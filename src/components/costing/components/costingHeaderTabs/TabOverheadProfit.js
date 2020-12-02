@@ -4,16 +4,22 @@ import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getOverheadProfitTabData, saveCostingOverheadProfitTab, } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import OverheadProfit from '../CostingHeadCosts/OverheadProfit';
 import Switch from "react-switch";
 
 function TabOverheadProfit(props) {
 
   const { register, handleSubmit, reset } = useForm();
-  const [isOpen, setIsOpen] = useState(false);
+
   const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [tabData, setTabData] = useState([]);
+
+  const [OverheadCost, setOverheadCost] = useState(0);
+  const [ProfitCost, setProfitCost] = useState(0);
+  const [RejectionCost, setRejectionCost] = useState('');
+  const [ICCCost, setICCCost] = useState('');
+  const [PaymentTermCostValue, setPaymentTermCost] = useState('');
 
   const dispatch = useDispatch()
 
@@ -27,7 +33,6 @@ function TabOverheadProfit(props) {
         PlantId: costData.PlantId,
       }
       dispatch(getOverheadProfitTabData(data, (res) => {
-        console.log('res: >>>>>>>>> ', res);
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           setTabData(Data.CostingPartDetails)
@@ -38,10 +43,14 @@ function TabOverheadProfit(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    // let topHeaderData = {
-    //   NetSurfaceTreatmentCost: surfaceTotal + transportationTotal,
-    // }
-    // props.setHeaderCost(topHeaderData)
+
+    setTimeout(() => {
+      let topHeaderData = {
+        NetOverheadProfitCost: checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(RejectionCost) + checkForNull(ICCCost) + checkForNull(PaymentTermCostValue),
+      }
+      props.setHeaderCost(topHeaderData)
+    }, 1000)
+
   }, [tabData]);
 
   const toggle = (index) => {
@@ -55,20 +64,33 @@ function TabOverheadProfit(props) {
   * @method setOverheadDetail
   * @description SET OVERHEAD DEATILS
   */
-  const setOverheadDetail = (overheadObj, index) => {
-    let tempObj = tabData[index];
+  const setOverheadDetail = (data, index) => {
+
+    const { overheadObj, profitObj } = data;
+    console.log('overheadObj: ', overheadObj);
+    console.log('profitObj: ', profitObj);
+
+    let OverheadNetCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, 2) + checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, 2)
+      + checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, 2);
+
+    let ProfitNetCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, 2) + checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, 2)
+      + checkForDecimalAndNull(profitObj.ProfitCCTotalCost, 2);
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
           CostingOverheadDetail: overheadObj,
-          OverheadNetCost: '',
-          NetOverheadAndProfitCost: '',
-          OverheadProfitNetCost: '',
+          CostingProfitDetail: profitObj,
+          OverheadNetCost: OverheadNetCost,
+          ProfitNetCost: ProfitNetCost,
+          NetOverheadAndProfitCost: OverheadNetCost + ProfitNetCost,
+          OverheadProfitNetCost: OverheadNetCost + ProfitNetCost,
         })
     })
 
     setTimeout(() => {
+      setOverheadCost(overheadObj ? checkForDecimalAndNull(OverheadNetCost, 2) : 0)
+      setProfitCost(overheadObj ? checkForDecimalAndNull(ProfitNetCost, 2) : 0)
       setTabData(tempArr)
     }, 200)
 
@@ -102,17 +124,69 @@ function TabOverheadProfit(props) {
   * @description SET REJECTION DETAIL 
   */
   const setRejectionDetail = (rejectionObj, index) => {
-    let tempObj = tabData[index];
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
           CostingRejectionDetail: rejectionObj,
-          RejectionNetCost: '',
+          RejectionNetCost: rejectionObj.RejectionTotalCost,
         })
     })
 
     setTimeout(() => {
+      setRejectionCost(checkForDecimalAndNull(rejectionObj ? rejectionObj.RejectionTotalCost : 0, 2))
+      setTabData(tempArr)
+    }, 200)
+
+  }
+
+  /**
+  * @method setICCDetail
+  * @description SET ICC DETAIL 
+  */
+  const setICCDetail = (ICCObj, index) => {
+
+    let tempArr = Object.assign([...tabData], {
+      [index]: Object.assign({}, tabData[index],
+        {
+          ICCCost: ICCObj ? ICCObj.NetCost : 0,
+          CostingInterestRateDetail: {
+            ...tabData[index].CostingInterestRateDetail,
+            ICCApplicabilityDetail: ICCObj,
+            IsInventoryCarringCost: ICCObj ? true : false,
+            NetICC: ICCObj ? ICCObj.NetCost : 0,
+          },
+        })
+    })
+
+    setTimeout(() => {
+      setICCCost(checkForDecimalAndNull(ICCObj ? ICCObj.NetCost : 0, 2))
+      setTabData(tempArr)
+    }, 200)
+
+  }
+
+  /**
+  * @method setPaymentTermsDetail
+  * @description SET PAYMENT TERMS DETAIL 
+  */
+  const setPaymentTermsDetail = (PaymentTermObj, index) => {
+
+    let tempArr = Object.assign([...tabData], {
+      [index]: Object.assign({}, tabData[index],
+        {
+          PaymentTermCost: PaymentTermObj ? PaymentTermObj.NetCost : 0,
+          CostingInterestRateDetail: {
+            ...tabData[index].CostingInterestRateDetail,
+            PaymentTermDetail: PaymentTermObj,
+            IsPaymentTerms: PaymentTermObj ? true : false,
+            NetPaymentTermCost: PaymentTermObj ? PaymentTermObj.NetCost : 0,
+          },
+        })
+    })
+
+    setTimeout(() => {
+      setPaymentTermCost(checkForDecimalAndNull(PaymentTermObj ? PaymentTermObj.NetCost : 0, 2))
       setTabData(tempArr)
     }, 200)
 
@@ -132,81 +206,19 @@ function TabOverheadProfit(props) {
   */
   const saveCosting = () => {
     const data = {
-      "CostingId": "00000000-0000-0000-0000-000000000000",
-      "OverheadProfitDetailId": "00000000-0000-0000-0000-000000000000",
-      "PartId": "00000000-0000-0000-0000-000000000000",
-      "PartNumber": "string",
-      "NetPOPrice": 0,
-      "LoggedInUserId": "00000000-0000-0000-0000-000000000000",
-      "NetOverheadAndProfitCost": 0,
-      "IsApplicableForChildParts": true,
-      "OverheadNetCost": 0,
-      "ProfitNetCost": 0,
-      "RejectionNetCost": 0,
-      "OverheadProfitNetCost": 0,
-      "ModelTypeId": "00000000-0000-0000-0000-000000000000",
-      "ModelType": "string",
-      "CostingOverheadDetail": {
-        "OverheadId": "00000000-0000-0000-0000-000000000000",
-        "IsOverheadCombined": true,
-        "OverheadApplicabilityId": "00000000-0000-0000-0000-000000000000",
-        "OverheadApplicability": "string",
-        "OverheadPercentage": 0,
-        "OverheadCombinedCost": 0,
-        "OverheadCombinedTotalCost": 0,
-        "OverheadCCPercentage": 0,
-        "OverheadCCCost": 0,
-        "OverheadCCTotalCost": 0,
-        "IsOverheadCCApplicable": true,
-        "OverheadBOPPercentage": 0,
-        "OverheadBOPCost": 0,
-        "OverheadBOPTotalCost": 0,
-        "IsOverheadBOPApplicable": true,
-        "OverheadRMPercentage": 0,
-        "OverheadRMCost": 0,
-        "OverheadRMTotalCost": 0,
-        "IsOverheadRMApplicable": true,
-        "OverheadFixedPercentage": 0,
-        "OverheadFixedCost": 0,
-        "OverheadFixedTotalCost": 0,
-        "IsOverheadFixedApplicable": true,
-        "IsSurfaceTreatmentApplicable": true
-      },
-      "CostingProfitDetail": {
-        "ProfitId": "00000000-0000-0000-0000-000000000000",
-        "ProfitApplicabilityId": "00000000-0000-0000-0000-000000000000",
-        "ProfitApplicability": "string",
-        "IsProfitCombined": true,
-        "ProfitPercentage": 0,
-        "ProfitCombinedCost": 0,
-        "ProfitCombinedTotalCost": 0,
-        "ProfitCCPercentage": 0,
-        "ProfitCCCost": 0,
-        "ProfitCCTotalCost": 0,
-        "IsProfitCCApplicable": true,
-        "ProfitBOPPercentage": 0,
-        "ProfitBOPCost": 0,
-        "ProfitBOPTotalCost": 0,
-        "IsProfitBOPApplicable": true,
-        "ProfitRMPercentage": 0,
-        "ProfitRMCost": 0,
-        "ProfitRMTotalCost": 0,
-        "IsProfitRMApplicable": true,
-        "ProfitFixedPercentage": 0,
-        "ProfitFixedCost": 0,
-        "ProfitFixedTotalCost": 0,
-        "IsProfitFixedApplicable": true,
-        "IsSurfaceTreatmentApplicable": true
-      },
-      "CostingRejectionDetail": {
-        "RejectionApplicabilityId": "00000000-0000-0000-0000-000000000000",
-        "RejectionApplicability": "string",
-        "RejectionPercentage": 0,
-        "RejectionCost": 0,
-        "RejectionTotalCost": 0,
-        "IsSurfaceTreatmentApplicable": true
-      }
-
+      "CostingId": costData.CostingId,
+      "PartId": costData.PartId,
+      "PartNumber": costData.PartNumber,
+      "NetPOPrice": props.netPOPrice,
+      "LoggedInUserId": loggedInUserId(),
+      "IsApplicableForChildParts": IsApplicableForChildParts,
+      "NetOverheadAndProfitCost": OverheadCost + ProfitCost,
+      "OverheadNetCost": OverheadCost,
+      "ProfitNetCost": ProfitCost,
+      "RejectionNetCost": RejectionCost,
+      "ICCCost": ICCCost,
+      "PaymentTermCost": PaymentTermCostValue,
+      "CostingPartDetails": tabData
     }
 
     dispatch(saveCostingOverheadProfitTab(data, res => {
@@ -288,11 +300,11 @@ function TabOverheadProfit(props) {
                               < >
                                 <tr key={index} onClick={() => toggle(index)}>
                                   <td><span class="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                                  <td>{''}</td>
-                                  <td>{''}</td>
-                                  <td>{''}</td>
-                                  <td>{''}</td>
-                                  <td>{''}</td>
+                                  <td>{item.OverheadNetCost !== null ? checkForDecimalAndNull(item.OverheadNetCost, 2) : 0}</td>
+                                  <td>{item.ProfitNetCost !== null ? checkForDecimalAndNull(item.ProfitNetCost, 2) : 0}</td>
+                                  <td>{item.RejectionNetCost !== null ? checkForDecimalAndNull(item.RejectionNetCost, 2) : 0}</td>
+                                  <td>{item.ICCCost !== null ? checkForDecimalAndNull(item.ICCCost, 2) : 0}</td>
+                                  <td>{item.PaymentTermCost !== null ? checkForDecimalAndNull(item.PaymentTermCost, 2) : 0}</td>
                                 </tr>
                                 {item.IsOpen &&
                                   <tr>
@@ -302,9 +314,14 @@ function TabOverheadProfit(props) {
                                           index={index}
                                           tabData={item}
                                           headCostRMCCBOPData={props.headCostRMCCBOPData}
+                                          OverheadCost={OverheadCost}
+                                          ProfitCost={ProfitCost}
                                           setOverheadDetail={setOverheadDetail}
                                           setProfitDetail={setProfitDetail}
                                           setRejectionDetail={setRejectionDetail}
+                                          setICCDetail={setICCDetail}
+                                          setPaymentTermsDetail={setPaymentTermsDetail}
+                                          saveCosting={saveCosting}
                                         />
                                       </div>
                                     </td>

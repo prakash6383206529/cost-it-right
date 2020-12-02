@@ -6,7 +6,6 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
-import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import AddPackaging from '../../Drawers/AddPackaging';
 
 function PackageCost(props) {
@@ -16,14 +15,14 @@ function PackageCost(props) {
     reValidateMode: 'onChange',
   });
 
-  const [gridData, setGridData] = useState([])
+  const [gridData, setGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    //props.setSurfaceCost(gridData, props.index)
+    props.setPackageCost(gridData, props.index)
   }, [gridData]);
 
   /**
@@ -40,18 +39,11 @@ function PackageCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0) {
-      let rowArray = {
-        PackagingId: rowData.PackagingId,
-        PackagingDescription: rowData.PackagingDescription,
-        PackagingPercentage: rowData.PackagingPercentage,
-        Applicability: rowData.Applicability,
-        PackagingCost: rowData.PackagingCost,
-      }
       if (editIndex !== '' && isEditFlag) {
-        let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })
+        let tempArr = Object.assign([...gridData], { [editIndex]: rowData })
         setGridData(tempArr)
       } else {
-        let tempArr = [...gridData, rowArray]
+        let tempArr = [...gridData, rowData]
         setGridData(tempArr)
       }
     }
@@ -132,7 +124,7 @@ function PackageCost(props) {
                       return (
                         <tr key={index}>
                           <td>{item.PackagingDescription}</td>
-                          <td>{item.PackagingPercentage}</td>
+                          <td>{item.PackagingCostPercentage}</td>
                           <td>{item.PackagingCost}</td>
                           <td>
                             <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />

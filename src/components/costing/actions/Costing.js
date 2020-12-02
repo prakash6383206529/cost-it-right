@@ -18,6 +18,8 @@ import {
   GET_COSTING_PART_SELECTLIST,
   GET_PART_INFO,
   GET_COSTING_DATA_BY_COSTINGID,
+  GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
+  GET_RATE_CRITERIA_BY_CAPACITY,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -532,9 +534,7 @@ export function getInventoryDataByHeads(Id, callback) {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getInventoryDataByHeads}/${Id}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      }
+      callback(response);
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
@@ -552,6 +552,24 @@ export function getPaymentTermsDataByHeads(Id, callback) {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPaymentTermsDataByHeads}/${Id}`, headers);
     request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getPackageFreightTabData
+ * @description GET PACKAGE AND FREIGHT DATA IN COSTING DETAIL
+ */
+export function getPackageFreightTabData(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    request.then((response) => {
       if (response.data.Result) {
         callback(response);
       }
@@ -563,19 +581,182 @@ export function getPaymentTermsDataByHeads(Id, callback) {
   };
 }
 
+/**
+ * @method saveCostingPackageFreightTab
+ * @description SAVE COSTING PACKAGE & FREIGHT TAB
+ */
+export function saveCostingPackageFreightTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingPackageFreightTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method getFreigtFullTruckCapacitySelectList
+ * @description GET FREIGHT FULL TRUCK CAPACITY SELECTLIST
+ */
+export function getFreigtFullTruckCapacitySelectList() {
+  return (dispatch) => {
+    const request = axios.get(API.getFreigtFullTruckCapacitySelectList, headers);
+    request.then((response) => {
+      dispatch({
+        type: GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
+        payload: response.data.SelectList,
+      });
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method getRateCriteriaByCapacitySelectList
+ * @description GET RATE CRITERIA BY CAPACITY SELECTLIST
+ */
+export function getRateCriteriaByCapacitySelectList(Capacity) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getRateCriteriaByCapacitySelectList}/${Capacity}`, headers);
+    request.then((response) => {
+      dispatch({
+        type: GET_RATE_CRITERIA_BY_CAPACITY,
+        payload: response.data.SelectList,
+      });
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method getRateByCapacityCriteria
+ * @description GET RATE BY CAPACITY AND CRITERIA
+ */
+export function getRateByCapacityCriteria(data, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getRateByCapacityCriteria}/${data.Capacity}/${data.Criteria}`, headers);
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method getToolTabData
+ * @description GET TOOL DATA IN COSTING DETAIL
+ */
+export function getToolTabData(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method saveToolTab
+ * @description SAVE TOOL TAB
+ */
+export function saveToolTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveToolTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method getDiscountOtherCostTabData
+ * @description GET DISCOUNT OTHER COST IN COSTING DETAIL
+ */
+export function getDiscountOtherCostTabData(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method saveDiscountOtherCostTab
+ * @description SAVE DISCOUNT OTHER COST TAB
+ */
+export function saveDiscountOtherCostTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveDiscountOtherCostTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
+/**
+ * @method fileUploadCosting
+ * @description File Upload COSTING
+ */
+export function fileUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.fileUploadCosting, data, headers);
+    request.then((response) => {
+      if (response && response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
 
-
-
-
-
+/**
+ * @method fileDeleteCosting
+ * @description DELETE COSTING FILES
+ */
+export function fileDeleteCosting(data, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    axios.delete(`${API.fileDeleteCosting}/${data.Id}/${data.DeletedBy}`, headers)
+      .then((response) => {
+        callback(response);
+      }).catch((error) => {
+        apiErrors(error);
+        dispatch({ type: API_FAILURE });
+      });
+  };
+}
 
 
 

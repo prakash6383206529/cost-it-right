@@ -449,8 +449,22 @@ export const API = {
   getOverheadProfitTabData: `${BASE_URL}/costing/get-zbc-costing-detail-overhead-and-profit`,
   getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
   saveCostingOverheadProfitTab: `${BASE_URL}/costing/save-zbc-costing-overhead-profit-details`,
-  getInventoryDataByHeads: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
-  getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
+  getInventoryDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-icc-applicability`,
+  getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-payment-term-applicability`,
+
+  getPackageFreightTabData: `${BASE_URL}/costing/get-zbc-costing-detail-freight-and-packaging`,
+  saveCostingPackageFreightTab: `${BASE_URL}/costing/save-zbc-costing-freight-packaging-details`,
+
+  getToolTabData: `${BASE_URL}/costing/get-zbc-costing-detail-tools-cost`,
+  saveToolTab: `${BASE_URL}/costing/save-zbc-costing-tool-cost-details`,
+
+  getDiscountOtherCostTabData: `${BASE_URL}/costing/get-zbc-costing-detail-other-cost`,
+  saveDiscountOtherCostTab: `${BASE_URL}/costing/save-zbc-costing-other-cost-details`,
+
+  fileUploadCosting: `${BASE_URL}/costing/costing-file-upload`,
+
+  getRateCriteriaByCapacitySelectList: `${BASE_URL}/costing/get-rate-criteria-by-capacity-select-list`,
+  getRateByCapacityCriteria: `${BASE_URL}/costing/get-rate-by-capacity-criteria`,
 
   getCostingPartDetails: `${BASE_URL}/costing/get-costing-part-details`,
   getExistingSupplierDetailByPartId: `${BASE_URL}/costing-sheet-metal/get-existing-suppliers-details-by-part`,
@@ -1005,6 +1019,7 @@ export const GET_ZBC_COSTING_SELECTLIST_BY_PART = 'GET_ZBC_COSTING_SELECTLIST_BY
 export const ADD_BOP_GRID_COSTING_SUCCESS = 'ADD_BOP_GRID_COSTING_SUCCESS';
 export const SAVE_BOP_COSTING_SUCCESS = 'SAVE_BOP_COSTING_SUCCESS';
 export const GET_COSTING_DATA_BY_COSTINGID = 'GET_COSTING_DATA_BY_COSTINGID';
+export const GET_RATE_CRITERIA_BY_CAPACITY = 'GET_RATE_CRITERIA_BY_CAPACITY';
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';

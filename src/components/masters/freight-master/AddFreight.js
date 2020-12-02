@@ -671,7 +671,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="3">
                                                 <Field
-                                                    label={`INR/Kg`}
+                                                    label={`Rate (INR/Kg)`}
                                                     name={"PartTruckLoadRatePerKilogram"}
                                                     type="text"
                                                     placeholder={'Enter'}
@@ -685,7 +685,7 @@ class AddFreight extends Component {
                                             </Col>
                                             <Col md="3">
                                                 <Field
-                                                    label={`INR/Cubic Feet`}
+                                                    label={`Rate (INR/Cubic Feet)`}
                                                     name={"PartTruckLoadRatePerCubicFeet"}
                                                     type="text"
                                                     placeholder={'Enter'}

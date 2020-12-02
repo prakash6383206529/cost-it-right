@@ -6,7 +6,6 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
-import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 import AddFreight from '../../Drawers/AddFreight';
 
 function FreightCost(props) {
@@ -16,14 +15,14 @@ function FreightCost(props) {
     reValidateMode: 'onChange',
   });
 
-  const [gridData, setGridData] = useState([])
+  const [gridData, setGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    //props.setSurfaceCost(gridData, props.index)
+    props.setFreightCost(gridData, props.index)
   }, [gridData]);
 
   /**
@@ -40,22 +39,14 @@ function FreightCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0) {
-      let rowArray = {
-        FreightId: rowData.FreightId,
-        IsPartTruckLoad: rowData.IsPartTruckLoad,
-        RateCriteria: rowData.RateCriteria,
-        Rate: rowData.Rate,
-        Quantity: rowData.Quantity,
-        Cost: rowData.Cost,
-      }
       if (editIndex !== '' && isEditFlag) {
-        let tempArr = Object.assign([...gridData], { [editIndex]: rowArray })
+        let tempArr = Object.assign([...gridData], { [editIndex]: rowData })
         setGridData(tempArr)
         setEditIndex('')
         setIsEditFlag(false)
         setRowObjData(tempArr)
       } else {
-        let tempArr = [...gridData, rowArray]
+        let tempArr = [...gridData, rowData]
         setGridData(tempArr)
         setEditIndex('')
         setIsEditFlag(false)
@@ -79,22 +70,6 @@ function FreightCost(props) {
     setIsEditFlag(true)
     setRowObjData(tempArr)
     setDrawerOpen(true)
-  }
-
-  const handleSurfaceAreaChange = (event, index) => {
-    let tempArr = [];
-    let tempData = gridData[index];
-
-    if (!isNaN(event.target.value)) {
-
-      const SurfaceTreatmentCost = (checkForNull(event.target.value) * checkForNull(tempData.RatePerUOM)) + (checkForNull(tempData.LabourRate) * parseInt(tempData.LabourQuantity));
-      tempData = { ...tempData, SurfaceArea: parseInt(event.target.value), SurfaceTreatmentCost: SurfaceTreatmentCost }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-
-    } else {
-      toastr.warning('Please enter valid number.')
-    }
   }
 
   /**
@@ -127,6 +102,7 @@ function FreightCost(props) {
                 <thead>
                   <tr>
                     <th>{`Freight Type`}</th>
+                    <th>{`Capacity`}</th>
                     <th>{`Criteria`}</th>
                     <th>{`Rate`}</th>
                     <th>{`Quantity`}</th>
@@ -141,10 +117,11 @@ function FreightCost(props) {
                       return (
                         <tr key={index}>
                           <td>{item.IsPartTruckLoad ? 'PTL' : 'FTL'}</td>
-                          <td>{item.RateCriteria}</td>
+                          <td>{item.Capacity}</td>
+                          <td>{item.Criteria}</td>
                           <td>{item.Rate}</td>
                           <td>{item.Quantity}</td>
-                          <td>{item.Cost}</td>
+                          <td>{item.FreightCost}</td>
                           <td>
                             <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
                             <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />

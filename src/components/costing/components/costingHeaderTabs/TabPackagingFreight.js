@@ -2,19 +2,18 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
+import { getPackageFreightTabData, saveCostingPackageFreightTab } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 
 function TabPackagingFreight(props) {
 
   const { handleSubmit, watch, reset } = useForm();
-  const [isOpen, setIsOpen] = useState(false);
+
   const [tabData, setTabData] = useState([]);
-  const [surfaceTotal, setSurfaceTotal] = useState('');
-  const [transportationTotal, setTransportationTotal] = useState('');
-  const [netSurfaceTreatmentCost, setNetSurfaceTreatmentCost] = useState('');
+  const [packageTotal, setPackageTotal] = useState(0);
+  const [freightTotal, setFreightTotal] = useState(0);
 
   const dispatch = useDispatch()
 
@@ -27,21 +26,23 @@ function TabPackagingFreight(props) {
         PartId: costData.PartId,
         PlantId: costData.PlantId,
       }
-      // dispatch(getSurfaceTreatmentTabData(data, (res) => {
-      //   if (res && res.data && res.data.Result) {
-      //     let Data = res.data.Data;
-      //     setTabData(Data.CostingPartDetails)
-      //   }
-      // }))
+      dispatch(getPackageFreightTabData(data, (res) => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          setTabData(Data.CostingPartDetails)
+        }
+      }))
     }
   }, [costData]);
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     let topHeaderData = {
-      NetSurfaceTreatmentCost: surfaceTotal + transportationTotal,
+      NetFreightPackagingCost: checkForNull(packageTotal) + checkForNull(freightTotal),
+      FreightNetCost: freightTotal,
+      PackagingNetCost: packageTotal,
     }
-    //props.setHeaderCost(topHeaderData)
+    props.setHeaderCost(topHeaderData)
   }, [tabData]);
 
   const toggle = (index) => {
@@ -52,64 +53,74 @@ function TabPackagingFreight(props) {
   }
 
   /**
-  * @method setSurfaceCost
-  * @description SET SURFACE TREATMENT COST
+  * @method setPackageCost
+  * @description SET PACKAGE COST
   */
-  const setSurfaceCost = (surfaceGrid, index) => {
+  const setPackageCost = (GridData, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(tempObj.TransporationCost)
+    console.log('GridData: ', GridData);
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          SurfaceTreatmentCost: surfaceCost(surfaceGrid),
-          SurfaceTreatmentZBCDetails: surfaceGrid
+          PackagingNetCost: packageTotalCost(GridData),
+          NetFreightPackagingCost: tempObj.FreightNetCost !== null ? tempObj.FreightNetCost : 0 + packageTotalCost(GridData),
+          CostingPackagingDetail: GridData
         })
     })
 
     setTimeout(() => {
+      setPackageTotal(packageTotalCost(GridData))
       setTabData(tempArr)
     }, 200)
 
   }
 
   /**
-  * @method surfaceCost
-  * @description GET SURFACE TREATMENT COST
+  * @method packageTotalCost
+  * @description GET TOTAL PACKAGE COST
   */
-  const surfaceCost = (item) => {
+  const packageTotalCost = (item) => {
     let cost = 0;
     cost = item && item.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.SurfaceTreatmentCost);
+      return accummlator + checkForNull(el.PackagingCost);
     }, 0)
-    setSurfaceTotal(cost)
     return cost;
   }
 
   /**
-  * @method setTransportationCost
-  * @description SET TRANSPORTATION COST
+  * @method setFreightCost
+  * @description SET FREIGHT COST
   */
-  const setTransportationCost = (transportationObj, index) => {
+  const setFreightCost = (GridData, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(tempObj.SurfaceTreatmentCost) + checkForNull(transportationObj.TransporationCost)
-    setTransportationTotal(checkForNull(transportationObj.TransporationCost))
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          TransporationCost: transportationObj.TransporationCost,
-          TransporationZBCDetails: transportationObj,
+          FreightNetCost: freightTotalCost(GridData),
+          NetFreightPackagingCost: tempObj.PackagingNetCost + freightTotalCost(GridData),
+          CostingFreightDetail: GridData
         })
     })
 
     setTimeout(() => {
+      setFreightTotal(freightTotalCost(GridData))
       setTabData(tempArr)
     }, 200)
+
+  }
+
+  /**
+  * @method freightTotalCost
+  * @description GET TOTAL FREIGHT COST
+  */
+  const freightTotalCost = (item) => {
+    let cost = 0;
+    cost = item && item.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.FreightCost);
+    }, 0)
+    return cost;
   }
 
   /**
@@ -118,30 +129,17 @@ function TabPackagingFreight(props) {
   */
   const saveCosting = () => {
     const data = {
-      NetRawMaterialsCost: '',
-      NetBoughtOutPartCost: '',
-      NetConversionCost: '',
-      NetOperationCost: '',
-      NetProcessCost: '',
-      NetToolsCost: '',
-      NetTotalRMBOPCC: '',
-      NetSurfaceTreatmentCost: 0,
-      NetOverheadAndProfitCost: 0,
-      NetPackagingAndFreight: 0,
-      NetToolCost: 0,
-      DiscountsAndOtherCost: 0,
-      TotalCost: '',
-      NetPOPrice: '',
-      LoggedInUserId: '',
-      CostingId: costData.CostingId,
-      CostingNumber: costData.CostingNumber,
-      ShareOfBusinessPercent: costData.ShareOfBusinessPercent,
-      IsIncludeSurfaceTreatmentWithOverheadAndProfit: '',
-      CostingPartDetails: tabData,
+      "CostingId": costData.CostingId,
+      "PartId": costData.PartId,
+      "PartNumber": costData.PartNumber,
+      "NetPOPrice": props.netPOPrice,
+      "LoggedInUserId": loggedInUserId(),
+      "NetFreightPackagingCost": checkForNull(packageTotal) + checkForNull(freightTotal),
+      "CostingPartDetails": tabData
     }
 
-    dispatch(saveCostingSurfaceTreatmentTab(data, res => {
-      console.log('saveCostingSurfaceTreatmentTab: ', res);
+    dispatch(saveCostingPackageFreightTab(data, res => {
+      console.log('saveCostingPackageFreightTab: ', res);
     }))
 
   }
@@ -183,32 +181,32 @@ function TabPackagingFreight(props) {
                       </thead>
                       <tbody>
                         {
-                          // tabData && tabData.map((item, index) => {
-                          //   return (
-                          //     < >
-                          //       <tr key={index} onClick={() => toggle(index)}>
-                          //         <td>{item.PartName}</td>
-                          //         <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
-                          //         <td>{item.TransporationCost !== null ? checkForDecimalAndNull(item.TransporationCost, 2) : 0}</td>
-                          //       </tr>
-                          //       {item.IsOpen &&
-                          <tr>
-                            <td colSpan={4}>
-                              <div>
-                                <PackageAndFreight
-                                //index={index}
-                                //surfaceData={item.SurfaceTreatmentZBCDetails}
-                                //transportationData={item.TransporationZBCDetails}
-                                //setSurfaceCost={setSurfaceCost}
-                                //setTransportationCost={setTransportationCost}
-                                />
-                              </div>
-                            </td>
-                          </tr>
-                          //       }
-                          //     </>
-                          //   )
-                          // })
+                          tabData && tabData.map((item, index) => {
+                            return (
+                              < >
+                                <tr key={index} onClick={() => toggle(index)}>
+                                  <td>{item.PartName}</td>
+                                  <td>{item.PackagingNetCost !== null ? checkForDecimalAndNull(item.PackagingNetCost, 2) : 0}</td>
+                                  <td>{item.FreightNetCost !== null ? checkForDecimalAndNull(item.FreightNetCost, 2) : 0}</td>
+                                </tr>
+                                {item.IsOpen &&
+                                  <tr>
+                                    <td colSpan={3}>
+                                      <div>
+                                        <PackageAndFreight
+                                          index={index}
+                                          packageData={item.CostingPackagingDetail}
+                                          freightData={item.CostingFreightDetail}
+                                          setPackageCost={setPackageCost}
+                                          setFreightCost={setFreightCost}
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                }
+                              </>
+                            )
+                          })
                         }
 
                       </tbody>

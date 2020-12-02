@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
-import { Row, Col, } from 'reactstrap';
-import { getOverheadProfitTabData, saveCostingOverheadProfitTab, } from '../../actions/Costing';
+import { useDispatch, useSelector } from 'react-redux';
+import { Row, Col, Table } from 'reactstrap';
+import { getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting } from '../../actions/Costing';
+import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -15,10 +16,11 @@ function TabDiscountOther(props) {
 
   const { register, handleSubmit, setValue, getValues, reset, errors, control } = useForm();
 
-  const [tabData, setTabData] = useState([]);
+  const [tabData, setTabData] = useState({});
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
   const [files, setFiles] = useState([]);
+  const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
 
   const dispatch = useDispatch()
@@ -32,20 +34,60 @@ function TabDiscountOther(props) {
         PartId: costData.PartId,
         PlantId: costData.PlantId,
       }
-      dispatch(getOverheadProfitTabData(data, (res) => {
-        // console.log('res: >>>>>>>>> ', res);
-        // if (res && res.data && res.data.Result) {
-        //   let Data = res.data.Data;
-        //   setTabData(Data.CostingPartDetails)
-        // }
+      dispatch(getDiscountOtherCostTabData(data, (res) => {
+        console.log('res: >>>>>>>>> ', res);
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          setTabData(Data)
+          if (Data && Data.CostingPartDetails[0] && Data.CostingPartDetails[0].DiscountCost !== null) {
+            let OtherCostDetails = Data.CostingPartDetails[0].OtherCostDetails;
+            setCurrency(OtherCostDetails.IsCurrencyChange ? true : false)
+            setValue([
+              { HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '' },
+              { OtherCostDescription: OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '' },
+              { NetPOPriceAfterDiscount: OtherCostDetails.NetPOPriceAfterDiscount !== null ? OtherCostDetails.NetPOPriceAfterDiscount : '' },
+              { HundiPerDiscountValue: OtherCostDetails.HundiPerDiscountValue !== null ? OtherCostDetails.HundiPerDiscountValue : '' },
+              { AnyOtherCost: OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '' },
+              { Currency: OtherCostDetails.Currency !== null ? { label: '', value: '' } : [] },
+              { NetPOPriceAfterCurrencyChange: OtherCostDetails.NetPOPriceAfterCurrencyChange !== null ? OtherCostDetails.NetPOPriceAfterCurrencyChange : '' },
+            ])
+          }
+        }
       }))
     }
   }, [costData]);
+
+  useEffect(() => {
+    dispatch(getCurrencySelectList(() => { }))
+  }, [])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
 
   }, [tabData]);
+
+  const currencySelectList = useSelector(state => state.comman.currencySelectList)
+
+  /**
+  * @method handleDiscountChange
+  * @description HANDLE DISCOUNT CHANGE
+  */
+  const handleDiscountChange = (event) => {
+    if (!isNaN(event.target.value)) {
+
+      if (props.netPOPrice !== '') {
+        const cost = props.netPOPrice * calculatePercentage(event.target.value);
+        setValue('NetPOPriceAfterDiscount', checkForDecimalAndNull(props.netPOPrice - cost, 2))
+        setValue('HundiPerDiscountValue', checkForDecimalAndNull(cost, 2))
+      } else {
+        setValue('NetPOPriceAfterDiscount', props.netPOPrice)
+        setValue('HundiPerDiscountValue', '')
+      }
+
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
 
 
   /**
@@ -53,21 +95,8 @@ function TabDiscountOther(props) {
   * @description TOGGLE CURRENCY CHANGE
   */
   const onPressChangeCurrency = () => {
+    setCurrency([])
     setIsCurrencyChange(!IsCurrencyChange)
-  }
-
-  /**
-  * @method renderListing
-  * @description Used show listing of unit of measurement
-  */
-  const renderListing = (label) => {
-
-    if (label === 'Currency') {
-      return [
-        { label: 'INR', value: 'INR' },
-      ];
-    }
-
   }
 
   /**
@@ -82,11 +111,28 @@ function TabDiscountOther(props) {
     }
   }
 
+  /**
+  * @method renderListing
+  * @description Used show listing of unit of measurement
+  */
+  const renderListing = (label) => {
+
+    const temp = [];
+
+    if (label === 'Currency') {
+      currencySelectList && currencySelectList.map(item => {
+        if (item.Value === '0' || item.Text === 'INR') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
+  }
 
   // specify upload params and url for your files
   const getUploadParams = ({ file, meta }) => {
     return { url: 'https://httpbin.org/post', }
-
   }
 
   // called every time a file's `status` changes
@@ -96,17 +142,18 @@ function TabDiscountOther(props) {
       const removedFileName = file.name;
       let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
       setFiles(tempArr)
+      setIsOpen(!IsOpen)
     }
 
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-      // dispatch(fileUploadBOPDomestic(data, (res) => {
-      //   let Data = res.data[0]
-      //   const { files } = this.state;
-      //   files.push(Data)
-      //   setFiles(files)
-      // }))
+      dispatch(fileUploadCosting(data, (res) => {
+        let Data = res.data[0]
+        files.push(Data)
+        setFiles(files)
+        setIsOpen(!IsOpen)
+      }))
     }
 
     if (status === 'rejected_file_type') {
@@ -115,7 +162,7 @@ function TabDiscountOther(props) {
   }
 
   const renderImages = () => {
-    this.state.files && this.state.files.map(f => {
+    files && files.map(f => {
       const withOutTild = f.FileURL.replace('~', '')
       const fileURL = `${FILE_URL}${withOutTild}`;
       return (
@@ -135,15 +182,17 @@ function TabDiscountOther(props) {
         Id: FileId,
         DeletedBy: loggedInUserId(),
       }
-      // dispatch(fileDeleteBOPDomestic(deleteData, (res) => {
-      //   toastr.success('File has been deleted successfully.')
-      //   let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-      //   setFiles(tempArr)
-      // }))
+      dispatch(fileDeleteCosting(deleteData, (res) => {
+        toastr.success('File has been deleted successfully.')
+        let tempArr = files && files.filter(item => item.FileId !== FileId)
+        setFiles(tempArr)
+        setIsOpen(!IsOpen)
+      }))
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
       setFiles(tempArr)
+      setIsOpen(!IsOpen)
     }
   }
 
@@ -179,7 +228,19 @@ function TabDiscountOther(props) {
               </Row>
 
               <Row>
-
+                <Col md="12">
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th>{``}</th>
+                        <th>{``}</th>
+                        <th>{``}</th>
+                        <th>{``}</th>
+                        <th>{`Total Cost: ${100}`}</th>
+                      </tr>
+                    </thead>
+                  </Table>
+                </Col>
               </Row>
 
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -188,7 +249,7 @@ function TabDiscountOther(props) {
                   <Col md="4">
                     <TextFieldHookForm
                       label="Hundi/Other Discount(%)"
-                      name={'HundiPerOtherDiscount'}
+                      name={'HundiOrDiscountPercentage'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -201,11 +262,14 @@ function TabDiscountOther(props) {
                         },
                         // maxLength: 4,
                       }}
-                      handleChange={() => { }}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleDiscountChange(e)
+                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.HundiPerOtherDiscount}
+                      errors={errors.HundiOrDiscountPercentage}
                       disabled={false}
                     />
                   </Col>
@@ -236,7 +300,7 @@ function TabDiscountOther(props) {
                   <Col md="4">
                     <TextFieldHookForm
                       label="Net PO Price(INR)"
-                      name={'NetPOPrice'}
+                      name={'NetPOPriceAfterDiscount'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -253,7 +317,7 @@ function TabDiscountOther(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.NetPOPrice}
+                      errors={errors.NetPOPriceAfterDiscount}
                       disabled={true}
                     />
                   </Col>
@@ -263,7 +327,7 @@ function TabDiscountOther(props) {
                   <Col md="4">
                     <TextFieldHookForm
                       label="Hundi/Discount Value"
-                      name={'HundiPerDiscount'}
+                      name={'HundiPerDiscountValue'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -280,7 +344,7 @@ function TabDiscountOther(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.HundiPerDiscount}
+                      errors={errors.HundiPerDiscountValue}
                       disabled={true}
                     />
                   </Col>
@@ -311,7 +375,7 @@ function TabDiscountOther(props) {
                 </Row>
 
                 <Row>
-                  <Col md="4" className="mb15">
+                  <Col md="2" className="mb15">
                     <label
                       className={`custom-checkbox`}
                       onChange={onPressChangeCurrency}
@@ -329,6 +393,8 @@ function TabDiscountOther(props) {
                       />
                     </label>
                   </Col>
+
+                  <Col md="2" ></Col>
 
                   {IsCurrencyChange &&
                     <>
@@ -351,7 +417,7 @@ function TabDiscountOther(props) {
                       </Col>
                       <Col md="4">
                         <TextFieldHookForm
-                          label="Net PO Price(INR)"
+                          label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                           name={'NetPOPriceCurrency'}
                           Controller={Controller}
                           control={control}
@@ -410,7 +476,7 @@ function TabDiscountOther(props) {
 
                   <Col md="3">
                     <label>Upload Files (upload up to 3 files)</label>
-                    {files && files.length >= 3 ? '' :
+                    {files && files.length >= 8 ? '' :
                       <Dropzone
                         getUploadParams={getUploadParams}
                         onChangeStatus={handleChangeStatus}
@@ -418,7 +484,7 @@ function TabDiscountOther(props) {
                         //onSubmit={this.handleSubmit}
                         accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
                         initialFiles={initialFiles}
-                        maxFiles={3}
+                        maxFiles={8}
                         maxSizeBytes={2000000}
                         inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
                         styles={{

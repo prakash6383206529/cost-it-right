@@ -11,7 +11,7 @@ function TransportationCost(props) {
   const { data } = props;
 
   const defaultValues = {
-    UOM: data && data.UOM !== undefined ? data.UOM : [],
+    UOM: data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [],
     Rate: data && data.Rate !== undefined ? data.Rate : 0,
     Quantity: data && data.Quantity !== undefined ? data.Quantity : 0,
     TransporationCost: data && data.TransporationCost !== undefined ? data.TransporationCost : 0,
@@ -23,22 +23,20 @@ function TransportationCost(props) {
     defaultValues: defaultValues,
   });
 
-  const [gridData, setGridData] = useState([])
-  const [uom, setUOM] = useState([])
+  const [uom, setUOM] = useState(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
   const [Quantity, setQuantity] = useState('')
   const [Rate, setRate] = useState('')
-  const [NetCost, setNetCost] = useState('')
 
   const dispatch = useDispatch()
 
   useEffect(() => {
     let tempObj = {
       TransporationDetailId: '',
-      UOMName: uom ? uom.label : '',
+      UOM: uom ? uom.label : '',
       UOMId: uom ? uom.value : '',
       Rate: Rate,
       Quantity: Quantity,
-      TransporationCost: NetCost,
+      TransporationCost: getValues('TransporationCost'),
     }
 
     props.setTransportationCost(tempObj, props.index)
@@ -68,9 +66,11 @@ function TransportationCost(props) {
       setRate(event.target.value)
       if (Quantity !== '') {
         const cost = Quantity * event.target.value;
-        setNetCost(checkForDecimalAndNull(cost, 2));
+        //setNetCost(checkForDecimalAndNull(cost, 2));
+        setValue('TransporationCost', checkForDecimalAndNull(cost, 2))
       } else {
-        setNetCost(0);
+        setValue('TransporationCost', 0)
+        //setNetCost(0);
       }
     } else {
       toastr.warning('Please enter valid number.')
@@ -84,9 +84,9 @@ function TransportationCost(props) {
 
       if (Rate !== '') {
         const cost = Rate * event.target.value;
-        setNetCost(checkForDecimalAndNull(cost, 2));
+        setValue('TransporationCost', checkForDecimalAndNull(cost, 2));
       } else {
-        setNetCost(0);
+        setValue('TransporationCost', 0);
       }
     } else {
       toastr.warning('Please enter valid number.')
@@ -203,11 +203,37 @@ function TransportationCost(props) {
 
             </Col>
             <Col md="3">
-              <label>
+              <TextFieldHookForm
+                label="Cost"
+                name={`TransporationCost`}
+                Controller={Controller}
+                control={control}
+                register={register}
+                mandatory={false}
+                rules={{
+                  //required: true,
+                  pattern: {
+                    value: /^[0-9]*$/i,
+                    //value: /^[0-9]\d*(\.\d+)?$/i,
+                    message: 'Invalid Number.'
+                  },
+                }}
+                defaultValue={''}
+                className=""
+                customClassName={'withBorder'}
+                handleChange={(e) => {
+                  e.preventDefault()
+                  //handleQuantityChange(e)
+                }}
+                errors={errors && errors.TransporationCost}
+                disabled={true}
+              />
+
+            </Col>
+            {/* <label>
                 {'Cost'}
               </label>
-              {NetCost}
-            </Col>
+              {NetCost} */}
           </Row>
 
         </div>

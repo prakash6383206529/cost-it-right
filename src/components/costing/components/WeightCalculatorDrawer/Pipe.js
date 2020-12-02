@@ -16,7 +16,7 @@ function Pipe(props) {
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
 
   const defaultValues = {
-    UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
+    //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
     OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
     Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? WeightCalculatorRequest.Thickness : '',
     InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== undefined ? WeightCalculatorRequest.InnerDiameter : '',
@@ -39,7 +39,7 @@ function Pipe(props) {
   });
 
   const [isOneSide, setIsOneSide] = useState(false);
-  const [UOMDimension, setUOMDimension] = useState([]);
+  const [UOMDimension, setUOMDimension] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMDimensionId ? { label: WeightCalculatorRequest.UOMDimensionLabel, value: WeightCalculatorRequest.UOMDimensionId } : []);
 
   const fieldValues = useWatch({
     control,
@@ -262,6 +262,8 @@ function Pipe(props) {
     let data = {
       LayoutingType: 'PIPE',
       CostingWeightCalculatioId: '',
+      UOMDimensionId: UOMDimension ? UOMDimension.value : '',
+      UOMDimensionLabel: UOMDimension ? UOMDimension.label : '',
       UOMDimension: values.UOMDimension,
       OuterDiameter: values.OuterDiameter,
       Thickness: values.Thickness,

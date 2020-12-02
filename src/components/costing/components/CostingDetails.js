@@ -62,7 +62,6 @@ function CostingDetails() {
     name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
     //defaultValue: 'default' // default value before the render
   });
-  console.log('fieldValues: ', fieldValues);
 
   const dispatch = useDispatch()
 
@@ -719,7 +718,7 @@ function CostingDetails() {
   * @description Used to Submit the form
   */
   const onSubmit = (values) => {
-    console.log('values >>>', values);
+
   }
 
   const zbcPlantGridFields = 'zbcPlantGridFields';

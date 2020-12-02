@@ -17,6 +17,8 @@ import {
     GET_COSTING_PART_SELECTLIST,
     GET_PART_INFO,
     GET_COSTING_DATA_BY_COSTINGID,
+    GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
+    GET_RATE_CRITERIA_BY_CAPACITY,
 } from '../../../config/constants';
 
 const initialState = {
@@ -188,6 +190,18 @@ export default function costingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
                 costingData: action.payload
+            };
+        case GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST:
+            return {
+                ...state,
+                loading: false,
+                freightFullTruckCapacitySelectList: action.payload
+            };
+        case GET_RATE_CRITERIA_BY_CAPACITY:
+            return {
+                ...state,
+                loading: false,
+                rateCriteriaByCapacitySelectList: action.payload
             };
         default:
             return state;

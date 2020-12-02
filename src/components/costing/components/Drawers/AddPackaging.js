@@ -15,14 +15,11 @@ function AddPackaging(props) {
   const { rowObjData, isEditFlag } = props;
 
   const defaultValues = {
-    ToolOperationId: rowObjData && rowObjData.ToolOperationId !== undefined ? rowObjData.ToolOperationId : '',
-    ProcessOrOperation: rowObjData && rowObjData.ProcessOrOperation !== undefined ? rowObjData.ProcessOrOperation : '',
-    ToolCategory: rowObjData && rowObjData.ToolCategory !== undefined ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
-    ToolName: rowObjData && rowObjData.ToolName !== undefined ? rowObjData.ToolName : '',
-    Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
-    ToolCost: rowObjData && rowObjData.ToolCost !== undefined ? rowObjData.ToolCost : '',
-    Life: rowObjData && rowObjData.Life !== undefined ? rowObjData.Life : '',
-    TotalToolCost: rowObjData && rowObjData.TotalToolCost !== undefined ? rowObjData.TotalToolCost : '',
+    PackagingDetailId: rowObjData && rowObjData.PackagingDetailId !== undefined ? rowObjData.PackagingDetailId : '',
+    PackagingDescription: rowObjData && rowObjData.PackagingDescription !== undefined ? rowObjData.PackagingDescription : '',
+    PackagingCostPercentage: rowObjData && rowObjData.PackagingCostPercentage !== undefined ? rowObjData.PackagingCostPercentage : 0,
+    Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
+    PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? rowObjData.PackagingCost : 0,
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
@@ -36,12 +33,12 @@ function AddPackaging(props) {
   const headCostData = useContext(netHeadCostContext)
 
   const [applicability, setApplicability] = useState([]);
-  const [IsFixed, setIsFixed] = useState(false);
+  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
   //const [formData, setFormData] = useState({});
 
   const fieldValues = useWatch({
     control,
-    name: ['PackagingPercentage'],
+    name: ['PackagingCostPercentage'],
   });
 
   useEffect(() => {
@@ -51,12 +48,12 @@ function AddPackaging(props) {
   }, [fieldValues]);
 
   useEffect(() => {
-    if (!IsFixed) {
-      setValue('PackagingPercentage', 'Fixed')
+    if (!PackageType) {
+      setValue('PackagingCostPercentage', 'Fixed')
     } else {
-      setValue('PackagingPercentage', '')
+      setValue('PackagingCostPercentage', '')
     }
-  }, [IsFixed]);
+  }, [PackageType]);
 
   const toggleDrawer = (event, formData = {}) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -101,30 +98,30 @@ function AddPackaging(props) {
    */
   const calculateApplicabilityCost = (Text) => {
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
-    const PackagingPercentage = getValues('PackagingPercentage');
+    const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
     switch (Text) {
       case 'RM':
-        if (!IsFixed) {
+        if (!PackageType) {
           setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost, 2))
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
       case 'RM + CC':
-        if (!IsFixed) {
+        if (!PackageType) {
           setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost + NetConversionCost, 2))
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(PackagingPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
       case 'CC':
-        if (!IsFixed) {
+        if (!PackageType) {
           setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost, 2))
         } else {
-          setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(PackagingPercentage), 2))
+          setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
@@ -134,11 +131,11 @@ function AddPackaging(props) {
   }
 
   /**
-    * @method IsFixedToggle
+    * @method PackageTypeToggle
     * @description PACKAGING TYPE 
     */
-  const IsFixedToggle = () => {
-    setIsFixed(!IsFixed)
+  const PackageTypeToggle = () => {
+    setPackageType(!PackageType)
   }
 
   /**
@@ -160,11 +157,13 @@ function AddPackaging(props) {
 
   const onSubmit = data => {
     let formData = {
-      PackagingId: isEditFlag ? rowObjData.PackagingId : '',
+      PackagingDetailId: isEditFlag ? rowObjData.PackagingDetailId : '',
+      IsPackagingCostFixed: PackageType,
       PackagingDescription: data.PackagingDescription,
-      PackagingPercentage: data.PackagingPercentage,
-      Applicability: data.Applicability,
+      PackagingCostFixed: 0,
+      PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
       PackagingCost: data.PackagingCost,
+      Applicability: applicability ? data.Applicability.value : '',
     }
     toggleDrawer('', formData)
   }
@@ -201,8 +200,8 @@ function AddPackaging(props) {
                     <label className="switch-level">
                       <div className={'left-title'}>{'Fixed'}</div>
                       <Switch
-                        onChange={IsFixedToggle}
-                        checked={IsFixed}
+                        onChange={PackageTypeToggle}
+                        checked={PackageType}
                         id="normal-switch"
                         disabled={false}
                         background="#4DC771"
@@ -244,7 +243,7 @@ function AddPackaging(props) {
                   <Col md="12">
                     <TextFieldHookForm
                       label="Packaging Percentage"
-                      name={'PackagingPercentage'}
+                      name={'PackagingCostPercentage'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -252,8 +251,8 @@ function AddPackaging(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: IsFixed ? /^[0-9]*$/i : '',
-                          message: IsFixed ? 'Invalid Number.' : '',
+                          value: PackageType ? /^[0-9]*$/i : '',
+                          message: PackageType ? 'Invalid Number.' : '',
                         },
                         // maxLength: 4,
                       }}
@@ -261,8 +260,8 @@ function AddPackaging(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.PackagingPercentage}
-                      disabled={isEditFlag || !IsFixed ? true : false}
+                      errors={errors.PackagingCostPercentage}
+                      disabled={isEditFlag || !PackageType ? true : false}
                     />
                   </Col>
 

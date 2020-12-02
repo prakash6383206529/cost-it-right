@@ -7,6 +7,7 @@ import TabSurfaceTreatment from './TabSurfaceTreatment';
 import TabOverheadProfit from './TabOverheadProfit';
 import TabPackagingFreight from './TabPackagingFreight';
 import TabDiscountOther from './TabDiscountOther';
+import TabToolCost from './TabToolCost';
 
 function CostingHeaderTabs(props) {
 
@@ -84,17 +85,24 @@ function CostingHeaderTabs(props) {
               <TabOverheadProfit
                 netPOPrice={netPOPrice}
                 activeTab={activeTab}
+                setHeaderCost={props.setHeaderOverheadProfitCostTab}
                 headCostRMCCBOPData={props.headCostRMCCBOPData}
               />
             </TabPane>
             <TabPane tabId="4">
-              <TabPackagingFreight />
+              <TabPackagingFreight
+                netPOPrice={netPOPrice}
+                activeTab={activeTab}
+                setHeaderCost={props.setHeaderPackageFreightTab}
+              />
             </TabPane>
             <TabPane tabId="5">
-              {'Tool Cost'}
+              <TabToolCost />
             </TabPane>
             <TabPane tabId="6">
-              <TabDiscountOther />
+              <TabDiscountOther
+                netPOPrice={netPOPrice}
+              />
             </TabPane>
           </TabContent>
         </div>

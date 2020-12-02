@@ -73,10 +73,6 @@ function ToolCost(props) {
 
   const editItem = (index) => {
     let tempArr = gridData && gridData.find((el, i) => i === index)
-    // if (editIndex !== '') {
-    //   let tempArr = Object.assign([...gridData], { [editIndex]: rowObjData })
-    //   setGridData(tempArr)
-    // }
     setEditIndex(index)
     setIsEditFlag(true)
     setRowObjData(tempArr)

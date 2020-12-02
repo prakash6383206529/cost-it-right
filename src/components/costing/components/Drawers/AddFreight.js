@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { getOperationDrawerDataList } from '../../actions/Costing';
+import { getFreigtFullTruckCapacitySelectList, getRateCriteriaByCapacitySelectList, getRateByCapacityCriteria } from '../../actions/Costing';
 import { netHeadCostContext } from '../CostingDetailStepTwo';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
@@ -15,12 +15,13 @@ function AddFreight(props) {
   const { rowObjData, isEditFlag } = props;
 
   const defaultValues = {
+    FreightDetailId: rowObjData && rowObjData.FreightDetailId !== undefined ? rowObjData.FreightDetailId : '',
     FreightId: rowObjData && rowObjData.FreightId !== undefined ? rowObjData.FreightId : '',
-    RateCriteria: rowObjData && rowObjData.RateCriteria !== undefined ? rowObjData.RateCriteria : '',
-    //ToolCategory: rowObjData && rowObjData.ToolCategory !== undefined ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
-    Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
+    Capacity: rowObjData && rowObjData.Capacity !== undefined ? { label: rowObjData.Capacity, value: rowObjData.Capacity } : [],
+    Criteria: rowObjData && rowObjData.Criteria !== undefined ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : '',
     Rate: rowObjData && rowObjData.Rate !== undefined ? rowObjData.Rate : '',
-    Cost: rowObjData && rowObjData.Cost !== undefined ? rowObjData.Cost : '',
+    Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
+    FreightCost: rowObjData && rowObjData.FreightCost !== undefined ? rowObjData.FreightCost : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
@@ -33,8 +34,13 @@ function AddFreight(props) {
 
   const headCostData = useContext(netHeadCostContext)
 
-  const [rateCriteria, setRateCriteria] = useState([]);
+  const [capacity, setCapacity] = useState([]);
+  const [criteria, setCriteria] = useState([]);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
+
+  useEffect(() => {
+    dispatch(getFreigtFullTruckCapacitySelectList())
+  }, []);
 
   const fieldValues = useWatch({
     control,
@@ -42,10 +48,13 @@ function AddFreight(props) {
   });
 
   useEffect(() => {
-    if (rateCriteria) {
-      calculateApplicabilityCost(rateCriteria.value)
+    if (criteria) {
+      calculateApplicabilityCost(criteria.value)
     }
   }, [fieldValues]);
+
+  const freightFullTruckCapacitySelectList = useSelector(state => state.freight.freightFullTruckCapacitySelectList)
+  const rateCriteriaByCapacitySelectList = useSelector(state => state.costing.rateCriteriaByCapacitySelectList)
 
 
   const toggleDrawer = (event, formData = {}) => {
@@ -62,6 +71,26 @@ function AddFreight(props) {
   */
   const renderListing = (label) => {
 
+    const temp = [];
+
+    if (label === 'Capacity') {
+      freightFullTruckCapacitySelectList && freightFullTruckCapacitySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
+    if (label === 'RateCriteria') {
+      rateCriteriaByCapacitySelectList && rateCriteriaByCapacitySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+
     if (label === 'Applicability') {
       return [
         { label: 'RM', value: 'RM' },
@@ -73,15 +102,47 @@ function AddFreight(props) {
   }
 
   /**
-  * @method handleRateCriteriaChange
-  * @description  RATE CRITERIA CHANGE HANDLE
+  * @method handleCapacityChange
+  * @description  CAPACITY CHANGE HANDLE
   */
-  const handleRateCriteriaChange = (newValue) => {
+  const handleCapacityChange = (newValue) => {
     if (newValue && newValue !== '') {
-      setRateCriteria(newValue)
-      calculateApplicabilityCost(newValue.value)
+      setCapacity(newValue)
+      dispatch(getRateCriteriaByCapacitySelectList(newValue.value, res => { }))
     } else {
-      setRateCriteria([])
+      setCapacity([])
+    }
+  }
+
+  /**
+  * @method handleCriteriaChange
+  * @description  CRITERIA CHANGE HANDLE
+  */
+  const handleCriteriaChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setCriteria(newValue)
+      calculateApplicabilityCost(newValue.value)
+      const data = { Capacity: capacity.value, Criteria: newValue.value }
+      dispatch(getRateByCapacityCriteria(data, res => {
+        console.log('res from criteria', res)
+      }))
+      setValue('Rate', 50)
+    } else {
+      setCriteria([])
+    }
+  }
+
+  const handleQuantityChange = (event) => {
+    if (!isNaN(event.target.value)) {
+      const Rate = getValues('Rate')
+      if (Rate !== '') {
+        const cost = Rate * event.target.value;
+        setValue('FreightCost', checkForDecimalAndNull(cost, 2));
+      } else {
+        setValue('FreightCost', 0);
+      }
+    } else {
+      toastr.warning('Please enter valid number.')
     }
   }
 
@@ -112,12 +173,15 @@ function AddFreight(props) {
 
   const onSubmit = data => {
     let formData = {
+      FreightDetailId: isEditFlag ? rowObjData.FreightDetailId : '',
       FreightId: isEditFlag ? rowObjData.FreightId : '',
       IsPartTruckLoad: IsPartTruckLoad,
-      RateCriteria: data.RateCriteria,
-      Quantity: data.Quantity,
+      Capacity: !IsPartTruckLoad ? data.Capacity.value : '',
+      Criteria: data.Criteria.value,
       Rate: data.Rate,
-      Cost: data.Cost,
+      Quantity: data.Quantity,
+      FreightCost: data.FreightCost,
+      Freight: '',
     }
     toggleDrawer('', formData)
   }
@@ -173,18 +237,35 @@ function AddFreight(props) {
                   </Col>
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={'Rate Criteria'}
-                      name={'RateCriteria'}
+                      label={'Capacity'}
+                      name={'Capacity'}
                       placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={rateCriteria.length !== 0 ? rateCriteria : ''}
+                      defaultValue={capacity.length !== 0 ? capacity : ''}
+                      options={renderListing('Capacity')}
+                      mandatory={true}
+                      handleChange={handleCapacityChange}
+                      errors={errors.Capacity}
+                      disabled={isEditFlag ? true : false}
+                    />
+                  </Col>
+                  <Col md="12">
+                    <SearchableSelectHookForm
+                      label={'Rate Criteria'}
+                      name={'Criteria'}
+                      placeholder={'-Select-'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={criteria.length !== 0 ? criteria : ''}
                       options={renderListing('RateCriteria')}
                       mandatory={true}
-                      handleChange={handleRateCriteriaChange}
-                      errors={errors.RateCriteria}
+                      handleChange={handleCriteriaChange}
+                      errors={errors.Criteria}
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
@@ -228,7 +309,10 @@ function AddFreight(props) {
                         },
                         // maxLength: 4,
                       }}
-                      handleChange={() => { }}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleQuantityChange(e)
+                      }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -242,7 +326,7 @@ function AddFreight(props) {
                   <Col md="12">
                     <TextFieldHookForm
                       label="Cost"
-                      name={'Cost'}
+                      name={'FreightCost'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -259,7 +343,7 @@ function AddFreight(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.Cost}
+                      errors={errors.FreightCost}
                       disabled={true}
                     />
                   </Col>
