@@ -9,7 +9,7 @@ import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 
 function TabPackagingFreight(props) {
 
-  const { handleSubmit, watch, reset } = useForm();
+  const { handleSubmit, } = useForm();
 
   const [tabData, setTabData] = useState([]);
   const [packageTotal, setPackageTotal] = useState(0);
@@ -134,6 +134,8 @@ function TabPackagingFreight(props) {
       "PartNumber": costData.PartNumber,
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
+      "FreightNetCost": checkForNull(freightTotal),
+      "PackagingNetCost": checkForNull(packageTotal),
       "NetFreightPackagingCost": checkForNull(packageTotal) + checkForNull(freightTotal),
       "CostingPartDetails": tabData
     }

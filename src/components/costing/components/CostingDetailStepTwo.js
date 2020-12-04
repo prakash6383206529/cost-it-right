@@ -86,7 +86,6 @@ function CostingDetailStepTwo(props) {
    * @description GET NET SURFACE TREATMENT COST FOR TOP HEADER 
    */
   const netSurfaceTreatmentCost = useCallback((item) => {
-    console.log('item.NetSurfaceTreatmentCost: ', item, item.NetSurfaceTreatmentCost);
     return item && item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0
   }, [])
 
@@ -148,7 +147,6 @@ function CostingDetailStepTwo(props) {
 
     setTimeout(() => {
       let tempData = partDataList[headerIndex];
-      console.log('tempData: >> ', tempData);
 
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
@@ -168,7 +166,7 @@ function CostingDetailStepTwo(props) {
         ToolCost: data.NetToolsCost,
         TotalCost: OverAllCost,
       }
-      console.log('tempData: ', tempData);
+
       let tempArr = Object.assign([...partDataList], { [headerIndex]: tempData })
       setPartDataList(tempArr)
       setPOPrice(calculateNetPOPrice(tempArr))
@@ -220,12 +218,10 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM OVERHEAD PROFIT TAB
    */
   const setHeaderOverheadProfitCostTab = (data) => {
-    //console.log('data overhead: ', data);
     const headerIndex = 0;
 
     setTimeout(() => {
       let tempData = partDataList[headerIndex];
-      //console.log('tempData: ', tempData);
 
       let OverAllCost = 0;
 
@@ -238,7 +234,6 @@ function CostingDetailStepTwo(props) {
 
         OverAllCost = RMBOPCCCost + surfaceCost + data.NetOverheadProfitCost + PackageCost + toolCost - discountCost
       }
-      //console.log('OverAllCost: ', OverAllCost);
 
       tempData = {
         ...tempData,
@@ -264,7 +259,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM PACKAGE AND FREIGHT
    */
   const setHeaderPackageFreightTab = (data) => {
-    console.log('setHeaderPackageFreightTab: ', data);
+
     const headerIndex = 0;
 
     setTimeout(() => {

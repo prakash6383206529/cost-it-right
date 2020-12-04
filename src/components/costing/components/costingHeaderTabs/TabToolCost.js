@@ -4,8 +4,7 @@ import { useDispatch, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getToolTabData, saveToolTab, } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
-import OverheadProfit from '../CostingHeadCosts/OverheadProfit';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
 
@@ -14,7 +13,9 @@ function TabToolCost(props) {
   const { register, handleSubmit, reset } = useForm();
 
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
+  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(false);
   const [tabData, setTabData] = useState([]);
+  const [toolCost, setNetToolCost] = useState('');
 
   const dispatch = useDispatch()
 
@@ -28,9 +29,11 @@ function TabToolCost(props) {
         PlantId: costData.PlantId,
       }
       dispatch(getToolTabData(data, (res) => {
-        console.log('res: >>>>>>>>> ', res);
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
+          if (Data.IsProcessWiseApplicability === true) {
+            setIsApplicablilityDisable(Data.IsProcessWiseApplicability)
+          }
           setTabData(Data.CostingPartDetails)
         }
       }))
@@ -53,28 +56,50 @@ function TabToolCost(props) {
   }
 
   /**
-  * @method setOverheadDetail
-  * @description SET OVERHEAD DEATILS
+  * @method setOverAllApplicabilityCost
+  * @description SET OVERALL APPLICABILITY DEATILS
   */
-  const setOverheadDetail = (overheadObj, index) => {
+  const setOverAllApplicabilityCost = (OverAllToolObj, index) => {
     let tempObj = tabData[index];
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
-          CostingOverheadDetail: overheadObj,
-          OverheadNetCost: '',
-          NetOverheadAndProfitCost: '',
-          OverheadProfitNetCost: '',
+          OverAllApplicability: OverAllToolObj,
+          NetToolCost: OverAllToolObj.NetToolCost,
+          //CostingToolsCostResponse: [],
         })
     })
 
     setTimeout(() => {
+      setNetToolCost(OverAllToolObj.NetToolCost)
       setTabData(tempArr)
     }, 200)
 
   }
 
+  /**
+  * @method setToolCost
+  * @description SET OVERHEAD DEATILS
+  */
+  const setToolCost = (ToolObj, index) => {
+    let tempObj = tabData[index];
+
+    let tempArr = Object.assign([...tabData], {
+      [index]: Object.assign({}, tabData[index],
+        {
+          CostingToolsCostResponse: ToolObj,
+          NetToolCost: ToolObj.NetToolCost,
+          OverAllApplicability: {},
+        })
+    })
+
+    setTimeout(() => {
+      setNetToolCost(ToolObj.NetToolCost)
+      setTabData(tempArr)
+    }, 200)
+
+  }
 
   /**
   * @method onPressApplicability
@@ -88,9 +113,18 @@ function TabToolCost(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = () => {
+  const saveCosting = (formData) => {
     const data = {
-
+      "IsProcessWiseApplicability": IsApplicableProcessWise,
+      "NetToolsCost": toolCost,
+      "NetToolCost": toolCost,
+      "CostingId": costData.CostingId,
+      "PartId": costData.PartId,
+      "PartNumber": costData.PartNumber,
+      "NetPOPrice": props.netPOPrice,
+      "LoggedInUserId": loggedInUserId(),
+      //"Version": "string",
+      "CostingPartDetails": tabData,
 
     }
 
@@ -134,7 +168,7 @@ function TabToolCost(props) {
                           onChange={onPressApplicability}
                           checked={IsApplicableProcessWise}
                           id="normal-switch"
-                          disabled={false}
+                          disabled={IsApplicablilityDisable}
                           background="#4DC771"
                           onColor="#4DC771"
                           onHandleColor="#ffffff"
@@ -170,7 +204,7 @@ function TabToolCost(props) {
                               < >
                                 <tr key={index} onClick={() => toggle(index)}>
                                   <td><span class="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                                  <td>{200}</td>
+                                  <td>{checkForDecimalAndNull(item.NetToolCost, 2)}</td>
                                 </tr>
                                 {item.IsOpen &&
                                   <tr>
@@ -180,8 +214,10 @@ function TabToolCost(props) {
                                           index={index}
                                           IsApplicableProcessWise={IsApplicableProcessWise}
                                           data={item}
-                                        // headCostRMCCBOPData={props.headCostRMCCBOPData}
-                                        // setOverheadDetail={setOverheadDetail}
+                                          // headCostRMCCBOPData={props.headCostRMCCBOPData}
+                                          setOverAllApplicabilityCost={setOverAllApplicabilityCost}
+                                          setToolCost={setToolCost}
+                                          saveCosting={saveCosting}
                                         />
                                       </div>
                                     </td>
@@ -196,19 +232,6 @@ function TabToolCost(props) {
                     </Table>
                   </Col>
                 </Row>
-
-                {/* <Row className="sf-btn-footer no-gutters justify-content-between mt25">
-                  <div className="col-sm-12 text-right bluefooter-butn">
-
-                    <button
-                      type={'button'}
-                      className="submit-button mr5 save-btn"
-                      onClick={saveCosting}>
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
-                    </button>
-                  </div>
-                </Row> */}
 
               </form>
             </div>

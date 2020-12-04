@@ -89,7 +89,7 @@ export const RMDomesticZBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        "Material": "Aluminium",
+        "Material": "Material Name",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
@@ -135,7 +135,7 @@ export const RMDomesticVBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        "Material": "Aluminium",
+        "Material": "Material Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
         "VendorPlant": "VendorPlant",
@@ -183,7 +183,7 @@ export const RMImportZBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        "Material": "Aluminium",
+        "Material": "Material Name",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
@@ -231,10 +231,10 @@ export const RMImportVBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        "Material": "Aluminium",
+        "Material": "Material Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
-        "VendorPlant": "VendorPlant",
+        "VendorPlant": "Vendor Plant Name",
         "VendorLocation": "Vendor Location",
         "Source": "Source Name",
         "SourceLocation": "Source Location",
@@ -259,10 +259,10 @@ export const RMSpecification = [
 
 export const RMSpecificationXLTempData = [
     {
-        "RawMaterialName": "Aluminium",
-        "Material": "Plastic",
-        "RMGrade": "A1",
-        "Specification": "Aluminium Wired",
+        "RawMaterialName": "Raw Material 1",
+        "Material": "Material 1",
+        "RMGrade": "RM Grade 1",
+        "Specification": "10mm",
     }
 ]
 
@@ -296,16 +296,16 @@ export const VendorTempData = [
         'LabourVendor': 'YES OR NO',
         'VBCVendor': 'YES OR NO',
         'BOPVendor': 'YES OR NO',
-        'VendorEmail': 'Vendor Email',
-        'MobileNumber': 'Mobile Number',
-        'AddressLine1': 'Address',
-        'AddressLine2': 'Address',
-        'ZipCode': 'Zip Code',
-        'PhoneNumber': 'Phone Number',
-        'Extension': 'Extension',
-        'City': 'City',
-        'State': 'State',
-        'Country': 'Country',
+        'VendorEmail': 'Vendor@gmail.com',
+        'MobileNumber': '1234567890',
+        'AddressLine1': '123, Area location',
+        'AddressLine2': '123, Area location',
+        'ZipCode': '123456',
+        'PhoneNumber': '1234567899',
+        'Extension': '123',
+        'City': 'Indore',
+        'State': 'MP',
+        'Country': 'India',
     }
 ]
 
@@ -327,16 +327,16 @@ export const Overhead = [
 
 export const OverheadTempData = [
     {
-        'CostingHead': 'CostingHead',
-        'ModelType': 'ModelType',
-        'OverheadApplicability': 'OverheadApplicability',
-        'OverheadPercentage': 'OverheadPercentage',
-        'OverheadMachiningCCPercentage': 'OverheadMachiningCCPercentage',
-        'OverheadBOPPercentage': 'OverheadBOPPercentage',
-        'OverheadRMPercentage': 'OverheadRMPercentage',
-        'VendorName': 'VendorName',
-        'VendorCode': 'VendorCode',
-        'Remark': 'Remark',
+        'CostingHead': 'Costing Head',
+        'ModelType': 'High',
+        'OverheadApplicability': 'RM',
+        'OverheadPercentage': '10',
+        'OverheadMachiningCCPercentage': '10',
+        'OverheadBOPPercentage': '10',
+        'OverheadRMPercentage': '10',
+        'VendorName': 'Vendor123',
+        'VendorCode': 'Vendor Code1',
+        'Remark': 'Remark Text',
     }
 ]
 
@@ -357,15 +357,15 @@ export const ZBCOperation = [
 
 export const ZBCOperationTempData = [
     {
-        'Technology': 'Technology',
-        'OperationName': 'Operation Name',
-        'OperationCode': 'Operation Code',
-        'Description': 'Description',
-        'Plant': 'Plant',
+        'Technology': 'Technology Name',
+        'OperationName': 'Operation 1',
+        'OperationCode': 'Operation 123',
+        'Description': 'Description Text',
+        'Plant': 'Plant123',
         'UOM': 'Unit of Measurement',
         'Rate': 0,
         'LabourRate': 0,
-        'Remark': 'Remark',
+        'Remark': 'Remark Text',
     }
 ]
 
@@ -389,14 +389,14 @@ export const VBCOperation = [
 
 export const VBCOperationTempData = [
     {
-        'Technology': 'Technology',
-        'OperationName': 'OperationName',
-        'OperationCode': 'OperationCode',
+        'Technology': 'Technology Name',
+        'OperationName': 'Operation 1',
+        'OperationCode': 'Operation Code123',
         'Description': 'Description',
-        'Plant': 'Plant',
-        'VendorName': 'VendorName',
-        'VendorCode': 'VendorCode',
-        'VendorPlant': 'VendorPlant',
+        'Plant': 'P123',
+        'VendorName': 'Vendor 123',
+        'VendorCode': 'Vendor Code123',
+        'VendorPlant': 'Vendor Plant',
         'UOM': 'Unit of Measurement',
         'Rate': 0,
         'LabourRate': 0,
@@ -423,14 +423,14 @@ export const Profit = [
 export const ProfitTempData = [
     {
         'CostingHead': 'CostingHead',
-        'ModelType': 'ModelType',
-        'ProfitApplicability': 'ProfitApplicability',
-        'ProfitPercentage': 'ProfitPercentage',
-        'ProfitMachiningCCPercentage': 'ProfitMachiningCCPercentage',
-        'ProfitBOPPercentage': 'ProfitBOPPercentage',
-        'ProfitRMPercentage': 'ProfitRMPercentage',
-        'VendorName': 'VendorName',
-        'VendorCode': 'VendorCode',
+        'ModelType': 'High',
+        'ProfitApplicability': 'RM',
+        'ProfitPercentage': '10',
+        'ProfitMachiningCCPercentage': '10',
+        'ProfitBOPPercentage': '10',
+        'ProfitRMPercentage': '10',
+        'VendorName': 'Vendor Name',
+        'VendorCode': 'Vendor Code123',
         'Remark': 'Remark',
     }
 ]
@@ -453,8 +453,8 @@ export const LabourTempData = [
     {
         'EmploymentTerms': 'Employ or Contractual',
         'VendorName': 'Vendor Name',
-        'State': 'State',
-        'Plant': 'Plant',
+        'State': 'MP',
+        'Plant': 'P1',
         'MachineType': 'Machine Type',
         'LabourType': 'Labour Type',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
@@ -475,11 +475,11 @@ export const Fuel = [
 
 export const FuelTempData = [
     {
-        'FuelName': 'FuelName',
-        'State': 'State',
-        'Rate': 'Rate',
+        'FuelName': 'Petrol',
+        'State': 'MP',
+        'Rate': '100',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'UOM',
+        'UOM': 'Litre',
     }
 ]
 
@@ -518,16 +518,16 @@ export const BOP_ZBC_DOMESTIC = [
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOPPartNumber',
-        'BOPPartName': 'BOPPartName',
-        'BOPCategory': 'BOPCategory',
-        'PartNumber': 'PartNumber',
-        'Specification': 'Specification',
-        'Plant': 'Plant',
-        'VendorName': 'Vendor Name',
-        'NoOfPcs': 'NoOfPcs',
-        'BasicRate': 'BasicRate',
-        'Remark': 'Remark',
+        'BOPPartNumber': 'BOP1',
+        'BOPPartName': 'BOP Name',
+        'BOPCategory': 'Category 1',
+        'PartNumber': 'P1',
+        'Specification': 'BOP Specification',
+        'Plant': 'Plant1',
+        'VendorName': 'Vendor Name123',
+        'NoOfPcs': '1',
+        'BasicRate': '100',
+        'Remark': 'Remark Text',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
@@ -555,20 +555,20 @@ export const BOP_VBC_DOMESTIC = [
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOPPartNumber',
-        'BOPPartName': 'BOPPartName',
-        'BOPCategory': 'BOPCategory',
-        'PartNumber': 'PartNumber',
-        'Specification': 'Specification',
-        'VendorName': 'VendorName',
-        'VendorCode': 'VendorCode',
-        'VendorLocation': 'VendorLocation',
-        'VendorPlant': 'VendorPlant',
-        'SourceVendorName': 'SourceVendorName',
-        'SourceVendorLocation': 'SourceVendorLocation',
-        'NoOfPcs': 'NoOfPcs',
-        'BasicRate': 'BasicRate',
-        'Remark': 'Remark',
+        'BOPPartNumber': 'BOP1',
+        'BOPPartName': 'BOP Part Name123',
+        'BOPCategory': 'Category1',
+        'PartNumber': 'P1',
+        'Specification': 'BOP Specification',
+        'VendorName': 'Vendor Name123',
+        'VendorCode': 'Vendor Code123',
+        'VendorLocation': 'Vendor Location',
+        'VendorPlant': 'Vendor Plant123',
+        'SourceVendorName': 'Source Vendor Name',
+        'SourceVendorLocation': 'Source Vendor Location',
+        'NoOfPcs': '10',
+        'BasicRate': '100',
+        'Remark': 'Remark Text',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
@@ -593,17 +593,17 @@ export const BOP_ZBC_IMPORT = [
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOPPartNumber',
-        'BOPPartName': 'BOPPartName',
-        'BOPCategory': 'BOPCategory',
-        'PartNumber': 'PartNumber',
+        'BOPPartNumber': 'BOP Part Number123',
+        'BOPPartName': 'Part1',
+        'BOPCategory': 'Category1',
+        'PartNumber': 'P1',
         'Specification': 'Specification',
         'Plant': 'Plant',
-        'VendorName': 'VendorName',
-        'NoOfPcs': 'NoOfPcs',
-        'BasicRate': 'BasicRate',
-        'Currency': 'Currency',
-        'Remark': 'Remark',
+        'VendorName': 'Vendor Name123',
+        'NoOfPcs': '10',
+        'BasicRate': '100',
+        'Currency': 'INR',
+        'Remark': 'Remark Text',
         'EffectiveDate': moment().format('DD-MM-YYYY'),
     }
 ]
@@ -632,21 +632,21 @@ export const BOP_VBC_IMPORT = [
 
 export const BOP_VBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOPPartNumber',
-        'BOPPartName': 'BOPPartName',
-        'BOPCategory': 'BOPCategory',
-        'PartNumber': 'PartNumber',
+        'BOPPartNumber': 'BOP Part Number123',
+        'BOPPartName': 'Part1',
+        'BOPCategory': 'Category1',
+        'PartNumber': 'P1',
         'Specification': 'Specification',
-        'VendorName': 'VendorName',
-        'VendorCode': 'VendorCode',
-        'VendorLocation': 'VendorLocation',
-        'VendorPlant': 'VendorPlant',
-        'SourceVendorName': 'SourceVendorName',
-        'SourceVendorLocation': 'SourceVendorLocation',
-        'NoOfPcs': 'NoOfPcs',
-        'BasicRate': 'BasicRate',
-        'Currency': 'Currency',
-        'Remark': 'Remark',
+        'VendorName': 'Vendor Name',
+        'VendorCode': 'Vendor Code123',
+        'VendorLocation': 'Vendor Location',
+        'VendorPlant': 'Vendor Plant123',
+        'SourceVendorName': 'Vendor Name123',
+        'SourceVendorLocation': 'Vendor Location',
+        'NoOfPcs': '10',
+        'BasicRate': '100',
+        'Currency': 'INR',
+        'Remark': 'Remark Text',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
@@ -666,13 +666,13 @@ export const VOLUME_ACTUAL_ZBC = [
 
 export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
-        'Plant': 'Plant',
-        'PartNo': 'Part No',
-        'OldPartNo': 'Old Part No',
-        'PartName': 'Part Name',
-        'Year': 'Year',
-        'Month': 'Month',
-        'ActualQuantity': 0,
+        'Plant': 'P1',
+        'PartNo': 'Part 1',
+        'OldPartNo': 'Old Part 2',
+        'PartName': 'Part 1',
+        'Year': moment().format('YYYY'),
+        'Month': moment().format('MM'),
+        'ActualQuantity': 1,
     }
 ]
 
@@ -692,12 +692,12 @@ export const VOLUME_ACTUAL_VBC = [
 export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
         'VendorName': 'Vendor Name',
-        'PartNo': 'Part No',
-        'OldPartNo': 'Old Part No',
-        'PartName': 'Part Name',
-        'Year': 'Year',
-        'Month': 'Month',
-        'ActualQuantity': 0,
+        'PartNo': 'Part1',
+        'OldPartNo': 'Old Part1',
+        'PartName': 'Part Name1',
+        'Year': moment().format('YYYY'),
+        'Month': moment().format('MM'),
+        'ActualQuantity': 1,
     }
 ]
 
@@ -717,12 +717,12 @@ export const VOLUME_BUDGETED_ZBC = [
 export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'BudgetedQuantity': 'BudgetedQuantity',
-        'Plant': 'Plant',
-        'PartNo': 'PartNo',
-        'OldPartNo': 'OldPartNo',
+        'Plant': 'Plant1',
+        'PartNo': 'Part No1',
+        'OldPartNo': 'Old Part1',
         'PartName': 'PartName',
-        'Year': 'Year',
-        'Month': 'Month',
+        'Year': moment().format('YYYY'),
+        'Month': moment().format('MM'),
     }
 ]
 
@@ -746,8 +746,8 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'PartNo': 'PartNo',
         'OldPartNo': 'OldPartNo',
         'PartName': 'PartName',
-        'Year': 'Year',
-        'Month': 'Month',
+        'Year': moment().format('YYYY'),
+        'Month': moment().format('MM'),
     }
 ]
 
@@ -852,14 +852,14 @@ export const MachineZBC = [
 
 export const MachineZBCTempData = [
     {
-        'Technology': 'Technology',
-        'Plant': 'Plant',
-        'MachineNo': 'Machine No',
-        'MachineName': 'Machine Name',
+        'Technology': 'Technology Name',
+        'Plant': 'Plant1',
+        'MachineNo': 'Machine 1',
+        'MachineName': 'Machine Name1',
         'MachineType': 'Machine Type',
-        'MachineCapicityAndTonnage': 'Machine Capicity And Tonnage',
-        'Description': 'Description',
-        'ProcessName': 'Process Name',
+        'MachineCapicityAndTonnage': '10',
+        'Description': 'Description Text',
+        'ProcessName': 'Process Name1',
         'UOM': 'UOM',
         'MachineRate': 0,
         'Remark': 'Remark',
@@ -1024,19 +1024,19 @@ export const MachineVBC = [
 
 export const MachineVBCTempData = [
     {
-        'Technology': 'Technology',
-        'VendorName': 'Vendor Name',
-        'VendorCode': 'Vendor Code',
-        'VendorPlant': 'Vendor Plant',
-        'MachineNo': 'Machine No',
-        'MachineName': 'Machine Name',
+        'Technology': 'Sheet Metal',
+        'VendorName': 'Vendor Name1',
+        'VendorCode': 'Vendor Code123',
+        'VendorPlant': 'Vendor Plant123',
+        'MachineNo': 'Machine1',
+        'MachineName': 'Machine Name1',
         'MachineType': 'Machine Type',
-        'MachineCapicityAndTonnage': 'Machine Capicity And Tonnage',
-        'Description': 'Description',
-        'ProcessName': 'ProcessName',
+        'MachineCapicityAndTonnage': '10',
+        'Description': 'Description Text',
+        'ProcessName': 'Process1',
         'UOM': 'UOM',
-        'MachineRate': 'Machine Rate',
-        'Remark': 'Remark',
+        'MachineRate': '100',
+        'Remark': 'Remark Text',
     }
 ]
 
@@ -1059,17 +1059,17 @@ export const PartComponent = [
 
 export const PartComponentTempData = [
     {
-        'BOMNo': 'BOMNo',
-        'PartNo': 'Part  No',
+        'BOMNo': '123',
+        'PartNo': 'Part1',
         'PartName': 'Part Name',
         'PartDescription': 'Part Description',
-        'GroupCode': 'Group Code',
-        'ECNNumber': 'ECN Number',
-        'RevisionNo': 'Revision No',
-        'DrawingNo': 'Drawing No',
-        'Plant': 'Plant',
+        'GroupCode': 'GC1',
+        'ECNNumber': '1',
+        'RevisionNo': '1',
+        'DrawingNo': '1',
+        'Plant': 'Plant1',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'Remark': 'Remark',
+        'Remark': 'Remark Text',
     }
 ]
 
@@ -1090,11 +1090,11 @@ export const ZBCInterestRate = [
 
 export const ZBCInterestRateTempData = [
     {
-        'VendorName': 'Vendor Name',
-        'VendorCode': 'Vendor Code',
-        'ICCApplicability': 'ICCApplicability',
+        'VendorName': 'Vendor Name1',
+        'VendorCode': 'Vendor Code123',
+        'ICCApplicability': 'RM',
         'ICCPercent': 0,
-        'PaymentTermApplicability': 'Payment Term Applicability',
+        'PaymentTermApplicability': 'RM',
         'PaymentTermPercent': 0,
         'RepaymentPeriod': 0,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
@@ -1117,13 +1117,13 @@ export const VBCInterestRate = [
 
 export const VBCInterestRateTempData = [
     {
-        'VendorName': 'VendorName',
-        'VendorCode': 'VendorCode',
-        'ICCApplicability': 'ICCApplicability',
-        'ICCPercent': 'ICCPercent',
-        'PaymentTermApplicability': 'PaymentTermApplicability',
-        'PaymentTermPercent': 'PaymentTermPercent',
-        'RepaymentPeriod': 'RepaymentPeriod',
+        'VendorName': 'Vendor Name1',
+        'VendorCode': 'Vendor Code123',
+        'ICCApplicability': 'RM',
+        'ICCPercent': '10',
+        'PaymentTermApplicability': 'RM',
+        'PaymentTermPercent': '10',
+        'RepaymentPeriod': '30',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
@@ -1149,13 +1149,13 @@ export const BOMUpload = [
 
 export const BOMUploadTempData = [
     {
-        "BOMNo": "BOM No",
-        "AssemblyPartNo": "Assembly Part No",
+        "BOMNo": "123",
+        "AssemblyPartNo": "Part1",
         "PartNo": "Part No",
-        "AssemblyPartName": "Assembly Part Name",
-        "Description": "Description",
+        "AssemblyPartName": "Part Name1",
+        "Description": "Description Text",
         "PartType": "Part Type",
-        "GroupCode": "Group Code",
+        "GroupCode": "GC1",
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,

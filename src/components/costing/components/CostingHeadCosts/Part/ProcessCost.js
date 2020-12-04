@@ -68,9 +68,9 @@ function ProcessCost(props) {
           Tonnage: el.MachineTonnage,
           UOM: el.UnitOfMeasurement,
           MHR: el.MachineRate,
-          CycleTime: '',
-          Efficiency: '',
-          Cavity: '',
+          CycleTime: 0,
+          Efficiency: 0,
+          Cavity: 0,
           Quantity: '',
           ProcessCost: '',
         }

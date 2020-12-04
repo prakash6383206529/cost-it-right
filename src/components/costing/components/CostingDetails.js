@@ -475,6 +475,8 @@ function CostingDetails() {
 
       const data = {
         PartId: part.value,
+        PartTypeId: partInfo.PartTypeId,
+        PartType: partInfo.PartType,
         TechnologyId: technology.value,
         ZBCId: userDetail.ZBCSupplierInfo.VendorId,
         UserId: loggedInUserId(),
@@ -510,6 +512,8 @@ function CostingDetails() {
 
       const data = {
         PartId: part.value,
+        PartTypeId: partInfo.PartTypeId,
+        PartType: partInfo.PartType,
         TechnologyId: technology.value,
         VendorId: tempData.VendorId,
         VendorPlantId: tempData.VendorPlantId,

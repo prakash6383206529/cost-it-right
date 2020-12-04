@@ -13,10 +13,11 @@ function TabSurfaceTreatment(props) {
 
   const { handleSubmit, watch, reset } = useForm();
   const [isOpen, setIsOpen] = useState(false);
-  const [isIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
   const [tabData, setTabData] = useState([]);
+  const [costingData, setCostingData] = useState({});
   const [surfaceTotal, setSurfaceTotal] = useState('');
   const [transportationTotal, setTransportationTotal] = useState('');
+  const [isIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
 
   const dispatch = useDispatch()
 
@@ -32,6 +33,8 @@ function TabSurfaceTreatment(props) {
       dispatch(getSurfaceTreatmentTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
+          setCostingData(Data)
+          setIsIncludeSurfaceTreatment(Data && Data.IsIncludeSurfaceTreatmentWithOverheadAndProfit)
           setTabData(Data.CostingPartDetails)
         }
       }))
@@ -59,7 +62,7 @@ function TabSurfaceTreatment(props) {
   */
   const setSurfaceCost = (surfaceGrid, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(tempObj.TransporationCost)
+    let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(tempObj.TransportationCost)
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
@@ -97,16 +100,16 @@ function TabSurfaceTreatment(props) {
   */
   const setTransportationCost = (transportationObj, index) => {
     let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(tempObj.SurfaceTreatmentCost) + checkForNull(transportationObj.TransporationCost)
-    setTransportationTotal(checkForNull(transportationObj.TransporationCost))
+    let NetSurfaceTreatmentCost = checkForNull(tempObj.SurfaceTreatmentCost) + checkForNull(transportationObj.TransportationCost)
+    setTransportationTotal(checkForNull(transportationObj.TransportationCost))
 
     let tempArr = Object.assign([...tabData], {
       [index]: Object.assign({}, tabData[index],
         {
           //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
           NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          TransporationCost: transportationObj.TransporationCost,
-          TransporationDetails: transportationObj,
+          TransportationCost: transportationObj.TransportationCost,
+          TransportationDetails: transportationObj,
         })
     })
 
@@ -136,7 +139,7 @@ function TabSurfaceTreatment(props) {
       LoggedInUserId: loggedInUserId(),
       NetSurfaceTreatmentCost: surfaceTotal + transportationTotal,
       SurfaceTreatmentCost: surfaceTotal,
-      TransporationCost: transportationTotal,
+      TransportationCost: transportationTotal,
       IsIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatment,
       CostingPartDetails: tabData,
     }
@@ -212,7 +215,7 @@ function TabSurfaceTreatment(props) {
                                 <tr key={index} onClick={() => toggle(index)}>
                                   <td><span class="cr-prt-nm">{item.PartName}</span></td>
                                   <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
-                                  <td>{item.TransporationCost !== null ? checkForDecimalAndNull(item.TransporationCost, 2) : 0}</td>
+                                  <td>{item.TransportationCost !== null ? checkForDecimalAndNull(item.TransportationCost, 2) : 0}</td>
                                   <td>{item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0}</td>
                                 </tr>
                                 {item.IsOpen &&
@@ -222,7 +225,7 @@ function TabSurfaceTreatment(props) {
                                         <SurfaceTreatment
                                           index={index}
                                           surfaceData={item.SurfaceTreatmentDetails}
-                                          transportationData={item.TransporationDetails}
+                                          transportationData={item.TransportationDetails}
                                           setSurfaceCost={setSurfaceCost}
                                           setTransportationCost={setTransportationCost}
                                         />

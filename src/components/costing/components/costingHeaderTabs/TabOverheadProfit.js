@@ -66,9 +66,7 @@ function TabOverheadProfit(props) {
   */
   const setOverheadDetail = (data, index) => {
 
-    const { overheadObj, profitObj } = data;
-    console.log('overheadObj: ', overheadObj);
-    console.log('profitObj: ', profitObj);
+    const { overheadObj, profitObj, modelType } = data;
 
     let OverheadNetCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, 2) + checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, 2)
       + checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, 2);
@@ -85,12 +83,14 @@ function TabOverheadProfit(props) {
           ProfitNetCost: ProfitNetCost,
           NetOverheadAndProfitCost: OverheadNetCost + ProfitNetCost,
           OverheadProfitNetCost: OverheadNetCost + ProfitNetCost,
+          ModelType: modelType.label,
+          ModelTypeId: modelType.value,
         })
     })
 
     setTimeout(() => {
       setOverheadCost(overheadObj ? checkForDecimalAndNull(OverheadNetCost, 2) : 0)
-      setProfitCost(overheadObj ? checkForDecimalAndNull(ProfitNetCost, 2) : 0)
+      setProfitCost(profitObj ? checkForDecimalAndNull(ProfitNetCost, 2) : 0)
       setTabData(tempArr)
     }, 200)
 
@@ -336,19 +336,6 @@ function TabOverheadProfit(props) {
                     </Table>
                   </Col>
                 </Row>
-
-                {/* <Row className="sf-btn-footer no-gutters justify-content-between mt25">
-                  <div className="col-sm-12 text-right bluefooter-butn">
-
-                    <button
-                      type={'button'}
-                      className="submit-button mr5 save-btn"
-                      onClick={saveCosting}>
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
-                    </button>
-                  </div>
-                </Row> */}
 
               </form>
             </div>

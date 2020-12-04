@@ -124,11 +124,14 @@ function AddFreight(props) {
       calculateApplicabilityCost(newValue.value)
       const data = { Capacity: capacity.value, Criteria: newValue.value }
       dispatch(getRateByCapacityCriteria(data, res => {
-        console.log('res from criteria', res)
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.DynamicData;
+          setValue('Rate', Data.Rate)
+        }
       }))
-      setValue('Rate', 50)
     } else {
       setCriteria([])
+      setValue('Rate', '')
     }
   }
 

@@ -6,7 +6,7 @@ import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 
 function Tool(props) {
@@ -18,14 +18,14 @@ function Tool(props) {
     reValidateMode: 'onChange',
   });
 
-  const [gridData, setGridData] = useState(data && data.CostingToolCost && data.CostingToolCost.CostingToolsCostResponse)
+  const [gridData, setGridData] = useState(data && data.CostingToolsCostResponse && data.CostingToolsCostResponse)
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    //props.setBOPCost(gridData, props.index)
+    props.setToolCost(gridData, props.index)
   }, [gridData]);
 
   /**
@@ -75,17 +75,26 @@ function Tool(props) {
   * @method handleToolMaintanenceChange
   * @description HANDLE TOOL MAINTANENCE CHANGE
   */
-  const handleToolMaintanenceChange = (event, index) => {
-    // let tempArr = [];
-    // let tempData = gridData[index];
+  const handleToolMaintanenceChange = (event) => {
 
     if (!isNaN(event.target.value)) {
 
-      setValue('ToolMaintanenceCost', event.target.value)
+      setValue('ToolMaintenanceCost', event.target.value)
 
-      const ToolCost = getValues('ToolCost')
-      const AmortizationQuantity = getValues('AmortizationQuantity')
-      const NetToolCost = getValues('NetToolCost')
+      const ToolMaintenanceCost = checkForNull(event.target.value)
+      const ToolCost = checkForNull(getValues('ToolCost'));
+      const Life = checkForNull(getValues('Life'))
+
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2))
+
+      const OverAllApplicability = {
+        ToolMaintenanceCost: checkForNull(event.target.value),
+        ToolCost: ToolCost,
+        Life: Life,
+        NetToolCost: checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
+      }
+
+      props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
 
     } else {
       toastr.warning('Please enter valid number.')
@@ -96,17 +105,26 @@ function Tool(props) {
   * @method handleToolCostChange
   * @description HANDLE TOOL COST CHANGE
   */
-  const handleToolCostChange = (event, index) => {
-    // let tempArr = [];
-    // let tempData = gridData[index];
+  const handleToolCostChange = (event) => {
 
     if (!isNaN(event.target.value)) {
 
-      setValue('ToolMaintanenceCost', event.target.value)
+      setValue('ToolCost', event.target.value)
 
-      const ToolCost = getValues('ToolCost')
-      const AmortizationQuantity = getValues('AmortizationQuantity')
-      const NetToolCost = getValues('NetToolCost')
+      const ToolMaintenanceCost = checkForNull(getValues('ToolMaintenanceCost'))
+      const ToolCost = checkForNull(event.target.value);
+      const Life = checkForNull(getValues('Life'))
+
+      setValue('NetToolCost', checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2))
+
+      const OverAllApplicability = {
+        ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
+        ToolCost: ToolCost,
+        Life: Life,
+        NetToolCost: checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2),
+      }
+
+      props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
 
     } else {
       toastr.warning('Please enter valid number.')
@@ -118,16 +136,25 @@ function Tool(props) {
     * @description HANDLE TOOL LIFE CHANGE
     */
   const handleToolLifeChange = (event) => {
-    // let tempArr = [];
-    // let tempData = gridData[index];
 
     if (!isNaN(event.target.value)) {
 
-      setValue('ToolMaintanenceCost', event.target.value)
+      setValue('Life', event.target.value)
 
-      const ToolCost = getValues('ToolCost')
-      const AmortizationQuantity = getValues('AmortizationQuantity')
-      const NetToolCost = getValues('NetToolCost')
+      const ToolMaintenanceCost = checkForNull(getValues('ToolMaintenanceCost'))
+      const ToolCost = checkForNull(getValues('ToolCost'));
+      const Life = checkForNull(event.target.value)
+
+      setValue('NetToolCost', checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2))
+
+      const OverAllApplicability = {
+        ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
+        ToolCost: ToolCost,
+        Life: checkForNull(event.target.value),
+        NetToolCost: checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2),
+      }
+
+      props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
 
     } else {
       toastr.warning('Please enter valid number.')
@@ -140,6 +167,7 @@ function Tool(props) {
   */
   const onSubmit = (values) => {
     console.log('values >>>', values);
+    props.saveCosting(values)
   }
 
   /**
@@ -212,7 +240,7 @@ function Tool(props) {
                   <Col md="3">
                     <TextFieldHookForm
                       label="Tool Maintanence Cost"
-                      name={`ToolMaintanenceCost`}
+                      name={`ToolMaintenanceCost`}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -232,7 +260,7 @@ function Tool(props) {
                         e.preventDefault()
                         handleToolMaintanenceChange(e)
                       }}
-                      errors={errors && errors.ToolMaintanenceCost}
+                      errors={errors && errors.ToolMaintenanceCost}
                       disabled={false}
                     />
                   </Col>
@@ -266,7 +294,7 @@ function Tool(props) {
                   <Col md="3">
                     <TextFieldHookForm
                       label="Amortization Quantity(Tool Life)"
-                      name={`AmortizationQuantity`}
+                      name={`Life`}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -286,7 +314,7 @@ function Tool(props) {
                         e.preventDefault()
                         handleToolLifeChange(e)
                       }}
-                      errors={errors && errors.AmortizationQuantity}
+                      errors={errors && errors.Life}
                       disabled={false}
                     />
                   </Col>
@@ -320,6 +348,18 @@ function Tool(props) {
                 </>
               }
 
+            </Row>
+
+            <Row className="sf-btn-footer no-gutters justify-content-between mt25">
+              <div className="col-sm-12 text-right bluefooter-butn">
+
+                <button
+                  type={'submit'}
+                  className="submit-button mr5 save-btn">
+                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  {'Save'}
+                </button>
+              </div>
             </Row>
           </form>
         </div>

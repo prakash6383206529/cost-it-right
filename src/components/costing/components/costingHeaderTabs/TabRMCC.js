@@ -17,6 +17,7 @@ function TabRMCC(props) {
   const [netOperationCost, setNetOperationCost] = useState('');
   const [netToolsCost, setNetToolsCost] = useState(0);
   const [tabData, setTabData] = useState([]);
+  const [costingData, setCostingData] = useState({});
 
   const dispatch = useDispatch()
 
@@ -32,6 +33,7 @@ function TabRMCC(props) {
       dispatch(getRMCCTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
+          setCostingData(Data)
           setTabData(Data.CostingPartDetails)
         }
       }))
@@ -277,6 +279,9 @@ function TabRMCC(props) {
       CostingId: costData.CostingId,
       CostingNumber: costData.CostingNumber,
       ShareOfBusinessPercent: costData.ShareOfBusinessPercent,
+      PartId: costData.PartId,
+      PartNumber: costData.PartNumber,
+      Version: costingData.Version,
       CostingPartDetails: tabData,
     }
 

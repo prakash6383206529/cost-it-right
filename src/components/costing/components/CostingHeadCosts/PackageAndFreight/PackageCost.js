@@ -124,7 +124,7 @@ function PackageCost(props) {
                       return (
                         <tr key={index}>
                           <td>{item.PackagingDescription}</td>
-                          <td>{item.PackagingCostPercentage}</td>
+                          <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
                           <td>{item.PackagingCost}</td>
                           <td>
                             <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />

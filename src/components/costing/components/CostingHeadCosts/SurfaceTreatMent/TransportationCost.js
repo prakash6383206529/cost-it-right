@@ -14,7 +14,7 @@ function TransportationCost(props) {
     UOM: data && data.UOM !== undefined ? { label: data.UOM, value: data.UOMId } : [],
     Rate: data && data.Rate !== undefined ? data.Rate : 0,
     Quantity: data && data.Quantity !== undefined ? data.Quantity : 0,
-    TransporationCost: data && data.TransporationCost !== undefined ? data.TransporationCost : 0,
+    TransportationCost: data && data.TransportationCost !== undefined ? data.TransportationCost : 0,
   }
 
   const { register, control, errors, setValue, getValues, } = useForm({
@@ -36,7 +36,7 @@ function TransportationCost(props) {
       UOMId: uom ? uom.value : '',
       Rate: Rate,
       Quantity: Quantity,
-      TransporationCost: getValues('TransporationCost'),
+      TransportationCost: getValues('TransportationCost'),
     }
 
     props.setTransportationCost(tempObj, props.index)
@@ -67,9 +67,9 @@ function TransportationCost(props) {
       if (Quantity !== '') {
         const cost = Quantity * event.target.value;
         //setNetCost(checkForDecimalAndNull(cost, 2));
-        setValue('TransporationCost', checkForDecimalAndNull(cost, 2))
+        setValue('TransportationCost', checkForDecimalAndNull(cost, 2))
       } else {
-        setValue('TransporationCost', 0)
+        setValue('TransportationCost', 0)
         //setNetCost(0);
       }
     } else {
@@ -84,9 +84,9 @@ function TransportationCost(props) {
 
       if (Rate !== '') {
         const cost = Rate * event.target.value;
-        setValue('TransporationCost', checkForDecimalAndNull(cost, 2));
+        setValue('TransportationCost', checkForDecimalAndNull(cost, 2));
       } else {
-        setValue('TransporationCost', 0);
+        setValue('TransportationCost', 0);
       }
     } else {
       toastr.warning('Please enter valid number.')
@@ -205,7 +205,7 @@ function TransportationCost(props) {
             <Col md="3">
               <TextFieldHookForm
                 label="Cost"
-                name={`TransporationCost`}
+                name={`TransportationCost`}
                 Controller={Controller}
                 control={control}
                 register={register}
@@ -225,7 +225,7 @@ function TransportationCost(props) {
                   e.preventDefault()
                   //handleQuantityChange(e)
                 }}
-                errors={errors && errors.TransporationCost}
+                errors={errors && errors.TransportationCost}
                 disabled={true}
               />
 

@@ -92,15 +92,20 @@ function OverheadProfit(props) {
   const [InventoryObj, setInventoryObj] = useState(ICCApplicabilityDetail)
   const [PaymentTermObj, setPaymentTermObj] = useState(PaymentTermDetail)
 
-  const [modelType, setModelType] = useState([])
+  const [modelType, setModelType] = useState(props.tabData && props.tabData.ModelType !== null ? { label: props.tabData.ModelType, value: props.tabData.ModelTypeId } : [])
 
   const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
 
   const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail.IsInventoryCarringCost !== null ? true : false)
-  const [ICCapplicability, setICCapplicability] = useState([])
+  const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
+  const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
 
   const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail.IsPaymentTerms !== null ? true : false)
-  const [paymentTermsApplicability, setPaymentTermsApplicability] = useState([])
+  const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
+  const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
+
+  setValue('ICCApplicability', ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
+  setValue('PaymentTermsApplicability', PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
 
   //INITIAL CALLED EFFECT TO SET VALUES
   useEffect(() => {
@@ -113,6 +118,21 @@ function OverheadProfit(props) {
     checkIsProfitRMApplicable()
     checkIsProfitBOPApplicable()
     checkIsProfitCCApplicable()
+
+    if (props.tabData && props.tabData.ModelTypeId !== null) {
+      handleModelTypeChange({ label: props.tabData.ModelType, value: props.tabData.ModelTypeId })
+    }
+
+    if (ICCApplicabilityDetail !== undefined) {
+      setICCapplicability({ label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability })
+      setICCInterestRateId(ICCApplicabilityDetail.InterestRateId)
+    }
+
+    if (PaymentTermDetail !== undefined) {
+      setPaymentTermsApplicability({ label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability })
+      setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
+    }
+
   }, []);
 
   const overheadFieldValues = useWatch({
@@ -167,29 +187,29 @@ function OverheadProfit(props) {
         "ProfitCombinedTotalCost": profitObj.IsProfitCombined ? getValues('ProfitCombinedTotalCost') : '',
 
         "IsProfitCCApplicable": profitObj.IsProfitCCApplicable,
-        "ProfitCCPercentage": profitObj.IsProfitCombined ? getValues('ProfitCCPercentage') : '',
-        "ProfitCCCost": profitObj.IsProfitCombined ? getValues('ProfitCCCost') : '',
-        "ProfitCCTotalCost": profitObj.IsProfitCombined ? getValues('ProfitCCTotalCost') : '',
+        "ProfitCCPercentage": profitObj.IsProfitCCApplicable ? getValues('ProfitCCPercentage') : '',
+        "ProfitCCCost": profitObj.IsProfitCCApplicable ? getValues('ProfitCCCost') : '',
+        "ProfitCCTotalCost": profitObj.IsProfitCCApplicable ? getValues('ProfitCCTotalCost') : '',
 
         "IsProfitBOPApplicable": profitObj.IsProfitBOPApplicable,
-        "ProfitBOPPercentage": profitObj.IsProfitCombined ? getValues('ProfitBOPPercentage') : '',
-        "ProfitBOPCost": profitObj.IsProfitCombined ? getValues('ProfitBOPCost') : '',
-        "ProfitBOPTotalCost": profitObj.IsProfitCombined ? getValues('ProfitBOPTotalCost') : '',
+        "ProfitBOPPercentage": profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPPercentage') : '',
+        "ProfitBOPCost": profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPCost') : '',
+        "ProfitBOPTotalCost": profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPTotalCost') : '',
 
         "IsProfitRMApplicable": profitObj.IsProfitRMApplicable,
-        "ProfitRMPercentage": profitObj.IsProfitCombined ? getValues('ProfitRMPercentage') : '',
-        "ProfitRMCost": profitObj.IsProfitCombined ? getValues('ProfitRMCost') : '',
-        "ProfitRMTotalCost": profitObj.IsProfitCombined ? getValues('ProfitRMTotalCost') : '',
+        "ProfitRMPercentage": profitObj.IsProfitRMApplicable ? getValues('ProfitRMPercentage') : '',
+        "ProfitRMCost": profitObj.IsProfitRMApplicable ? getValues('ProfitRMCost') : '',
+        "ProfitRMTotalCost": profitObj.IsProfitRMApplicable ? getValues('ProfitRMTotalCost') : '',
 
         "IsProfitFixedApplicable": profitObj.IsProfitFixedApplicable,
-        "ProfitFixedPercentage": profitObj.IsProfitCombined ? getValues('ProfitFixedPercentage') : '',
-        "ProfitFixedCost": profitObj.IsProfitCombined ? getValues('ProfitFixedCost') : '',
-        "ProfitFixedTotalCost": profitObj.IsProfitCombined ? getValues('ProfitFixedTotalCost') : '',
+        "ProfitFixedPercentage": profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedPercentage') : '',
+        "ProfitFixedCost": profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedCost') : '',
+        "ProfitFixedTotalCost": profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedTotalCost') : '',
 
         "IsSurfaceTreatmentApplicable": true
       }
 
-      props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj }, props.index)
+      props.setOverheadDetail({ overheadObj: tempObj, profitObj: profitTempObj, modelType: modelType }, props.index)
     }, 500)
 
   }, [overheadObj, profitObj]);
@@ -199,46 +219,6 @@ function OverheadProfit(props) {
     name: ['ProfitFixedPercentage',],
   });
 
-  // useEffect(() => {
-
-  //   let tempObj = {
-  //     "ProfitId": profitObj.ProfitId,
-  //     "ProfitApplicabilityId": profitObj.ProfitApplicabilityId,
-  //     "ProfitApplicability": profitObj.ProfitApplicability,
-
-  //     "IsProfitCombined": profitObj.IsProfitCombined,
-  //     "ProfitPercentage": profitObj.IsProfitCombined ? getValues('ProfitPercentage') : '',
-  //     "ProfitCombinedCost": profitObj.IsProfitCombined ? getValues('ProfitCombinedCost') : '',
-  //     "ProfitCombinedTotalCost": profitObj.IsProfitCombined ? getValues('ProfitCombinedTotalCost') : '',
-
-  //     "IsProfitCCApplicable": profitObj.IsProfitCCApplicable,
-  //     "ProfitCCPercentage": profitObj.IsProfitCombined ? getValues('ProfitCCPercentage') : '',
-  //     "ProfitCCCost": profitObj.IsProfitCombined ? getValues('ProfitCCCost') : '',
-  //     "ProfitCCTotalCost": profitObj.IsProfitCombined ? getValues('ProfitCCTotalCost') : '',
-
-  //     "IsProfitBOPApplicable": profitObj.IsProfitBOPApplicable,
-  //     "ProfitBOPPercentage": profitObj.IsProfitCombined ? getValues('ProfitBOPPercentage') : '',
-  //     "ProfitBOPCost": profitObj.IsProfitCombined ? getValues('ProfitBOPCost') : '',
-  //     "ProfitBOPTotalCost": profitObj.IsProfitCombined ? getValues('ProfitBOPTotalCost') : '',
-
-  //     "IsProfitRMApplicable": profitObj.IsProfitRMApplicable,
-  //     "ProfitRMPercentage": profitObj.IsProfitCombined ? getValues('ProfitRMPercentage') : '',
-  //     "ProfitRMCost": profitObj.IsProfitCombined ? getValues('ProfitRMCost') : '',
-  //     "ProfitRMTotalCost": profitObj.IsProfitCombined ? getValues('ProfitRMTotalCost') : '',
-
-  //     "IsProfitFixedApplicable": profitObj.IsProfitFixedApplicable,
-  //     "ProfitFixedPercentage": profitObj.IsProfitCombined ? getValues('ProfitFixedPercentage') : '',
-  //     "ProfitFixedCost": profitObj.IsProfitCombined ? getValues('ProfitFixedCost') : '',
-  //     "ProfitFixedTotalCost": profitObj.IsProfitCombined ? getValues('ProfitFixedTotalCost') : '',
-
-  //     "IsSurfaceTreatmentApplicable": true
-  //   }
-
-  //   setTimeout(() => {
-  //     props.setProfitDetail(tempObj, props.index)
-  //   }, 200)
-
-  // }, [profitFieldValues]);
 
   const rejectionFieldValues = useWatch({
     control,
@@ -268,7 +248,7 @@ function OverheadProfit(props) {
 
   useEffect(() => {
     let tempObj = {
-      "InterestRateId": ICCApplicabilityDetail ? ICCApplicabilityDetail.InterestRateId : '',
+      "InterestRateId": ICCApplicabilityDetail ? ICCInterestRateId : '',
       "IccDetailId": ICCApplicabilityDetail ? ICCApplicabilityDetail.IccDetailId : '',
       "ICCApplicability": IsInventoryApplicable ? ICCapplicability.label : '',
       "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
@@ -289,7 +269,7 @@ function OverheadProfit(props) {
 
   useEffect(() => {
     let tempObj = {
-      "InterestRateId": IsPaymentTermsApplicable ? PaymentTermDetail.InterestRateId : '',
+      "InterestRateId": IsPaymentTermsApplicable ? PaymentTermInterestRateId : '',
       "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
       "PaymentTermApplicability": IsPaymentTermsApplicable ? paymentTermsApplicability.label : '',
       "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
@@ -882,6 +862,7 @@ function OverheadProfit(props) {
           if (res && res.data && res.data.Result) {
             let Data = res.data.Data;
             setValue('InterestRatePercentage', Data.InterestRate)
+            setICCInterestRateId(Data.InterestRateId)
             checkInventoryApplicability(newValue.label)
           }
         }
@@ -971,6 +952,7 @@ function OverheadProfit(props) {
           let Data = res.data.Data;
           setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
           setValue('RepaymentPeriodPercentage', Data.InterestRate)
+          setPaymentTermInterestRateId(Data.InterestRateId)
           checkPaymentTermApplicability(newValue.label)
         }
       }))

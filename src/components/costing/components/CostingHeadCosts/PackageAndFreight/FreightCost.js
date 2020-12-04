@@ -147,7 +147,7 @@ function FreightCost(props) {
       {isDrawerOpen && <AddFreight
         isOpen={isDrawerOpen}
         closeDrawer={closeDrawer}
-        isEditFlag={false}
+        isEditFlag={isEditFlag}
         ID={''}
         editIndex={editIndex}
         rowObjData={rowObjData}
