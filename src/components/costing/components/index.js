@@ -3,6 +3,7 @@ import { connect, useDispatch } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
+import CostingSummaryTable from './CostingSummaryTable';
 
 function Costing(props) {
 
@@ -54,7 +55,7 @@ function Costing(props) {
                             </TabPane>}
                         {activeTab === '2' &&
                             <TabPane tabId="2">
-                                {'Costing summary goes here'}
+                            <CostingSummaryTable />
                             </TabPane>}
                         {activeTab === '3' &&
                             <TabPane tabId="3">

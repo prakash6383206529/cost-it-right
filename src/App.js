@@ -15,8 +15,8 @@ class App extends Component {
 
   UNSAFE_componentWillMount() {
     this.props.getLoginPageInit(res => {
-      let Data = res.data.Data;
-      reactLocalStorage.setObject('InitialConfiguration', Data)
+        let Data = res.data.Data;
+        reactLocalStorage.setObject('InitialConfiguration', Data)
     })
   }
 
