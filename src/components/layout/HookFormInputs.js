@@ -159,3 +159,112 @@ export const TextAreaHookForm = (field) => {
     </>
   )
 }
+
+
+/**
+* @method:RadioHookForm
+* @desc: render radio button
+*/
+// import Typography from "../typography";
+// import "./radioButtons.less";
+export const RadioHookForm = ({
+    dataArray = [],
+    label = "label",
+    optionsValue = "optionsValue",
+    labelElement = '',
+    className,
+    selectedValue = "",
+    register,
+    name,
+    onChange = null,
+    // disable = false
+}) => {
+    const onChangeSelect = (val) => {
+        onChange && onChange(val);
+    };
+    const flexContainer = {
+     display: 'flex',
+     flexDirection: 'row',
+     padding: '10px 30px'
+   };
+    return (
+        <div className={`te-radio-button ${className}`}>
+          <div>
+               {dataArray && dataArray.length !== 0 && (
+                 <ul style={flexContainer} className={"radio-button-list"}>
+                    {dataArray.map((data, index) => {
+                      return (
+                            <li style={{padding:'10px'}} key={index}>
+                               <label className="radio-button-wrapper">
+                                    <input
+                                        name={name}
+                                        type="radio"
+                                        value={data[optionsValue]}
+                                        ref={register}
+                                        onChange={e =>
+                                            onChangeSelect(
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                    {" "}
+                                    {data[label]}
+                                    {/* {data[labelElement] && data[labelElement]} */}
+                                    <span className="radio-label"></span>
+                                </label>
+                            </li>)
+                      })
+                    }
+                 </ul>
+                )}
+            </div>
+        </div>
+    );
+};
+
+
+
+
+// export const RadioHookForm = (field) => {
+//   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
+//   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
+//   const InputClassName = `form-control ${field.className ? field.className : ""}`;
+//   const isDisabled = field.disabled === true ? true : false;
+//   return (
+//     <>
+//       <div 
+//       //className={className}
+//       >
+//         <label>
+//           {label}
+//           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+//         </label>
+//         <Controller
+//           name={name}
+//           control={control}
+//           rules={rules}
+//           ref={register}
+//           defaultValue={defaultValue}
+//           render={({ onChange, onBlur, value, name }) => {
+//             return (
+//               <input
+//                 {...field}
+//                 type="radio"
+//                 name={name}
+//                 // className={InputClassName}
+//                 disabled={isDisabled}
+//                 value={value}
+//                 onChange={(e) => {
+//                   handleChange(e);
+//                   onChange(e)
+//                 }}
+//               />
+//             )
+//           }
+//           }
+//         />
+//         {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+//       </div>
+//     </>
+//   )
+// }

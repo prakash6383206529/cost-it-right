@@ -72,6 +72,8 @@ padding:2rem;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
+
+
 @media (max-width:767px){
 .sf-mainwrapper .sf-editorgform .sf-invitewrap .form-group label{font-size:1rem;margin-bottom:0px;}
 .sf-mainwrapper .sf-editorgpage .form-control{padding-bottom:6px;}

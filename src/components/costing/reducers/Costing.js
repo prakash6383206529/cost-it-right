@@ -20,7 +20,9 @@ import {
     GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
     GET_RATE_CRITERIA_BY_CAPACITY,
     GET_COSTING_DETAILS_BY_COSTING_ID,
-    SET_COSTING_VIEW_DATA
+    SET_COSTING_VIEW_DATA,
+    STORE_PART_VALUE,
+    GET_COST_SUMMARY_BY_PART_PLANT
 } from '../../../config/constants';
 
 const initialState = {
@@ -30,7 +32,8 @@ const initialState = {
         // supplierThree: {},
     },
     singleCostingDetail : {},
-    viewCostingDetailData: []
+    viewCostingDetailData: [],
+    partNo: ''
 };
 
 export default function costingReducer(state = initialState, action) {
@@ -219,6 +222,16 @@ export default function costingReducer(state = initialState, action) {
                 loading: false,
                 viewCostingDetailData: action.payload
             };
+        case STORE_PART_VALUE:
+            return {
+                ...state,
+                partNo: action.payload
+            };
+        case GET_COST_SUMMARY_BY_PART_PLANT:
+            return {
+                ...state,
+                costSummaryByPartAndPlant: action.payload
+            }
         default:
             return state;
     }

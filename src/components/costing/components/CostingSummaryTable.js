@@ -209,7 +209,6 @@ const CostingSummaryTable = props => {
     const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm();
     return (
         <Fragment>
-            Hello from Summary Table
             <Row>
                 <Col md="4">
                     <div className="left-border">
