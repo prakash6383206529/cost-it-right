@@ -20,6 +20,8 @@ import {
   GET_COSTING_DATA_BY_COSTINGID,
   GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
   GET_RATE_CRITERIA_BY_CAPACITY,
+  STORE_PART_VALUE,
+  GET_COST_SUMMARY_BY_PART_PLANT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -1162,4 +1164,39 @@ export function copyCostingAPI(data, callback) {
       apiErrors(error);
     });
   };
+}
+
+/**
+ *@method:storePartNumber
+ *@description: Used for storing part no from costing summary
+*/
+export function  storePartNumber(partNo) {
+  return (dispatch) => {
+    dispatch({
+      type: STORE_PART_VALUE,
+      payload: partNo
+    });
+  };
+}
+
+export function getCostingSummaryByplantIdPartNo(partNo,plantId,callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}`, headers);
+    request.then((response) => {
+      console.log(response,"Response from costing summary");
+      if (response.data.Result) {
+      dispatch({
+          type: GET_COST_SUMMARY_BY_PART_PLANT,
+          payload: response.data.Result,
+        })
+        callback(response);
+    }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+  
 }

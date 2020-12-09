@@ -6,10 +6,13 @@ import DatePicker from "react-datepicker";
 import { toastr } from 'react-redux-toastr';
 import moment from 'moment';
 
+import AddToComparisonDrawer from './AddToComparisonDrawer'
+
 
 
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, 
+  storePartNumber
 } from '../actions/Costing';
 
 import { VBC, ZBC } from '../../../config/constants';
@@ -30,7 +33,7 @@ function CostingSummary() {
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
-
+  const [addComparisonToggle, setaddComparisonToggle] = useState(false)
  
   const fieldValues = useWatch({ control });
 
@@ -106,6 +109,7 @@ function CostingSummary() {
 
       if (IsTechnologySelected) {
         const data = { TechnologyId: technology.value, PartId: newValue.value }
+
         dispatch(checkPartWithTechnology(data, (response) => {
           setPart(newValue)
           if (response.data.Result) {
@@ -118,6 +122,7 @@ function CostingSummary() {
               setValue("RevisionNumber", Data.RevisionNumber)
               setValue("ShareOfBusiness", Data.Price)
               setEffectiveDate(moment(Data.EffectiveDate)._d)
+              dispatch(storePartNumber(newValue))
             }))
           } else {
             dispatch(getPartInfo('', () => { }))
@@ -182,7 +187,27 @@ function CostingSummary() {
     }
   }
 
+/**
+* @method addComparisonDrawerToggle
+* @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
+*/
+  const addComparisonDrawerToggle = () => {
+     setaddComparisonToggle(true)
+  }
 
+ /**
+  * @method closeAddComparisonDrawer
+  * @description HIDE ADD COMPARISON DRAWER
+  */
+  const closeAddComparisonDrawer = (e = '') => {
+
+    // if (Object.keys(plantData).length > 0) {
+    //   let tempArr = [...zbcPlantGrid, plantData]
+    //   setZBCPlantGrid(tempArr)
+    // }
+    setaddComparisonToggle(false)
+
+  }
 
   /**
   * @method onSubmit
@@ -378,7 +403,11 @@ function CostingSummary() {
                           </div>
                         </div>
                       </Col>
-
+                        <button
+                            type="button"
+                            className={'user-btn'}
+                            onClick={addComparisonDrawerToggle}>
+                            <div className={'plus'}></div>ADD Comparison</button>
                     </Row>
                   </>}
               </form>
@@ -386,6 +415,16 @@ function CostingSummary() {
           </Col>
         </Row>
       </div>
+      {
+         addComparisonToggle && 
+         <AddToComparisonDrawer 
+          part = {part}
+          isOpen = {addComparisonToggle}
+          closeDrawer = {closeAddComparisonDrawer}
+          isEditFlag = {false}
+          anchor = {'right'}
+          />
+      }
     </>
   );
 };
