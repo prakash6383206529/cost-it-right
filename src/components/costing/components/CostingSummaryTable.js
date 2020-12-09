@@ -206,6 +206,8 @@ const CostingSummaryTable = props => {
             }
         }))
     }, [])
+
+    useEffect(() => {}, [viewCostingData])
     const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm();
     return (
         <Fragment>
