@@ -20,10 +20,13 @@ import {
   GET_COSTING_DATA_BY_COSTINGID,
   GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
   GET_RATE_CRITERIA_BY_CAPACITY,
+  GET_COSTING_DETAILS_BY_COSTING_ID,
+  SET_COSTING_VIEW_DATA,
+  VIEW_COSTING_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
-import { toastr } from 'react-redux-toastr'
+import { toastr } from 'react-redux-toastr';
 
 const headers = {
   'Content-Type': 'application/json',
@@ -1163,3 +1166,42 @@ export function copyCostingAPI(data, callback) {
     });
   };
 }
+
+/**
+ * @method getSingleCostingDetails
+ * @description Used to fetch costing details by costingId
+ */
+export function getSingleCostingDetails(costingId, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getCostingDetailsByCostingId}/${costingId}`, headers);
+    request.then((response) => {
+      if (response.data.Data) {
+        dispatch({
+          type: GET_COSTING_DETAILS_BY_COSTING_ID,
+          payload: response.data.Data,
+        });
+        callback(response);
+      } else {
+        toastr.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+export const setCostingViewData = (data) => dispatch => {
+  let temp = [];
+  temp.push(VIEW_COSTING_DATA)
+  data.map(val => {
+    temp.push(val)
+  })
+  console.log('temp: ', temp);
+  dispatch({
+      type: SET_COSTING_VIEW_DATA,
+      payload: temp
+  })
+}
+

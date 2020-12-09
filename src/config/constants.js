@@ -476,6 +476,7 @@ export const API = {
   getAllPartSelectList: `${BASE_URL}/costing/get-part-select-list`,
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
+  getCostingDetailsByCostingId: `${BASE_URL}/costing/get-zbc-view-costing`,
 
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
@@ -1020,6 +1021,8 @@ export const ADD_BOP_GRID_COSTING_SUCCESS = 'ADD_BOP_GRID_COSTING_SUCCESS';
 export const SAVE_BOP_COSTING_SUCCESS = 'SAVE_BOP_COSTING_SUCCESS';
 export const GET_COSTING_DATA_BY_COSTINGID = 'GET_COSTING_DATA_BY_COSTINGID';
 export const GET_RATE_CRITERIA_BY_CAPACITY = 'GET_RATE_CRITERIA_BY_CAPACITY';
+export const GET_COSTING_DETAILS_BY_COSTING_ID = 'GET_COSTING_DETAILS_BY_COSTING_ID';
+export const SET_COSTING_VIEW_DATA = 'SET_COSTING_VIEW_DATA';
 
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
@@ -1235,3 +1238,45 @@ export const BOUGHTOUTPART = 'BoughtOutPart';
 
 
 export const COSTING_PATH = '/costing';
+
+export const VIEW_COSTING_DATA = {
+  zbc: "ZBC v/s VBC",
+  costingName: "",
+  poPrice: "PO Price",
+  status: "Status",
+  rm: "RM name-Grade",
+  gWeight: "Gross Weight",
+  fWeight: "Finish Weight",
+  netRM: "Net RM Cost",
+  netBOP: "Net BOP Cost",
+  pCost: "Process Cost",
+  oCost: "Operation Cost",
+  sTreatment: "Surface Treatment",
+  tCost: "Transportation Cost",
+  nConvCost: "Net Conversion Cost",
+  modelType: "Model Type For Overhead/Profit",
+  aValue: "",
+  overheadOn: "Overhead On",
+  profitOn: "Profit On",
+  rejectionOn: "Rejection On",
+  iccOn: "ICC On",
+  paymentTerms: "Payment Terms",
+  nOverheadProfit: "Net Overhead Profits",
+  packagingCost: "Packaging Cost",
+  freight: "Freight",
+  nPackagingAndFreight: "Net Packaging and Freight",
+  toolMaintenanceCost: "Tool Maintenance Cost",
+  toolPrice: "Tool Price",
+  amortizationQty: "Amortization Quantity",
+  totalToolCost: "Total Tool Cost",
+  totalCost: "Total Cost",
+  otherDiscount: "Hundi/Other Discount",
+  otherDiscountValue: "",
+  anyOtherCost: "Any Other Cost",
+  remark: "Remark",
+  nPOPriceWithCurrency: "Net PO Price(INR)",
+  currency: "Currency",
+  nPOPrice: "Net PO Price",
+  attachment: "Attachment",
+  approvalButton: ""
+}

@@ -19,6 +19,8 @@ import {
     GET_COSTING_DATA_BY_COSTINGID,
     GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
     GET_RATE_CRITERIA_BY_CAPACITY,
+    GET_COSTING_DETAILS_BY_COSTING_ID,
+    SET_COSTING_VIEW_DATA
 } from '../../../config/constants';
 
 const initialState = {
@@ -27,6 +29,8 @@ const initialState = {
         // supplierTwo: {},
         // supplierThree: {},
     },
+    singleCostingDetail : {},
+    viewCostingDetailData: []
 };
 
 export default function costingReducer(state = initialState, action) {
@@ -202,6 +206,18 @@ export default function costingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 rateCriteriaByCapacitySelectList: action.payload
+            };
+        case GET_COSTING_DETAILS_BY_COSTING_ID:
+            return {
+                ...state,
+                loading: false,
+                singleCostingDetail: action.payload
+            };
+        case SET_COSTING_VIEW_DATA:
+            return {
+                ...state,
+                loading: false,
+                viewCostingDetailData: action.payload
             };
         default:
             return state;
