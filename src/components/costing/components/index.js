@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
@@ -9,6 +9,8 @@ import CostingSummary from './CostingSummary';
 function Costing(props) {
 
     const [activeTab, setActiveTab] = useState('1');
+    const partNumber = useSelector(state => state.costing.partNo);
+    console.log('partNumber: ', partNumber);
 
     /**
     * @method toggle
@@ -57,7 +59,7 @@ function Costing(props) {
                         {activeTab === '2' &&
                             <TabPane tabId="2">
                             <CostingSummary />
-                            <CostingSummaryTable />
+                            {partNumber != "" && <CostingSummaryTable />}
                             </TabPane>}
                         {activeTab === '3' &&
                             <TabPane tabId="3">
