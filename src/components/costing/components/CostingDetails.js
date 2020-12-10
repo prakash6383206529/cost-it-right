@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import { TextFieldHookForm, SearchableSelectHookForm, TextFieldHooks, } from '../../layout/HookFormInputs';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting,
-  createVBCCosting, getZBCExistingCosting, getVBCExistingCosting, updateZBCSOBDetail, updateVBCSOBDetail
+  createVBCCosting, getZBCExistingCosting, getVBCExistingCosting, updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber
 } from '../actions/Costing';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -66,6 +66,7 @@ function CostingDetails() {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    dispatch(storePartNumber(''))
     dispatch(getCostingTechnologySelectList(() => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))

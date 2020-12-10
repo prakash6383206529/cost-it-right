@@ -25,6 +25,7 @@ class SideBar extends Component {
 
   UNSAFE_componentWillMount() {
     const { location } = this.props;
+    console.log(location,"Location");
     this.setState({ isLoader: true })
     if (location && location !== undefined) {
       this.props.getModuleIdByPathName(location.pathname, res => {
