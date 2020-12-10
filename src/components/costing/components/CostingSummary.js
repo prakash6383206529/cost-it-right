@@ -128,7 +128,7 @@ function CostingSummary() {
                 else if(viewCostingData.length == 1){
                   temp = viewCostingData
                 }
-                // if(res.data.Result == true){
+                if(res.data.Result == true){
                   // dispatch(res.Data.CostingId, res => {
                   dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                     if (res.data.Data) {
@@ -206,10 +206,10 @@ function CostingSummary() {
                       dispatch(setCostingViewData(temp));
                   }
                   }))
-                // }
-                // else{
-                //   dispatch(setCostingViewData(temp))
-                // }
+                }
+                else{
+                  dispatch(setCostingViewData(temp))
+                }
               }))
             }))
           } else {
