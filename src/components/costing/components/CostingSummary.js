@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Table } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import DatePicker from "react-datepicker";
 import { toastr } from 'react-redux-toastr';
 import moment from 'moment';
-
-import AddToComparisonDrawer from './AddToComparisonDrawer'
-
-
-
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, 
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails
 } from '../actions/Costing';
-
-import { VBC, ZBC } from '../../../config/constants';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
-
-
 import "react-datepicker/dist/react-datepicker.css";
+import { VIEW_COSTING_DATA } from '../../../config/constants';
 
 function CostingSummary() {
 
@@ -29,11 +21,11 @@ function CostingSummary() {
    
   });
  
+  /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([]);
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
-  const [addComparisonToggle, setaddComparisonToggle] = useState(false)
  
   const fieldValues = useWatch({ control });
 
@@ -48,6 +40,7 @@ function CostingSummary() {
   const technologySelectList = useSelector(state => state.costing.technologySelectList)
   const partSelectList = useSelector(state => state.costing.partSelectList)
   const partInfo = useSelector(state => state.costing.partInfo)
+  const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
 
   /**
   * @method renderDropdownListing
@@ -126,10 +119,16 @@ function CostingSummary() {
               setEffectiveDate(moment(Data.EffectiveDate)._d)
               dispatch(storePartNumber(newValue))
               dispatch(getCostingSummaryByplantIdPartNo(newValue.value, '00000000-0000-0000-0000-000000000000', res => {
+                let temp = [];
+                if(viewCostingData.length == 0){
+                  temp.push(VIEW_COSTING_DATA)
+                }
+                else if(viewCostingData.length == 1){
+                  temp = viewCostingData
+                }
                 if(res.data.Result == true){
                   dispatch(res.Data.CostingId, res => {
                     if (res.data.Data) {
-                      let temp = [];
                       let dataFromAPI = res.data.Data
                       let obj = {};
                       obj.zbc = dataFromAPI.TypeOfCosting;
@@ -199,13 +198,14 @@ function CostingSummary() {
                       obj.attachment = "View Attachment"
                       obj.approvalButton = "Button"
 
+                      
                       temp.push(obj);
                       dispatch(setCostingViewData(temp));
                   }
                   })
                 }
                 else{
-                  dispatch(setCostingViewData([]))
+                  dispatch(setCostingViewData(temp))
                 }
               }))
             }))
@@ -271,28 +271,6 @@ function CostingSummary() {
       default:
         break;
     }
-  }
-
-/**
-* @method addComparisonDrawerToggle
-* @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
-*/
-  const addComparisonDrawerToggle = () => {
-     setaddComparisonToggle(true)
-  }
-
- /**
-  * @method closeAddComparisonDrawer
-  * @description HIDE ADD COMPARISON DRAWER
-  */
-  const closeAddComparisonDrawer = (e = '') => {
-
-    // if (Object.keys(plantData).length > 0) {
-    //   let tempArr = [...zbcPlantGrid, plantData]
-    //   setZBCPlantGrid(tempArr)
-    // }
-    setaddComparisonToggle(false)
-
   }
 
   /**
@@ -489,11 +467,6 @@ function CostingSummary() {
                           </div>
                         </div>
                       </Col>
-                        <button
-                            type="button"
-                            className={'user-btn'}
-                            onClick={addComparisonDrawerToggle}>
-                            <div className={'plus'}></div>ADD Comparison</button>
                     </Row>
                   </>}
               </form>
@@ -501,16 +474,6 @@ function CostingSummary() {
           </Col>
         </Row>
       </div>
-      {
-         addComparisonToggle && 
-         <AddToComparisonDrawer 
-          part = {part}
-          isOpen = {addComparisonToggle}
-          closeDrawer = {closeAddComparisonDrawer}
-          isEditFlag = {false}
-          anchor = {'right'}
-          />
-      }
     </>
   );
 };
