@@ -130,7 +130,7 @@ const CostingSummaryTable = props => {
                 let temp = viewCostingData;
                 let dataFromAPI = res.data.Data
                 let obj = {};
-                obj.zbc = dataFromAPI.typeOfCosting;
+                obj.zbc = dataFromAPI.TypeOfCosting;
                 obj.poPrice = dataFromAPI.NetPOPrice;
                 obj.costingName = dataFromAPI.CostingNumber
                 obj.status = dataFromAPI.CostingStatus
