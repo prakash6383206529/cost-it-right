@@ -25,9 +25,6 @@ function AddToComparisonDrawer(props) {
     handleSubmit,
     control,
     setValue,
-    getValues,
-    reset,
-    errors,
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -36,30 +33,31 @@ function AddToComparisonDrawer(props) {
   const fieldValues = useWatch({ control, name: ['comparisonValue'] })
   const dispatch = useDispatch()
 
+  /* DropDown constants */
   const [plantDropDownList, setPlantDropDownList] = useState([])
   const [vendorDropDownList, setVendorDropDownList] = useState([])
   const [vendorPlantDropdown, setvendorPlantDropdown] = useState([])
   const [clientDropdown, setclientDropdown] = useState([])
   const [costingDropdown, setCostingDropdown] = useState([])
-  console.log(costingDropdown,"Drop down of costing");
-
+ 
+/* constant for form value */
   const [plantValue, setPlantValue] = useState('')
   const [vendorValue, setVendorValue] = useState('')
   const [vendorPlant, setVendorPlant] = useState('')
   const [cbcValue, setCbcValue] = useState('')
 
+/* constant for checkbox rendering condition */ 
   const [isZbcSelected, setIsZbcSelected] = useState(false)
   const [isVbcSelected, setIsVbcSelected] = useState(false)
   const [isCbcSelected, setisCbcSelected] = useState(false)
 
-  const plantSelectList = useSelector((state) => state.comman.plantSelectList)
-  //const plantBySupplierList = useSelector(state => state.comman.filterPlantList)
+ /* For vendor dropdown */ 
   const vendorSelectList = useSelector(
     (state) => state.comman.vendorWithVendorCodeSelectList,
   )
+  /* For getting part no for costing dropdown */ 
   const partNo = useSelector((state) => state.costing.partNo)
-  console.log(partNo, 'Summary part no')
-
+/* For getting default value of check box */
   useEffect(() => {
     const temp = []
     dispatch(
@@ -75,6 +73,7 @@ function AddToComparisonDrawer(props) {
     )
   }, [])
 
+  /* for showing venor name dropdown */ 
   useEffect(() => {
     const temp = []
     setIsZbcSelected(false)
@@ -87,6 +86,10 @@ function AddToComparisonDrawer(props) {
     setVendorDropDownList(temp)
   }, [vendorSelectList])
 
+  /**
+   * @method toggleDrawer
+   * @description closing drawer
+   */
   const toggleDrawer = (event) => {
     if (
       event.type === 'keydown' &&
@@ -97,13 +100,26 @@ function AddToComparisonDrawer(props) {
     props.closeDrawer('')
   }
 
+  /**
+   * @method addHandler
+   * @description Handling add function
+  */
+  const addHandler = () => {
+    setCostingDropdown([])
+    setValue("costings",'');
+    props.closeDrawer('')
+  }
+
+  /**
+   * @method handleComparison
+   * @description for handling rendering for different checkbox
+  */
   const handleComparison = (value) => {
     setValue('comparisonValue', value)
     const temp = []
     if (value === 'ZBC') {
       dispatch(
         getPlantSelectListByType(ZBC, (res) => {
-          // console.log(res,"Response  plant");
           res.data.SelectList.map((item) => {
             temp.push({ label: item.Text, value: item.Value })
           })
@@ -111,19 +127,16 @@ function AddToComparisonDrawer(props) {
           setIsZbcSelected(true)
           setIsVbcSelected(false)
           setisCbcSelected(false)
-          // dispatch(getCostingSummaryByplantIdPartNo(partNo,))
         }),
       )
     } else if (value === 'VBC') {
       setCostingDropdown([])
       setValue("costings",'')
       dispatch(getVendorWithVendorCodeSelectList(() => {}))
-      //  console.log(vendorSelectList,"Comparision");
     } else if (value === 'CBC') {
       setCostingDropdown([])
       dispatch(
         getClientSelectList((res) => {
-          console.log(res.data.SelectList, 'Response from Client')
           res.data.SelectList &&
             res.data.SelectList.map((client) => {
               temp.push({ label: client.Text, value: client.Value })
@@ -136,6 +149,11 @@ function AddToComparisonDrawer(props) {
       )
     }
   }
+
+  /**
+   * @method handleVendorChange
+   * @description showing vendor plant by vendor name
+  */
   const handleVendorChange = ({ value }) => {
     const temp = []
     dispatch(
@@ -148,6 +166,11 @@ function AddToComparisonDrawer(props) {
       }),
     )
   }
+
+  /**
+   * @method onSubmit
+   * @description Handling form submisson seting value
+  */
   const onSubmit = (values) => {
     console.log(values, 'onsubmit')
     setPlantValue(values.plant)
@@ -156,12 +179,14 @@ function AddToComparisonDrawer(props) {
     setCbcValue(values.clientName)
   }
 
+/**
+ * @method  handlePlantChange
+ * @description Getting costing dropdown on basis of plant selection
+*/
   const handlePlantChange = (value) => {
     const temp = []
-    console.log(typeof partNo.label, value, 'handle change')
     dispatch(
       getCostingSummaryByplantIdPartNo(partNo.label, value.value, (res) => {
-        console.log(res.data.Data.CostingOptions, 'Response from summary')
         res.data.Data.CostingOptions &&
           res.data.Data.CostingOptions.map((costing) => {
             temp.push({
@@ -173,6 +198,7 @@ function AddToComparisonDrawer(props) {
       }),
     )
   }
+
   return (
     <div>
       <Drawer
@@ -285,7 +311,7 @@ function AddToComparisonDrawer(props) {
                         control={control}
                         rules={{ required: true }}
                         register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
+                         //defaultValue={plant.length !== 0 ? plant : ''}
                         options={clientDropdown}
                         mandatory={true}
                         handleChange={() => {}}
@@ -310,24 +336,7 @@ function AddToComparisonDrawer(props) {
                     handleChange={() => {}}
                   />
                 </Col>
-                {/* <Col md="12">
-                  <SearchableSelectHookForm
-                    label={'Plant'}
-                    name={'Plant'}
-                    placeholder={'-Select-'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={plant.length !== 0 ? plant : ''}
-                    options={renderListing('Plant')}
-                    mandatory={true}
-                    handleChange={handlePlantChange}
-                    errors={errors.Plant}
-                  />
-                </Col> */}
               </Row>
-
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button
@@ -347,7 +356,7 @@ function AddToComparisonDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button mr5 save-btn"
-                    // onClick={toggleDrawer}
+                     onClick={addHandler}
                   >
                     <div className={'check-icon'}>
                       <img

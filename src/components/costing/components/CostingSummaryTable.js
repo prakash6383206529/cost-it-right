@@ -3,8 +3,9 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { Row, Col, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import AddToComparisonDrawer from './AddToComparisonDrawer'
 import { getSingleCostingDetails, setCostingViewData } from '../actions/Costing';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const arr = [
     {
@@ -119,7 +120,9 @@ const arr = [
         approvalButton: "Button"
     }
 ]
+
 const CostingSummaryTable = props => {
+    const [addComparisonToggle, setaddComparisonToggle] = useState(false)
     const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
     console.log('ViewCostingData: ', viewCostingData);
     const dispatch = useDispatch();
@@ -207,6 +210,21 @@ const CostingSummaryTable = props => {
         }))
     }, [])
 
+/**
+* @method addComparisonDrawerToggle
+* @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
+*/
+
+const addComparisonDrawerToggle = () => {
+    setaddComparisonToggle(true)
+ }
+/**
+* @method closeAddComparisonDrawer
+* @description HIDE ADD COMPARISON DRAWER
+*/
+ const closeAddComparisonDrawer = (e = '') => {
+    setaddComparisonToggle(false)
+}
     useEffect(() => {}, [viewCostingData])
     const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm();
     return (
@@ -221,7 +239,12 @@ const CostingSummaryTable = props => {
                     <button>{"Send For Approval"}</button>
                 </Col>
                 <Col md="4">
-                    <button>{"Add To Comparison"}</button>
+                <button
+                 type="button"
+                 className={'user-btn'}
+                 onClick={addComparisonDrawerToggle}>
+                <div className={'plus'}></div>Add To Comparison
+                </button>
                 </Col>
             </Row>
             <Row>
@@ -362,6 +385,15 @@ const CostingSummaryTable = props => {
                     </table>
                 </Col>
             </Row>
+            {
+         addComparisonToggle && 
+         <AddToComparisonDrawer 
+          isOpen = {addComparisonToggle}
+          closeDrawer = {closeAddComparisonDrawer}
+          isEditFlag = {false}
+          anchor = {'right'}
+          />
+      }
         </Fragment>
     )
 }
