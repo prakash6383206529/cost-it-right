@@ -282,10 +282,10 @@ const CostingSummaryTable = props => {
                                         <td>{data.fWeight}</td>
                                     </tr>
                                     <tr>
-                                        <td>{data.netRM}</td>
+                                        <td>{data.netRM}{index != 0 && <div><button>View</button></div>}</td>
                                     </tr>
                                     <tr>
-                                        <td>{data.netBOP}</td>
+                                    <td>{data.netBOP}{index != 0 && <div><button>View</button></div>}</td>
                                     </tr>
                                     <tr>
                                         <td>{data.pCost}</td>
@@ -300,7 +300,7 @@ const CostingSummaryTable = props => {
                                         <td>{data.tCost}</td>
                                     </tr>
                                     <tr>
-                                        <td>{data.nConvCost}</td>
+                                    <td>{data.nConvCost}{index != 0 && <div><button>View</button></div>}</td>
                                     </tr>
                                     <tr>
                                         <td>{data.modelType}</td>
@@ -330,7 +330,7 @@ const CostingSummaryTable = props => {
                                             <span>{data.paymentTerms.paymentTitle}</span> &nbsp; <span>{data.paymentTerms.paymentValue}</span></div></td>}
                                     </tr>
                                     <tr>
-                                        <td>{data.nOverheadProfit}</td>
+                                    <td>{data.nOverheadProfit}{index != 0 && <div><button>View</button></div>}</td>
                                     </tr>
                                     <tr>
                                         <td>{data.packagingCost}</td>
@@ -339,7 +339,7 @@ const CostingSummaryTable = props => {
                                         <td>{data.freight}</td>
                                     </tr>
                                     <tr>
-                                        <td>{data.nPackagingAndFreight}</td>
+                                    <td>{data.nPackagingAndFreight}{index != 0 && <div><button>View</button></div>}</td>
                                     </tr>
                                     <tr>
                                         <td>{data.toolMaintenanceCost}</td>
@@ -351,7 +351,7 @@ const CostingSummaryTable = props => {
                                         <td>{data.amortizationQty}</td>
                                     </tr>
                                     <tr>
-                                        <td>{data.totalToolCost}</td>
+                                    <td>{data.totalToolCost}{index != 0 && <div><button>View</button></div>}</td>
                                     </tr>
                                     <tr>
                                         <td>{data.totalCost}</td>
