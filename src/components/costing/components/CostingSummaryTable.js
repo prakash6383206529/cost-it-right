@@ -1,12 +1,13 @@
 import React, { Fragment } from 'react';
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Row, Col, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import AddToComparisonDrawer from './AddToComparisonDrawer'
+import AddToComparisonDrawer from './AddToComparisonDrawer';
 import { getSingleCostingDetails, setCostingViewData } from '../actions/Costing';
 import { useEffect, useState } from 'react';
-
+import { VIEW_COSTING_DATA } from '../../../config/constants';
+import  ViewBOP  from './Drawers/ViewBOP'
 // const arr = [
 //     {
 //         zbc: "ZBC v/s VBC",
@@ -121,289 +122,615 @@ import { useEffect, useState } from 'react';
 //     }
 // ]
 
-const CostingSummaryTable = props => {
-    const [addComparisonToggle, setaddComparisonToggle] = useState(false)
-    const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
-    console.log('ViewCostingData: ', viewCostingData);
-    const dispatch = useDispatch();
-    // useEffect(() => {
-    //     dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
-    //         console.log(res.data.Data, "Response of the API")
-    //         if (res.data.Data) {
-    //             let temp = viewCostingData;
-    //             let dataFromAPI = res.data.Data
-    //             let obj = {};
-    //             obj.zbc = dataFromAPI.TypeOfCosting;
-    //             obj.poPrice = dataFromAPI.NetPOPrice;
-    //             obj.costingName = dataFromAPI.CostingNumber
-    //             obj.status = dataFromAPI.CostingStatus
-    //             obj.rm = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].RMName
-    //             obj.gWeight = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.GrossWeight
-    //             obj.fWeight = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.FinishWeight
-    //             obj.netRM = dataFromAPI.NetRawMaterialsCost
-    //             obj.netBOP = dataFromAPI.NetBoughtOutPartCost
-    //             obj.pCost = dataFromAPI.NetProcessCost
-    //             obj.oCost = dataFromAPI.NetOperationCost
-    //             obj.sTreatment = dataFromAPI.NetSurfaceTreatmentCost
-    //             obj.tCost = dataFromAPI.CostingPartDetails[0].TransportationCost
-    //             obj.nConvCost = dataFromAPI.NetConversionCost
-    //             obj.modelType = dataFromAPI.ModelType
-    //             obj.aValue = {
-    //                 applicability: "Applicability",
-    //                 value: "Value"
-    //             }
-    //             obj.overheadOn = {
-    //                 overheadTitle: dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadApplicability,
-    //                 overheadValue: (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost) : 0)
-    //             }
-    //             obj.profitOn = {
-    //                 profitTitle: dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitApplicability,
-    //                 profitValue: (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost) : 0)
-    //             }
-    //             obj.rejectionOn = {
-    //                 rejectionTitle: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionApplicability,
-    //                 rejectionValue: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionTotalCost
-    //             }
-    //             obj.iccOn = {
-    //                 iccTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability,
-    //                 iccValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.NetCost
-    //             }
-    //             obj.paymentTerms = {
-    //                 paymentTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability,
-    //                 paymentValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.NetCost
-    //             }
-    //             obj.nOverheadProfit = dataFromAPI.NetOverheadAndProfitCost
-    //             obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
-    //             obj.freight = dataFromAPI.CostingPartDetails[0].FreightNetCost
-    //             obj.nPackagingAndFreight = dataFromAPI.NetPackagingAndFreight
-    //             obj.toolMaintenanceCost = dataFromAPI.NetToolCost
-    //             obj.toolPrice = "5000.00"
-    //             obj.amortizationQty = "10"
-    //             obj.totalToolCost = dataFromAPI.NetToolCost
-    //             obj.totalCost = dataFromAPI.TotalCost
-    //             obj.otherDiscount = {
-    //                 discount: "Discount %",
-    //                 value: "Value"
-    //             }
-    //             obj.otherDiscountValue = {
-    //                 discountPercentValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage : "-",
-    //                 discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue : "-"
-    //             }
-    //             obj.anyOtherCost = dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost : "-"
-    //             obj.remark = dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark : "-"
-    //             obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency : "-"
-    //             obj.currency = {
-    //                 currencyTitle: "INR/EUR",
-    //                 currencyValue: "85"
-    //             }
-    //             obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR : "-"
-    //             obj.attachment = "View Attachment"
-    //             obj.approvalButton = "Button"
+const CostingSummaryTable = (props) => {
+  const [addComparisonToggle, setaddComparisonToggle] = useState(false)
+  const [isEditFlag, setIsEditFlag] = useState(false)
+  const [editObject, setEditObject] = useState({})
+  const [isViewBOP, setViewBOP] = useState(false)
+  const [viewBOPData, setViewData] = useState([])
+  console.log(isViewBOP,"view");
+  const viewCostingData = useSelector(
+    (state) => state.costing.viewCostingDetailData,
+  )
+  console.log('ViewCostingData: ', viewCostingData)
+  const technologyId = ''
 
-    //             temp.push(obj);
-    //             console.log('temp: ', temp);
-    //             dispatch(setCostingViewData(temp));
-    //         }
-    //     }))
-    // }, [])
+  const viewBop = index => {
+    setViewBOP(true)
+    console.log(index, "Index");
+      if(index != -1){
+          let data = viewCostingData[index].netBOPCostView;
+          console.log(data, "Dataaa");
+          setViewData(data)
+        //   data.tool ? data.tool : "-"
+      }
+ }
 
-    const deleteCostingFromView = data => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(
+      getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', (res) => {
+        console.log(res.data.Data, 'Response of the API')
+        if (res.data.Data) {
+          // let temp = viewCostingData;
+          let temp = []
+          let dataFromAPI = res.data.Data
+          let obj = {}
+          obj.zbc = dataFromAPI.TypeOfCosting
+          obj.poPrice = dataFromAPI.NetPOPrice
+          obj.costingName = dataFromAPI.CostingNumber
+          obj.status = dataFromAPI.CostingStatus
+          obj.rm =
+            dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].RMName
+          obj.gWeight =
+            dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.GrossWeight
+          obj.fWeight =
+            dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.FinishWeight
+          obj.netRM = dataFromAPI.NetRawMaterialsCost
+          obj.netBOP = dataFromAPI.NetBoughtOutPartCost
+          obj.pCost = dataFromAPI.NetProcessCost
+          obj.oCost = dataFromAPI.NetOperationCost
+          obj.sTreatment = dataFromAPI.NetSurfaceTreatmentCost
+          obj.tCost = dataFromAPI.CostingPartDetails[0].TransportationCost
+          obj.nConvCost = dataFromAPI.NetConversionCost
+          obj.modelType = dataFromAPI.ModelType
+          obj.aValue = {
+            applicability: 'Applicability',
+            value: 'Value',
+          }
+          obj.overheadOn = {
+            overheadTitle:
+              dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                .OverheadApplicability,
+            overheadValue:
+              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                .OverheadCCTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadCCTotalCost,
+                  )
+                : 0) +
+              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                .OverheadBOPTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadBOPTotalCost,
+                  )
+                : 0) +
+              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                .OverheadRMTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadRMTotalCost,
+                  )
+                : 0) +
+              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                .OverheadFixedTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadFixedTotalCost,
+                  )
+                : 0),
+          }
+          obj.profitOn = {
+            profitTitle:
+              dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                .ProfitApplicability,
+            profitValue:
+              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                .ProfitCCTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitCCTotalCost,
+                  )
+                : 0) +
+              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                .ProfitBOPTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitBOPTotalCost,
+                  )
+                : 0) +
+              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                .ProfitRMTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitRMTotalCost,
+                  )
+                : 0) +
+              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                .ProfitFixedTotalCost
+                ? parseInt(
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitFixedTotalCost,
+                  )
+                : 0),
+          }
+          obj.rejectionOn = {
+            rejectionTitle:
+              dataFromAPI.CostingPartDetails[0].CostingRejectionDetail
+                .RejectionApplicability,
+            rejectionValue:
+              dataFromAPI.CostingPartDetails[0].CostingRejectionDetail
+                .RejectionTotalCost,
+          }
+          obj.iccOn = {
+            iccTitle:
+              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
+                .ICCApplicabilityDetail.ICCApplicability,
+            iccValue:
+              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
+                .ICCApplicabilityDetail.NetCost,
+          }
+          obj.paymentTerms = {
+            paymentTitle:
+              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
+                .PaymentTermDetail.PaymentTermApplicability,
+            paymentValue:
+              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
+                .PaymentTermDetail.NetCost,
+          }
+          obj.nOverheadProfit = dataFromAPI.NetOverheadAndProfitCost
+          obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
+          obj.freight = dataFromAPI.CostingPartDetails[0].FreightNetCost
+          obj.nPackagingAndFreight = dataFromAPI.NetPackagingAndFreight
+          obj.toolMaintenanceCost = dataFromAPI.NetToolCost
+          obj.toolPrice = '5000.00'
+          obj.amortizationQty = '10'
+          obj.totalToolCost = dataFromAPI.NetToolCost
+          obj.totalCost = dataFromAPI.TotalCost
+          obj.otherDiscount = {
+            discount: 'Discount %',
+            value: 'Value',
+          }
+          obj.otherDiscountValue = {
+            discountPercentValue: dataFromAPI.CostingPartDetails[0]
+              .OtherCostDetails.HundiOrDiscountPercentage
+              ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
+                  .HundiOrDiscountPercentage
+              : '-',
+            discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails
+              .HundiOrDiscountValue
+              ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
+                  .HundiOrDiscountValue
+              : '-',
+          }
+          obj.anyOtherCost = dataFromAPI.CostingPartDetails[0].OtherCostDetails
+            .TotalOtherCost
+            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost
+            : '-'
+          obj.remark = dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark
+            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark
+            : '-'
+          obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0]
+            .OtherCostDetails.NetPOPriceOtherCurrency
+            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
+                .NetPOPriceOtherCurrency
+            : '-'
+          obj.currency = {
+            currencyTitle: 'INR/EUR',
+            currencyValue: '85',
+          }
+          obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails
+            .NetPOPriceINR
+            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR
+            : '-'
+          obj.attachment = 'View Attachment'
+          obj.approvalButton = 'Button'
 
-    }
+          //BOP Cost
+          obj.netBOPCostView =
+            dataFromAPI.CostingPartDetails[0].CostingBoughtOutPartCost
+          //COnversion Cost
+          obj.netConversionCostView =
+            dataFromAPI.CostingPartDetails[0].CostingConversionCost
+          //OverheadCost and Profit
+          obj.netOverheadCostView =
+            dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+          obj.netProfitCostView =
+            dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+          //Net Packaging and Freight
+          obj.netPackagingCostView =
+            dataFromAPI.CostingPartDetails[0].CostingPackagingDetail
+          obj.netFreightCostView =
+            dataFromAPI.CostingPartDetails[0].CostingFreightDetail
+          //Tool Cost
+          obj.netToolCostView =
+            dataFromAPI.CostingPartDetails[0].OverAllApplicability
 
-    /**
-    * @method addComparisonDrawerToggle
-    * @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
-    */
-
-    const addComparisonDrawerToggle = () => {
-        setaddComparisonToggle(true)
-    }
-    /**
-    * @method closeAddComparisonDrawer
-    * @description HIDE ADD COMPARISON DRAWER
-    */
-    const closeAddComparisonDrawer = (e = '') => {
-        setaddComparisonToggle(false)
-    }
-    useEffect(() => { }, [viewCostingData])
-    const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm();
-    return (
-        <Fragment>
-            <Row>
-                <Col md="4">
-                    <div className="left-border">
-                        {'Summary'}
-                    </div>
-                </Col>
-                <Col md="4">
-                    <button>{"Send For Approval"}</button>
-                </Col>
-                <Col md="4">
-                    <button
-                        type="button"
-                        className={'user-btn'}
-                        onClick={addComparisonDrawerToggle}>
-                        <div className={'plus'}></div>Add To Comparison
-                </button>
-                </Col>
-            </Row>
-            <Row>
-                <Col md="12">
-                    <table>
-                        {
-                            viewCostingData && viewCostingData.length > 0 && viewCostingData.map((data, index) => {
-                            return (
-                                <Fragment>
-                                    <tr>
-                                        {index == 0 ? <th>{data.zbc}</th> : <th><div>{data.zbc}
-                                            <button onClick={() => deleteCostingFromView()}>Delete</button>
-                                        </div></th>}
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>Test</td> : <td><div>{data.costingName}
-                                            <button>Edit Costing</button> &nbsp;
-                                <button>Add Costing</button>
-                                        </div></td>}
-                                    </tr>
-                                    <tr>
-                                        <td>{data.poPrice}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.status}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.rm}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.gWeight}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.fWeight}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.netRM}{index != 0 && <div><button>View</button></div>}</td>
-                                    </tr>
-                                    <tr>
-                                    <td>{data.netBOP}{index != 0 && <div><button>View</button></div>}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.pCost}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.oCost}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.sTreatment}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.tCost}</td>
-                                    </tr>
-                                    <tr>
-                                    <td>{data.nConvCost}{index != 0 && <div><button>View</button></div>}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.modelType}</td>
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>Test</td> : <td><div>
-                                            <span>{data.aValue.applicability}</span> &nbsp; <span>{data.aValue.value}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.overheadOn}</td> : <td><div>
-                                            <span>{data.overheadOn.overheadTitle}</span> &nbsp; <span>{data.overheadOn.overheadValue}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.profitOn}</td> : <td><div>
-                                            <span>{data.profitOn.profitTitle}</span> &nbsp; <span>{data.profitOn.profitValue}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.rejectionOn}</td> : <td><div>
-                                            <span>{data.rejectionOn.rejectionTitle}</span> &nbsp; <span>{data.rejectionOn.rejectionValue}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.iccOn}</td> : <td><div>
-                                            <span>{data.iccOn.iccTitle}</span> &nbsp; <span>{data.iccOn.iccValue}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.paymentTerms}</td> : <td><div>
-                                            <span>{data.paymentTerms.paymentTitle}</span> &nbsp; <span>{data.paymentTerms.paymentValue}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                    <td>{data.nOverheadProfit}{index != 0 && <div><button>View</button></div>}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.packagingCost}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.freight}</td>
-                                    </tr>
-                                    <tr>
-                                    <td>{data.nPackagingAndFreight}{index != 0 && <div><button>View</button></div>}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.toolMaintenanceCost}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.toolPrice}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.amortizationQty}</td>
-                                    </tr>
-                                    <tr>
-                                    <td>{data.totalToolCost}{index != 0 && <div><button>View</button></div>}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.totalCost}</td>
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.otherDiscount}</td> : <td><div>
-                                            <span>{data.otherDiscount.discount}</span> &nbsp; <span>{data.otherDiscount.value}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.otherDiscountValue}</td> : <td><div>
-                                            <span>{data.otherDiscountValue.discountPercentValue}</span> &nbsp; <span>{data.otherDiscountValue.discountValue}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        <td>{data.anyOtherCost}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.remark}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.nPOPriceWithCurrency}</td>
-                                    </tr>
-                                    <tr>
-                                        {index == 0 ? <td>{data.currency}</td> : <td><div>
-                                            <span>{data.currency.currencyTitle}</span> &nbsp; <span>{data.currency.currencyValue}</span></div></td>}
-                                    </tr>
-                                    <tr>
-                                        <td>{data.nPOPrice}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.attachment}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.approvalButton}</td>
-                                    </tr>
-                                </Fragment>
-                            )
-                        })
-                    }
-                    </table>
-                </Col>
-            </Row>
-            {
-                addComparisonToggle &&
-                <AddToComparisonDrawer
-                    isOpen={addComparisonToggle}
-                    closeDrawer={closeAddComparisonDrawer}
-                    isEditFlag={false}
-                    anchor={'right'}
-                />
-            }
-        </Fragment>
+          temp.push(VIEW_COSTING_DATA)
+          temp.push(obj)
+          console.log('temp: ', temp)
+          dispatch(setCostingViewData(temp))
+        }
+      }),
     )
+  }, [])
+
+  const deleteCostingFromView = (data) => {}
+
+  const editHandler = () => {
+    const editObject = {
+      partId: 'WISHER',
+      plantId: 'f232e30e-95f9-41e1-805e-fdc336548779',
+      plantName: '777(T1) Cachar',
+      costingId: 'f1c9edcb-c04f-481e-a7fb-e71c1b4d000a',
+      CostingNumber: 'CSM-500672',
+    }
+    setIsEditFlag(true)
+    setaddComparisonToggle(true)
+    setEditObject(editObject)
+  }
+
+  /**
+   * @method addComparisonDrawerToggle
+   * @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
+   */
+
+  const addComparisonDrawerToggle = () => {
+    setaddComparisonToggle(true)
+    setIsEditFlag(false)
+    setEditObject({})
+  }
+  /**
+   * @method closeAddComparisonDrawer
+   * @description HIDE ADD COMPARISON DRAWER
+   */
+  const closeAddComparisonDrawer = (e = '') => {
+    setaddComparisonToggle(false)
+  }
+  const closeViewBOP= (e = '') => {
+    setViewBOP(false)
+  }
+  useEffect(() => {}, [viewCostingData])
+
+  const viewToolsOverview = index => {
+      console.log(index, "Index");
+      if(index != -1){
+          let data = viewCostingData[index].netToolCostView;
+          console.log(data, "Dataaa");
+        //   data.tool ? data.tool : "-"
+      }
+  }
+  
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    getValues,
+    reset,
+    errors,
+  } = useForm()
+  return (
+    <Fragment>
+      <Row>
+        <Col md="4">
+          <div className="left-border">{'Summary'}</div>
+        </Col>
+        <Col md="4">
+          <button>{'Send For Approval'}</button>
+        </Col>
+        <Col md="4">
+          <button className={'user-btn'} onClick={editHandler}>
+            {'Edit'}
+          </button>
+        </Col>
+        <Col md="4">
+          <button
+            type="button"
+            className={'user-btn'}
+            onClick={addComparisonDrawerToggle}
+          >
+            <div className={'plus'}></div>Add To Comparison
+          </button>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="12">
+          <table>
+            {viewCostingData &&
+              viewCostingData.length > 0 &&
+              viewCostingData.map((data, index) => {
+                return (
+                  <Fragment>
+                    <tr>
+                      {index == 0 ? (
+                        <th>{data.zbc}</th>
+                      ) : (
+                        <th>
+                          <div>
+                            {data.zbc}
+                            <button onClick={() => deleteCostingFromView()}>
+                              Delete
+                            </button>
+                          </div>
+                        </th>
+                      )}
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>Test</td>
+                      ) : (
+                        <td>
+                          <div>
+                            {data.costingName}
+                            <button>Edit Costing</button> &nbsp;
+                            <button>Add Costing</button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      <td>{data.poPrice}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.status}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.rm}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.gWeight}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.fWeight}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        {`${data.netRM}-RMCOSt`}
+                        {index != 0 && (
+                          <div>
+                            <button>View</button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        {data.netBOP}
+                        {index != 0 && (
+                          <div>
+                            <button
+                            onClick={() => viewBop(index)}
+                            >
+                            View-BOP
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{data.pCost}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.oCost}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.sTreatment}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.tCost}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        {data.nConvCost}
+                        {index != 0 && (
+                          <div>
+                            <button>View-CONVERSION COST</button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{data.modelType}</td>
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>Test</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.aValue.applicability}</span> &nbsp;{' '}
+                            <span>{data.aValue.value}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.overheadOn}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.overheadOn.overheadTitle}</span> &nbsp;{' '}
+                            <span>{data.overheadOn.overheadValue}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.profitOn}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.profitOn.profitTitle}</span> &nbsp;{' '}
+                            <span>{data.profitOn.profitValue}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.rejectionOn}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.rejectionOn.rejectionTitle}</span>{' '}
+                            &nbsp;{' '}
+                            <span>{data.rejectionOn.rejectionValue}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.iccOn}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.iccOn.iccTitle}</span> &nbsp;{' '}
+                            <span>{data.iccOn.iccValue}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.paymentTerms}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.paymentTerms.paymentTitle}</span> &nbsp;{' '}
+                            <span>{data.paymentTerms.paymentValue}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      <td>
+                        {data.nOverheadProfit}
+                        {index != 0 && (
+                          <div>
+                            <button>View-OVERHAD  PROFT</button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{data.packagingCost}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.freight}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        {data.nPackagingAndFreight}
+                        {index != 0 && (
+                          <div>
+                            <button>View-PACKAGING</button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{data.toolMaintenanceCost}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.toolPrice}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.amortizationQty}</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        {data.totalToolCost}
+                        {index != 0 && (
+                          <div>
+                            <button onClick={() => viewToolsOverview(index)}>View-TOOLS </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>{data.totalCost}</td>
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.otherDiscount}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.otherDiscount.discount}</span> &nbsp;{' '}
+                            <span>{data.otherDiscount.value}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.otherDiscountValue}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>
+                              {data.otherDiscountValue.discountPercentValue}
+                            </span>{' '}
+                            &nbsp;{' '}
+                            <span>{data.otherDiscountValue.discountValue}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      <td>{data.anyOtherCost}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.remark}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.nPOPriceWithCurrency}</td>
+                    </tr>
+                    <tr>
+                      {index == 0 ? (
+                        <td>{data.currency}</td>
+                      ) : (
+                        <td>
+                          <div>
+                            <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
+                            <span>{data.currency.currencyValue}</span>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                    <tr>
+                      <td>{data.nPOPrice}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.attachment}</td>
+                    </tr>
+                    <tr>
+                      <td>{data.approvalButton}</td>
+                    </tr>
+                  </Fragment>
+                )
+              })}
+          </table>
+        </Col>
+      </Row>
+      {addComparisonToggle && (
+        <AddToComparisonDrawer
+          isOpen={addComparisonToggle}
+          closeDrawer={closeAddComparisonDrawer}
+          isEditFlag={isEditFlag}
+          editObject={editObject}
+          anchor={'right'}
+        />
+      )}
+      {
+          isViewBOP && (
+              <ViewBOP
+              isOpen={isViewBOP}
+              viewBOPData={viewBOPData}
+              closeDrawer={closeViewBOP}
+              anchor={'right'}
+              />
+          )
+      }
+    </Fragment>
+  )
 }
 
-export default CostingSummaryTable;
+export default CostingSummaryTable

@@ -78,6 +78,7 @@ function CostingSummary() {
   * @description  USED TO HANDLE TECHNOLOGY CHANGE
   */
   const handleTechnologyChange = (newValue) => {
+    console.log(newValue,"technology");
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))

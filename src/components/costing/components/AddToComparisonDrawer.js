@@ -20,6 +20,16 @@ import {
 import { ZBC, VBC } from '../../../config/constants'
 
 function AddToComparisonDrawer(props) {
+  console.log(props,"Props");
+  const { editObject, isEditFlag} = props
+  console.log(editObject,"Edit object");
+  const { 
+            partId ,
+            plantId,
+            plantName,
+            costingId,
+            CostingNumber
+        } = editObject
   const {
     register,
     handleSubmit,
@@ -28,9 +38,14 @@ function AddToComparisonDrawer(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: { comparisonValue: 'ZBC' },
+    defaultValues: { 
+      comparisonValue: 'ZBC',
+      plant: isEditFlag ? { label: plantName, value: plantId} : '',
+      costings: isEditFlag ? { label: CostingNumber, value: costingId} : ''
+    }
   })
-  const fieldValues = useWatch({ control, name: ['comparisonValue'] })
+  const fieldValues = useWatch({ control, name: ['comparisonValue','plant'] })
+  console.log(fieldValues,"fv");
   const dispatch = useDispatch()
 
   /* DropDown constants */
@@ -120,6 +135,7 @@ function AddToComparisonDrawer(props) {
     if (value === 'ZBC') {
       dispatch(
         getPlantSelectListByType(ZBC, (res) => {
+          console.log(res,"Plant response");
           res.data.SelectList.map((item) => {
             temp.push({ label: item.Text, value: item.Value })
           })
@@ -211,7 +227,7 @@ function AddToComparisonDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Add to Comparison: '}</h3>
+                <h3>{ isEditFlag ? 'Edit for' : 'Add to'}{' Comparison: '}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -259,7 +275,7 @@ function AddToComparisonDrawer(props) {
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      // defaultValue={plant.length !== 0 ? plant : ''}
+                      defaultValue={isEditFlag ? plantName :''}
                       options={plantDropDownList}
                       mandatory={true}
                       handleChange={handlePlantChange}
@@ -364,7 +380,7 @@ function AddToComparisonDrawer(props) {
                         alt="check-icon.jpg"
                       />{' '}
                     </div>
-                    {'ADD'}
+                    { isEditFlag ? 'Edit' : 'Add'}
                   </button>
                 </div>
               </Row>

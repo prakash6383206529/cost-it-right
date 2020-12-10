@@ -76,6 +76,7 @@ export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
+  console.log(defaultValue,"hook form");
 
   return (
     <div className="w-100 mb-15">
