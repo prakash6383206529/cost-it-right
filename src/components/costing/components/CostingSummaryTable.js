@@ -127,12 +127,10 @@ const CostingSummaryTable = props => {
         dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
             console.log(res.data.Data, "Response of the API")
             if (res.data.Data) {
-                console.log("HIii")
                 let temp = viewCostingData;
                 let dataFromAPI = res.data.Data
-                console.log('dataFromAPI: ', dataFromAPI);
                 let obj = {};
-                obj.zbc = "ZBC";
+                obj.zbc = dataFromAPI.typeOfCosting;
                 obj.poPrice = dataFromAPI.NetPOPrice;
                 obj.costingName = dataFromAPI.CostingNumber
                 obj.status = dataFromAPI.CostingStatus
@@ -199,13 +197,15 @@ const CostingSummaryTable = props => {
                 obj.attachment = "View Attachment"
                 obj.approvalButton = "Button"
 
-                console.log('obj: ', obj);
                 temp.push(obj);
-                console.log('temp: ', temp);
                 dispatch(setCostingViewData(temp));
             }
         }))
     }, [])
+
+    const deleteCostingFromView = data => {
+
+    }
 
     useEffect(() => {}, [viewCostingData])
     const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm();
@@ -231,7 +231,9 @@ const CostingSummaryTable = props => {
                             return (
                                 <Fragment>
                                     <tr>
-                                        <th>{data.zbc}</th>
+                                        <th><div>{data.zbc}
+                                        <button onClick={() => deleteCostingFromView()}>Delete</button>
+                                        </div></th>
                                     </tr>
                                     <tr>
                                         {index == 0 ? <td>Test</td> : <td>{data.costingName}</td>}
