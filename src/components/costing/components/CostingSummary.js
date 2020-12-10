@@ -49,6 +49,7 @@ function CostingSummary() {
     const tempDropdownList = [];
 
     if (label === 'Technology') {
+      
       technologySelectList && technologySelectList.map(item => {
         if (item.Value === '0') return false;
         tempDropdownList.push({ label: item.Text, value: item.Value })
@@ -75,6 +76,7 @@ function CostingSummary() {
   * @description  USED TO HANDLE TECHNOLOGY CHANGE
   */
   const handleTechnologyChange = (newValue) => {
+    dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
