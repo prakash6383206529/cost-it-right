@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummaryTable from './CostingSummaryTable';
 import CostingSummary from './CostingSummary';
+import { storePartNumber } from '../actions/Costing'
 
 function Costing(props) {
 
@@ -23,6 +24,9 @@ function Costing(props) {
     }
 
     const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(storePartNumber(''))
+    }, [])
 
     /**
     * @method render
