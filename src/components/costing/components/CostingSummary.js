@@ -11,6 +11,7 @@ import {
 } from '../actions/Costing';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import "react-datepicker/dist/react-datepicker.css";
+import { VIEW_COSTING_DATA } from '../../../config/constants';
 
 function CostingSummary() {
 
@@ -39,6 +40,7 @@ function CostingSummary() {
   const technologySelectList = useSelector(state => state.costing.technologySelectList)
   const partSelectList = useSelector(state => state.costing.partSelectList)
   const partInfo = useSelector(state => state.costing.partInfo)
+  const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
 
   /**
   * @method renderDropdownListing
@@ -119,13 +121,19 @@ function CostingSummary() {
               setEffectiveDate(moment(Data.EffectiveDate)._d)
               dispatch(storePartNumber(newValue))
               dispatch(getCostingSummaryByplantIdPartNo(newValue.value, '00000000-0000-0000-0000-000000000000', res => {
+                let temp = [];
+                if(viewCostingData.length == 0){
+                  temp.push(VIEW_COSTING_DATA)
+                }
+                else if(viewCostingData.length == 1){
+                  temp = viewCostingData
+                }
                 if(res.data.Result == true){
                   dispatch(res.Data.CostingId, res => {
                     if (res.data.Data) {
-                      let temp = [];
                       let dataFromAPI = res.data.Data
                       let obj = {};
-                      obj.zbc = dataFromAPI.typeOfCosting;
+                      obj.zbc = dataFromAPI.TypeOfCosting;
                       obj.poPrice = dataFromAPI.NetPOPrice;
                       obj.costingName = dataFromAPI.CostingNumber
                       obj.status = dataFromAPI.CostingStatus
@@ -192,13 +200,14 @@ function CostingSummary() {
                       obj.attachment = "View Attachment"
                       obj.approvalButton = "Button"
 
+                      
                       temp.push(obj);
                       dispatch(setCostingViewData(temp));
                   }
                   })
                 }
                 else{
-                  dispatch(setCostingViewData([]))
+                  dispatch(setCostingViewData(temp))
                 }
               }))
             }))

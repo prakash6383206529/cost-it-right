@@ -1196,7 +1196,7 @@ export function getSingleCostingDetails(costingId, callback) {
 
 export const setCostingViewData = (data) => dispatch => {
   let temp = [];
-  temp.push(VIEW_COSTING_DATA)
+  // temp.push(VIEW_COSTING_DATA)
   data.map(val => {
     temp.push(val)
   })
