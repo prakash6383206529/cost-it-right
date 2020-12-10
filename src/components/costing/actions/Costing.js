@@ -1227,12 +1227,12 @@ export function getCostingSummaryByplantIdPartNo(partNo,plantId,callback) {
     const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}`, headers);
     request.then((response) => {
       console.log(response,"Response from costing summary");
+      callback(response);
       if (response.data.Result) {
       dispatch({
           type: GET_COST_SUMMARY_BY_PART_PLANT,
           payload: response.data.Result,
         })
-        callback(response);
     }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });

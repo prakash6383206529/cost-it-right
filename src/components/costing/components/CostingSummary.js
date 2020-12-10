@@ -12,7 +12,7 @@ import AddToComparisonDrawer from './AddToComparisonDrawer'
 
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, 
-  storePartNumber
+  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails
 } from '../actions/Costing';
 
 import { VBC, ZBC } from '../../../config/constants';
@@ -105,6 +105,8 @@ function CostingSummary() {
   * @description  USED TO HANDLE PART CHANGE
   */
   const handlePartChange = (newValue) => {
+    console.log('newValue: ', newValue);
+
     if (newValue && newValue !== '') {
 
       if (IsTechnologySelected) {
@@ -123,6 +125,89 @@ function CostingSummary() {
               setValue("ShareOfBusiness", Data.Price)
               setEffectiveDate(moment(Data.EffectiveDate)._d)
               dispatch(storePartNumber(newValue))
+              dispatch(getCostingSummaryByplantIdPartNo(newValue.value, '00000000-0000-0000-0000-000000000000', res => {
+                if(res.data.Result == true){
+                  dispatch(res.Data.CostingId, res => {
+                    if (res.data.Data) {
+                      let temp = [];
+                      let dataFromAPI = res.data.Data
+                      let obj = {};
+                      obj.zbc = dataFromAPI.typeOfCosting;
+                      obj.poPrice = dataFromAPI.NetPOPrice;
+                      obj.costingName = dataFromAPI.CostingNumber
+                      obj.status = dataFromAPI.CostingStatus
+                      obj.rm = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].RMName
+                      obj.gWeight = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.GrossWeight
+                      obj.fWeight = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.FinishWeight
+                      obj.netRM = dataFromAPI.NetRawMaterialsCost
+                      obj.netBOP = dataFromAPI.NetBoughtOutPartCost
+                      obj.pCost = dataFromAPI.NetProcessCost
+                      obj.oCost = dataFromAPI.NetOperationCost
+                      obj.sTreatment = dataFromAPI.NetSurfaceTreatmentCost
+                      obj.tCost = dataFromAPI.CostingPartDetails[0].TransportationCost
+                      obj.nConvCost = dataFromAPI.NetConversionCost
+                      obj.modelType = dataFromAPI.ModelType
+                      obj.aValue= {
+                          applicability: "Applicability",
+                          value: "Value"
+                      }
+                      obj.overheadOn = {
+                          overheadTitle: dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadApplicability,
+                          overheadValue: (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost) : 0) 
+                      }
+                      obj.profitOn = {
+                          profitTitle: dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitApplicability,
+                          profitValue: (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost) : 0)
+                      }
+                      obj.rejectionOn = {
+                          rejectionTitle: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionApplicability,
+                          rejectionValue: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionTotalCost
+                      }
+                      obj.iccOn = {
+                          iccTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability,
+                          iccValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.NetCost
+                      }
+                      obj.paymentTerms = {
+                          paymentTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability,
+                          paymentValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.NetCost
+                      }
+                      obj.nOverheadProfit = dataFromAPI.NetOverheadAndProfitCost
+                      obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
+                      obj.freight = dataFromAPI.CostingPartDetails[0].FreightNetCost
+                      obj.nPackagingAndFreight = dataFromAPI.NetPackagingAndFreight
+                      obj.toolMaintenanceCost = dataFromAPI.NetToolCost
+                      obj.toolPrice = "5000.00"
+                      obj.amortizationQty = "10"
+                      obj.totalToolCost = dataFromAPI.NetToolCost
+                      obj.totalCost = dataFromAPI.TotalCost
+                      obj.otherDiscount = {
+                          discount: "Discount %",
+                          value: "Value"
+                      }
+                      obj.otherDiscountValue = {
+                          discountPercentValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage : "-",
+                          discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue : "-"
+                      }
+                      obj.anyOtherCost = dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost : "-"
+                      obj.remark = dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark : "-"
+                      obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency : "-"
+                      obj.currency = {
+                          currencyTitle: "INR/EUR",
+                          currencyValue: "85"
+                      }
+                      obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR : "-"
+                      obj.attachment = "View Attachment"
+                      obj.approvalButton = "Button"
+
+                      temp.push(obj);
+                      dispatch(setCostingViewData(temp));
+                  }
+                  })
+                }
+                else{
+                  dispatch(setCostingViewData([]))
+                }
+              }))
             }))
           } else {
             dispatch(getPartInfo('', () => { }))
@@ -133,6 +218,7 @@ function CostingSummary() {
             setValue("RevisionNumber", '')
             setValue("ShareOfBusiness", '')
             setEffectiveDate('')
+            dispatch(setCostingViewData([]))
           }
         }))
       }
