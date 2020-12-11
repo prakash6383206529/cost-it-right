@@ -95,20 +95,6 @@ function ViewRM(props) {
                                     <br />
                                 <button className="CalculatorIcon cr-cl-icon mt15" type={'button'} onClick={() => {}} />
                                 </h5>  
-                                {/* <TextFieldHookForm
-                                 label="Weight Calculator"
-                                 name={'weightCalculator'}
-                                 Controller={Controller}
-                                 control={control}
-                                 register={register}
-                                 mandatory={false}
-                                 handleChange={() => { }}
-                                 defaultValue={viewRM.RMName}
-                                 className=""
-                                 customClassName={'withBorder'}
-                                 //errors={errors.ECNNumber}
-                                 disabled={true}
-                                /> */}
                                 </div>
                                 <div className="input-group form-group col-md-12 input-withouticon" >
                                 <TextFieldHookForm
