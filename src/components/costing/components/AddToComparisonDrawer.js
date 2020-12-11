@@ -122,16 +122,6 @@ function AddToComparisonDrawer(props) {
   }
 
   /**
-   * @method addHandler
-   * @description Handling add function
-  */
-  const addHandler = () => {
-    setCostingDropdown([])
-    setValue("costings", '');
-    props.closeDrawer('')
-  }
-
-  /**
    * @method handleComparison
    * @description for handling rendering for different checkbox
   */
@@ -199,6 +189,8 @@ function AddToComparisonDrawer(props) {
     setVendorValue(values.vendor)
     setVendorPlant(values.vendorPlant)
     setCbcValue(values.clientName)
+    setCostingDropdown([]);
+    setValue("costings",'');
     let temp = []
     if (viewCostingData.length == 0) {
       temp.push(VIEW_COSTING_DATA)
@@ -374,7 +366,8 @@ function AddToComparisonDrawer(props) {
             : '-'
           obj.attachment = 'View Attachment'
           obj.approvalButton = 'Button'
-
+          //RM
+          obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
           //BOP Cost
           obj.netBOPCostView =
             dataFromAPI.CostingPartDetails[0].CostingBoughtOutPartCost
@@ -466,6 +459,8 @@ function AddToComparisonDrawer(props) {
                 <div className="left-border">{'Costing Head:'}</div>
               </Col>
             </Row>
+            
+            <form onSubmit={handleSubmit(onSubmit)}>
             <Row>
               <RadioHookForm
                 className={'filter-from-section'}
@@ -489,7 +484,6 @@ function AddToComparisonDrawer(props) {
                 ]}
               />
             </Row>
-            <form onSubmit={handleSubmit(onSubmit)}>
               <Row>
                 {isZbcSelected && (
                   <Col md="12">
@@ -603,7 +597,7 @@ function AddToComparisonDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button mr5 save-btn"
-                    onClick={() => handleSubmit(onSubmit)}
+                    // onClick={addHandler}
                   >
                     <div className={'check-icon'}>
                       <img

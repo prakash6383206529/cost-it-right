@@ -204,6 +204,8 @@ function CostingSummary() {
                       obj.attachment = "Attachment";
                       // obj.attachment = dataFromAPI.Attachements;
                       obj.approvalButton = "Button"
+                      //RM
+                      obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
                       //BOP Cost
                       obj.netBOPCostView =
                         dataFromAPI.CostingPartDetails[0].CostingBoughtOutPartCost
@@ -223,7 +225,7 @@ function CostingSummary() {
                       //Tool Cost
                       obj.netToolCostView =
                         dataFromAPI.CostingPartDetails[0].OverAllApplicability
-                        //For Drawer Edit
+                      //For Drawer Edit
                       obj.partId = dataFromAPI.PartNumber;
                       obj.plantId = dataFromAPI.PlantId;
                       obj.plantName = dataFromAPI.PlantName;
