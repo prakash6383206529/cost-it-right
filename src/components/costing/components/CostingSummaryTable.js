@@ -73,218 +73,18 @@ const viewRM = index => {
   setIsViewRM(true)
   setViewRMData(data)
 }
-  const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(
-      getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', (res) => {
-        console.log(res.data.Data, 'Response of the API')
-        if (res.data.Data) {
-          // let temp = viewCostingData;
-          let temp = []
-          let dataFromAPI = res.data.Data
-          let obj = {}
-          obj.zbc = dataFromAPI.TypeOfCosting
-          obj.poPrice = dataFromAPI.NetPOPrice
-          obj.costingName = dataFromAPI.CostingNumber
-          obj.status = dataFromAPI.CostingStatus
-          obj.rm =
-            dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].RMName
-          obj.gWeight =
-            dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.GrossWeight
-          obj.fWeight =
-            dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0].WeightCalculatorRequest.FinishWeight
-          obj.netRM = dataFromAPI.NetRawMaterialsCost
-          obj.netBOP = dataFromAPI.NetBoughtOutPartCost
-          obj.pCost = dataFromAPI.NetProcessCost
-          obj.oCost = dataFromAPI.NetOperationCost
-          obj.sTreatment = dataFromAPI.NetSurfaceTreatmentCost
-          obj.tCost = dataFromAPI.CostingPartDetails[0].TransportationCost
-          obj.nConvCost = dataFromAPI.NetConversionCost
-          obj.modelType = dataFromAPI.ModelType
-          obj.aValue = {
-            applicability: 'Applicability',
-            value: 'Value',
-          }
-          obj.overheadOn = {
-            overheadTitle:
-              dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadApplicability,
-            overheadValue:
-              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadCCTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadCCTotalCost,
-                  )
-                : 0) +
-              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadBOPTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadBOPTotalCost,
-                  )
-                : 0) +
-              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadRMTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadRMTotalCost,
-                  )
-                : 0) +
-              (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadFixedTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadFixedTotalCost,
-                  )
-                : 0),
-          }
-          obj.profitOn = {
-            profitTitle:
-              dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitApplicability,
-            profitValue:
-              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitCCTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitCCTotalCost,
-                  )
-                : 0) +
-              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitBOPTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitBOPTotalCost,
-                  )
-                : 0) +
-              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitRMTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitRMTotalCost,
-                  )
-                : 0) +
-              (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitFixedTotalCost
-                ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitFixedTotalCost,
-                  )
-                : 0),
-          }
-          obj.rejectionOn = {
-            rejectionTitle:
-              dataFromAPI.CostingPartDetails[0].CostingRejectionDetail
-                .RejectionApplicability,
-            rejectionValue:
-              dataFromAPI.CostingPartDetails[0].CostingRejectionDetail
-                .RejectionTotalCost,
-          }
-          obj.iccOn = {
-            iccTitle:
-              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-                .ICCApplicabilityDetail.ICCApplicability,
-            iccValue:
-              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-                .ICCApplicabilityDetail.NetCost,
-          }
-          obj.paymentTerms = {
-            paymentTitle:
-              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-                .PaymentTermDetail.PaymentTermApplicability,
-            paymentValue:
-              dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-                .PaymentTermDetail.NetCost,
-          }
-          obj.nOverheadProfit = dataFromAPI.NetOverheadAndProfitCost
-          obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
-          obj.freight = dataFromAPI.CostingPartDetails[0].FreightNetCost
-          obj.nPackagingAndFreight = dataFromAPI.NetPackagingAndFreight
-          obj.toolMaintenanceCost = dataFromAPI.NetToolCost
-          obj.toolPrice = '5000.00'
-          obj.amortizationQty = '10'
-          obj.totalToolCost = dataFromAPI.NetToolCost
-          obj.totalCost = dataFromAPI.TotalCost
-          obj.otherDiscount = {
-            discount: 'Discount %',
-            value: 'Value',
-          }
-          obj.otherDiscountValue = {
-            discountPercentValue: dataFromAPI.CostingPartDetails[0]
-              .OtherCostDetails.HundiOrDiscountPercentage
-              ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                  .HundiOrDiscountPercentage
-              : '-',
-            discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails
-              .HundiOrDiscountValue
-              ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                  .HundiOrDiscountValue
-              : '-',
-          }
-          obj.anyOtherCost = dataFromAPI.CostingPartDetails[0].OtherCostDetails
-            .TotalOtherCost
-            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost
-            : '-'
-          obj.remark = dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark
-            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark
-            : '-'
-          obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0]
-            .OtherCostDetails.NetPOPriceOtherCurrency
-            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                .NetPOPriceOtherCurrency
-            : '-'
-          obj.currency = {
-            currencyTitle: 'INR/EUR',
-            currencyValue: '85',
-          }
-          obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails
-            .NetPOPriceINR
-            ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR
-            : '-'
-          obj.attachment = 'View Attachment'
-          obj.approvalButton = 'Button'
-            // RM
-          obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
-          //BOP Cost
-          obj.netBOPCostView =
-            dataFromAPI.CostingPartDetails[0].CostingBoughtOutPartCost
-          //COnversion Cost
-          obj.netConversionCostView =
-            dataFromAPI.CostingPartDetails[0].CostingConversionCost
-          //OverheadCost and Profit
-          obj.netOverheadCostView =
-            dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-          obj.netProfitCostView =
-            dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-          //Net Packaging and Freight
-          obj.netPackagingCostView =
-            dataFromAPI.CostingPartDetails[0].CostingPackagingDetail
-          obj.netFreightCostView =
-            dataFromAPI.CostingPartDetails[0].CostingFreightDetail
-          //Tool Cost
-          obj.netToolCostView =
-            dataFromAPI.CostingPartDetails[0].OverAllApplicability
-
-          temp.push(VIEW_COSTING_DATA)
-          temp.push(obj)
-          console.log('temp: ', temp)
-          dispatch(setCostingViewData(temp))
-        }
-      }),
-    )
-  }, [])
 
   const deleteCostingFromView = (data) => {}
 
   const editHandler = (index) => {
     const editObject = {
-      partId: 'WISHER',
-      plantId: 'f232e30e-95f9-41e1-805e-fdc336548779',
-      plantName: '777(T1) Cachar',
-      costingId: 'f1c9edcb-c04f-481e-a7fb-e71c1b4d000a',
-      CostingNumber: 'CSM-500672',
-      index: index
+      partId: viewCostingData[index].partId,
+      plantId: viewCostingData[index].plantId,
+      plantName: viewCostingData[index].plantName,
+      costingId: viewCostingData[index].costingId,
+      CostingNumber: viewCostingData[index].costingName,
+      index: index,
+      typeOfCosting: viewCostingData[index].zbc
     }
     setIsEditFlag(true)
     setaddComparisonToggle(true)
@@ -329,17 +129,6 @@ const viewRM = index => {
   useEffect(() => {}, [viewCostingData])
 
   
-  
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm()
   return (
     <Fragment>
       <Row>

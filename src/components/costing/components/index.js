@@ -63,8 +63,10 @@ function Costing(props) {
                         {activeTab === '2' &&
                             <TabPane tabId="2">
                             <CostingSummary />
-                            <CostingSummaryTable />
-                            {/* {partNumber != "" && <CostingSummaryTable />} */}
+                            {
+                                // <CostingSummaryTable />
+                            }
+                            {partNumber != "" && <CostingSummaryTable />}
                         
                             </TabPane>}
                         {activeTab === '3' &&

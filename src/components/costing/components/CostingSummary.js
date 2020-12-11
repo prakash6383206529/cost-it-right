@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import { toastr } from 'react-redux-toastr';
 import moment from 'moment';
 import {
-  getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, 
+  getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
   storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails
 } from '../actions/Costing';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
@@ -18,15 +18,15 @@ function CostingSummary() {
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-   
+
   });
- 
+
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([]);
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
- 
+
   const fieldValues = useWatch({ control });
 
   const dispatch = useDispatch()
@@ -51,7 +51,7 @@ function CostingSummary() {
     const tempDropdownList = [];
 
     if (label === 'Technology') {
-      
+
       technologySelectList && technologySelectList.map(item => {
         if (item.Value === '0') return false;
         tempDropdownList.push({ label: item.Text, value: item.Value })
@@ -78,7 +78,7 @@ function CostingSummary() {
   * @description  USED TO HANDLE TECHNOLOGY CHANGE
   */
   const handleTechnologyChange = (newValue) => {
-    console.log(newValue,"technology");
+    console.log(newValue, "technology");
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
@@ -121,19 +121,21 @@ function CostingSummary() {
               setValue("ShareOfBusiness", Data.Price)
               setEffectiveDate(moment(Data.EffectiveDate)._d)
               dispatch(storePartNumber(newValue))
-              dispatch(getCostingSummaryByplantIdPartNo(newValue.value, '00000000-0000-0000-0000-000000000000', res => {
+              dispatch(getCostingSummaryByplantIdPartNo(newValue.label, '00000000-0000-0000-0000-000000000000', res => {
+                console.log('res: ', res);
                 let temp = [];
-                if(viewCostingData.length == 0){
+                if (viewCostingData.length == 0) {
                   temp.push(VIEW_COSTING_DATA)
                 }
-                else if(viewCostingData.length == 1){
+                else if (viewCostingData.length >= 1) {
                   temp = viewCostingData
                 }
-                if(res.data.Result == true){
-                  // dispatch(res.Data.CostingId, res => {
-                  dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
+                if (res.data.Result == true) {
+                  dispatch(getSingleCostingDetails(res.data.Data.CostingId, res => {
+                    // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                     if (res.data.Data) {
                       let dataFromAPI = res.data.Data
+                      console.log('dataFromAPI: ', dataFromAPI);
                       let obj = {};
                       obj.zbc = dataFromAPI.TypeOfCosting;
                       obj.poPrice = dataFromAPI.NetPOPrice;
@@ -150,29 +152,29 @@ function CostingSummary() {
                       obj.tCost = dataFromAPI.CostingPartDetails[0].TransportationCost
                       obj.nConvCost = dataFromAPI.NetConversionCost
                       obj.modelType = dataFromAPI.ModelType
-                      obj.aValue= {
-                          applicability: "Applicability",
-                          value: "Value"
+                      obj.aValue = {
+                        applicability: "Applicability",
+                        value: "Value"
                       }
                       obj.overheadOn = {
-                          overheadTitle: dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadApplicability,
-                          overheadValue: (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost) : 0) 
+                        overheadTitle: dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadApplicability,
+                        overheadValue: (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingOverheadDetail.OverheadFixedTotalCost) : 0)
                       }
                       obj.profitOn = {
-                          profitTitle: dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitApplicability,
-                          profitValue: (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost) : 0)
+                        profitTitle: dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitApplicability,
+                        profitValue: (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitBOPTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost) : 0) + (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost ? parseInt(dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitFixedTotalCost) : 0)
                       }
                       obj.rejectionOn = {
-                          rejectionTitle: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionApplicability,
-                          rejectionValue: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionTotalCost
+                        rejectionTitle: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionApplicability,
+                        rejectionValue: dataFromAPI.CostingPartDetails[0].CostingRejectionDetail.RejectionTotalCost
                       }
                       obj.iccOn = {
-                          iccTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability,
-                          iccValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.NetCost
+                        iccTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability,
+                        iccValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.ICCApplicabilityDetail.NetCost
                       }
                       obj.paymentTerms = {
-                          paymentTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability,
-                          paymentValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.NetCost
+                        paymentTitle: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability,
+                        paymentValue: dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail.PaymentTermDetail.NetCost
                       }
                       obj.nOverheadProfit = dataFromAPI.NetOverheadAndProfitCost
                       obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
@@ -184,31 +186,57 @@ function CostingSummary() {
                       obj.totalToolCost = dataFromAPI.NetToolCost
                       obj.totalCost = dataFromAPI.TotalCost
                       obj.otherDiscount = {
-                          discount: "Discount %",
-                          value: "Value"
+                        discount: "Discount %",
+                        value: "Value"
                       }
                       obj.otherDiscountValue = {
-                          discountPercentValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage : "-",
-                          discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue : "-"
+                        discountPercentValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountPercentage : "-",
+                        discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue : "-"
                       }
                       obj.anyOtherCost = dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.TotalOtherCost : "-"
                       obj.remark = dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark : "-"
                       obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency : "-"
                       obj.currency = {
-                          currencyTitle: "INR/EUR",
-                          currencyValue: "85"
+                        currencyTitle: "INR/EUR",
+                        currencyValue: "85"
                       }
                       obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR : "-"
-                      obj.attachment = "View Attachment"
+                      obj.attachment = "Attachment";
+                      // obj.attachment = dataFromAPI.Attachements;
                       obj.approvalButton = "Button"
+                      //RM
+                      obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
+                      //BOP Cost
+                      obj.netBOPCostView =
+                        dataFromAPI.CostingPartDetails[0].CostingBoughtOutPartCost
+                      //COnversion Cost
+                      obj.netConversionCostView =
+                        dataFromAPI.CostingPartDetails[0].CostingConversionCost
+                      //OverheadCost and Profit
+                      obj.netOverheadCostView =
+                        dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      obj.netProfitCostView =
+                        dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      //Net Packaging and Freight
+                      obj.netPackagingCostView =
+                        dataFromAPI.CostingPartDetails[0].CostingPackagingDetail
+                      obj.netFreightCostView =
+                        dataFromAPI.CostingPartDetails[0].CostingFreightDetail
+                      //Tool Cost
+                      obj.netToolCostView =
+                        dataFromAPI.CostingPartDetails[0].OverAllApplicability
+                      //For Drawer Edit
+                      obj.partId = dataFromAPI.PartNumber;
+                      obj.plantId = dataFromAPI.PlantId;
+                      obj.plantName = dataFromAPI.PlantName;
+                      obj.costingId = dataFromAPI.CostingId
 
-                      
                       temp.push(obj);
                       dispatch(setCostingViewData(temp));
-                  }
+                    }
                   }))
                 }
-                else{
+                else {
                   dispatch(setCostingViewData(temp))
                 }
               }))
@@ -298,7 +326,7 @@ function CostingSummary() {
                   </div>
                 </Col>
               </Row>
-              <form noValidate className="form" onSubmit={handleSubmit(() => {} )} >
+              <form noValidate className="form" onSubmit={handleSubmit(() => { })} >
                 {
                   <>
                     <Row>
