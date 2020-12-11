@@ -10,10 +10,11 @@ import { VIEW_COSTING_DATA } from '../../../config/constants';
 import  ViewBOP  from './Drawers/ViewBOP'
 
 const CostingSummaryTable = (props) => {
-  const [addComparisonToggle, setaddComparisonToggle] = useState(false)
-  const [isEditFlag, setIsEditFlag] = useState(false)
-  const [editObject, setEditObject] = useState({})
-  const [isViewBOP, setViewBOP] = useState(false)
+  const [addComparisonToggle, setaddComparisonToggle] = useState(false);
+  const [isEditFlag, setIsEditFlag] = useState(false);
+  const [editObject, setEditObject] = useState({});
+  const [isViewBOP, setViewBOP] = useState(false);
+  const [isViewConversionCost, setisViewConversionCost] = useState(false);
   const [viewBOPData, setViewData] = useState([])
   console.log(isViewBOP,"view");
   const viewCostingData = useSelector(
@@ -31,6 +32,14 @@ const CostingSummaryTable = (props) => {
           setViewData(data)
         //   data.tool ? data.tool : "-"
       }
+ }
+
+ const viewConversionCost = index => {
+   console.log(index,"Index");
+   if(index != -1) {
+     let data = viewCostingData[index].netConversionCostView;
+     console.log(data,"Data of conversion cost");
+   }
  }
 
   const dispatch = useDispatch()
@@ -408,7 +417,11 @@ const CostingSummaryTable = (props) => {
                         {data.nConvCost}
                         {index != 0 && (
                           <div>
-                            <button>View-CONVERSION COST</button>
+                            <button
+                            onClick={() => viewConversionCost(index)}
+                            >
+                              View-CONVERSION COST
+                            </button>
                           </div>
                         )}
                       </td>

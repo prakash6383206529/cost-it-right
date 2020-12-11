@@ -124,9 +124,8 @@ function AddToComparisonDrawer(props) {
    * @description Handling add function
   */
   const addHandler = () => {
-    setCostingDropdown([])
-    setValue("costings",'');
-    props.closeDrawer('')
+    
+    
   }
 
   /**
@@ -192,11 +191,14 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
   */
   const onSubmit = (values) => {
-    console.log(values, 'onsubmit')
-    setPlantValue(values.plant)
-    setVendorValue(values.vendor)
-    setVendorPlant(values.vendorPlant)
-    setCbcValue(values.clientName)
+    console.log(values, 'onsubmit');
+    setPlantValue(values.plant);
+    setVendorValue(values.vendor);
+    setVendorPlant(values.vendorPlant);
+    setCbcValue(values.clientName);
+    setCostingDropdown([]);
+    setValue("costings",'');
+    props.closeDrawer('');
     // let temp = []
     // if(viewCostingData.length == 0){
     //   temp.push(VIEW_COSTING_DATA)
@@ -453,6 +455,8 @@ function AddToComparisonDrawer(props) {
                 <div className="left-border">{'Costing Head:'}</div>
               </Col>
             </Row>
+            
+            <form onSubmit={handleSubmit(onSubmit)}>
             <Row>
               <RadioHookForm
                 className={'filter-from-section'}
@@ -476,7 +480,6 @@ function AddToComparisonDrawer(props) {
                 ]}
               />
             </Row>
-            <form onSubmit={handleSubmit(onSubmit)}>
               <Row>
                 {isZbcSelected && (
                   <Col md="12">
@@ -585,7 +588,7 @@ function AddToComparisonDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button mr5 save-btn"
-                     onClick={addHandler}
+                    // onClick={addHandler}
                   >
                     <div className={'check-icon'}>
                       <img
