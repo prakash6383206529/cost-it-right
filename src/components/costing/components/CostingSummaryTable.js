@@ -8,40 +8,71 @@ import { getSingleCostingDetails, setCostingViewData } from '../actions/Costing'
 import { useEffect, useState } from 'react';
 import { VIEW_COSTING_DATA } from '../../../config/constants';
 import  ViewBOP  from './Drawers/ViewBOP'
+import ViewConversionCost from './Drawers/ViewConversionCost'
+import ViewRM from './Drawers/ViewRM'
 
 const CostingSummaryTable = (props) => {
   const [addComparisonToggle, setaddComparisonToggle] = useState(false);
   const [isEditFlag, setIsEditFlag] = useState(false);
   const [editObject, setEditObject] = useState({});
   const [isViewBOP, setViewBOP] = useState(false);
-  const [isViewConversionCost, setisViewConversionCost] = useState(false);
-  const [viewBOPData, setViewData] = useState([])
-  console.log(isViewBOP,"view");
+  const [isViewConversionCost, setIsViewConversionCost] = useState(false);
+  const [isViewRM, setIsViewRM] = useState(false);
+
+  const [viewBOPData, setViewBOPData] = useState([])
+  const [viewConversionCostData, setViewConversionCostData] = useState([])
+  const [viewRMData, setViewRMData] = useState([])
+  console.log(viewConversionCostData,"view");
   const viewCostingData = useSelector(
     (state) => state.costing.viewCostingDetailData
   )
   console.log('ViewCostingData: ', viewCostingData)
   const technologyId = ''
 
+  /**
+   * @method ViewBOP
+   * @description SET VIEW BOP DATA FOR DRAWER
+  */
   const viewBop = index => {
     setViewBOP(true)
+    setIsViewConversionCost(false)
     console.log(index, "Index");
       if(index != -1){
           let data = viewCostingData[index].netBOPCostView;
           console.log(data, "Dataaa");
-          setViewData(data)
+          setViewBOPData(data)
         //   data.tool ? data.tool : "-"
       }
  }
-
+/**
+ * @method viewConversionCostData
+ * @description SET COVERSION DATA FOR DRAWER
+*/
  const viewConversionCost = index => {
    console.log(index,"Index");
+   setIsViewConversionCost(true)
+   setViewBOP(false)
    if(index != -1) {
      let data = viewCostingData[index].netConversionCostView;
      console.log(data,"Data of conversion cost");
+     setViewConversionCostData(data)
    }
  }
-
+ const viewToolsOverview = index => {
+  console.log(index, "Index");
+  if(index != -1){
+      let data = viewCostingData[index].netToolCostView;
+      //console.log(data, "Dataaa");
+    //   data.tool ? data.tool : "-"
+  }
+}
+const viewRM = index => {
+  console.log(index);
+  let data = viewCostingData[index].netRMCostView;
+  console.log(data,"Data of Rm");
+  setIsViewRM(true)
+  setViewRMData(data)
+}
   const dispatch = useDispatch()
   useEffect(() => {
     dispatch(
@@ -213,7 +244,8 @@ const CostingSummaryTable = (props) => {
             : '-'
           obj.attachment = 'View Attachment'
           obj.approvalButton = 'Button'
-
+            // RM
+          obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
           //BOP Cost
           obj.netBOPCostView =
             dataFromAPI.CostingPartDetails[0].CostingBoughtOutPartCost
@@ -276,19 +308,27 @@ const CostingSummaryTable = (props) => {
   const closeAddComparisonDrawer = (e = '') => {
     setaddComparisonToggle(false)
   }
+  /**
+   * @method closeViewBOP
+   * @description HIDE VIEW BOP  DRAWER
+   */
   const closeViewBOP= (e = '') => {
     setViewBOP(false)
   }
+  /**
+   * @method closeViewConversionData
+   * @description HIDE VIEW CONVERSION DATA DRAWER
+   */
+  const closeViewConversionData= (e = '') => {
+    setIsViewConversionCost(false)
+  }
+
+  const closeViewRMData= (e = '') => {
+    setIsViewRM(false)
+  }
   useEffect(() => {}, [viewCostingData])
 
-  const viewToolsOverview = index => {
-      console.log(index, "Index");
-      if(index != -1){
-          let data = viewCostingData[index].netToolCostView;
-          console.log(data, "Dataaa");
-        //   data.tool ? data.tool : "-"
-      }
-  }
+  
   
 
   const {
@@ -381,7 +421,9 @@ const CostingSummaryTable = (props) => {
                         {`${data.netRM}-RMCOSt`}
                         {index != 0 && (
                           <div>
-                            <button>View</button>
+                            <button
+                            onClick={() => viewRM(index)}
+                            >View -RM</button>
                           </div>
                         )}
                       </td>
@@ -628,6 +670,26 @@ const CostingSummaryTable = (props) => {
               isOpen={isViewBOP}
               viewBOPData={viewBOPData}
               closeDrawer={closeViewBOP}
+              anchor={'right'}
+              />
+          )
+      }
+       {
+          isViewConversionCost && (
+              <ViewConversionCost
+              isOpen={isViewConversionCost}
+              viewConversionCostData={viewConversionCostData}
+              closeDrawer={closeViewConversionData}
+              anchor={'right'}
+              />
+          )
+      }
+      {
+          isViewRM && (
+              <ViewRM
+              isOpen={isViewRM}
+              viewRMData={viewRMData}
+              closeDrawer={closeViewRMData}
               anchor={'right'}
               />
           )
