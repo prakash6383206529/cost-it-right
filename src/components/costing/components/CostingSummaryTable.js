@@ -8,119 +8,6 @@ import { getSingleCostingDetails, setCostingViewData } from '../actions/Costing'
 import { useEffect, useState } from 'react';
 import { VIEW_COSTING_DATA } from '../../../config/constants';
 import  ViewBOP  from './Drawers/ViewBOP'
-// const arr = [
-//     {
-//         zbc: "ZBC v/s VBC",
-//         costingName: "",
-//         poPrice: "PO Price",
-//         status: "Status",
-//         rm: "RM name-Grade",
-//         gWeight: "Gross Weight",
-//         fWeight: "Finish Weight",
-//         netRM: "Net RM Cost",
-//         netBOP: "Net BOP Cost",
-//         pCost: "Process Cost",
-//         oCost: "Operation Cost",
-//         sTreatment: "Surface Treatment",
-//         tCost: "Transportation Cost",
-//         nConvCost: "Net Conversion Cost",
-//         modelType: "Model Type For Overhead/Profit",
-//         aValue: "",
-//         overheadOn: "Overhead On",
-//         profitOn: "Profit On",
-//         rejectionOn: "Rejection On",
-//         iccOn: "ICC On",
-//         paymentTerms: "Payment Terms",
-//         nOverheadProfit: "Net Overhead Profits",
-//         packagingCost: "Packaging Cost",
-//         freight: "Freight",
-//         nPackagingAndFreight: "Net Packaging and Freight",
-//         toolMaintenanceCost: "Tool Maintenance Cost",
-//         toolPrice: "Tool Price",
-//         amortizationQty: "Amortization Quantity",
-//         totalToolCost: "Total Tool Cost",
-//         totalCost: "Total Cost",
-//         otherDiscount: "Hundi/Other Discount",
-//         otherDiscountValue: "",
-//         anyOtherCost: "Any Other Cost",
-//         remark: "Remark",
-//         nPOPriceWithCurrency: "Net PO Price(INR)",
-//         currency: "Currency",
-//         nPOPrice: "Net PO Price",
-//         attachment: "Attachment",
-//         approvalButton: ""
-
-//     },
-//     {
-//         zbc: "ZBC",
-//         poPrice: "250000.00",
-//         costingName: "Costing 1",
-//         status: "Draft",
-//         rm: "Raw1-B1",
-//         gWeight: "77",
-//         fWeight: "70",
-//         netRM: "4029.00",
-//         netBOP: "3.05",
-//         pCost: "40.00",
-//         oCost: "25.00",
-
-//         sTreatment: "18.00",
-//         tCost: "2.00",
-//         nConvCost: "85.00",
-//         modelType: "All",
-//         aValue: {
-//             applicability: "Applicability",
-//             value: "Value"
-//         },
-//         overheadOn: {
-//             overheadTitle: "RM+CC+BOP",
-//             overheadValue: "150.00"
-//         },
-//         profitOn: {
-//             profitTitle: "RM+CC+BOP",
-//             profitValue: "150.00"
-//         },
-//         rejectionOn: {
-//             rejectionTitle: "RM+CC+BOP",
-//             rejectionValue: "150.00"
-//         },
-//         iccOn: {
-//             iccTitle: "RM Inventory",
-//             iccValue: "250.00"
-//         },
-//         paymentTerms: {
-//             paymentTitle: "Net Cost",
-//             paymentValue: "250.00"
-//         },
-//         nOverheadProfit: "950.00",
-//         packagingCost: "40.00",
-//         freight: "75.00",
-//         nPackagingAndFreight: "115.00",
-//         toolMaintenanceCost: "600.00",
-//         toolPrice: "5000.00",
-//         amortizationQty: "10",
-//         totalToolCost: "1100.00",
-//         totalCost: "6282.25",
-//         otherDiscount: {
-//             discount: "Discount %",
-//             value: "Value"
-//         },
-//         otherDiscountValue: {
-//             discountPercentValue: "5%",
-//             discountValue: "314.11"
-//         },
-//         anyOtherCost: "500.00",
-//         remark: "Test Remark",
-//         nPOPriceWithCurrency: "7096.36",
-//         currency: {
-//             currencyTitle: "INR/EUR",
-//             currencyValue: "85"
-//         },
-//         nPOPrice: "7096.36",
-//         attachment: "View Attachment",
-//         approvalButton: "Button"
-//     }
-// ]
 
 const CostingSummaryTable = (props) => {
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
@@ -130,7 +17,7 @@ const CostingSummaryTable = (props) => {
   const [viewBOPData, setViewData] = useState([])
   console.log(isViewBOP,"view");
   const viewCostingData = useSelector(
-    (state) => state.costing.viewCostingDetailData,
+    (state) => state.costing.viewCostingDetailData
   )
   console.log('ViewCostingData: ', viewCostingData)
   const technologyId = ''
@@ -349,13 +236,14 @@ const CostingSummaryTable = (props) => {
 
   const deleteCostingFromView = (data) => {}
 
-  const editHandler = () => {
+  const editHandler = (index) => {
     const editObject = {
       partId: 'WISHER',
       plantId: 'f232e30e-95f9-41e1-805e-fdc336548779',
       plantName: '777(T1) Cachar',
       costingId: 'f1c9edcb-c04f-481e-a7fb-e71c1b4d000a',
       CostingNumber: 'CSM-500672',
+      index: index
     }
     setIsEditFlag(true)
     setaddComparisonToggle(true)
@@ -412,11 +300,13 @@ const CostingSummaryTable = (props) => {
         <Col md="4">
           <button>{'Send For Approval'}</button>
         </Col>
-        <Col md="4">
-          <button className={'user-btn'} onClick={editHandler}>
-            {'Edit'}
-          </button>
-        </Col>
+        {
+        //   <Col md="4">
+        //   <button className={'user-btn'} onClick={() => editHandler(index)}>
+        //     {'Edit'}
+        //   </button>
+        // </Col>
+      }
         <Col md="4">
           <button
             type="button"
@@ -456,7 +346,7 @@ const CostingSummaryTable = (props) => {
                         <td>
                           <div>
                             {data.costingName}
-                            <button>Edit Costing</button> &nbsp;
+                            <button className={'user-btn'} onClick={() => editHandler(index)}>Edit Costing</button> &nbsp;
                             <button>Add Costing</button>
                           </div>
                         </td>
