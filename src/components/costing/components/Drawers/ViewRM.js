@@ -10,7 +10,6 @@ import WeightCalculator from '../WeightCalculatorDrawer';
 function ViewRM(props) {
     console.log(props,"RM props");
     const { viewRMData } = props
-    console.log( viewRMData,"RM");
     /*
     * @method toggleDrawer
     * @description closing drawer
@@ -22,11 +21,8 @@ function ViewRM(props) {
   });
   const [viewRM, setViewRM] = useState({})
   const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
-  console.log(viewRM,"rrrrrrrrrrrrrrrrrrrr");
   useEffect(() => {
-    console.log( viewRMData,"RM1111111111111111111111");
     const [ rm ] = viewRMData
-    console.log(rm,"RM arrrrrrrrrrrrrrrrrrr");
     setViewRM(rm)
   }, [])
  
@@ -39,6 +35,10 @@ function ViewRM(props) {
      }
      props.closeDrawer('')
    }
+   /**
+    * @method closeWeightDrawer
+    * @description CLOSING WEIGHT DRAWER
+   */
  const closeWeightDrawer = (e="") => {
     setWeightCalculatorDrawer(false)
    }

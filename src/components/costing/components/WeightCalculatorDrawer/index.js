@@ -21,7 +21,6 @@ import SectionZ from './SectionZ'
 
 function WeightCalculator(props) {
   const { rmRowData, isEditFlag } = props
-  console.log(isEditFlag, 'RM data in weight Calculator')
   const [activeTab, setActiveTab] = useState('1')
 
   /**
@@ -91,6 +90,7 @@ function WeightCalculator(props) {
 
             <Row>
               <Col>
+              {/* Conditional rendering based on edit and view mode */}
                 {!isEditFlag ? (
                   <Nav tabs className="subtabs">
                     {rmRowData.WeightCalculatorRequest.LayoutingType ===

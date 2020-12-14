@@ -15,7 +15,6 @@ function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
   const isEditFlag = props.isEditFlag
-  console.log(isEditFlag,"Edit flag in Pipe.js");
   const defaultValues = {
     //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
     OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
