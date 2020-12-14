@@ -78,7 +78,6 @@ function CostingSummary() {
   * @description  USED TO HANDLE TECHNOLOGY CHANGE
   */
   const handleTechnologyChange = (newValue) => {
-    console.log(newValue, "technology");
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
@@ -100,8 +99,17 @@ function CostingSummary() {
   * @method handlePartChange
   * @description  USED TO HANDLE PART CHANGE
   */
-  const handlePartChange = (newValue) => {
-    console.log('newValue: ', newValue);
+const handlePartChange = (newValue) => {
+    let temp = [];
+    if (viewCostingData.length == 0 || part.value == newValue.value || part.value != newValue.value) {
+      console.log("From iffff")
+      temp.push(VIEW_COSTING_DATA)
+    }
+    else if (viewCostingData.length >= 1) {
+      console.log("From elseeeee")
+      temp = viewCostingData
+    }
+    // else if(part != newValue)
 
     if (newValue && newValue !== '') {
 
@@ -122,20 +130,12 @@ function CostingSummary() {
               setEffectiveDate(moment(Data.EffectiveDate)._d)
               dispatch(storePartNumber(newValue))
               dispatch(getCostingSummaryByplantIdPartNo(newValue.label, '00000000-0000-0000-0000-000000000000', res => {
-                console.log('res: ', res);
-                let temp = [];
-                if (viewCostingData.length == 0) {
-                  temp.push(VIEW_COSTING_DATA)
-                }
-                else if (viewCostingData.length >= 1) {
-                  temp = viewCostingData
-                }
                 if (res.data.Result == true) {
                   dispatch(getSingleCostingDetails(res.data.Data.CostingId, res => {
+                    console.log('res: ', res);
                     // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                     if (res.data.Data) {
                       let dataFromAPI = res.data.Data
-                      console.log('dataFromAPI: ', dataFromAPI);
                       let obj = {};
                       obj.zbc = dataFromAPI.TypeOfCosting;
                       obj.poPrice = dataFromAPI.NetPOPrice;
@@ -230,6 +230,7 @@ function CostingSummary() {
                       obj.plantId = dataFromAPI.PlantId;
                       obj.plantName = dataFromAPI.PlantName;
                       obj.costingId = dataFromAPI.CostingId
+                      console.log('obj: ', obj);
 
                       temp.push(obj);
                       dispatch(setCostingViewData(temp));
