@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Row, Col, Table } from 'reactstrap'
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { Container, Row, Col } from 'reactstrap'
+import { useForm, Controller } from "react-hook-form";
 import Drawer from '@material-ui/core/Drawer'
-import NoContentFound from '../../../common/NoContentFound'
-import { CONSTANT } from '../../../../helper/AllConastant'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
 
 
@@ -15,7 +13,7 @@ function ViewRM(props) {
     * @method toggleDrawer
     * @description closing drawer
     */
-   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+   const { register, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
    

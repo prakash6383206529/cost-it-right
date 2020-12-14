@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { checkForDecimalAndNull } from '../../../../../src/helper';
-import { Container, Row, Col,Table } from 'reactstrap'
-import Drawer from '@material-ui/core/Drawer'
-
+import { Container, Row, Col,Table } from 'reactstrap';
+import Drawer from '@material-ui/core/Drawer';
+import NoContentFound from '../../../common/NoContentFound';
+import { CONSTANT } from '../../../../helper/AllConastant';
 
  function ViewBOP(props) {
      const { viewBOPData } =props
      console.log(viewBOPData,"BOP data");
-    const [gridData, setGridData] = useState([])
+    const [viewBOPCost, setviewBOPCost] = useState([])
     useEffect(() => {
-      setGridData(viewBOPData)
+      setviewBOPCost(viewBOPData)
         
     }, [])
 
@@ -35,7 +36,7 @@ import Drawer from '@material-ui/core/Drawer'
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD BOP'}</h3>
+                  <h3>{'View BOP'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -45,7 +46,13 @@ import Drawer from '@material-ui/core/Drawer'
             </Row>
 
             <Row>
+            
               <Col md="12">
+              <Row>
+              <Col md="12">
+                <div className="left-border">{'View BOP:'}</div>
+              </Col>
+              </Row>
                 <Table className="table cr-brdr-main" size="sm" >
                   <thead>
                     <tr>
@@ -59,8 +66,8 @@ import Drawer from '@material-ui/core/Drawer'
                   </thead>
                   <tbody >
                     {
-                      gridData &&
-                      gridData.map((item, index) => {
+                      viewBOPCost &&
+                      viewBOPCost.map((item, index) => {
                         return (
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
@@ -73,13 +80,13 @@ import Drawer from '@material-ui/core/Drawer'
                         )
                       })
                     }
-                    {/* {gridData.length === 0 &&
+                    {viewBOPCost.length === 0 &&
                       <tr>
                         <td colSpan={7}>
                           <NoContentFound title={CONSTANT.EMPTY_DATA} />
                         </td>
                       </tr>
-                    } */}
+                    }
                   </tbody>
                 </Table>
               </Col>

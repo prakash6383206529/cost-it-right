@@ -235,12 +235,12 @@ function ViewConversionCost(props) {
                             costingToolsCost.map((item, index) => {
                               return (
                                 <tr key={index}>
-                                  <td>{item.ProcessOrOperation}</td>
-                                  <td>{item.ToolCategory}</td>
-                                  <td>{item.ToolName}</td>
-                                  <td>{item.Quantity}</td>
-                                  <td>{item.ToolCost}</td>
-                                  <td>{item.Life}</td>
+                                  <td>{item.ProcessOrOperation ? item.ProcessOrOperation: '-' }</td>
+                                  <td>{item.ToolCategory ? item.ToolCategory: '-' }</td>
+                                  <td>{item.ToolName ? item.ToolName: '-' }</td>
+                                  <td>{item.Quantity ? item.Quantity: '-' }</td>
+                                  <td>{item.ToolCost ? item.ToolCost: '-' }</td>
+                                  <td>{item.Life ? item.Life: '-' }</td>
                                   <td>
                                     {item.NetToolCost
                                       ? checkForDecimalAndNull(
