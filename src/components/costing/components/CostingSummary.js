@@ -217,6 +217,10 @@ const handlePartChange = (newValue) => {
                         dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                       obj.netProfitCostView =
                         dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      // Rejection
+                      obj.netRejectionCostView = 
+                          dataFromAPI.CostingPartDetails[0].CostingRejectionDetail
+                      
                       //Net Packaging and Freight
                       obj.netPackagingCostView =
                         dataFromAPI.CostingPartDetails[0].CostingPackagingDetail

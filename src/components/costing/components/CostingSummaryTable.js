@@ -7,9 +7,11 @@ import AddToComparisonDrawer from './AddToComparisonDrawer';
 import { getSingleCostingDetails, setCostingViewData } from '../actions/Costing';
 import { useEffect, useState } from 'react';
 import { VIEW_COSTING_DATA } from '../../../config/constants';
-import  ViewBOP  from './Drawers/ViewBOP'
-import ViewConversionCost from './Drawers/ViewConversionCost'
-import ViewRM from './Drawers/ViewRM'
+import  ViewBOP  from './Drawers/ViewBOP';
+import ViewConversionCost from './Drawers/ViewConversionCost';
+import ViewRM from './Drawers/ViewRM';
+import ViewOverheadProfit from './Drawers/ViewOverheadProfit';
+import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight';
 
 const CostingSummaryTable = (props) => {
   const [addComparisonToggle, setaddComparisonToggle] = useState(false);
@@ -18,10 +20,17 @@ const CostingSummaryTable = (props) => {
   const [isViewBOP, setViewBOP] = useState(false);
   const [isViewConversionCost, setIsViewConversionCost] = useState(false);
   const [isViewRM, setIsViewRM] = useState(false);
+  const [isViewOverheadProfit, setIsViewOverheadProfit] = useState(false);
+  const [isViewPackagingFreight, setIsViewPackagingFreight] = useState(false)
 
   const [viewBOPData, setViewBOPData] = useState([])
   const [viewConversionCostData, setViewConversionCostData] = useState([])
   const [viewRMData, setViewRMData] = useState([])
+  const [viewOverheadData, setViewOverheadData] = useState([])
+  const [viewProfitData, setViewProfitData] = useState([])
+  const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
+  const [viewPackagingFreight, setViewPackagingFreight] = useState({})
+
   console.log(viewConversionCostData,"view");
   const viewCostingData = useSelector(
     (state) => state.costing.viewCostingDetailData
@@ -58,14 +67,7 @@ const CostingSummaryTable = (props) => {
      setViewConversionCostData(data)
    }
  }
- const viewToolsOverview = index => {
-  console.log(index, "Index");
-  if(index != -1){
-      let data = viewCostingData[index].netToolCostView;
-      //console.log(data, "Dataaa");
-    //   data.tool ? data.tool : "-"
-  }
-}
+
 const viewRM = index => {
   console.log(index);
   let data = viewCostingData[index].netRMCostView;
@@ -73,10 +75,31 @@ const viewRM = index => {
   setIsViewRM(true)
   setViewRMData(data)
 }
+const overHeadProfit = index => {
+  console.log(index,"Index");
+  let overHeadData = viewCostingData[index].netOverheadCostView;
+  let profitData = viewCostingData[index].netProfitCostView;
+  let rejectData = viewCostingData[index].netRejectionCostView;
+  let modelType = viewCostingData[index].modelType;
+  console.log(rejectData,"ovr",modelType);
+  setIsViewOverheadProfit(true);
+  setViewOverheadData(overHeadData);
+  setViewProfitData(profitData);
+  setViewRejectAndModelType({rejectData: rejectData,modelType: modelType })
+}
 
-  const deleteCostingFromView = (data) => {}
+const viewPackagingAndFrieghtData = index => {
+  console.log(index);
+  let packagingData =  viewCostingData[index].netPackagingCostView;
+  let freightData =  viewCostingData[index].netFreightCostView;
+  console.log(packagingData,"data tabler",freightData);
+  setIsViewPackagingFreight(true)
+  setViewPackagingFreight({packagingData: packagingData, freightData: freightData })
+}
 
-  const editHandler = (index) => {
+const deleteCostingFromView = (data) => {}
+
+const editHandler = (index) => {
     const editObject = {
       partId: viewCostingData[index].partId,
       plantId: viewCostingData[index].plantId,
@@ -115,6 +138,9 @@ const viewRM = index => {
   const closeViewBOP= (e = '') => {
     setViewBOP(false)
   }
+  const closeViewPackagingFreight= (e = '') => {
+    setIsViewPackagingFreight(false)
+  }
   /**
    * @method closeViewConversionData
    * @description HIDE VIEW CONVERSION DATA DRAWER
@@ -125,6 +151,9 @@ const viewRM = index => {
 
   const closeViewRMData= (e = '') => {
     setIsViewRM(false)
+  }
+  const closeViewOverheadProfitData= (e = '') => {
+    setIsViewOverheadProfit(false)
   }
   useEffect(() => {}, [viewCostingData])
 
@@ -338,7 +367,9 @@ const viewRM = index => {
                         {data.nOverheadProfit}
                         {index != 0 && (
                           <div>
-                            <button>View-OVERHAD  PROFT</button>
+                            <button
+                            onClick={() => overHeadProfit(index)}
+                            >View-OVERHEAD  PROFIT</button>
                           </div>
                         )}
                       </td>
@@ -354,7 +385,9 @@ const viewRM = index => {
                         {data.nPackagingAndFreight}
                         {index != 0 && (
                           <div>
-                            <button>View-PACKAGING</button>
+                            <button
+                            onClick={() => viewPackagingAndFrieghtData(index)}
+                            >View-PACKAGING</button>
                           </div>
                         )}
                       </td>
@@ -373,7 +406,7 @@ const viewRM = index => {
                         {data.totalToolCost}
                         {index != 0 && (
                           <div>
-                            <button onClick={() => viewToolsOverview(index)}>View-TOOLS </button>
+                            <button>View-TOOLS </button>
                           </div>
                         )}
                       </td>
@@ -482,6 +515,27 @@ const viewRM = index => {
               anchor={'right'}
               />
           )
+      }
+      {
+        isViewOverheadProfit && (
+          <ViewOverheadProfit
+            isOpen={isViewOverheadProfit}
+            overheadData = {viewOverheadData}
+            profitData = {viewProfitData}
+            rejectAndModelType= {viewRejectAndModelType}
+            closeDrawer={closeViewOverheadProfitData}
+            anchor={'right'}
+          />
+        )
+      }
+      {
+        isViewPackagingFreight &&
+        <ViewPackagingAndFreight
+          isOpen={isViewPackagingFreight}
+          packagingAndFreightCost = {viewPackagingFreight}
+          closeDrawer={closeViewPackagingFreight}
+          anchor={'right'}
+        />
       }
     </Fragment>
   )
