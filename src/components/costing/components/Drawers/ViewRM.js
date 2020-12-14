@@ -3,6 +3,8 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from "react-hook-form";
 import Drawer from '@material-ui/core/Drawer'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
+import Pipe from '../WeightCalculatorDrawer/Pipe';
+import WeightCalculator from '../WeightCalculatorDrawer';
 
 
 function ViewRM(props) {
@@ -19,6 +21,7 @@ function ViewRM(props) {
    
   });
   const [viewRM, setViewRM] = useState({})
+  const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   console.log(viewRM,"rrrrrrrrrrrrrrrrrrrr");
   useEffect(() => {
     console.log( viewRMData,"RM1111111111111111111111");
@@ -35,6 +38,9 @@ function ViewRM(props) {
        return
      }
      props.closeDrawer('')
+   }
+ const closeWeightDrawer = (e="") => {
+    setWeightCalculatorDrawer(false)
    }
     return (
         <>
@@ -91,7 +97,12 @@ function ViewRM(props) {
                                 <div className="input-group form-group col-md-12 input-withouticon">
                                  <h5>Calculator 
                                     <br />
-                                <button className="CalculatorIcon cr-cl-icon mt15" type={'button'} onClick={() => {}} />
+                                <button 
+                                className="CalculatorIcon cr-cl-icon mt15" 
+                                type={'button'} 
+                                onClick={() => {
+                                    setWeightCalculatorDrawer(true)
+                                }} />
                                 </h5>  
                                 </div>
                                 <div className="input-group form-group col-md-12 input-withouticon" >
@@ -144,6 +155,16 @@ function ViewRM(props) {
                                 </div>
                                </Row>
                         </form>
+                        {
+                            weightCalculatorDrawer && 
+                            <WeightCalculator
+                            rmRowData ={viewRM}
+                            anchor={`right`}
+                            isEditFlag={false}
+                            isOpen={weightCalculatorDrawer}
+                            closeDrawer={closeWeightDrawer}
+                            />
+                        }
                     </div>
                 </Container>
             </Drawer>
