@@ -19,6 +19,7 @@ const CostingSummaryTable = (props) => {
   const [addComparisonToggle, setaddComparisonToggle] = useState(false);
   const [isEditFlag, setIsEditFlag] = useState(false);
   const [editObject, setEditObject] = useState({});
+  /* Constant  for drawer toggle*/
   const [isViewBOP, setViewBOP] = useState(false);
   const [isViewConversionCost, setIsViewConversionCost] = useState(false);
   const [isViewRM, setIsViewRM] = useState(false);
@@ -26,7 +27,7 @@ const CostingSummaryTable = (props) => {
   const [isViewOverheadProfit, setIsViewOverheadProfit] = useState(false);
   const [isViewPackagingFreight, setIsViewPackagingFreight] = useState(false);
   const [showApproval, setShowApproval] = useState(false)
-
+  /*Constants for sendind data in drawer*/
   const [viewBOPData, setViewBOPData] = useState([])
   const [viewConversionCostData, setViewConversionCostData] = useState([])
   const [viewRMData, setViewRMData] = useState([])
@@ -72,7 +73,10 @@ const CostingSummaryTable = (props) => {
      setViewConversionCostData(data)
    }
  }
-
+/**
+ * @method viewRM
+ * @description SET RM DATA FOR DRAWER
+*/
 const viewRM = index => {
   console.log(index);
   let data = viewCostingData[index].netRMCostView;
@@ -80,6 +84,10 @@ const viewRM = index => {
   setIsViewRM(true)
   setViewRMData(data)
 }
+/**
+ * @method overHeadProfit
+ * @description SET OVERHEAD & PROFIT DATA FOR DRAWER
+*/
 const overHeadProfit = index => {
   console.log(index,"Index");
   let overHeadData = viewCostingData[index].netOverheadCostView;
@@ -92,7 +100,10 @@ const overHeadProfit = index => {
   setViewProfitData(profitData);
   setViewRejectAndModelType({rejectData: rejectData,modelType: modelType })
 }
-
+/**
+ * @method viewPackagingAndFrieghtData
+ * @description SET PACKAGING AND FRIEGHT DATA FOR DRAWER
+*/
 const viewPackagingAndFrieghtData = index => {
   console.log(index);
   let packagingData =  viewCostingData[index].netPackagingCostView;
@@ -101,7 +112,10 @@ const viewPackagingAndFrieghtData = index => {
   setIsViewPackagingFreight(true)
   setViewPackagingFreight({packagingData: packagingData, freightData: freightData })
 }
-
+/**
+ * @method viewToolCostData
+ * @description SET TOOL DATA FOR DRAWER
+*/
 const viewToolCostData = index => {
   console.log(index);
   let data = viewCostingData[index].netToolCostView;
@@ -111,6 +125,11 @@ const viewToolCostData = index => {
 
 const deleteCostingFromView = (data) => {}
 
+/**
+ * @method editHandler
+ * @description HANDLING EDIT OF COSTING SUMMARY
+ *  
+ */
 const editHandler = (index) => {
     const editObject = {
       partId: viewCostingData[index].partId,
@@ -143,36 +162,29 @@ const editHandler = (index) => {
   const closeAddComparisonDrawer = (e = '') => {
     setaddComparisonToggle(false)
   }
-  /**
-   * @method closeViewBOP
-   * @description HIDE VIEW BOP  DRAWER
-   */
-  const closeViewBOP= (e = '') => {
-    setViewBOP(false)
-  }
-  const closeViewPackagingFreight= (e = '') => {
-    setIsViewPackagingFreight(false)
-  }
-  /**
-   * @method closeViewConversionData
-   * @description HIDE VIEW CONVERSION DATA DRAWER
-   */
-  const closeViewConversionData= (e = '') => {
-    setIsViewConversionCost(false)
-  }
 
-  const closeViewRMData= (e = '') => {
-    setIsViewRM(false)
-  }
-  const closeViewOverheadProfitData= (e = '') => {
-    setIsViewOverheadProfit(false)
-  }
-  const closeViewToolCost = (e = '') => {
-    setIsViewToolCost(false)
-  }
+  /**
+   * @method closeViewDrawer
+   * @description Closing view Drawer
+  */
+ const closeViewDrawer = (e=" ") => {
+  setViewBOP(false)
+  setIsViewPackagingFreight(false)
+  setIsViewRM(false)
+  setIsViewOverheadProfit(false)
+  setIsViewConversionCost(false)
+  setIsViewToolCost(false)
+}
+  /**
+   * @method closeShowApproval
+   * @description FOR CLOSING APPROVAL DRAWER
+  */
   const closeShowApproval = (e = '') => {
     setShowApproval(false)
   }
+
+  
+
   useEffect(() => {}, [viewCostingData])
 
   
@@ -506,12 +518,13 @@ const editHandler = (index) => {
           anchor={'right'}
         />
       )}
+      {/* DRAWERS FOR VIEW  */}
       {
           isViewBOP && (
               <ViewBOP
               isOpen={isViewBOP}
               viewBOPData={viewBOPData}
-              closeDrawer={closeViewBOP}
+              closeDrawer={closeViewDrawer}
               anchor={'right'}
               />
           )
@@ -521,7 +534,7 @@ const editHandler = (index) => {
               <ViewConversionCost
               isOpen={isViewConversionCost}
               viewConversionCostData={viewConversionCostData}
-              closeDrawer={closeViewConversionData}
+              closeDrawer={closeViewDrawer}
               anchor={'right'}
               />
           )
@@ -531,7 +544,7 @@ const editHandler = (index) => {
               <ViewRM
               isOpen={isViewRM}
               viewRMData={viewRMData}
-              closeDrawer={closeViewRMData}
+              closeDrawer={closeViewDrawer}
               anchor={'right'}
               />
           )
@@ -543,7 +556,7 @@ const editHandler = (index) => {
             overheadData = {viewOverheadData}
             profitData = {viewProfitData}
             rejectAndModelType= {viewRejectAndModelType}
-            closeDrawer={closeViewOverheadProfitData}
+            closeDrawer={closeViewDrawer}
             anchor={'right'}
           />
         )
@@ -553,7 +566,7 @@ const editHandler = (index) => {
         <ViewPackagingAndFreight
           isOpen={isViewPackagingFreight}
           packagingAndFreightCost = {viewPackagingFreight}
-          closeDrawer={closeViewPackagingFreight}
+          closeDrawer={closeViewDrawer}
           anchor={'right'}
         />
       }
@@ -562,7 +575,7 @@ const editHandler = (index) => {
         <ViewToolCost
           isOpen={isViewToolCost}
           viewToolCost = {viewToolCost}
-          closeDrawer={closeViewToolCost}
+          closeDrawer={closeViewDrawer}
           anchor={'right'}
         />
       }

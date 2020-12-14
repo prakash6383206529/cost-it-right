@@ -7,7 +7,6 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 
  function ViewBOP(props) {
      const { viewBOPData } =props
-     console.log(viewBOPData,"BOP data");
     const [viewBOPCost, setviewBOPCost] = useState([])
     useEffect(() => {
       setviewBOPCost(viewBOPData)

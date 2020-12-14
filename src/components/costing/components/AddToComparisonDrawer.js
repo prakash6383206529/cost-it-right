@@ -94,7 +94,7 @@ function AddToComparisonDrawer(props) {
     )
   }, [])
 
-  /* for showing venor name dropdown */
+  /* for showing vendor name dropdown */
   useEffect(() => {
     const temp = []
     setIsZbcSelected(false)
@@ -561,7 +561,7 @@ function AddToComparisonDrawer(props) {
                 )}
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={'Costings'}
+                    label={'Costing Version'}
                     name={'costings'}
                     placeholder={'-Select-'}
                     Controller={Controller}

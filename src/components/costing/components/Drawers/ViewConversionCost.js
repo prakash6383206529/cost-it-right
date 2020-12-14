@@ -6,7 +6,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
 
 function ViewConversionCost(props) {
-  // console.log(CostingProcessCostResponse,"process cost");
+  
   /**
    * @method toggleDrawer
    * @description closing drawer
@@ -70,7 +70,7 @@ function ViewConversionCost(props) {
                 </Col>
               </Row>
               <Row>
-                {/*OPERATION COST GRID */}
+                {/*PROCESS COST GRID */}
 
                 <Col md="12">
                   <Table className="table cr-brdr-main" size="sm">

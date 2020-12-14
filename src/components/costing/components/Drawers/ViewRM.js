@@ -3,12 +3,13 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from "react-hook-form";
 import Drawer from '@material-ui/core/Drawer'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
+import Pipe from '../WeightCalculatorDrawer/Pipe';
+import WeightCalculator from '../WeightCalculatorDrawer';
 
 
 function ViewRM(props) {
     console.log(props,"RM props");
     const { viewRMData } = props
-    console.log( viewRMData,"RM");
     /*
     * @method toggleDrawer
     * @description closing drawer
@@ -19,11 +20,9 @@ function ViewRM(props) {
    
   });
   const [viewRM, setViewRM] = useState({})
-  console.log(viewRM,"rrrrrrrrrrrrrrrrrrrr");
+  const [weightCalculatorDrawer, setWeightCalculatorDrawer] = useState(false)
   useEffect(() => {
-    console.log( viewRMData,"RM1111111111111111111111");
     const [ rm ] = viewRMData
-    console.log(rm,"RM arrrrrrrrrrrrrrrrrrr");
     setViewRM(rm)
   }, [])
  
@@ -35,6 +34,13 @@ function ViewRM(props) {
        return
      }
      props.closeDrawer('')
+   }
+   /**
+    * @method closeWeightDrawer
+    * @description CLOSING WEIGHT DRAWER
+   */
+ const closeWeightDrawer = (e="") => {
+    setWeightCalculatorDrawer(false)
    }
     return (
         <>
@@ -91,7 +97,12 @@ function ViewRM(props) {
                                 <div className="input-group form-group col-md-12 input-withouticon">
                                  <h5>Calculator 
                                     <br />
-                                <button className="CalculatorIcon cr-cl-icon mt15" type={'button'} onClick={() => {}} />
+                                <button 
+                                className="CalculatorIcon cr-cl-icon mt15" 
+                                type={'button'} 
+                                onClick={() => {
+                                    setWeightCalculatorDrawer(true)
+                                }} />
                                 </h5>  
                                 </div>
                                 <div className="input-group form-group col-md-12 input-withouticon" >
@@ -144,6 +155,16 @@ function ViewRM(props) {
                                 </div>
                                </Row>
                         </form>
+                        {
+                            weightCalculatorDrawer && 
+                            <WeightCalculator
+                            rmRowData ={viewRM}
+                            anchor={`right`}
+                            isEditFlag={false}
+                            isOpen={weightCalculatorDrawer}
+                            closeDrawer={closeWeightDrawer}
+                            />
+                        }
                     </div>
                 </Container>
             </Drawer>

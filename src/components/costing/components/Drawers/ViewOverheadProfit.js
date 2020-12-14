@@ -17,7 +17,7 @@ function ViewOverheadProfit(props) {
 
   const [viewOverheadData, setViewOverheadData] = useState({})
   const [viewProfitData, setViewProfitData] = useState({})
-  //console.log(viewProfitData,"Over");
+ 
   useEffect(() => {
     setViewOverheadData(overheadData)
     setViewProfitData(profitData)
@@ -55,6 +55,7 @@ function ViewOverheadProfit(props) {
                 ></div>
               </Col>
             </Row>
+            
             <div className="input-group form-group col-md-12 input-withouticon">
                   <TextFieldHookForm
                     label="Model Type for Overhead/Profit"
@@ -82,7 +83,7 @@ function ViewOverheadProfit(props) {
               </Row>
               <Row>
                 
-
+                {/* OVERHEAD RENDERING */}
                 <Col md="12">
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
@@ -198,7 +199,7 @@ function ViewOverheadProfit(props) {
                   </Col>
                 </Row>
                 <Row>
-                  {/*OPERATION COST GRID */}
+                  {/*PROFIT RENDERING */}
 
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
@@ -316,7 +317,7 @@ function ViewOverheadProfit(props) {
                   </Col>
                 </Row>
                 <Row>
-                  {/*TOOL COST GRID */}
+                  {/*REJECTION RENDERING */}
 
                   <Col md="12">
                     <Table className="table" size="sm">
