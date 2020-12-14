@@ -5,6 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 
 
  function ViewToolCost(props) {
+     console.log('props: ', props);
      const { viewToolCost } =props
 
     /**

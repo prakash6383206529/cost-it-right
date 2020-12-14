@@ -228,7 +228,7 @@ const handlePartChange = (newValue) => {
                         dataFromAPI.CostingPartDetails[0].CostingFreightDetail
                       //Tool Cost
                       obj.netToolCostView =
-                        dataFromAPI.CostingPartDetails[0].OverAllApplicability
+                        dataFromAPI.CostingPartDetails[0].CostingToolsCostResponse
                       //For Drawer Edit
                       obj.partId = dataFromAPI.PartNumber;
                       obj.plantId = dataFromAPI.PlantId;

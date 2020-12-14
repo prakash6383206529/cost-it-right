@@ -12,6 +12,7 @@ import ViewConversionCost from './Drawers/ViewConversionCost';
 import ViewRM from './Drawers/ViewRM';
 import ViewOverheadProfit from './Drawers/ViewOverheadProfit';
 import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight';
+import ViewToolCost from './Drawers/viewToolCost';
 
 const CostingSummaryTable = (props) => {
   const [addComparisonToggle, setaddComparisonToggle] = useState(false);
@@ -20,6 +21,7 @@ const CostingSummaryTable = (props) => {
   const [isViewBOP, setViewBOP] = useState(false);
   const [isViewConversionCost, setIsViewConversionCost] = useState(false);
   const [isViewRM, setIsViewRM] = useState(false);
+  const [isViewToolCost, setIsViewToolCost] = useState(false);
   const [isViewOverheadProfit, setIsViewOverheadProfit] = useState(false);
   const [isViewPackagingFreight, setIsViewPackagingFreight] = useState(false)
 
@@ -28,6 +30,7 @@ const CostingSummaryTable = (props) => {
   const [viewRMData, setViewRMData] = useState([])
   const [viewOverheadData, setViewOverheadData] = useState([])
   const [viewProfitData, setViewProfitData] = useState([])
+  const [viewToolCost, setViewToolCost] = useState([])
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
 
@@ -97,6 +100,13 @@ const viewPackagingAndFrieghtData = index => {
   setViewPackagingFreight({packagingData: packagingData, freightData: freightData })
 }
 
+const viewToolCostData = index => {
+  console.log(index);
+  let data = viewCostingData[index].netToolCostView;
+  setIsViewToolCost(true)
+  setViewToolCost(data)
+}
+
 const deleteCostingFromView = (data) => {}
 
 const editHandler = (index) => {
@@ -154,6 +164,9 @@ const editHandler = (index) => {
   }
   const closeViewOverheadProfitData= (e = '') => {
     setIsViewOverheadProfit(false)
+  }
+  const closeViewToolCost = (e = '') => {
+    setIsViewToolCost(false)
   }
   useEffect(() => {}, [viewCostingData])
 
@@ -406,7 +419,9 @@ const editHandler = (index) => {
                         {data.totalToolCost}
                         {index != 0 && (
                           <div>
-                            <button>View-TOOLS </button>
+                            <button
+                            onClick={() => viewToolCostData(index)}
+                            >View-TOOLS </button>
                           </div>
                         )}
                       </td>
@@ -534,6 +549,15 @@ const editHandler = (index) => {
           isOpen={isViewPackagingFreight}
           packagingAndFreightCost = {viewPackagingFreight}
           closeDrawer={closeViewPackagingFreight}
+          anchor={'right'}
+        />
+      }
+      {
+        isViewToolCost &&
+        <ViewToolCost
+          isOpen={isViewToolCost}
+          viewToolCost = {viewToolCost}
+          closeDrawer={closeViewToolCost}
           anchor={'right'}
         />
       }
