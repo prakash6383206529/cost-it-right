@@ -13,6 +13,7 @@ import ViewRM from './Drawers/ViewRM';
 import ViewOverheadProfit from './Drawers/ViewOverheadProfit';
 import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight';
 import ViewToolCost from './Drawers/viewToolCost';
+import SendForApproval from './SendForApproval';
 
 const CostingSummaryTable = (props) => {
   const [addComparisonToggle, setaddComparisonToggle] = useState(false);
@@ -23,7 +24,8 @@ const CostingSummaryTable = (props) => {
   const [isViewRM, setIsViewRM] = useState(false);
   const [isViewToolCost, setIsViewToolCost] = useState(false);
   const [isViewOverheadProfit, setIsViewOverheadProfit] = useState(false);
-  const [isViewPackagingFreight, setIsViewPackagingFreight] = useState(false)
+  const [isViewPackagingFreight, setIsViewPackagingFreight] = useState(false);
+  const [showApproval, setShowApproval] = useState(false)
 
   const [viewBOPData, setViewBOPData] = useState([])
   const [viewConversionCostData, setViewConversionCostData] = useState([])
@@ -167,6 +169,9 @@ const editHandler = (index) => {
   }
   const closeViewToolCost = (e = '') => {
     setIsViewToolCost(false)
+  }
+  const closeShowApproval = (e = '') => {
+    setShowApproval(false)
   }
   useEffect(() => {}, [viewCostingData])
 
@@ -484,7 +489,7 @@ const editHandler = (index) => {
                       <td>{data.attachment}</td>
                     </tr>
                     <tr>
-                      <td>{data.approvalButton}</td>
+                     {index == 0 ? <td></td> : <td><button onClick={() => setShowApproval(true)}>Send For Approval</button></td>}
                     </tr>
                   </Fragment>
                 )
@@ -558,6 +563,14 @@ const editHandler = (index) => {
           isOpen={isViewToolCost}
           viewToolCost = {viewToolCost}
           closeDrawer={closeViewToolCost}
+          anchor={'right'}
+        />
+      }
+      {
+        showApproval && 
+        <SendForApproval
+          isOpen={showApproval}
+          closeDrawer={closeShowApproval}
           anchor={'right'}
         />
       }
