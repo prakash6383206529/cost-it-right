@@ -1,12 +1,10 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Row, Col, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import AddToComparisonDrawer from './AddToComparisonDrawer';
-import { getSingleCostingDetails, setCostingViewData } from '../actions/Costing';
-import { useEffect, useState } from 'react';
-import { VIEW_COSTING_DATA } from '../../../config/constants';
+import { setCostingViewData, setCostingApprovalData } from '../actions/Costing';
 import  ViewBOP  from './Drawers/ViewBOP';
 import ViewConversionCost from './Drawers/ViewConversionCost';
 import ViewRM from './Drawers/ViewRM';
@@ -38,14 +36,13 @@ const CostingSummaryTable = (props) => {
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
-  console.log('multipleCostings: ', multipleCostings);
+  const [flag, setFlag] = useState(false)
+  
 
-  console.log(viewConversionCostData,"view");
   const viewCostingData = useSelector(
     (state) => state.costing.viewCostingDetailData
   )
-  console.log('ViewCostingData: ', viewCostingData)
-  const technologyId = ''
+  const viewApprovalData = useSelector(state => state.costing.costingApprovalData);
 
   /**
    * @method ViewBOP
@@ -54,12 +51,10 @@ const CostingSummaryTable = (props) => {
   const viewBop = index => {
     setViewBOP(true)
     setIsViewConversionCost(false)
-    console.log(index, "Index");
       if(index != -1){
           let data = viewCostingData[index].netBOPCostView;
           console.log(data, "Dataaa");
-          setViewBOPData(data)
-        //   data.tool ? data.tool : "-"
+          setViewBOPData(data);
       }
  }
 /**
@@ -127,10 +122,8 @@ const viewToolCostData = index => {
 }
 
 const deleteCostingFromView = (index) => {
-  console.log('index: ', index);
   let temp = viewCostingData;
-  temp.splice(index, 1)
-  console.log(temp, "From Summary Table");
+  temp.splice(index, 1);
   dispatch(setCostingViewData(temp))
 }
 
@@ -198,9 +191,8 @@ const editHandler = (index) => {
     console.log('temp: ', temp);
     if(checked){
       console.log("From If")
-      temp.push(viewCostingData[index].costingName)
-      console.log('temp: ', temp);
-      setMultipleCostings(temp)
+      temp.push(viewCostingData[index].costingName);
+      // setMultipleCostings(temp)
     }
     else{
       console.log("From else")
@@ -208,16 +200,51 @@ const editHandler = (index) => {
       if(ind != -1){
         temp.splice(ind, 1);
       }
-      setMultipleCostings(temp)
-      console.log(temp, "Temp from Multiple costing")
+      // setMultipleCostings(temp)
     }
+    console.log(temp, "Temp from Multiple costing")
+    setMultipleCostings(temp)
+    setFlag(!flag)
+    // let data = viewCostingData[index].netBOPCostView;
+    // setViewBOPData(data)
   }
 
+  const sendForApprovalData = (costingIds) => {
+    console.log('costingIds: ', costingIds);
+    let temp = viewApprovalData
+    costingIds && costingIds.map(id => {
+      let index = viewCostingData.findIndex(data => data.costingName == id);
+      if(index !== -1){
+        let obj = {};
+        obj.typeOfCosting = viewCostingData[index].zbc;
+        obj.plantCode = viewCostingData[index].plantName;
+        obj.costingId = viewCostingData[index].costingName;
+        // obj.oldPrice = viewCostingData[index].oldPrice;
+        obj.oldPrice = 1000000;
+        obj.revisedPrice = viewCostingData[index].nPOPrice;
+        obj.variance = 1000000 - parseInt(viewCostingData[index].nPOPrice);
+        obj.consumptionQty = "";
+        obj.remainingQty = "";
+        obj.annualImpact = "";
+        obj.yearImpact = ""
+        obj.reason = "";
+        obj.ecnNo = "";
+        obj.effectiveDate = "";
+        temp.push(obj)
+      }
+      dispatch(setCostingApprovalData(temp))
+    })
+
+  }
   
 
-  useEffect(() => {}, [viewCostingData, multipleCostings])
-
+  useEffect(() => {}, [viewCostingData])
   
+  // useEffect(() => {
+  //   console.log('multipleCostings: ', multipleCostings);
+  // }, [multipleCostings])
+
+  // console.log('multipleCostings: ', multipleCostings);
   return (
     <Fragment>
       <Row>
@@ -262,7 +289,7 @@ const editHandler = (index) => {
                           type="checkbox"
                           onClick={(e) => {console.log(e.target.checked, "From CheckBox")
                         handleMultipleCostings(e.target.checked, index)}}
-                          checked={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true: false}
+                          value={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true: false}
                           // disabled={isEditFlag ? true : false}
                       />
                             {data.zbc}
@@ -538,7 +565,7 @@ const editHandler = (index) => {
                       <td>{data.attachment}</td>
                     </tr>
                     <tr>
-                     {index == 0 ? <td></td> : <td><button onClick={() => setShowApproval(true)}>Send For Approval</button></td>}
+                     {index == 0 ? <td></td> : <td><button onClick={() => {sendForApprovalData([data.costingName], index);setShowApproval(true)}}>Send For Approval</button></td>}
                     </tr>
                   </Fragment>
                 )
