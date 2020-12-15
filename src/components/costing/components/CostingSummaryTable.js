@@ -16,6 +16,7 @@ import ViewToolCost from './Drawers/viewToolCost';
 import SendForApproval from './SendForApproval';
 
 const CostingSummaryTable = (props) => {
+  const dispatch = useDispatch();
   const [addComparisonToggle, setaddComparisonToggle] = useState(false);
   const [isEditFlag, setIsEditFlag] = useState(false);
   const [editObject, setEditObject] = useState({});
@@ -36,6 +37,8 @@ const CostingSummaryTable = (props) => {
   const [viewToolCost, setViewToolCost] = useState([])
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
+  const [multipleCostings, setMultipleCostings] = useState([])
+  console.log('multipleCostings: ', multipleCostings);
 
   console.log(viewConversionCostData,"view");
   const viewCostingData = useSelector(
@@ -123,7 +126,13 @@ const viewToolCostData = index => {
   setViewToolCost(data)
 }
 
-const deleteCostingFromView = (data) => {}
+const deleteCostingFromView = (index) => {
+  console.log('index: ', index);
+  let temp = viewCostingData;
+  temp.splice(index, 1)
+  console.log(temp, "From Summary Table");
+  dispatch(setCostingViewData(temp))
+}
 
 /**
  * @method editHandler
@@ -183,9 +192,30 @@ const editHandler = (index) => {
     setShowApproval(false)
   }
 
+  const handleMultipleCostings = (checked, index) => {
+    console.log('checked: ', checked);
+    let temp = multipleCostings;
+    console.log('temp: ', temp);
+    if(checked){
+      console.log("From If")
+      temp.push(viewCostingData[index].costingName)
+      console.log('temp: ', temp);
+      setMultipleCostings(temp)
+    }
+    else{
+      console.log("From else")
+      const ind = multipleCostings.findIndex(data => data == viewCostingData[index].costingName);
+      if(ind != -1){
+        temp.splice(ind, 1);
+      }
+      setMultipleCostings(temp)
+      console.log(temp, "Temp from Multiple costing")
+    }
+  }
+
   
 
-  useEffect(() => {}, [viewCostingData])
+  useEffect(() => {}, [viewCostingData, multipleCostings])
 
   
   return (
@@ -228,8 +258,15 @@ const editHandler = (index) => {
                       ) : (
                         <th>
                           <div>
+                          <input
+                          type="checkbox"
+                          onClick={(e) => {console.log(e.target.checked, "From CheckBox")
+                        handleMultipleCostings(e.target.checked, index)}}
+                          checked={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true: false}
+                          // disabled={isEditFlag ? true : false}
+                      />
                             {data.zbc}
-                            <button onClick={() => deleteCostingFromView()}>
+                            <button onClick={() => deleteCostingFromView(index)}>
                               Delete
                             </button>
                           </div>
