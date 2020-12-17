@@ -3,10 +3,11 @@ import {
     API_FAILURE,
     GET_VOLUME_DATA_SUCCESS,
     GET_FINANCIAL_YEAR_SELECTLIST,
+    GET_VOLUME_DATA_BY_PART_AND_YEAR,
 } from '../../config/constants';
 
 const initialState = {
-
+    volumeDataByPartAndYear: {}
 };
 
 export default function VolumeReducer(state = initialState, action) {
@@ -32,6 +33,12 @@ export default function VolumeReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 financialYearSelectList: action.payload
+            };
+        case GET_VOLUME_DATA_BY_PART_AND_YEAR:
+            return {
+                ...state,
+                loading: false,
+                volumeDataByPartAndYear: action.payload
             };
         default:
             return state;

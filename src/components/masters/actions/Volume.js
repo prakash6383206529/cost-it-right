@@ -5,7 +5,8 @@ import {
     API_FAILURE,
     GET_VOLUME_DATA_SUCCESS,
     GET_FINANCIAL_YEAR_SELECTLIST,
-    config
+    config,
+    GET_VOLUME_DATA_BY_PART_AND_YEAR
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 const headers = config
@@ -204,5 +205,28 @@ export function bulkUploadVolumeBudgetedVBC(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getVolumeDataByPartAndYear
+ * @description Get Volume Data by part and year
+ */
+export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}`, headers)
+            .then((response) => {
+                callback(response);
+                if (response.data.Result === true) {
+                    dispatch({
+                        type: GET_VOLUME_DATA_BY_PART_AND_YEAR,
+                        payload: response.data.Data,
+                    });
+                }
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

@@ -24,7 +24,8 @@ import {
   SET_COSTING_VIEW_DATA,
   VIEW_COSTING_DATA,
   STORE_PART_VALUE,
-  GET_COST_SUMMARY_BY_PART_PLANT
+  GET_COST_SUMMARY_BY_PART_PLANT,
+  SET_COSTING_APPROVAL_DATA
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -1259,4 +1260,17 @@ export function saveCopyCosting(data, callback) {
       apiErrors(error);
     });
   };
+}
+
+export const setCostingApprovalData = (data) => dispatch => {
+  let temp = [];
+  // temp.push(VIEW_COSTING_DATA)
+  data.map(val => {
+    temp.push(val)
+  })
+  console.log('temp: ', temp);
+  dispatch({
+      type: SET_COSTING_APPROVAL_DATA,
+      payload: temp
+  })
 }

@@ -22,7 +22,8 @@ import {
     GET_COSTING_DETAILS_BY_COSTING_ID,
     SET_COSTING_VIEW_DATA,
     STORE_PART_VALUE,
-    GET_COST_SUMMARY_BY_PART_PLANT
+    GET_COST_SUMMARY_BY_PART_PLANT,
+    SET_COSTING_APPROVAL_DATA
 } from '../../../config/constants';
 
 const initialState = {
@@ -33,7 +34,8 @@ const initialState = {
     },
     singleCostingDetail : {},
     viewCostingDetailData: [],
-    partNo: ''
+    partNo: '',
+    costingApprovalData: []
 };
 
 export default function costingReducer(state = initialState, action) {
@@ -221,6 +223,12 @@ export default function costingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 viewCostingDetailData: action.payload
+            };
+        case SET_COSTING_APPROVAL_DATA:
+            return {
+                ...state,
+                loading: false,
+                costingApprovalData: action.payload
             };
         case STORE_PART_VALUE:
             return {
