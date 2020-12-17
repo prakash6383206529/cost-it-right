@@ -9,6 +9,7 @@ import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm } from '.
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment } from '../actions/Approval';
 import { userDetails } from '../../../helper/auth';
 import { setCostingApprovalData } from '../actions/Costing';
+import { toastr } from 'react-redux-toastr';
 
 const SendForApproval = props => {
     const dispatch = useDispatch();
@@ -18,14 +19,11 @@ const SendForApproval = props => {
     const deptList = useSelector(state => state.approval.approvalDepartmentList);
     const usersList = useSelector(state => state.approval.approvalUsersList);
     const viewApprovalData = useSelector(state => state.costing.costingApprovalData);
-    console.log('viewApprovalData: ', viewApprovalData);
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const userData = userDetails();
 
     useEffect(() => {
-        dispatch(getReasonSelectList(res => {
-            console.log(res, "Responseeee from Reason list")
-        }))
+        dispatch(getReasonSelectList(res => { }))
         dispatch(getAllApprovalDepartment(res => { }))
     }, [])
 
@@ -94,11 +92,61 @@ const SendForApproval = props => {
     const handleECNNoChange = (data, index) => {
         let viewDataTemp = viewApprovalData;
         let temp = viewApprovalData[index];
-        temp.reason = data.label;
-        temp.reasonId = data.value;
+        temp.ecNo = data;
         viewDataTemp[index] = temp;
         dispatch(setCostingApprovalData(viewDataTemp));
     }
+
+    const handleEffectiveDateChange = (date, index) => {
+        // console.log('date: ', date);
+        let viewDataTemp = viewApprovalData;
+        let temp = viewApprovalData[index];
+        temp.effectiveDate = date;
+        temp.consumptionQty = 20;
+        temp.remainingQty = 10;
+        temp.annualImpact = (20 + 10) * parseInt(temp.variance);
+        temp.yearImpact = 10 * parseInt(temp.variance)
+        viewDataTemp[index] = temp;
+        dispatch(setCostingApprovalData(viewDataTemp));
+    }
+
+    const onSubmit = data => {
+        let count = 0;
+        viewApprovalData.map(item => {
+            if(item.effectiveDate == ""){
+                count = count + 1
+            }
+        })
+        if(count != 0){
+            toastr.warning("Please select effective date for all the costing");
+            return;
+        }
+        const obj = {
+            costingsList: [
+                {
+                typeOfCosting: "ZBC",
+                plantCode: "Plant 001",
+                costingId: "CSm7654",
+                reason: "Test",
+                ecnRefNo: "",
+                effectiveDate: "16/12/2020"
+            },
+            {
+                typeOfCosting: "ZBC",
+                plantCode: "Plant 001",
+                costingId: "CSm7654",
+                reason: "Test",
+                ecnRefNo: "",
+                effectiveDate: "16/12/2020"
+            }
+        ],
+        approverDepartmentId: "Department Id",
+        approverId: "Approver Id",
+        remark: ""
+        }
+    }
+
+    useEffect(() => {}, [viewApprovalData])
 
     const toggleDrawer = (event) => {
         if (
@@ -112,7 +160,6 @@ const SendForApproval = props => {
     return (
         <Fragment>
             <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-                <form>
                     {viewApprovalData && viewApprovalData.map((data, index) => {
                         return (
                             <Container>
@@ -155,7 +202,7 @@ const SendForApproval = props => {
                                                     register={register}
                                                     rules={{ required: false }}
                                                     mandatory={false}
-                                                    handleChange={(e) => { console.log(e.target.value, "Text change")
+                                                    handleChange={(e) => {
                                                 handleECNNoChange(e.target.value, index) }}
                                                     defaultValue={data.ecnNo != "" ? data.ecnNo : ''}
                                                     className=""
@@ -171,7 +218,9 @@ const SendForApproval = props => {
                                                         <DatePicker
                                                             name="EffectiveDate"
                                                             selected={data.effectiveDate != "" ? data.effectiveDate : ''}
-                                                            //   onChange={handleEffectiveDateChange}
+                                                            onChange={(date) => {
+                                                                handleEffectiveDateChange(date, index)
+                                                            }}
                                                             showMonthDropdown
                                                             showYearDropdown
                                                             dateFormat="dd/MM/yyyy"
@@ -183,6 +232,7 @@ const SendForApproval = props => {
                                                             disabledKeyboardNavigation
                                                             onChangeRaw={(e) => e.preventDefault()}
                                                             disabled={false}
+                                                            required={true}
                                                         />
                                                     </div>
                                                 </div>
@@ -190,133 +240,43 @@ const SendForApproval = props => {
                                         </tr>
                                         <tr>
                                             <td>
-                                                <TextFieldHookForm
-                                                    label="Old/Current Price"
-                                                    name={'oldPrice'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={data.oldPrice != "" ? data.oldPrice : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.oldPrice}
-                                                    disabled={true}
-                                                />
+                                            <label>Old/Current Price</label>
+                                            <label>{data.oldPrice ? data.oldPrice : '-'}</label>
                                             </td>
                                             <td>
-                                                <TextFieldHookForm
-                                                    label="New Revised Price"
-                                                    name={'revisedPrice'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={data.revisedPrice != "" ? data.revisedPrice : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.revisedPrice}
-                                                    disabled={true}
-                                                />
+                                            <label>Revised Price</label>
+                                            <label>{data.revisedPrice ? data.revisedPrice : '-'}</label>
                                             </td>
                                             <td>
-                                                <TextFieldHookForm
-                                                    label="Variance"
-                                                    name={'variance'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={data.variance != "" ? data.variance : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.variance}
-                                                    disabled={true}
-                                                />
+                                            <label>Variance</label>
+                                            <label>{data.variance ? data.variance : '-'}</label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <TextFieldHookForm
-                                                    label="Consumption Quantity"
-                                                    name={'consumptionQty'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={data.consumptionQty != "" ? data.consumptionQty : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.consumptionQty}
-                                                    disabled={true}
-                                                />
+                                            <label>Consumpion Quantity</label>
+                                            <label>{data.consumptionQty ? data.consumptionQty : '-'}</label>
                                             </td>
                                             <td>
-                                                <TextFieldHookForm
-                                                    label="Remaining Quantity"
-                                                    name={'remainingQty'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={data.remainingQty != "" ? data.remainingQty : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.remainingQty}
-                                                    disabled={true}
-                                                />
+                                            <label>Remaining Quantity</label>
+                                            <label>{data.remainingQty ? data.remainingQty : '-'}</label>
                                             </td>
                                             <td>
-                                                <TextFieldHookForm
-                                                    label="Annual Impact"
-                                                    name={'annualImpact'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={data.annualImpact != "" ? data.annualImpact : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.annualImpact}
-                                                    disabled={true}
-                                                />
+                                            <label>Annual Impact</label>
+                                            <label>{data.annualImpact ? data.annualImpact : '-'}</label>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <TextFieldHookForm
-                                                    label="Impact of the Year"
-                                                    name={'yearImpact'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={() => { }}
-                                                    defaultValue={data.yearImpact != "" ? data.yearImpact : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.yearImpact}
-                                                    disabled={true}
-                                                />
+                                            <label>Impact for the Year</label>
+                                            <label>{data.yearImpact ? data.yearImpact : '-'}</label>
                                             </td></tr>
                                     </table>
                                 </div>
                             </Container>
                         )
                     })}
+                    <form onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md="4">
                             <div className="left-border">{'Approver'}</div>
@@ -330,26 +290,28 @@ const SendForApproval = props => {
                         control={control}
                         rules={{ required: true }}
                         register={register}
-                        //   defaultValue={technology.length !== 0 ? technology : ''}
+                        defaultValue={''}
                         options={renderDropdownListing('Dept')}
-                        mandatory={true}
+                        // mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
                     />
-                    <SearchableSelectHookForm
-                        label={'Approver'}
-                        name={'approver'}
-                        placeholder={'-Select-'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        //   defaultValue={technology.length !== 0 ? technology : ''}
-                        options={renderDropdownListing('Approver')}
-                        mandatory={true}
-                        // handleChange={handleDepartmentChange}
-                        errors={errors.approver}
-                    />
+                    {
+                    //     <SearchableSelectHookForm
+                    //     label={'Approver'}
+                    //     name={'approver'}
+                    //     placeholder={'-Select-'}
+                    //     Controller={Controller}
+                    //     control={control}
+                    //     rules={{ required: true }}
+                    //     register={register}
+                    //     defaultValue={''}
+                    //     options={renderDropdownListing('Approver')}
+                    //     mandatory={false}
+                    //     // handleChange={handleDepartmentChange}
+                    //     errors={errors.approver}
+                    // />
+                }
                     <TextAreaHookForm
                         label="Remarks"
                         name={'remarks'}
@@ -364,18 +326,19 @@ const SendForApproval = props => {
                         errors={errors.remarks}
                         disabled={false}
                     />
-                    <Row className="sf-btn-footer justify-content-between">
-                        <div className="col-sm-12 text-right">
+                    <Row>
+                        <div>
                             <button
                                 type={'button'}
-                                className="reset mr15 cancel-btn"
+                                // className="reset mr15 cancel-btn"
                             >
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Clear'}
                             </button>
 
                             <button
-                                type="button"
-                                className="submit-button save-btn"
+                                type="submit"
+                                // className="submit-button save-btn"
+                                // onClick={() => handleSubmit(onSubmit)}
                             >
                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                 {'Submit'}

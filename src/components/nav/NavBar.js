@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
-import { Link, } from "react-router-dom";
+import { Link, Redirect, } from "react-router-dom";
 import { NavbarToggler, Nav, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
@@ -20,6 +20,7 @@ class SideBar extends Component {
       isOpen: false,
       isRedirect: false,
       isLoader: false,
+      isLeftMenuRendered: false
     };
   }
 
@@ -134,9 +135,10 @@ class SideBar extends Component {
     reactLocalStorage.set('ModuleId', ModuleId);
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
       const { location, } = this.props;
-      if (location && location.state) {
-        this.setState({ activeURL: location.pathname })
-      }
+      this.setState({isLeftMenuRendered : true})
+      // if (location && location.state) {
+      //   this.setState({ activeURL: location.pathname })
+      // }
     })
   }
 
@@ -377,12 +379,17 @@ class SideBar extends Component {
   }
 
   render() {
-    const { userData, moduleSelectList, } = this.props;
-    const { isLoader } = this.state;
+    const { userData, moduleSelectList, leftMenuData} = this.props;
+    const { isLoader, isLeftMenuRendered } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
       <nav>
         {isLoader && <Loader />}
+        {isLeftMenuRendered && <Redirect
+          to={{
+            pathname: leftMenuData[0].NavigationURL,
+        }}
+          />}
         <div>
           <div className="flex-conatiner sign-social ">
             <NavbarToggler className="navbar-light" onClick={this.toggleMobile} />
