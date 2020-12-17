@@ -3,13 +3,14 @@ import { Row, Col, Table, Container } from 'reactstrap';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment } from '../actions/Approval';
 import { userDetails } from '../../../helper/auth';
 import { setCostingApprovalData } from '../actions/Costing';
-import { toastr } from 'react-redux-toastr';
+import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume';
+import "react-datepicker/dist/react-datepicker.css";
 
 const SendForApproval = props => {
     const dispatch = useDispatch();
@@ -19,6 +20,8 @@ const SendForApproval = props => {
     const deptList = useSelector(state => state.approval.approvalDepartmentList);
     const usersList = useSelector(state => state.approval.approvalUsersList);
     const viewApprovalData = useSelector(state => state.costing.costingApprovalData);
+    const partNo = useSelector((state) => state.costing.partNo)
+    console.log('partNo: ', partNo);
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const userData = userDetails();
 
@@ -98,16 +101,31 @@ const SendForApproval = props => {
     }
 
     const handleEffectiveDateChange = (date, index) => {
-        // console.log('date: ', date);
-        let viewDataTemp = viewApprovalData;
-        let temp = viewApprovalData[index];
-        temp.effectiveDate = date;
-        temp.consumptionQty = 20;
-        temp.remainingQty = 10;
-        temp.annualImpact = (20 + 10) * parseInt(temp.variance);
-        temp.yearImpact = 10 * parseInt(temp.variance)
-        viewDataTemp[index] = temp;
-        dispatch(setCostingApprovalData(viewDataTemp));
+        console.log('date: ', date);
+        console.log(date.getMonth(), "Monthhh");
+        console.log(date.getFullYear(), "Yearrr")
+        let month = date.getMonth();
+        let year = '';
+        if(month <= 2){
+            year = `${(date.getFullYear()) - 1}-${date.getFullYear()}`
+        }
+        else{
+            year = `${(date.getFullYear())}-${date.getFullYear() + 1}`
+        }
+        console.log('year: ', year);
+        dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => {
+            console.log('res: ', res);
+
+        }))
+        // let viewDataTemp = viewApprovalData;
+        // let temp = viewApprovalData[index];
+        // temp.effectiveDate = date;
+        // temp.consumptionQty = 20;
+        // temp.remainingQty = 10;
+        // temp.annualImpact = (20 + 10) * parseInt(temp.variance);
+        // temp.yearImpact = 10 * parseInt(temp.variance)
+        // viewDataTemp[index] = temp;
+        // dispatch(setCostingApprovalData(viewDataTemp));
     }
 
     const onSubmit = data => {
