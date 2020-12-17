@@ -1242,3 +1242,21 @@ export function getCostingSummaryByplantIdPartNo(partNo,plantId,callback) {
   };
   
 }
+
+/**
+ * @method saveCopyCosting
+ * @description SAVE COPY OF COSTING
+*/
+export function saveCopyCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingCopy, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}

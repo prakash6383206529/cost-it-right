@@ -84,6 +84,7 @@ function AddToComparisonDrawer(props) {
     dispatch(
       getPlantSelectListByType(ZBC, (res) => {
         res.data.SelectList.map((item) => {
+          if (item.Value === '0' || plantDropDownList.includes(item.Value)) return false;
           temp.push({ label: item.Text, value: item.Value })
         })
         setPlantDropDownList(temp)
@@ -102,6 +103,7 @@ function AddToComparisonDrawer(props) {
     setisCbcSelected(false)
     vendorSelectList &&
       vendorSelectList.map((vendor) => {
+        if (vendor.Value === '0' || vendorDropDownList.includes(vendor.Value)) return false;
         temp.push({ label: vendor.Text, value: vendor.Value })
       })
     setVendorDropDownList(temp)
@@ -133,6 +135,7 @@ function AddToComparisonDrawer(props) {
         getPlantSelectListByType(ZBC, (res) => {
           console.log(res, "Plant response");
           res.data.SelectList.map((item) => {
+            if (item.Value === '0' || plantDropDownList.includes(item.Value)) return false;
             temp.push({ label: item.Text, value: item.Value })
           })
           setPlantDropDownList(temp)
@@ -151,6 +154,7 @@ function AddToComparisonDrawer(props) {
         getClientSelectList((res) => {
           res.data.SelectList &&
             res.data.SelectList.map((client) => {
+              if (client.Value === '0' || clientDropdown.includes(client.Value)) return false;
               temp.push({ label: client.Text, value: client.Value })
             })
           setclientDropdown(temp)
@@ -172,6 +176,7 @@ function AddToComparisonDrawer(props) {
       getPlantBySupplier(value, (res) => {
         res.data.SelectList &&
           res.data.SelectList.map((plant) => {
+            if (plant.Value === '0' || vendorPlantDropdown.includes(plant.Value)) return false;
             temp.push({ label: plant.Text, value: plant.Value })
           })
         setvendorPlantDropdown(temp)

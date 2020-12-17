@@ -20,6 +20,7 @@ import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { VBC, ZBC } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import  CopyCosting from './Drawers/CopyCosting';
 
 function CostingDetails() {
 
@@ -46,7 +47,7 @@ function CostingDetails() {
   const [IsPlantDrawerOpen, setIsPlantDrawerOpen] = useState(false);
   const [zbcPlantGrid, setZBCPlantGrid] = useState([]);
   const [zbcPlantOldArray, setzbcPlantOldArray] = useState([]);
-
+  
   const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
@@ -55,6 +56,12 @@ function CostingDetails() {
   const [stepTwo, setStepTwo] = useState(false);
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
+
+  // For copy costing
+  const [copyCostingData, setCopyCostingData] = useState({})
+  const [type, setType] = useState('')
+  const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
+  const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
   //console.log('watch', watch('zbcPlantGridFields'))
   const fieldValues = useWatch({
@@ -208,6 +215,7 @@ function CostingDetails() {
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
       dispatch(getZBCExistingCosting(part.value, res => {
         if (res.data.Result) {
+          console.log(res.data,"mmmmmmmmmmmmmmmmmmm");
           let Data = res.data.DataList;
           setZBCPlantGrid(Data);
           setzbcPlantOldArray(Data);
@@ -352,6 +360,16 @@ function CostingDetails() {
     setIsVendorDrawerOpen(false)
 
   }
+
+   /**
+  * @method closeCopyCostingDrawer
+  * @description HIDE COPY COSTING DRAWER
+  */
+ const closeCopyCostingDrawer = (e = '') => {
+
+ setIsCopyCostingDrawer(false)
+
+}
 
 
   /**
@@ -681,15 +699,38 @@ function CostingDetails() {
   * @description COPY EXIS COSTING
   */
   const copyCosting = (index, type) => {
-    if (!checkSOBTotal()) {
-      warningMessageHandle('SOB_WARNING')
-    } else if (!isCostingVersionSelected(index, type)) {
-      warningMessageHandle('COSTING_VERSION_WARNING')
-    } else if (!checkForError(index, type)) {
-      warningMessageHandle('ERROR_WARNING')
-    } else {
-      console.log('Move to Copy Costing')
+    console.log(type,"type");
+    /*Commented because of error*/
+    // if (!checkSOBTotal()) {
+    //   warningMessageHandle('SOB_WARNING')
+    // } else if (!isCostingVersionSelected(index, type)) {
+    //   warningMessageHandle('COSTING_VERSION_WARNING')
+    // } else if (!checkForError(index, type)) {
+    //   warningMessageHandle('ERROR_WARNING')
+    // } else {
+    //   console.log('Move to Copy Costing')
+    //   
+      
+
+
+    // }
+    /*Copy Costing Drawer code here*/
+    setIsCopyCostingDrawer(true)
+    console.log(getValues(`${vbcGridFields}[${index}]CostingVersion`),"VBC DATA");
+    // zbcCosting :getValues(`${zbcPlantGridFields}[${index}]CostingVersion`)
+    //     vbcCosting:getValues(`${vbcGridFields}[${index}]CostingVersion`)
+
+    if (type === ZBC){
+      const tempcopyCostingData = zbcPlantGrid[index]
+      setCopyCostingData(tempcopyCostingData)
+      setCostingIdForCopy({zbcCosting :getValues(`${zbcPlantGridFields}[${index}]CostingVersion`), vbcCosting:''})
+      
+    }else{
+      const tempcopyCostingData = vbcVendorGrid[index]
+      setCopyCostingData(tempcopyCostingData)
+      setCostingIdForCopy({zbcCosting:'', vbcCosting:getValues(`${vbcGridFields}[${index}]CostingVersion`)})
     }
+    setType(type)
   }
 
   /**
@@ -961,6 +1002,7 @@ function CostingDetails() {
                               {
                                 zbcPlantGrid &&
                                 zbcPlantGrid.map((item, index) => {
+                                  console.log(item,"itemk");
                                   return (
                                     <tr key={index}>
                                       <td>{item.PlantCode}</td>
@@ -1118,6 +1160,7 @@ function CostingDetails() {
                                       </td>
                                       <td>
                                         <button className="Add-file mr-2" type={'button'} title={'Add Costing'} onClick={() => addDetails(index, VBC)} />
+                                        {/* <button className="Copy All mr-2" type={'button'} title={'Edit Costing'} onClick={()=>{copyCosting(index,VBC)}} /> */}
                                         {!item.IsNewCosting && <button className="View mr-2" type={'button'} title={'View Costing'} onClick={() => viewDetails(index, VBC)} />}
                                         {!item.IsNewCosting && <button className="Edit mr-2" type={'button'} title={'Edit Costing'} onClick={() => editCosting(index, VBC)} />}
                                         {!item.IsNewCosting && <button className="Copy All mr-2" title={'Copy Costing'} type={'button'} onClick={() => copyCosting(index, VBC)} />}
@@ -1206,6 +1249,21 @@ function CostingDetails() {
         ID={''}
         anchor={'right'}
       />}
+      {
+        isCopyCostingDrawer && 
+        <CopyCosting
+        isOpen={isCopyCostingDrawer}
+        closeDrawer={closeCopyCostingDrawer}
+        copyCostingData={copyCostingData}
+        zbcPlantGrid={zbcPlantGrid}
+        vbcVendorGrid={vbcVendorGrid}
+        partNo={getValues('Part')}
+        type={type}
+        selectedCostingId ={costingIdForCopy}
+        //isEditFlag={false}
+        anchor={'right'}
+        />
+      }
     </>
   );
 };

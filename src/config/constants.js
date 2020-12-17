@@ -478,7 +478,7 @@ export const API = {
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-zbc-view-costing`,
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
-
+  saveCostingCopy:`${BASE_URL}/costing/copy-costing`,
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
