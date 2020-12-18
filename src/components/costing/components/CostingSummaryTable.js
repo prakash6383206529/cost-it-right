@@ -217,8 +217,11 @@ const editHandler = (index) => {
       if(index !== -1){
         let obj = {};
         obj.typeOfCosting = viewCostingData[index].zbc;
-        obj.plantCode = viewCostingData[index].plantName;
-        obj.costingId = viewCostingData[index].costingName;
+        obj.plantCode = viewCostingData[index].plantCode;
+        obj.plantName = viewCostingData[index].plantName;
+        obj.plantId = viewCostingData[index].plantId;
+        obj.costingName = viewCostingData[index].costingName;
+        obj.costingId = viewCostingData[index].costingId;
         // obj.oldPrice = viewCostingData[index].oldPrice;
         obj.oldPrice = 1000000;
         obj.revisedPrice = viewCostingData[index].nPOPrice;

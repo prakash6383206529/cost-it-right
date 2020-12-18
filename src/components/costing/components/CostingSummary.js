@@ -203,7 +203,7 @@ const handlePartChange = (newValue) => {
                       obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR : "-"
                       obj.attachment = "Attachment";
                       // obj.attachment = dataFromAPI.Attachements;
-                      obj.approvalButton = "Button"
+                      obj.approvalButton = ""
                       //RM
                       obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
                       //BOP Cost
@@ -233,6 +233,7 @@ const handlePartChange = (newValue) => {
                       obj.partId = dataFromAPI.PartNumber;
                       obj.plantId = dataFromAPI.PlantId;
                       obj.plantName = dataFromAPI.PlantName;
+                      obj.plantCode = dataFromAPI.PlantCode;
                       obj.costingId = dataFromAPI.CostingId
                       console.log('obj: ', obj);
 

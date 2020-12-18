@@ -394,6 +394,7 @@ function AddToComparisonDrawer(props) {
             dataFromAPI.CostingPartDetails[0].OverAllApplicability
           obj.partId = dataFromAPI.PartNumber;
           obj.plantId = dataFromAPI.PlantId;
+          obj.plantCode = dataFromAPI.PlantCode;
           obj.plantName = dataFromAPI.PlantName;
           obj.costingId = dataFromAPI.CostingId
 

@@ -6,16 +6,16 @@ import DatePicker from "react-datepicker";
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment } from '../actions/Approval';
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment, sendForApprovalBySender } from '../actions/Approval';
 import { userDetails } from '../../../helper/auth';
 import { setCostingApprovalData } from '../actions/Costing';
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume';
 import "react-datepicker/dist/react-datepicker.css";
 
+const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8];
 const SendForApproval = props => {
     const dispatch = useDispatch();
     const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm();
-    const [effectiveDate, setEffectiveDate] = useState('');
     const reasonsList = useSelector(state => state.approval.reasonsList);
     const deptList = useSelector(state => state.approval.approvalDepartmentList);
     const usersList = useSelector(state => state.approval.approvalUsersList);
@@ -23,6 +23,7 @@ const SendForApproval = props => {
     const partNo = useSelector((state) => state.costing.partNo)
     console.log('partNo: ', partNo);
     const [selectedDepartment, setSelectedDepartment] = useState('');
+    const [selectedApprover, setSelectedApprover] = useState('');
     const userData = userDetails();
 
     useEffect(() => {
@@ -101,70 +102,100 @@ const SendForApproval = props => {
     }
 
     const handleEffectiveDateChange = (date, index) => {
-        console.log('date: ', date);
-        console.log(date.getMonth(), "Monthhh");
-        console.log(date.getFullYear(), "Yearrr")
+        let viewDataTemp = viewApprovalData;
+        let temp = viewApprovalData[index];
+        temp.effectiveDate = date;
         let month = date.getMonth();
         let year = '';
-        if(month <= 2){
+        let sequence = SEQUENCE_OF_MONTH[month];
+        console.log('sequence: ', sequence);
+        if (month <= 2) {
             year = `${(date.getFullYear()) - 1}-${date.getFullYear()}`
         }
-        else{
+        else {
             year = `${(date.getFullYear())}-${date.getFullYear() + 1}`
         }
-        console.log('year: ', year);
-        dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => {
-            console.log('res: ', res);
+        // dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => {
+        dispatch(getVolumeDataByPartAndYear('WISHER', year, res => {
+            if (res.data.Result === true) {
+                let approvedQtyArr = res.data.Data.VolumeApprovedDetails;
+                let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails;
+                let actualQty = 0;
+                let budgetedRemQty = 0;
+                let actualRemQty = 0;
+                approvedQtyArr.map(data => {
+                    if (data.Sequence < sequence) {
+                        actualQty += parseInt(data.ApprovedQuantity);
+                    }
+                    else if (data.Sequence >= sequence) {
+                        actualRemQty += parseInt(data.ApprovedQuantity);
+                    }
+                })
+                budgetedQtyArr.map(data => {
+                    if (data.Sequence >= sequence) {
+                        budgetedRemQty += parseInt(data.BudgetedQuantity);
+                    }
+                })
+                temp.consumptionQty = actualQty;
+                temp.remainingQty = budgetedRemQty - actualRemQty
+                temp.annualImpact = (actualQty + (budgetedRemQty - actualRemQty)) * parseInt(temp.variance);
+                temp.yearImpact = (budgetedRemQty - actualRemQty) * parseInt(temp.variance)
+                viewDataTemp[index] = temp;
+                console.log('temp: ', temp);
+                dispatch(setCostingApprovalData(viewDataTemp));
+            }
 
         }))
-        // let viewDataTemp = viewApprovalData;
-        // let temp = viewApprovalData[index];
-        // temp.effectiveDate = date;
-        // temp.consumptionQty = 20;
-        // temp.remainingQty = 10;
-        // temp.annualImpact = (20 + 10) * parseInt(temp.variance);
-        // temp.yearImpact = 10 * parseInt(temp.variance)
-        // viewDataTemp[index] = temp;
-        // dispatch(setCostingApprovalData(viewDataTemp));
     }
 
     const onSubmit = data => {
+        console.log('data: ', data);
         let count = 0;
         viewApprovalData.map(item => {
-            if(item.effectiveDate == ""){
+            if (item.effectiveDate == "") {
                 count = count + 1
             }
         })
-        if(count != 0){
+        if (count != 0) {
             toastr.warning("Please select effective date for all the costing");
             return;
         }
-        const obj = {
-            costingsList: [
-                {
-                typeOfCosting: "ZBC",
-                plantCode: "Plant 001",
-                costingId: "CSm7654",
-                reason: "Test",
-                ecnRefNo: "",
-                effectiveDate: "16/12/2020"
-            },
-            {
-                typeOfCosting: "ZBC",
-                plantCode: "Plant 001",
-                costingId: "CSm7654",
-                reason: "Test",
-                ecnRefNo: "",
-                effectiveDate: "16/12/2020"
-            }
-        ],
-        approverDepartmentId: "Department Id",
-        approverId: "Approver Id",
-        remark: ""
+        let obj = {
+            ApproverDepartmentId: selectedDepartment.value,
+            ApproverLevelId: 1,
+            ApproverId: 1,
+            SenderLevelId: userData.LoggedInLevelId,
+            SenderId: userData.LoggedInUserId,
+            SenderRemark: data.remarks,
+            LoggedInUserId: userData.LoggedInUserId
         }
+        let temp = []
+        let tempObj = {}
+        viewApprovalData.map(data => {
+            tempObj.TypeOfCosting = data.typeOfCosting;
+            tempObj.PlantCode = data.plantCode;
+            tempObj.PlantNumber = data.plantId;
+            tempObj.CostingId = data.costingId;
+            tempObj.CostingNumber = data.costingName;
+            tempObj.ReasonId = data.reasonId;
+            tempObj.Reason = data.reason;
+            tempObj.ECNNumber = data.ecnNo;
+            tempObj.EffectiveDate = data.effectiveDate;
+            temp.push(tempObj);
+        })
+        obj.CostingsList = temp;
+        console.log('obj: ', obj);
+
+        dispatch(sendForApprovalBySender(obj, res => {
+            console.log(res, "Response from send for approval")
+        }))
     }
 
-    useEffect(() => {}, [viewApprovalData])
+    const handleApproverChange = data => {
+        setSelectedApprover(data)
+    }
+
+    useEffect(() => { }, [viewApprovalData])
 
     const toggleDrawer = (event) => {
         if (
@@ -178,123 +209,124 @@ const SendForApproval = props => {
     return (
         <Fragment>
             <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-                    {viewApprovalData && viewApprovalData.map((data, index) => {
-                        return (
-                            <Container>
-                                <div>
-                                    <Row>
-                                        <Col md="4">
-                                            <div className="left-border">{data.typeOfCosting}</div>
-                                        </Col>
-                                        <Col md="4">
-                                            <div className="left-border">{`Plant Code: ${data.plantCode}`}</div>
-                                        </Col>
-                                        <Col md="4">
-                                            <div className="left-border">{`Costing Id: ${data.costingId}`}</div>
-                                        </Col>
-                                    </Row>
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <SearchableSelectHookForm
-                                                    label={'Reason'}
-                                                    name={'reason'}
-                                                    placeholder={'-Select-'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    rules={{ required: true }}
-                                                    register={register}
-                                                    defaultValue={data.reason != "" ? data.reason : ''}
-                                                    options={renderDropdownListing('Reason')}
-                                                    mandatory={true}
-                                                    handleChange={(e) => { handleReasonChange(e, index) }}
-                                                    errors={errors.reason}
-                                                />
-                                            </td>
-                                            <td>
-                                                <TextFieldHookForm
-                                                    label="ENC Ref No"
-                                                    name={'encNumber'}
-                                                    Controller={Controller}
-                                                    control={control}
-                                                    register={register}
-                                                    rules={{ required: false }}
-                                                    mandatory={false}
-                                                    handleChange={(e) => {
-                                                handleECNNoChange(e.target.value, index) }}
-                                                    defaultValue={data.ecnNo != "" ? data.ecnNo : ''}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                    errors={errors.encNumber}
-                                                // disabled={true}
-                                                />
-                                            </td>
-                                            <td>
-                                                <div className="form-group">
-                                                    <label>Effective Date</label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="EffectiveDate"
-                                                            selected={data.effectiveDate != "" ? data.effectiveDate : ''}
-                                                            onChange={(date) => {
-                                                                handleEffectiveDateChange(date, index)
-                                                            }}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
-                                                            dropdownMode="select"
-                                                            placeholderText="Select date"
-                                                            className="withBorder"
-                                                            autoComplete={'off'}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={false}
-                                                            required={true}
-                                                        />
-                                                    </div>
+                {viewApprovalData && viewApprovalData.map((data, index) => {
+                    return (
+                        <Container>
+                            <div>
+                                <Row>
+                                    <Col md="4">
+                                        <div className="left-border">{data.typeOfCosting}</div>
+                                    </Col>
+                                    <Col md="4">
+                                        <div className="left-border">{`Plant Code: ${data.plantCode}`}</div>
+                                    </Col>
+                                    <Col md="4">
+                                        <div className="left-border">{`Costing Id: ${data.costingId}`}</div>
+                                    </Col>
+                                </Row>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <SearchableSelectHookForm
+                                                label={'Reason'}
+                                                name={'reason'}
+                                                placeholder={'-Select-'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                defaultValue={data.reason != "" ? data.reason : ''}
+                                                options={renderDropdownListing('Reason')}
+                                                mandatory={true}
+                                                handleChange={(e) => { handleReasonChange(e, index) }}
+                                                errors={errors.reason}
+                                            />
+                                        </td>
+                                        <td>
+                                            <TextFieldHookForm
+                                                label="ENC Ref No"
+                                                name={'encNumber'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={(e) => {
+                                                    handleECNNoChange(e.target.value, index)
+                                                }}
+                                                defaultValue={data.ecnNo != "" ? data.ecnNo : ''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.encNumber}
+                                            // disabled={true}
+                                            />
+                                        </td>
+                                        <td>
+                                            <div className="form-group">
+                                                <label>Effective Date</label>
+                                                <div className="inputbox date-section">
+                                                    <DatePicker
+                                                        name="EffectiveDate"
+                                                        selected={data.effectiveDate != "" ? data.effectiveDate : ''}
+                                                        onChange={(date) => {
+                                                            handleEffectiveDateChange(date, index)
+                                                        }}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dateFormat="dd/MM/yyyy"
+                                                        //maxDate={new Date()}
+                                                        dropdownMode="select"
+                                                        placeholderText="Select date"
+                                                        className="withBorder"
+                                                        autoComplete={'off'}
+                                                        disabledKeyboardNavigation
+                                                        onChangeRaw={(e) => e.preventDefault()}
+                                                        disabled={false}
+                                                        required={true}
+                                                    />
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             <label>Old/Current Price</label>
                                             <label>{data.oldPrice ? data.oldPrice : '-'}</label>
-                                            </td>
-                                            <td>
+                                        </td>
+                                        <td>
                                             <label>Revised Price</label>
                                             <label>{data.revisedPrice ? data.revisedPrice : '-'}</label>
-                                            </td>
-                                            <td>
+                                        </td>
+                                        <td>
                                             <label>Variance</label>
                                             <label>{data.variance ? data.variance : '-'}</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             <label>Consumpion Quantity</label>
                                             <label>{data.consumptionQty ? data.consumptionQty : '-'}</label>
-                                            </td>
-                                            <td>
+                                        </td>
+                                        <td>
                                             <label>Remaining Quantity</label>
-                                            <label>{data.remainingQty ? data.remainingQty : '-'}</label>
-                                            </td>
-                                            <td>
+                                            <label>{data.remainingQty !== "" ? data.remainingQty : '-'}</label>
+                                        </td>
+                                        <td>
                                             <label>Annual Impact</label>
-                                            <label>{data.annualImpact ? data.annualImpact : '-'}</label>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
+                                            <label>{data.annualImpact !== "" ? data.annualImpact : '-'}</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             <label>Impact for the Year</label>
                                             <label>{data.yearImpact ? data.yearImpact : '-'}</label>
-                                            </td></tr>
-                                    </table>
-                                </div>
-                            </Container>
-                        )
-                    })}
-                    <form onSubmit={handleSubmit(onSubmit)}>
+                                        </td></tr>
+                                </table>
+                            </div>
+                        </Container>
+                    )
+                })}
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md="4">
                             <div className="left-border">{'Approver'}</div>
@@ -315,21 +347,20 @@ const SendForApproval = props => {
                         errors={errors.dept}
                     />
                     {
-                    //     <SearchableSelectHookForm
-                    //     label={'Approver'}
-                    //     name={'approver'}
-                    //     placeholder={'-Select-'}
-                    //     Controller={Controller}
-                    //     control={control}
-                    //     rules={{ required: true }}
-                    //     register={register}
-                    //     defaultValue={''}
-                    //     options={renderDropdownListing('Approver')}
-                    //     mandatory={false}
-                    //     // handleChange={handleDepartmentChange}
-                    //     errors={errors.approver}
-                    // />
-                }
+                        <SearchableSelectHookForm
+                            label={'Approver'}
+                            name={'approver'}
+                            placeholder={'-Select-'}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            defaultValue={''}
+                            options={renderDropdownListing('Approver')}
+                            mandatory={false}
+                            handleChange={handleApproverChange}
+                            errors={errors.approver}
+                        />
+                    }
                     <TextAreaHookForm
                         label="Remarks"
                         name={'remarks'}
@@ -348,15 +379,15 @@ const SendForApproval = props => {
                         <div>
                             <button
                                 type={'button'}
-                                // className="reset mr15 cancel-btn"
+                            // className="reset mr15 cancel-btn"
                             >
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Clear'}
                             </button>
 
                             <button
                                 type="submit"
-                                // className="submit-button save-btn"
-                                // onClick={() => handleSubmit(onSubmit)}
+                            // className="submit-button save-btn"
+                            // onClick={() => handleSubmit(onSubmit)}
                             >
                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                 {'Submit'}
