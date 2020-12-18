@@ -25,7 +25,8 @@ import {
   VIEW_COSTING_DATA,
   STORE_PART_VALUE,
   GET_COST_SUMMARY_BY_PART_PLANT,
-  SET_COSTING_APPROVAL_DATA
+  SET_COSTING_APPROVAL_DATA,
+  GET_COSTING_BY_VENDOR_VENDOR_PLANT
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -1273,4 +1274,25 @@ export const setCostingApprovalData = (data) => dispatch => {
       type: SET_COSTING_APPROVAL_DATA,
       payload: temp
   })
+}
+
+export function getCostingByVendorAndVendorPlant (partNo,VendorId,VendorPlantId,callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`, headers);
+    request.then((response) => {
+      console.log(response,"Response from costing summary");
+      callback(response);
+      if (response.data.Result) {
+      dispatch({
+          type: GET_COSTING_BY_VENDOR_VENDOR_PLANT,
+          payload: response.data.Result,
+        })
+    }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      
+      apiErrors(error);
+    });
+  };
 }

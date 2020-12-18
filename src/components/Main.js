@@ -39,6 +39,7 @@ import {
   RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH
 } from '../config/constants'
 import ApprovalSummary from "./costing/components/ApprovalSummary";
+import ApprovalListing from "./costing/components/ApprovalListing";
 
 class Main extends Component {
   constructor(props) {
@@ -184,7 +185,8 @@ class Main extends Component {
                     <Route path="/costing" component={CostingRoutes} />
 
                     {/*Temporary  */}
-                    <Route path="/approval-summary" component={ApprovalSummary} />
+                    {/* <Route path="/approval-summary" component={ApprovalSummary} /> */}
+                    <Route path="/approval-listing" component={ApprovalListing} />
 
                     <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
 

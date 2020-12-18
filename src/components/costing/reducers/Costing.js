@@ -23,7 +23,8 @@ import {
     SET_COSTING_VIEW_DATA,
     STORE_PART_VALUE,
     GET_COST_SUMMARY_BY_PART_PLANT,
-    SET_COSTING_APPROVAL_DATA
+    SET_COSTING_APPROVAL_DATA,
+    GET_COSTING_BY_VENDOR_VENDOR_PLANT
 } from '../../../config/constants';
 
 const initialState = {
@@ -239,6 +240,12 @@ export default function costingReducer(state = initialState, action) {
             return {
                 ...state,
                 costSummaryByPartAndPlant: action.payload
+            }
+        case GET_COSTING_BY_VENDOR_VENDOR_PLANT:
+            return {
+                ...state,
+                loading: false,
+                costingByVendorAndVendorPlant: action.payload
             }
         default:
             return state;
