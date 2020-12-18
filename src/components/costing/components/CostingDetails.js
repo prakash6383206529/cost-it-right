@@ -717,9 +717,7 @@ function CostingDetails() {
     /*Copy Costing Drawer code here*/
     setIsCopyCostingDrawer(true)
     console.log(getValues(`${vbcGridFields}[${index}]CostingVersion`),"VBC DATA");
-    // zbcCosting :getValues(`${zbcPlantGridFields}[${index}]CostingVersion`)
-    //     vbcCosting:getValues(`${vbcGridFields}[${index}]CostingVersion`)
-
+ 
     if (type === ZBC){
       const tempcopyCostingData = zbcPlantGrid[index]
       setCopyCostingData(tempcopyCostingData)

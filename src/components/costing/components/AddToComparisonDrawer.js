@@ -18,10 +18,14 @@ import {
 } from '../../layout/HookFormInputs'
 
 import { ZBC, VBC, VIEW_COSTING_DATA } from '../../../config/constants'
-import { toastr } from 'react-redux-toastr'
+import { toastr } from 'react-redux-toastr';
+import { isUserLoggedIn } from '../../../helper/auth'
+
 
 function AddToComparisonDrawer(props) {
-  console.log(props, "Props");
+  
+  const loggedIn = isUserLoggedIn()
+  console.log(loggedIn, "Logged in");
   const { editObject, isEditFlag } = props
   console.log(editObject, "Edit object");
   const {
@@ -526,7 +530,9 @@ function AddToComparisonDrawer(props) {
                         errors={errors.vendor}
                       />
                     </Col>
-                    <Col md="12">
+                    {
+                      loggedIn && 
+                      <Col md="12">
                       <SearchableSelectHookForm
                         label={'Vendor Plant'}
                         name={'vendorPlant'}
@@ -542,6 +548,8 @@ function AddToComparisonDrawer(props) {
                         errors={errors.vendorPlant}
                       />
                     </Col>
+                    }
+                    
                   </>
                 )}
                 {isCbcSelected && (

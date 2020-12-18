@@ -1,25 +1,22 @@
-import React, { useState, useEffect } from 'react'
-import { Container, Row, Col } from 'reactstrap'
-import { useForm, Controller } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import Drawer from '@material-ui/core/Drawer'
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col } from 'reactstrap';
+import { useForm, Controller } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import Drawer from '@material-ui/core/Drawer';
+import Switch from 'react-switch';
 import {
-  TextFieldHookForm,
   SearchableSelectHookForm,
-} from '../../../layout/HookFormInputs'
-import Switch from 'react-switch'
+} from '../../../layout/HookFormInputs';
+
 import {
-  getPlantSelectListByType,
   getPlantBySupplier,
-} from '../../../../actions/Common'
+} from '../../../../actions/Common';
 import {
   getCostingSummaryByplantIdPartNo,
-  getZBCExistingCosting,
-  getVBCExistingCosting,
   saveCopyCosting,
-} from '../../actions/Costing'
-import { VBC, ZBC } from '../../../../config/constants'
-import { isUserLoggedIn, loggedInUserId } from '../../../../helper'
+} from '../../actions/Costing';
+import { VBC, ZBC } from '../../../../config/constants';
+import { isUserLoggedIn, loggedInUserId } from '../../../../helper';
 
 function CopyCosting(props) {
   const loggedIn = isUserLoggedIn()
@@ -55,7 +52,7 @@ function CopyCosting(props) {
   useEffect(() => {
     const ZbcTemp = []
     const VbcTemp = []
-
+    /* For ZBC plant drop down*/
     zbcPlantGrid &&
       zbcPlantGrid.map((item) => {
         ZbcTemp.push({
@@ -64,7 +61,7 @@ function CopyCosting(props) {
         })
       })
     setPlantDropDownList(ZbcTemp)
-
+      /*For vendor dropdown*/
     vbcVendorGrid &&
       vbcVendorGrid.map((item) => {
         VbcTemp.push({
@@ -109,7 +106,7 @@ function CopyCosting(props) {
   /**
    * @method handleToSwitch
    * @description Handle switch of 'To'
-  */
+   */
   const handleToSwitch = (checked) => {
     setToSwitch(checked)
     if (checked === false) {
@@ -124,7 +121,7 @@ function CopyCosting(props) {
   /**
    * @method handleFromChange
    * @description Handle switch of 'From'
-  */
+   */
   const handleFromChange = (checked, event, id) => {
     console.log(checked, 'Checked from first switch', event, 'ggggggggg', id)
     setFromType(checked)
@@ -137,11 +134,10 @@ function CopyCosting(props) {
     }
   }
 
-
   /**
    * @method getCostingDropDown
    * @description getting dropdown of costing id
-  */
+   */
   function getCostingDropDown(value, costingFor) {
     const temp = []
     dispatch(
@@ -169,7 +165,7 @@ function CopyCosting(props) {
   /**
    * @method filterCostingDropDown
    * @description fliter costing dropdown for vendor
-  */
+   */
   function filterCostingDropDown(value) {
     const temp = []
     console.log(value, 'Value', vbcVendorGrid)
@@ -186,10 +182,10 @@ function CopyCosting(props) {
       })
     setVendorCostingId(temp)
   }
-/**
- * @method getVendorPlantDropdown
- * @description vendorplant dropdown 
-*/
+  /**
+   * @method getVendorPlantDropdown
+   * @description vendorplant dropdown
+   */
 
   function getVendorPlantDropdown(value, vendorType) {
     const temp = []
@@ -214,69 +210,59 @@ function CopyCosting(props) {
   }
   /**
    * @method handlePlantChange
-   * @description 
-  */
+   * @description for finding costing based plant change
+   */
   const handlePlantChange = (value) => {
     setValue('fromcostingId', '')
     getCostingDropDown(value.value, ZBC)
   }
+  /**
+   * @method handleFromVendorName
+   * @description for changing vendor plant and costing id based on vendor for "from"
+   */
   const handleFromVendorName = (value) => {
     setValue('fromVbccostingId', '')
     getVendorPlantDropdown(value.value, 'from')
     filterCostingDropDown(value.value)
   }
+  /**
+   * @method handleToVendorName
+   * @descriptionfor changing vendor plant  based on vendor for "To"
+   */
   const handleToVendorName = (value) => {
     getVendorPlantDropdown(value.value, 'to')
   }
 
-  const handleFromVendorPlant = (value) => {
-    console.log(value, 'After selecting vendor plant')
-    getCostingDropDown(value.value, VBC)
-  }
-
+  // const handleFromVendorPlant = (value) => {
+  //   console.log(value, 'After selecting vendor plant')
+  //   getCostingDropDown(value.value, VBC)
+  // }
+  /**
+   * @method submitForm
+   * @description Submitting the form
+   */
   const submitForm = (value) => {
     console.log('save value', value)
-    let copy = ''
-
-    // {
-    //  done "IsVendor": isToVbc ? true : false,
-    //  done "TypeOfCopy": copy,
-    //  done "CostingId": value.fromcostingId ? value.fromcostingId.value:"00000000-0000-0000-0000-000000000000",
-    //  done "CostingNumber": "string",
-    // done  "PartNumber": "string",
-    // done  "Comments": "string",
-    // done  "FromPlantId": "00000000-0000-0000-0000-000000000000",
-    // done  "ToPlantId": "00000000-0000-0000-0000-000000000000",
-    // done "FromPlanCode": "string",
-    //  done "FromVendorId": "00000000-0000-0000-0000-000000000000",
-    //  done "FromVendorCode": "string",
-    // done  "ToVendorId": "00000000-0000-0000-0000-000000000000",
-    // done  "FromVendorPlantId": "00000000-0000-0000-0000-000000000000",
-    // done  "FromVendorPlantCode": "string",
-    //  done "ToVendorPlantId": "00000000-0000-0000-0000-000000000000",
-    //  done "LoggedInUserId": "00000000-0000-0000-0000-000000000000"
-    // }
 
     let obj = {}
     if (isFromZbc) {
       const plantCode = value.fromPlant.label.split('(')
-      console.log(plantCode[1].split(')'),"Plant code");
+      console.log(plantCode[1].split(')'), 'Plant code')
       obj.FromPlantId = value.fromPlant.value
       obj.FromPlantCode = plantCode[1].split(')')[0]
       obj.CostingId = value.fromcostingId.value
       obj.CostingNumber = value.fromcostingId.label
-      obj.FromVendorPlantId = "00000000-0000-0000-0000-000000000000"
-      obj.FromVendorPlantCode=""
-      obj.FromVendorId = "00000000-0000-0000-0000-000000000000"
-      obj.FromVendorCode = ""
+      obj.FromVendorPlantId = '00000000-0000-0000-0000-000000000000'
+      obj.FromVendorPlantCode = ''
+      obj.FromVendorId = '00000000-0000-0000-0000-000000000000'
+      obj.FromVendorCode = ''
     }
     if (isToZbc) {
       obj.ToPlantId = value.toPlant.value
-      obj.ToVendorPlantId ="00000000-0000-0000-0000-000000000000"
-      obj.ToVendorId="00000000-0000-0000-0000-000000000000"
+      obj.ToVendorPlantId = '00000000-0000-0000-0000-000000000000'
+      obj.ToVendorId = '00000000-0000-0000-0000-000000000000'
     }
     if (isFromVbc) {
-      //console.log(value.fromVbccostingId.label.split('-'),"fffffff");
       const costNo = value.fromVbccostingId.label.split('-')
       const plantCode = value.fromVendorPlant.label.split('(')
       const vendorCode = value.fromVendorName.label.split('(')
@@ -286,20 +272,20 @@ function CopyCosting(props) {
       obj.FromVendorCode = vendorCode[1].split(')')[0]
       obj.FromVendorPlantId = value.fromVendorPlant.value
       obj.FromVendorPlantCode = plantCode[1].split(')')[0]
-      obj.FromPlantCode = ""
-      obj.FromPlantId = "00000000-0000-0000-0000-000000000000"
+      obj.FromPlantCode = ''
+      obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
     }
     if (isToVbc) {
       obj.ToVendorId = value.toVendorName.value
       obj.ToVendorPlantId = value.toVendorPlant.value
-      obj.ToPlantId = "00000000-0000-0000-0000-000000000000"
+      obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
     }
     obj.PartNumber = partNo.label
     obj.Comments = ''
     obj.IsVendor = isToVbc ? true : false
-    obj.LoggedInUserId=loggedUserId
+    obj.LoggedInUserId = loggedUserId
     if (isFromZbc && isToZbc) {
-     obj.TypeOfCopy = 101
+      obj.TypeOfCopy = 101
     } else if (isFromZbc && isToVbc) {
       obj.TypeOfCopy = 102
     } else if (isFromVbc && isToZbc) {
@@ -309,12 +295,14 @@ function CopyCosting(props) {
     }
 
     console.log(obj, 'Json Object')
-     dispatch(saveCopyCosting(obj,(res)=>{
-       console.log(res);
-      if(res.status = 200) {
-        props.closeDrawer('')
-      }
-     }) ) // for saving data
+    dispatch(
+      saveCopyCosting(obj, (res) => {
+        console.log(res)
+        if ((res.status = 200)) {
+          props.closeDrawer('')
+        }
+      }),
+    ) // for saving data
   }
   /**
    * @method toggleDrawer
@@ -383,8 +371,8 @@ function CopyCosting(props) {
                   </div>
                 </Col>
               </Row>
+              {/* From data for ZBC */}
               {isFromZbc && (
-                // vendorName
                 <Row>
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
@@ -420,6 +408,7 @@ function CopyCosting(props) {
                   </div>
                 </Row>
               )}
+              {/* From data for VBC */}
               {isFromVbc && (
                 <Row>
                   <div className="input-group form-group col-md-12 input-withouticon">
@@ -508,6 +497,7 @@ function CopyCosting(props) {
                   </div>
                 </Col>
               </Row>
+              {/* To data for ZBC */}
               {isToZbc && (
                 <Row>
                   <div className="input-group form-group col-md-12 input-withouticon">
@@ -544,6 +534,7 @@ function CopyCosting(props) {
                 </div> */}
                 </Row>
               )}
+              {/* To data for VBC */}
               {isToVbc && (
                 <Row>
                   <div className="input-group form-group col-md-12 input-withouticon">
