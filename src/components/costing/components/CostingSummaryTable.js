@@ -1,9 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form';
-import { Row, Col, Table } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import AddToComparisonDrawer from './AddToComparisonDrawer';
+import { toastr } from 'react-redux-toastr';
 import { setCostingViewData, setCostingApprovalData } from '../actions/Costing';
 import ViewBOP from './Drawers/ViewBOP';
 import ViewConversionCost from './Drawers/ViewConversionCost';
@@ -11,8 +9,8 @@ import ViewRM from './Drawers/ViewRM';
 import ViewOverheadProfit from './Drawers/ViewOverheadProfit';
 import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight';
 import ViewToolCost from './Drawers/viewToolCost';
+import AddToComparisonDrawer from './AddToComparisonDrawer';
 import SendForApproval from './SendForApproval';
-import { toastr } from 'react-redux-toastr';
 
 const CostingSummaryTable = (props) => {
   const dispatch = useDispatch();
@@ -39,7 +37,7 @@ const CostingSummaryTable = (props) => {
   const [multipleCostings, setMultipleCostings] = useState([])
   const [flag, setFlag] = useState(false)
 
-
+//Fetch data from reducer for costing summary table view
   const viewCostingData = useSelector(
     (state) => state.costing.viewCostingDetailData
   )
@@ -54,74 +52,75 @@ const CostingSummaryTable = (props) => {
     setIsViewConversionCost(false)
     if (index != -1) {
       let data = viewCostingData[index].netBOPCostView;
-      console.log(data, "Dataaa");
       setViewBOPData(data);
     }
   }
+
   /**
    * @method viewConversionCostData
    * @description SET COVERSION DATA FOR DRAWER
   */
   const viewConversionCost = index => {
-    console.log(index, "Index");
+    
     setIsViewConversionCost(true)
     setViewBOP(false)
     if (index != -1) {
       let data = viewCostingData[index].netConversionCostView;
-      console.log(data, "Data of conversion cost");
       setViewConversionCostData(data)
     }
   }
+
   /**
    * @method viewRM
    * @description SET RM DATA FOR DRAWER
   */
   const viewRM = index => {
-    console.log(index);
     let data = viewCostingData[index].netRMCostView;
-    console.log(data, "Data of Rm");
     setIsViewRM(true)
     setViewRMData(data)
   }
+
   /**
    * @method overHeadProfit
    * @description SET OVERHEAD & PROFIT DATA FOR DRAWER
   */
   const overHeadProfit = index => {
-    console.log(index, "Index");
     let overHeadData = viewCostingData[index].netOverheadCostView;
     let profitData = viewCostingData[index].netProfitCostView;
     let rejectData = viewCostingData[index].netRejectionCostView;
     let modelType = viewCostingData[index].modelType;
-    console.log(rejectData, "ovr", modelType);
     setIsViewOverheadProfit(true);
     setViewOverheadData(overHeadData);
     setViewProfitData(profitData);
     setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
   }
+
   /**
    * @method viewPackagingAndFrieghtData
    * @description SET PACKAGING AND FRIEGHT DATA FOR DRAWER
   */
   const viewPackagingAndFrieghtData = index => {
-    console.log(index);
     let packagingData = viewCostingData[index].netPackagingCostView;
     let freightData = viewCostingData[index].netFreightCostView;
-    console.log(packagingData, "data tabler", freightData);
     setIsViewPackagingFreight(true)
     setViewPackagingFreight({ packagingData: packagingData, freightData: freightData })
   }
+
   /**
    * @method viewToolCostData
    * @description SET TOOL DATA FOR DRAWER
   */
   const viewToolCostData = index => {
-    console.log(index);
     let data = viewCostingData[index].netToolCostView;
     setIsViewToolCost(true)
     setViewToolCost(data)
   }
 
+  /**
+   * @method deleteCostingFromView
+   * @param {*} index 
+   * @description This method is used to delete the costing id from summary and updates the reducer.
+   */
   const deleteCostingFromView = (index) => {
     let temp = viewCostingData;
     temp.splice(index, 1);
@@ -152,12 +151,12 @@ const CostingSummaryTable = (props) => {
    * @method addComparisonDrawerToggle
    * @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
    */
-
   const addComparisonDrawerToggle = () => {
     setaddComparisonToggle(true)
     setIsEditFlag(false)
     setEditObject({})
   }
+
   /**
    * @method closeAddComparisonDrawer
    * @description HIDE ADD COMPARISON DRAWER
@@ -178,6 +177,7 @@ const CostingSummaryTable = (props) => {
     setIsViewConversionCost(false)
     setIsViewToolCost(false)
   }
+
   /**
    * @method closeShowApproval
    * @description FOR CLOSING APPROVAL DRAWER
@@ -186,31 +186,33 @@ const CostingSummaryTable = (props) => {
     setShowApproval(false)
   }
 
+  /**
+   * @method handleMultipleCostings
+   * @param {*} checked 
+   * @param {*} index 
+   * @description this method is used to add or delete the costing ids to be set in the multiplecosting state.
+   */
   const handleMultipleCostings = (checked, index) => {
     let temp = multipleCostings;
-    console.log('temp: ', temp);
     if (checked) {
-      console.log("From If")
       temp.push(viewCostingData[index].costingId);
-      // setMultipleCostings(temp)
     }
     else {
-      console.log("From else")
       const ind = multipleCostings.findIndex(data => data == viewCostingData[index].costingId);
       if (ind != -1) {
         temp.splice(ind, 1);
       }
-      // setMultipleCostings(temp)
     }
-    console.log(temp, "Temp from Multiple costing")
     setMultipleCostings(temp)
     setFlag(!flag)
-    // let data = viewCostingData[index].netBOPCostView;
-    // setViewBOPData(data)
   }
 
+  /**
+   * @method sendForApprovalData
+   * @param {*} costingIds 
+   * @description This method is used for sending approval data to the drawer.
+   */
   const sendForApprovalData = (costingIds) => {
-    console.log('costingIds: ', costingIds);
     let temp = viewApprovalData
     costingIds && costingIds.map(id => {
       let index = viewCostingData.findIndex(data => data.costingId == id);
@@ -222,7 +224,6 @@ const CostingSummaryTable = (props) => {
         obj.plantId = viewCostingData[index].plantId;
         obj.costingName = viewCostingData[index].costingName;
         obj.costingId = viewCostingData[index].costingId;
-        // obj.oldPrice = viewCostingData[index].oldPrice;
         obj.oldPrice = viewCostingData[index].oldPoPrice;
         obj.revisedPrice = viewCostingData[index].nPOPrice;
         obj.variance = parseInt(viewCostingData[index].oldPoPrice) - parseInt(viewCostingData[index].nPOPrice);
@@ -233,13 +234,20 @@ const CostingSummaryTable = (props) => {
         obj.reason = "";
         obj.ecnNo = "";
         obj.effectiveDate = "";
+        obj.vendorId = "";
+        obj.vendorCode = "";
+        obj.vendorPlantId = "";
+        obj.vendorPlantCode = "";
         temp.push(obj)
       }
       dispatch(setCostingApprovalData(temp))
     })
-
   }
 
+  /**
+   * @method checkCostings
+   * @description This method is used to check whether a user has selected one or multiple costings.
+   */
   const checkCostings = () => {
     if (multipleCostings.length == 0) {
       toastr.warning("Please select at least one costing for sendig for approval")
@@ -253,11 +261,6 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => { }, [viewCostingData])
 
-  // useEffect(() => {
-  //   console.log('multipleCostings: ', multipleCostings);
-  // }, [multipleCostings])
-
-  // console.log('multipleCostings: ', multipleCostings);
   return (
     <Fragment>
       <Row>
@@ -301,7 +304,7 @@ const CostingSummaryTable = (props) => {
                               <input
                                 type="checkbox"
                                 onClick={(e) => {
-                                  console.log(e.target.checked, "From CheckBox")
+                                  
                                   handleMultipleCostings(e.target.checked, index)
                                 }}
                                 value={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true : false}

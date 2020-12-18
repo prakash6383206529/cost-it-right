@@ -24,6 +24,7 @@ const SendForApproval = props => {
     console.log('partNo: ', partNo);
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedApprover, setSelectedApprover] = useState('');
+    const [financialYear, setFinancialYear] = useState('');
     const userData = userDetails();
 
     useEffect(() => {
@@ -131,6 +132,7 @@ const SendForApproval = props => {
         else {
             year = `${(date.getFullYear())}-${date.getFullYear() + 1}`
         }
+        setFinancialYear(year);
         // dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => {
         dispatch(getVolumeDataByPartAndYear('WISHER', year, res => {
             if (res.data.Result === true) {
@@ -201,6 +203,7 @@ const SendForApproval = props => {
             tempObj.Reason = data.reason;
             tempObj.ECNNumber = data.ecnNo;
             tempObj.EffectiveDate = data.effectiveDate;
+            tempObj.RevisionNumber = partNo.revisionNumber
             temp.push(tempObj);
         })
         obj.CostingsList = temp;

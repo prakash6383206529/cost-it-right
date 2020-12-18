@@ -128,6 +128,7 @@ const handlePartChange = (newValue) => {
               setValue("RevisionNumber", Data.RevisionNumber)
               setValue("ShareOfBusiness", Data.Price)
               setEffectiveDate(moment(Data.EffectiveDate)._d)
+              newValue.revisionNumber = Data.RevisionNumber;
               dispatch(storePartNumber(newValue))
               dispatch(getCostingSummaryByplantIdPartNo(newValue.label, '00000000-0000-0000-0000-000000000000', res => {
                 if (res.data.Result == true) {
