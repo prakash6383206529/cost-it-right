@@ -479,6 +479,7 @@ export const API = {
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-zbc-view-costing`,
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy:`${BASE_URL}/costing/copy-costing`,
+  getCostingByVendorVendorPlant:`${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
@@ -1028,7 +1029,7 @@ export const SET_COSTING_VIEW_DATA = 'SET_COSTING_VIEW_DATA';
 export const SET_COSTING_APPROVAL_DATA = 'SET_COSTING_APPROVAL_DATA';
 export const STORE_PART_VALUE = 'STORE_PART_VALUE';
 export const GET_COST_SUMMARY_BY_PART_PLANT = 'GET_COST_SUMMARY_BY_PART_PLANT';
-
+export const GET_COSTING_BY_VENDOR_VENDOR_PLANT='GET_COSTING_BY_VENDOR_VENDOR_PLANT';
 //weight calculation costing
 export const GET_WEIGHT_CALC_INFO_SUCCESS = 'GET_WEIGHT_CALC_INFO_SUCCESS';
 export const CREATE_WEIGHT_CALC_COSTING_SUCCESS = 'CREATE_WEIGHT_CALC_COSTING_SUCCESS';

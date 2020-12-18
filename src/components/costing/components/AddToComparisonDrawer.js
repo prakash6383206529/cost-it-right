@@ -10,7 +10,7 @@ import {
   getPlantBySupplier,
 } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
-import { getCostingSummaryByplantIdPartNo, getSingleCostingDetails, setCostingViewData } from '../actions/Costing'
+import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getSingleCostingDetails, setCostingViewData } from '../actions/Costing'
 
 import {
   SearchableSelectHookForm,
@@ -62,6 +62,8 @@ function AddToComparisonDrawer(props) {
   const [vendorPlantDropdown, setvendorPlantDropdown] = useState([])
   const [clientDropdown, setclientDropdown] = useState([])
   const [costingDropdown, setCostingDropdown] = useState([])
+
+  const [vendorId, setVendorId] = useState([])
 
   /* constant for form value */
   const [plantValue, setPlantValue] = useState('')
@@ -174,18 +176,24 @@ function AddToComparisonDrawer(props) {
    * @method handleVendorChange
    * @description showing vendor plant by vendor name
   */
-  const handleVendorChange = ({ value }) => {
+  const handleVendorChange = ( {value} ) => {
     const temp = []
-    dispatch(
-      getPlantBySupplier(value, (res) => {
-        res.data.SelectList &&
-          res.data.SelectList.map((plant) => {
-            if (plant.Value === '0' || vendorPlantDropdown.includes(plant.Value)) return false;
-            temp.push({ label: plant.Text, value: plant.Value })
-          })
-        setvendorPlantDropdown(temp)
-      }),
-    )
+    setVendorId(value)
+    if (loggedIn){
+      dispatch(
+        getPlantBySupplier(value, (res) => {
+          res.data.SelectList &&
+            res.data.SelectList.map((plant) => {
+              if (plant.Value === '0' || vendorPlantDropdown.includes(plant.Value)) return false;
+              temp.push({ label: plant.Text, value: plant.Value })
+            })
+          setvendorPlantDropdown(temp)
+        }),
+      )
+    }else {
+      handleVendorNameChange('')
+    }
+    
   }
 
   /**
@@ -431,6 +439,7 @@ function AddToComparisonDrawer(props) {
     const temp = []
     dispatch(
       getCostingSummaryByplantIdPartNo(partNo.label, value.value, (res) => {
+        console.log(res,"Response");
         res.data.Data.CostingOptions &&
           res.data.Data.CostingOptions.map((costing) => {
             temp.push({
@@ -441,6 +450,30 @@ function AddToComparisonDrawer(props) {
         setCostingDropdown(temp)
         setValue('costings', '')
       }),
+    )
+  }
+
+  const handleVendorNameChange = ({value}) => {
+    const temp =[]
+    if(value==="") {
+      value="00000000-0000-0000-0000-000000000000"
+    }
+    else {
+      value=value
+    }
+    dispatch(
+      getCostingByVendorAndVendorPlant(partNo.value,vendorId,value, (res) => {
+        console.log(res,"Response from Costing by vendor");
+        res.data.DataList && 
+        res.data.DataList.map((costing) => {
+          temp.push({
+            label: costing.CostingNumber,
+            value: costing.CostingId,
+          })
+        })
+        setCostingDropdown(temp)
+        setValue('costings', '')
+      })
     )
   }
 
@@ -545,7 +578,7 @@ function AddToComparisonDrawer(props) {
                         // defaultValue={plant.length !== 0 ? plant : ''}
                         options={vendorPlantDropdown}
                         mandatory={true}
-                        handleChange={() => { }}
+                        handleChange={handleVendorNameChange}
                         errors={errors.vendorPlant}
                       />
                     </Col>
