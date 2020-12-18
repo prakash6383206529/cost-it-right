@@ -575,6 +575,7 @@ export const API = {
   getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
   // getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-level-filter-by-department`,
   sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
+  sendForApprovalBySender: `${BASE_URL}/app-approval-system/send-to-approver-by-sender`,
   approvalProcess: `${BASE_URL}/app-approval-system/approval-process`,
   finalApprovalProcess: `${BASE_URL}/app-approval-system/final-approval-process`,
   reassignCosting: `${BASE_URL}/app-approval-system/reassign-send-for-approval-click`,
