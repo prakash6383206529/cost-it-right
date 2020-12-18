@@ -286,309 +286,106 @@ const CostingSummaryTable = (props) => {
       </Row>
       <Row>
         <Col md="12">
-          <table>
-            {viewCostingData &&
-              viewCostingData.length > 0 &&
-              viewCostingData.map((data, index) => {
-                return (
-                  <Fragment>
-                    <tr>
-                      {index == 0 ? (
-                        <th><b>{data.zbc}</b></th>
-                      ) : (
-                          <th>
-                            <div>
-                              <input
-                                type="checkbox"
-                                onClick={(e) => {
-                                  console.log(e.target.checked, "From CheckBox")
-                                  handleMultipleCostings(e.target.checked, index)
-                                }}
-                                value={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true : false}
-                              // disabled={isEditFlag ? true : false}
-                              />
-                              {data.zbc}
-                              <button onClick={() => deleteCostingFromView(index)}>
-                                Delete
-                            </button>
-                            </div>
-                          </th>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>Test</td>
-                      ) : (
-                          <td>
-                            <div>
-                              {data.costingName}
-                              <button className={'user-btn'} onClick={() => editHandler(index)}>Edit Costing</button> &nbsp;
-                            <button>Add Costing</button>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.poPrice}</td> : <td>{data.poPrice}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.status}</td> : <td>{data.status}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.rm}</td> : <td>{data.rm}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.gWeight}</td> : <td>{data.gWeight}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.fWeight}</td> : <td>{data.fWeight}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                        {index == 0 ? <span>{data.netRM}</span> : data.netRm}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewRM(index)}
-                            >View -RM</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.netBOP}</span> : data.netBOP}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewBop(index)}
-                            >
-                              View-BOP
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.pCost}</td> : <td>{data.pCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.oCost}</td> : <td>{data.oCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.sTreatment}</td> : <td>{data.sTreatment}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.tCost}</td> : <td>{data.tCost}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.nConvCost}</span> : data.nConvCost}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewConversionCost(index)}
-                            >
-                              View-CONVERSION COST
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.modelType}</td> : <td>{data.modelType}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td></td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.aValue.applicability}</span> &nbsp;{' '}
-                              <span>{data.aValue.value}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.overheadOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.overheadOn.overheadTitle}</span> &nbsp;{' '}
-                              <span>{data.overheadOn.overheadValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.profitOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.profitOn.profitTitle}</span> &nbsp;{' '}
-                              <span>{data.profitOn.profitValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.rejectionOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.rejectionOn.rejectionTitle}</span>{' '}
-                            &nbsp;{' '}
-                              <span>{data.rejectionOn.rejectionValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.iccOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.iccOn.iccTitle}</span> &nbsp;{' '}
-                              <span>{data.iccOn.iccValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.paymentTerms}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.paymentTerms.paymentTitle}</span> &nbsp;{' '}
-                              <span>{data.paymentTerms.paymentValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.nOverheadProfit}</span> : data.nOverheadProfit}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => overHeadProfit(index)}
-                            >View-OVERHEAD  PROFIT</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.packagingCost}</td> : <td>{data.packagingCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.freight}</td> : <td>{data.freight}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.nPackagingAndFreight}</span> : data.nPackagingAndFreight}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewPackagingAndFrieghtData(index)}
-                            >View-PACKAGING</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.toolMaintenanceCost}</td> : <td>{data.toolMaintenanceCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.toolPrice}</td> : <td>{data.toolPrice}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.amortizationQty}</td> : <td>{data.amortizationQty}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.totalToolCost}</span> : data.totalToolCost}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewToolCostData(index)}
-                            >View-TOOLS </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.totalCost}</td> : <td>{data.totalCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.otherDiscount}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.otherDiscount.discount}</span> &nbsp;{' '}
-                              <span>{data.otherDiscount.value}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.otherDiscountValue}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>
-                                {data.otherDiscountValue.discountPercentValue}
-                              </span>{' '}
-                            &nbsp;{' '}
-                              <span>{data.otherDiscountValue.discountValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.anyOtherCost}</td> : <td>{data.anyOtherCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.remark}</td> : <td>{data.remark}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.nPOPriceWithCurrency}</td> : <td>{data.nPOPriceWithCurrency}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.currency}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
-                              <span>{data.currency.currencyValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.nPOPrice}</td> : <td>{data.nPOPrice}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td></td> : <td>{data.attachment && data.attachment.length == 0 ? "No attachment found" : data.attachment.length == 1 ? <img
-                        src={require('../../../assests/images/times.png')}
-                        alt="cancel-icon.jpg"
-                      /> : <button>View Attachment</button>}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td></td> : <td><button onClick={() => { sendForApprovalData([data.costingId], index); setShowApproval(true) }}>Send For Approval</button></td>}
-                    </tr>
-                  </Fragment>
-                )
-              })}
+        <div class="table-responsive">
+          <table class="table table-bordered costing-summary-table">
+            <thead>
+              <tr>
+                <th scope="col">ZBC v/s VBC</th>
+                <th scope="col">
+                  <div class="element w-50 d-inline-block">
+                    <div class="custom-check d-inline-block">
+                      <input type="checkbox" id="check1"></input>
+                      <label for="check1"></label>
+                    </div>
+                     <span>ZBC (SOB:20%)</span>
+                  </div>
+                  <div class="action w-50 d-inline-block text-right">
+                    <button type="button" class="btn small-square-btn btn-link edit-btn"><i class="fa fa-pencil"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link file-btn"><i class="fa fa-file"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link remove-btn"><i class="fa fa-times"></i></button>
+                  </div>
+                </th>
+                <th scope="col">
+                  <div class="element w-50 d-inline-block">
+                    <div class="custom-check d-inline-block">
+                      <input type="checkbox" id="check2"></input>
+                      <label for="check2"></label>
+                    </div>
+                     <span>Supplier 1(SOB:17%)</span>
+                  </div>
+                  <div class="action w-50 d-inline-block text-right">
+                    <button type="button" class="btn small-square-btn btn-link edit-btn"><i class="fa fa-pencil"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link file-btn"><i class="fa fa-file"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link remove-btn"><i class="fa fa-times"></i></button>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span class="d-block">Costing Version</span>
+                  <span class="d-block">PO Price</span>
+                </td>
+                <td>
+                  <span class="d-block bg-grey">CS7654- 12/01/2020 10:00AM -Draft <a class="float-right d-inline-block"><small>Change version</small></a></span>
+                  <span class="d-block">250000.00</span>
+                </td>
+                <td>
+                  <span class="d-block bg-grey">CS7654- 12/01/2020 10:00AM -Draft <a class="float-right d-inline-block"><small>Change version</small></a></span>
+                  <span class="d-block">250000.00</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="d-block small-grey-text">RM Name-Grade</span>
+                  <span class="d-block small-grey-text">Gross Weight</span>
+                  <span class="d-block small-grey-text">Finish Weight</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">Raw1-B1</span>
+                  <span class="d-block small-grey-text">77</span>
+                  <span class="d-block small-grey-text">70</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">Raw1</span>
+                  <span class="d-block small-grey-text">77</span>
+                  <span class="d-block small-grey-text">70</span>
+                </td>
+              </tr>
+              <tr class="background-light-blue">
+                <th>Net RM Cost</th>
+                <td>4029.00 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+                <td>4029.00 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+              </tr>
+              <tr class="background-light-blue">
+                <th>Net BOP Cost</th>
+                <td>3.05 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+                <td>3.05 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="d-block small-grey-text">Process Cost</span>
+                  <span class="d-block small-grey-text">Operation Cost</span>
+                  <span class="d-block small-grey-text">Surface Treatment</span>
+                  <span class="d-block small-grey-text">Suportation Cost</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">40.00</span>
+                  <span class="d-block small-grey-text">25.00</span>
+                  <span class="d-block small-grey-text">18.00</span>
+                  <span class="d-block small-grey-text">2.00</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">48.00</span>
+                  <span class="d-block small-grey-text">29.00</span>
+                  <span class="d-block small-grey-text">18.00</span>
+                  <span class="d-block small-grey-text">2.00</span>
+                </td>
+              </tr>
+            </tbody>
           </table>
+        </div>
         </Col>
       </Row>
       {addComparisonToggle && (
