@@ -241,11 +241,11 @@ const CostingSummaryTable = (props) => {
   }
 
   const checkCostings = () => {
-    if(multipleCostings.length == 0){
+    if (multipleCostings.length == 0) {
       toastr.warning("Please select at least one costing for sendig for approval")
       return;
     }
-    else{
+    else {
       sendForApprovalData(multipleCostings);
       setShowApproval(true)
     }
@@ -329,23 +329,23 @@ const CostingSummaryTable = (props) => {
                         )}
                     </tr>
                     <tr>
-                      <td>{data.poPrice}</td>
+                      {index == 0 ? <td>{data.poPrice}</td> : <td>{data.poPrice}</td>}
                     </tr>
                     <tr>
-                      <td>{data.status}</td>
+                      {index == 0 ? <td>{data.status}</td> : <td>{data.status}</td>}
                     </tr>
                     <tr>
-                      <td>{data.rm}</td>
+                      {index == 0 ? <td>{data.rm}</td> : <td>{data.rm}</td>}
                     </tr>
                     <tr>
-                      <td>{data.gWeight}</td>
+                      {index == 0 ? <td>{data.gWeight}</td> : <td>{data.gWeight}</td>}
                     </tr>
                     <tr>
-                      <td>{data.fWeight}</td>
+                      {index == 0 ? <td>{data.fWeight}</td> : <td>{data.fWeight}</td>}
                     </tr>
                     <tr>
                       <td>
-                        {`${data.netRM}-RMCOSt`}
+                        {index == 0 ? <span>{data.netRM}</span> : data.netRm}
                         {index != 0 && (
                           <div>
                             <button
@@ -357,7 +357,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     <tr>
                       <td>
-                        {data.netBOP}
+                      {index == 0 ? <span>{data.netBOP}</span> : data.netBOP}
                         {index != 0 && (
                           <div>
                             <button
@@ -370,20 +370,20 @@ const CostingSummaryTable = (props) => {
                       </td>
                     </tr>
                     <tr>
-                      <td>{data.pCost}</td>
+                      {index == 0 ? <td>{data.pCost}</td> : <td>{data.pCost}</td>}
                     </tr>
                     <tr>
-                      <td>{data.oCost}</td>
+                      {index == 0 ? <td>{data.oCost}</td> : <td>{data.oCost}</td>}
                     </tr>
                     <tr>
-                      <td>{data.sTreatment}</td>
+                      {index == 0 ? <td>{data.sTreatment}</td> : <td>{data.sTreatment}</td>}
                     </tr>
                     <tr>
-                      <td>{data.tCost}</td>
+                      {index == 0 ? <td>{data.tCost}</td> : <td>{data.tCost}</td>}
                     </tr>
                     <tr>
                       <td>
-                        {data.nConvCost}
+                      {index == 0 ? <span>{data.nConvCost}</span> : data.nConvCost}
                         {index != 0 && (
                           <div>
                             <button
@@ -396,11 +396,11 @@ const CostingSummaryTable = (props) => {
                       </td>
                     </tr>
                     <tr>
-                      <td>{data.modelType}</td>
+                      {index == 0 ? <td>{data.modelType}</td> : <td>{data.modelType}</td>}
                     </tr>
                     <tr>
                       {index == 0 ? (
-                        <td>Test</td>
+                        <td></td>
                       ) : (
                           <td>
                             <div>
@@ -473,7 +473,7 @@ const CostingSummaryTable = (props) => {
                     </tr>
                     <tr>
                       <td>
-                        {data.nOverheadProfit}
+                      {index == 0 ? <span>{data.nOverheadProfit}</span> : data.nOverheadProfit}
                         {index != 0 && (
                           <div>
                             <button
@@ -484,14 +484,14 @@ const CostingSummaryTable = (props) => {
                       </td>
                     </tr>
                     <tr>
-                      <td>{data.packagingCost}</td>
+                      {index == 0 ? <td>{data.packagingCost}</td> : <td>{data.packagingCost}</td>}
                     </tr>
                     <tr>
-                      <td>{data.freight}</td>
+                      {index == 0 ? <td>{data.freight}</td> : <td>{data.freight}</td>}
                     </tr>
                     <tr>
                       <td>
-                        {data.nPackagingAndFreight}
+                      {index == 0 ? <span>{data.nPackagingAndFreight}</span> : data.nPackagingAndFreight}
                         {index != 0 && (
                           <div>
                             <button
@@ -502,17 +502,17 @@ const CostingSummaryTable = (props) => {
                       </td>
                     </tr>
                     <tr>
-                      <td>{data.toolMaintenanceCost}</td>
+                      {index == 0 ? <td>{data.toolMaintenanceCost}</td> : <td>{data.toolMaintenanceCost}</td>}
                     </tr>
                     <tr>
-                      <td>{data.toolPrice}</td>
+                      {index == 0 ? <td>{data.toolPrice}</td> : <td>{data.toolPrice}</td>}
                     </tr>
                     <tr>
-                      <td>{data.amortizationQty}</td>
+                      {index == 0 ? <td>{data.amortizationQty}</td> : <td>{data.amortizationQty}</td>}
                     </tr>
                     <tr>
                       <td>
-                        {data.totalToolCost}
+                      {index == 0 ? <span>{data.totalToolCost}</span> : data.totalToolCost}
                         {index != 0 && (
                           <div>
                             <button
@@ -523,7 +523,7 @@ const CostingSummaryTable = (props) => {
                       </td>
                     </tr>
                     <tr>
-                      <td>{data.totalCost}</td>
+                      {index == 0 ? <td>{data.totalCost}</td> : <td>{data.totalCost}</td>}
                     </tr>
                     <tr>
                       {index == 0 ? (
@@ -553,13 +553,13 @@ const CostingSummaryTable = (props) => {
                         )}
                     </tr>
                     <tr>
-                      <td>{data.anyOtherCost}</td>
+                      {index == 0 ? <td>{data.anyOtherCost}</td> : <td>{data.anyOtherCost}</td>}
                     </tr>
                     <tr>
-                      <td>{data.remark}</td>
+                      {index == 0 ? <td>{data.remark}</td> : <td>{data.remark}</td>}
                     </tr>
                     <tr>
-                      <td>{data.nPOPriceWithCurrency}</td>
+                      {index == 0 ? <td>{data.nPOPriceWithCurrency}</td> : <td>{data.nPOPriceWithCurrency}</td>}
                     </tr>
                     <tr>
                       {index == 0 ? (
@@ -574,7 +574,7 @@ const CostingSummaryTable = (props) => {
                         )}
                     </tr>
                     <tr>
-                      <td>{data.nPOPrice}</td>
+                      {index == 0 ? <td>{data.nPOPrice}</td> : <td>{data.nPOPrice}</td>}
                     </tr>
                     <tr>
                       {index == 0 ? <td></td> : <td>{data.attachment && data.attachment.length == 0 ? "No attachment found" : data.attachment.length == 1 ? <img
