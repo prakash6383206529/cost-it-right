@@ -23,7 +23,7 @@ import { isUserLoggedIn } from '../../../helper/auth'
 
 
 function AddToComparisonDrawer(props) {
-  
+
   const loggedIn = isUserLoggedIn()
   console.log(loggedIn, "Logged in");
   const { editObject, isEditFlag } = props
@@ -199,7 +199,7 @@ function AddToComparisonDrawer(props) {
     setVendorPlant(values.vendorPlant)
     setCbcValue(values.clientName)
     setCostingDropdown([]);
-    setValue("costings",'');
+    setValue("costings", '');
     let temp = []
     if (viewCostingData.length == 0) {
       temp.push(VIEW_COSTING_DATA)
@@ -332,9 +332,9 @@ function AddToComparisonDrawer(props) {
           obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
           obj.freight = dataFromAPI.CostingPartDetails[0].FreightNetCost
           obj.nPackagingAndFreight = dataFromAPI.NetPackagingAndFreight
-          obj.toolMaintenanceCost = dataFromAPI.NetToolCost
-          obj.toolPrice = '5000.00'
-          obj.amortizationQty = '10'
+          obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolMaintenanceCost ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolMaintenanceCost : '-'
+          obj.toolPrice = dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolCost ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolCost : '-'
+          obj.amortizationQty = dataFromAPI.CostingPartDetails[0].OverAllApplicability.Life ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.Life : '-'
           obj.totalToolCost = dataFromAPI.NetToolCost
           obj.totalCost = dataFromAPI.TotalCost
           obj.otherDiscount = {
@@ -366,14 +366,15 @@ function AddToComparisonDrawer(props) {
               .NetPOPriceOtherCurrency
             : '-'
           obj.currency = {
-            currencyTitle: 'INR/EUR',
-            currencyValue: '85',
+            currencyTitle: dataFromAPI.CostingPartDetails[0].OtherCostDetails.Currency,
+            currencyValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.IsChangeCurrency ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.CurrencyValue : "-"
           }
           obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails
             .NetPOPriceINR
             ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR
             : '-'
-          obj.attachment = 'View Attachment'
+          // obj.attachment = "Attachment";
+          obj.attachment = dataFromAPI.Attachements;
           obj.approvalButton = 'Button'
           //RM
           obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
@@ -408,10 +409,10 @@ function AddToComparisonDrawer(props) {
           }
           else {
             const index = temp.findIndex(data => data.costingId == values.costings.value)
-            if(index == -1){
+            if (index == -1) {
               temp.push(obj)
             }
-            else{
+            else {
               toastr.warning("This costing is already present for comparison.");
               return;
             }
@@ -469,31 +470,31 @@ function AddToComparisonDrawer(props) {
                 <div className="left-border">{'Costing Head:'}</div>
               </Col>
             </Row>
-            
+
             <form onSubmit={handleSubmit(onSubmit)}>
-            <Row>
-              <RadioHookForm
-                className={'filter-from-section'}
-                name={'comparisonValue'}
-                register={register}
-                onChange={handleComparison}
-                defaultValue={'ZBC'}
-                dataArray={[
-                  {
-                    label: 'ZBC',
-                    optionsValue: 'ZBC',
-                  },
-                  {
-                    label: 'VBC',
-                    optionsValue: 'VBC',
-                  },
-                  {
-                    label: 'CBC',
-                    optionsValue: 'CBC',
-                  },
-                ]}
-              />
-            </Row>
+              <Row>
+                <RadioHookForm
+                  className={'filter-from-section'}
+                  name={'comparisonValue'}
+                  register={register}
+                  onChange={handleComparison}
+                  defaultValue={'ZBC'}
+                  dataArray={[
+                    {
+                      label: 'ZBC',
+                      optionsValue: 'ZBC',
+                    },
+                    {
+                      label: 'VBC',
+                      optionsValue: 'VBC',
+                    },
+                    {
+                      label: 'CBC',
+                      optionsValue: 'CBC',
+                    },
+                  ]}
+                />
+              </Row>
               <Row>
                 {isZbcSelected && (
                   <Col md="12">
@@ -532,25 +533,25 @@ function AddToComparisonDrawer(props) {
                       />
                     </Col>
                     {
-                      loggedIn && 
+                      loggedIn &&
                       <Col md="12">
-                      <SearchableSelectHookForm
-                        label={'Vendor Plant'}
-                        name={'vendorPlant'}
-                        placeholder={'-Select-'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
-                        options={vendorPlantDropdown}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.vendorPlant}
-                      />
-                    </Col>
+                        <SearchableSelectHookForm
+                          label={'Vendor Plant'}
+                          name={'vendorPlant'}
+                          placeholder={'-Select-'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          // defaultValue={plant.length !== 0 ? plant : ''}
+                          options={vendorPlantDropdown}
+                          mandatory={true}
+                          handleChange={() => { }}
+                          errors={errors.vendorPlant}
+                        />
+                      </Col>
                     }
-                    
+
                   </>
                 )}
                 {isCbcSelected && (
@@ -611,7 +612,7 @@ function AddToComparisonDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button mr5 save-btn"
-                    // onClick={addHandler}
+                  // onClick={addHandler}
                   >
                     <div className={'check-icon'}>
                       <img
