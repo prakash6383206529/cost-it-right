@@ -235,6 +235,7 @@ const handlePartChange = (newValue) => {
                       obj.plantName = dataFromAPI.PlantName;
                       obj.plantCode = dataFromAPI.PlantCode;
                       obj.costingId = dataFromAPI.CostingId
+                      obj.oldPoPrice = dataFromAPI.OldPOPrice;
                       console.log('obj: ', obj);
 
                       temp.push(obj);

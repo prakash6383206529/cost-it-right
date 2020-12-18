@@ -221,7 +221,7 @@ const SendForApproval = props => {
                                         <div className="left-border">{`Plant Code: ${data.plantCode}`}</div>
                                     </Col>
                                     <Col md="4">
-                                        <div className="left-border">{`Costing Id: ${data.costingId}`}</div>
+                                        <div className="left-border">{`Costing Id: ${data.costingName}`}</div>
                                     </Col>
                                 </Row>
                                 <table>

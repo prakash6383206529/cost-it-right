@@ -12,6 +12,7 @@ import ViewOverheadProfit from './Drawers/ViewOverheadProfit';
 import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight';
 import ViewToolCost from './Drawers/viewToolCost';
 import SendForApproval from './SendForApproval';
+import { toastr } from 'react-redux-toastr';
 
 const CostingSummaryTable = (props) => {
   const dispatch = useDispatch();
@@ -186,17 +187,16 @@ const CostingSummaryTable = (props) => {
   }
 
   const handleMultipleCostings = (checked, index) => {
-    console.log('checked: ', checked);
     let temp = multipleCostings;
     console.log('temp: ', temp);
     if (checked) {
       console.log("From If")
-      temp.push(viewCostingData[index].costingName);
+      temp.push(viewCostingData[index].costingId);
       // setMultipleCostings(temp)
     }
     else {
       console.log("From else")
-      const ind = multipleCostings.findIndex(data => data == viewCostingData[index].costingName);
+      const ind = multipleCostings.findIndex(data => data == viewCostingData[index].costingId);
       if (ind != -1) {
         temp.splice(ind, 1);
       }
@@ -213,7 +213,7 @@ const CostingSummaryTable = (props) => {
     console.log('costingIds: ', costingIds);
     let temp = viewApprovalData
     costingIds && costingIds.map(id => {
-      let index = viewCostingData.findIndex(data => data.costingName == id);
+      let index = viewCostingData.findIndex(data => data.costingId == id);
       if (index !== -1) {
         let obj = {};
         obj.typeOfCosting = viewCostingData[index].zbc;
@@ -223,9 +223,9 @@ const CostingSummaryTable = (props) => {
         obj.costingName = viewCostingData[index].costingName;
         obj.costingId = viewCostingData[index].costingId;
         // obj.oldPrice = viewCostingData[index].oldPrice;
-        obj.oldPrice = 1000000;
+        obj.oldPrice = viewCostingData[index].oldPoPrice;
         obj.revisedPrice = viewCostingData[index].nPOPrice;
-        obj.variance = 1000000 - parseInt(viewCostingData[index].nPOPrice);
+        obj.variance = parseInt(viewCostingData[index].oldPoPrice) - parseInt(viewCostingData[index].nPOPrice);
         obj.consumptionQty = "";
         obj.remainingQty = "";
         obj.annualImpact = "";
@@ -240,6 +240,16 @@ const CostingSummaryTable = (props) => {
 
   }
 
+  const checkCostings = () => {
+    if(multipleCostings.length == 0){
+      toastr.warning("Please select at least one costing for sendig for approval")
+      return;
+    }
+    else{
+      sendForApprovalData(multipleCostings);
+      setShowApproval(true)
+    }
+  }
 
   useEffect(() => { }, [viewCostingData])
 
@@ -255,7 +265,7 @@ const CostingSummaryTable = (props) => {
           <div className="left-border">{'Summary'}</div>
         </Col>
         <Col md="4">
-          <button>{'Send For Approval'}</button>
+          <button onClick={() => checkCostings()}>{'Send For Approval'}</button>
         </Col>
         {
           //   <Col md="4">
@@ -573,7 +583,7 @@ const CostingSummaryTable = (props) => {
                       /> : <button>View Attachment</button>}</td>}
                     </tr>
                     <tr>
-                      {index == 0 ? <td></td> : <td><button onClick={() => { sendForApprovalData([data.costingName], index); setShowApproval(true) }}>Send For Approval</button></td>}
+                      {index == 0 ? <td></td> : <td><button onClick={() => { sendForApprovalData([data.costingId], index); setShowApproval(true) }}>Send For Approval</button></td>}
                     </tr>
                   </Fragment>
                 )
