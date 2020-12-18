@@ -180,9 +180,9 @@ const handlePartChange = (newValue) => {
                       obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
                       obj.freight = dataFromAPI.CostingPartDetails[0].FreightNetCost
                       obj.nPackagingAndFreight = dataFromAPI.NetPackagingAndFreight
-                      obj.toolMaintenanceCost = dataFromAPI.NetToolCost
-                      obj.toolPrice = "5000.00"
-                      obj.amortizationQty = "10"
+                      obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolMaintenanceCost ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolMaintenanceCost : '-'
+                      obj.toolPrice = dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolCost ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolCost : '-'
+                      obj.amortizationQty = dataFromAPI.CostingPartDetails[0].OverAllApplicability.Life ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.Life : '-'
                       obj.totalToolCost = dataFromAPI.NetToolCost
                       obj.totalCost = dataFromAPI.TotalCost
                       obj.otherDiscount = {
@@ -197,12 +197,12 @@ const handlePartChange = (newValue) => {
                       obj.remark = dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.Remark : "-"
                       obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency : "-"
                       obj.currency = {
-                        currencyTitle: "INR/EUR",
-                        currencyValue: "85"
+                        currencyTitle: dataFromAPI.CostingPartDetails[0].OtherCostDetails.Currency,
+                        currencyValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.IsChangeCurrency ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.CurrencyValue : "-"
                       }
                       obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR : "-"
-                      obj.attachment = "Attachment";
-                      // obj.attachment = dataFromAPI.Attachements;
+                      // obj.attachment = "Attachment";
+                      obj.attachment = dataFromAPI.Attachements;
                       obj.approvalButton = ""
                       //RM
                       obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
@@ -235,6 +235,7 @@ const handlePartChange = (newValue) => {
                       obj.plantName = dataFromAPI.PlantName;
                       obj.plantCode = dataFromAPI.PlantCode;
                       obj.costingId = dataFromAPI.CostingId
+                      obj.oldPoPrice = dataFromAPI.OldPOPrice;
                       console.log('obj: ', obj);
 
                       temp.push(obj);
