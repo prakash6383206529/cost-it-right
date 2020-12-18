@@ -36,11 +36,9 @@ const SendForApproval = props => {
   * @description Used show listing of unit of measurement
   */
     const renderDropdownListing = (label) => {
-
         const tempDropdownList = [];
 
         if (label === 'Reason') {
-
             reasonsList && reasonsList.map(item => {
                 if (item.Value === '0') return false;
                 tempDropdownList.push({ label: item.Text, value: item.Value })
@@ -84,6 +82,12 @@ const SendForApproval = props => {
         }
     }
 
+    /**
+     * @method handleReasonChange
+     * @param {*} data 
+     * @param {*} index 
+     * @description This method is used to handle change of reason for every costing
+     */
     const handleReasonChange = (data, index) => {
         let viewDataTemp = viewApprovalData;
         let temp = viewApprovalData[index];
@@ -93,6 +97,12 @@ const SendForApproval = props => {
         dispatch(setCostingApprovalData(viewDataTemp));
     }
 
+    /**
+     * @method handleECNNoChange
+     * @param {*} data 
+     * @param {*} index 
+     * @description This method is used to handle change in ECN number for every costing
+     */
     const handleECNNoChange = (data, index) => {
         let viewDataTemp = viewApprovalData;
         let temp = viewApprovalData[index];
@@ -101,6 +111,12 @@ const SendForApproval = props => {
         dispatch(setCostingApprovalData(viewDataTemp));
     }
 
+    /**
+     * @method handleEffectiveDateChange
+     * @param {*} date 
+     * @param {*} index 
+     * @description This method is used to handle change of date and calculate consumption and remaining quantity and other details
+     */
     const handleEffectiveDateChange = (date, index) => {
         let viewDataTemp = viewApprovalData;
         let temp = viewApprovalData[index];
@@ -141,13 +157,17 @@ const SendForApproval = props => {
                 temp.annualImpact = (actualQty + (budgetedRemQty - actualRemQty)) * parseInt(temp.variance);
                 temp.yearImpact = (budgetedRemQty - actualRemQty) * parseInt(temp.variance)
                 viewDataTemp[index] = temp;
-                console.log('temp: ', temp);
                 dispatch(setCostingApprovalData(viewDataTemp));
             }
 
         }))
     }
 
+    /**
+     * @method onSubmit
+     * @param {*} data 
+     * @description This method is called on the submission of the form for send for approval
+     */
     const onSubmit = data => {
         console.log('data: ', data);
         let count = 0;
@@ -184,7 +204,6 @@ const SendForApproval = props => {
             temp.push(tempObj);
         })
         obj.CostingsList = temp;
-        console.log('obj: ', obj);
 
         dispatch(sendForApprovalBySender(obj, res => {
             console.log(res, "Response from send for approval")
@@ -204,6 +223,7 @@ const SendForApproval = props => {
         ) {
             return
         }
+        dispatch(setCostingApprovalData([]))
         props.closeDrawer('')
     }
     return (
@@ -379,6 +399,7 @@ const SendForApproval = props => {
                         <div>
                             <button
                                 type={'button'}
+                                onClick={toggleDrawer}
                             // className="reset mr15 cancel-btn"
                             >
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Clear'}
