@@ -1,7 +1,9 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Row, Col } from 'reactstrap';
+import { useForm, Controller, useWatch } from 'react-hook-form';
+import { Row, Col, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { toastr } from 'react-redux-toastr';
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import AddToComparisonDrawer from './AddToComparisonDrawer';
 import { setCostingViewData, setCostingApprovalData } from '../actions/Costing';
 import ViewBOP from './Drawers/ViewBOP';
 import ViewConversionCost from './Drawers/ViewConversionCost';
@@ -9,8 +11,8 @@ import ViewRM from './Drawers/ViewRM';
 import ViewOverheadProfit from './Drawers/ViewOverheadProfit';
 import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight';
 import ViewToolCost from './Drawers/viewToolCost';
-import AddToComparisonDrawer from './AddToComparisonDrawer';
 import SendForApproval from './SendForApproval';
+import { toastr } from 'react-redux-toastr';
 
 const CostingSummaryTable = (props) => {
   const dispatch = useDispatch();
@@ -37,7 +39,7 @@ const CostingSummaryTable = (props) => {
   const [multipleCostings, setMultipleCostings] = useState([])
   const [flag, setFlag] = useState(false)
 
-//Fetch data from reducer for costing summary table view
+
   const viewCostingData = useSelector(
     (state) => state.costing.viewCostingDetailData
   )
@@ -52,75 +54,74 @@ const CostingSummaryTable = (props) => {
     setIsViewConversionCost(false)
     if (index != -1) {
       let data = viewCostingData[index].netBOPCostView;
+      console.log(data, "Dataaa");
       setViewBOPData(data);
     }
   }
-
   /**
    * @method viewConversionCostData
    * @description SET COVERSION DATA FOR DRAWER
   */
   const viewConversionCost = index => {
-    
+    console.log(index, "Index");
     setIsViewConversionCost(true)
     setViewBOP(false)
     if (index != -1) {
       let data = viewCostingData[index].netConversionCostView;
+      console.log(data, "Data of conversion cost");
       setViewConversionCostData(data)
     }
   }
-
   /**
    * @method viewRM
    * @description SET RM DATA FOR DRAWER
   */
   const viewRM = index => {
+    console.log(index);
     let data = viewCostingData[index].netRMCostView;
+    console.log(data, "Data of Rm");
     setIsViewRM(true)
     setViewRMData(data)
   }
-
   /**
    * @method overHeadProfit
    * @description SET OVERHEAD & PROFIT DATA FOR DRAWER
   */
   const overHeadProfit = index => {
+    console.log(index, "Index");
     let overHeadData = viewCostingData[index].netOverheadCostView;
     let profitData = viewCostingData[index].netProfitCostView;
     let rejectData = viewCostingData[index].netRejectionCostView;
     let modelType = viewCostingData[index].modelType;
+    console.log(rejectData, "ovr", modelType);
     setIsViewOverheadProfit(true);
     setViewOverheadData(overHeadData);
     setViewProfitData(profitData);
     setViewRejectAndModelType({ rejectData: rejectData, modelType: modelType })
   }
-
   /**
    * @method viewPackagingAndFrieghtData
    * @description SET PACKAGING AND FRIEGHT DATA FOR DRAWER
   */
   const viewPackagingAndFrieghtData = index => {
+    console.log(index);
     let packagingData = viewCostingData[index].netPackagingCostView;
     let freightData = viewCostingData[index].netFreightCostView;
+    console.log(packagingData, "data tabler", freightData);
     setIsViewPackagingFreight(true)
     setViewPackagingFreight({ packagingData: packagingData, freightData: freightData })
   }
-
   /**
    * @method viewToolCostData
    * @description SET TOOL DATA FOR DRAWER
   */
   const viewToolCostData = index => {
+    console.log(index);
     let data = viewCostingData[index].netToolCostView;
     setIsViewToolCost(true)
     setViewToolCost(data)
   }
 
-  /**
-   * @method deleteCostingFromView
-   * @param {*} index 
-   * @description This method is used to delete the costing id from summary and updates the reducer.
-   */
   const deleteCostingFromView = (index) => {
     let temp = viewCostingData;
     temp.splice(index, 1);
@@ -151,12 +152,12 @@ const CostingSummaryTable = (props) => {
    * @method addComparisonDrawerToggle
    * @description HANDLE ADD TO COMPARISON DRAWER TOGGLE
    */
+
   const addComparisonDrawerToggle = () => {
     setaddComparisonToggle(true)
     setIsEditFlag(false)
     setEditObject({})
   }
-
   /**
    * @method closeAddComparisonDrawer
    * @description HIDE ADD COMPARISON DRAWER
@@ -177,7 +178,6 @@ const CostingSummaryTable = (props) => {
     setIsViewConversionCost(false)
     setIsViewToolCost(false)
   }
-
   /**
    * @method closeShowApproval
    * @description FOR CLOSING APPROVAL DRAWER
@@ -186,33 +186,31 @@ const CostingSummaryTable = (props) => {
     setShowApproval(false)
   }
 
-  /**
-   * @method handleMultipleCostings
-   * @param {*} checked 
-   * @param {*} index 
-   * @description this method is used to add or delete the costing ids to be set in the multiplecosting state.
-   */
   const handleMultipleCostings = (checked, index) => {
     let temp = multipleCostings;
+    console.log('temp: ', temp);
     if (checked) {
+      console.log("From If")
       temp.push(viewCostingData[index].costingId);
+      // setMultipleCostings(temp)
     }
     else {
+      console.log("From else")
       const ind = multipleCostings.findIndex(data => data == viewCostingData[index].costingId);
       if (ind != -1) {
         temp.splice(ind, 1);
       }
+      // setMultipleCostings(temp)
     }
+    console.log(temp, "Temp from Multiple costing")
     setMultipleCostings(temp)
     setFlag(!flag)
+    // let data = viewCostingData[index].netBOPCostView;
+    // setViewBOPData(data)
   }
 
-  /**
-   * @method sendForApprovalData
-   * @param {*} costingIds 
-   * @description This method is used for sending approval data to the drawer.
-   */
   const sendForApprovalData = (costingIds) => {
+    console.log('costingIds: ', costingIds);
     let temp = viewApprovalData
     costingIds && costingIds.map(id => {
       let index = viewCostingData.findIndex(data => data.costingId == id);
@@ -224,6 +222,7 @@ const CostingSummaryTable = (props) => {
         obj.plantId = viewCostingData[index].plantId;
         obj.costingName = viewCostingData[index].costingName;
         obj.costingId = viewCostingData[index].costingId;
+        // obj.oldPrice = viewCostingData[index].oldPrice;
         obj.oldPrice = viewCostingData[index].oldPoPrice;
         obj.revisedPrice = viewCostingData[index].nPOPrice;
         obj.variance = parseInt(viewCostingData[index].oldPoPrice) - parseInt(viewCostingData[index].nPOPrice);
@@ -234,20 +233,13 @@ const CostingSummaryTable = (props) => {
         obj.reason = "";
         obj.ecnNo = "";
         obj.effectiveDate = "";
-        obj.vendorId = "";
-        obj.vendorCode = "";
-        obj.vendorPlantId = "";
-        obj.vendorPlantCode = "";
         temp.push(obj)
       }
       dispatch(setCostingApprovalData(temp))
     })
+
   }
 
-  /**
-   * @method checkCostings
-   * @description This method is used to check whether a user has selected one or multiple costings.
-   */
   const checkCostings = () => {
     if (multipleCostings.length == 0) {
       toastr.warning("Please select at least one costing for sendig for approval")
@@ -261,6 +253,11 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => { }, [viewCostingData])
 
+  // useEffect(() => {
+  //   console.log('multipleCostings: ', multipleCostings);
+  // }, [multipleCostings])
+
+  // console.log('multipleCostings: ', multipleCostings);
   return (
     <Fragment>
       <Row>
@@ -289,309 +286,106 @@ const CostingSummaryTable = (props) => {
       </Row>
       <Row>
         <Col md="12">
-          <table>
-            {viewCostingData &&
-              viewCostingData.length > 0 &&
-              viewCostingData.map((data, index) => {
-                return (
-                  <Fragment>
-                    <tr>
-                      {index == 0 ? (
-                        <th>{data.zbc}</th>
-                      ) : (
-                          <th>
-                            <div>
-                              <input
-                                type="checkbox"
-                                onClick={(e) => {
-                                  
-                                  handleMultipleCostings(e.target.checked, index)
-                                }}
-                                value={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true : false}
-                              // disabled={isEditFlag ? true : false}
-                              />
-                              {data.zbc}
-                              <button onClick={() => deleteCostingFromView(index)}>
-                                Delete
-                            </button>
-                            </div>
-                          </th>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>Test</td>
-                      ) : (
-                          <td>
-                            <div>
-                              {data.costingName}
-                              <button className={'user-btn'} onClick={() => editHandler(index)}>Edit Costing</button> &nbsp;
-                            <button>Add Costing</button>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.poPrice}</td> : <td>{data.poPrice}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.status}</td> : <td>{data.status}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.rm}</td> : <td>{data.rm}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.gWeight}</td> : <td>{data.gWeight}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.fWeight}</td> : <td>{data.fWeight}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                        {index == 0 ? <span>{data.netRM}</span> : data.netRm}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewRM(index)}
-                            >View -RM</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.netBOP}</span> : data.netBOP}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewBop(index)}
-                            >
-                              View-BOP
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.pCost}</td> : <td>{data.pCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.oCost}</td> : <td>{data.oCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.sTreatment}</td> : <td>{data.sTreatment}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.tCost}</td> : <td>{data.tCost}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.nConvCost}</span> : data.nConvCost}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewConversionCost(index)}
-                            >
-                              View-CONVERSION COST
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.modelType}</td> : <td>{data.modelType}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td></td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.aValue.applicability}</span> &nbsp;{' '}
-                              <span>{data.aValue.value}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.overheadOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.overheadOn.overheadTitle}</span> &nbsp;{' '}
-                              <span>{data.overheadOn.overheadValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.profitOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.profitOn.profitTitle}</span> &nbsp;{' '}
-                              <span>{data.profitOn.profitValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.rejectionOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.rejectionOn.rejectionTitle}</span>{' '}
-                            &nbsp;{' '}
-                              <span>{data.rejectionOn.rejectionValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.iccOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.iccOn.iccTitle}</span> &nbsp;{' '}
-                              <span>{data.iccOn.iccValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.paymentTerms}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.paymentTerms.paymentTitle}</span> &nbsp;{' '}
-                              <span>{data.paymentTerms.paymentValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.nOverheadProfit}</span> : data.nOverheadProfit}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => overHeadProfit(index)}
-                            >View-OVERHEAD  PROFIT</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.packagingCost}</td> : <td>{data.packagingCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.freight}</td> : <td>{data.freight}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.nPackagingAndFreight}</span> : data.nPackagingAndFreight}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewPackagingAndFrieghtData(index)}
-                            >View-PACKAGING</button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.toolMaintenanceCost}</td> : <td>{data.toolMaintenanceCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.toolPrice}</td> : <td>{data.toolPrice}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.amortizationQty}</td> : <td>{data.amortizationQty}</td>}
-                    </tr>
-                    <tr>
-                      <td>
-                      {index == 0 ? <span>{data.totalToolCost}</span> : data.totalToolCost}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewToolCostData(index)}
-                            >View-TOOLS </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.totalCost}</td> : <td>{data.totalCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.otherDiscount}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.otherDiscount.discount}</span> &nbsp;{' '}
-                              <span>{data.otherDiscount.value}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.otherDiscountValue}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>
-                                {data.otherDiscountValue.discountPercentValue}
-                              </span>{' '}
-                            &nbsp;{' '}
-                              <span>{data.otherDiscountValue.discountValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.anyOtherCost}</td> : <td>{data.anyOtherCost}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.remark}</td> : <td>{data.remark}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.nPOPriceWithCurrency}</td> : <td>{data.nPOPriceWithCurrency}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.currency}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
-                              <span>{data.currency.currencyValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td>{data.nPOPrice}</td> : <td>{data.nPOPrice}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td></td> : <td>{data.attachment && data.attachment.length == 0 ? "No attachment found" : data.attachment.length == 1 ? <img
-                        src={require('../../../assests/images/times.png')}
-                        alt="cancel-icon.jpg"
-                      /> : <button>View Attachment</button>}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td></td> : <td><button onClick={() => { sendForApprovalData([data.costingId], index); setShowApproval(true) }}>Send For Approval</button></td>}
-                    </tr>
-                  </Fragment>
-                )
-              })}
+        <div class="table-responsive">
+          <table class="table table-bordered costing-summary-table">
+            <thead>
+              <tr>
+                <th scope="col">ZBC v/s VBC</th>
+                <th scope="col">
+                  <div class="element w-50 d-inline-block">
+                    <div class="custom-check d-inline-block">
+                      <input type="checkbox" id="check1"></input>
+                      <label for="check1"></label>
+                    </div>
+                     <span>ZBC (SOB:20%)</span>
+                  </div>
+                  <div class="action w-50 d-inline-block text-right">
+                    <button type="button" class="btn small-square-btn btn-link edit-btn"><i class="fa fa-pencil"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link file-btn"><i class="fa fa-file"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link remove-btn"><i class="fa fa-times"></i></button>
+                  </div>
+                </th>
+                <th scope="col">
+                  <div class="element w-50 d-inline-block">
+                    <div class="custom-check d-inline-block">
+                      <input type="checkbox" id="check2"></input>
+                      <label for="check2"></label>
+                    </div>
+                     <span>Supplier 1(SOB:17%)</span>
+                  </div>
+                  <div class="action w-50 d-inline-block text-right">
+                    <button type="button" class="btn small-square-btn btn-link edit-btn"><i class="fa fa-pencil"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link file-btn"><i class="fa fa-file"></i></button>
+                    <button type="button" class="btn small-square-btn btn-link remove-btn"><i class="fa fa-times"></i></button>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <span class="d-block">Costing Version</span>
+                  <span class="d-block">PO Price</span>
+                </td>
+                <td>
+                  <span class="d-block bg-grey">CS7654- 12/01/2020 10:00AM -Draft <a class="float-right d-inline-block"><small>Change version</small></a></span>
+                  <span class="d-block">250000.00</span>
+                </td>
+                <td>
+                  <span class="d-block bg-grey">CS7654- 12/01/2020 10:00AM -Draft <a class="float-right d-inline-block"><small>Change version</small></a></span>
+                  <span class="d-block">250000.00</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="d-block small-grey-text">RM Name-Grade</span>
+                  <span class="d-block small-grey-text">Gross Weight</span>
+                  <span class="d-block small-grey-text">Finish Weight</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">Raw1-B1</span>
+                  <span class="d-block small-grey-text">77</span>
+                  <span class="d-block small-grey-text">70</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">Raw1</span>
+                  <span class="d-block small-grey-text">77</span>
+                  <span class="d-block small-grey-text">70</span>
+                </td>
+              </tr>
+              <tr class="background-light-blue">
+                <th>Net RM Cost</th>
+                <td>4029.00 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+                <td>4029.00 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+              </tr>
+              <tr class="background-light-blue">
+                <th>Net BOP Cost</th>
+                <td>3.05 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+                <td>3.05 <button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="d-block small-grey-text">Process Cost</span>
+                  <span class="d-block small-grey-text">Operation Cost</span>
+                  <span class="d-block small-grey-text">Surface Treatment</span>
+                  <span class="d-block small-grey-text">Suportation Cost</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">40.00</span>
+                  <span class="d-block small-grey-text">25.00</span>
+                  <span class="d-block small-grey-text">18.00</span>
+                  <span class="d-block small-grey-text">2.00</span>
+                </td>
+                <td>
+                  <span class="d-block small-grey-text">48.00</span>
+                  <span class="d-block small-grey-text">29.00</span>
+                  <span class="d-block small-grey-text">18.00</span>
+                  <span class="d-block small-grey-text">2.00</span>
+                </td>
+              </tr>
+            </tbody>
           </table>
+        </div>
         </Col>
       </Row>
       {addComparisonToggle && (
