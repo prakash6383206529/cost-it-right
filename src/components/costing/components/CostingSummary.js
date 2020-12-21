@@ -101,14 +101,15 @@ function CostingSummary() {
   */
 const handlePartChange = (newValue) => {
     let temp = [];
-    if (viewCostingData.length == 0 || part.value == newValue.value || part.value != newValue.value) {
-      console.log("From iffff")
-      temp.push(VIEW_COSTING_DATA)
-    }
-    else if (viewCostingData.length >= 1) {
-      console.log("From elseeeee")
-      temp = viewCostingData
-    }
+    temp = viewCostingData;
+    // if (viewCostingData.length == 0 || part.value == newValue.value || part.value != newValue.value) {
+    //   console.log("From iffff")
+    //   temp.push(VIEW_COSTING_DATA)
+    // }
+    // else if (viewCostingData.length >= 1) {
+    //   console.log("From elseeeee")
+    //   temp = viewCostingData
+    // }
     // else if(part != newValue)
 
     if (newValue && newValue !== '') {
@@ -128,6 +129,7 @@ const handlePartChange = (newValue) => {
               setValue("RevisionNumber", Data.RevisionNumber)
               setValue("ShareOfBusiness", Data.Price)
               setEffectiveDate(moment(Data.EffectiveDate)._d)
+              newValue.revisionNumber = Data.RevisionNumber;
               dispatch(storePartNumber(newValue))
               dispatch(getCostingSummaryByplantIdPartNo(newValue.label, '00000000-0000-0000-0000-000000000000', res => {
                 if (res.data.Result == true) {

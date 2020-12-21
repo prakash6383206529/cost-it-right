@@ -4,26 +4,28 @@ import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import DatePicker from "react-datepicker";
 import { toastr } from 'react-redux-toastr';
+import { useHistory } from 'react-router-dom';
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment, sendForApprovalBySender } from '../actions/Approval';
 import { userDetails } from '../../../helper/auth';
-import { setCostingApprovalData } from '../actions/Costing';
+import { setCostingApprovalData, setCostingViewData } from '../actions/Costing';
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume';
 import "react-datepicker/dist/react-datepicker.css";
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8];
 const SendForApproval = props => {
     const dispatch = useDispatch();
+    const history = useHistory();
     const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm();
     const reasonsList = useSelector(state => state.approval.reasonsList);
     const deptList = useSelector(state => state.approval.approvalDepartmentList);
     const usersList = useSelector(state => state.approval.approvalUsersList);
     const viewApprovalData = useSelector(state => state.costing.costingApprovalData);
-    const partNo = useSelector((state) => state.costing.partNo)
-    console.log('partNo: ', partNo);
+    const partNo = useSelector((state) => state.costing.partNo);
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedApprover, setSelectedApprover] = useState('');
+    const [financialYear, setFinancialYear] = useState('');
     const userData = userDetails();
 
     useEffect(() => {
@@ -36,11 +38,9 @@ const SendForApproval = props => {
   * @description Used show listing of unit of measurement
   */
     const renderDropdownListing = (label) => {
-
         const tempDropdownList = [];
 
         if (label === 'Reason') {
-
             reasonsList && reasonsList.map(item => {
                 if (item.Value === '0') return false;
                 tempDropdownList.push({ label: item.Text, value: item.Value })
@@ -84,6 +84,12 @@ const SendForApproval = props => {
         }
     }
 
+    /**
+     * @method handleReasonChange
+     * @param {*} data 
+     * @param {*} index 
+     * @description This method is used to handle change of reason for every costing
+     */
     const handleReasonChange = (data, index) => {
         let viewDataTemp = viewApprovalData;
         let temp = viewApprovalData[index];
@@ -93,6 +99,12 @@ const SendForApproval = props => {
         dispatch(setCostingApprovalData(viewDataTemp));
     }
 
+    /**
+     * @method handleECNNoChange
+     * @param {*} data 
+     * @param {*} index 
+     * @description This method is used to handle change in ECN number for every costing
+     */
     const handleECNNoChange = (data, index) => {
         let viewDataTemp = viewApprovalData;
         let temp = viewApprovalData[index];
@@ -101,6 +113,12 @@ const SendForApproval = props => {
         dispatch(setCostingApprovalData(viewDataTemp));
     }
 
+    /**
+     * @method handleEffectiveDateChange
+     * @param {*} date 
+     * @param {*} index 
+     * @description This method is used to handle change of date and calculate consumption and remaining quantity and other details
+     */
     const handleEffectiveDateChange = (date, index) => {
         let viewDataTemp = viewApprovalData;
         let temp = viewApprovalData[index];
@@ -115,6 +133,7 @@ const SendForApproval = props => {
         else {
             year = `${(date.getFullYear())}-${date.getFullYear() + 1}`
         }
+        setFinancialYear(year);
         // dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => {
         dispatch(getVolumeDataByPartAndYear('WISHER', year, res => {
             if (res.data.Result === true) {
@@ -141,13 +160,17 @@ const SendForApproval = props => {
                 temp.annualImpact = (actualQty + (budgetedRemQty - actualRemQty)) * parseInt(temp.variance);
                 temp.yearImpact = (budgetedRemQty - actualRemQty) * parseInt(temp.variance)
                 viewDataTemp[index] = temp;
-                console.log('temp: ', temp);
                 dispatch(setCostingApprovalData(viewDataTemp));
             }
 
         }))
     }
 
+    /**
+     * @method onSubmit
+     * @param {*} data 
+     * @description This method is called on the submission of the form for send for approval
+     */
     const onSubmit = data => {
         console.log('data: ', data);
         let count = 0;
@@ -162,8 +185,8 @@ const SendForApproval = props => {
         }
         let obj = {
             ApproverDepartmentId: selectedDepartment.value,
-            ApproverLevelId: 1,
-            ApproverId: 1,
+            ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692",
+            ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",
             SenderLevelId: userData.LoggedInLevelId,
             SenderId: userData.LoggedInUserId,
             SenderRemark: data.remarks,
@@ -173,20 +196,42 @@ const SendForApproval = props => {
         let tempObj = {}
         viewApprovalData.map(data => {
             tempObj.TypeOfCosting = data.typeOfCosting;
-            tempObj.PlantCode = data.plantCode;
-            tempObj.PlantNumber = data.plantId;
+            tempObj.PlantId = data.typeOfCosting.toLowerCase() == "zbc" ? data.plantId : "";
+            tempObj.PlantNumber = data.typeOfCosting.toLowerCase() == "zbc" ? data.plantCode : "";
+            tempObj.PlantName = data.typeOfCosting.toLowerCase() == "zbc" ? data.plantName : "";
             tempObj.CostingId = data.costingId;
             tempObj.CostingNumber = data.costingName;
             tempObj.ReasonId = data.reasonId;
             tempObj.Reason = data.reason;
-            tempObj.ECNNumber = data.ecnNo;
+            // tempObj.ECNNumber = data.ecnNo;
+            tempObj.ECNNumber = 1;
             tempObj.EffectiveDate = data.effectiveDate;
+            tempObj.RevisionNumber = partNo.revisionNumber;
+            // tempObj.PartName = partNo.label;
+            tempObj.PartName = "Compressor";
+            // tempObj.PartNumber = partNo.value;
+            tempObj.PartNumber = "CP021220";
+            tempObj.FinancialYear = financialYear;
+            tempObj.OldPOPrice = data.oldPrice;
+            tempObj.NewPoPrice = data.revisedPrice;
+            tempObj.Variance = data.variance;
+            tempObj.ConsumptionQuantity = data.consumptionQty;
+            tempObj.RemainingQuantity = data.remainingQty;
+            tempObj.AnnualImpact = data.annualImpact;
+            tempObj.ImpactOfTheYear = data.yearImpact;
+            tempObj.VendorId = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendorId :"";
+            tempObj.VendorCode = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendoreCode :"";
+            tempObj.VendorPlantId = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendorePlantId :"";
+            tempObj.VendorPlantCode = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendorPlantCode :"";
             temp.push(tempObj);
         })
         obj.CostingsList = temp;
         console.log('obj: ', obj);
 
         dispatch(sendForApprovalBySender(obj, res => {
+            history.push('/costing');
+            dispatch(setCostingApprovalData([]))
+            dispatch(setCostingViewData([]))
             console.log(res, "Response from send for approval")
         }))
     }
@@ -204,6 +249,7 @@ const SendForApproval = props => {
         ) {
             return
         }
+        dispatch(setCostingApprovalData([]))
         props.closeDrawer('')
     }
     return (
@@ -379,6 +425,7 @@ const SendForApproval = props => {
                         <div>
                             <button
                                 type={'button'}
+                                onClick={toggleDrawer}
                             // className="reset mr15 cancel-btn"
                             >
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Clear'}

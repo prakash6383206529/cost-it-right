@@ -13,6 +13,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight';
 import ViewToolCost from './Drawers/viewToolCost';
 import SendForApproval from './SendForApproval';
 import { toastr } from 'react-redux-toastr';
+import { checkForDecimalAndNull } from '../../../helper';
 
 const CostingSummaryTable = (props) => {
   const dispatch = useDispatch();
@@ -241,11 +242,11 @@ const CostingSummaryTable = (props) => {
   }
 
   const checkCostings = () => {
-    if(multipleCostings.length == 0){
+    if (multipleCostings.length == 0) {
       toastr.warning("Please select at least one costing for sendig for approval")
       return;
     }
-    else{
+    else {
       sendForApprovalData(multipleCostings);
       setShowApproval(true)
     }
@@ -286,309 +287,308 @@ const CostingSummaryTable = (props) => {
       </Row>
       <Row>
         <Col md="12">
-          <table>
-            {viewCostingData &&
-              viewCostingData.length > 0 &&
-              viewCostingData.map((data, index) => {
-                return (
-                  <Fragment>
-                    <tr>
-                      {index == 0 ? (
-                        <th>{data.zbc}</th>
-                      ) : (
-                          <th>
-                            <div>
-                              <input
-                                type="checkbox"
-                                onClick={(e) => {
-                                  console.log(e.target.checked, "From CheckBox")
-                                  handleMultipleCostings(e.target.checked, index)
-                                }}
-                                value={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true : false}
-                              // disabled={isEditFlag ? true : false}
-                              />
-                              {data.zbc}
-                              <button onClick={() => deleteCostingFromView(index)}>
-                                Delete
-                            </button>
-                            </div>
-                          </th>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>Test</td>
-                      ) : (
-                          <td>
-                            <div>
-                              {data.costingName}
-                              <button className={'user-btn'} onClick={() => editHandler(index)}>Edit Costing</button> &nbsp;
-                            <button>Add Costing</button>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      <td>{data.poPrice}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.status}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.rm}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.gWeight}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.fWeight}</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        {`${data.netRM}-RMCOSt`}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewRM(index)}
-                            >View -RM</button>
+          <div class="table-responsive">
+            <table class="table table-bordered costing-summary-table">
+              <thead>
+                <tr>
+                  <th scope="col">ZBC v/s VBC</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <th scope="col">
+                        <div class="element w-50 d-inline-block">
+                          <div class="custom-check d-inline-block">
+                            <input type="checkbox" id="check1" onClick={(e) => {
+                              handleMultipleCostings(e.target.checked, index)
+                            }}
+                            value={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true : false}
+                            />
+                            {
+                              // <label for="check1"></label>
+                            }
                           </div>
-                        )}
-                      </td>
-                    </tr>
-                    <tr>
+                          <span>{data.zbc}</span>
+                        </div>
+                        <div class="action w-50 d-inline-block text-right">
+                          <button type="button" class="btn small-square-btn btn-link edit-btn"><i class="fa fa-pencil"></i></button>
+                          <button type="button" class="btn small-square-btn btn-link file-btn"><i class="fa fa-file"></i></button>
+                          <button type="button" class="btn small-square-btn btn-link remove-btn" onClick={() => deleteCostingFromView(index)}><i class="fa fa-times"></i></button>
+                        </div>
+                      </th>
+                    )
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="d-block">Costing Version</span>
+                    <span class="d-block">PO Price</span>
+                  </td>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
                       <td>
-                        {data.netBOP}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewBop(index)}
-                            >
-                              View-BOP
-                            </button>
-                          </div>
-                        )}
+                        <span class="d-block bg-grey">{data.costingName} <button class="float-right d-inline-block" onClick={() => editHandler(index)}><small>Change version</small></button></span>
+                        <span class="d-block">{data.poPrice}</span>
                       </td>
-                    </tr>
-                    <tr>
-                      <td>{data.pCost}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.oCost}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.sTreatment}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.tCost}</td>
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>
+                    <span class="d-block small-grey-text">RM Name-Grade</span>
+                    <span class="d-block small-grey-text">Gross Weight</span>
+                    <span class="d-block small-grey-text">Finish Weight</span>
+                  </td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
                       <td>
-                        {data.nConvCost}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewConversionCost(index)}
-                            >
-                              View-CONVERSION COST
-                            </button>
-                          </div>
-                        )}
+                        <span class="d-block small-grey-text">{data.rm}</span>
+                        <span class="d-block small-grey-text">{data.gWeight}</span>
+                        <span class="d-block small-grey-text">{data.fWeight}</span>
                       </td>
-                    </tr>
-                    <tr>
-                      <td>{data.modelType}</td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>Test</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.aValue.applicability}</span> &nbsp;{' '}
-                              <span>{data.aValue.value}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.overheadOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.overheadOn.overheadTitle}</span> &nbsp;{' '}
-                              <span>{data.overheadOn.overheadValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.profitOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.profitOn.profitTitle}</span> &nbsp;{' '}
-                              <span>{data.profitOn.profitValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.rejectionOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.rejectionOn.rejectionTitle}</span>{' '}
-                            &nbsp;{' '}
-                              <span>{data.rejectionOn.rejectionValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.iccOn}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.iccOn.iccTitle}</span> &nbsp;{' '}
-                              <span>{data.iccOn.iccValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.paymentTerms}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.paymentTerms.paymentTitle}</span> &nbsp;{' '}
-                              <span>{data.paymentTerms.paymentValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Net RM Cost</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <td>{data.netRM}<button type="button" class="float-right btn small-square-btn btn-link eye-btn" onClick={() => viewRM(index)}><i class="fa fa-eye"></i></button></td>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Net BOP Cost</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <td>{data.netBOP}<button type="button" class="float-right btn small-square-btn btn-link eye-btn" onClick={() => viewBop(index)}><i class="fa fa-eye"></i></button></td>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>
+                    <span class="d-block small-grey-text">Process Cost</span>
+                    <span class="d-block small-grey-text">Operation Cost</span>
+                    <span class="d-block small-grey-text">Surface Treatment</span>
+                    <span class="d-block small-grey-text">Suportation Cost</span>
+                  </td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
                       <td>
-                        {data.nOverheadProfit}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => overHeadProfit(index)}
-                            >View-OVERHEAD  PROFIT</button>
-                          </div>
-                        )}
+                        <span class="d-block small-grey-text">{data.pCost}</span>
+                        <span class="d-block small-grey-text">{data.oCost}</span>
+                        <span class="d-block small-grey-text">{data.sTreatment}</span>
+                        <span class="d-block small-grey-text">{data.tCost}</span>
                       </td>
-                    </tr>
-                    <tr>
-                      <td>{data.packagingCost}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.freight}</td>
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Net Conversion Cost</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <td>{data.nConvCost}<button type="button" class="float-right btn small-square-btn btn-link eye-btn" onClick={() => viewConversionCost(index)}><i class="fa fa-eye"></i></button></td>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>
+                    <span class="d-block small-grey-text">Model Type For Overhead/Profit</span>
+                    <br />
+                    <span class="d-block small-grey-text">Overhead On</span>
+                    <span class="d-block small-grey-text">Profit On</span>
+                    <span class="d-block small-grey-text">Rejection On</span>
+                    <span class="d-block small-grey-text">ICC On</span>
+                    <span class="d-block small-grey-text">Payment Terms</span>
+                  </td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
                       <td>
-                        {data.nPackagingAndFreight}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewPackagingAndFrieghtData(index)}
-                            >View-PACKAGING</button>
-                          </div>
-                        )}
+                        <span class="d-block small-grey-text">{data.modelType}</span>
+                        <div>
+                          <span>{data.aValue.applicability}</span> &nbsp;{' '}
+                          <span>{data.aValue.value}</span>
+                        </div>
+                        <div>
+                          <span>{data.overheadOn.overheadTitle}</span> &nbsp;{' '}
+                          <span>{data.overheadOn.overheadValue}</span>
+                        </div>
+                        <div>
+                          <span>{data.profitOn.profitTitle}</span> &nbsp;{' '}
+                          <span>{data.profitOn.profitValue}</span>
+                        </div>
+                        <div>
+                          <span>{data.rejectionOn.rejectionTitle}</span>{' '}
+                      &nbsp;{' '}
+                          <span>{data.rejectionOn.rejectionValue}</span>
+                        </div>
+                        <div>
+                          <span>{data.iccOn.iccTitle}</span> &nbsp;{' '}
+                          <span>{data.iccOn.iccValue}</span>
+                        </div>
+                        <div>
+                          <span>{data.paymentTerms.paymentTitle}</span> &nbsp;{' '}
+                          <span>{data.paymentTerms.paymentValue}</span>
+                        </div>
                       </td>
-                    </tr>
-                    <tr>
-                      <td>{data.toolMaintenanceCost}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.toolPrice}</td>
-                    </tr>
-                    <tr>
-                      <td>{data.amortizationQty}</td>
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Net Overhead & Profits</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <td>{data.nOverheadProfit}<button type="button" class="float-right btn small-square-btn btn-link eye-btn" onClick={() => overHeadProfit(index)}><i class="fa fa-eye"></i></button></td>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>
+                    <span class="d-block small-grey-text">Packaging Cost</span>
+                    <span class="d-block small-grey-text">Freight</span>
+                  </td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
                       <td>
-                        {data.totalToolCost}
-                        {index != 0 && (
-                          <div>
-                            <button
-                              onClick={() => viewToolCostData(index)}
-                            >View-TOOLS </button>
-                          </div>
-                        )}
+                        <span class="d-block small-grey-text">{data.packagingCost}</span>
+                        <span class="d-block small-grey-text">{data.freight}</span>
                       </td>
-                    </tr>
-                    <tr>
-                      <td>{data.totalCost}</td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.otherDiscount}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.otherDiscount.discount}</span> &nbsp;{' '}
-                              <span>{data.otherDiscount.value}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.otherDiscountValue}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>
-                                {data.otherDiscountValue.discountPercentValue}
-                              </span>{' '}
-                            &nbsp;{' '}
-                              <span>{data.otherDiscountValue.discountValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Net Packaging & Freight</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <td>{data.nPackagingAndFreight}<button type="button" class="float-right btn small-square-btn btn-link eye-btn" onClick={() => viewPackagingAndFrieghtData(index)}><i class="fa fa-eye"></i></button></td>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>
+                    <span class="d-block small-grey-text">Tool Maintenance Cost</span>
+                    <span class="d-block small-grey-text">Tool Price</span>
+                    <span class="d-block small-grey-text">Amortization Quantity(Tool Life)</span>
+                  </td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
+                      <td>
+                        <span class="d-block small-grey-text">{data.toolMaintenanceCost}</span>
+                        <span class="d-block small-grey-text">{data.toolPrice}</span>
+                        <span class="d-block small-grey-text">{data.amortizationQty}</span>
+                      </td>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Total Tool Cost</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <td>{data.totalToolCost}<button type="button" class="float-right btn small-square-btn btn-link eye-btn" onClick={() => viewToolCostData(index)}><i class="fa fa-eye"></i></button></td>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Total Cost</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
+                      <td>{data.totalCost}<i class="fa fa-eye"></i></td>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>
+                    <span class="d-block small-grey-text">Hundi/Other Discount</span>
+                    <span class="d-block small-grey-text"></span>
+                  </td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
+                      <td>
+                        <div>
+                          <span>{data.otherDiscount.discount}</span> &nbsp;{' '}
+                          <span>{data.otherDiscount.value}</span>
+                        </div>
+                        <div>
+                          <span>
+                            {data.otherDiscountValue.discountPercentValue}
+                          </span>{' '}
+              &nbsp;{' '}
+                          <span>{data.otherDiscountValue.discountValue}</span>
+                        </div>
+                      </td>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Any Other Cost</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
                       <td>{data.anyOtherCost}</td>
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <th>Remark</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
                       <td>{data.remark}</td>
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Net Po PRice(INR)</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
                       <td>{data.nPOPriceWithCurrency}</td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? (
-                        <td>{data.currency}</td>
-                      ) : (
-                          <td>
-                            <div>
-                              <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
-                              <span>{data.currency.currencyValue}</span>
-                            </div>
-                          </td>
-                        )}
-                    </tr>
-                    <tr>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>
+                    <span class="d-block small-grey-text">Currency</span>
+                  </td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
+                      <td>
+                        <div>
+                          <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
+                          <span>{data.currency.currencyValue}</span>
+                        </div>
+                      </td>
+                    )
+                  })}
+                </tr>
+                <tr class="background-light-blue">
+                  <th>Net PO PRice</th>
+                  {viewCostingData && viewCostingData.map((data, index) => {
+                    return (
                       <td>{data.nPOPrice}</td>
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td></td> : <td>{data.attachment && data.attachment.length == 0 ? "No attachment found" : data.attachment.length == 1 ? <img
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td>Attachment</td>
+                  {viewCostingData && viewCostingData.map(data => {
+                    return (
+                      <td>{data.attachment && data.attachment.length == 0 ? "No attachment found" : data.attachment.length == 1 ? <img
                         src={require('../../../assests/images/times.png')}
                         alt="cancel-icon.jpg"
-                      /> : <button>View Attachment</button>}</td>}
-                    </tr>
-                    <tr>
-                      {index == 0 ? <td></td> : <td><button onClick={() => { sendForApprovalData([data.costingId], index); setShowApproval(true) }}>Send For Approval</button></td>}
-                    </tr>
-                  </Fragment>
-                )
-              })}
-          </table>
+                      /> : <button>View Attachment</button>}</td>
+                    )
+                  })}
+                </tr>
+                <tr>
+                  <td></td>
+                  {viewCostingData.map((data, index) => {
+                    return (
+                      <td><button onClick={() => { sendForApprovalData([data.costingId], index); setShowApproval(true) }}>Send For Approval</button></td>
+                    )
+                  })}
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
         </Col>
       </Row>
       {addComparisonToggle && (

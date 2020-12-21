@@ -209,12 +209,12 @@ function AddToComparisonDrawer(props) {
     setCostingDropdown([]);
     setValue("costings", '');
     let temp = []
-    if (viewCostingData.length == 0) {
-      temp.push(VIEW_COSTING_DATA)
-    }
-    else if (viewCostingData.length >= 1) {
-      temp = viewCostingData
-    }
+    temp = viewCostingData
+    // if (viewCostingData.length == 0) {
+    //   temp.push(VIEW_COSTING_DATA)
+    // }
+    // else if (viewCostingData.length >= 1) {
+    // }
     dispatch(
       // getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', (res) => {
       getSingleCostingDetails(values.costings.value, (res) => {
