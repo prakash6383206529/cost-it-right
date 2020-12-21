@@ -265,9 +265,7 @@ const CostingSummaryTable = (props) => {
         <Col md="4">
           <div className="left-border">{'Summary'}</div>
         </Col>
-        <Col md="4">
-          <button onClick={() => checkCostings()}>{'Send For Approval'}</button>
-        </Col>
+        
         {
           //   <Col md="4">
           //   <button className={'user-btn'} onClick={() => editHandler(index)}>
@@ -275,14 +273,11 @@ const CostingSummaryTable = (props) => {
           //   </button>
           // </Col>
         }
-        <Col md="4">
-          <button
-            type="button"
-            className={'user-btn'}
-            onClick={addComparisonDrawerToggle}
-          >
-            <div className={'plus'}></div>Add To Comparison
-          </button>
+        <Col md="8" className="text-right">
+        <button class="user-btn mr-1 mb-2" onClick={() => checkCostings()}>
+            <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')} ></img> {'Send For Approval'}</button>
+          <button type="button" className={'user-btn mb-2'} onClick={addComparisonDrawerToggle}>
+          <img src={require('../../../assests/images/compare.svg')} ></img> Add To Comparison </button>
         </Col>
       </Row>
       <Row>
@@ -303,7 +298,7 @@ const CostingSummaryTable = (props) => {
                             value={multipleCostings.length == 0 ? false : multipleCostings.includes(data.costingName) ? true : false}
                             />
                             {
-                              // <label for="check1"></label>
+                              <label for="check1"></label> /*dont remove it is for check box*/
                             }
                           </div>
                           <span>{data.zbc}</span>
@@ -327,7 +322,7 @@ const CostingSummaryTable = (props) => {
                   {viewCostingData && viewCostingData.map((data, index) => {
                     return (
                       <td>
-                        <span class="d-block bg-grey">{data.costingName} <button class="float-right d-inline-block" onClick={() => editHandler(index)}><small>Change version</small></button></span>
+                        <span class="d-flex justify-content-between bg-grey">{data.costingName} <a class="text-primary d-inline-block" onClick={() => editHandler(index)}><small>Change version</small></a></span>
                         <span class="d-block">{data.poPrice}</span>
                       </td>
                     )
@@ -404,31 +399,31 @@ const CostingSummaryTable = (props) => {
                   {viewCostingData && viewCostingData.map(data => {
                     return (
                       <td>
-                        <span class="d-block small-grey-text">{data.modelType}</span>
-                        <div>
-                          <span>{data.aValue.applicability}</span> &nbsp;{' '}
-                          <span>{data.aValue.value}</span>
+                        <span class="d-block">{data.modelType}</span>
+                        <div class="d-flex">
+                          <span class="d-inline-block w-50">{data.aValue.applicability}</span> &nbsp;{' '}
+                          <span class="d-inline-block w-50">{data.aValue.value}</span>
                         </div>
-                        <div>
-                          <span>{data.overheadOn.overheadTitle}</span> &nbsp;{' '}
-                          <span>{data.overheadOn.overheadValue}</span>
+                        <div class="d-flex">
+                          <span class="d-inline-block w-50 small-grey-text">{data.overheadOn.overheadTitle}</span> &nbsp;{' '}
+                          <span class="d-inline-block w-50 small-grey-text">{data.overheadOn.overheadValue}</span>
                         </div>
-                        <div>
-                          <span>{data.profitOn.profitTitle}</span> &nbsp;{' '}
-                          <span>{data.profitOn.profitValue}</span>
+                        <div class="d-flex">
+                          <span class="d-inline-block w-50 small-grey-text">{data.profitOn.profitTitle}</span> &nbsp;{' '}
+                          <span class="d-inline-block w-50 small-grey-text">{data.profitOn.profitValue}</span>
                         </div>
-                        <div>
-                          <span>{data.rejectionOn.rejectionTitle}</span>{' '}
+                        <div class="d-flex">
+                          <span class="d-inline-block w-50 small-grey-text">{data.rejectionOn.rejectionTitle}</span>{' '}
                       &nbsp;{' '}
-                          <span>{data.rejectionOn.rejectionValue}</span>
+                          <span class="d-inline-block w-50 small-grey-text">{data.rejectionOn.rejectionValue}</span>
                         </div>
-                        <div>
-                          <span>{data.iccOn.iccTitle}</span> &nbsp;{' '}
-                          <span>{data.iccOn.iccValue}</span>
+                        <div class="d-flex">
+                          <span class="d-inline-block w-50 small-grey-text">{data.iccOn.iccTitle}</span> &nbsp;{' '}
+                          <span class="d-inline-block w-50 small-grey-text">{data.iccOn.iccValue}</span>
                         </div>
-                        <div>
-                          <span>{data.paymentTerms.paymentTitle}</span> &nbsp;{' '}
-                          <span>{data.paymentTerms.paymentValue}</span>
+                        <div class="d-flex">
+                          <span class="d-inline-block w-50 small-grey-text">{data.paymentTerms.paymentTitle}</span> &nbsp;{' '}
+                          <span class="d-inline-block w-50 small-grey-text">{data.paymentTerms.paymentValue}</span>
                         </div>
                       </td>
                     )
@@ -492,7 +487,7 @@ const CostingSummaryTable = (props) => {
                   <th>Total Cost</th>
                   {viewCostingData && viewCostingData.map((data, index) => {
                     return (
-                      <td>{data.totalCost}<i class="fa fa-eye"></i></td>
+                      <td>{data.totalCost}<button type="button" class="float-right btn small-square-btn btn-link eye-btn"><i class="fa fa-eye"></i></button></td>
                     )
                   })}
                 </tr>
@@ -577,11 +572,11 @@ const CostingSummaryTable = (props) => {
                     )
                   })}
                 </tr>
-                <tr>
-                  <td></td>
+                <tr class="background-light-blue">
+                  <td className="text-center"></td>
                   {viewCostingData.map((data, index) => {
                     return (
-                      <td><button onClick={() => { sendForApprovalData([data.costingId], index); setShowApproval(true) }}>Send For Approval</button></td>
+                      <td class="text-center"><button class="user-btn" onClick={() => { sendForApprovalData([data.costingId], index); setShowApproval(true) }}> <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')} ></img>Send For Approval</button></td>
                     )
                   })}
                 </tr>
