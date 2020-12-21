@@ -582,6 +582,7 @@ export const API = {
   reassignCosting: `${BASE_URL}/app-approval-system/reassign-send-for-approval-click`,
   cancelCosting: `${BASE_URL}/app-approval-system/cancel-for-approval-click`,
   getReasonSelectList: `${BASE_URL}/configuration/select-list-get-reasons`,
+  getApprovalList:`${BASE_URL}/app-approval-system/get-costing-approvals-by-filter`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -1096,6 +1097,7 @@ export const GET_SEND_FOR_APPROVAL_SUCCESS = 'GET_SEND_FOR_APPROVAL_SUCCESS';
 export const GET_ALL_APPROVAL_DEPARTMENT = 'GET_ALL_APPROVAL_DEPARTMENT';
 export const GET_ALL_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USERS_BY_DEPARTMENT';
 export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST';
+export const GET_APPROVAL_LIST='GET_APPROVAL_LIST';
 
 //PRIVILEGE
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS';

@@ -1,15 +1,97 @@
-import React, { useState } from 'react';
-import { Field, reduxForm } from 'redux-form';
+import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'reactstrap';
-import { focusOnError, searchableSelect } from '../../layout/FormInputs';
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { useDispatch } from 'react-redux';
+import { getApprovalList } from '../actions/Approval';
+import { loggedInUserId } from '../../../helper';
+import { values } from 'lodash';
 
 function ApprovalListing() {
-    const [tableData, setTableData] = useState([])
+  const loggedUser = loggedInUserId()
+  console.log(loggedUser, 'user id')
+  const [tableData, setTableData] = useState([])
+  const [partNoDropdown, setPartNoDropdown] = useState([])
+  const [createdByDropdown, setCreatedByDropdown] = useState([])
+  const [requestedByDropdown, setRequestedByDropdown] = useState([])
+  const [statusDropdown, setStatusDropdown] = useState([])
+  const dispatch = useDispatch()
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    errors
+  } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange'
+  })
+  useEffect(() => {
+    getTableData()
+  }, [])
+  /**
+   * @method getTableData
+   * @description getting approval list table
+   */
+
+  const getTableData = (
+    partNo = '',
+    createdBy = ' ',
+    requestedBy = ' ',
+    status = ' ',
+  ) => {
+    let filterData = {
+      loggedUser: loggedUser,
+      partNo: partNo,
+      createdBy: createdBy,
+      requestedBy: requestedBy,
+      status: status,
+    }
+
+    dispatch(
+      getApprovalList(filterData, (res) => {
+        console.log(res, 'Response for Approval List')
+        if (res.status === 204 && res.data === '') {
+          setTableData([])
+        } else if (res && res.data && res.data.DataList) {
+          let Data = res.data.DataList
+          console.log(Data, 'Data')
+          setTableData(
+            Data.sort((a, b) => a.Sequence - b.Sequence).sort(
+              (a, b) => a.Index - b.Index,
+            ),
+          )
+        } else {
+          setTableData([])
+        }
+      }),
+    )
+  }
+  /**
+   * @method onSubmit
+   * @description filtering data on Apply button
+  */
+  const onSubmit = (values) => {
+    console.log(values);
+    const tempPartNo = values.partNo.value
+    const tempcreatedBy = values.createdBy.value
+    const tempRequestedBy = values.requestedBy.value
+    const tempStatus = values.status.value
+    getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
+  }
+/**
+ * @method resetHandler
+ * @description Reseting all filter
+*/
+const resetHandler = () => {
+    getTableData()
+}
   return (
     <>
-      <form onSubmit={() => {}} noValidate>
-        <div class="col-sm-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className="col-sm-4">
           <h3>Costing Approval</h3>
         </div>
         <hr />
@@ -21,88 +103,67 @@ function ApprovalListing() {
               </div>
 
               <div className="flex-fill">
-                <Field
-                  name="partNo"
-                  type="text"
-                  label=""
-                  component={searchableSelect}
+                <SearchableSelectHookForm
+                  label={''}
+                  name={'partNo'}
                   placeholder={'Part No.'}
-                  isClearable={false}
-                  options={''}
-                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                  //   validate={
-                  //     this.state.year == null || this.state.year.length === 0
-                  //       ? [required]
-                  //       : []
-                  //   }
-                  required={true}
-                  handleChangeDescription={() => {}}
-                  //valueDescription={this.state.year}
-                  //disabled={isEditFlag ? true : false}
+                  Controller={Controller}
+                  control={control}
+                  rules={{ required: true }}
+                  register={register}
+                  // defaultValue={plant.length !== 0 ? plant : ''}
+                  options={partNoDropdown}
+                  mandatory={false}
+                  handleChange={() => {}}
+                  errors={errors.partNo}
                 />
               </div>
               <div className="flex-fill">
-                <Field
-                  name="createdBy"
-                  type="text"
-                  label=""
-                  component={searchableSelect}
+                <SearchableSelectHookForm
+                  label={''}
+                  name={'createdBy'}
                   placeholder={'Created By'}
-                  isClearable={false}
-                  options={''}
-                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                  //   validate={
-                  //     this.state.month == null || this.state.month.length === 0
-                  //       ? [required]
-                  //       : []
-                  //   }
-                  required={true}
-                  handleChangeDescription={() => {}}
-                  //valueDescription={this.state.month}
-                  //disabled={isEditFlag ? true : false}
+                  Controller={Controller}
+                  control={control}
+                  rules={{ required: true }}
+                  register={register}
+                  // defaultValue={plant.length !== 0 ? plant : ''}
+                  options={createdByDropdown}
+                  mandatory={false}
+                  handleChange={() => {}}
+                  errors={errors.createdBy}
                 />
               </div>
               <div className="flex-fill">
-                <Field
-                  name="requestedBy"
-                  type="text"
-                  label=""
-                  component={searchableSelect}
-                  placeholder={'-Requested By-'}
-                  isClearable={false}
-                  options={''}
-                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                  //   validate={
-                  //     this.state.vendorName == null ||
-                  //     this.state.vendorName.length === 0
-                  //       ? [required]
-                  //       : []
-                  //   }
-                  required={true}
-                  handleChangeDescription={() => {}}
-                  //valueDescription={this.state.vendorName}
-                  // disabled={isEditFlag ? true : false}
+                <SearchableSelectHookForm
+                  label={''}
+                  name={'requestedBy'}
+                  placeholder={'Requested By'}
+                  Controller={Controller}
+                  control={control}
+                  rules={{ required: true }}
+                  register={register}
+                  // defaultValue={plant.length !== 0 ? plant : ''}
+                  options={requestedByDropdown}
+                  mandatory={false}
+                  handleChange={() => {}}
+                  errors={errors.requestedBy}
                 />
               </div>
               <div className="flex-fill">
-                <Field
-                  name="status"
-                  type="text"
-                  label=""
-                  component={searchableSelect}
-                  placeholder={'-Status-'}
-                  isClearable={false}
-                  options={() => {}}
-                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                  //   validate={
-                  //     this.state.plant == null || this.state.plant.length === 0
-                  //       ? [required]
-                  //       : []
-                  //   }
-                  required={true}
-                  handleChangeDescription={() => {}}
-                  //   valueDescription={this.state.plant}
-                  //   disabled={isEditFlag ? true : false}
+                <SearchableSelectHookForm
+                  label={''}
+                  name={'status'}
+                  placeholder={'Status'}
+                  Controller={Controller}
+                  control={control}
+                  rules={{ required: true }}
+                  register={register}
+                  // defaultValue={plant.length !== 0 ? plant : ''}
+                  options={statusDropdown}
+                  mandatory={false}
+                  handleChange={() => {}}
+                  errors={errors.status}
                 />
               </div>
 
@@ -110,7 +171,7 @@ function ApprovalListing() {
                 <button
                   type="button"
                   //disabled={pristine || submitting}
-                  onClick={() => {}}
+                  onClick={resetHandler}
                   className="reset mr10"
                 >
                   {'Reset'}
@@ -143,7 +204,7 @@ function ApprovalListing() {
         striped={false}
         hover={false}
         bordered={false}
-        options={''}
+        //options={''}
         search
         // exportCSV
         //ignoreSinglePage
@@ -153,7 +214,7 @@ function ApprovalListing() {
         pagination
       >
         <TableHeaderColumn
-          dataField="IsVendor"
+          dataField="ApprovalNumber"
           columnTitle={true}
           dataAlign="center"
           dataSort={true}
@@ -162,7 +223,7 @@ function ApprovalListing() {
           {`Approval No.`}
         </TableHeaderColumn>
         <TableHeaderColumn
-          dataField="Year"
+          dataField="CostingNumber"
           width={100}
           columnTitle={true}
           dataAlign="center"
@@ -171,7 +232,7 @@ function ApprovalListing() {
           {'Costing Id'}
         </TableHeaderColumn>
         <TableHeaderColumn
-          dataField="Month"
+          dataField="PartNumber"
           width={100}
           columnTitle={true}
           dataAlign="center"
@@ -180,7 +241,7 @@ function ApprovalListing() {
           {'Part No.'}
         </TableHeaderColumn>
         <TableHeaderColumn
-          dataField="VendorName"
+          dataField="PartName"
           columnTitle={true}
           dataAlign="center"
           dataSort={false}
@@ -188,7 +249,7 @@ function ApprovalListing() {
           {'Part Name'}
         </TableHeaderColumn>
         <TableHeaderColumn
-          dataField="PartNumber"
+          dataField="CreatedBy"
           columnTitle={true}
           dataAlign="center"
           dataSort={false}
@@ -196,7 +257,7 @@ function ApprovalListing() {
           {'Created By'}
         </TableHeaderColumn>
         <TableHeaderColumn
-          dataField="PartName"
+          dataField="CreatedOn"
           columnTitle={true}
           dataAlign="center"
           dataSort={false}
@@ -204,7 +265,7 @@ function ApprovalListing() {
           {'Created On'}
         </TableHeaderColumn>
         <TableHeaderColumn
-          dataField="BudgetedQuantity"
+          dataField="RequestedBy"
           columnTitle={true}
           dataAlign="center"
           dataSort={false}
@@ -212,7 +273,7 @@ function ApprovalListing() {
           {'Requested By'}
         </TableHeaderColumn>
         <TableHeaderColumn
-          dataField="ApprovedQuantity"
+          dataField="RequestedOn"
           columnTitle={true}
           dataAlign="center"
           dataSort={false}
@@ -221,10 +282,10 @@ function ApprovalListing() {
         </TableHeaderColumn>
         <TableHeaderColumn
           className="action"
-          dataField="VolumeId"
+          dataField="Status"
           export={false}
           isKey={true}
-         // dataFormat={this.buttonFormatter}
+          // dataFormat={this.buttonFormatter}
         >
           Status
         </TableHeaderColumn>
@@ -233,10 +294,4 @@ function ApprovalListing() {
   )
 }
 
-export default reduxForm({
-  form: 'ApprovalListing',
-  onSubmitFail: (errors) => {
-    focusOnError(errors)
-  },
-  enableReinitialize: true,
-})(ApprovalListing)
+export default ApprovalListing

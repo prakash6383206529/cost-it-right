@@ -7,15 +7,18 @@ import {
   GET_ALL_APPROVAL_DEPARTMENT,
   GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
   GET_ALL_REASON_SELECTLIST,
+  GET_APPROVAL_LIST,
+  config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr'
 
-const headers = {
-  'Content-Type': 'application/json',
-  //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
-};
+const headers = config
+// const headers = {
+//   'Content-Type': 'application/json',
+//   //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
+// };
 
 
 /**
@@ -217,4 +220,31 @@ export function sendForApprovalBySender(data, callback) {
       apiErrors(error);
     });
   };
+}
+
+/**
+ * @method getApprovalList
+ * @description for getting list of approval
+*/
+
+export function getApprovalList (filterData,callback) {
+  console.log(filterData,"FilterData");
+  return (dispatch) => {
+     const queryParameter = `logged_in_user_id=${filterData.loggedUser}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
+    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, { headers });
+    request.then(response =>{
+      if (response.data.Result) {
+        dispatch({
+          type: GET_APPROVAL_LIST,
+          payload: response.data.SelectList,
+        });
+        callback(response);
+      } else {
+        toastr.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch(error =>{
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    })
+  }
 }
