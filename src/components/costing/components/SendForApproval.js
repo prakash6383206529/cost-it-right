@@ -258,58 +258,66 @@ const SendForApproval = props => {
                 {viewApprovalData && viewApprovalData.map((data, index) => {
                     return (
                         <Container>
-                            <div>
-                                <Row>
-                                    <Col md="4">
-                                        <div className="left-border">{data.typeOfCosting}</div>
-                                    </Col>
-                                    <Col md="4">
-                                        <div className="left-border">{`Plant Code: ${data.plantCode}`}</div>
-                                    </Col>
-                                    <Col md="4">
-                                        <div className="left-border">{`Costing Id: ${data.costingName}`}</div>
+                            <div className={'drawer-wrapper drawer-md'}>
+                                <Row className="drawer-heading">
+                                    <Col>
+                                        <div className={'header-wrapper left'}>
+                                        <h3>{'Send for Approval'}</h3>
+                                        </div>
+                                        <div
+                                        onClick={(e) => toggleDrawer(e)}
+                                        className={'close-button right'}
+                                        ></div>
                                     </Col>
                                 </Row>
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <SearchableSelectHookForm
-                                                label={'Reason'}
-                                                name={'reason'}
-                                                placeholder={'-Select-'}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: true }}
-                                                register={register}
-                                                defaultValue={data.reason != "" ? data.reason : ''}
-                                                options={renderDropdownListing('Reason')}
-                                                mandatory={true}
-                                                handleChange={(e) => { handleReasonChange(e, index) }}
-                                                errors={errors.reason}
-                                            />
-                                        </td>
-                                        <td>
-                                            <TextFieldHookForm
-                                                label="ENC Ref No"
-                                                name={'encNumber'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={(e) => {
-                                                    handleECNNoChange(e.target.value, index)
-                                                }}
-                                                defaultValue={data.ecnNo != "" ? data.ecnNo : ''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.encNumber}
-                                            // disabled={true}
-                                            />
-                                        </td>
-                                        <td>
-                                            <div className="form-group">
-                                                <label>Effective Date</label>
+                                <Row>
+                                    <Col md="12">
+                                        <h6 className="left-border d-inline-block mr-3">{data.typeOfCosting}</h6>
+                                        <div className="text-small d-inline-block mr-3">{`Plant Code:`} <span className="small-grey-text">{`${data.plantCode}`}</span></div>
+                                        <div className="text-small d-inline-block">{`Costing Id:`} <span className="small-grey-text">{`${data.costingName}`}</span></div>
+                                    </Col>
+                                </Row>
+                                <div className="border-box border p-3 mb-4">
+                                    <Row>
+                                    <Col md="4">
+                                        <SearchableSelectHookForm
+                                            label={'Reason'}
+                                            name={'reason'}
+                                            placeholder={'-Select-'}
+                                            Controller={Controller}
+                                            control={control}
+                                            rules={{ required: true }}
+                                            register={register}
+                                            defaultValue={data.reason != "" ? data.reason : ''}
+                                            options={renderDropdownListing('Reason')}
+                                            mandatory={true}
+                                            handleChange={(e) => { handleReasonChange(e, index) }}
+                                            errors={errors.reason}
+                                        />
+                                    </Col>
+                                    <Col md="4">
+                                        <TextFieldHookForm
+                                            label="ENC Ref No"
+                                            name={'encNumber'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            rules={{ required: false }}
+                                            mandatory={false}
+                                            handleChange={(e) => {
+                                                handleECNNoChange(e.target.value, index)
+                                            }}
+                                            defaultValue={data.ecnNo != "" ? data.ecnNo : ''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.encNumber}
+                                        // disabled={true}
+                                        />
+                                    </Col>
+                                    <Col md="4">
+                                        <div className="form-group">
+                                            <label>Effective Date</label>
+                                            <div className="d-flex">
                                                 <div className="inputbox date-section">
                                                     <DatePicker
                                                         name="EffectiveDate"
@@ -331,99 +339,114 @@ const SendForApproval = props => {
                                                         required={true}
                                                     />
                                                 </div>
+                                                <i className="fa fa-calendar icon-small-primary ml-2"></i>
                                             </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <label>Old/Current Price</label>
-                                            <label>{data.oldPrice ? data.oldPrice : '-'}</label>
-                                        </td>
-                                        <td>
-                                            <label>Revised Price</label>
-                                            <label>{data.revisedPrice ? data.revisedPrice : '-'}</label>
-                                        </td>
-                                        <td>
-                                            <label>Variance</label>
-                                            <label>{data.variance ? data.variance : '-'}</label>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <label>Consumpion Quantity</label>
-                                            <label>{data.consumptionQty ? data.consumptionQty : '-'}</label>
-                                        </td>
-                                        <td>
-                                            <label>Remaining Quantity</label>
-                                            <label>{data.remainingQty !== "" ? data.remainingQty : '-'}</label>
-                                        </td>
-                                        <td>
-                                            <label>Annual Impact</label>
-                                            <label>{data.annualImpact !== "" ? data.annualImpact : '-'}</label>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <label>Impact for the Year</label>
-                                            <label>{data.yearImpact ? data.yearImpact : '-'}</label>
-                                        </td></tr>
-                                </table>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                    <Row>
+                                    <Col md="4">
+                                        <label>Old/Current Price</label>
+                                        <label className="form-control bg-grey">{data.oldPrice ? data.oldPrice : '-'}</label>
+                                    </Col>
+                                    <Col md="4">
+                                        <label>Revised Price</label>
+                                        <label className="form-control bg-grey">{data.revisedPrice ? data.revisedPrice : '-'}</label>
+                                    </Col>
+                                    <Col md="4">
+                                        <label>Variance</label>
+                                        <label className="form-control bg-grey">{data.variance ? data.variance : '-'}</label>
+                                    </Col>
+                                </Row>
+                                    <Row>
+                                    <Col md="4">
+                                        <label>Consumpion Quantity</label>
+                                        <div className="d-flex">
+                                            <label className="form-control bg-grey">{data.consumptionQty ? data.consumptionQty : '-'}</label>
+                                            <i className="fa fa-plus icon-small-primary ml-2"></i>
+                                        </div>
+                                    </Col>
+                                    <Col md="4">
+                                        <label>Remaining Quantity</label>
+                                        <label className="form-control bg-grey">{data.remainingQty !== "" ? data.remainingQty : '-'}</label>
+                                    </Col>
+                                    <Col md="4">
+                                        <label>Annual Impact</label>
+                                        <label className="form-control bg-grey">{data.annualImpact !== "" ? data.annualImpact : '-'}</label>
+                                    </Col>
+                                </Row>
+                                    <Row>
+                                    <Col md="4">
+                                        <label>Impact for the Year</label>
+                                        <label className="form-control bg-grey">{data.yearImpact ? data.yearImpact : '-'}</label>
+                                    </Col>
+                                </Row>
+                                </div>
                             </div>
                         </Container>
                     )
                 })}
+                <Container>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Row>
                         <Col md="4">
                             <div className="left-border">{'Approver'}</div>
                         </Col>
                     </Row>
-                    <SearchableSelectHookForm
-                        label={'Department'}
-                        name={'dept'}
-                        placeholder={'-Select-'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        defaultValue={''}
-                        options={renderDropdownListing('Dept')}
-                        // mandatory={true}
-                        handleChange={handleDepartmentChange}
-                        errors={errors.dept}
-                    />
-                    {
-                        <SearchableSelectHookForm
-                            label={'Approver'}
-                            name={'approver'}
-                            placeholder={'-Select-'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            defaultValue={''}
-                            options={renderDropdownListing('Approver')}
-                            mandatory={false}
-                            handleChange={handleApproverChange}
-                            errors={errors.approver}
-                        />
-                    }
-                    <TextAreaHookForm
-                        label="Remarks"
-                        name={'remarks'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.remarks}
-                        disabled={false}
-                    />
                     <Row>
-                        <div>
-                            <button
+                        <Col md="6">
+                            <SearchableSelectHookForm
+                                label={'Department'}
+                                name={'dept'}
+                                placeholder={'-Select-'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={''}
+                                options={renderDropdownListing('Dept')}
+                                // mandatory={true}
+                                handleChange={handleDepartmentChange}
+                                errors={errors.dept}
+                            />
+                        </Col>
+                        <Col md="6">
+                            {
+                            <SearchableSelectHookForm
+                                label={'Approver'}
+                                name={'approver'}
+                                placeholder={'-Select-'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                defaultValue={''}
+                                options={renderDropdownListing('Approver')}
+                                mandatory={false}
+                                handleChange={handleApproverChange}
+                                errors={errors.approver}
+                            />
+                            }
+                        </Col>
+                        <Col md="12">
+                            <TextAreaHookForm
+                                label="Remarks"
+                                name={'remarks'}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                defaultValue={''}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.remarks}
+                                disabled={false}
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md="12" className="text-right mb-3">
+                            <button className="cancel-btn btn btn-outline-secondary mr-2"
                                 type={'button'}
                                 onClick={toggleDrawer}
                             // className="reset mr15 cancel-btn"
@@ -431,7 +454,7 @@ const SendForApproval = props => {
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Clear'}
                             </button>
 
-                            <button
+                            <button className="btn btn-primary save-btn"
                                 type="submit"
                             // className="submit-button save-btn"
                             // onClick={() => handleSubmit(onSubmit)}
@@ -439,9 +462,10 @@ const SendForApproval = props => {
                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                 {'Submit'}
                             </button>
-                        </div>
+                        </Col>
                     </Row>
                 </form>
+                </Container>
             </Drawer>
         </Fragment>
     )
