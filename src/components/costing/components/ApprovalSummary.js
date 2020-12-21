@@ -37,12 +37,10 @@ function ApprovalSummary() {
             {'Approval Workflow (Approval No. 15361):'}
           </div>
         </Col>
-        <Col md="2">
+        <Col md="4" className="text-right">
           <div className="right-border">
             {
-              <button type={'button'} className="reset mr15 view-btn">
-                View All
-              </button>
+              <button type={'button'} className="apply mr15 view-btn">View All</button>
             }
           </div>
         </Col>
@@ -57,7 +55,7 @@ function ApprovalSummary() {
       </Row>
       <Row>
         <Col md="12">
-          <Table className="table cr-brdr-main" size="sm">
+          <Table responsive className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
                 <th>{`Technology:`}</th>
@@ -101,7 +99,7 @@ function ApprovalSummary() {
       </Row>
       <Row>
         <Col md="12">
-          <Table className="table cr-brdr-main" size="sm">
+          <Table responsive className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
                 <th>{`Costing ID`}</th>

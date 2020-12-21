@@ -6,6 +6,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { useDispatch } from 'react-redux';
 import { getApprovalList } from '../actions/Approval';
 import { loggedInUserId } from '../../../helper';
+import { Badge } from 'reactstrap';
 import { values } from 'lodash';
 
 function ApprovalListing() {
@@ -96,13 +97,13 @@ const resetHandler = () => {
         </div>
         <hr />
         <Row className="pt-30">
-          <Col md="8" className="filter-block">
+          <Col md="12" className="filter-block mb-2">
             <div className="d-inline-flex justify-content-start align-items-top w100">
               <div className="flex-fills">
                 <h5>{`Filter By:`}</h5>
               </div>
 
-              <div className="flex-fill">
+              <div className="flex-fill filled-small hide-label">
                 <SearchableSelectHookForm
                   label={''}
                   name={'partNo'}
@@ -118,7 +119,7 @@ const resetHandler = () => {
                   errors={errors.partNo}
                 />
               </div>
-              <div className="flex-fill">
+              <div className="flex-fill filled-small hide-label">
                 <SearchableSelectHookForm
                   label={''}
                   name={'createdBy'}
@@ -134,7 +135,7 @@ const resetHandler = () => {
                   errors={errors.createdBy}
                 />
               </div>
-              <div className="flex-fill">
+              <div className="flex-fill filled-small hide-label">
                 <SearchableSelectHookForm
                   label={''}
                   name={'requestedBy'}
@@ -150,7 +151,7 @@ const resetHandler = () => {
                   errors={errors.requestedBy}
                 />
               </div>
-              <div className="flex-fill">
+              <div className="flex-fill filled-small hide-label">
                 <SearchableSelectHookForm
                   label={''}
                   name={'status'}
@@ -167,7 +168,7 @@ const resetHandler = () => {
                 />
               </div>
 
-              <div className="flex-fill">
+              <div className="flex-fill filled-small hide-label">
                 <button
                   type="button"
                   //disabled={pristine || submitting}
@@ -187,6 +188,17 @@ const resetHandler = () => {
               </div>
             </div>
           </Col>
+          <Col md="12"  className="tag-container mb-4">
+            <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">Grant Marshall <a href=""><i className="ml-1 fa fa-times-circle"></i></a></Badge>
+            <Badge color="secondary" pill className="md-badge-blue-grey">Kerri Barber <a href=""><i className="ml-1 fa fa-times-circle"></i></a></Badge>
+          </Col>
+
+          {/* <Col md="12"  className="mb-4">
+            <Badge color="success" pill className="badge-small">Approved </Badge>
+            <Badge color="danger" pill className="badge-small">Rejected</Badge>
+            <Badge color="warning" pill className="badge-small">Pending for Approval</Badge>
+          </Col> */}
+
           {/* <Col md="4" className="search-user-block">
             <div className="d-flex justify-content-end bd-highlight">
               <div>
