@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr';
 import { useHistory } from 'react-router-dom';
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment, sendForApprovalBySender } from '../actions/Approval';
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender } from '../actions/Approval';
 import { userDetails } from '../../../helper/auth';
 import { setCostingApprovalData, setCostingViewData } from '../actions/Costing';
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume';
@@ -23,6 +23,7 @@ const SendForApproval = props => {
     const usersList = useSelector(state => state.approval.approvalUsersList);
     const viewApprovalData = useSelector(state => state.costing.costingApprovalData);
     const partNo = useSelector((state) => state.costing.partNo);
+    console.log(partNo,"part");
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedApprover, setSelectedApprover] = useState('');
     const [financialYear, setFinancialYear] = useState('');
@@ -74,9 +75,11 @@ const SendForApproval = props => {
   */
     const handleDepartmentChange = (newValue) => {
         if (newValue && newValue !== '') {
-            dispatch(getAllApprovalUserByDepartment({
+            // dispatch(getAllApprovalUserByDepartment({ // add approval api here
+            dispatch(getAllApprovalUserFilterByDepartment({
                 UserId: userData.LoggedInUserId,
-                DepartmentId: newValue.Value
+                DepartmentId: newValue.value,
+                TechnologyId:partNo.technologyId
             }, () => { }))
             setSelectedDepartment(newValue)
         } else {
@@ -134,7 +137,7 @@ const SendForApproval = props => {
             year = `${(date.getFullYear())}-${date.getFullYear() + 1}`
         }
         setFinancialYear(year);
-        // dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => {
+        // dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => { //change when kamal sir map and give data.
         dispatch(getVolumeDataByPartAndYear('WISHER', year, res => {
             if (res.data.Result === true) {
                 let approvedQtyArr = res.data.Data.VolumeApprovedDetails;
@@ -185,8 +188,8 @@ const SendForApproval = props => {
         }
         let obj = {
             ApproverDepartmentId: selectedDepartment.value,
-            ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692",
-            ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",
+            ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
+            ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
             SenderLevelId: userData.LoggedInLevelId,
             SenderId: userData.LoggedInUserId,
             SenderRemark: data.remarks,
@@ -208,9 +211,9 @@ const SendForApproval = props => {
             tempObj.EffectiveDate = data.effectiveDate;
             tempObj.RevisionNumber = partNo.revisionNumber;
             // tempObj.PartName = partNo.label;
-            tempObj.PartName = "Compressor";
+            tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
             // tempObj.PartNumber = partNo.value;
-            tempObj.PartNumber = "CP021220";
+            tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
             tempObj.FinancialYear = financialYear;
             tempObj.OldPOPrice = data.oldPrice;
             tempObj.NewPoPrice = data.revisedPrice;

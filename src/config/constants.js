@@ -574,7 +574,7 @@ export const API = {
   getSendForApproval: `${BASE_URL}/app-approval-system/send-for-approval-click`,
   getAllApprovalDepartment: `${BASE_URL}/app-approval-system/get-all-approval-department`,
   getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-by-department`,
-  // getAllApprovalUserByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-level-filter-by-department`,
+  getAllApprovalUserFilterByDepartment: `${BASE_URL}/app-approval-system/get-all-approval-users-level-filter-by-department`,
   sendForApproval: `${BASE_URL}/app-approval-system/send-for-approval`,
   sendForApprovalBySender: `${BASE_URL}/app-approval-system/send-to-approver-by-sender`,
   approvalProcess: `${BASE_URL}/app-approval-system/approval-process`,
@@ -1096,6 +1096,7 @@ export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER';
 export const GET_SEND_FOR_APPROVAL_SUCCESS = 'GET_SEND_FOR_APPROVAL_SUCCESS';
 export const GET_ALL_APPROVAL_DEPARTMENT = 'GET_ALL_APPROVAL_DEPARTMENT';
 export const GET_ALL_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USERS_BY_DEPARTMENT';
+export const GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT='GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT';
 export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST';
 export const GET_APPROVAL_LIST='GET_APPROVAL_LIST';
 

@@ -23,6 +23,7 @@ function CostingSummary() {
 
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([]);
+  console.log(technology,"tech");
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
@@ -78,6 +79,7 @@ function CostingSummary() {
   * @description  USED TO HANDLE TECHNOLOGY CHANGE
   */
   const handleTechnologyChange = (newValue) => {
+    console.log(newValue,"Technology change");
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
@@ -130,6 +132,9 @@ const handlePartChange = (newValue) => {
               setValue("ShareOfBusiness", Data.Price)
               setEffectiveDate(moment(Data.EffectiveDate)._d)
               newValue.revisionNumber = Data.RevisionNumber;
+              newValue.technologyId = technology.value;
+              newValue.technologyName = technology.label;
+              newValue.PartName = newValue.label
               dispatch(storePartNumber(newValue))
               dispatch(getCostingSummaryByplantIdPartNo(newValue.label, '00000000-0000-0000-0000-000000000000', res => {
                 if (res.data.Result == true) {
@@ -238,6 +243,7 @@ const handlePartChange = (newValue) => {
                       obj.plantCode = dataFromAPI.PlantCode;
                       obj.costingId = dataFromAPI.CostingId
                       obj.oldPoPrice = dataFromAPI.OldPOPrice;
+                      // obj.technology = technology
                       console.log('obj: ', obj);
 
                       temp.push(obj);

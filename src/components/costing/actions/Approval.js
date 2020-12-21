@@ -6,6 +6,7 @@ import {
   GET_SEND_FOR_APPROVAL_SUCCESS,
   GET_ALL_APPROVAL_DEPARTMENT,
   GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
+  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
   GET_ALL_REASON_SELECTLIST,
   GET_APPROVAL_LIST,
   config
@@ -85,6 +86,36 @@ export function getAllApprovalUserByDepartment(data, callback) {
       if (response.data.Result) {
         dispatch({
           type: GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
+          payload: response.data.DataList
+        });
+        callback(response);
+      } else {
+        dispatch({ type: API_FAILURE });
+        if (response.data.Message) {
+          toastr.error(response.data.Message);
+        }
+      }
+    }).catch((error) => {
+      dispatch({
+        type: API_FAILURE
+      });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getAllApprovalUserFilterByDepartment
+ * @description GET ALL APPROVAL USERS FILTER BY DEPARTMENT
+ */
+export function getAllApprovalUserFilterByDepartment(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.getAllApprovalUserFilterByDepartment, data, headers);
+    request.then((response) => {
+      console.log(response,"Get response for user by dep");
+      if (response.data.Result) {
+        dispatch({
+          type: GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
           payload: response.data.DataList
         });
         callback(response);
