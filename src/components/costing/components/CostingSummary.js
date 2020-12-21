@@ -101,14 +101,15 @@ function CostingSummary() {
   */
 const handlePartChange = (newValue) => {
     let temp = [];
-    if (viewCostingData.length == 0 || part.value == newValue.value || part.value != newValue.value) {
-      console.log("From iffff")
-      temp.push(VIEW_COSTING_DATA)
-    }
-    else if (viewCostingData.length >= 1) {
-      console.log("From elseeeee")
-      temp = viewCostingData
-    }
+    temp = viewCostingData;
+    // if (viewCostingData.length == 0 || part.value == newValue.value || part.value != newValue.value) {
+    //   console.log("From iffff")
+    //   temp.push(VIEW_COSTING_DATA)
+    // }
+    // else if (viewCostingData.length >= 1) {
+    //   console.log("From elseeeee")
+    //   temp = viewCostingData
+    // }
     // else if(part != newValue)
 
     if (newValue && newValue !== '') {
