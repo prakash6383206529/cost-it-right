@@ -97,7 +97,7 @@ const resetHandler = () => {
         </div>
         <hr />
         <Row className="pt-30">
-          <Col md="12" className="filter-block mb-2">
+          <Col lg="10" md="12" className="filter-block mb-2">
             <div className="d-inline-flex justify-content-start align-items-top w100">
               <div className="flex-fills">
                 <h5>{`Filter By:`}</h5>
@@ -188,10 +188,10 @@ const resetHandler = () => {
               </div>
             </div>
           </Col>
-          <Col md="12"  className="tag-container mb-4">
+          {/* <Col md="12"  className="tag-container mb-4">
             <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">Grant Marshall <a href=""><i className="ml-1 fa fa-times-circle"></i></a></Badge>
             <Badge color="secondary" pill className="md-badge-blue-grey">Kerri Barber <a href=""><i className="ml-1 fa fa-times-circle"></i></a></Badge>
-          </Col>
+          </Col> */}
 
           {/* <Col md="12"  className="mb-4">
             <Badge color="success" pill className="badge-small">Approved </Badge>
