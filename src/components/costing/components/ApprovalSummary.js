@@ -63,7 +63,7 @@ function ApprovalSummary() {
         <Col md="4" className="text-right">
           <div className="right-border">
             {
-              <button type={'button'} className="apply mr15 view-btn">View All</button>
+              <button type={'button'} className="apply view-btn">View All</button>
             }
           </div>
         </Col>
@@ -77,32 +77,37 @@ function ApprovalSummary() {
         </Col>
       </Row>
       <Row>
-        <Col md="12">
+        <Col md="12" className="mb-2">
           <Table responsive className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
-                <th>{`Technology:`}</th>
-                <th>{`Assembly No./Part No.`}</th>
-                <th>{`Assembly Name/Part Name`}</th>
-                <th>{`Assembly Description/Part Description`}</th>
-                <th>{`ECO No:`}</th>
-                <th>{`Drawing No:`}</th>
-                <th>{`Revision No:`}</th>
-                <th>{`Effective Date:`}</th>
+                <th><span className="d-block grey-text text-small">{`Technology:`}</span>
+                <span className="d-block text-small">{`Technology 1`}</span>
+                </th>
+                <th><span className="d-block grey-text text-small">{`Assembly No./Part No.`}</span>
+                <span className="d-block text-small">{`IZABC0001244`}</span>
+                </th>
+                <th><span className="d-block grey-text text-small">{`Assembly Name/Part Name`}</span>
+                <span className="d-block text-small">{`Part 1`}</span>
+                </th>
+                <th><span className="d-block grey-text text-small">{`Assembly Description/Part Description`}</span>
+                <span className="d-block text-small">{`Loreum ipsum`}</span>
+                </th>
+                <th><span className="d-block grey-text text-small">{`ECO No:`}</span>
+                <span className="d-block text-small">{`1244`}</span>
+                </th>
+                <th><span className="d-block grey-text text-small">{`Drawing No:`}</span>
+                <span className="d-block text-small">{`10`}</span>
+                </th>
+                <th><span className="d-block grey-text text-small">{`Revision No:`}</span>
+                <span className="d-block text-small">{`2`}</span>
+                </th>
+                <th><span className="d-block grey-text text-small">{`Effective Date:`}</span>
+                <span className="d-block text-small">{`10/06/2020`}</span>
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>{`Technology 1`}</td>
-                <td>{`IZABC0001244`}</td>
-                <td>{`Part 1`}</td>
-                <td>{`Loreum ipsum`}</td>
-                <td>{`1244`}</td>
-                <td>{`10`}</td>
-                <td>{`2`}</td>
-                <td>{`10/06/2020`}</td>
-              </tr>
-
               {/* {costingProcessCost && costingProcessCost.length === 0 && (
                 <tr>
                   <td colSpan={12}>
@@ -114,7 +119,6 @@ function ApprovalSummary() {
           </Table>
         </Col>
       </Row>
-      <hr />
       <Row>
         <Col md="8">
           <div className="left-border">{'Approval Details:'}</div>
@@ -169,15 +173,15 @@ function ApprovalSummary() {
                   </td>
                 </tr>
               )} */}
-              <tfoot>
-                <Row>
-                  <Col md="12">Reason : Loreum Ipsum</Col>
-                </Row>
-                <Row>
-                  <Col md="12">Remark : Loreum Ipsum Dolor</Col>
-                </Row>
-              </tfoot>
             </tbody>
+            <tfoot>
+                <tr>
+                  <td colSpan="12"><span className="grey-text">Reason:</span> Loreum Ipsum</td>
+                </tr>
+                <tr>
+                  <td colSpan="12"><span className="grey-text">Remark:</span> Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore.</td>
+                </tr>
+              </tfoot>
           </Table>
         </Col>
       </Row>
@@ -186,9 +190,9 @@ function ApprovalSummary() {
         <Col md="10">
           <div className="left-border">{'Costing Summary:'}</div>
         </Col>
-        <Col md="2">
+        <Col md="2" className="text-right">
           <div className="right-border">
-            {<button className="Add mr-1" type={'button'} />}
+            <button className="btn btn-small-primary-circle ml-1" type='button'><i className="fa fa-plus"></i></button>
           </div>
         </Col>
       </Row>
