@@ -134,7 +134,9 @@ const handlePartChange = (newValue) => {
               newValue.revisionNumber = Data.RevisionNumber;
               newValue.technologyId = technology.value;
               newValue.technologyName = technology.label;
-              newValue.PartName = newValue.label
+              newValue.partName = Data.PartName;
+              newValue.partNumber = newValue.label;
+              newValue.partId = newValue.value;
               dispatch(storePartNumber(newValue))
               dispatch(getCostingSummaryByplantIdPartNo(newValue.label, '00000000-0000-0000-0000-000000000000', res => {
                 if (res.data.Result == true) {
@@ -241,6 +243,12 @@ const handlePartChange = (newValue) => {
                       obj.plantId = dataFromAPI.PlantId;
                       obj.plantName = dataFromAPI.PlantName;
                       obj.plantCode = dataFromAPI.PlantCode;
+                      obj.vendorId = dataFromAPI.VendorId;
+                      obj.vendorName = dataFromAPI.VendorName;
+                      obj.vendorCode = dataFromAPI.VendorCode;
+                      obj.vendorPlantId = dataFromAPI.VendorPlantId;
+                      obj.vendorPlantName = dataFromAPI.VendorPlantName;
+                      obj.vendorPlantCode = dataFromAPI.VendorPlantCode;
                       obj.costingId = dataFromAPI.CostingId
                       obj.oldPoPrice = dataFromAPI.OldPOPrice;
                       // obj.technology = technology

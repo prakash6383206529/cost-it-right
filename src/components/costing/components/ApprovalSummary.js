@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
+import { loggedInUserId } from '../../../helper';
+import { getApprovalSummary } from '../actions/Approval'
 import ApprovalWorkFlow from './ApprovalWorkFlow';
 import ApproveRejectDrawer from './ApproveRejectDrawer';
 function ApprovalSummary() {
-  const tokenNo = "00000000-0000-0000-0000-000000000000"
+  const tokenNo = "2345438"
+  const loggedInUser = loggedInUserId()
+  const dispatch = useDispatch()
+  const approvalSummary = useSelector(state => state.approval.approvalSummaryData)
+  console.log(approvalSummary);
+  useEffect(() => {
+    dispatch(getApprovalSummary(tokenNo,loggedInUser, ()=>{
+    
+    }))
+    
+  }, [])
   const approvalDetail = [
     {
       costingId: 'CS7654',

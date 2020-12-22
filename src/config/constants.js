@@ -585,7 +585,8 @@ export const API = {
   getApprovalList:`${BASE_URL}/app-approval-system/get-costing-approvals-by-filter`,
   approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approve`,
   rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
-
+  getApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-costing-summary`,
+  
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
   moduleSelectList: `${BASE_URL}/app-privilege-permission/get-module-select-list`,
@@ -1101,7 +1102,7 @@ export const GET_ALL_APPROVAL_USERS_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USERS_BY_D
 export const GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT='GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT';
 export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST';
 export const GET_APPROVAL_LIST='GET_APPROVAL_LIST';
-
+export const GET_APPROVAL_SUMMARY='GET_APPROVAL_SUMMARY';
 //PRIVILEGE
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS';
 export const GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS = 'GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS';
@@ -1250,6 +1251,8 @@ export const BOUGHTOUTPART = 'BoughtOutPart';
 
 
 export const COSTING_PATH = '/costing';
+export const APPROVAL_SUMMARY_PATH = '/approval-summary';
+export const APPROVAL_LISTING_PATH = '/approval-listing';
 
 export const VIEW_COSTING_DATA = {
   zbc: "ZBC v/s VBC",

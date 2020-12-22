@@ -217,16 +217,23 @@ const CostingSummaryTable = (props) => {
       let index = viewCostingData.findIndex(data => data.costingId == id);
       if (index !== -1) {
         let obj = {};
+        // add vendor key here
         obj.typeOfCosting = viewCostingData[index].zbc;
         obj.plantCode = viewCostingData[index].plantCode;
         obj.plantName = viewCostingData[index].plantName;
         obj.plantId = viewCostingData[index].plantId;
+        obj.vendorId = viewCostingData[index].vendorId;
+        obj.vendorName = viewCostingData[index].vendorName;
+        obj.vendorCode = viewCostingData[index].vendorCode;
+        obj.vendorPlantId = viewCostingData[index].vendorPlantId;
+        obj.vendorPlantName = viewCostingData[index].vendorPlantName;
+        obj.vendorPlantCode = viewCostingData[index].vendorPlantCode;
         obj.costingName = viewCostingData[index].costingName;
         obj.costingId = viewCostingData[index].costingId;
         // obj.oldPrice = viewCostingData[index].oldPrice;
         obj.oldPrice = viewCostingData[index].oldPoPrice;
         obj.revisedPrice = viewCostingData[index].nPOPrice;
-        obj.variance = parseInt(viewCostingData[index].oldPoPrice) - parseInt(viewCostingData[index].nPOPrice);
+        obj.variance =viewCostingData[index].oldPoPrice!=0 ? parseInt(viewCostingData[index].oldPoPrice) - parseInt(viewCostingData[index].nPOPrice): "";
         obj.consumptionQty = "";
         obj.remainingQty = "";
         obj.annualImpact = "";

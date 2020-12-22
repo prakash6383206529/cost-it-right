@@ -7,6 +7,7 @@ import {
     GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
     GET_ALL_REASON_SELECTLIST,
     GET_APPROVAL_LIST,
+    GET_APPROVAL_SUMMARY,
 } from '../../../config/constants';
 
 const initialState = {
@@ -67,6 +68,12 @@ export default function ApprovalReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 approvalList: action.payload
+            }
+        case GET_APPROVAL_SUMMARY:
+            return {
+                ...state,
+                loading: false,
+                approvalSummaryData: action.payload
             }
         default:
             return state;

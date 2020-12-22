@@ -36,7 +36,7 @@ import { showUserData } from '../actions/auth/AuthActions';
 import AuthMiddleware from '../AuthMiddleware';
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION, OVERHEAD_AND_PROFIT, PART, PLANT,
-  RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH
+  RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, APPROVAL_SUMMARY_PATH
 } from '../config/constants'
 import ApprovalSummary from "./costing/components/ApprovalSummary";
 import ApprovalListing from "./costing/components/ApprovalListing";
@@ -101,7 +101,7 @@ class Main extends Component {
       isLogin = false;
     }
 
-    const fullSizeClass = location.pathname === COSTING_PATH ? 'full_size_content' : '';
+    const fullSizeClass = location.pathname === COSTING_PATH || location.pathname === APPROVAL_LISTING_PATH || location.pathname === APPROVAL_SUMMARY_PATH ? 'full_size_content' : '';
 
     return (
       <Suspense fallback={<Loader />}>
@@ -137,7 +137,7 @@ class Main extends Component {
           <div className={isLogin ? 'blue-box' : ''}>
 
             <div className={isLogin ? 'main-section' : ''}>
-              {isLogin && !this.state.visibelPageNotFound && location.pathname !== COSTING_PATH && <LeftMenu {...this.props} />}
+              {isLogin && !this.state.visibelPageNotFound && (location.pathname !== COSTING_PATH && location.pathname !== APPROVAL_SUMMARY_PATH && location.pathname !== APPROVAL_LISTING_PATH ) && <LeftMenu {...this.props} />}
 
               <div className={isLogin ? `content-page ${fullSizeClass}` : ''}>
                 <div className={isLogin ? 'middleContainer' : ''}>
@@ -186,6 +186,7 @@ class Main extends Component {
 
                     {/*Temporary  */}
                     <Route path="/approval-summary" component={ApprovalSummary} />
+
                     <Route path="/approval-listing" component={ApprovalListing} />
 
                     <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />

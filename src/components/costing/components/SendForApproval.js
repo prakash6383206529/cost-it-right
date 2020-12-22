@@ -175,8 +175,8 @@ const SendForApproval = props => {
                 })
                 temp.consumptionQty = actualQty;
                 temp.remainingQty = budgetedRemQty - actualRemQty
-                temp.annualImpact = (actualQty + (budgetedRemQty - actualRemQty)) * parseInt(temp.variance);
-                temp.yearImpact = (budgetedRemQty - actualRemQty) * parseInt(temp.variance)
+                temp.annualImpact = temp.variance !="" ? (actualQty + (budgetedRemQty - actualRemQty)) * parseInt(temp.variance): "";
+                temp.yearImpact = temp.variance !="" ? (budgetedRemQty - actualRemQty) * parseInt(temp.variance) : ""
                 viewDataTemp[index] = temp;
                 dispatch(setCostingApprovalData(viewDataTemp));
             }
@@ -203,34 +203,39 @@ const SendForApproval = props => {
         }
         let obj = {
             ApproverDepartmentId: selectedDepartment.value,
-            // ApproverLevelId: selectedApproverLevelId,
-            // ApproverId: selectedApprover.value,
-            ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
-            ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
+            ApproverDepartmentName: selectedDepartment.label,
+            ApproverLevelId: selectedApproverLevelId,
+            ApproverId: selectedApprover.value,
+            // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
+            // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
             SenderLevelId: userData.LoggedInLevelId,
+            // SenderLevelName: name     levelname ?
             SenderId: userData.LoggedInUserId,
             SenderRemark: data.remarks,
             LoggedInUserId: userData.LoggedInUserId
         }
         let temp = []
         let tempObj = {}
+        console.log(viewApprovalData,"Approval dta");
         viewApprovalData.map(data => {
             tempObj.TypeOfCosting = data.typeOfCosting;
             tempObj.PlantId = data.typeOfCosting.toLowerCase() == "zbc" ? data.plantId : "";
             tempObj.PlantNumber = data.typeOfCosting.toLowerCase() == "zbc" ? data.plantCode : "";
             tempObj.PlantName = data.typeOfCosting.toLowerCase() == "zbc" ? data.plantName : "";
+            tempObj.PlantCode = data.typeOfCosting.toLowerCase() == "zbc" ? data.plantCode : "";
             tempObj.CostingId = data.costingId;
             tempObj.CostingNumber = data.costingName;
             tempObj.ReasonId = data.reasonId;
             tempObj.Reason = data.reason;
-            // tempObj.ECNNumber = data.ecnNo;
-            tempObj.ECNNumber = 1;
+            tempObj.ECNNumber = data.ecnNo;
+           // tempObj.ECNNumber = 1;
             tempObj.EffectiveDate = data.effectiveDate;
             tempObj.RevisionNumber = partNo.revisionNumber;
-            // tempObj.PartName = partNo.label;
-            tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
-            // tempObj.PartNumber = partNo.value;
-            tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
+            tempObj.PartName = partNo.partName;
+           // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
+            tempObj.PartNumber = partNo.partNumber; //label 
+            tempObj.PartId = partNo.partId
+            // tempObj.PartNumber = "CP021220";// set data for this is in costing summary,will come here
             tempObj.FinancialYear = financialYear;
             tempObj.OldPOPrice = data.oldPrice;
             tempObj.NewPoPrice = data.revisedPrice;
@@ -243,17 +248,21 @@ const SendForApproval = props => {
             tempObj.VendorCode = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendoreCode :"";
             tempObj.VendorPlantId = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendorePlantId :"";
             tempObj.VendorPlantCode = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendorPlantCode :"";
+            tempObj.VendorName = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendorName : "";
+            tempObj.VendorPlantName = data.typeOfCosting.toLowerCase() == "vbc" ? data.vendorPlantName : "";
+            tempObj.IsFinalApproved = false
             temp.push(tempObj);
         })
+        console.log(temp,"Temp");
         obj.CostingsList = temp;
         console.log('obj: ', obj);
-         dispatch(storePartNumber({departmentId: selectedDepartment.value}))
-        dispatch(sendForApprovalBySender(obj, res => {
-            history.push('/costing');
-            dispatch(setCostingApprovalData([]))
-            dispatch(setCostingViewData([]))
-            console.log(res, "Response from send for approval")
-        }))
+        
+        // dispatch(sendForApprovalBySender(obj, res => {
+        //     history.push('/costing');
+        //     dispatch(setCostingApprovalData([]))
+        //     dispatch(setCostingViewData([]))
+        //     console.log(res, "Response from send for approval")
+        // }))
     }
 
     const handleApproverChange = data => {
@@ -319,7 +328,7 @@ const SendForApproval = props => {
                                     </Col>
                                     <Col md="4">
                                         <TextFieldHookForm
-                                            label="ENC Ref No"
+                                            label="ECN Ref No"
                                             name={'encNumber'}
                                             Controller={Controller}
                                             control={control}

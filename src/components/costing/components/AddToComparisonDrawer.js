@@ -409,6 +409,13 @@ function AddToComparisonDrawer(props) {
           obj.plantId = dataFromAPI.PlantId;
           obj.plantCode = dataFromAPI.PlantCode;
           obj.plantName = dataFromAPI.PlantName;
+          //Add vendor key here
+          obj.vendorId = dataFromAPI.VendorId;
+          obj.vendorName = dataFromAPI.VendorName;
+          obj.vendorCode = dataFromAPI.VendorCode;
+          obj.vendorPlantId = dataFromAPI.VendorPlantId;
+          obj.vendorPlantName = dataFromAPI.VendorPlantName;
+          obj.vendorPlantCode = dataFromAPI.VendorPlantCode;
           obj.costingId = dataFromAPI.CostingId;
           obj.oldPoPrice = dataFromAPI.OldPOPrice;
 

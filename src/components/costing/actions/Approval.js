@@ -9,7 +9,8 @@ import {
   GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
   GET_ALL_REASON_SELECTLIST,
   GET_APPROVAL_LIST,
-  config
+  config,
+  GET_APPROVAL_SUMMARY
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -325,4 +326,30 @@ export function rejectRequestByApprove(data, callback) {
       apiErrors(error);
     });
   };
+}
+
+/**
+ * @method getApprovalSummary
+ * @description getting summary of approval by approval id
+*/
+
+export function  getApprovalSummary(approvalNumber, loggedInUserId, callback) {
+
+  return (dispatch) => {
+    const request = axios.get(`${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${loggedInUserId}`, { headers });
+    request.then(response =>{
+      if (response.data.Result) {
+        dispatch({
+          type: GET_APPROVAL_SUMMARY,
+          payload: response.data.Data,
+        });
+        callback(response);
+      } else {
+        toastr.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch(error =>{
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    })
+  }
 }

@@ -37,7 +37,6 @@ function ApproveRejectDrawer(props) {
       obj.Remark = data.remark
       obj.ApprovalToken = tokenNo
       obj.LoggedInUserId = userLoggedIn
-      obj.IsApproved = type==="Approve" ? true : false //Confusion need to ask.
       obj.ApprovalProcessSummaryId = "00000000-0000-0000-0000-000000000000"
       
       if(type === "Approve") {
