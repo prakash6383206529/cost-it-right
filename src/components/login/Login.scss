@@ -253,6 +253,18 @@ label{margin-bottom: 0;}
 body .icon-small-primary{width: 25px;height: 25px;display: inline-block;background-color: #256BD1;    font-family: FontAwesome !important;color: #fff !important;border-radius: 3px;text-align: center;line-height: 25px;margin-top: 6px;}
 // =================costing summary table page=========================
 
+// =================Costing Approval=========================
+.hide-label label{display: none;}
+.filled-small div[class$="placeholder"]{top: 14px;}
+.filled-small .css-tlfecz-indicatorContainer{margin-top: -4px;}
+.md-badge-blue-grey {background: #D0D8E5;color: #3D4465;padding: 6px 10px;}
+.md-badge-blue-grey i{color:#256BD1}
+.badge-success{background-color: #4DC771;}
+.badge-danger{background-color: #FC5774;}
+.badge-warning{background-color: #F8A000;color: #fff;}
+.badge-small{padding:4px 12px;margin: 1px;font-weight: 400;}
+// =================Costing Approval=========================
+
 
 .right-sideimg{
 img
