@@ -109,8 +109,10 @@ export function getAllApprovalUserByDepartment(data, callback) {
  * @description GET ALL APPROVAL USERS FILTER BY DEPARTMENT
  */
 export function getAllApprovalUserFilterByDepartment(data, callback) {
+ 
   return (dispatch) => {
-    const request = axios.post(API.getAllApprovalUserFilterByDepartment, data, headers);
+    const request = axios.post(`${API.getAllApprovalUserFilterByDepartment}`, data, headers);
+  
     request.then((response) => {
       console.log(response,"Get response for user by dep");
       if (response.data.Result) {
@@ -278,4 +280,49 @@ export function getApprovalList (filterData,callback) {
       apiErrors(error);
     })
   }
+}
+
+/**
+ * @method approvalRequestByApprove
+ * @description approving the request by approve
+*/
+export function approvalRequestByApprove(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.approveCostingByApprover, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        dispatch({ type: API_FAILURE });
+        if (response.data.Message) {
+          toastr.error(response.data.Message);
+        }
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+/**
+ * @method rejectRequestByApprove
+ * @description rejecting approval Request
+*/
+export function rejectRequestByApprove(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.rejectCostingByApprover, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        dispatch({ type: API_FAILURE });
+        if (response.data.Message) {
+          toastr.error(response.data.Message);
+        }
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
 }

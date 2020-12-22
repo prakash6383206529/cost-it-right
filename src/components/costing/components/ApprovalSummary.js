@@ -1,7 +1,9 @@
-import React from 'react'
-import { Container, Row, Col, Table } from 'reactstrap'
-import ApprovalWorkFlow from './ApprovalWorkFlow'
+import React, { useState } from 'react';
+import { Container, Row, Col, Table } from 'reactstrap';
+import ApprovalWorkFlow from './ApprovalWorkFlow';
+import ApproveRejectDrawer from './ApproveRejectDrawer';
 function ApprovalSummary() {
+  const tokenNo = "00000000-0000-0000-0000-000000000000"
   const approvalDetail = [
     {
       costingId: 'CS7654',
@@ -28,6 +30,14 @@ function ApprovalSummary() {
       effectiveDate: '10/06/2020',
     },
   ]
+
+  const [approveDrawer, setApproveDrawer] = useState(false)
+  const [rejectDrawer, setRejectDrawer] = useState(false)
+
+  const closeDrawer = (e = '') => {
+    setApproveDrawer(false)
+    setRejectDrawer(false)
+  }
   return (
     <>
       <h2>Approval Summary</h2>
@@ -178,7 +188,7 @@ function ApprovalSummary() {
           <button
             type={'button'}
             className="reset mr15 cancel-btn"
-            onClick={() => {}}
+             onClick={()=>setRejectDrawer(true)}
           >
             <div className={'cross-icon'}>
               <img
@@ -190,9 +200,9 @@ function ApprovalSummary() {
           </button>
 
           <button
-            type="submit"
+            type="button"
             className="submit-button mr5 save-btn"
-            // onClick={addHandler}
+              onClick={()=>setApproveDrawer(true)}
           >
             <div className={'check-icon'}>
               <img
@@ -204,6 +214,26 @@ function ApprovalSummary() {
           </button>
         </div>
       </Row>
+      {
+        approveDrawer && 
+        <ApproveRejectDrawer
+          type={'Approve'}
+          isOpen={approveDrawer}
+          closeDrawer={closeDrawer}
+          tokenNo={tokenNo}
+          anchor={'right'}
+        />
+      }
+      {
+        rejectDrawer && 
+        <ApproveRejectDrawer
+        type ={'Reject'}
+        isOpen={rejectDrawer}
+        closeDrawer={closeDrawer}
+        tokenNo={tokenNo}
+        anchor={'right'}
+        />
+      }
     </>
   )
 }

@@ -583,6 +583,8 @@ export const API = {
   cancelCosting: `${BASE_URL}/app-approval-system/cancel-for-approval-click`,
   getReasonSelectList: `${BASE_URL}/configuration/select-list-get-reasons`,
   getApprovalList:`${BASE_URL}/app-approval-system/get-costing-approvals-by-filter`,
+  approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approve`,
+  rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,

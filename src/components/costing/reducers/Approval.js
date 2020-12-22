@@ -52,7 +52,7 @@ export default function ApprovalReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false,
-                error: true,
+                // error: true,
                 approvalUserListByDepartment: action.payload
             }
         case GET_ALL_REASON_SELECTLIST:

@@ -9,7 +9,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender } from '../actions/Approval';
 import { userDetails } from '../../../helper/auth';
-import { setCostingApprovalData, setCostingViewData } from '../actions/Costing';
+import { setCostingApprovalData, setCostingViewData, storePartNumber } from '../actions/Costing';
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume';
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -26,7 +26,9 @@ const SendForApproval = props => {
     console.log(partNo,"part");
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedApprover, setSelectedApprover] = useState('');
+    const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
     const [financialYear, setFinancialYear] = useState('');
+    const [approvalDropDown, setApprovalDropDown] = useState([])
     const userData = userDetails();
 
     useEffect(() => {
@@ -39,6 +41,7 @@ const SendForApproval = props => {
   * @description Used show listing of unit of measurement
   */
     const renderDropdownListing = (label) => {
+        console.log(label,"Label");
         const tempDropdownList = [];
 
         if (label === 'Reason') {
@@ -58,14 +61,15 @@ const SendForApproval = props => {
             });
             return tempDropdownList;
         }
-        if (label === 'Approver') {
-            usersList && usersList.map(item => {
-                if (item.Value === '0') return false;
-                tempDropdownList.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return tempDropdownList;
-        }
+        // if (label === 'Approver') {
+        //     usersList && usersList.map(item => {
+        //         console.log(item,"Item");
+        //         // if (item.Value === '0') return false;
+        //         tempDropdownList.push({ label: item.Text, value: item.Value })
+        //         return null;
+        //     });
+        //     return tempDropdownList;
+        // }
 
     }
 
@@ -74,13 +78,24 @@ const SendForApproval = props => {
   * @description  USED TO HANDLE DEPARTMENT CHANGE
   */
     const handleDepartmentChange = (newValue) => {
+        const tempDropdownList =[]
         if (newValue && newValue !== '') {
             // dispatch(getAllApprovalUserByDepartment({ // add approval api here
-            dispatch(getAllApprovalUserFilterByDepartment({
-                UserId: userData.LoggedInUserId,
+        dispatch(getAllApprovalUserFilterByDepartment({
+                LoggedInUserId: userData.LoggedInUserId,
                 DepartmentId: newValue.value,
                 TechnologyId:partNo.technologyId
-            }, () => { }))
+            }, (res) => { 
+                console.log(res,"response");
+                res.data.DataList && res.data.DataList.map(item => {
+                    console.log(item,"Item");
+                     //if (item.Value === '0') return false;
+                    tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId })
+                    return null;
+                });
+                setApprovalDropDown(tempDropdownList);
+                
+             }))
             setSelectedDepartment(newValue)
         } else {
             setSelectedDepartment('')
@@ -188,6 +203,8 @@ const SendForApproval = props => {
         }
         let obj = {
             ApproverDepartmentId: selectedDepartment.value,
+            // ApproverLevelId: selectedApproverLevelId,
+            // ApproverId: selectedApprover.value,
             ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
             ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
             SenderLevelId: userData.LoggedInLevelId,
@@ -230,7 +247,7 @@ const SendForApproval = props => {
         })
         obj.CostingsList = temp;
         console.log('obj: ', obj);
-
+         dispatch(storePartNumber({departmentId: selectedDepartment.value}))
         dispatch(sendForApprovalBySender(obj, res => {
             history.push('/costing');
             dispatch(setCostingApprovalData([]))
@@ -240,7 +257,9 @@ const SendForApproval = props => {
     }
 
     const handleApproverChange = data => {
-        setSelectedApprover(data)
+        console.log(data,"Dta");
+        setSelectedApprover(data.value)
+        setSelectedApproverLevelId(data.levelId)
     }
 
     useEffect(() => { }, [viewApprovalData])
@@ -423,7 +442,7 @@ const SendForApproval = props => {
                                 control={control}
                                 register={register}
                                 defaultValue={''}
-                                options={renderDropdownListing('Approver')}
+                                options={approvalDropDown}
                                 mandatory={false}
                                 handleChange={handleApproverChange}
                                 errors={errors.approver}
