@@ -1,24 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col } from 'reactstrap';
-import { useForm, Controller } from 'react-hook-form';
-import Drawer from '@material-ui/core/Drawer';
-import { useDispatch, useSelector } from 'react-redux';
-import {approvalRequestByApprove, rejectRequestByApprove} from '../../costing/actions/Approval'
+import React, { useEffect, useState } from 'react'
+import { Container, Row, Col } from 'reactstrap'
+import { useForm, Controller } from 'react-hook-form'
+import Drawer from '@material-ui/core/Drawer'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  approvalRequestByApprove,
+  rejectRequestByApprove,
+  getAllApprovalUserFilterByDepartment,
+} from '../../costing/actions/Approval'
 import {
   TextAreaHookForm,
   SearchableSelectHookForm,
 } from '../../layout/HookFormInputs'
-import { loggedInUserId } from '../../../helper'
+import { loggedInUserId, userDetails } from '../../../helper'
 function ApproveRejectDrawer(props) {
-  const { type, tokenNo } = props
+  const { type, tokenNo, departmentId, approvalProcessId } = props
   const userLoggedIn = loggedInUserId()
-  const partNo = useSelector((state) => state.costing.partNo);
-  console.log(partNo,"Part");
+  const userData = userDetails()
+  const partNo = useSelector((state) => state.costing.partNo)
+  console.log(partNo, 'Part')
   const { register, control, errors, handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
   const dispatch = useDispatch()
+  const [approvalDropDown, setApprovalDropDown] = useState([])
+  useEffect(() => {
+    let tempDropdownList = []
+    let obj = {
+      LoggedInUserId: loggedInUserId(), // use id
+      DepartmentId: departmentId.departmentId
+        ? departmentId.departmentId
+        : '00000000-0000-0000-0000-000000000000',
+      TechnologyId: departmentId.technology
+        ? departmentId.technology
+        : '00000000-0000-0000-0000-000000000000',
+    }
+
+    /* Problem here*/
+    dispatch(
+      getAllApprovalUserFilterByDepartment(obj, (res) => {
+        console.log(res.data.DataList, 'RESPONSE')
+
+        res.data.DataList &&
+          res.data.DataList.map((item) => {
+            console.log(item, 'Item')
+            //if (item.Value === '0') return false;
+            tempDropdownList.push({
+              label: item.Text,
+              value: item.Value,
+              levelId: item.LevelId,
+            })
+            return null
+          })
+        setApprovalDropDown(tempDropdownList)
+      }),
+    )
+    // DO IT AFTER GETTING DATA
+  }, [])
+
   const toggleDrawer = (event) => {
     if (
       event.type === 'keydown' &&
@@ -28,22 +68,22 @@ function ApproveRejectDrawer(props) {
     }
     props.closeDrawer('')
   }
-  const onSubmit = data => {
-      let obj={}
-      if(type==="Approve"){
-        obj.Approver = data.approver.value
-      }
-     
-      obj.Remark = data.remark
-      obj.ApprovalToken = tokenNo
-      obj.LoggedInUserId = userLoggedIn
-      obj.ApprovalProcessSummaryId = "00000000-0000-0000-0000-000000000000"
-      
-      if(type === "Approve") {
-        dispatch(approvalRequestByApprove, (obj,()=>{}))
-      }else {
-        dispatch(rejectRequestByApprove, (obj,()=>{}))
-      }
+  const onSubmit = (data) => {
+    let obj = {}
+    if (type === 'Approve') {
+      obj.Approver = data.approver.value
+    }
+
+    obj.Remark = data.remark
+    obj.ApprovalToken = tokenNo
+    obj.LoggedInUserId = userLoggedIn
+    obj.ApprovalProcessSummaryId = approvalProcessId
+
+    if (type === 'Approve') {
+      dispatch(approvalRequestByApprove, (obj, () => {}))
+    } else {
+      dispatch(rejectRequestByApprove, (obj, () => {}))
+    }
   }
   return (
     <>
@@ -79,7 +119,7 @@ function ApproveRejectDrawer(props) {
                       rules={{ required: true }}
                       register={register}
                       //defaultValue={isEditFlag ? plantName : ''}
-                      options={''}
+                      options={approvalDropDown}
                       mandatory={true}
                       handleChange={() => {}}
                       errors={errors.approver}

@@ -4,6 +4,7 @@ export function formatLoginResult(res) {
             Token: res.Data.Token,
             LoggedInUserId: res.Data.LoggedInUserId,
             LoggedInLevelId: res.Data.LoggedInLevelId,
+            LoggedInLevel: "Level 2", //TODO//res.Data.LoggedInLevel, 
             UserName: res.Data.UserName,
             Name: res.Data.Name,
             RememberMe: res.Data.RememberMe,
