@@ -190,7 +190,7 @@ function ApprovalListing() {
         </div>
         <hr />
         <Row className="pt-30">
-          <Col md="12" className="filter-block mb-2">
+          <Col lg="10" md="12" className="filter-block mb-2">
             <div className="d-inline-flex justify-content-start align-items-top w100">
               <div className="flex-fills">
                 <h5>{`Filter By:`}</h5>
