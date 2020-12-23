@@ -53,7 +53,7 @@ function ApprovalSummary() {
   }
   return (
     <>
-      <h2>Approval Summary</h2>
+      <h2 className="heading-main">Approval Summary</h2>
       <Row>
         <Col md="8">
           <div className="left-border">

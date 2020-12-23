@@ -6,6 +6,7 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import AddToComparisonDrawer from './AddToComparisonDrawer';
 import { setCostingViewData, setCostingApprovalData } from '../actions/Costing';
 import ViewBOP from './Drawers/ViewBOP';
+import $ from 'jquery';
 import ViewConversionCost from './Drawers/ViewConversionCost';
 import ViewRM from './Drawers/ViewRM';
 import ViewOverheadProfit from './Drawers/ViewOverheadProfit';
@@ -51,6 +52,7 @@ const CostingSummaryTable = (props) => {
    * @description SET VIEW BOP DATA FOR DRAWER
   */
   const viewBop = index => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     setViewBOP(true)
     setIsViewConversionCost(false)
     if (index != -1) {
@@ -64,6 +66,7 @@ const CostingSummaryTable = (props) => {
    * @description SET COVERSION DATA FOR DRAWER
   */
   const viewConversionCost = index => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     console.log(index, "Index");
     setIsViewConversionCost(true)
     setViewBOP(false)
@@ -78,6 +81,7 @@ const CostingSummaryTable = (props) => {
    * @description SET RM DATA FOR DRAWER
   */
   const viewRM = index => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     console.log(index);
     let data = viewCostingData[index].netRMCostView;
     console.log(data, "Data of Rm");
@@ -89,6 +93,7 @@ const CostingSummaryTable = (props) => {
    * @description SET OVERHEAD & PROFIT DATA FOR DRAWER
   */
   const overHeadProfit = index => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     console.log(index, "Index");
     let overHeadData = viewCostingData[index].netOverheadCostView;
     let profitData = viewCostingData[index].netProfitCostView;
@@ -105,6 +110,7 @@ const CostingSummaryTable = (props) => {
    * @description SET PACKAGING AND FRIEGHT DATA FOR DRAWER
   */
   const viewPackagingAndFrieghtData = index => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     console.log(index);
     let packagingData = viewCostingData[index].netPackagingCostView;
     let freightData = viewCostingData[index].netFreightCostView;
@@ -117,6 +123,7 @@ const CostingSummaryTable = (props) => {
    * @description SET TOOL DATA FOR DRAWER
   */
   const viewToolCostData = index => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     console.log(index);
     let data = viewCostingData[index].netToolCostView;
     setIsViewToolCost(true)
@@ -155,6 +162,7 @@ const CostingSummaryTable = (props) => {
    */
 
   const addComparisonDrawerToggle = () => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     setaddComparisonToggle(true)
     setIsEditFlag(false)
     setEditObject({})
@@ -211,6 +219,7 @@ const CostingSummaryTable = (props) => {
   }
 
   const sendForApprovalData = (costingIds) => {
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
     console.log('costingIds: ', costingIds);
     let temp = viewApprovalData
     costingIds && costingIds.map(id => {

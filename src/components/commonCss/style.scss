@@ -1386,6 +1386,7 @@ button.user-btn.pull-right {
 }
 
 // =================costing summary table page=========================
+.date-section .react-datepicker-wrapper .react-datepicker__input-container input{min-height: 40px;}
 .costing-summary-table{position: relative;font-size: 14px;color: #3D4465;min-width: 980px;}
 .custom-check input {padding: 0;height: initial;width: initial;margin-bottom: 0;display: none;cursor: pointer;}
 .custom-check label {position: relative;cursor: pointer;color: #3D4465;}
@@ -1442,6 +1443,11 @@ body .icon-small-primary{width: 25px;height: 25px;display: inline-block;backgrou
 .btn-small-primary-circle{width: 25px;height: 25px;border-radius:50px;background-color: #256BD1;color: #fff;display: inline-block;text-align: center;line-height: 25px;padding: 0px;font-size: 14px;}
 .btn-small-primary-circle:hover{color: #fff;background-color: #1c5dbd;}
 html body .save-btn,html body  .cancel-btn{width: auto;padding: 8px 12px;min-width: 96px;}
+.MuiDrawer-root.MuiDrawer-modal .MuiBackdrop-root, .MuiDrawer-root.MuiDrawer-modal .MuiDrawer-paper{overflow-x: hidden;}
+.MuiDrawer-paperAnchorRight form .row{padding-right: 15px;}
+.content-page h2.heading-main{margin-bottom: 25px;}
+.left-border{margin-bottom: 20px;}
+.content-page .filter-block .flex-fill, .content-page .filter-block .flex-fills{padding-right: 10px;}
 // =================approval-summary=========================
 
 @media(max-width:768px){
