@@ -708,6 +708,26 @@ export function getDiscountOtherCostTabData(data, callback) {
 }
 
 /**
+ * @method getExchangeRateByCurrency
+ * @description GET EXCHANGE RATE BY CURRENCY
+ */
+export function getExchangeRateByCurrency(Currency, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
  * @method saveDiscountOtherCostTab
  * @description SAVE DISCOUNT OTHER COST TAB
  */

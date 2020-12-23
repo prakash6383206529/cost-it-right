@@ -460,6 +460,7 @@ export const API = {
 
   getDiscountOtherCostTabData: `${BASE_URL}/costing/get-zbc-costing-detail-other-cost`,
   saveDiscountOtherCostTab: `${BASE_URL}/costing/save-zbc-costing-other-cost-details`,
+  getExchangeRateByCurrency: `${BASE_URL}/costing/get-costing-exchange-rate-by-currency`,
 
   fileUploadCosting: `${BASE_URL}/costing/costing-file-upload`,
 

@@ -97,11 +97,17 @@ function CostingHeaderTabs(props) {
               />
             </TabPane>
             <TabPane tabId="5">
-              <TabToolCost />
+              <TabToolCost
+                netPOPrice={netPOPrice}
+                activeTab={activeTab}
+              />
             </TabPane>
             <TabPane tabId="6">
               <TabDiscountOther
                 netPOPrice={netPOPrice}
+                activeTab={activeTab}
+                setHeaderCost={props.setHeaderDiscountTab}
+                DiscountTabData={props.DiscountTabData}
               />
             </TabPane>
           </TabContent>

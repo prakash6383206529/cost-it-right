@@ -114,7 +114,7 @@ function CostingDetails() {
 
     options && options.map(item => {
       if (item.CostingId === '00000000-0000-0000-0000-000000000000') return false;
-      temp.push({ label: item.CostingNumber, value: item.CostingId })
+      temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
       return null;
     });
     return temp;
@@ -470,6 +470,7 @@ function CostingDetails() {
   */
   const addDetails = (index, type) => {
     const userDetail = userDetails()
+
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index];
 

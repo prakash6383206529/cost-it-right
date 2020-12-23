@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import { getZBCCostingByCostingId } from '../actions/Costing';
-import { checkForDecimalAndNull, checkForNull } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import { VBC, ZBC } from '../../../config/constants';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
@@ -22,25 +22,27 @@ function CostingDetailStepTwo(props) {
   const [headCostOverheadProfitData, setHeadCostOverheadProfitData] = useState({});
   const [headCostPackageFreightData, setHeadCostPackageFreightData] = useState({});
 
+  const [DiscountTabData, setDiscountTabData] = useState({});
+
   const dispatch = useDispatch()
 
   useEffect(() => {
 
     const { costingInfo } = props;
 
-    if (costingInfo.type === ZBC) {
-      dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => {
-        setCostData(res.data.Data);
-        setPartDataList(res.data.DataList);
-      }))
-    }
+    //if (costingInfo.type === ZBC) {
+    dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => {
+      setCostData(res.data.Data);
+      setPartDataList(res.data.DataList);
+    }))
+    //}
 
-    if (costingInfo.type === VBC) {
-      dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => {
-        setCostData(res.data.Data);
-        setPartDataList(res.data.DataList);
-      }))
-    }
+    // if (costingInfo.type === VBC) {
+    //   dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => {
+    //     setCostData(res.data.Data);
+    //     setPartDataList(res.data.DataList);
+    //   }))
+    // }
 
   }, []);
 
@@ -51,7 +53,7 @@ function CostingDetailStepTwo(props) {
   * @description GET TOTAL RM COST FOR TOP HEADER 
   */
   const netRMCostPerAssembly = useCallback((item) => {
-    return item && item.NetRMCost !== null ? checkForNull(item.NetRMCost) : 0
+    return item && item.NetRMCost !== null ? checkForDecimalAndNull(item.NetRMCost, 2) : 0
   }, [])
 
   /**
@@ -292,6 +294,53 @@ function CostingDetailStepTwo(props) {
   }
 
   /**
+   * @method setHeaderDiscountTab
+   * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
+   */
+  const setHeaderDiscountTab = (data) => {
+
+    const headerIndex = 0;
+
+    let tempData = partDataList[headerIndex];
+
+    let OverAllCost = 0;
+    if (tempData && tempData !== undefined) {
+      //SUM OF ALL TAB EXCEPT DISCOUNT TAB
+      const SumOfTab = checkForNull(tempData.NetTotalRMBOPCC) + checkForNull(tempData.NetSurfaceTreatmentCost) +
+        checkForNull(tempData.NetOverheadAndProfitCost) + checkForNull(tempData.NetPackagingAndFreight) + checkForNull(tempData.ToolCost)
+
+      const cost = SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage);
+      const discountValues = {
+        NetPOPriceINR: checkForDecimalAndNull(SumOfTab - cost, 2),
+        HundiOrDiscountValue: checkForDecimalAndNull(cost, 2),
+      }
+      setDiscountTabData(discountValues)
+
+      OverAllCost = checkForNull(tempData.NetTotalRMBOPCC) +
+        checkForNull(tempData.NetSurfaceTreatmentCost) +
+        checkForNull(tempData.NetOverheadAndProfitCost) +
+        checkForNull(tempData.NetPackagingAndFreight) +
+        checkForNull(tempData.ToolCost) - checkForDecimalAndNull(cost, 2)
+
+      setTimeout(() => {
+        tempData = {
+          ...tempData,
+          DiscountsAndOtherCost: checkForDecimalAndNull(cost, 2),
+          TotalCost: OverAllCost,
+        }
+        let tempArr = Object.assign([...partDataList], { [headerIndex]: tempData })
+
+        setPartDataList(tempArr)
+
+        setPOPrice(calculateNetPOPrice(tempArr))
+        //setHeadCostPackageFreightData(data)
+
+      }, 500)
+    }
+  }
+
+
+  /**
   * @method calculateNetPOPrice
   * @description CALCULATE NET PO PRICE
   */
@@ -393,6 +442,8 @@ function CostingDetailStepTwo(props) {
                         setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
                         setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
                         setHeaderPackageFreightTab={setHeaderPackageFreightTab}
+                        setHeaderDiscountTab={setHeaderDiscountTab}
+                        DiscountTabData={DiscountTabData}
                         headCostRMCCBOPData={headCostRMCCBOPData}
                         headCostSurfaceData={headCostSurfaceData}
                         headCostOverheadProfitData={headCostOverheadProfitData}

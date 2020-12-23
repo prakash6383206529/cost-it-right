@@ -32,6 +32,7 @@ function TabToolCost(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           if (Data.IsProcessWiseApplicability === true) {
+            setIsApplicableProcessWise(Data.IsProcessWiseApplicability)
             setIsApplicablilityDisable(Data.IsProcessWiseApplicability)
           }
           setTabData(Data.CostingPartDetails)
@@ -67,7 +68,7 @@ function TabToolCost(props) {
         {
           OverAllApplicability: OverAllToolObj,
           NetToolCost: OverAllToolObj.NetToolCost,
-          //CostingToolsCostResponse: [],
+          CostingToolsCostResponse: [],
         })
     })
 
@@ -129,7 +130,7 @@ function TabToolCost(props) {
     }
 
     dispatch(saveToolTab(data, res => {
-      console.log('saveCostingOverheadProfitTab: ', res);
+      console.log('saveCostingToolTab: ', res);
     }))
 
   }
@@ -159,7 +160,7 @@ function TabToolCost(props) {
 
               <Row>
                 <Col md="1" >{'Applicability:'}</Col>
-                <Col md="8" className="switch mb15">
+                <Col md="3" className="switch mb15">
                   <label className="switch-level">
                     <div className={'left-title'}>{'Overall'}</div>
                     <span className="cr-sw-level">
@@ -183,6 +184,7 @@ function TabToolCost(props) {
                     </span>
                   </label>
                 </Col>
+                <Col md="7" >{''}</Col>
                 <Col md="1" >{'Net Tool Cost'}</Col>
               </Row>
 
@@ -204,7 +206,7 @@ function TabToolCost(props) {
                               < >
                                 <tr key={index} onClick={() => toggle(index)}>
                                   <td><span class="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                                  <td>{checkForDecimalAndNull(item.NetToolCost, 2)}</td>
+                                  <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
                                 </tr>
                                 {item.IsOpen &&
                                   <tr>
