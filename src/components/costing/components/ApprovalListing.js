@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col } from 'reactstrap';
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from 'react-hook-form';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { useDispatch } from 'react-redux';
-import { getApprovalList } from '../actions/Approval';
-import { loggedInUserId } from '../../../helper';
-import { Badge } from 'reactstrap';
-import { values } from 'lodash';
+import React, { useState, useEffect, Fragment } from 'react'
+import { Row, Col } from 'reactstrap'
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
+import { useForm, Controller, useWatch } from 'react-hook-form'
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
+import { useDispatch, useSelector } from 'react-redux'
+import { getApprovalList } from '../actions/Approval'
+import { loggedInUserId } from '../../../helper'
+import { Badge } from 'reactstrap'
+import { values } from 'lodash'
+import ApprovalSummary from './ApprovalSummary'
+import {
+  getAllPartSelectList,
+  getCostingStatusSelectList,
+} from '../actions/Costing'
+import NoContentFound from '../../common/NoContentFound'
+import { CONSTANT } from '../../../helper/AllConastant'
 
 function ApprovalListing() {
   const loggedUser = loggedInUserId()
@@ -18,19 +25,19 @@ function ApprovalListing() {
   const [requestedByDropdown, setRequestedByDropdown] = useState([])
   const [statusDropdown, setStatusDropdown] = useState([])
   const dispatch = useDispatch()
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    errors
-  } = useForm({
+  const partSelectList = useSelector((state) => state.costing.partSelectList)
+  const statusSelectList = useSelector(
+    (state) => state.costing.costingStatusSelectList,
+  )
+  console.log(partSelectList, 'dropdown')
+  const { register, handleSubmit, control, setValue, errors } = useForm({
     mode: 'onChange',
-    reValidateMode: 'onChange'
+    reValidateMode: 'onChange',
   })
   useEffect(() => {
     getTableData()
+    dispatch(getAllPartSelectList(() => {}))
+    dispatch(getCostingStatusSelectList(() => {}))
   }, [])
   /**
    * @method getTableData
@@ -50,6 +57,12 @@ function ApprovalListing() {
       requestedBy: requestedBy,
       status: status,
     }
+    function uniqueFilter(data, key) {
+      const arrayUniqueByKey = [
+        ...new Map(data.map((item) => [item[key], item])).values(),
+      ]
+      return arrayUniqueByKey
+    }
 
     dispatch(
       getApprovalList(filterData, (res) => {
@@ -59,6 +72,28 @@ function ApprovalListing() {
         } else if (res && res.data && res.data.DataList) {
           let Data = res.data.DataList
           console.log(Data, 'Data')
+          const key = Data.CreatedBy
+          let tempcreatedBy = []
+          const createdArray = uniqueFilter(Data, key)
+          createdArray &&
+            createdArray.map((item) => {
+              tempcreatedBy.push({
+                label: item.CreatedBy,
+                value: item.CreatedById,
+              })
+            })
+          setRequestedByDropdown(tempcreatedBy)
+          const key2 = Data.RequestedBy
+          let tempRequestedBy = []
+          const requestedArray = uniqueFilter(Data, key2)
+          requestedArray &&
+            requestedArray.map((item) => {
+              tempRequestedBy.push({
+                label: item.RequestedBy,
+                value: item.RequestedById,
+              })
+            })
+          setRequestedByDropdown(tempRequestedBy)
           setTableData(
             Data.sort((a, b) => a.Sequence - b.Sequence).sort(
               (a, b) => a.Index - b.Index,
@@ -70,27 +105,85 @@ function ApprovalListing() {
       }),
     )
   }
+
+  const renderDropdownListing = (label) => {
+    const tempDropdownList = []
+
+    if (label === 'PartList') {
+      partSelectList &&
+        partSelectList.map((item) => {
+          if (item.Value === '0') return false
+          tempDropdownList.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      console.log(tempDropdownList, 'temp')
+      return tempDropdownList
+    }
+
+    if (label === 'Status') {
+      statusSelectList &&
+        statusSelectList.map((item) => {
+          if (item.Value === '0') return false
+          tempDropdownList.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      console.log(tempDropdownList, 'temp')
+      return tempDropdownList
+    }
+  }
+
   /**
    * @method onSubmit
    * @description filtering data on Apply button
-  */
+   */
   const onSubmit = (values) => {
-    console.log(values);
+    console.log(values)
     const tempPartNo = values.partNo.value
     const tempcreatedBy = values.createdBy.value
     const tempRequestedBy = values.requestedBy.value
     const tempStatus = values.status.value
     getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
   }
-/**
- * @method resetHandler
- * @description Reseting all filter
-*/
-const resetHandler = () => {
+
+  /**
+   * @method linkableFormatter
+   * @description Renders Name link
+   */
+  const linkableFormatter = (cell, row, enumObject, rowIndex) => {
+    return (
+      <Fragment>
+        <div onClick={() => viewDetails(row.ApprovalNumber)} className={'link'}>
+          {cell}
+        </div>
+      </Fragment>
+    )
+  }
+
+  const viewDetails = (approvalNumber) => {
+    return (
+      <ApprovalSummary token={approvalNumber ? approvalNumber : '2345438'} /> //TODO list
+    )
+  }
+  /**
+   * @method resetHandler
+   * @description Reseting all filter
+   */
+  const resetHandler = () => {
     getTableData()
-}
+  }
+
+  const options = {
+    clearSearch: true,
+    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+    //exportCSVText: 'Download Excel',
+    //onExportToCSV: this.onExportToCSV,
+    //paginationShowsTotal: true,
+    //paginationShowsTotal: this.renderPaginationShowsTotal,
+    paginationSize: 5,
+  }
+
   return (
-    <>
+    <Fragment>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="col-sm-4">
           <h3>Costing Approval</h3>
@@ -113,7 +206,7 @@ const resetHandler = () => {
                   rules={{ required: true }}
                   register={register}
                   // defaultValue={plant.length !== 0 ? plant : ''}
-                  options={partNoDropdown}
+                  options={renderDropdownListing('PartList')}
                   mandatory={false}
                   handleChange={() => {}}
                   errors={errors.partNo}
@@ -161,7 +254,7 @@ const resetHandler = () => {
                   rules={{ required: true }}
                   register={register}
                   // defaultValue={plant.length !== 0 ? plant : ''}
-                  options={statusDropdown}
+                  options={renderDropdownListing('Status')}
                   mandatory={false}
                   handleChange={() => {}}
                   errors={errors.status}
@@ -188,10 +281,20 @@ const resetHandler = () => {
               </div>
             </div>
           </Col>
-          {/* <Col md="12"  className="tag-container mb-4">
-            <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">Grant Marshall <a href=""><i className="ml-1 fa fa-times-circle"></i></a></Badge>
-            <Badge color="secondary" pill className="md-badge-blue-grey">Kerri Barber <a href=""><i className="ml-1 fa fa-times-circle"></i></a></Badge>
-          </Col> */}
+          <Col md="12" className="tag-container mb-4">
+            <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">
+              Grant Marshall{' '}
+              <a href="">
+                <i className="ml-1 fa fa-times-circle"></i>
+              </a>
+            </Badge>
+            <Badge color="secondary" pill className="md-badge-blue-grey">
+              Kerri Barber{' '}
+              <a href="">
+                <i className="ml-1 fa fa-times-circle"></i>
+              </a>
+            </Badge>
+          </Col>
 
           {/* <Col md="12"  className="mb-4">
             <Badge color="success" pill className="badge-small">Approved </Badge>
@@ -216,7 +319,7 @@ const resetHandler = () => {
         striped={false}
         hover={false}
         bordered={false}
-        //options={''}
+        options={options}
         search
         // exportCSV
         //ignoreSinglePage
@@ -230,7 +333,7 @@ const resetHandler = () => {
           columnTitle={true}
           dataAlign="center"
           dataSort={true}
-          //dataFormat={this.costingHeadFormatter}
+          dataFormat={linkableFormatter}
         >
           {`Approval No.`}
         </TableHeaderColumn>
@@ -302,7 +405,7 @@ const resetHandler = () => {
           Status
         </TableHeaderColumn>
       </BootstrapTable>
-    </>
+    </Fragment>
   )
 }
 

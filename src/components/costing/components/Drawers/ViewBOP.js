@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { checkForDecimalAndNull } from '../../../../../src/helper';
-import { Container, Row, Col,Table } from 'reactstrap';
-import Drawer from '@material-ui/core/Drawer';
-import NoContentFound from '../../../common/NoContentFound';
-import { CONSTANT } from '../../../../helper/AllConastant';
+import React, { useState, useEffect, Fragment } from 'react'
+import { checkForDecimalAndNull } from '../../../../../src/helper'
+import { Container, Row, Col, Table } from 'reactstrap'
+import Drawer from '@material-ui/core/Drawer'
+import NoContentFound from '../../../common/NoContentFound'
+import { CONSTANT } from '../../../../helper/AllConastant'
 
- function ViewBOP(props) {
-     const { viewBOPData } =props
-    const [viewBOPCost, setviewBOPCost] = useState([])
-    useEffect(() => {
-      setviewBOPCost(viewBOPData)
-        
-    }, [])
+function ViewBOP(props) {
+  const { viewBOPData } = props
+  const [viewBOPCost, setviewBOPCost] = useState([])
+  useEffect(() => {
+    setviewBOPCost(viewBOPData)
+  }, [])
 
-    /**
+  /**
    * @method toggleDrawer
    * @description closing drawer
    */
@@ -26,12 +25,15 @@ import { CONSTANT } from '../../../../helper/AllConastant';
     }
     props.closeDrawer('')
   }
-    return (
-      <>
-      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+  return (
+    <Fragment>
+      <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+        onClose={(e) => toggleDrawer(e)}
+      >
         <Container>
           <div className={'drawer-wrapper drawer-1500px'}>
-
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
@@ -39,20 +41,19 @@ import { CONSTANT } from '../../../../helper/AllConastant';
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}>
-                </div>
+                  className={'close-button right'}
+                ></div>
               </Col>
             </Row>
 
             <Row>
-            
               <Col md="12">
-              <Row>
-              <Col md="12">
-                <div className="left-border">{'View BOP:'}</div>
-              </Col>
-              </Row>
-                <Table className="table cr-brdr-main" size="sm" >
+                <Row>
+                  <Col md="12">
+                    <div className="left-border">{'View BOP:'}</div>
+                  </Col>
+                </Row>
+                <Table className="table cr-brdr-main" size="sm">
                   <thead>
                     <tr>
                       <th>{`BOP Part No.`}</th>
@@ -63,29 +64,36 @@ import { CONSTANT } from '../../../../helper/AllConastant';
                       <th>{`Net BOP Cost`}</th>
                     </tr>
                   </thead>
-                  <tbody >
-                    {
-                      viewBOPCost &&
+                  <tbody>
+                    {viewBOPCost &&
                       viewBOPCost.map((item, index) => {
                         return (
-                            <tr key={index}>
-                              <td>{item.BOPPartNumber}</td>
-                              <td>{item.BOPPartName}</td>
-                              <td>{item.Currency}</td>
-                              <td>{checkForDecimalAndNull(item.LandedCostINR, 2)}</td>
-                              <td> {item.Quantity}</td>
-                              <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
-                            </tr>
+                          <tr key={index}>
+                            <td>{item.BOPPartNumber}</td>
+                            <td>{item.BOPPartName}</td>
+                            <td>{item.Currency}</td>
+                            <td>
+                              {checkForDecimalAndNull(item.LandedCostINR, 2)}
+                            </td>
+                            <td> {item.Quantity}</td>
+                            <td>
+                              {item.NetBoughtOutPartCost !== undefined
+                                ? checkForDecimalAndNull(
+                                    item.NetBoughtOutPartCost,
+                                    2,
+                                  )
+                                : 0}
+                            </td>
+                          </tr>
                         )
-                      })
-                    }
-                    {viewBOPCost.length === 0 &&
+                      })}
+                    {viewBOPCost.length === 0 && (
                       <tr>
                         <td colSpan={7}>
                           <NoContentFound title={CONSTANT.EMPTY_DATA} />
                         </td>
                       </tr>
-                    }
+                    )}
                   </tbody>
                 </Table>
               </Col>
@@ -93,8 +101,8 @@ import { CONSTANT } from '../../../../helper/AllConastant';
           </div>
         </Container>
       </Drawer>
-      </>
-    )
-} 
+    </Fragment>
+  )
+}
 
 export default React.memo(ViewBOP)

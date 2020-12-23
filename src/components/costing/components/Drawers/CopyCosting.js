@@ -146,7 +146,7 @@ function CopyCosting(props) {
         res.data.Data.CostingOptions &&
           res.data.Data.CostingOptions.map((costing) => {
             temp.push({
-              label: costing.CostingNumber,
+              label: costing.DisplayCostingNumber,
               value: costing.CostingId,
             })
           })

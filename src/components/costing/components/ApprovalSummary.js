@@ -1,51 +1,59 @@
-import React, { useState,useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Container, Row, Col, Table } from 'reactstrap';
-import { loggedInUserId } from '../../../helper';
+import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { Container, Row, Col, Table } from 'reactstrap'
+import { formViewData, loggedInUserId } from '../../../helper'
+import { CONSTANT } from '../../../helper/AllConastant'
+import NoContentFound from '../../common/NoContentFound'
 import { getApprovalSummary } from '../actions/Approval'
-import ApprovalWorkFlow from './ApprovalWorkFlow';
-import ApproveRejectDrawer from './ApproveRejectDrawer';
-function ApprovalSummary() {
-  const tokenNo = "2345438"
+import { setCostingViewData } from '../actions/Costing'
+import ApprovalWorkFlow from './ApprovalWorkFlow'
+import ApproveRejectDrawer from './ApproveRejectDrawer'
+import CostingSummaryTable from './CostingSummaryTable'
+function ApprovalSummary(props) {
+  const tokenNo = props.token ? props.token : '2345438'
   const loggedInUser = loggedInUserId()
   const dispatch = useDispatch()
-  const approvalSummary = useSelector(state => state.approval.approvalSummaryData)
-  console.log(approvalSummary);
-  useEffect(() => {
-    dispatch(getApprovalSummary(tokenNo,loggedInUser, ()=>{
-    
-    }))
-    
-  }, [])
-  const approvalDetail = [
-    {
-      costingId: 'CS7654',
-      zbcVendorName: 'ZBC',
-      plantCode: 'Plant 001',
-      sob: '20%',
-      oldCurrentPrice: '1235',
-      newRevisedPrice: '1245',
-      variance: 10,
-      consumption: 100,
-      remaining: 100,
-      effectiveDate: '10/06/2020',
-    },
-    {
-      costingId: 'CS7655',
-      zbcVendorName: 'Pena Valdez',
-      plantCode: 'Plant 002',
-      sob: '17%',
-      oldCurrentPrice: '1264',
-      newRevisedPrice: '1254',
-      variance: 10,
-      consumption: 100,
-      remaining: 100,
-      effectiveDate: '10/06/2020',
-    },
-  ]
-
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [rejectDrawer, setRejectDrawer] = useState(false)
+  const [partDetail, setPartDetail] = useState({})
+  const [approvalDetails, setApprovalDetails] = useState({})
+  console.log(approvalDetails, 'Approval Detail')
+  const [costingSummary, setCostingSummary] = useState(false)
+  const [approvalLevelStep, setApprovalLevelStep] = useState([])
+  const [departmentsId, setDepartmentId] = useState('')
+  const approvalSummary = useSelector(
+    (state) => state.approval.approvalSummaryData,
+  )
+
+  useEffect(() => {
+    dispatch(
+      getApprovalSummary(tokenNo, loggedInUser, (res) => {
+        console.log(res.data.Data, 'Data for summary')
+        const {
+          PartDetails,
+          CostingSummary,
+          ApprovalDetails,
+          ApprovalLevelStep,
+        } = res.data.Data
+        setPartDetail(PartDetails)
+        setApprovalDetails(ApprovalDetails)
+        setApprovalLevelStep(ApprovalLevelStep)
+        console.log(CostingSummary, 'CCCCCCCCCCCCCCCCCccc')
+        const departmentId = res.data.Data.DepartmentId
+        const technology = res.data.Data.Technology
+        const approvalProcessId = res.data.Data.ApprovalProcessId
+        const approvalNumber = res.data.Data.ApprovalNumber
+        setDepartmentId({
+          departmentId: departmentId,
+          technology: technology,
+          approvalProcessId: approvalProcessId,
+          approvalNumber: approvalNumber,
+        })
+        const tempObj = formViewData(CostingSummary)
+        dispatch(setCostingViewData(tempObj))
+      }),
+    )
+  }, [])
 
   const closeDrawer = (e = '') => {
     setApproveDrawer(false)
@@ -57,19 +65,24 @@ function ApprovalSummary() {
       <Row>
         <Col md="8">
           <div className="left-border">
-            {'Approval Workflow (Approval No. 15361):'}
+            {'Approval Workflow (Approval No. '}
+            {`${
+              departmentsId.approvalNumber ? departmentsId.approvalNumber : '-'
+            }) :`}
           </div>
         </Col>
         <Col md="4" className="text-right">
           <div className="right-border">
             {
-              <button type={'button'} className="apply view-btn">View All</button>
+              <button type={'button'} className="apply view-btn">
+                View All
+              </button>
             }
           </div>
         </Col>
       </Row>
       {/* Code for approval workflow */}
-      <ApprovalWorkFlow />
+      <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} />
       <hr />
       <Row>
         <Col md="8">
@@ -81,33 +94,66 @@ function ApprovalSummary() {
           <Table responsive className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
-                <th><span className="d-block grey-text text-small">{`Technology:`}</span>
-                <span className="d-block text-small">{`Technology 1`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`Technology:`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.Technology ? partDetail.Technology : '-'}
+                  </span>
                 </th>
-                <th><span className="d-block grey-text text-small">{`Assembly No./Part No.`}</span>
-                <span className="d-block text-small">{`IZABC0001244`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`Assembly No./Part No.`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.PartNumber ? partDetail.PartNumber : '-'}
+                  </span>
                 </th>
-                <th><span className="d-block grey-text text-small">{`Assembly Name/Part Name`}</span>
-                <span className="d-block text-small">{`Part 1`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`Assembly Name/Part Name`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.PartName ? partDetail.PartName : '-'}
+                  </span>
                 </th>
-                <th><span className="d-block grey-text text-small">{`Assembly Description/Part Description`}</span>
-                <span className="d-block text-small">{`Loreum ipsum`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`Assembly Description/Part Description`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.Description ? partDetail.Description : '-'}
+                  </span>
                 </th>
-                <th><span className="d-block grey-text text-small">{`ECO No:`}</span>
-                <span className="d-block text-small">{`1244`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`ECO No:`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
+                  </span>
                 </th>
-                <th><span className="d-block grey-text text-small">{`Drawing No:`}</span>
-                <span className="d-block text-small">{`10`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`Drawing No:`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
+                  </span>
                 </th>
-                <th><span className="d-block grey-text text-small">{`Revision No:`}</span>
-                <span className="d-block text-small">{`2`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`Revision No:`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.RevisionNumber
+                      ? partDetail.RevisionNumber
+                      : '-'}
+                  </span>
                 </th>
-                <th><span className="d-block grey-text text-small">{`Effective Date:`}</span>
-                <span className="d-block text-small">{`10/06/2020`}</span>
+                <th>
+                  <span className="d-block grey-text text-small">{`Effective Date:`}</span>
+                  <span className="d-block text-small">
+                    {partDetail.EffectiveDate ? partDetail.EffectiveDate : '-'}
+                  </span>
                 </th>
               </tr>
             </thead>
             <tbody>
+              {/* {Object.keys(partDetail).length === 0 && (
+                <tr>
+                  <td colSpan={12}>
+                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                  </td>
+                </tr>
+              )} */}
               {/* {costingProcessCost && costingProcessCost.length === 0 && (
                 <tr>
                   <td colSpan={12}>
@@ -130,8 +176,15 @@ function ApprovalSummary() {
             <thead>
               <tr>
                 <th>{`Costing ID`}</th>
-                <th>{`ZBC/Vendor Name`}</th>
-                <th>{`Plant Code`}</th>
+                {approvalDetails.TypeOfCosting === 'VBC' && (
+                  <th>{`ZBC/Vendor Name`}</th>
+                )}
+                <th>
+                  {approvalDetails.TypeOfCosting === 'VBC'
+                    ? 'Vendor Plant'
+                    : 'Plant'}
+                  {`Code`}
+                </th>
                 <th>{`SOB`}</th>
                 <th>{`Old/Current Price`}</th>
                 <th>{`New/Revised Price:`}</th>
@@ -144,29 +197,73 @@ function ApprovalSummary() {
               </tr>
             </thead>
             <tbody>
-              {approvalDetail &&
-                approvalDetail.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>{item.costingId}</td>
-                      <td>{item.zbcVendorName}</td>
-                      <td>{item.plantCode}</td>
-                      <td>{item.sob}</td>
-                      <td>{item.oldCurrentPrice}</td>
-                      <td>{item.newRevisedPrice}</td>
-                      <td>{item.variance}</td>
-                      <td>{item.consumption}</td>
-                      <td>{item.remaining}</td>
-                      <td>
-                        {(item.consumption + item.remaining) * item.variance}
-                      </td>
-                      <td>{item.remaining * item.variance}</td>
-                      <td>{item.effectiveDate}</td>
-                    </tr>
-                  )
-                })}
+              <tr>
+                <td>
+                  {approvalDetails.CostingId
+                    ? approvalDetails.CostingNumber
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.TypeOfCosting === 'VBC' &&
+                  approvalDetails.VendorName
+                    ? approvalDetails.VendorName
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.TypeOfCosting === 'VBC'
+                    ? approvalDetails.VendorPlantCode
+                      ? approvalDetails.VendorPlantCode
+                      : '-'
+                    : approvalDetails.PlantCode
+                    ? approvalDetails.PlantCode
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.ShareOfBusiness
+                    ? approvalDetails.ShareOfBusiness
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.OldPOPrice
+                    ? approvalDetails.OldPOPrice
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.NewPOPrice
+                    ? approvalDetails.NewPOPrice
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.Variance ? approvalDetails.Variance : '-'}
+                </td>
+                <td>
+                  {approvalDetails.ConsumptionQuantity
+                    ? approvalDetails.ConsumptionQuantity
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.RemainingQuantity
+                    ? approvalDetails.RemainingQuantity
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.AnnualImpact
+                    ? approvalDetails.AnnualImpact
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.ImpactOfTheYear
+                    ? approvalDetails.ImpactOfTheYear
+                    : '-'}
+                </td>
+                <td>
+                  {approvalDetails.EffectiveDate
+                    ? approvalDetails.EffectiveDate
+                    : '-'}
+                </td>
+              </tr>
 
-              {/* {costingProcessCost && costingProcessCost.length === 0 && (
+              {/* {Object.keys(approvalDetails).length === 0 && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={CONSTANT.EMPTY_DATA} />
@@ -175,13 +272,19 @@ function ApprovalSummary() {
               )} */}
             </tbody>
             <tfoot>
-                <tr>
-                  <td colSpan="12"><span className="grey-text">Reason:</span> Loreum Ipsum</td>
-                </tr>
-                <tr>
-                  <td colSpan="12"><span className="grey-text">Remark:</span> Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit, Sed Do Eiusmod Tempor Incididunt Ut Labore.</td>
-                </tr>
-              </tfoot>
+              <tr>
+                <td colSpan="12">
+                  <span className="grey-text">Reason:</span>
+                  {approvalDetails.Reason ? approvalDetails.Reason : '-'}
+                </td>
+              </tr>
+              <tr>
+                <td colSpan="12">
+                  <span className="grey-text">Remark:</span>
+                  {approvalDetails.Remark ? approvalDetails.Remark : '-'}{' '}
+                </td>
+              </tr>
+            </tfoot>
           </Table>
         </Col>
       </Row>
@@ -192,8 +295,29 @@ function ApprovalSummary() {
         </Col>
         <Col md="2" className="text-right">
           <div className="right-border">
-            <button className="btn btn-small-primary-circle ml-1" type='button'><i className="fa fa-plus"></i></button>
+            <button className="btn btn-small-primary-circle ml-1" type="button">
+              {costingSummary ? (
+                <i
+                  onClick={() => {
+                    setCostingSummary(false)
+                  }}
+                  className="fa fa-minus"
+                ></i>
+              ) : (
+                <i
+                  onClick={() => {
+                    setCostingSummary(true)
+                  }}
+                  className="fa fa-plus"
+                ></i>
+              )}
+            </button>
           </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col md="12">
+          {costingSummary && <CostingSummaryTable viewMode={true} />}
         </Col>
       </Row>
       {/* Costing Summary page here */}
@@ -203,7 +327,7 @@ function ApprovalSummary() {
           <button
             type={'button'}
             className="reset mr15 cancel-btn"
-             onClick={()=>setRejectDrawer(true)}
+            onClick={() => setRejectDrawer(true)}
           >
             <div className={'cross-icon'}>
               <img
@@ -217,7 +341,7 @@ function ApprovalSummary() {
           <button
             type="button"
             className="submit-button mr5 save-btn"
-              onClick={()=>setApproveDrawer(true)}
+            onClick={() => setApproveDrawer(true)}
           >
             <div className={'check-icon'}>
               <img
@@ -229,26 +353,26 @@ function ApprovalSummary() {
           </button>
         </div>
       </Row>
-      {
-        approveDrawer && 
+      {approveDrawer && (
         <ApproveRejectDrawer
           type={'Approve'}
           isOpen={approveDrawer}
           closeDrawer={closeDrawer}
           tokenNo={tokenNo}
+          departmentId={departmentsId}
           anchor={'right'}
         />
-      }
-      {
-        rejectDrawer && 
+      )}
+      {rejectDrawer && (
         <ApproveRejectDrawer
-        type ={'Reject'}
-        isOpen={rejectDrawer}
-        closeDrawer={closeDrawer}
-        tokenNo={tokenNo}
-        anchor={'right'}
+          type={'Reject'}
+          isOpen={rejectDrawer}
+          departmentId={departmentsId}
+          closeDrawer={closeDrawer}
+          tokenNo={tokenNo}
+          anchor={'right'}
         />
-      }
+      )}
     </>
   )
 }
