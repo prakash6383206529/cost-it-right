@@ -271,6 +271,7 @@ function mapStateToProps({ part }) {
         initialValues = {
             BOPPartName: DrawerPartData.BoughtOutPartName,
             BOPCategory: DrawerPartData.Category,
+            Specification: DrawerPartData.Specification,
         }
     }
 

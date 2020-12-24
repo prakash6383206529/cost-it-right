@@ -337,6 +337,26 @@ export function getRMDrawerDataList(data, callback) {
 }
 
 /**
+ * @method getRMDrawerVBCDataList
+ * @description GET RM DATALIST IN RM DRAWER IN COSTING VBC
+ */
+export function getRMDrawerVBCDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getRMDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
  * @method getBOPDrawerDataList
  * @description GET BOP DATALIST IN RM DRAWER IN COSTING
  */
@@ -344,6 +364,26 @@ export function getBOPDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getBOPDrawerDataList}/${data.PlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getBOPDrawerVBCDataList
+ * @description GET BOP DATALIST IN BOP DRAWER IN COSTING VBC
+ */
+export function getBOPDrawerVBCDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getBOPDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -377,6 +417,26 @@ export function getOperationDrawerDataList(data, callback) {
 }
 
 /**
+ * @method getOperationDrawerVBCDataList
+ * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING VBC
+ */
+export function getOperationDrawerVBCDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getOperationDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
  * @method getProcessDrawerDataList
  * @description GET OPERATION DATALIST IN OPERATION DRAWER IN COSTING
  */
@@ -384,6 +444,26 @@ export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getProcessDrawerDataList}/${data.PlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getProcessDrawerVBCDataList
+ * @description GET PROCESS DATALIST IN PROCESS DRAWER IN COSTING VBC
+ */
+export function getProcessDrawerVBCDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getProcessDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -468,6 +548,25 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
   };
 }
 
+/**
+ * @method getSurfaceTreatmentDrawerVBCDataList
+ * @description GET PROCESS DATALIST IN PROCESS DRAWER IN COSTING VBC
+ */
+export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 
 /**
  * @method getOverheadProfitTabData

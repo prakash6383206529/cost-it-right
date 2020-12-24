@@ -234,8 +234,7 @@ class AddAssemblyPart extends Component {
         if (fieldsObj.BOMNumber === undefined ||
             fieldsObj.AssemblyPartNumber === undefined ||
             fieldsObj.AssemblyPartName === undefined ||
-            fieldsObj.Description === undefined ||
-            fieldsObj.GroupCode === undefined) {
+            fieldsObj.Description === undefined) {
             return false;
         } else {
             return true;
@@ -432,7 +431,7 @@ class AddAssemblyPart extends Component {
         let childPartArray = [];
 
         if (BOMViewerData && (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
-            toastr.warning('Need to add assembly parts.');
+            toastr.warning('Need to add Child parts');
             return false;
         }
 
