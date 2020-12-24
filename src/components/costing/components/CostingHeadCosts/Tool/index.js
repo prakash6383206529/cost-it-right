@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
-import AddBOP from '../../Drawers/AddBOP';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -13,12 +12,22 @@ function Tool(props) {
 
   const { IsApplicableProcessWise, data } = props;
 
+  const OverAllApplicability = data.OverAllApplicability;
+
+  const defaultValues = {
+    ToolMaintenanceCost: OverAllApplicability && OverAllApplicability.ToolMaintenanceCost !== undefined ? OverAllApplicability.ToolMaintenanceCost : '',
+    ToolCost: OverAllApplicability && OverAllApplicability.ToolCost !== undefined ? OverAllApplicability.ToolCost : '',
+    Life: OverAllApplicability && OverAllApplicability.Life !== undefined ? OverAllApplicability.Life : '',
+    NetToolCost: OverAllApplicability && OverAllApplicability.NetToolCost !== undefined ? OverAllApplicability.NetToolCost : '',
+  }
+
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues: IsApplicableProcessWise === false ? defaultValues : {},
   });
 
-  const [gridData, setGridData] = useState(data && data.CostingToolsCostResponse && data.CostingToolsCostResponse)
+  const [gridData, setGridData] = useState(data && data.CostingToolsCostResponse)
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')

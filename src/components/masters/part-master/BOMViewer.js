@@ -98,7 +98,7 @@ class BOMViewer extends Component {
         let tempArray = [];
         let outputArray = [];
 
-        const posX = flowpoints.length > 0 ? 450 * (flowpoints.filter(el => el.Level === 'L1').length - 1) : 50;
+        const posX = flowpoints.length > 0 ? 450 * Math.abs(flowpoints.filter(el => el.Level === 'L1').length - 1) : 50;
 
         if (Object.keys(childData).length > 0 && childData.PartType === ASSEMBLY) {
 

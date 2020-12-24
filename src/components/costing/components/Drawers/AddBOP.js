@@ -3,7 +3,7 @@ import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getBOPDrawerDataList } from '../../actions/Costing';
+import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
@@ -32,20 +32,42 @@ function AddBOP(props) {
   };
 
   useEffect(() => {
-    const data = {
-      PlantId: costData.PlantId,
-      CostingId: costData.CostingId,
-    }
-    dispatch(getBOPDrawerDataList(data, (res) => {
-      if (res && res.status === 200) {
-        let Data = res.data.DataList;
-        setTableDataList(Data)
-      } else if (res && res.response && res.response.status === 412) {
-        setTableDataList([])
-      } else {
-        setTableDataList([])
+    if (costData.VendorType === ZBC) {
+
+      const data = {
+        PlantId: costData.PlantId,
+        CostingId: costData.CostingId,
       }
-    }))
+      dispatch(getBOPDrawerDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    } else {
+
+      const data = {
+        VendorId: costData.VendorId,
+        VendorPlantId: costData.VendorPlantId,
+        CostingId: costData.CostingId,
+      }
+      dispatch(getBOPDrawerVBCDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    }
   }, []);
 
 

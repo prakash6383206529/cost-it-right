@@ -437,14 +437,19 @@ export const API = {
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
   getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-detail`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-raw-materials-detail`,
+  getRMDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-raw-materials-detail`,
   getBOPDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-bop-detail`,
+  getBOPDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-bop-detail`,
   getOperationDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-cc-operation-detail`,
+  getOperationDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-cc-operation-detail`,
   getProcessDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-cc-machine-detail`,
+  getProcessDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-cc-machine-detail`,
   saveCostingRMCCTab: `${BASE_URL}/costing/save-zbc-costing-tab-one`,
 
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-zbc-costing-detail-surface-treatment`,
   saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-zbc-costing-surface-treatment-details`,
   getSurfaceTreatmentDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-surface-treatment-operation-list`,
+  getSurfaceTreatmentDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-surface-treatment-operation-list`,
 
   getOverheadProfitTabData: `${BASE_URL}/costing/get-zbc-costing-detail-overhead-and-profit`,
   getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
@@ -460,6 +465,7 @@ export const API = {
 
   getDiscountOtherCostTabData: `${BASE_URL}/costing/get-zbc-costing-detail-other-cost`,
   saveDiscountOtherCostTab: `${BASE_URL}/costing/save-zbc-costing-other-cost-details`,
+  getExchangeRateByCurrency: `${BASE_URL}/costing/get-costing-exchange-rate-by-currency`,
 
   fileUploadCosting: `${BASE_URL}/costing/costing-file-upload`,
 

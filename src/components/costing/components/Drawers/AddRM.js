@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { getRMDrawerDataList } from '../../actions/Costing';
+import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -20,20 +20,42 @@ function AddRM(props) {
   const costData = useContext(costingInfoContext)
 
   useEffect(() => {
-    const data = {
-      PlantId: costData.PlantId,
-      CostingId: costData.CostingId,
-    }
-    dispatch(getRMDrawerDataList(data, (res) => {
-      if (res && res.status === 200) {
-        let Data = res.data.DataList;
-        setTableDataList(Data)
-      } else if (res && res.response && res.response.status === 412) {
-        setTableDataList([])
-      } else {
-        setTableDataList([])
+    if (costData.VendorType === ZBC) {
+
+      const data = {
+        PlantId: costData.PlantId,
+        CostingId: costData.CostingId,
       }
-    }))
+      dispatch(getRMDrawerDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    } else {
+
+      const data = {
+        VendorId: costData.VendorId,
+        VendorPlantId: costData.VendorPlantId,
+        CostingId: costData.CostingId,
+      }
+      dispatch(getRMDrawerVBCDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    }
   }, []);
 
   /**

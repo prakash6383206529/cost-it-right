@@ -2,13 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getProcessDrawerDataList } from '../../actions/Costing';
+import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
+import { ZBC } from '../../../../config/constants';
 
 function AddProcess(props) {
 
@@ -31,20 +32,42 @@ function AddProcess(props) {
   };
 
   useEffect(() => {
-    const data = {
-      PlantId: costData.PlantId,
-      CostingId: costData.CostingId,
-    }
-    dispatch(getProcessDrawerDataList(data, (res) => {
-      if (res && res.status === 200) {
-        let Data = res.data.DataList;
-        setTableDataList(Data)
-      } else if (res && res.response && res.response.status === 412) {
-        setTableDataList([])
-      } else {
-        setTableDataList([])
+    if (costData.VendorType === ZBC) {
+
+      const data = {
+        PlantId: costData.PlantId,
+        CostingId: costData.CostingId,
       }
-    }))
+      dispatch(getProcessDrawerDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    } else {
+
+      const data = {
+        VendorId: costData.VendorId,
+        VendorPlantId: costData.VendorPlantId,
+        CostingId: costData.CostingId,
+      }
+      dispatch(getProcessDrawerVBCDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    }
   }, []);
 
 
