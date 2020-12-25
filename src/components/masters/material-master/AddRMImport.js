@@ -802,7 +802,7 @@ class AddRMImport extends Component {
                                         </Row>
                                         <Row>
                                             <Col md="12" className="filter-block">
-                                                <div className=" flex-fills mb-2">
+                                                <div className=" flex-fills mb-2 pl-0">
                                                     <h5>{'Raw Material:'}</h5>
                                                 </div>
                                             </Col>
@@ -928,7 +928,7 @@ class AddRMImport extends Component {
 
 
                                             <Col md="12" className="filter-block">
-                                                <div className=" flex-fills mb-2">
+                                                <div className=" flex-fills mb-2 pl-0">
                                                     <h5>{'Vendor'}</h5>
                                                 </div>
                                             </Col>
@@ -1033,7 +1033,7 @@ class AddRMImport extends Component {
 
                                         <Row>
                                             <Col md="12" className="filter-block">
-                                                <div className=" flex-fills mb-2">
+                                                <div className=" flex-fills mb-2 pl-0">
                                                     <h5>{'Cost:'}</h5>
                                                 </div>
                                             </Col>
@@ -1149,7 +1149,7 @@ class AddRMImport extends Component {
 
                                         <Row>
                                             <Col md="12" className="filter-block">
-                                                <div className=" flex-fills mb-2">
+                                                <div className=" flex-fills mb-2 pl-0">
                                                     <h5>{'Remark & Attachments'}</h5>
                                                 </div>
                                             </Col>

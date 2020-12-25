@@ -300,6 +300,10 @@ class SpecificationListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+			prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -307,7 +311,7 @@ class SpecificationListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
+                    <Row className="pt-4">
                         <Col md="8" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
@@ -362,7 +366,7 @@ class SpecificationListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md={4} className="text-right">
+                        <Col md={4} className="text-right mb-3">
                             {BulkUploadAccessibility && <button
                                 type="button"
                                 className={'user-btn mr5'}

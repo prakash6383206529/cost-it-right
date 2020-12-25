@@ -249,6 +249,10 @@ class AssemblyPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -256,7 +260,7 @@ class AssemblyPartListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
 
-                <Row className="pt-30">
+                <Row className="pt-4">
                     <Col md="8" className="filter-block">
 
                     </Col>

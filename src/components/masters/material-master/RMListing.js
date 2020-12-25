@@ -149,13 +149,17 @@ class RMListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+			prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
         return (
             <div>
                 {this.props.loading && <Loader />}
-                <Row className="pt-30 mb-30">
+                <Row className="pt-4 mb-3">
                     <Col md={12} className="text-right ">
                         {AddAccessibility && <button
                             type={'button'}

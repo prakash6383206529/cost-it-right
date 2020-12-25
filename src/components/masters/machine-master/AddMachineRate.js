@@ -1130,7 +1130,7 @@ class AddMachineRate extends Component {
                                                         }
                                                         {this.state.processGrid.length === 0 &&
                                                             <tr>
-                                                                <td>
+                                                                <td colspan="10">
                                                                     <NoContentFound title={CONSTANT.EMPTY_DATA} />
                                                                 </td>
                                                             </tr>
@@ -1142,7 +1142,7 @@ class AddMachineRate extends Component {
 
                                         <Row>
                                             <Col md="12" className="filter-block">
-                                                <div className=" flex-fills mb-2">
+                                                <div className=" flex-fills mb-2 pl-0">
                                                     <h5>{'Remark & Attachments'}</h5>
                                                 </div>
                                             </Col>

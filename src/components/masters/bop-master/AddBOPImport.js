@@ -831,7 +831,7 @@ class AddBOPImport extends Component {
                                                         Effective Date
                                                         {/* <span className="asterisk-required">*</span> */}
                                                     </label>
-                                                    <div className="inputbox date-section">
+                                                    <div className="inputbox date-section mb-3">
                                                         <DatePicker
                                                             name="EffectiveDate"
                                                             selected={this.state.effectiveDate}

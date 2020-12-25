@@ -1386,6 +1386,9 @@ button.user-btn.pull-right {
 }
 
 // =================costing summary table page=========================
+$sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+$FontAwesome: 'FontAwesome';
+$roboto: "Roboto", sans-serif;
 .date-section {
 	.react-datepicker-wrapper {
 		.react-datepicker__input-container {
@@ -1529,7 +1532,7 @@ body {
 		height: 25px;
 		display: inline-block;
 		background-color: #256BD1;
-		font-family: FontAwesome !important;
+		font-family: $FontAwesome !important;
 		color: #fff !important;
 		border-radius: 3px;
 		text-align: center;
@@ -1845,7 +1848,7 @@ html {
 	&:before {
 		content: "\f06e";
 		color: black;
-		font-family: 'FontAwesome';
+		font-family: $FontAwesome;
 		color: #959CB6;
 	}
 }
@@ -1878,7 +1881,9 @@ html {
 .css-1wa3eu0-placeholder {
 	white-space: nowrap;
 	max-width: 100%;
-	text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  color: #A4ABC5 !important;
 }
 
 
@@ -1903,7 +1908,7 @@ html {
 }
 .input-range {
 	position: relative;
-	font-family: "Roboto", sans-serif !important;
+	font-family: $roboto !important;
 	.input-range__slider-container {
 		&:nth-child(3) {
 			right: 0px;
@@ -1921,7 +1926,7 @@ html {
 					content: 'Net Landed Range (INR)';
 					position: absolute;
 					left: -7px;
-					font-family: "Roboto", sans-serif !important;
+					font-family: $roboto !important;
 					font-size: 10px;
 				}
 			}
@@ -1929,11 +1934,16 @@ html {
 	}
 	.input-range__label-container {
 		left: auto;
-		right: 0;
+    right: 0;
+    color: #3D4465;
+    font-family: $roboto;
 	}
 }
-
 // input range
+
+.w-180{
+  min-width: 180px;
+}
 // ============issues fixing =============
 
 @media(max-width:1367px){
