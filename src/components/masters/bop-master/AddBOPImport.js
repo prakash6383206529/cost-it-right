@@ -7,7 +7,7 @@ import {
     renderText, searchableSelect, renderMultiSelectField, renderTextAreaField
 } from "../../layout/FormInputs";
 import {
-    fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList,
+    fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType,
 } from '../../../actions/Common';
 import {
     createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
@@ -24,7 +24,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, ZBC } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -69,6 +69,7 @@ class AddBOPImport extends Component {
         this.props.getUOMSelectList(() => { })
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPartSelectList(() => { })
+        this.props.getPlantSelectListByType(ZBC, () => { })
     }
 
     /**
@@ -185,13 +186,14 @@ class AddBOPImport extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { vendorWithVendorCodeSelectList, bopCategorySelectList, partSelectList, plantList, filterPlantList, cityList,
+        const { vendorWithVendorCodeSelectList, bopCategorySelectList, partSelectList, plantSelectList, filterPlantList, cityList,
             UOMSelectList, currencySelectList, } = this.props;
         const temp = [];
         if (label === 'BOPCategory') {
             bopCategorySelectList && bopCategorySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -199,13 +201,15 @@ class AddBOPImport extends Component {
             partSelectList && partSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'plant') {
-            plantList && plantList.map(item => {
+            plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -213,6 +217,7 @@ class AddBOPImport extends Component {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -220,6 +225,7 @@ class AddBOPImport extends Component {
             filterPlantList && filterPlantList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -227,6 +233,7 @@ class AddBOPImport extends Component {
             cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -234,6 +241,7 @@ class AddBOPImport extends Component {
             UOMSelectList && UOMSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -241,6 +249,7 @@ class AddBOPImport extends Component {
             currencySelectList && currencySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -459,6 +468,10 @@ class AddBOPImport extends Component {
         let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
         let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
         let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
+
+        if (selectedPlants.length === 0 && !this.state.IsVendor) {
+            return false;
+        }
 
         if (isEditFlag) {
             let updatedFiles = files.map((file) => {
@@ -976,7 +989,7 @@ function mapStateToProps(state) {
 
     const { bopCategorySelectList, bopData, } = boughtOutparts;
     const { plantList, filterPlantList, filterCityListBySupplier, cityList,
-        UOMSelectList, currencySelectList, } = comman;
+        UOMSelectList, currencySelectList, plantSelectList } = comman;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { partSelectList } = part;
     const { initialConfiguration } = auth;
@@ -997,7 +1010,7 @@ function mapStateToProps(state) {
 
     return {
         vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-        cityList, partSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration,
+        plantSelectList, cityList, partSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration,
     }
 
 }
@@ -1022,6 +1035,7 @@ export default connect(mapStateToProps, {
     getBOPImportById,
     fileUploadBOPDomestic,
     fileDeleteBOPDomestic,
+    getPlantSelectListByType,
 })(reduxForm({
     form: 'AddBOPImport',
     enableReinitialize: true,

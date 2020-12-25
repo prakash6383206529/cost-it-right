@@ -24,7 +24,7 @@ function TabPackagingFreight(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        PlantId: costData.PlantId,
+        //PlantId: costData.PlantId,
       }
       dispatch(getPackageFreightTabData(data, (res) => {
         if (res && res.data && res.data.Result) {

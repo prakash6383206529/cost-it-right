@@ -8,7 +8,7 @@ import {
     renderMultiSelectField, renderTextAreaField
 } from "../../layout/FormInputs";
 import {
-    fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList,
+    fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType,
 } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
@@ -25,7 +25,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, ZBC } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -71,6 +71,7 @@ class AddBOPDomestic extends Component {
         this.props.getUOMSelectList(() => { })
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPartSelectList(() => { })
+        this.props.getPlantSelectListByType(ZBC, () => { })
     }
 
     /**
@@ -185,13 +186,14 @@ class AddBOPDomestic extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, cityList,
+        const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantSelectList, filterPlantList, cityList,
             UOMSelectList, partSelectList, } = this.props;
         const temp = [];
         if (label === 'BOPCategory') {
             bopCategorySelectList && bopCategorySelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -199,13 +201,15 @@ class AddBOPDomestic extends Component {
             partSelectList && partSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
         if (label === 'plant') {
-            plantList && plantList.map(item => {
+            plantSelectList && plantSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -213,6 +217,7 @@ class AddBOPDomestic extends Component {
             vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -220,6 +225,7 @@ class AddBOPDomestic extends Component {
             filterPlantList && filterPlantList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ Text: item.Text, Value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -227,6 +233,7 @@ class AddBOPDomestic extends Component {
             cityList && cityList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -234,6 +241,7 @@ class AddBOPDomestic extends Component {
             UOMSelectList && UOMSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
+                return null;
             });
             return temp;
         }
@@ -461,6 +469,10 @@ class AddBOPDomestic extends Component {
         let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
         let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
         let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
+
+        if (selectedPlants.length === 0 && !this.state.IsVendor) {
+            return false;
+        }
 
         if (isEditFlag) {
             let updatedFiles = files.map((file) => {
@@ -956,7 +968,7 @@ function mapStateToProps(state) {
     const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
 
     const { bopCategorySelectList, bopData, } = boughtOutparts;
-    const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, } = comman;
+    const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, } = comman;
     const { partSelectList } = part;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
@@ -977,7 +989,7 @@ function mapStateToProps(state) {
 
     return {
         vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-        bopCategorySelectList, bopData, partSelectList, fieldsObj, initialValues, initialConfiguration,
+        plantSelectList, bopCategorySelectList, bopData, partSelectList, fieldsObj, initialValues, initialConfiguration,
     }
 
 }
@@ -1002,6 +1014,7 @@ export default connect(mapStateToProps, {
     getPartSelectList,
     fileUploadBOPDomestic,
     fileDeleteBOPDomestic,
+    getPlantSelectListByType,
 })(reduxForm({
     form: 'AddBOPDomestic',
     enableReinitialize: true,

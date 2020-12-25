@@ -44,10 +44,10 @@ function TabDiscountOther(props) {
         PlantId: costData.PlantId,
       }
       dispatch(getDiscountOtherCostTabData(data, (res) => {
-        console.log('res: >>>>>>>>> ', res);
+        console.log('res: >>>>>>>>> ddddddd ', res);
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
-          setTabData(Data)
+          //setTabData(Data)
           if (Data && Data.CostingPartDetails[0] && Data.CostingPartDetails[0].DiscountCost !== null) {
             let OtherCostDetails = Data.CostingPartDetails[0].OtherCostDetails;
             setCurrency(OtherCostDetails.IsCurrencyChange ? true : false)
@@ -271,7 +271,6 @@ function TabDiscountOther(props) {
       ],
       "Attachements": updatedFiles
     }
-    console.log('data: ', data);
 
     dispatch(saveDiscountOtherCostTab(data, res => {
       console.log('saveDiscountOtherCostTab: ', res);

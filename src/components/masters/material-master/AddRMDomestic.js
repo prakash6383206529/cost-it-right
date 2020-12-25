@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength100, getVendorCode } from "../../../helper/validation";
+import { required, number, maxLength100, getVendorCode, decimalLength2 } from "../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField, focusOnError,
@@ -33,6 +33,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import ImageModel from '../../common/ImageModel';
+//import { number } from 'yup';
 const selector = formValueSelector('AddRMDomestic');
 
 class AddRMDomestic extends Component {
@@ -1083,8 +1084,8 @@ class AddRMDomestic extends Component {
                                                     name={"BasicRate"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[required, number, decimalLength2]}
+                                                    component={renderText}
                                                     onChange={this.handleBasicRate}
                                                     required={true}
                                                     disabled={false}
@@ -1098,8 +1099,8 @@ class AddRMDomestic extends Component {
                                                     name={"ScrapRate"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[required, number, decimalLength2]}
+                                                    component={renderText}
                                                     required={true}
                                                     className=""
                                                     customClassName=" withBorder"
@@ -1111,7 +1112,7 @@ class AddRMDomestic extends Component {
                                                     name={"NetLandedCost"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required]}
+                                                    validate={[required, number]}
                                                     component={renderText}
                                                     required={true}
                                                     disabled={true}

@@ -303,7 +303,7 @@ export function getVBCDetailByVendorId(data, callback) {
 export function getRMCCTabData(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -351,7 +351,7 @@ export function getRMDrawerVBCDataList(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
-      apiErrors(error);
+      //apiErrors(error);
     });
   };
 }
@@ -499,7 +499,7 @@ export function saveCostingRMCCTab(data, callback) {
 export function getSurfaceTreatmentTabData(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -575,7 +575,7 @@ export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
 export function getOverheadProfitTabData(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -667,7 +667,7 @@ export function getPaymentTermsDataByHeads(Id, callback) {
 export function getPackageFreightTabData(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -757,7 +757,7 @@ export function getRateByCapacityCriteria(data, callback) {
 export function getToolTabData(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -793,15 +793,16 @@ export function saveToolTab(data, callback) {
 export function getDiscountOtherCostTabData(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}/${data.PlantId}`, headers);
+    const request = axios.get(`${API.getDiscountOtherCostTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
       }
     }).catch((error) => {
+      console.log('error: ', error);
       dispatch({ type: API_FAILURE });
       callback(error);
-      apiErrors(error);
+      //apiErrors(error);
     });
   };
 }

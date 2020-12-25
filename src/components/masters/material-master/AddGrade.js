@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { alphaNumeric, required } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
@@ -121,7 +121,7 @@ class AddGrade extends Component {
                                             name={"Grade"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            validate={[required, alphaNumeric]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -130,23 +130,19 @@ class AddGrade extends Component {
                                     </Col>
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
-                                            <button
-                                                onClick={this.cancel}
-                                                type="submit"
-                                                value="CANCEL"
-                                                className="reset mr15 cancel-btn">
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
-                                            <button
-                                                type="submit"
-                                                // disabled={isSubmitted ? true : false}
-                                                className="btn-primary save-btn"
-                                            >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
-                                                </div>
-                                                {this.props.isEditFlag ? 'UPDATE' : 'SAVE'}
-                                            </button>
-                                        </div>
+                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={this.cancel} >
+                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button mr5 save-btn" >
+                                            <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
+                                            </div> {isEditFlag ? 'Update' : 'Save'}
+                                        </button>
                                     </div>
                                 </Row>
                             </form>

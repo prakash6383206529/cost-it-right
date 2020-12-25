@@ -78,12 +78,12 @@ export const website = value =>
         : undefined;
 
 export const required = value =>
-    ((typeof value !== 'undefined' && value !== null && value !== "")
-        ? undefined : 'This field is required.');
+((typeof value !== 'undefined' && value !== null && value !== "")
+    ? undefined : 'This field is required.');
 
 export const selectRequired = value =>
-    ((typeof value !== 'undefined' && value !== null && value !== "")
-        ? undefined : 'This field is required.');
+((typeof value !== 'undefined' && value !== null && value !== "")
+    ? undefined : 'This field is required.');
 
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0)
@@ -107,7 +107,7 @@ export const validatePassword = value => {
 
 export const alphaNumeric = value =>
     value && /[^a-zA-Z0-9 ]/i.test(value)
-        ? 'Please enter a valid zip code'
+        ? 'Please enter only alphabets or numbers.'
         : undefined;
 
 export const alphaNumericTitle = value =>
@@ -233,8 +233,8 @@ export const trimFourDecimalPlace = (floatValue) => {
 
 export const trimDecimalPlace = (floatValue, Number) => {
     var decimalTextLength = 0;
-    if (undefined !== floatValue) {
-        if (undefined !== floatValue.toString().split('.')[1]) {
+    if (floatValue !== undefined) {
+        if (floatValue.toString().split('.')[1] !== undefined) {
             decimalTextLength = (floatValue.toString().split('.')[1]).length;
         }
     }

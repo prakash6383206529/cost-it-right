@@ -28,7 +28,7 @@ function TabRMCC(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        PlantId: costData.PlantId,
+        //PlantId: costData.PlantId,
       }
       dispatch(getRMCCTabData(data, (res) => {
         if (res && res.data && res.data.Result) {

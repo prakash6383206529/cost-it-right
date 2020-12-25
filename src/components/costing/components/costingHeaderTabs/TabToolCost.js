@@ -26,7 +26,7 @@ function TabToolCost(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        PlantId: costData.PlantId,
+        //PlantId: costData.PlantId,
       }
       dispatch(getToolTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
