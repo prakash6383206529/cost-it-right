@@ -635,7 +635,7 @@ class AddOperation extends Component {
                                                     </div>
                                                     {!isEditFlag && <div
                                                         onClick={this.vendorToggler}
-                                                        className={'plus-icon-square mt30 mr15 right'}>
+                                                        className={'plus-icon-square mt-2 mr15 right'}>
                                                     </div>}
                                                 </div>
                                             </Col>}

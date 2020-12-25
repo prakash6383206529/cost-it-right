@@ -148,7 +148,7 @@ class AddReason extends Component {
                             </Row>
                             <Row>
 
-                                <Col md="6">
+                                <Col md="12">
                                     <Field
                                         label={`Reason`}
                                         name={"Reason"}
@@ -183,8 +183,8 @@ class AddReason extends Component {
                                     </Col>
                                 </Col> */}
                             </Row>
-
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
+                        </form>
+                        <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-sm-12 text-right bluefooter-butn">
                                     <button
                                         type={'button'}
@@ -200,7 +200,7 @@ class AddReason extends Component {
                                     </button>
                                 </div>
                             </Row>
-                        </form>
+                        
                     </div>
                 </Container>
             </Drawer>

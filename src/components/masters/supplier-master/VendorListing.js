@@ -413,8 +413,8 @@ class VendorListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="mr15">
                     <div class="col-sm-4"><h3>Vendor</h3></div>
                     <hr />
-                    <Row className="pt-30 px-15">
-                        <Col md="9" className="filter-block">
+                    <Row className="pt-30 px-15 filter-row-large">
+                        <Col md="12" lg="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -470,7 +470,7 @@ class VendorListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="3" className="search-user-block">
+                        <Col md="12" lg="3" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {BulkUploadAccessibility && <button

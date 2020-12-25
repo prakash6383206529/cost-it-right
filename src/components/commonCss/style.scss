@@ -1736,6 +1736,7 @@ html {
 }
 
 // =================approval-summary=========================
+
 // ============issues fixing =============
 // scrollbar styling
 ::-webkit-scrollbar {
@@ -1757,7 +1758,6 @@ html {
 		border: 2px solid #f4f4f4;
 	}
 }
-
 // scrollbar styling
 
 .react-bs-table-container {
@@ -1936,11 +1936,15 @@ html {
 // input range
 // ============issues fixing =============
 
-@media(max-width:768px){
-  .workflow-row .col-lg-3 {padding: 0;flex-grow: 0;flex-shrink: 0;flex-basis: calc(50% - 30px);max-width: calc(50% - 30px);position: relative;margin-bottom: 20px;}
-  .workflow-row .col-lg-3:nth-child(2) .card-border:after{display:none;}
+@media(max-width:1367px){
+  .filter-row-large{
+     .col-md-12{-ms-flex: 0 0 100%;flex: 0 0 100%;max-width: 100%;} 
+  }
 }
 
-@media(max-width:1367px){
-  .filter-row-large .col-md-12{-ms-flex: 0 0 100%;flex: 0 0 100%;max-width: 100%;}
+@media(max-width:768px){
+  .workflow-row {
+    .col-lg-3 {padding: 0;flex-grow: 0;flex-shrink: 0;flex-basis: calc(50% - 30px);max-width: calc(50% - 30px);position: relative;margin-bottom: 20px;} 
+  }
+  .workflow-row .col-lg-3:nth-child(2) .card-border:after{display:none;}
 }

@@ -761,9 +761,9 @@ class AddLabour extends Component {
                                                             )
                                                         })
                                                     }
-                                                    {this.state.gridTable.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                 </tbody>
                                             </Table>
+                                            {this.state.gridTable.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                         </Col>
 
                                     </Row>

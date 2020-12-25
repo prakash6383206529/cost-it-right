@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
     "@hookform/error-message": "0.0.4",
     "@hookform/resolvers": "0.0.3",
     "@material-ui/core": "^4.9.14",
@@ -11,6 +10,7 @@
     "axios": "^0.19.0",
     "dotenv": "^8.2.0",
     "flowpoints": "^1.0.18",
+    "fontawesome-4.7": "^4.7.0",
     "jquery": "^3.4.1",
     "lodash": "^4.17.15",
     "mdbreact": "^4.22.0",
