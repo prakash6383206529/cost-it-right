@@ -397,10 +397,10 @@ class SideBar extends Component {
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
-                <img src={require('../../assests/images/logo.png')} alt='Cost It Rights' height="30" />
+                <img src={require('../../assests/images/logo.png')} alt='Cost It Right' height="30" />
               </a>
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
-                <img src={require('../../assests/images/sipl-logo.svg')} alt='Cost It Rights' height="30" />
+                <img src={require('../../assests/images/logo.png')} alt='Cost It Right' height="30" />
               </a>
               <button className="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
                 <span className="navbar-toggler-icon"></span>

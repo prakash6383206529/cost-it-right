@@ -1074,7 +1074,7 @@ class AddMachineRate extends Component {
 
                                                             <button
                                                                 type="button"
-                                                                className={'cancel-btn mt30 pull-left'}
+                                                                className={'reset-btn mt30 pull-left'}
                                                                 onClick={this.resetProcessGridData}
                                                             >Cancel</button>
                                                         </>

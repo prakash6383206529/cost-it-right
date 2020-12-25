@@ -562,7 +562,7 @@ class AddLabour extends Component {
 
                                     <Row>
                                         <Col md="12" className="filter-block">
-                                            <div className=" flex-fills mb-2">
+                                            <div className=" flex-fills mb-2 w-100 pl-0">
                                                 <h5>{'Vendor:'}</h5>
                                             </div>
                                         </Col>
@@ -623,12 +623,12 @@ class AddLabour extends Component {
 
                                     <Row>
                                         <Col md="12" className="filter-block">
-                                            <div className=" flex-fills mb-2">
+                                            <div className=" flex-fills mb-2 w-100 pl-0">
                                                 <h5>{'Rate Per Person:'}</h5>
                                             </div>
                                         </Col>
 
-                                        <Col md="3">
+                                        <Col md="3" className="col">
                                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                                 <div className="fullinput-icon">
                                                     <Field
@@ -652,7 +652,7 @@ class AddLabour extends Component {
                                                 </div>}
                                             </div>
                                         </Col>
-                                        <Col md="3">
+                                        <Col md="" className="col">
                                             <Field
                                                 name="LabourTypeIds"
                                                 type="text"
@@ -667,7 +667,7 @@ class AddLabour extends Component {
                                                 valueDescription={this.state.labourType}
                                             />
                                         </Col>
-                                        <Col md="2">
+                                        <Col md="" className="col">
                                             <Field
                                                 label={`Rate Per Person/Annum (INR)`}
                                                 name={"LabourRate"}
@@ -681,7 +681,7 @@ class AddLabour extends Component {
                                                 customClassName="withBorder"
                                             />
                                         </Col>
-                                        <Col md="2">
+                                        <Col md="" className="col">
                                             <div className="form-group">
                                                 <label>
                                                     Effective Date
@@ -707,7 +707,7 @@ class AddLabour extends Component {
                                                 </div>
                                             </div>
                                         </Col>
-                                        <Col md="2">
+                                        <Col md="" className="col">
                                             <div>
                                                 {this.state.isEditIndex ?
                                                     <>
@@ -719,7 +719,7 @@ class AddLabour extends Component {
 
                                                         <button
                                                             type="button"
-                                                            className={'cancel-btn mt30 pull-left'}
+                                                            className={'reset-btn mt30 pull-left'}
                                                             onClick={this.resetGridData}
                                                         >Cancel</button>
                                                     </>

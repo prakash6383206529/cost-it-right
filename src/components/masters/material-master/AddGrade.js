@@ -129,9 +129,10 @@ class AddGrade extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
+                                </form>
+                                <div className="col-md-12">
+                                    <Row className="sf-btn-footer no-gutters justify-content-between m-0">
+                                        <div className="text-right w-100">
                                             <button
                                                 onClick={this.cancel}
                                                 type="submit"
@@ -147,9 +148,8 @@ class AddGrade extends Component {
                                                 {this.props.isEditFlag ? 'UPDATE' : 'SAVE'}
                                             </button>
                                         </div>
-                                    </div>
-                                </Row>
-                            </form>
+                                    </Row>
+                                </div>
                         </div>
                     </Container>
                 </Drawer>
