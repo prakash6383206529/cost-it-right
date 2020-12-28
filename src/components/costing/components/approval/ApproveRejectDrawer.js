@@ -7,12 +7,12 @@ import {
   approvalRequestByApprove,
   rejectRequestByApprove,
   getAllApprovalUserFilterByDepartment,
-} from '../../costing/actions/Approval'
+} from '../../../costing/actions/Approval'
 import {
   TextAreaHookForm,
   SearchableSelectHookForm,
-} from '../../layout/HookFormInputs'
-import { loggedInUserId, userDetails } from '../../../helper'
+} from '../../../layout/HookFormInputs'
+import { loggedInUserId, userDetails } from '../../../../helper'
 function ApproveRejectDrawer(props) {
   const { type, tokenNo, departmentId, approvalProcessId } = props
   const userLoggedIn = loggedInUserId()
@@ -153,7 +153,7 @@ function ApproveRejectDrawer(props) {
                   >
                     <div className={'cross-icon'}>
                       <img
-                        src={require('../../../assests/images/times.png')}
+                        src={require('../../../../assests/images/times.png')}
                         alt="cancel-icon.jpg"
                       />
                     </div>{' '}
@@ -167,7 +167,7 @@ function ApproveRejectDrawer(props) {
                   >
                     <div className={'check-icon'}>
                       <img
-                        src={require('../../../assests/images/check.png')}
+                        src={require('../../../../assests/images/check.png')}
                         alt="check-icon.jpg"
                       />{' '}
                     </div>

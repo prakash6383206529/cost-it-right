@@ -10,7 +10,12 @@ import {
   getPlantBySupplier,
 } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
-import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getSingleCostingDetails, setCostingViewData } from '../actions/Costing'
+import {
+  getCostingByVendorAndVendorPlant,
+  getCostingSummaryByplantIdPartNo,
+  getSingleCostingDetails,
+  setCostingViewData,
+} from '../actions/Costing'
 
 import {
   SearchableSelectHookForm,
@@ -18,16 +23,14 @@ import {
 } from '../../layout/HookFormInputs'
 
 import { ZBC, VBC, VIEW_COSTING_DATA } from '../../../config/constants'
-import { toastr } from 'react-redux-toastr';
+import { toastr } from 'react-redux-toastr'
 import { isUserLoggedIn } from '../../../helper/auth'
 
-
 function AddToComparisonDrawer(props) {
-
   const loggedIn = isUserLoggedIn()
-  console.log(loggedIn, "Logged in");
+  console.log(loggedIn, 'Logged in')
   const { editObject, isEditFlag } = props
-  console.log(editObject, "Edit object");
+  console.log(editObject, 'Edit object')
   const {
     partId,
     plantId,
@@ -35,25 +38,19 @@ function AddToComparisonDrawer(props) {
     costingId,
     CostingNumber,
     index,
-    typeOfCosting
+    typeOfCosting,
   } = editObject
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    errors
-  } = useForm({
+  const { register, handleSubmit, control, setValue, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
       comparisonValue: isEditFlag ? typeOfCosting : 'ZBC',
       plant: isEditFlag ? { label: plantName, value: plantId } : '',
-      costings: isEditFlag ? { label: CostingNumber, value: costingId } : ''
-    }
+      costings: isEditFlag ? { label: CostingNumber, value: costingId } : '',
+    },
   })
   const fieldValues = useWatch({ control, name: ['comparisonValue', 'plant'] })
-  console.log(fieldValues, "fv");
+  console.log(fieldValues, 'fv')
   const dispatch = useDispatch()
 
   /* DropDown constants */
@@ -81,7 +78,8 @@ function AddToComparisonDrawer(props) {
     (state) => state.comman.vendorWithVendorCodeSelectList,
   )
   const viewCostingData = useSelector(
-    (state) => state.costing.viewCostingDetailData)
+    (state) => state.costing.viewCostingDetailData,
+  )
   /* For getting part no for costing dropdown */
   const partNo = useSelector((state) => state.costing.partNo)
   /* For getting default value of check box */
@@ -90,7 +88,8 @@ function AddToComparisonDrawer(props) {
     dispatch(
       getPlantSelectListByType(ZBC, (res) => {
         res.data.SelectList.map((item) => {
-          if (item.Value === '0' || plantDropDownList.includes(item.Value)) return false;
+          if (item.Value === '0' || plantDropDownList.includes(item.Value))
+            return false
           temp.push({ label: item.Text, value: item.Value })
         })
         setPlantDropDownList(temp)
@@ -109,7 +108,8 @@ function AddToComparisonDrawer(props) {
     setisCbcSelected(false)
     vendorSelectList &&
       vendorSelectList.map((vendor) => {
-        if (vendor.Value === '0' || vendorDropDownList.includes(vendor.Value)) return false;
+        if (vendor.Value === '0' || vendorDropDownList.includes(vendor.Value))
+          return false
         temp.push({ label: vendor.Text, value: vendor.Value })
       })
     setVendorDropDownList(temp)
@@ -132,16 +132,17 @@ function AddToComparisonDrawer(props) {
   /**
    * @method handleComparison
    * @description for handling rendering for different checkbox
-  */
+   */
   const handleComparison = (value) => {
     setValue('comparisonValue', value)
     const temp = []
     if (value === 'ZBC') {
       dispatch(
         getPlantSelectListByType(ZBC, (res) => {
-          console.log(res, "Plant response");
+          console.log(res, 'Plant response')
           res.data.SelectList.map((item) => {
-            if (item.Value === '0' || plantDropDownList.includes(item.Value)) return false;
+            if (item.Value === '0' || plantDropDownList.includes(item.Value))
+              return false
             temp.push({ label: item.Text, value: item.Value })
           })
           setPlantDropDownList(temp)
@@ -152,15 +153,16 @@ function AddToComparisonDrawer(props) {
       )
     } else if (value === 'VBC') {
       setCostingDropdown([])
-      setValue("costings", '')
-      dispatch(getVendorWithVendorCodeSelectList(() => { }))
+      setValue('costings', '')
+      dispatch(getVendorWithVendorCodeSelectList(() => {}))
     } else if (value === 'CBC') {
       setCostingDropdown([])
       dispatch(
         getClientSelectList((res) => {
           res.data.SelectList &&
             res.data.SelectList.map((client) => {
-              if (client.Value === '0' || clientDropdown.includes(client.Value)) return false;
+              if (client.Value === '0' || clientDropdown.includes(client.Value))
+                return false
               temp.push({ label: client.Text, value: client.Value })
             })
           setclientDropdown(temp)
@@ -175,39 +177,42 @@ function AddToComparisonDrawer(props) {
   /**
    * @method handleVendorChange
    * @description showing vendor plant by vendor name
-  */
-  const handleVendorChange = ( {value} ) => {
+   */
+  const handleVendorChange = ({ value }) => {
     const temp = []
     setVendorId(value)
-    if (loggedIn){
+    if (loggedIn) {
       dispatch(
         getPlantBySupplier(value, (res) => {
           res.data.SelectList &&
             res.data.SelectList.map((plant) => {
-              if (plant.Value === '0' || vendorPlantDropdown.includes(plant.Value)) return false;
+              if (
+                plant.Value === '0' ||
+                vendorPlantDropdown.includes(plant.Value)
+              )
+                return false
               temp.push({ label: plant.Text, value: plant.Value })
             })
           setvendorPlantDropdown(temp)
         }),
       )
-    }else {
+    } else {
       handleVendorNameChange('')
     }
-    
   }
 
   /**
    * @method onSubmit
    * @description Handling form submisson seting value
-  */
+   */
   const onSubmit = (values) => {
     console.log(values, 'onsubmit')
     setPlantValue(values.plant)
     setVendorValue(values.vendor)
     setVendorPlant(values.vendorPlant)
     setCbcValue(values.clientName)
-    setCostingDropdown([]);
-    setValue("costings", '');
+    setCostingDropdown([])
+    setValue('costings', '')
     let temp = []
     temp = viewCostingData
     // if (viewCostingData.length == 0) {
@@ -252,30 +257,30 @@ function AddToComparisonDrawer(props) {
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadCCTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                    .OverheadCCTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadCCTotalCost,
+                  )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadBOPTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                    .OverheadBOPTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadBOPTotalCost,
+                  )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadRMTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                    .OverheadRMTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadRMTotalCost,
+                  )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadFixedTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                    .OverheadFixedTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                      .OverheadFixedTotalCost,
+                  )
                 : 0),
           }
           obj.profitOn = {
@@ -286,30 +291,30 @@ function AddToComparisonDrawer(props) {
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitCCTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                    .ProfitCCTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitCCTotalCost,
+                  )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitBOPTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                    .ProfitBOPTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitBOPTotalCost,
+                  )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitRMTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                    .ProfitRMTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitRMTotalCost,
+                  )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitFixedTotalCost
                 ? parseInt(
-                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                    .ProfitFixedTotalCost,
-                )
+                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                      .ProfitFixedTotalCost,
+                  )
                 : 0),
           }
           obj.rejectionOn = {
@@ -340,9 +345,19 @@ function AddToComparisonDrawer(props) {
           obj.packagingCost = dataFromAPI.CostingPartDetails[0].PackagingNetCost
           obj.freight = dataFromAPI.CostingPartDetails[0].FreightNetCost
           obj.nPackagingAndFreight = dataFromAPI.NetPackagingAndFreight
-          obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolMaintenanceCost ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolMaintenanceCost : '-'
-          obj.toolPrice = dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolCost ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolCost : '-'
-          obj.amortizationQty = dataFromAPI.CostingPartDetails[0].OverAllApplicability.Life ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.Life : '-'
+          obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails[0]
+            .OverAllApplicability.ToolMaintenanceCost
+            ? dataFromAPI.CostingPartDetails[0].OverAllApplicability
+                .ToolMaintenanceCost
+            : '-'
+          obj.toolPrice = dataFromAPI.CostingPartDetails[0].OverAllApplicability
+            .ToolCost
+            ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolCost
+            : '-'
+          obj.amortizationQty = dataFromAPI.CostingPartDetails[0]
+            .OverAllApplicability.Life
+            ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.Life
+            : '-'
           obj.totalToolCost = dataFromAPI.NetToolCost
           obj.totalCost = dataFromAPI.TotalCost
           obj.otherDiscount = {
@@ -353,12 +368,12 @@ function AddToComparisonDrawer(props) {
             discountPercentValue: dataFromAPI.CostingPartDetails[0]
               .OtherCostDetails.HundiOrDiscountPercentage
               ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                .HundiOrDiscountPercentage
+                  .HundiOrDiscountPercentage
               : '-',
             discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails
               .HundiOrDiscountValue
               ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                .HundiOrDiscountValue
+                  .HundiOrDiscountValue
               : '-',
           }
           obj.anyOtherCost = dataFromAPI.CostingPartDetails[0].OtherCostDetails
@@ -371,21 +386,26 @@ function AddToComparisonDrawer(props) {
           obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0]
             .OtherCostDetails.NetPOPriceOtherCurrency
             ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-              .NetPOPriceOtherCurrency
+                .NetPOPriceOtherCurrency
             : '-'
           obj.currency = {
-            currencyTitle: dataFromAPI.CostingPartDetails[0].OtherCostDetails.Currency,
-            currencyValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails.IsChangeCurrency ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.CurrencyValue : "-"
+            currencyTitle:
+              dataFromAPI.CostingPartDetails[0].OtherCostDetails.Currency,
+            currencyValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails
+              .IsChangeCurrency
+              ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.CurrencyValue
+              : '-',
           }
           obj.nPOPrice = dataFromAPI.CostingPartDetails[0].OtherCostDetails
             .NetPOPriceINR
             ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceINR
             : '-'
           // obj.attachment = "Attachment";
-          obj.attachment = dataFromAPI.Attachements;
+          obj.attachment = dataFromAPI.Attachements
           obj.approvalButton = 'Button'
           //RM
-          obj.netRMCostView = dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
+          obj.netRMCostView =
+            dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost
           //BOP Cost
           obj.netBOPCostView =
             dataFromAPI.CostingPartDetails[0].CostingBoughtOutPartCost
@@ -405,50 +425,50 @@ function AddToComparisonDrawer(props) {
           //Tool Cost
           obj.netToolCostView =
             dataFromAPI.CostingPartDetails[0].OverAllApplicability
-          obj.partId = dataFromAPI.PartNumber;
-          obj.plantId = dataFromAPI.PlantId;
-          obj.plantCode = dataFromAPI.PlantCode;
-          obj.plantName = dataFromAPI.PlantName;
+          obj.partId = dataFromAPI.PartNumber
+          obj.plantId = dataFromAPI.PlantId
+          obj.plantCode = dataFromAPI.PlantCode
+          obj.plantName = dataFromAPI.PlantName
           //Add vendor key here
-          obj.vendorId = dataFromAPI.VendorId;
-          obj.vendorName = dataFromAPI.VendorName;
-          obj.vendorCode = dataFromAPI.VendorCode;
-          obj.vendorPlantId = dataFromAPI.VendorPlantId;
-          obj.vendorPlantName = dataFromAPI.VendorPlantName;
-          obj.vendorPlantCode = dataFromAPI.VendorPlantCode;
-          obj.costingId = dataFromAPI.CostingId;
-          obj.oldPoPrice = dataFromAPI.OldPOPrice;
+          obj.vendorId = dataFromAPI.VendorId
+          obj.vendorName = dataFromAPI.VendorName
+          obj.vendorCode = dataFromAPI.VendorCode
+          obj.vendorPlantId = dataFromAPI.VendorPlantId
+          obj.vendorPlantName = dataFromAPI.VendorPlantName
+          obj.vendorPlantCode = dataFromAPI.VendorPlantCode
+          obj.costingId = dataFromAPI.CostingId
+          obj.oldPoPrice = dataFromAPI.OldPOPrice
 
           // temp.push(VIEW_COSTING_DATA)
           if (index) {
             temp[index] = obj
-          }
-          else {
-            const index = temp.findIndex(data => data.costingId == values.costings.value)
+          } else {
+            const index = temp.findIndex(
+              (data) => data.costingId == values.costings.value,
+            )
             if (index == -1) {
               temp.push(obj)
-            }
-            else {
-              toastr.warning("This costing is already present for comparison.");
-              return;
+            } else {
+              toastr.warning('This costing is already present for comparison.')
+              return
             }
           }
           dispatch(setCostingViewData(temp))
-          props.closeDrawer('');
+          props.closeDrawer('')
         }
-      })
+      }),
     )
   }
 
   /**
    * @method  handlePlantChange
    * @description Getting costing dropdown on basis of plant selection
-  */
+   */
   const handlePlantChange = (value) => {
     const temp = []
     dispatch(
       getCostingSummaryByplantIdPartNo(partNo.label, value.value, (res) => {
-        console.log(res,"Response");
+        console.log(res, 'Response')
         res.data.Data.CostingOptions &&
           res.data.Data.CostingOptions.map((costing) => {
             temp.push({
@@ -462,27 +482,26 @@ function AddToComparisonDrawer(props) {
     )
   }
 
-  const handleVendorNameChange = ({value}) => {
-    const temp =[]
-    if(value==="") {
-      value="00000000-0000-0000-0000-000000000000"
-    }
-    else {
-      value=value
+  const handleVendorNameChange = ({ value }) => {
+    const temp = []
+    if (value === '') {
+      value = '00000000-0000-0000-0000-000000000000'
+    } else {
+      value = value
     }
     dispatch(
-      getCostingByVendorAndVendorPlant(partNo.value,vendorId,value, (res) => {
-        console.log(res,"Response from Costing by vendor");
-        res.data.DataList && 
-        res.data.DataList.map((costing) => {
-          temp.push({
-            label: costing.CostingNumber,
-            value: costing.CostingId,
+      getCostingByVendorAndVendorPlant(partNo.value, vendorId, value, (res) => {
+        console.log(res, 'Response from Costing by vendor')
+        res.data.DataList &&
+          res.data.DataList.map((costing) => {
+            temp.push({
+              label: costing.CostingNumber,
+              value: costing.CostingId,
+            })
           })
-        })
         setCostingDropdown(temp)
         setValue('costings', '')
-      })
+      }),
     )
   }
 
@@ -498,7 +517,10 @@ function AddToComparisonDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{isEditFlag ? 'Edit for' : 'Add to'}{' Comparison: '}</h3>
+                  <h3>
+                    {isEditFlag ? 'Edit for' : 'Add to'}
+                    {' Comparison: '}
+                  </h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -573,26 +595,24 @@ function AddToComparisonDrawer(props) {
                         errors={errors.vendor}
                       />
                     </Col>
-                    {
-                      loggedIn &&
+                    {loggedIn && (
                       <Col md="12">
-                      <SearchableSelectHookForm
-                        label={'Vendor Plant'}
-                        name={'vendorPlant'}
-                        placeholder={'-Select-'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        // defaultValue={plant.length !== 0 ? plant : ''}
-                        options={vendorPlantDropdown}
-                        mandatory={true}
-                        handleChange={handleVendorNameChange}
-                        errors={errors.vendorPlant}
-                      />
-                    </Col>
-                    }
-
+                        <SearchableSelectHookForm
+                          label={'Vendor Plant'}
+                          name={'vendorPlant'}
+                          placeholder={'-Select-'}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          // defaultValue={plant.length !== 0 ? plant : ''}
+                          options={vendorPlantDropdown}
+                          mandatory={true}
+                          handleChange={handleVendorNameChange}
+                          errors={errors.vendorPlant}
+                        />
+                      </Col>
+                    )}
                   </>
                 )}
                 {isCbcSelected && (
@@ -609,7 +629,7 @@ function AddToComparisonDrawer(props) {
                         //defaultValue={plant.length !== 0 ? plant : ''}
                         options={clientDropdown}
                         mandatory={true}
-                        handleChange={() => { }}
+                        handleChange={() => {}}
                         errors={errors.clientName}
                       />
                     </Col>
@@ -629,7 +649,7 @@ function AddToComparisonDrawer(props) {
                     }
                     options={costingDropdown}
                     mandatory={true}
-                    handleChange={() => { }}
+                    handleChange={() => {}}
                     errors={errors.costings}
                   />
                 </Col>
@@ -654,7 +674,7 @@ function AddToComparisonDrawer(props) {
                 <button
                   type="submit"
                   className="submit-button mr5 save-btn"
-                // onClick={addHandler}
+                  // onClick={addHandler}
                 >
                   <div className={'check-icon'}>
                     <img
