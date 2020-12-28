@@ -7,6 +7,7 @@ import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
+import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import {
@@ -369,6 +370,7 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
+        $('html, body').animate({ scrollTop: 0 }, 'slow');
         this.setState({ isOpenVendor: true })
     }
 
@@ -404,7 +406,11 @@ class VendorListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
+            paginationSize: 3,
         };
 
         return (
@@ -413,8 +419,8 @@ class VendorListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="mr15">
                     <div class="col-sm-4"><h3>Vendor</h3></div>
                     <hr />
-                    <Row className="pt-30 px-15 filter-row-large">
-                        <Col md="12" lg="9" className="filter-block">
+                    <Row className="pt-1 px-15">
+                        <Col md="12" lg="8" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -470,7 +476,7 @@ class VendorListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="12" lg="3" className="search-user-block mb-3">
+                        <Col md="12" lg="4" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {BulkUploadAccessibility && <button

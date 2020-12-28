@@ -201,7 +201,7 @@ class AddProcessDrawer extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
 
                                     <Col md="12">
                                         <Field
