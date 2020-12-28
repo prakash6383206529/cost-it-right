@@ -393,233 +393,279 @@ class AddFuel extends Component {
         const { isOpenFuelDrawer, isEditFlag, } = this.state;
 
         return (
-            <>
-                <div>
-                    <div className="login-container signup-form">
+          <>
+            <div className="container-fluid">
+              <div>
+                <div className="login-container signup-form">
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="shadow-lgg login-formg">
                         <div className="row">
-                            <div className="col-md-12">
-                                <div className="shadow-lgg login-formg">
-                                    <div className="row">
-                                        <div className="col-md-6 mt-15">
-                                            <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Fuel` : `Add Fuel`}</h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <form
-                                        noValidate
-                                        className="form"
-                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                          <div className="col-md-6">
+                            <h1>{isEditFlag ? `Update Fuel` : `Add Fuel`}</h1>
+                          </div>
+                        </div>
+                        <form
+                          noValidate
+                          className="form"
+                          onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                        >
+                          <Row>
+                            <Col md="12" className="filter-block">
+                              <div className=" flex-fills mb-2 pl-0">
+                                <h5>{"Fuel:"}</h5>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="Fuel"
+                                    type="text"
+                                    label="Fuel Name"
+                                    component={searchableSelect}
+                                    placeholder={"--- Select Fuel ---"}
+                                    options={this.renderListing("fuel")}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    validate={
+                                      this.state.fuel == null ||
+                                      this.state.fuel.length === 0
+                                        ? [required]
+                                        : []
+                                    }
+                                    required={true}
+                                    handleChangeDescription={this.handleFuel}
+                                    valueDescription={this.state.fuel}
+                                    disabled={isEditFlag ? true : false}
+                                  />
+                                </div>
+                                {!isEditFlag && (
+                                  <div
+                                    onClick={this.fuelToggler}
+                                    className={"plus-icon-square  right"}
+                                  ></div>
+                                )}
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="UnitOfMeasurementId"
+                                    type="text"
+                                    label="UOM"
+                                    component={searchableSelect}
+                                    placeholder={"--- Select ---"}
+                                    options={this.renderListing("uom")}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    validate={
+                                      this.state.UOM == null ||
+                                      this.state.UOM.length === 0
+                                        ? [required]
+                                        : []
+                                    }
+                                    required={true}
+                                    handleChangeDescription={this.handleUOM}
+                                    valueDescription={this.state.UOM}
+                                    disabled={isEditFlag ? true : false}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                          </Row>
+
+                          <Row>
+                            <Col md="12" className="filter-block">
+                              <div className=" flex-fills mb-2 pl-0">
+                                <h5>{"Rate:"}</h5>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="state"
+                                    type="text"
+                                    label="State"
+                                    component={searchableSelect}
+                                    placeholder={"--- Select ---"}
+                                    options={this.renderListing("state")}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                    //required={true}
+                                    handleChangeDescription={this.handleState}
+                                    valueDescription={this.state.StateName}
+                                    disabled={false}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Rate (INR)`}
+                                name={"Rate"}
+                                type="text"
+                                placeholder={"Enter"}
+                                validate={[decimalLength2]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                className=""
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <div className="form-group">
+                                <label>
+                                  Effective Date
+                                  {/* <span className="asterisk-required">*</span> */}
+                                </label>
+                                <div className="inputbox date-section">
+                                  <DatePicker
+                                    name="EffectiveDate"
+                                    selected={this.state.effectiveDate}
+                                    onChange={this.handleEffectiveDateChange}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="dd/MM/yyyy"
+                                    //maxDate={new Date()}
+                                    dropdownMode="select"
+                                    placeholderText="Select date"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    disabled={false}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <div>
+                                {this.state.isEditIndex ? (
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={
+                                        "btn btn-primary mt30 pull-left mr5"
+                                      }
+                                      onClick={this.updateRateGrid}
                                     >
-                                        <Row>
-                                            <Col md="12" className="filter-block">
-                                                <div className=" flex-fills mb-2">
-                                                    <h5>{'Fuel:'}</h5>
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            name="Fuel"
-                                                            type="text"
-                                                            label="Fuel Name"
-                                                            component={searchableSelect}
-                                                            placeholder={'--- Select Fuel ---'}
-                                                            options={this.renderListing('fuel')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.fuel == null || this.state.fuel.length === 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleFuel}
-                                                            valueDescription={this.state.fuel}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
-                                                    {!isEditFlag && <div
-                                                        onClick={this.fuelToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div>}
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            name="UnitOfMeasurementId"
-                                                            type="text"
-                                                            label="UOM"
-                                                            component={searchableSelect}
-                                                            placeholder={'--- Select ---'}
-                                                            options={this.renderListing('uom')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.UOM == null || this.state.UOM.length === 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleUOM}
-                                                            valueDescription={this.state.UOM}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>
-
-
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="12" className="filter-block">
-                                                <div className=" flex-fills mb-2">
-                                                    <h5>{'Rate:'}</h5>
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            name="state"
-                                                            type="text"
-                                                            label="State"
-                                                            component={searchableSelect}
-                                                            placeholder={'--- Select ---'}
-                                                            options={this.renderListing('state')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                                                            //required={true}
-                                                            handleChangeDescription={this.handleState}
-                                                            valueDescription={this.state.StateName}
-                                                            disabled={false}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <Field
-                                                    label={`Rate (INR)`}
-                                                    name={"Rate"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[decimalLength2]}
-                                                    component={renderNumberInputField}
-                                                    //required={true}
-                                                    className=""
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <div className="form-group">
-                                                    <label>
-                                                        Effective Date
-                                                    {/* <span className="asterisk-required">*</span> */}
-                                                    </label>
-                                                    <div className="inputbox date-section">
-                                                        <DatePicker
-                                                            name="EffectiveDate"
-                                                            selected={this.state.effectiveDate}
-                                                            onChange={this.handleEffectiveDateChange}
-                                                            showMonthDropdown
-                                                            showYearDropdown
-                                                            dateFormat="dd/MM/yyyy"
-                                                            //maxDate={new Date()}
-                                                            dropdownMode="select"
-                                                            placeholderText="Select date"
-                                                            className="withBorder"
-                                                            autoComplete={'off'}
-                                                            disabledKeyboardNavigation
-                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                            disabled={false}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                            <Col md="3">
-                                                <div>
-                                                    {this.state.isEditIndex ?
-                                                        <>
-                                                            <button
-                                                                type="button"
-                                                                className={'btn btn-primary mt30 pull-left mr5'}
-                                                                onClick={this.updateRateGrid}
-                                                            >Update</button>
-                                                            {/* <button
+                                      Update
+                                    </button>
+                                    {/* <button
                                                                 type="button"
                                                                 className={'btn btn-secondary mt30 pull-left'}
                                                                 onClick={this.resetRateGridData}
                                                             >Cancel</button> */}
-                                                        </>
-                                                        :
-                                                        <button
-                                                            type="button"
-                                                            className={'user-btn mt30 pull-left'}
-                                                            onClick={this.rateTableHandler}>
-                                                            <div className={'plus'}></div>ADD</button>}
+                                  </>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className={"user-btn mt30 pull-left"}
+                                    onClick={this.rateTableHandler}
+                                  >
+                                    <div className={"plus"}></div>ADD
+                                  </button>
+                                )}
+                              </div>
+                            </Col>
+                            <Col md="12">
+                              <Table className="table" size="sm">
+                                <thead>
+                                  <tr>
+                                    <th>{`State`}</th>
+                                    <th>{`Rate (INR)`}</th>
+                                    <th>{`Effective From`}</th>
+                                    <th>{`Action`}</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {this.state.rateGrid &&
+                                    this.state.rateGrid.map((item, index) => {
+                                      return (
+                                        <tr key={index}>
+                                          <td>{item.StateLabel}</td>
+                                          <td>{item.Rate}</td>
+                                          {/* <td>{item.effectiveDate}</td> */}
+                                          <td>
+                                            {moment(item.effectiveDate).format(
+                                              "DD/MM/YYYY"
+                                            )}
+                                          </td>
+                                          <td>
+                                            <button
+                                              className="Edit mr-2"
+                                              type={"button"}
+                                              onClick={() =>
+                                                this.editItemDetails(index)
+                                              }
+                                            />
+                                            <button
+                                              className="Delete"
+                                              type={"button"}
+                                              onClick={() =>
+                                                this.deleteItem(index)
+                                              }
+                                            />
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                </tbody>
+                              </Table>
+                              {this.state.rateGrid.length === 0 && (
+                                <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                              )}
+                            </Col>
+                          </Row>
 
-                                                </div>
-                                            </Col>
-                                            <Col md="12">
-                                                <Table className="table" size="sm" >
-                                                    <thead>
-                                                        <tr>
-                                                            <th>{`State`}</th>
-                                                            <th>{`Rate (INR)`}</th>
-                                                            <th>{`Effective From`}</th>
-                                                            <th>{`Action`}</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody >
-                                                        {
-                                                            this.state.rateGrid &&
-                                                            this.state.rateGrid.map((item, index) => {
-                                                                return (
-                                                                    <tr key={index}>
-                                                                        <td>{item.StateLabel}</td>
-                                                                        <td>{item.Rate}</td>
-                                                                        {/* <td>{item.effectiveDate}</td> */}
-                                                                        <td>{moment(item.effectiveDate).format('DD/MM/YYYY')}</td>
-                                                                        <td>
-                                                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                                                        </td>
-                                                                    </tr>
-                                                                )
-                                                            })
-                                                        }
-                                                    </tbody>
-                                                    {this.state.rateGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                                                </Table>
-                                            </Col>
-                                        </Row>
-
-                                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-12 text-right bluefooter-butn">
-                                                <button
-                                                    type={'button'}
-                                                    className="reset mr15 cancel-btn"
-                                                    onClick={this.cancel} >
-                                                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="submit-button mr5 save-btn" >
-                                                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                                    {isEditFlag ? 'Update' : 'Save'}
-                                                </button>
-                                            </div>
-                                        </Row>
-
-                                    </form>
+                          <Row className="sf-btn-footer no-gutters justify-content-between">
+                            <div className="col-sm-12 text-right bluefooter-butn">
+                              <button
+                                type={"button"}
+                                className="reset mr15 cancel-btn"
+                                onClick={this.cancel}
+                              >
+                                <div className={"cross-icon"}>
+                                  <img
+                                    src={require("../../../assests/images/times.png")}
+                                    alt="cancel-icon.jpg"
+                                  />
+                                </div>{" "}
+                                {"Cancel"}
+                              </button>
+                              <button
+                                type="submit"
+                                className="submit-button mr5 save-btn"
+                              >
+                                <div className={"check-icon"}>
+                                  <img
+                                    src={require("../../../assests/images/check.png")}
+                                    alt="check-icon.jpg"
+                                  />{" "}
                                 </div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
                             </div>
-                        </div>
+                          </Row>
+                        </form>
+                      </div>
                     </div>
+                  </div>
                 </div>
+              </div>
 
-                {isOpenFuelDrawer && <AddFuelNameDrawer
-                    isOpen={isOpenFuelDrawer}
-                    closeDrawer={this.closeFuelDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
-            </>
+              {isOpenFuelDrawer && (
+                <AddFuelNameDrawer
+                  isOpen={isOpenFuelDrawer}
+                  closeDrawer={this.closeFuelDrawer}
+                  isEditFlag={false}
+                  ID={""}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }

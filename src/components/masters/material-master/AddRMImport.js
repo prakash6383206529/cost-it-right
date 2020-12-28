@@ -761,16 +761,15 @@ class AddRMImport extends Component {
 
         return (
             <>
+            <div className="container-fluid">
                 <div>
                     <div className="login-container signup-form">
                         <div className="row">
                             <div className="col-md-12">
                                 <div className="shadow-lgg login-formg">
-                                    <div className="row mt15">
+                                    <div className="row">
                                         <div className="col-md-6">
-                                            <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Raw Material Import Details` : `Add Raw Material Import Details`}</h2>
-                                            </div>
+                                            <h2>{isEditFlag ? `Update Raw Material Import Details` : `Add Raw Material Import Details`}</h2>
                                         </div>
                                     </div>
                                     <form
@@ -1296,6 +1295,7 @@ class AddRMImport extends Component {
                         anchor={'right'}
                     />
                 }
+                </div>
             </>
         );
     }

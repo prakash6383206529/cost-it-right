@@ -181,112 +181,141 @@ class AddProcessDrawer extends Component {
     render() {
         const { handleSubmit, isEditFlag, isMachineShow, } = this.props;
         return (
-            <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <Container>
-                        <div className={'drawer-wrapper'}>
-                            <form
-                                noValidate
-                                className="form"
-                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                            >
-                                <Row className="drawer-heading">
-                                    <Col>
-                                        <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Process' : 'Add Process'}</h3>
-                                        </div>
-                                        <div
-                                            onClick={(e) => this.toggleDrawer(e)}
-                                            className={'close-button right'}>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row className="pl-3">
-
-                                    <Col md="12">
-                                        <Field
-                                            label={`Process Name`}
-                                            name={"ProcessName"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            onBlur={this.checkProcessCode}
-                                            required={true}
-                                            className=" "
-                                            customClassName=" withBorder"
-                                            disabled={isEditFlag ? true : false}
-                                        />
-                                    </Col>
-                                    <Col md="12">
-                                        <Field
-                                            label={`Process Code`}
-                                            name={"ProcessCode"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            className=" "
-                                            customClassName=" withBorder"
-                                            disabled={isEditFlag ? true : false}
-                                        />
-                                    </Col>
-                                    <Col md="12">
-                                        <Field
-                                            label="Plant"
-                                            name="Plant"
-                                            placeholder="--Select--"
-                                            selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
-                                            options={this.renderListing('plant')}
-                                            selectionChanged={this.handlePlants}
-                                            optionValue={option => option.Value}
-                                            optionLabel={option => option.Text}
-                                            component={renderMultiSelectField}
-                                            mendatory={true}
-                                            className="multiselect-with-border"
-                                            disabled={false}
-                                        />
-                                    </Col>
-                                    {isMachineShow && <Col md="12">
-                                        <Field
-                                            label="Machine"
-                                            name="Machine"
-                                            placeholder="--Select--"
-                                            selection={(this.state.selectedMachine == null || this.state.selectedMachine.length === 0) ? [] : this.state.selectedMachine}
-                                            options={this.renderListing('machine')}
-                                            selectionChanged={this.handleMachine}
-                                            optionValue={option => option.Value}
-                                            optionLabel={option => option.Text}
-                                            component={renderMultiSelectField}
-                                            mendatory={true}
-                                            className="multiselect-with-border"
-                                            disabled={false}
-                                        />
-                                    </Col>}
-
-                                </Row>
-                            </form>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button
-                                        type={'button'}
-                                        className="reset mr15 cancel-btn"
-                                        onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="submit-button mr5 save-btn" >
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                        {isEditFlag ? 'Update' : 'Save'}
-                                    </button>
-                                </div>
-                            </Row>
+          <div>
+            <Drawer
+              anchor={this.props.anchor}
+              open={this.props.isOpen}
+              onClose={(e) => this.toggleDrawer(e)}
+            >
+              <Container>
+                <div className={"drawer-wrapper"}>
+                  <form
+                    noValidate
+                    className="form"
+                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  >
+                    <Row className="drawer-heading">
+                      <Col>
+                        <div className={"header-wrapper left"}>
+                          <h3>
+                            {isEditFlag ? "Update Process" : "Add Process"}
+                          </h3>
                         </div>
-                    </Container>
-                </Drawer>
-            </div>
+                        <div
+                          onClick={(e) => this.toggleDrawer(e)}
+                          className={"close-button right"}
+                        ></div>
+                      </Col>
+                    </Row>
+                    <Row className="pl-3">
+                      <Col md="12">
+                        <Field
+                          label={`Process Name`}
+                          name={"ProcessName"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required]}
+                          component={renderText}
+                          onBlur={this.checkProcessCode}
+                          required={true}
+                          className=" "
+                          customClassName=" withBorder"
+                          disabled={isEditFlag ? true : false}
+                        />
+                      </Col>
+                      <Col md="12">
+                        <Field
+                          label={`Process Code`}
+                          name={"ProcessCode"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required]}
+                          component={renderText}
+                          required={true}
+                          className=" "
+                          customClassName=" withBorder"
+                          disabled={isEditFlag ? true : false}
+                        />
+                      </Col>
+                      <Col md="12" className="mb-3">
+                        <Field
+                          label="Plant"
+                          name="Plant"
+                          placeholder="--Select--"
+                          selection={
+                            this.state.selectedPlants == null ||
+                            this.state.selectedPlants.length === 0
+                              ? []
+                              : this.state.selectedPlants
+                          }
+                          options={this.renderListing("plant")}
+                          selectionChanged={this.handlePlants}
+                          optionValue={(option) => option.Value}
+                          optionLabel={(option) => option.Text}
+                          component={renderMultiSelectField}
+                          mendatory={true}
+                          className="multiselect-with-border"
+                          disabled={false}
+                        />
+                      </Col>
+                      {isMachineShow && (
+                        <Col md="12" className="mb-3">
+                          <Field
+                            label="Machine"
+                            name="Machine"
+                            placeholder="--Select--"
+                            selection={
+                              this.state.selectedMachine == null ||
+                              this.state.selectedMachine.length === 0
+                                ? []
+                                : this.state.selectedMachine
+                            }
+                            options={this.renderListing("machine")}
+                            selectionChanged={this.handleMachine}
+                            optionValue={(option) => option.Value}
+                            optionLabel={(option) => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                            disabled={false}
+                          />
+                        </Col>
+                      )}
+                    </Row>
+                  </form>
+                  <Row className="sf-btn-footer no-gutters justify-content-between">
+                    <div className="col-sm-12 text-right bluefooter-butn">
+                      <button
+                        type={"button"}
+                        className="reset mr15 cancel-btn"
+                        onClick={this.cancel}
+                      >
+                        <div className={"cross-icon"}>
+                          <img
+                            src={require("../../../assests/images/times.png")}
+                            alt="cancel-icon.jpg"
+                          />
+                        </div>{" "}
+                        {"Cancel"}
+                      </button>
+                      <button
+                        type="submit"
+                        className="submit-button mr5 save-btn"
+                      >
+                        <div className={"check-icon"}>
+                          <img
+                            src={require("../../../assests/images/check.png")}
+                            alt="check-icon.jpg"
+                          />{" "}
+                        </div>
+                        {isEditFlag ? "Update" : "Save"}
+                      </button>
+                    </div>
+                  </Row>
+                </div>
+              </Container>
+            </Drawer>
+          </div>
         );
     }
 }

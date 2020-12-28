@@ -936,20 +936,19 @@ class AddRMDomestic extends Component {
 
     return (
       <>
+      <div className="container-fluid">
         <div>
           <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">
                 <div className="shadow-lgg login-formg">
                   <div className="row">
-                    <div className="col-md-6 mt-15">
-                      <div className="form-heading">
-                        <h2>
-                          {isEditFlag
-                            ? `Update Raw Material Domestic Details`
-                            : `Add Raw Material Domestic Details`}
-                        </h2>
-                      </div>
+                    <div className="col-md-6">
+                      <h1>
+                        {isEditFlag
+                          ? `Update Raw Material Domestic Details`
+                          : `Add Raw Material Domestic Details`}
+                      </h1>
                     </div>
                   </div>
                   <form
@@ -1579,6 +1578,7 @@ class AddRMDomestic extends Component {
             //modelData={}
           />
         )}
+        </div>
       </>
     )
   }

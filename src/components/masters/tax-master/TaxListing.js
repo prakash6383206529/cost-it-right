@@ -178,58 +178,89 @@ class TaxListing extends Component {
             paginationSize: 5,
         };
         return (
-            < >
-                {/* {this.props.loading && <Loader />} */}
-                <Row>
-                    <Col md={12}>
-                        <h3>{`Tax Details`}</h3>
-                    </Col>
-                    <hr />
-                    {AddAccessibility &&
-                        <Col md={12} className='text-right mb15'>
-                            <button
-                                type={'button'}
-                                className={'user-btn'}
-                                onClick={this.openModel}>
-                                <div className={'plus'}></div>{`ADD`}</button>
-                        </Col>}
-                </Row>
+          <>
+            <div className="container-fluid">
+              {/* {this.props.loading && <Loader />} */}
+              <Row>
+                <Col md={12}>
+                  <h1>{`Tax Details`}</h1>
+                </Col>
+                <Col md={12}>
+                  <hr className="mt-0"        />
+                </Col>
 
-
-                <Row>
-                    <Col>
-                        <BootstrapTable
-                            data={this.state.tableData}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            // exportCSV
-                            //ignoreSinglePage
-                            ref={'table'}
-                            trClassName={'userlisting-row'}
-                            tableHeaderClass='my-custom-class'
-                            pagination>
-                            <TableHeaderColumn dataField="TaxName" dataAlign="center" dataSort={true}>Tax Name</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
-                            <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-                        </BootstrapTable>
-                    </Col>
-                </Row>
-                {isOpen && (
-                    <AddTaxDetails
-                        isOpen={isOpen}
-                        closeDrawer={this.closeDrawer}
-                        isEditFlag={isEditFlag}
-                        ID={this.state.ID}
-                        anchor={'right'}
-                    />
+                {AddAccessibility && (
+                  <Col md={12} className="text-right mb15">
+                    <button
+                      type={"button"}
+                      className={"user-btn"}
+                      onClick={this.openModel}
+                    >
+                      <div className={"plus"}></div>
+                      {`ADD`}
+                    </button>
+                  </Col>
                 )}
-            </ >
+              </Row>
+              <Row>
+                <Col>
+                  <BootstrapTable
+                    data={this.state.tableData}
+                    striped={false}
+                    hover={false}
+                    bordered={false}
+                    options={options}
+                    search
+                    // exportCSV
+                    //ignoreSinglePage
+                    ref={"table"}
+                    trClassName={"userlisting-row"}
+                    tableHeaderClass="my-custom-class"
+                    pagination
+                  >
+                    <TableHeaderColumn
+                      dataField="TaxName"
+                      dataAlign="center"
+                      dataSort={true}
+                    >
+                      Tax Name
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="Country" dataSort={true}>
+                      Country
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="Rate" dataSort={true}>
+                      Rate (%)
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="EffectiveDate"
+                      columnTitle={true}
+                      dataAlign="center"
+                      dataFormat={this.effectiveDateFormatter}
+                    >
+                      {"Effective Date"}
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="TaxDetailId"
+                      export={false}
+                      isKey={true}
+                      dataFormat={this.buttonFormatter}
+                    >
+                      Actions
+                    </TableHeaderColumn>
+                  </BootstrapTable>
+                </Col>
+              </Row>
+              {isOpen && (
+                <AddTaxDetails
+                  isOpen={isOpen}
+                  closeDrawer={this.closeDrawer}
+                  isEditFlag={isEditFlag}
+                  ID={this.state.ID}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }

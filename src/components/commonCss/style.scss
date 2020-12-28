@@ -739,10 +739,11 @@ button.add-btn {
 }
 
 .left-border {
-  border-left: 3px solid #d62c8c;
+  border-left: 2px solid #d62c8c;
   padding: 5px;
   margin-bottom: 15px;
   color: #3D4465;
+  padding-left: 15px;
 }
 .table.cr-brdr-main thead th{color:#3D4465;}
 .withBorder input.form-control {
@@ -1520,10 +1521,10 @@ $roboto: "Roboto", sans-serif;
 }
 .MuiDrawer-root.MuiDrawer-modal {
 	.MuiBackdrop-root {
-		max-height: calc(100vh - 47px);
+		max-height: 100vh;
 	}
 	.MuiDrawer-paper {
-		max-height: calc(100vh - 47px);
+		max-height: 100vh;
 	}
 }
 body {
@@ -1836,6 +1837,7 @@ html {
 	}
 }
 .css-b8ldur-Input {
+  margin: 0 !important;
 	width: 100% !important;
 	>div {
 		width: 100% !important;
@@ -1944,6 +1946,7 @@ html {
 .w-180{
   min-width: 180px;
 }
+.cross-icon, .check-icon{margin-top: -3px;}
 // ============issues fixing =============
 
 @media(max-width:1367px){

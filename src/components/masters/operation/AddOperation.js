@@ -494,7 +494,7 @@ class AddOperation extends Component {
         const { handleSubmit, } = this.props;
         const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
         return (
-            <div>
+            <div className="container-fluid">
                 {/* {isLoader && <Loader />} */}
                 <div className="login-container signup-form">
                     <div className="row">
@@ -502,9 +502,7 @@ class AddOperation extends Component {
                             <div className="shadow-lgg login-formg">
                                 <div className="row">
                                     <div className="col-md-6">
-                                        <div className="form-heading mb-0">
-                                            <h2>{this.state.isEditFlag ? 'Update Operation' : 'Add Operation'}</h2>
-                                        </div>
+                                        <h2>{this.state.isEditFlag ? 'Update Operation' : 'Add Operation'}</h2>
                                     </div>
                                 </div>
                                 <form

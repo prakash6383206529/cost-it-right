@@ -182,7 +182,7 @@ class AddExchangeRate extends Component {
         const { handleSubmit, } = this.props;
         const { isEditFlag, } = this.state;
         return (
-            <div>
+            <div className="container-fluid">
                 {/* {isLoader && <Loader />} */}
                 <div className="login-container signup-form">
                     <div className="row">
@@ -191,7 +191,7 @@ class AddExchangeRate extends Component {
                                 <div className="row">
                                     <div className="col-md-6">
                                         <div className="form-heading mb-0">
-                                            <h2>{isEditFlag ? 'Update Exchange Rate' : 'Add Exchange Rate'}</h2>
+                                            <h1>{isEditFlag ? 'Update Exchange Rate' : 'Add Exchange Rate'}</h1>
                                         </div>
                                     </div>
                                 </div>

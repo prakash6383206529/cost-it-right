@@ -776,6 +776,7 @@ class AddMachineRate extends Component {
 
         return (
             <>
+                <div className="container-fluid">
                 {/* {(loading || isLoader) && <Loader />} */}
                 <div>
                     <div className="login-container signup-form">
@@ -784,9 +785,7 @@ class AddMachineRate extends Component {
                                 <div className="shadow-lgg login-formg">
                                     <div className="row">
                                         <div className="col-md-6">
-                                            <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Machine` : `Add Machine`}</h2>
-                                            </div>
+                                            <h2>{isEditFlag ? `Update Machine` : `Add Machine`}</h2>
                                         </div>
                                     </div>
                                     <form
@@ -1244,6 +1243,7 @@ class AddMachineRate extends Component {
                     ID={''}
                     anchor={'right'}
                 />}
+                </div>
             </>
         );
     }

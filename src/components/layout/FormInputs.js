@@ -1,7 +1,7 @@
 import React from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import "./formInputs.css";
 
 /*
@@ -22,7 +22,6 @@ export function renderLoginTextInputField(field) {
         <input
           maxLength={field.mxlength}
           {...others}
-
           type="email"
           className={`form-control`}
           {...input}
@@ -71,10 +70,11 @@ export function renderLoginPasswordInputField(field) {
   const {
     input,
     meta: { touched, error },
-    label
+    label,
   } = field;
-  const InputClassName = `form-control ${field.className ? field.className : ""
-    }`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+  }`;
   return (
     <div className="input-form-group">
       <label>{label}</label>
@@ -102,7 +102,9 @@ export function renderLoginPasswordInputField(field) {
 */
 export function renderCheckboxInputField(field) {
   const { input, ...others } = field;
-  const InputClassName = `d-flex align-items-center ${field.className ? field.className : ""}`;
+  const InputClassName = `d-flex align-items-center ${
+    field.className ? field.className : ""
+  }`;
   return (
     <div className={InputClassName}>
       <input
@@ -158,14 +160,18 @@ export function renderCheckboxInputFieldWithValidation(field) {
 export function renderPasswordInputField(field) {
   const {
     input,
-    meta: { touched, error, active }
+    meta: { touched, error, active },
   } = field;
   const inputbox = `inputbox input-group ${active ? "active" : ""}`;
-  const className = `form-group ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const className = `form-group ${
+    field.customClassName ? field.customClassName : ""
+  } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+  }`;
   const placeholder = field.placeholder ? field.placeholder : "";
-  const isPwdVisible = field.isShowHide === true ? 'text' : 'password';
-  const eyeIcon = field.isShowHide === true ? 'fa-eye' : 'fa-eye-slash';
+  const isPwdVisible = field.isShowHide === true ? "text" : "password";
+  const eyeIcon = field.isShowHide === true ? "fa-eye" : "fa-eye-slash";
   return (
     <div className={className}>
       <label>
@@ -173,8 +179,8 @@ export function renderPasswordInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={inputbox}>
         <input
@@ -182,30 +188,37 @@ export function renderPasswordInputField(field) {
           type={isPwdVisible}
           className={InputClassName}
           {...input}
-          id={'password'}
+          id={"password"}
           placeholder={placeholder}
         />
-        {field.isEyeIcon === true &&
-          <div className={`input-group-prepend ${field.isShowHide === true ? 'hide' : 'show'}`}>
-            <span onClick={field.showHide} className="input-group-text bg-white">
+        {field.isEyeIcon === true && (
+          <div
+            className={`input-group-prepend ${
+              field.isShowHide === true ? "hide" : "show"
+            }`}
+          >
+            <span
+              onClick={field.showHide}
+              className="input-group-text bg-white"
+            >
               <i className={`fas ${eyeIcon}`} />
             </span>
-          </div>}
+          </div>
+        )}
 
-        {field.isEyeIcon === false &&
+        {field.isEyeIcon === false && (
           <div className="input-group-prepend">
             <span className="input-group-text bg-white">
               <i className="fas fa-lock" />
             </span>
           </div>
-        }
+        )}
 
-        {field.isVarificationForm === true &&
+        {field.isVarificationForm === true && (
           <div className="input-group-prepend">
             <span className="input-group-text bg-white"></span>
           </div>
-        }
-
+        )}
       </div>
       <div className="text-help">{touched ? error : ""}</div>
     </div>
@@ -217,11 +230,16 @@ export function renderPasswordInputField(field) {
 @desc: Render multi select input
 */
 export function renderMultiSelectField(field) {
-  const { isTouched, meta: { touched, error, active } } = field;
+  const {
+    isTouched,
+    meta: { touched, error, active },
+  } = field;
   //const inputbox = `inputbox ${active ? "active" : ""}`;
   const inputbox = ` ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `basic-multi-select ${field.className ? field.className : ""}`;
+  const InputClassName = `basic-multi-select ${
+    field.className ? field.className : ""
+  }`;
   const optionValue = field.optionValue;
   const optionLabel = field.optionLabel;
   const placeholder = field.placeholder ? field.placeholder : "";
@@ -229,7 +247,11 @@ export function renderMultiSelectField(field) {
     <div className={className}>
       <label>
         {field.label}
-        {field.mendatory && field.mendatory === true ? (<span className="asterisk-required">*</span>) : ("")}
+        {field.mendatory && field.mendatory === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+          ""
+        )}
       </label>
       <div className={inputbox} onClick={field.onTouched}>
         <Select
@@ -244,14 +266,13 @@ export function renderMultiSelectField(field) {
           closeMenuOnSelect="false"
           onChange={field.selectionChanged}
           placeholder={placeholder}
-
         />
       </div>
       <div className="text-help">
         {touched &&
-          field.mendatory &&
-          field.selection &&
-          field.selection.length === 0
+        field.mendatory &&
+        field.selection &&
+        field.selection.length === 0
           ? "This field is required."
           : ""}
         {/* <div className="text-help">{field.isEmpty ? 'This field is required.' : ""}</div> */}
@@ -272,10 +293,13 @@ export function renderEmailInputField(field) {
     ...others
   } = field;
   const disabled = isDisabled === true ? true : false;
-  const inputbox = `inputbox input-group ${active ? "active" : ""}`;
-  const className = `form-group ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${disabled ? "disabled-control " : " "
-    } ${field.className ? field.className : ""}`;
+  const inputbox = `border-0 inputbox input-group ${active ? "active" : ""}`;
+  const className = `form-group ${
+    field.customClassName ? field.customClassName : ""
+  } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${
+    disabled ? "disabled-control " : " "
+  } ${field.className ? field.className : ""}`;
   return (
     <div className={className}>
       <label>
@@ -284,8 +308,8 @@ export function renderEmailInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={disabled ? `${inputbox} disabledEmail ` : inputbox}>
         <input
@@ -302,7 +326,7 @@ export function renderEmailInputField(field) {
           <span
             className={`input-group-text bg-white ${disabled ? "bg-gray" : ""}`}
           >
-            <i className="fas fa-envelope" />
+            <i className="fa fa-envelope" />
           </span>
         </div>
       </div>
@@ -325,8 +349,9 @@ export function renderTextInputField(field) {
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
-  const InputClassName = `form-control ${field.className ? field.className : ""
-    }`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+  }`;
   return (
     <div className={`${className} ${inputStyle}`}>
       <label>
@@ -335,8 +360,8 @@ export function renderTextInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={inputbox}>
         <input
@@ -364,11 +389,17 @@ export function renderTextInputField(field) {
 @desc: Render select input
 */
 export function renderSelectField(field) {
-  const { disabled, meta: { touched, error, active } } = field;
+  const {
+    disabled,
+    meta: { touched, error, active },
+  } = field;
   const inputbox = ` ${active ? "active" : ""}`;
-  const className = `form-group inputbox ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${field.className ? field.className : ""
-    }`;
+  const className = `form-group inputbox ${
+    touched && error ? "has-danger" : ""
+  }`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+  }`;
   let optionKey = field.optionValue;
   let optionText = field.optionLabel;
   const disabledSelect = disabled ? true : false;
@@ -379,15 +410,17 @@ export function renderSelectField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={inputbox}>
-        <select disabled={disabledSelect} className={InputClassName} {...field.input}>
-          {field.isSelect === false &&
-            <option value="">Select</option>
-          }
-          {field.options.map(data => {
+        <select
+          disabled={disabledSelect}
+          className={InputClassName}
+          {...field.input}
+        >
+          {field.isSelect === false && <option value="">Select</option>}
+          {field.options.map((data) => {
             return (
               <option key={data[optionKey]} value={data[optionKey]}>
                 {data[optionText]}
@@ -406,19 +439,28 @@ export function renderSelectField(field) {
 @desc: Render number input
 */
 export function renderNumberInputField(field) {
-  const { input, disabled, meta: { touched, error }, ...others } = field;
-  const customClassName = `${field.customClassName ? field.customClassName : ""}`;
-  const InputClassName = `form-control ${field.customClassName ? field.customClassName : ""} ${field.className ? field.className : ""}`;
+  const {
+    input,
+    disabled,
+    meta: { touched, error },
+    ...others
+  } = field;
+  const customClassName = `${
+    field.customClassName ? field.customClassName : ""
+  }`;
+  const InputClassName = `form-control ${
+    field.customClassName ? field.customClassName : ""
+  } ${field.className ? field.className : ""}`;
   const disabledLabel = disabled ? true : false;
   return (
-    <div className={`form-group inputbox ${customClassName}`} >
+    <div className={`form-group inputbox ${customClassName}`}>
       <label>
         {field.label}
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className="input-group">
         <input
@@ -446,8 +488,12 @@ export function renderNumberInputField(field) {
 @desc: Render textarea input
 */
 export function renderTextAreaField(field) {
-  console.log('field: ', field);
-  const { input, disabled, meta: { touched, error } } = field;
+  console.log("field: ", field);
+  const {
+    input,
+    disabled,
+    meta: { touched, error },
+  } = field;
   const customClass = `${field.customClassName ? field.customClassName : ""}`;
   const disabledLabel = disabled ? true : false;
   const placeholder = field.placeholder ? field.placeholder : "";
@@ -455,7 +501,11 @@ export function renderTextAreaField(field) {
     <div className={`form-group ${customClass}`}>
       <label>
         {field.label}
-        {field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+          ""
+        )}
       </label>
       <div className="inputbox ">
         <textarea
@@ -477,11 +527,11 @@ export function renderTextAreaField(field) {
 @method: focusOnError
 @desc: focus on the error input
 */
-export const focusOnError = errors => {
+export const focusOnError = (errors) => {
   if (typeof errors !== "undefined" && errors !== null) {
     const errorEl = document.querySelector(
       Object.keys(errors)
-        .map(fieldName => {
+        .map((fieldName) => {
           return `[name="${fieldName}"]`;
         })
         .join(",")
@@ -513,15 +563,27 @@ export const focusOnError = errors => {
  ********************************/
 
 export function renderText(field) {
-  const { input, meta: { touched, error }, ...others } = field;
-  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const {
+    input,
+    meta: { touched, error },
+    ...others
+  } = field;
+  const className = `form-group inputbox ${
+    field.customClassName ? field.customClassName : ""
+  } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${
+    field.className ? field.className : ""
+  }`;
   return (
     <div className={className}>
       <label>
         {field.label}
         {field.value}
-        {field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+          ""
+        )}{" "}
       </label>
       <input
         maxLength={field.maxLength}
@@ -536,27 +598,40 @@ export function renderText(field) {
 }
 
 export function InputHiddenField(field) {
-  const { input, meta: { touched, error }, ...others } = field;
+  const {
+    input,
+    meta: { touched, error },
+    ...others
+  } = field;
   return (
     <div>
-      <input
-        {...input}
-        {...others}
-      />
+      <input {...input} {...others} />
     </div>
   );
 }
 
 export function renderDatePicker(field) {
-  const { input, placeholder, defaultValue, meta: { touched, error } } = field;
+  const {
+    input,
+    placeholder,
+    defaultValue,
+    meta: { touched, error },
+  } = field;
   return (
-    <div className={'react-picker-box'}>
-      <label>{field.label}{(field.required && field.required === true) ? <span className="asterisk-required">*</span> : ''} </label>
+    <div className={"react-picker-box"}>
+      <label>
+        {field.label}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+          ""
+        )}{" "}
+      </label>
       <DatePicker
         {...input}
         dateFormat="MM/dd/yyyy"
         placeholderText={placeholder}
-        //maxDate={new Date()} 
+        //maxDate={new Date()}
         minDate={new Date()}
         showMonthDropdown
         showYearDropdown
@@ -564,27 +639,41 @@ export function renderDatePicker(field) {
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}
         className={field.className}
-        onSelect={field.changeHandler ? (date) => field.changeHandler(date) : null}
+        onSelect={
+          field.changeHandler ? (date) => field.changeHandler(date) : null
+        }
         autoComplete={field.autoComplete}
         disabledKeyboardNavigation
         onChangeRaw={(e) => e.preventDefault()}
       />
       {touched ? <div className="text-help mb-2">{error}</div> : ""}
     </div>
-  )
+  );
 }
 
 export function renderDatePickerOneDayAgo(field) {
-  const { input, placeholder, defaultValue, meta: { touched, error } } = field;
+  const {
+    input,
+    placeholder,
+    defaultValue,
+    meta: { touched, error },
+  } = field;
   const d = new Date();
   return (
     <div>
-      <label>{field.label}{(field.required && field.required === true) ? <span className="asterisk-required">*</span> : ''} </label>
+      <label>
+        {field.label}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+          ""
+        )}{" "}
+      </label>
       <DatePicker
         {...input}
         dateFormat="MM/dd/yyyy"
         placeholderText={placeholder}
-        //maxDate={new Date()} 
+        //maxDate={new Date()}
         minDate={d.setDate(d.getDate() + 1)}
         showMonthDropdown
         showYearDropdown
@@ -595,17 +684,38 @@ export function renderDatePickerOneDayAgo(field) {
       />
       <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
-  )
+  );
 }
 
-export const searchableSelect = ({ input, label, required, disabled, handleChangeDescription, valueDescription, options,
-  placeholder, isClearable, meta: { touched, error, dirty, visited }, multi, className }) => {
+export const searchableSelect = ({
+  input,
+  label,
+  required,
+  disabled,
+  handleChangeDescription,
+  valueDescription,
+  options,
+  placeholder,
+  isClearable,
+  meta: { touched, error, dirty, visited },
+  multi,
+  className,
+}) => {
   const { name, value, onBlur, onChange, onFocus } = input;
-  let isDisable = (disabled && disabled === true) ? true : false;
+  let isDisable = disabled && disabled === true ? true : false;
   //let isClear = (isClearable === undefined) ? true : false;
   return (
     <div className="w-100">
-      {label && <label>{label}{(required === true) ? <span className="asterisk-required">*</span> : ''}</label>}
+      {label && (
+        <label>
+          {label}
+          {required === true ? (
+            <span className="asterisk-required">*</span>
+          ) : (
+            ""
+          )}
+        </label>
+      )}
       <Select
         isClearable={false}
         options={options}
@@ -614,36 +724,65 @@ export const searchableSelect = ({ input, label, required, disabled, handleChang
         value={valueDescription}
         isDisabled={isDisable}
         placeholder={placeholder}
-        className={'searchable'}
+        className={"searchable"}
       />
       <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
-  )
-}
+  );
+};
 
-export const RFReactSelect = ({ input, labelKey, label, mendatory, disabled, isLoading, valueKey, options, onChangeHsn, onMaterialChange, rowIndex, selType, meta: { touched, error }, multi, className }) => {
+export const RFReactSelect = ({
+  input,
+  labelKey,
+  label,
+  mendatory,
+  disabled,
+  isLoading,
+  valueKey,
+  options,
+  onChangeHsn,
+  onMaterialChange,
+  rowIndex,
+  selType,
+  meta: { touched, error },
+  multi,
+  className,
+}) => {
   const { name, value, required, onBlur, onChange, onFocus } = input;
   const transformedValue = transformValue(value, options, multi, valueKey);
-  let isDisable = (disabled && disabled === true) ? true : false;
-  let loader = (isLoading && isLoading === true) ? true : false;
+  let isDisable = disabled && disabled === true ? true : false;
+  let loader = isLoading && isLoading === true ? true : false;
   return (
     <div>
-      {label && <label>{label}{mendatory && <span className="asterisk-required">*</span>}</label>}
+      {label && (
+        <label>
+          {label}
+          {mendatory && <span className="asterisk-required">*</span>}
+        </label>
+      )}
       <Select
-        placeholder={'Select'}
+        placeholder={"Select"}
         valueKey={valueKey}
         labelKey={labelKey}
         name={name}
         required={required}
         value={transformedValue}
         disabled={isDisable}
-        matchProp={'any'}
+        matchProp={"any"}
         multi={multi}
         isLoading={loader}
         options={options}
-        onChange={multi
-          ? multiChangeHandler(onChange, valueKey)
-          : singleChangeHandler(onChange, onChangeHsn, onMaterialChange, rowIndex, valueKey, selType)
+        onChange={
+          multi
+            ? multiChangeHandler(onChange, valueKey)
+            : singleChangeHandler(
+                onChange,
+                onChangeHsn,
+                onMaterialChange,
+                rowIndex,
+                valueKey,
+                selType
+              )
         }
         onBlur={() => onBlur(value)}
         onFocus={onFocus}
@@ -651,13 +790,13 @@ export const RFReactSelect = ({ input, labelKey, label, mendatory, disabled, isL
       />
       {touched && error}
     </div>
-  )
-}
+  );
+};
 
 RFReactSelect.defaultProps = {
   multi: false,
-  className: ""
-}
+  className: "",
+};
 
 RFReactSelect.propTypes = {
   input: PropTypes.shape({
@@ -669,54 +808,56 @@ RFReactSelect.propTypes = {
   }).isRequired,
   options: PropTypes.array.isRequired,
   multi: PropTypes.bool,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
-
 /**
-* onChange from Redux Form Field has to be called explicity.
-*/
-function singleChangeHandler(func, getHsnDetail, onMaterialChange, rowIndex, key, type) {
+ * onChange from Redux Form Field has to be called explicity.
+ */
+function singleChangeHandler(
+  func,
+  getHsnDetail,
+  onMaterialChange,
+  rowIndex,
+  key,
+  type
+) {
   return function handleSingleChange(value) {
-    func(value ? value[key] : '');
+    func(value ? value[key] : "");
 
     if (onMaterialChange !== undefined) {
-
       setTimeout(function () {
-        onMaterialChange(value ? value : '', rowIndex);
-      }, 1000)
-
+        onMaterialChange(value ? value : "", rowIndex);
+      }, 1000);
     }
 
     if (getHsnDetail !== undefined) {
       if (type !== undefined) {
         setTimeout(function () {
-          getHsnDetail(value ? value[key] : '', rowIndex, type);
-        }, 1000)
+          getHsnDetail(value ? value[key] : "", rowIndex, type);
+        }, 1000);
       } else {
-        getHsnDetail(value ? value[key] : '');
+        getHsnDetail(value ? value[key] : "");
       }
     }
   };
 }
 
 /**
-* onBlur from Redux Form Field has to be called explicity.
-*/
+ * onBlur from Redux Form Field has to be called explicity.
+ */
 function multiChangeHandler(func, key) {
   return function handleMultiHandler(values) {
-    func(values.map(value => value[key]));
+    func(values.map((value) => value[key]));
   };
 }
 
 function transformValue(value, options, multi, key) {
-  if (multi && typeof value === 'string') return []
+  if (multi && typeof value === "string") return [];
 
-  const filteredOptions = options.filter(option => {
-    return multi
-      ? value.indexOf(option[key]) !== -1
-      : option[key] === value
+  const filteredOptions = options.filter((option) => {
+    return multi ? value.indexOf(option[key]) !== -1 : option[key] === value;
   });
 
-  return multi ? filteredOptions : filteredOptions[0]
+  return multi ? filteredOptions : filteredOptions[0];
 }

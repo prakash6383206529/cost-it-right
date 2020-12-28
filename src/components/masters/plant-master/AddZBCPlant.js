@@ -263,208 +263,241 @@ class AddZBCPlant extends Component {
         const { handleSubmit, isEditFlag } = this.props;
         const { country } = this.state;
         return (
-            <>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <Container >
-                        <div className={'drawer-wrapper drawer-700px'}>
-                            <form
-                                noValidate
-                                className="form"
-                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                            >
-                                <Row className="drawer-heading">
-                                    <Col>
-                                        <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update ZBC Plant' : 'Add ZBC Plant'}</h3>
-                                        </div>
-                                        <div
-                                            onClick={(e) => this.toggleDrawer(e)}
-                                            className={'close-button right'}>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="6">
-                                        <Field
-                                            label={`Plant Name`}
-                                            name={"PlantName"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                        />
-                                    </Col>
-                                    <Col md="6">
-                                        <Field
-                                            label={`Plant Code`}
-                                            name={"PlantCode"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            disabled={isEditFlag ? true : false}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="6">
-                                        <Row>
-                                            <Col className="Phone phoneNumber" md="8">
-                                                <Field
-                                                    label="Phone Number"
-                                                    name={"PhoneNumber"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required, number]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    maxLength={12}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                            <Col className="Ext phoneNumber" md="4">
-                                                <Field
-                                                    label="Ex."
-                                                    name={"Extension"}
-                                                    type="text"
-                                                    placeholder={''}
-                                                    validate={[required]}
-                                                    component={renderText}
-                                                    required={true}
-                                                    maxLength={3}
-                                                    className=""
-                                                    customClassName={'withBorder'}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </Col>
-                                    <Col md="6">
-                                        <Field
-                                            label="Address 1"
-                                            name={"AddressLine1"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            maxLength={26}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="6">
-                                        <Field
-                                            label="Address 2"
-                                            name={"AddressLine2"}
-                                            type="text"
-                                            placeholder={''}
-                                            //validate={[required]}
-                                            component={renderText}
-                                            //required={true}
-                                            maxLength={26}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                        />
-                                    </Col>
-                                    <Col md="6">
-                                        <Field
-                                            name="CountryId"
-                                            type="text"
-                                            label="Country"
-                                            component={searchableSelect}
-                                            placeholder={'Select Country'}
-                                            options={this.selectType('country')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.countryHandler}
-                                            valueDescription={this.state.country}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    {(country.length === 0 || country.label === 'India') &&
-                                        <Col md="6">
-                                            <Field
-                                                name="StateId"
-                                                type="text"
-                                                label="State"
-                                                component={searchableSelect}
-                                                placeholder={'Select State'}
-                                                options={this.selectType('state')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.stateHandler}
-                                                valueDescription={this.state.state}
-                                            />
-                                        </Col>}
-                                    <Col md="6">
-                                        <Field
-                                            name="CityId"
-                                            type="text"
-                                            label="City"
-                                            component={searchableSelect}
-                                            placeholder={'Select City'}
-                                            options={this.selectType('city')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.cityHandler}
-                                            valueDescription={this.state.city}
-                                        />
-                                    </Col>
-                                </Row>
-
-                                <Row>
-                                    <Col md="6">
-                                        <Field
-                                            label="ZipCode"
-                                            name={"ZipCode"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required, number, maxLength6]}
-                                            component={renderText}
-                                            required={true}
-                                            //maxLength={6}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                        />
-                                    </Col>
-                                </Row>
-
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
-                                        <button
-                                            type={'button'}
-                                            className="reset mr15 cancel-btn"
-                                            onClick={this.cancel} >
-                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="submit-button mr5 save-btn" >
-                                            <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
-                                            </div> {isEditFlag ? 'Update' : 'Save'}
-                                        </button>
-                                    </div>
-                                </Row>
-                            </form>
+          <>
+            <Drawer
+              anchor={this.props.anchor}
+              open={this.props.isOpen}
+              onClose={(e) => this.toggleDrawer(e)}
+            >
+              <Container>
+                <div className={"drawer-wrapper drawer-700px"}>
+                  <form
+                    noValidate
+                    className="form"
+                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  >
+                    <Row className="drawer-heading">
+                      <Col>
+                        <div className={"header-wrapper left"}>
+                          <h3>
+                            {isEditFlag ? "Update ZBC Plant" : "Add ZBC Plant"}
+                          </h3>
                         </div>
-                    </Container>
-                </Drawer>
+                        <div
+                          onClick={(e) => this.toggleDrawer(e)}
+                          className={"close-button right"}
+                        ></div>
+                      </Col>
+                    </Row>
+                    <Row className="pl-3">
+                      <Col md="6">
+                        <Field
+                          label={`Plant Name`}
+                          name={"PlantName"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required]}
+                          component={renderText}
+                          required={true}
+                          className=""
+                          customClassName={"withBorder"}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <Field
+                          label={`Plant Code`}
+                          name={"PlantCode"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required]}
+                          component={renderText}
+                          required={true}
+                          className=""
+                          customClassName={"withBorder"}
+                          disabled={isEditFlag ? true : false}
+                        />
+                      </Col>
+                    </Row>
+                    <Row className="pl-3">
+                      <Col md="6">
+                        <Row>
+                          <Col className="Phone phoneNumber" md="8">
+                            <Field
+                              label="Phone Number"
+                              name={"PhoneNumber"}
+                              type="text"
+                              placeholder={""}
+                              validate={[required, number]}
+                              component={renderText}
+                              required={true}
+                              maxLength={12}
+                              className=""
+                              customClassName={"withBorder"}
+                            />
+                          </Col>
+                          <Col className="Ext phoneNumber pr-0" md="4">
+                            <Field
+                              label="Ex."
+                              name={"Extension"}
+                              type="text"
+                              placeholder={""}
+                              validate={[required]}
+                              component={renderText}
+                              required={true}
+                              maxLength={3}
+                              className=""
+                              customClassName={"withBorder"}
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col md="6">
+                        <Field
+                          label="Address 1"
+                          name={"AddressLine1"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required]}
+                          component={renderText}
+                          required={true}
+                          maxLength={26}
+                          className=""
+                          customClassName={"withBorder"}
+                        />
+                      </Col>
+                    </Row>
+                    <Row className="pl-3">
+                      <Col md="6">
+                        <Field
+                          label="Address 2"
+                          name={"AddressLine2"}
+                          type="text"
+                          placeholder={""}
+                          //validate={[required]}
+                          component={renderText}
+                          //required={true}
+                          maxLength={26}
+                          className=""
+                          customClassName={"withBorder"}
+                        />
+                      </Col>
+                      <Col md="6">
+                        <Field
+                          name="CountryId"
+                          type="text"
+                          label="Country"
+                          component={searchableSelect}
+                          placeholder={"Select Country"}
+                          options={this.selectType("country")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          validate={
+                            this.state.country == null ||
+                            this.state.country.length === 0
+                              ? [required]
+                              : []
+                          }
+                          required={true}
+                          handleChangeDescription={this.countryHandler}
+                          valueDescription={this.state.country}
+                        />
+                      </Col>
+                    </Row>
+                    <Row className="pl-3">
+                      {(country.length === 0 || country.label === "India") && (
+                        <Col md="6">
+                          <Field
+                            name="StateId"
+                            type="text"
+                            label="State"
+                            component={searchableSelect}
+                            placeholder={"Select State"}
+                            options={this.selectType("state")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.state == null ||
+                              this.state.state.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.stateHandler}
+                            valueDescription={this.state.state}
+                          />
+                        </Col>
+                      )}
+                      <Col md="6">
+                        <Field
+                          name="CityId"
+                          type="text"
+                          label="City"
+                          component={searchableSelect}
+                          placeholder={"Select City"}
+                          options={this.selectType("city")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          validate={
+                            this.state.city == null ||
+                            this.state.city.length === 0
+                              ? [required]
+                              : []
+                          }
+                          required={true}
+                          handleChangeDescription={this.cityHandler}
+                          valueDescription={this.state.city}
+                        />
+                      </Col>
+                    </Row>
 
+                    <Row className="pl-3">
+                      <Col md="6">
+                        <Field
+                          label="ZipCode"
+                          name={"ZipCode"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required, number, maxLength6]}
+                          component={renderText}
+                          required={true}
+                          //maxLength={6}
+                          className=""
+                          customClassName={"withBorder"}
+                        />
+                      </Col>
+                    </Row>
 
-            </>
+                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                      <div className="col-sm-12 text-right bluefooter-butn">
+                        <button
+                          type={"button"}
+                          className="reset mr15 cancel-btn"
+                          onClick={this.cancel}
+                        >
+                          <div className={"cross-icon"}>
+                            <img
+                              src={require("../../../assests/images/times.png")}
+                              alt="cancel-icon.jpg"
+                            />
+                          </div>{" "}
+                          {"Cancel"}
+                        </button>
+                        <button
+                          type="submit"
+                          className="submit-button mr5 save-btn"
+                        >
+                          <div className={"check-icon"}>
+                            <img
+                              src={require("../../../assests/images/check.png")}
+                              alt="check-icon.jpg"
+                            />
+                          </div>{" "}
+                          {isEditFlag ? "Update" : "Save"}
+                        </button>
+                      </div>
+                    </Row>
+                  </form>
+                </div>
+              </Container>
+            </Drawer>
+          </>
         );
     }
 }

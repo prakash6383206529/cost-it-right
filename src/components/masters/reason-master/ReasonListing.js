@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Col, } from 'reactstrap';
+import $ from "jquery";
 import { focusOnError, } from "../../layout/FormInputs";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -194,6 +195,7 @@ class ReasonListing extends Component {
     }
 
     formToggle = () => {
+        $("html,body").animate({ scrollTop: 0 }, "slow");
         this.setState({ isOpenDrawer: true })
     }
 
@@ -214,31 +216,41 @@ class ReasonListing extends Component {
     render() {
         const { isEditFlag, isOpenDrawer, AddAccessibility, } = this.state;
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
-            <>
+          <>
+            <div className="container-fluid p-0">
                 {/* {this.props.loading && <Loader />} */}
                 <Col md="12" className="search-user-block">
-                    <div class="col-sm-4"><h3>Reason</h3></div>
-                    <hr />
-                    <div className="d-flex justify-content-end bd-highlight w100 mb15">
-                        <div>
-                            {AddAccessibility && <button
-                                type="button"
-                                className={'user-btn'}
-                                onClick={this.formToggle}>
-                                <div className={'plus'}></div>ADD REASON</button>}
-                        </div>
+                <h1>Reason</h1>
+                <hr />
+                <div className="d-flex justify-content-end bd-highlight w100 mb15">
+                    <div>
+                    {AddAccessibility && (
+                        <button
+                        type="button"
+                        className={"user-btn"}
+                        onClick={this.formToggle}
+                        >
+                        <div className={"plus"}></div>ADD REASON
+                        </button>
+                    )}
                     </div>
+                </div>
                 </Col>
+                <Col md="12">
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
@@ -248,23 +260,50 @@ class ReasonListing extends Component {
                     search
                     // exportCSV
                     //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
+                    ref={"table"}
+                    trClassName={"userlisting-row"}
+                    tableHeaderClass="my-custom-header"
+                    pagination
+                >
                     {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="Reason" dataAlign="center" dataSort={true}>Reason</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="ReasonId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn
+                    dataField="Reason"
+                    dataAlign="center"
+                    dataSort={true}
+                    >
+                    Reason
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                    dataField="IsActive"
+                    dataAlign="center"
+                    export={false}
+                    dataFormat={this.statusButtonFormatter}
+                    >
+                    Status
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                    className="action"
+                    dataField="ReasonId"
+                    dataAlign="center"
+                    export={false}
+                    isKey={true}
+                    dataFormat={this.buttonFormatter}
+                    >
+                    Actions
+                    </TableHeaderColumn>
                 </BootstrapTable>
-                {isOpenDrawer && <AddReason
+                {isOpenDrawer && (
+                    <AddReason
                     isOpen={isOpenDrawer}
                     closeDrawer={this.closeVendorDrawer}
                     isEditFlag={isEditFlag}
                     ID={this.state.ID}
-                    anchor={'right'}
-                />}
-            </ >
+                    anchor={"right"}
+                    />
+                )}
+                </Col>
+            </div>
+          </>
         );
     }
 }

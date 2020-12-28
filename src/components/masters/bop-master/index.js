@@ -125,60 +125,79 @@ class BOPMaster extends Component {
         }
 
         return (
-            <>
-                {/* {this.props.loading && <Loader/>} */}
-                <Row>
-                    <Col sm="4">
-                        <h3>{`BOP Master`}</h3>
-                    </Col>
-                </Row>
+          <>
+            <div className="container-fluid">
+              {/* {this.props.loading && <Loader/>} */}
+              <Row>
+                <Col sm="4">
+                  <h1>{`BOP Master`}</h1>
+                </Col>
+              </Row>
 
-                <Row>
-                    <Col>
-                        <Nav tabs className="subtabs">
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                    Manage BOP (Domestic)
-                                </NavLink>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                    Manage BOP (Import)
-                                </NavLink>
-                            </NavItem>
-                        </Nav>
+              <Row>
+                <Col>
+                  <Nav tabs className="subtabs mt-0">
+                    <NavItem>
+                      <NavLink
+                        className={classnames({
+                          active: this.state.activeTab === "1",
+                        })}
+                        onClick={() => {
+                          this.toggle("1");
+                        }}
+                      >
+                        Manage BOP (Domestic)
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({
+                          active: this.state.activeTab === "2",
+                        })}
+                        onClick={() => {
+                          this.toggle("2");
+                        }}
+                      >
+                        Manage BOP (Import)
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
 
-                        <TabContent activeTab={this.state.activeTab}>
+                  <TabContent activeTab={this.state.activeTab}>
+                    {this.state.activeTab == 1 && (
+                      <TabPane tabId="1">
+                        <BOPDomesticListing
+                          displayForm={this.displayDomesticForm}
+                          getDetails={this.getDetails}
+                          AddAccessibility={this.state.AddAccessibility}
+                          EditAccessibility={this.state.EditAccessibility}
+                          DeleteAccessibility={this.state.DeleteAccessibility}
+                          BulkUploadAccessibility={
+                            this.state.BulkUploadAccessibility
+                          }
+                        />
+                      </TabPane>
+                    )}
 
-                            {this.state.activeTab == 1 &&
-                                <TabPane tabId="1">
-                                    <BOPDomesticListing
-                                        displayForm={this.displayDomesticForm}
-                                        getDetails={this.getDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                    />
-                                </TabPane>}
-
-                            {this.state.activeTab == 2 &&
-                                <TabPane tabId="2">
-                                    <BOPImportListing
-                                        displayForm={this.displayImportForm}
-                                        getDetails={this.getImportDetails}
-                                        AddAccessibility={this.state.AddAccessibility}
-                                        EditAccessibility={this.state.EditAccessibility}
-                                        DeleteAccessibility={this.state.DeleteAccessibility}
-                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                    />
-                                </TabPane>}
-                        </TabContent>
-
-                    </Col>
-                </Row>
-
-            </ >
+                    {this.state.activeTab == 2 && (
+                      <TabPane tabId="2">
+                        <BOPImportListing
+                          displayForm={this.displayImportForm}
+                          getDetails={this.getImportDetails}
+                          AddAccessibility={this.state.AddAccessibility}
+                          EditAccessibility={this.state.EditAccessibility}
+                          DeleteAccessibility={this.state.DeleteAccessibility}
+                          BulkUploadAccessibility={
+                            this.state.BulkUploadAccessibility
+                          }
+                        />
+                      </TabPane>
+                    )}
+                  </TabContent>
+                </Col>
+              </Row>
+            </div>
+          </>
         );
     }
 }

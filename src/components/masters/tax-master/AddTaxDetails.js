@@ -178,114 +178,139 @@ class AddTaxDetails extends Component {
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
         return (
-            <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                <Container>
-                    <div className={'drawer-wrapper'}>
-                        <form
-                            noValidate
-                            className="form"
-                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                        >
-                            <Row className="drawer-heading">
-                                <Col>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? 'UPDATE TAX DETAILS' : 'ADD TAX DETAILS'}</h3>
-                                    </div>
-                                    <div
-                                        onClick={(e) => this.toggleDrawer(e)}
-                                        className={'close-button right'}>
-                                    </div>
-                                </Col>
-                            </Row>
+          <Drawer
+            anchor={this.props.anchor}
+            open={this.props.isOpen}
+            onClose={(e) => this.toggleDrawer(e)}
+          >
+            <Container>
+              <div className={"drawer-wrapper"}>
+                <form
+                  noValidate
+                  className="form"
+                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                >
+                  <Row className="drawer-heading">
+                    <Col>
+                      <div className={"header-wrapper left"}>
+                        <h3>
+                          {isEditFlag
+                            ? "UPDATE TAX DETAILS"
+                            : "ADD TAX DETAILS"}
+                        </h3>
+                      </div>
+                      <div
+                        onClick={(e) => this.toggleDrawer(e)}
+                        className={"close-button right"}
+                      ></div>
+                    </Col>
+                  </Row>
 
-                            <Row>
-                                <div className="input-group form-group col-md-12 input-withouticon" >
-                                    <Field
-                                        label="Tax Name"
-                                        name={"TaxName"}
-                                        type="text"
-                                        placeholder={'Enter'}
-                                        validate={[required,]}
-                                        component={renderText}
-                                        required={true}
-                                        customClassName={'withBorder'}
-                                    />
-                                </div>
-                                <div className="col-md-12 form-group" >
-                                    <Field
-                                        name="CountryId"
-                                        type="text"
-                                        label="Country"
-                                        component={searchableSelect}
-                                        placeholder={'--Select Country--'}
-                                        options={this.renderListing('country')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.countryHandler}
-                                        valueDescription={this.state.country}
-                                    />
-                                </div>
-                                <div className="input-group form-group col-md-12 input-withouticon" >
-                                    <Field
-                                        label="Rate (%)"
-                                        name={"Rate"}
-                                        type="text"
-                                        placeholder={'Enter'}
-                                        validate={[required, number]}
-                                        component={renderText}
-                                        required={true}
-                                        customClassName={'withBorder'}
-                                    />
-                                </div>
-                                <div className="input-group form-group col-md-12 input-withouticon" >
-                                    <div className="form-group">
-                                        <label>
-                                            Effective Date
-                                                        {/* <span className="asterisk-required">*</span> */}
-                                        </label>
-                                        <div className="inputbox date-section">
-                                            <DatePicker
-                                                name="EffectiveDate"
-                                                selected={this.state.effectiveDate}
-                                                onChange={this.handleEffectiveDateChange}
-                                                showMonthDropdown
-                                                showYearDropdown
-                                                dateFormat="dd/MM/yyyy"
-                                                //maxDate={new Date()}
-                                                dropdownMode="select"
-                                                placeholderText="Select date"
-                                                className="withBorder"
-                                                autoComplete={'off'}
-                                                disabledKeyboardNavigation
-                                                onChangeRaw={(e) => e.preventDefault()}
-                                                disabled={false}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </Row>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button
-                                        type={'button'}
-                                        className="reset mr15 cancel-btn"
-                                        onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="submit-button mr5 save-btn">
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                        {isEditFlag ? 'Update' : 'Save'}
-                                    </button>
-                                </div>
-                            </Row>
-                        </form>
+                  <Row className="pl-3">
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <Field
+                        label="Tax Name"
+                        name={"TaxName"}
+                        type="text"
+                        placeholder={"Enter"}
+                        validate={[required]}
+                        component={renderText}
+                        required={true}
+                        customClassName={"withBorder"}
+                      />
                     </div>
-                </Container>
-            </Drawer>
+                    <div className="col-md-12 form-group">
+                      <Field
+                        name="CountryId"
+                        type="text"
+                        label="Country"
+                        component={searchableSelect}
+                        placeholder={"--Select Country--"}
+                        options={this.renderListing("country")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.country == null ||
+                          this.state.country.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.countryHandler}
+                        valueDescription={this.state.country}
+                      />
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <Field
+                        label="Rate (%)"
+                        name={"Rate"}
+                        type="text"
+                        placeholder={"Enter"}
+                        validate={[required, number]}
+                        component={renderText}
+                        required={true}
+                        customClassName={"withBorder"}
+                      />
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <div className="form-group">
+                        <label>
+                          Effective Date
+                          {/* <span className="asterisk-required">*</span> */}
+                        </label>
+                        <div className="inputbox date-section">
+                          <DatePicker
+                            name="EffectiveDate"
+                            selected={this.state.effectiveDate}
+                            onChange={this.handleEffectiveDateChange}
+                            showMonthDropdown
+                            showYearDropdown
+                            dateFormat="dd/MM/yyyy"
+                            //maxDate={new Date()}
+                            dropdownMode="select"
+                            placeholderText="Select date"
+                            className="withBorder"
+                            autoComplete={"off"}
+                            disabledKeyboardNavigation
+                            onChangeRaw={(e) => e.preventDefault()}
+                            disabled={false}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </Row>
+                </form>
+                <Row className="sf-btn-footer no-gutters justify-content-between">
+                  <div className="col-sm-12 text-right bluefooter-butn">
+                    <button
+                      type={"button"}
+                      className="reset mr15 cancel-btn"
+                      onClick={this.cancel}
+                    >
+                      <div className={"cross-icon"}>
+                        <img
+                          src={require("../../../assests/images/times.png")}
+                          alt="cancel-icon.jpg"
+                        />
+                      </div>{" "}
+                      {"Cancel"}
+                    </button>
+                    <button
+                      type="submit"
+                      className="submit-button mr-3 save-btn"
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                      {isEditFlag ? "Update" : "Save"}
+                    </button>
+                  </div>
+                </Row>
+              </div>
+            </Container>
+          </Drawer>
         );
     }
 }

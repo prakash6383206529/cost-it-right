@@ -82,62 +82,78 @@ class AddFuelNameDrawer extends Component {
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
         return (
-            <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                <Container>
-                    <div className={'drawer-wrapper'}>
-                        <form
-                            noValidate
-                            className="form"
-                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                        >
-                            <Row className="drawer-heading">
-                                <Col>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? 'UPDATE FUEL' : 'ADD FUEL'}</h3>
-                                    </div>
-                                    <div
-                                        onClick={(e) => this.toggleDrawer(e)}
-                                        className={'close-button right'}>
-                                    </div>
-                                </Col>
-                            </Row>
+          <Drawer
+            anchor={this.props.anchor}
+            open={this.props.isOpen}
+            onClose={(e) => this.toggleDrawer(e)}
+          >
+            <Container>
+              <div className={"drawer-wrapper"}>
+                <form
+                  noValidate
+                  className="form"
+                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                >
+                  <Row className="drawer-heading">
+                    <Col>
+                      <div className={"header-wrapper left"}>
+                        <h3>{isEditFlag ? "UPDATE FUEL" : "ADD FUEL"}</h3>
+                      </div>
+                      <div
+                        onClick={(e) => this.toggleDrawer(e)}
+                        className={"close-button right"}
+                      ></div>
+                    </Col>
+                  </Row>
 
-                            <Row>
-                                <div className="input-group form-group col-md-12 input-withouticon" >
-                                    <Field
-                                        label="Fuel Name"
-                                        name={"FuelName"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[required]}
-                                        component={renderText}
-                                        required={true}
-                                        maxLength={26}
-                                        customClassName={'withBorder'}
-                                    />
-                                </div>
-
-                            </Row>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button
-                                        type={'button'}
-                                        className="reset mr15 cancel-btn"
-                                        onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="submit-button mr5 save-btn" >
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                        {isEditFlag ? 'Update' : 'Save'}
-                                    </button>
-                                </div>
-                            </Row>
-                        </form>
+                  <Row className="pl-3">
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <Field
+                        label="Fuel Name"
+                        name={"FuelName"}
+                        type="text"
+                        placeholder={""}
+                        validate={[required]}
+                        component={renderText}
+                        required={true}
+                        maxLength={26}
+                        customClassName={"withBorder"}
+                      />
                     </div>
-                </Container>
-            </Drawer>
+                  </Row>
+                </form>
+                <Row className="sf-btn-footer no-gutters justify-content-between">
+                  <div className="col-sm-12 text-right bluefooter-butn">
+                    <button
+                      type={"button"}
+                      className="reset mr15 cancel-btn"
+                      onClick={this.cancel}
+                    >
+                      <div className={"cross-icon"}>
+                        <img
+                          src={require("../../../assests/images/times.png")}
+                          alt="cancel-icon.jpg"
+                        />
+                      </div>{" "}
+                      {"Cancel"}
+                    </button>
+                    <button
+                      type="submit"
+                      className="submit-button mr-3 save-btn"
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                      {isEditFlag ? "Update" : "Save"}
+                    </button>
+                  </div>
+                </Row>
+              </div>
+            </Container>
+          </Drawer>
         );
     }
 }
