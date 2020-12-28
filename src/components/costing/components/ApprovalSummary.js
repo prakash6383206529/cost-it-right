@@ -11,6 +11,9 @@ import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from './CostingSummaryTable'
 function ApprovalSummary(props) {
   const tokenNo = props.token ? props.token : '2345438'
+  const approvalProcessId = props.approvalProcessId
+    ? props.approvalProcessId
+    : '1'
   const loggedInUser = loggedInUserId()
   const dispatch = useDispatch()
   const [approveDrawer, setApproveDrawer] = useState(false)
@@ -27,14 +30,14 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
     dispatch(
-      getApprovalSummary(tokenNo, loggedInUser, (res) => {
+      getApprovalSummary(tokenNo, approvalProcessId, loggedInUser, (res) => {
         console.log(res.data.Data, 'Data for summary')
         const {
           PartDetails,
           CostingSummary,
           ApprovalDetails,
           ApprovalLevelStep,
-        } = res.data.Data
+        } = res.data.Data.Costings[0] //Need to ask how data will come
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails)
         setApprovalLevelStep(ApprovalLevelStep)

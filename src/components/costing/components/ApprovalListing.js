@@ -152,16 +152,22 @@ function ApprovalListing() {
   const linkableFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <Fragment>
-        <div onClick={() => viewDetails(row.ApprovalNumber)} className={'link'}>
+        <div
+          onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
+          className={'link'}
+        >
           {cell}
         </div>
       </Fragment>
     )
   }
 
-  const viewDetails = (approvalNumber) => {
+  const viewDetails = (approvalNumber, approvalProcessId) => {
     return (
-      <ApprovalSummary token={approvalNumber ? approvalNumber : '2345438'} /> //TODO list
+      <ApprovalSummary
+        token={approvalNumber ? approvalNumber : '2345438'}
+        approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
+      /> //TODO list
     )
   }
   /**
