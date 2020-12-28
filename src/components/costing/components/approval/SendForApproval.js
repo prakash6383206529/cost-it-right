@@ -10,21 +10,21 @@ import {
   SearchableSelectHookForm,
   TextFieldHookForm,
   TextAreaHookForm,
-} from '../../layout/HookFormInputs'
+} from '../../../layout/HookFormInputs'
 import {
   getReasonSelectList,
   getAllApprovalDepartment,
   getAllApprovalUserByDepartment,
   getAllApprovalUserFilterByDepartment,
   sendForApprovalBySender,
-} from '../actions/Approval'
-import { userDetails } from '../../../helper/auth'
+} from '../../actions/Approval'
+import { userDetails } from '../../../../helper/auth'
 import {
   setCostingApprovalData,
   setCostingViewData,
   storePartNumber,
-} from '../actions/Costing'
-import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
+} from '../../actions/Costing'
+import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 import 'react-datepicker/dist/react-datepicker.css'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -46,10 +46,9 @@ const SendForApproval = (props) => {
   const viewApprovalData = useSelector(
     (state) => state.costing.costingApprovalData,
   )
-  console.log(viewApprovalData, 'Approval data')
 
   const partNo = useSelector((state) => state.costing.partNo)
-  console.log(partNo, 'part')
+
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
   const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
@@ -67,7 +66,6 @@ const SendForApproval = (props) => {
    * @description Used show listing of unit of measurement
    */
   const renderDropdownListing = (label) => {
-    console.log(label, 'Label')
     const tempDropdownList = []
 
     if (label === 'Reason') {
@@ -116,10 +114,8 @@ const SendForApproval = (props) => {
             TechnologyId: partNo.technologyId,
           },
           (res) => {
-            console.log(res, 'response')
             res.data.DataList &&
               res.data.DataList.map((item) => {
-                console.log(item, 'Item')
                 //if (item.Value === '0') return false;
                 tempDropdownList.push({
                   label: item.Text,
@@ -180,7 +176,7 @@ const SendForApproval = (props) => {
     let month = date.getMonth()
     let year = ''
     let sequence = SEQUENCE_OF_MONTH[month]
-    console.log('sequence: ', sequence)
+
     if (month <= 2) {
       year = `${date.getFullYear() - 1}-${date.getFullYear()}`
     } else {
@@ -220,7 +216,7 @@ const SendForApproval = (props) => {
             temp.variance != ''
               ? (budgetedRemQty - actualRemQty) * parseInt(temp.variance)
               : ''
-          console.log(temp, 'temp')
+
           viewDataTemp[index] = temp
           dispatch(setCostingApprovalData(viewDataTemp))
         }
@@ -234,7 +230,6 @@ const SendForApproval = (props) => {
    * @description This method is called on the submission of the form for send for approval
    */
   const onSubmit = (data) => {
-    console.log('data: ', data)
     let count = 0
     viewApprovalData.map((item) => {
       if (item.effectiveDate == '') {
@@ -260,7 +255,7 @@ const SendForApproval = (props) => {
     }
     let temp = []
     let tempObj = {}
-    console.log(viewApprovalData, 'Approval dta')
+
     viewApprovalData.map((data) => {
       tempObj.TypeOfCosting = data.typeOfCosting
       tempObj.PlantId =
@@ -307,7 +302,7 @@ const SendForApproval = (props) => {
       tempObj.IsFinalApproved = false
       temp.push(tempObj)
     })
-    console.log(temp, 'Temp')
+
     obj.CostingsList = temp
     console.log('obj: ', obj)
 
@@ -317,13 +312,11 @@ const SendForApproval = (props) => {
         history.push('/costing')
         dispatch(setCostingApprovalData([]))
         dispatch(setCostingViewData([]))
-        console.log(res, 'Response from send for approval')
       }),
     )
   }
 
   const handleApproverChange = (data) => {
-    console.log(data, 'Dta')
     setSelectedApprover(data.value)
     setSelectedApproverLevelId(data.levelId)
   }
@@ -575,7 +568,7 @@ const SendForApproval = (props) => {
                 >
                   <div className={'cross-icon'}>
                     <img
-                      src={require('../../../assests/images/times.png')}
+                      src={require('../../../../assests/images/times.png')}
                       alt="cancel-icon.jpg"
                     />
                   </div>{' '}
@@ -590,7 +583,7 @@ const SendForApproval = (props) => {
                 >
                   <div className={'check-icon'}>
                     <img
-                      src={require('../../../assests/images/check.png')}
+                      src={require('../../../../assests/images/check.png')}
                       alt="check-icon.jpg"
                     />{' '}
                   </div>

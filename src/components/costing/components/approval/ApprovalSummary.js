@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Container, Row, Col, Table } from 'reactstrap'
-import { formViewData, loggedInUserId } from '../../../helper'
-import { CONSTANT } from '../../../helper/AllConastant'
-import NoContentFound from '../../common/NoContentFound'
-import { getApprovalSummary } from '../actions/Approval'
-import { setCostingViewData } from '../actions/Costing'
+import { formViewData, loggedInUserId } from '../../../../helper'
+import { CONSTANT } from '../../../../helper/AllConastant'
+import NoContentFound from '../../../common/NoContentFound'
+import { getApprovalSummary } from '../../actions/Approval'
+import { setCostingViewData } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
-import CostingSummaryTable from './CostingSummaryTable'
+import CostingSummaryTable from '../CostingSummaryTable'
 function ApprovalSummary(props) {
   const tokenNo = props.token ? props.token : '2345438'
+  const approvalProcessId = props.approvalProcessId
+    ? props.approvalProcessId
+    : '1'
   const loggedInUser = loggedInUserId()
   const dispatch = useDispatch()
   const [approveDrawer, setApproveDrawer] = useState(false)
@@ -27,14 +30,14 @@ function ApprovalSummary(props) {
 
   useEffect(() => {
     dispatch(
-      getApprovalSummary(tokenNo, loggedInUser, (res) => {
+      getApprovalSummary(tokenNo, approvalProcessId, loggedInUser, (res) => {
         console.log(res.data.Data, 'Data for summary')
         const {
           PartDetails,
           CostingSummary,
           ApprovalDetails,
           ApprovalLevelStep,
-        } = res.data.Data
+        } = res.data.Data.Costings[0] //Need to ask how data will come
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails)
         setApprovalLevelStep(ApprovalLevelStep)
@@ -331,7 +334,7 @@ function ApprovalSummary(props) {
           >
             <div className={'cross-icon'}>
               <img
-                src={require('../../../assests/images/times.png')}
+                src={require('../../../../assests/images/times.png')}
                 alt="cancel-icon.jpg"
               />
             </div>{' '}
@@ -345,7 +348,7 @@ function ApprovalSummary(props) {
           >
             <div className={'check-icon'}>
               <img
-                src={require('../../../assests/images/check.png')}
+                src={require('../../../../assests/images/check.png')}
                 alt="check-icon.jpg"
               />{' '}
             </div>

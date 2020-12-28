@@ -39,7 +39,7 @@ function CostingSummary() {
 
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
-  console.log(technology, 'tech')
+
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false)
   const [part, setPart] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
@@ -58,7 +58,7 @@ function CostingSummary() {
     (state) => state.costing.technologySelectList,
   )
   const partSelectList = useSelector((state) => state.costing.partSelectList)
-  console.log(partSelectList, 'Part select list')
+
   const partInfo = useSelector((state) => state.costing.partInfo)
   const viewCostingData = useSelector(
     (state) => state.costing.viewCostingDetailData,
@@ -97,7 +97,6 @@ function CostingSummary() {
    * @description  USED TO HANDLE TECHNOLOGY CHANGE
    */
   const handleTechnologyChange = (newValue) => {
-    console.log(newValue, 'Technology change')
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => {}))
@@ -167,7 +166,6 @@ function CostingSummary() {
                             getSingleCostingDetails(
                               res.data.Data.CostingId,
                               (res) => {
-                                console.log('res: ', res)
                                 // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
                                 if (res.data.Data) {
                                   let dataFromAPI = res.data.Data

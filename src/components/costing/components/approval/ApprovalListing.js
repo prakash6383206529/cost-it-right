@@ -1,20 +1,20 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
+import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
-import { getApprovalList } from '../actions/Approval'
-import { loggedInUserId } from '../../../helper'
+import { getApprovalList } from '../../actions/Approval'
+import { loggedInUserId } from '../../../../helper/auth'
 import { Badge } from 'reactstrap'
 import { values } from 'lodash'
 import ApprovalSummary from './ApprovalSummary'
 import {
   getAllPartSelectList,
   getCostingStatusSelectList,
-} from '../actions/Costing'
-import NoContentFound from '../../common/NoContentFound'
-import { CONSTANT } from '../../../helper/AllConastant'
+} from '../../actions/Costing'
+import NoContentFound from '../../../common/NoContentFound'
+import { CONSTANT } from '../../../../helper/AllConastant'
 
 function ApprovalListing() {
   const loggedUser = loggedInUserId()
@@ -152,16 +152,22 @@ function ApprovalListing() {
   const linkableFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <Fragment>
-        <div onClick={() => viewDetails(row.ApprovalNumber)} className={'link'}>
+        <div
+          onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)}
+          className={'link'}
+        >
           {cell}
         </div>
       </Fragment>
     )
   }
 
-  const viewDetails = (approvalNumber) => {
+  const viewDetails = (approvalNumber, approvalProcessId) => {
     return (
-      <ApprovalSummary token={approvalNumber ? approvalNumber : '2345438'} /> //TODO list
+      <ApprovalSummary
+        token={approvalNumber ? approvalNumber : '2345438'}
+        approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
+      /> //TODO list
     )
   }
   /**

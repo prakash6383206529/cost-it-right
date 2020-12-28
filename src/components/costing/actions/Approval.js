@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'
 import {
   API,
   API_REQUEST,
@@ -10,10 +10,10 @@ import {
   GET_ALL_REASON_SELECTLIST,
   GET_APPROVAL_LIST,
   config,
-  GET_APPROVAL_SUMMARY
-} from '../../../config/constants';
-import { apiErrors } from '../../../helper/util';
-import { MESSAGES } from '../../../config/message';
+  GET_APPROVAL_SUMMARY,
+} from '../../../config/constants'
+import { apiErrors } from '../../../helper/util'
+import { MESSAGES } from '../../../config/message'
 import { toastr } from 'react-redux-toastr'
 
 const headers = config
@@ -22,7 +22,6 @@ const headers = config
 //   //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
 // };
 
-
 /**
  * @method getSendForApproval
  * @description get SEND FOR APPROVAL DATA BY COSTING ID
@@ -30,23 +29,25 @@ const headers = config
 export function getSendForApprovalByCostingId(CostingId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSendForApproval}/${CostingId}`, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_SEND_FOR_APPROVAL_SUCCESS,
-          payload: response.data.Data,
-        });
-        callback(response);
-      } else {
-        toastr.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
+    const request = axios.get(`${API.getSendForApproval}/${CostingId}`, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_SEND_FOR_APPROVAL_SUCCESS,
+            payload: response.data.Data,
+          })
+          callback(response)
+        } else {
+          toastr.error(MESSAGES.SOME_ERROR)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        callback(error)
+        apiErrors(error)
+      })
+  }
 }
 
 /**
@@ -56,25 +57,26 @@ export function getSendForApprovalByCostingId(CostingId, callback) {
 export function getAllApprovalDepartment(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getAllApprovalDepartment}`, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ALL_APPROVAL_DEPARTMENT,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      } else {
-        toastr.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
+    const request = axios.get(`${API.getAllApprovalDepartment}`, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_ALL_APPROVAL_DEPARTMENT,
+            payload: response.data.SelectList,
+          })
+          callback(response)
+        } else {
+          toastr.error(MESSAGES.SOME_ERROR)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        callback(error)
+        apiErrors(error)
+      })
+  }
 }
-
 
 /**
  * @method getAllApprovalUserByDepartment
@@ -82,27 +84,33 @@ export function getAllApprovalDepartment(callback) {
  */
 export function getAllApprovalUserByDepartment(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.getAllApprovalUserByDepartment, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
-          payload: response.data.DataList
-        });
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(
+      API.getAllApprovalUserByDepartment,
+      data,
+      headers,
+    )
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
+            payload: response.data.DataList,
+          })
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({
-        type: API_FAILURE
-      });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({
+          type: API_FAILURE,
+        })
+        apiErrors(error)
+      })
+  }
 }
 
 /**
@@ -110,31 +118,36 @@ export function getAllApprovalUserByDepartment(data, callback) {
  * @description GET ALL APPROVAL USERS FILTER BY DEPARTMENT
  */
 export function getAllApprovalUserFilterByDepartment(data, callback) {
- 
   return (dispatch) => {
-    const request = axios.post(`${API.getAllApprovalUserFilterByDepartment}`, data, headers);
-  
-    request.then((response) => {
-      console.log(response,"Get response for user by dep");
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
-          payload: response.data.DataList
-        });
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(
+      `${API.getAllApprovalUserFilterByDepartment}`,
+      data,
+      headers,
+    )
+
+    request
+      .then((response) => {
+        console.log(response, 'Get response for user by dep')
+        if (response.data.Result) {
+          dispatch({
+            type: GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
+            payload: response.data.DataList,
+          })
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({
-        type: API_FAILURE
-      });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({
+          type: API_FAILURE,
+        })
+        apiErrors(error)
+      })
+  }
 }
 
 /**
@@ -143,21 +156,23 @@ export function getAllApprovalUserFilterByDepartment(data, callback) {
  */
 export function sendForApproval(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.sendForApproval, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(API.sendForApproval, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
 }
 
 /**
@@ -166,21 +181,23 @@ export function sendForApproval(data, callback) {
  */
 export function approvalProcess(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.approvalProcess, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(API.approvalProcess, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
 }
 
 /**
@@ -189,23 +206,24 @@ export function approvalProcess(data, callback) {
  */
 export function finalApprovalProcess(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.finalApprovalProcess, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(API.finalApprovalProcess, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
 }
-
 
 /**
  * @method getSendForApproval
@@ -214,23 +232,25 @@ export function finalApprovalProcess(data, callback) {
 export function getReasonSelectList(callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getReasonSelectList}`, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_ALL_REASON_SELECTLIST,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      } else {
-        toastr.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
-  };
+    const request = axios.get(`${API.getReasonSelectList}`, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_ALL_REASON_SELECTLIST,
+            payload: response.data.SelectList,
+          })
+          callback(response)
+        } else {
+          toastr.error(MESSAGES.SOME_ERROR)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        callback(error)
+        apiErrors(error)
+      })
+  }
 }
 
 /**
@@ -239,117 +259,136 @@ export function getReasonSelectList(callback) {
  */
 export function sendForApprovalBySender(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.sendForApprovalBySender, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(API.sendForApprovalBySender, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
 }
 
 /**
  * @method getApprovalList
  * @description for getting list of approval
-*/
+ */
 
-export function getApprovalList (filterData,callback) {
-  console.log(filterData,"FilterData");
+export function getApprovalList(filterData, callback) {
+  console.log(filterData, 'FilterData')
   return (dispatch) => {
-     const queryParameter = `logged_in_user_id=${filterData.loggedUser}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
-    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, { headers });
-    request.then(response =>{
-      if (response.data.Result) {
-        dispatch({
-          type: GET_APPROVAL_LIST,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      } else {
-        toastr.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch(error =>{
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
+    const queryParameter = `logged_in_user_id=${filterData.loggedUser}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
+    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, {
+      headers,
     })
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_APPROVAL_LIST,
+            payload: response.data.SelectList,
+          })
+          callback(response)
+        } else {
+          toastr.error(MESSAGES.SOME_ERROR)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
   }
 }
 
 /**
  * @method approvalRequestByApprove
  * @description approving the request by approve
-*/
+ */
 export function approvalRequestByApprove(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.approveCostingByApprover, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(API.approveCostingByApprover, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
 }
 /**
  * @method rejectRequestByApprove
  * @description rejecting approval Request
-*/
+ */
 export function rejectRequestByApprove(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.rejectCostingByApprover, data, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response);
-      } else {
-        dispatch({ type: API_FAILURE });
-        if (response.data.Message) {
-          toastr.error(response.data.Message);
+    const request = axios.post(API.rejectCostingByApprover, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        } else {
+          dispatch({ type: API_FAILURE })
+          if (response.data.Message) {
+            toastr.error(response.data.Message)
+          }
         }
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    });
-  };
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
 }
 
 /**
  * @method getApprovalSummary
  * @description getting summary of approval by approval id
-*/
+ */
 
-export function  getApprovalSummary(approvalNumber, loggedInUserId, callback) {
-
+export function getApprovalSummary(
+  approvalNumber,
+  approvalProcessId,
+  loggedInUserId,
+  callback,
+) {
   return (dispatch) => {
-    const request = axios.get(`${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${loggedInUserId}`, { headers });
-    request.then(response =>{
-      if (response.data.Result) {
-        dispatch({
-          type: GET_APPROVAL_SUMMARY,
-          payload: response.data.Data,
-        });
-        callback(response);
-      } else {
-        toastr.error(MESSAGES.SOME_ERROR);
-      }
-    }).catch(error =>{
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-    })
+    const request = axios.get(
+      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`,
+      headers,
+    )
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_APPROVAL_SUMMARY,
+            payload: response.data.Data,
+          })
+          callback(response)
+        } else {
+          toastr.error(MESSAGES.SOME_ERROR)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
   }
 }
