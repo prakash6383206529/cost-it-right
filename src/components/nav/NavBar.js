@@ -161,7 +161,7 @@ class SideBar extends Component {
               }}
               key={i}
             >
-              <img className="" src={require('../../assests/images/homeicon.svg')} alt='' />
+              <img className="" src={require('../../assests/images/homeicon.svg')} alt={module+" icon"} />
               <span>{module}</span>
             </Link>
           )
@@ -191,7 +191,7 @@ class SideBar extends Component {
                 }}
                 key={i}
               >
-                <img className="" src={require('../../assests/images/list.svg')} alt='List' /><span>Masters</span>
+                <img className="" src={require('../../assests/images/list.svg')} alt={module+" icon"} /><span>Masters</span>
               </Link>
             </>
           )
@@ -221,7 +221,7 @@ class SideBar extends Component {
                   state: { ModuleId: el.ModuleId, PageName: 'Additional Masters', PageURL: '/reason-master' }
                 }}
               >
-                <img className="" src={require('../../assests/images/list-add.png')} alt='List' />
+                <img className="" src={require('../../assests/images/list-add.png')} alt={module+" icon"} />
                 <span>Additional Masters</span>
               </Link>
             </>
@@ -252,7 +252,7 @@ class SideBar extends Component {
                 state: { ModuleId: el.ModuleId, PageName: 'Reports & Analytics', PageURL: '/report-analytics' }
               }}
             >
-              <img className="" src={require('../../assests/images/chart.svg')} alt='chart' />
+              <img className="" src={require('../../assests/images/chart.svg')} alt={module+" icon"} />
               <span>Report</span>
             </Link>
           )
@@ -281,7 +281,7 @@ class SideBar extends Component {
                 state: { ModuleId: el.ModuleId, PageName: 'Technology', PageURL: '/costing' }
               }}
             >
-              <img className="" src={require('../../assests/images/html.svg')} alt='html' />
+              <img className="" src={require('../../assests/images/html.svg')} alt={module+" icon"} />
               <span>Costing</span>
             </Link>
           )
@@ -310,7 +310,7 @@ class SideBar extends Component {
                 state: { ModuleId: el.ModuleId, PageName: 'Simulation', PageURL: '/simulation' }
               }}
             >
-              <img className="" src={require('../../assests/images/imac.svg')} alt='imac' />
+              <img className="" src={require('../../assests/images/imac.svg')} alt={module+" icon"} />
               <span>Simulation</span>
             </Link>
           )
@@ -339,7 +339,7 @@ class SideBar extends Component {
                 state: { ModuleId: el.ModuleId, PageName: 'Users', PageURL: '/users' }
               }}
             >
-              <img className="" src={require('../../assests/images/men.svg')} alt='men' />
+              <img className="" src={require('../../assests/images/men.svg')} alt={module+" icon"} />
               <span>{el.ModuleName}</span>
             </Link>
           )
@@ -368,7 +368,7 @@ class SideBar extends Component {
                 state: { ModuleId: el.ModuleId, PageName: 'Audit', PageURL: '/audit' }
               }}
             >
-              <img className="" src={require('../../assests/images/Audit.svg')} alt='men' />
+              <img className="" src={require('../../assests/images/Audit.svg')} alt={module+" icon"} />
               <span>{el.ModuleName}</span>
             </Link>
           )
@@ -397,10 +397,10 @@ class SideBar extends Component {
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
-                <img src={require('../../assests/images/logo.png')} alt='Cost It Rights' height="30" />
+                <img src={require('../../assests/images/logo.png')} alt='Cost It Right' height="30" />
               </a>
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
-                <img src={require('../../assests/images/sipl-logo.svg')} alt='Cost It Rights' height="30" />
+                <img src={require('../../assests/images/logo.png')} alt='Cost It Right' height="30" />
               </a>
               <button className="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
                 <span className="navbar-toggler-icon"></span>

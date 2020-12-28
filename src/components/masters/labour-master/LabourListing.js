@@ -480,8 +480,8 @@ class LabourListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <div class="col-sm-4"><h3>Labour</h3></div>
                     <hr />
-                    <Row className="pt-30">
-                        <Col md="9" className="filter-block">
+                    <Row className="pt-30 filter-row-large">
+                        <Col md="12" className="filter-block col-lg-9">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -571,7 +571,7 @@ class LabourListing extends Component {
                                         type="button"
                                         //disabled={pristine || submitting}
                                         onClick={this.resetFilter}
-                                        className="reset mr10"
+                                        className="reset mr5"
                                     >
                                         {'Reset'}
                                     </button>
@@ -579,14 +579,14 @@ class LabourListing extends Component {
                                         type="button"
                                         //disabled={pristine || submitting}
                                         onClick={this.filterList}
-                                        className="apply mr5"
+                                        className="apply mr0"
                                     >
                                         {'Apply'}
                                     </button>
                                 </div>
                             </div>
                         </Col>
-                        <Col md="3" className="search-user-block">
+                        <Col md="12" className="search-user-block col-lg-3 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {BulkUploadAccessibility && <button

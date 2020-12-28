@@ -167,7 +167,7 @@ class RowMaterialMaster extends Component {
                 <Row>
                     <Col>
                         <div>
-                            <Nav tabs className="subtabs">
+                            <Nav tabs className="subtabs mt-0">
                                 {ViewRMAccessibility && <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Manage Raw Material (Domestic)

@@ -195,7 +195,7 @@ function ApprovalListing() {
           <h3>Costing Approval</h3>
         </div>
         <hr />
-        <Row className="pt-30">
+        <Row className="pt-30 mb-2">
           <Col lg="10" md="12" className="filter-block mb-2">
             <div className="d-inline-flex justify-content-start align-items-top w100">
               <div className="flex-fills">

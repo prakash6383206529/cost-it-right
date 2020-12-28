@@ -620,7 +620,7 @@ class AddBOPDomestic extends Component {
                                                     </div>
                                                     {!isEditFlag && <div
                                                         onClick={this.categoryToggler}
-                                                        className={'plus-icon-square mr15 right'}>
+                                                        className={'plus-icon-square right'}>
                                                     </div>}
                                                 </div>
                                             </Col>

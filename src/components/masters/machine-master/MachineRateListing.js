@@ -410,6 +410,10 @@ class MachineRateListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -417,8 +421,8 @@ class MachineRateListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="10" className="filter-block">
+                    <Row className="pt-4 filter-row-large">
+                        <Col md="12" lg="10" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -521,7 +525,7 @@ class MachineRateListing extends Component {
                                         disabled={false}
                                     />
                                 </div>
-                                <div className="flex-fill">
+                                <div className="flex-fill w-180">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -542,7 +546,7 @@ class MachineRateListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="2" className="search-user-block">
+                        <Col md="12" lg="2" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {BulkUploadAccessibility && <button
