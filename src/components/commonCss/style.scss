@@ -1336,7 +1336,7 @@ button.user-btn.pull-right {
  .cr-innertool-cost.row{background-color: #E7F2FC;color:#3D4465;border-bottom:1px solid #C2CBE8;    margin-bottom: 15px;}
  .cr-tbl-label{color:#A4ABC5;font-size:16px}
  .cr-bg-tbl{background-color: #E7F2FC;}
- .cr-brdr-main tbody td{color:#8A91AC;font-size:16px;}
+ .cr-brdr-main tbody td{color:#C2CBE8;font-size:16px;}
  .cr-subtabs-head{background-color: #E0E9F5;}
  .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: 16px;padding: 10px 15px;border-top:2px solid transparent}
  .content-page .cr-subtabs-head.nav-tabs .nav-link.active,.content-page .cr-subtabs-head.nav-tabs .nav-link:hover{border-top: #d62c8c 2px solid;border-radius: 0;border-bottom: 0;background-color: #fff; }
@@ -1946,7 +1946,14 @@ html {
 .w-180{
   min-width: 180px;
 }
-.cross-icon, .check-icon{margin-top: -3px;}
+.cross-icon, .check-icon{
+  margin-top: -3px;
+}
+
+.w-100px{
+  .form-control{width: 100px;}
+}
+
 // ============issues fixing =============
 
 @media(max-width:1367px){
