@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 
 function PartCompoment(props) {
   const { rmData, bopData, ccData, } = props;
+
+  const costData = useContext(costingInfoContext);
+
   /**
   * @method render
   * @description Renders the component
@@ -13,17 +17,17 @@ function PartCompoment(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <RawMaterialCost
+          {!costData.IsAssemblyPart && <RawMaterialCost
             index={props.index}
             data={rmData}
             setRMCost={props.setRMCost}
-          />
+          />}
 
-          <BOPCost
+          {!costData.IsAssemblyPart && <BOPCost
             index={props.index}
             data={bopData}
             setBOPCost={props.setBOPCost}
-          />
+          />}
 
           <ProcessCost
             index={props.index}

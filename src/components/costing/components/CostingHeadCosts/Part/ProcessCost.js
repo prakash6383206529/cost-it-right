@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import Switch from "react-switch";
@@ -10,10 +10,13 @@ import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
 
 function ProcessCost(props) {
 
   const { data } = props;
+
+  const costData = useContext(costingInfoContext);
 
   const { register, control, errors } = useForm({
     mode: 'onChange',
@@ -289,9 +292,13 @@ function ProcessCost(props) {
         </Row>
         <div className="cr-process-costwrap">
           <Row className="cr-innertool-cost">
-            <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>
+
+            {!costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>}
             <Col md="3" className="cr-costlabel">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>
-            <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>
+            {costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Tools Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>}
+            {costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Net Operation Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>}
+            {!costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>}
+
             <Col md="3" className="switch cr-costlabel">
               <label className="switch-level">
                 <div className={'left-title'}>{''}</div>
@@ -329,9 +336,9 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          <Row>
-            {/*OPERATION COST GRID */}
+          {!costData.IsAssemblyPart && <Row>
 
+            {/*OPERATION COST GRID */}
             <Col md="12">
               <Table className="table cr-brdr-main" size="sm" >
                 <thead>
@@ -514,7 +521,7 @@ function ProcessCost(props) {
                 </tbody>
               </Table>
             </Col>
-          </Row>
+          </Row>}
 
           <hr />
           <OperationCost

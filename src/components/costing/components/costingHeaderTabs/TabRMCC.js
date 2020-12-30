@@ -370,14 +370,6 @@ function TabRMCC(props) {
 
                 <Row className="sf-btn-footer no-gutters justify-content-between mt25">
                   <div className="col-sm-12 text-right bluefooter-butn">
-
-                    {/* <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button> */}
-
                     <button
                       type={'button'}
                       className="submit-button mr5 save-btn"

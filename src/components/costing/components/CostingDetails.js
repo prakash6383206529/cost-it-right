@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { TextFieldHookForm, SearchableSelectHookForm, TextFieldHooks, } from '../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting,
   createVBCCosting, getZBCExistingCosting, getVBCExistingCosting, updateZBCSOBDetail, updateVBCSOBDetail
@@ -15,27 +15,17 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
 import { checkForNull, loggedInUserId, userDetails } from '../../../helper';
-import $ from 'jquery';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { VBC, ZBC } from '../../../config/constants';
-import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CostingDetails() {
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    //defaultValues: {},
-    //resolver: undefined,
-    //context: undefined,
-    //criteriaMode: "firstError",
-    //shouldFocusError: true,
-    //shouldUnregister: true,
   });
-  const inputRef = useRef();
 
-  const [isEditFlag, setIsEditFlag] = useState(false);
   const [technology, setTechnology] = useState([]);
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
@@ -1159,25 +1149,6 @@ function CostingDetails() {
                         </div>
                       </Row>}
 
-
-
-                    {/* <Row className="sf-btn-footer no-gutters justify-content-between">
-                      <div className="col-sm-12 text-right bluefooter-butn">
-                        <button
-                          type={'button'}
-                          className="reset mr15 cancel-btn"
-                          onClick={cancel} >
-                          <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                        </button>
-
-                        <button
-                          type="submit"
-                          className="submit-button mr5 save-btn" >
-                          <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                          {isEditFlag ? 'Update' : 'Save'}
-                        </button>
-                      </div>
-                    </Row> */}
                   </>}
                 {stepTwo &&
                   <CostingDetailStepTwo
