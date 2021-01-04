@@ -11,6 +11,7 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
+import SOBListing from './SOBListing';
 
 class BOPMaster extends Component {
     constructor(props) {
@@ -146,6 +147,11 @@ class BOPMaster extends Component {
                                     Manage BOP (Import)
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                    Manage SOB
+                                </NavLink>
+                            </NavItem>
                         </Nav>
 
                         <TabContent activeTab={this.state.activeTab}>
@@ -165,6 +171,18 @@ class BOPMaster extends Component {
                             {this.state.activeTab == 2 &&
                                 <TabPane tabId="2">
                                     <BOPImportListing
+                                        displayForm={this.displayImportForm}
+                                        getDetails={this.getImportDetails}
+                                        AddAccessibility={this.state.AddAccessibility}
+                                        EditAccessibility={this.state.EditAccessibility}
+                                        DeleteAccessibility={this.state.DeleteAccessibility}
+                                        BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                    />
+                                </TabPane>}
+
+                            {this.state.activeTab == 3 &&
+                                <TabPane tabId="3">
+                                    <SOBListing
                                         displayForm={this.displayImportForm}
                                         getDetails={this.getImportDetails}
                                         AddAccessibility={this.state.AddAccessibility}

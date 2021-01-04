@@ -140,7 +140,7 @@ function ToolCost(props) {
                       )
                     })
                   }
-                  {gridData.length === 0 &&
+                  {gridData && gridData.length === 0 &&
                     <tr>
                       <td colSpan={8}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />

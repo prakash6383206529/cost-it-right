@@ -186,7 +186,7 @@ function RawMaterialCost(props) {
               </div>
             </Col>
             <Col col={'2'}>
-              {gridData.length === 0 && <button
+              {gridData && gridData.length === 0 && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
@@ -285,7 +285,7 @@ function RawMaterialCost(props) {
                         )
                       })
                     }
-                    {gridData.length === 0 &&
+                    {gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={8}>
                           <NoContentFound title={CONSTANT.EMPTY_DATA} />

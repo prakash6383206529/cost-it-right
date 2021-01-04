@@ -293,11 +293,9 @@ function ProcessCost(props) {
         <div className="cr-process-costwrap">
           <Row className="cr-innertool-cost">
 
-            {!costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>}
+            <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>
             <Col md="3" className="cr-costlabel">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>
-            {costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Tools Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>}
-            {costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Net Operation Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>}
-            {!costData.IsAssemblyPart && <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>}
+            <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>
 
             <Col md="3" className="switch cr-costlabel">
               <label className="switch-level">
@@ -336,7 +334,7 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          {!costData.IsAssemblyPart && <Row>
+          <Row>
 
             {/*OPERATION COST GRID */}
             <Col md="12">
@@ -521,7 +519,7 @@ function ProcessCost(props) {
                 </tbody>
               </Table>
             </Col>
-          </Row>}
+          </Row>
 
           <hr />
           <OperationCost

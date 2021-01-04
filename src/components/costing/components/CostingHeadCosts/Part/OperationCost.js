@@ -290,7 +290,7 @@ function OperationCost(props) {
                       )
                     })
                   }
-                  {gridData.length === 0 &&
+                  {gridData && gridData.length === 0 &&
                     <tr>
                       <td colSpan={9}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />

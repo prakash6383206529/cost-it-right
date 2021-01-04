@@ -9,6 +9,8 @@ import {
     GET_ALL_VENDOR_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_BY_VENDOR,
+    GET_BOP_SOB_VENDOR_DATA_SUCCESS,
+    GET_INITIAL_SOB_VENDORS_SUCCESS,
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -422,5 +424,99 @@ export function bulkUploadBOPImportVBC(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
+    };
+}
+
+/**
+ * @method getManageBOPSOBDataList
+ * @description get all BOP SOB Data list.
+ */
+export function getInitialFilterData(boughtOutPartNumber, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `boughtOutPartNumber=${boughtOutPartNumber}`
+        const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_INITIAL_SOB_VENDORS_SUCCESS,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            //apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getManageBOPSOBDataList
+ * @description get all BOP SOB Data list.
+ */
+export function getManageBOPSOBDataList(data, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const queryParams = `boughtOutPartNumber=${data.boughtOutPartNumber}`
+        const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            //apiErrors(error);
+        });
+    };
+}
+
+/**
+ * @method getManageBOPSOBById
+ * @description GET MANAGE BOP SOB BY ID
+ */
+export function getManageBOPSOBById(bopId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        if (bopId !== '') {
+            axios.get(`${API.getManageBOPSOBById}/${bopId}`, headers)
+                .then((response) => {
+                    if (response.data.Result) {
+                        dispatch({
+                            type: GET_BOP_SOB_VENDOR_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                        callback(response);
+                    }
+                }).catch((error) => {
+                    apiErrors(error);
+                    dispatch({ type: API_FAILURE });
+                });
+        } else {
+            dispatch({
+                type: GET_BOP_SOB_VENDOR_DATA_SUCCESS,
+                payload: {},
+            });
+            callback();
+        }
+    };
+}
+
+/**
+ * @method updateBOPSOBVendors
+ * @description update BOP SOB Vendors
+ */
+export function updateBOPSOBVendors(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateBOPSOBVendors}`, requestData, headers)
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+            });
     };
 }

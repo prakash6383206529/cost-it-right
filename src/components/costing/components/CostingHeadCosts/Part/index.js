@@ -17,17 +17,19 @@ function PartCompoment(props) {
     <>
       <div className="user-page p-0">
         <div>
-          {!costData.IsAssemblyPart && <RawMaterialCost
+          {/* {!costData.IsAssemblyPart && <RawMaterialCost */}
+          <RawMaterialCost
             index={props.index}
             data={rmData}
             setRMCost={props.setRMCost}
-          />}
+          />
 
-          {!costData.IsAssemblyPart && <BOPCost
+          {/* {!costData.IsAssemblyPart && <BOPCost */}
+          <BOPCost
             index={props.index}
             data={bopData}
             setBOPCost={props.setBOPCost}
-          />}
+          />
 
           <ProcessCost
             index={props.index}

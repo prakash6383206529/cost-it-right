@@ -12,6 +12,8 @@ import {
     GET_ALL_VENDOR_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_SUCCESS,
     GET_PLANT_SELECTLIST_BY_VENDOR,
+    GET_BOP_SOB_VENDOR_DATA_SUCCESS,
+    GET_INITIAL_SOB_VENDORS_SUCCESS,
 } from '../../../config/constants';
 
 const initialState = {
@@ -96,6 +98,18 @@ export default function BOPReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 plantSelectList: action.payload
+            };
+        case GET_BOP_SOB_VENDOR_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                VendorsBOPSOBData: action.payload
+            };
+        case GET_INITIAL_SOB_VENDORS_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                BOPVendorDataList: action.payload
             };
         default:
             return state;

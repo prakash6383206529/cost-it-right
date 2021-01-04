@@ -1,0 +1,303 @@
+import React, { useState, useContext, useEffect, useCallback } from 'react';
+import { useForm, Controller, useWatch } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+import { Col, Row, Table, Container, } from 'reactstrap';
+import HeaderTitle from '../../common/HeaderTitle';
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
+import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
+import NoContentFound from '../../common/NoContentFound';
+import { CONSTANT } from '../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
+import Drawer from '@material-ui/core/Drawer';
+
+function ManageSOBDrawer(props) {
+
+  const { ID, isEditFlag } = props;
+
+  const defaultValues = {
+    //OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
+  }
+
+  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    defaultValues: defaultValues,
+  });
+
+  const [Data, setData] = useState({});
+  const [GridData, setGridData] = useState([]);
+  const [GridDataOldArray, setGridDataOldArray] = useState([]);
+  const [WeightedCost, setWeightedCost] = useState(0);
+
+  const fieldValues = useWatch({
+    control,
+    name: ['GridFields'],
+  });
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(getManageBOPSOBById(ID, (res) => {
+      if (res && res.data && res.data.Result) {
+        let Data = res.data.Data;
+        setData(Data)
+        setGridData(Data.BoughtOutPartVendorList)
+        setGridDataOldArray(Data.BoughtOutPartVendorList)
+      }
+    }))
+  }, []);
+
+  // const VendorsBOPSOBData = useSelector(state => state.boughtOutparts.VendorsBOPSOBData)
+  // if (VendorsBOPSOBData !== undefined) {
+  //   console.log('VendorsBOPSOBData: ', VendorsBOPSOBData);
+  // }
+
+  useEffect(() => {
+    calculateWeightedCost()
+  }, [fieldValues, GridData]);
+
+  /**
+   * @method calculateWeightedCost
+   * @description CALCULATE WEIGHTED COST
+   */
+  const calculateWeightedCost = () => {
+    let WeightedCost = 0;
+    WeightedCost = GridData && GridData.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.WeightedCost);
+    }, 0)
+    setWeightedCost(WeightedCost);
+  }
+
+  /**
+  * @method handleSOBChange
+  * @description HANDLE SOB CHANGE
+  */
+  const handleSOBChange = (event, index) => {
+
+    let tempArray = [];
+    let tempData = GridData[index];
+
+    if (!isNaN(event.target.value)) {
+
+      tempData = {
+        ...tempData,
+        ShareOfBusinessPercentage: parseInt(event.target.value),
+        //isSOBChanged: checkIsSOBChanged(event, index),
+        WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(parseInt(event.target.value)), 2),
+      }
+      tempArray = Object.assign([...GridData], { [index]: tempData })
+      setGridData(tempArray)
+
+    } else {
+      warningMessageHandle('VALID_NUMBER_WARNING')
+    }
+
+  }
+
+  /**
+  * @method checkIsSOBChanged
+  * @description HANDLE SOB CHANGE
+  */
+  const checkIsSOBChanged = (event, index) => {
+    let tempOldObj = GridDataOldArray[index];
+
+    if (index > GridDataOldArray.length - 1) {
+      return false;
+    } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercentage) {
+      return false;
+    } else if (parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercentage) {
+      return true;
+    }
+
+  }
+
+
+  /**
+  * @method warningMessageHandle
+  * @description VIEW COSTING DETAILS IN READ ONLY MODE
+  */
+  const warningMessageHandle = (warningType) => {
+    switch (warningType) {
+      case 'SOB_WARNING':
+        toastr.warning('SOB Should not be greater than 100.');
+        break;
+      case 'VALID_NUMBER_WARNING':
+        toastr.warning('Please enter a valid number.');
+        break;
+      case 'ERROR_WARNING':
+        toastr.warning('Please enter a valid number.');
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+  * @method cancel
+  * @description used to Reset form
+  */
+  const cancel = () => {
+    props.closeDrawer('')
+  }
+
+  /**
+  * @method toggleDrawer
+  * @description TOGGLE DRAWER
+  */
+  const toggleDrawer = (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    props.closeDrawer('')
+  };
+
+  /**
+    * @method onSubmit
+    * @description Used to Submit the form
+    */
+  const onSubmit = (values) => {
+    console.log('values >>>', values);
+    let data = {
+      "BoughtOutPartNumber": ID,
+      "LoggedInUserId": loggedInUserId(),
+      "BoughtOutPartSOBDetailId": Data.BoughtOutPartSOBDetailId,
+      "WeightedNetLandedCost": WeightedCost,
+      "BoughtOutPartVendorList": GridData
+    }
+    dispatch(updateBOPSOBVendors(data, (res) => {
+      if (res && res.data && res.data.Result) {
+        toastr.success('BOP Vendors SOB has been updated.')
+        props.closeDrawer('')
+      }
+    }))
+  }
+
+  const GridFields = 'GridFields';
+
+  /**
+  * @method render
+  * @description Renders the component
+  */
+  return (
+    <>
+      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+        <Container>
+          <div className={'drawer-wrapper drawer-1500px'}>
+
+            <Row className="drawer-heading">
+              <Col>
+                <div className={'header-wrapper left'}>
+                  <HeaderTitle title={'Manage SOB'} customClass={'underLine-title'} />
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  className={'close-button right'}>
+                </div>
+              </Col>
+            </Row>
+
+            <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
+
+              <Row>
+                <Col md="12">
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th style={{ width: '100px' }}>{`Vendor Name`}</th>
+                        <th style={{ width: '150px' }}>{`Net Landed Cost/Unit`}</th>
+                        <th style={{ width: '150px' }}>{`SOB%`}</th>
+                        <th >{`Weighted Cost`}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        GridData &&
+                        GridData.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>{item.BoughtOutPartVendorName}</td>
+                              <td>{item.NetLandedCost}</td>
+                              <td className="cr-select-height">
+                                <TextFieldHookForm
+                                  label={''}
+                                  name={`${GridFields}[${index}]ShareOfBusinessPercentage`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      //value: /^[0-9]*$/i,
+                                      value: /^[0-9]\d*(\.\d+)?$/i,
+                                      message: 'Invalid Number.'
+                                    },
+                                  }}
+                                  defaultValue={item.ShareOfBusinessPercentage}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    handleSOBChange(e, index)
+                                  }}
+                                  errors={errors && errors.GridFields && errors.GridFields[index] !== undefined ? errors.GridFields[index].ShareOfBusinessPercentage : ''}
+                                  disabled={false}
+                                />
+                              </td>
+                              <td>{item.WeightedCost}</td>
+                            </tr>
+                          )
+                        })
+                      }
+
+                      {
+                        GridData && <tr>
+                          <td><b>{'BOP Cost'}</b></td>
+                          <td>{''}</td>
+                          <td><b>{`Net landed Cost(Weighted Average)`}</b></td>
+                          <td><b>{`:${WeightedCost}`}</b></td>
+                        </tr>
+                      }
+
+                      {GridData.length === 0 &&
+                        <tr>
+                          <td colSpan={5}>
+                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </Table>
+                </Col>
+
+              </Row>
+
+              <Row className="sf-btn-footer no-gutters justify-content-between mt25">
+                <div className="col-sm-12 text-right bluefooter-butn">
+
+                  <button
+                    type={'button'}
+                    className="reset mr15 cancel-btn"
+                    onClick={cancel} >
+                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                  </button>
+                  <button
+                    type={'submit'}
+                    className="submit-button mr5 save-btn">
+                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                    {'Save'}
+                  </button>
+                </div>
+              </Row>
+
+            </form>
+
+          </div >
+        </Container>
+      </Drawer>
+    </ >
+  );
+}
+
+export default ManageSOBDrawer;
