@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { alphaNumeric, number, required } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
     createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
@@ -388,7 +388,7 @@ class AddSpecification extends Component {
                                                 name={"Density"}
                                                 type="text"
                                                 placeholder={'Enter'}
-                                                validate={[required]}
+                                                validate={[required, number]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" "
@@ -439,7 +439,7 @@ class AddSpecification extends Component {
                                                 name={"Specification"}
                                                 type="text"
                                                 placeholder={'Enter'}
-                                                validate={[required]}
+                                                validate={[required, alphaNumeric]}
                                                 component={renderText}
                                                 required={true}
                                                 className=" "

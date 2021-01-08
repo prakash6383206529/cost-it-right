@@ -10,7 +10,7 @@ import Switch from "react-switch";
 
 function TabOverheadProfit(props) {
 
-  const { register, handleSubmit, reset } = useForm();
+  const { handleSubmit, } = useForm();
 
   const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
   const [tabData, setTabData] = useState([]);
@@ -30,7 +30,7 @@ function TabOverheadProfit(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        PlantId: costData.PlantId,
+        //PlantId: costData.PlantId,
       }
       dispatch(getOverheadProfitTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
@@ -160,7 +160,7 @@ function TabOverheadProfit(props) {
     })
 
     setTimeout(() => {
-      setICCCost(checkForDecimalAndNull(ICCObj ? ICCObj.NetCost : 0, 2))
+      setICCCost(checkForDecimalAndNull(ICCObj && ICCObj.NetCost !== null ? ICCObj.NetCost : 0, 2))
       setTabData(tempArr)
     }, 200)
 
@@ -186,7 +186,7 @@ function TabOverheadProfit(props) {
     })
 
     setTimeout(() => {
-      setPaymentTermCost(checkForDecimalAndNull(PaymentTermObj ? PaymentTermObj.NetCost : 0, 2))
+      setPaymentTermCost(checkForDecimalAndNull(PaymentTermObj && PaymentTermObj.NetCost !== null ? PaymentTermObj.NetCost : 0, 2))
       setTabData(tempArr)
     }, 200)
 

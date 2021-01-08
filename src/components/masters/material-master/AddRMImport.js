@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength100, getVendorCode } from "../../../helper/validation";
+import { required, maxLength100, getVendorCode, number, decimalLength2 } from "../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField
@@ -10,7 +10,7 @@ import {
 import {
     getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
     getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
-    getCurrencySelectList, fetchSupplierCityDataAPI,
+    getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI,
 } from '../../../actions/Common';
 import {
     createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
@@ -86,6 +86,7 @@ class AddRMImport extends Component {
         this.props.getRawMaterialNameChild(() => { })
         this.props.getUOMSelectList(() => { })
         this.props.getSupplierList(() => { })
+        this.props.fetchPlantDataAPI(() => { })
         this.props.getCurrencySelectList(() => { })
     }
 
@@ -108,7 +109,7 @@ class AddRMImport extends Component {
     */
     handleRMChange = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ RawMaterial: newValue }, () => {
+            this.setState({ RawMaterial: newValue, RMGrade: [], }, () => {
                 const { RawMaterial } = this.state;
                 this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { })
             });
@@ -1083,8 +1084,8 @@ class AddRMImport extends Component {
                                                     name={"BasicRate"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[required, number, decimalLength2]}
+                                                    component={renderText}
                                                     onChange={this.handleBasicRate}
                                                     required={true}
                                                     disabled={false}
@@ -1098,8 +1099,8 @@ class AddRMImport extends Component {
                                                     name={"ScrapRate"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[required, number, decimalLength2]}
+                                                    component={renderText}
                                                     required={true}
                                                     className=""
                                                     customClassName=" withBorder"
@@ -1365,6 +1366,7 @@ export default connect(mapStateToProps, {
     getVendorListByVendorType,
     fileUploadRMDomestic,
     getCurrencySelectList,
+    fetchPlantDataAPI,
 })(reduxForm({
     form: 'AddRMImport',
     enableReinitialize: true,

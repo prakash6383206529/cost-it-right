@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
-import { getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting } from '../../actions/Costing';
+import {
+  getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
+  getExchangeRateByCurrency
+} from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
@@ -14,6 +17,7 @@ import { toastr } from 'react-redux-toastr';
 
 function TabDiscountOther(props) {
 
+  const { DiscountTabData } = props;
   const { register, handleSubmit, setValue, getValues, reset, errors, control } = useForm();
 
   const [tabData, setTabData] = useState({});
@@ -27,6 +31,11 @@ function TabDiscountOther(props) {
 
   const costData = useContext(costingInfoContext);
 
+  const fieldValues = useWatch({
+    control,
+    name: ['HundiOrDiscountPercentage'],
+  });
+
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
@@ -35,18 +44,18 @@ function TabDiscountOther(props) {
         PlantId: costData.PlantId,
       }
       dispatch(getDiscountOtherCostTabData(data, (res) => {
-        console.log('res: >>>>>>>>> ', res);
+        console.log('res: >>>>>>>>> ddddddd ', res);
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
-          setTabData(Data)
+          //setTabData(Data)
           if (Data && Data.CostingPartDetails[0] && Data.CostingPartDetails[0].DiscountCost !== null) {
             let OtherCostDetails = Data.CostingPartDetails[0].OtherCostDetails;
             setCurrency(OtherCostDetails.IsCurrencyChange ? true : false)
             setValue([
               { HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '' },
               { OtherCostDescription: OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '' },
-              { NetPOPriceAfterDiscount: OtherCostDetails.NetPOPriceAfterDiscount !== null ? OtherCostDetails.NetPOPriceAfterDiscount : '' },
-              { HundiPerDiscountValue: OtherCostDetails.HundiPerDiscountValue !== null ? OtherCostDetails.HundiPerDiscountValue : '' },
+              { NetPOPriceINR: OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '' },
+              { HundiOrDiscountValue: OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '' },
               { AnyOtherCost: OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '' },
               { Currency: OtherCostDetails.Currency !== null ? { label: '', value: '' } : [] },
               { NetPOPriceAfterCurrencyChange: OtherCostDetails.NetPOPriceAfterCurrencyChange !== null ? OtherCostDetails.NetPOPriceAfterCurrencyChange : '' },
@@ -63,8 +72,12 @@ function TabDiscountOther(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-
-  }, [tabData]);
+    const { DiscountTabData } = props;
+    setTimeout(() => {
+      setValue('NetPOPriceINR', DiscountTabData.NetPOPriceINR)
+      setValue('HundiOrDiscountValue', DiscountTabData.HundiOrDiscountValue)
+    }, 500)
+  }, [props]);
 
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
@@ -75,14 +88,11 @@ function TabDiscountOther(props) {
   const handleDiscountChange = (event) => {
     if (!isNaN(event.target.value)) {
 
-      if (props.netPOPrice !== '') {
-        const cost = props.netPOPrice * calculatePercentage(event.target.value);
-        setValue('NetPOPriceAfterDiscount', checkForDecimalAndNull(props.netPOPrice - cost, 2))
-        setValue('HundiPerDiscountValue', checkForDecimalAndNull(cost, 2))
-      } else {
-        setValue('NetPOPriceAfterDiscount', props.netPOPrice)
-        setValue('HundiPerDiscountValue', '')
+      let topHeaderData = {
+        //DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        HundiOrDiscountPercentage: checkForNull(event.target.value),
       }
+      props.setHeaderCost(topHeaderData)
 
     } else {
       toastr.warning('Please enter valid number.')
@@ -106,6 +116,11 @@ function TabDiscountOther(props) {
   const handleCurrencyChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
+      dispatch(getExchangeRateByCurrency(newValue.label, res => {
+        let Data = res.data.Data;
+        const NetPOPriceINR = getValues('NetPOPriceINR');
+        setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+      }))
     } else {
       setCurrency([])
     }
@@ -210,7 +225,56 @@ function TabDiscountOther(props) {
   * @description Used to Submit the form
   */
   const onSubmit = (values) => {
-    console.log('values: ', values);
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: costData.CostingId }
+    })
+    let data = {
+      "CostingId": costData.CostingId,
+      "PartId": costData.PartId,
+      "PartNumber": costData.PartNumber,
+      "NetPOPrice": props.netPOPrice,
+      "LoggedInUserId": loggedInUserId(),
+      "NetOtherCostCost": 0,
+      "CostingPartDetails": [
+        {
+          "CostingDetailId": costData.CostingId,
+          "PartId": costData.PartId,
+          "PartTypeId": "00000000-0000-0000-0000-000000000000",
+          "Type": costData.VendorType,
+          "PartNumber": costData.PartNumber,
+          "PartName": costData.PartName,
+          "Quantity": 0,
+          "GrandTotalCost": 0,
+          "IsOpen": true,
+          "IsPrimary": true,
+          "Sequence": 0,
+          "NetOtherCost": values.TotalOtherCost,
+          "OtherCost": values.AnyOtherCost,
+          "DiscountCost": values.HundiOrDiscountValue,
+          "OtherCostDetails": {
+            "OtherCostDetailId": '',
+            "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
+            "HundiOrDiscountValue": values.HundiOrDiscountValue,
+            "AnyOtherCost": values.AnyOtherCost,
+            "OtherCostPercentage": values.OtherCostPercentage,
+            "TotalOtherCost": values.TotalOtherCost,
+            "TotalDiscount": values.TotalDiscount,
+            "IsChangeCurrency": IsCurrencyChange,
+            "NetPOPriceINR": values.NetPOPriceINR,
+            "NetPOPriceOtherCurrency": values.NetPOPriceOtherCurrency,
+            "CurrencyId": currency.value,
+            "Currency": currency.label,
+            "Remark": values.Remarks,
+            "OtherCostDescription": values.OtherCostDescription,
+          }
+        }
+      ],
+      "Attachements": updatedFiles
+    }
+
+    dispatch(saveDiscountOtherCostTab(data, res => {
+      console.log('saveDiscountOtherCostTab: ', res);
+    }))
   }
 
   return (
@@ -236,7 +300,9 @@ function TabDiscountOther(props) {
                         <th>{``}</th>
                         <th>{``}</th>
                         <th>{``}</th>
-                        <th>{`Total Cost: ${100}`}</th>
+                        <th>{``}</th>
+                        <th>{``}</th>
+                        <th>{`Total Cost: ${DiscountTabData.HundiOrDiscountValue}`}</th>
                       </tr>
                     </thead>
                   </Table>
@@ -257,7 +323,7 @@ function TabDiscountOther(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                         // maxLength: 4,
@@ -300,7 +366,7 @@ function TabDiscountOther(props) {
                   <Col md="4">
                     <TextFieldHookForm
                       label="Net PO Price(INR)"
-                      name={'NetPOPriceAfterDiscount'}
+                      name={'NetPOPriceINR'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -317,7 +383,7 @@ function TabDiscountOther(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.NetPOPriceAfterDiscount}
+                      errors={errors.NetPOPriceINR}
                       disabled={true}
                     />
                   </Col>
@@ -327,7 +393,7 @@ function TabDiscountOther(props) {
                   <Col md="4">
                     <TextFieldHookForm
                       label="Hundi/Discount Value"
-                      name={'HundiPerDiscountValue'}
+                      name={'HundiOrDiscountValue'}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -335,7 +401,7 @@ function TabDiscountOther(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                         // maxLength: 4,
@@ -344,7 +410,7 @@ function TabDiscountOther(props) {
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.HundiPerDiscountValue}
+                      errors={errors.HundiOrDiscountValue}
                       disabled={true}
                     />
                   </Col>
@@ -418,7 +484,7 @@ function TabDiscountOther(props) {
                       <Col md="4">
                         <TextFieldHookForm
                           label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
-                          name={'NetPOPriceCurrency'}
+                          name={'NetPOPriceOtherCurrency'}
                           Controller={Controller}
                           control={control}
                           register={register}
@@ -435,7 +501,7 @@ function TabDiscountOther(props) {
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
-                          errors={errors.NetPOPriceCurrency}
+                          errors={errors.NetPOPriceOtherCurrency}
                           disabled={true}
                         />
                       </Col>

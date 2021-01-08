@@ -74,6 +74,7 @@ export default function VishualAdDrawer(props) {
                                         control={control}
                                         register={register}
                                         mandatory={true}
+                                        handleChange={() => { }}
                                         defaultValue={props.updatedQuantity}
                                         className=""
                                         customClassName={'withBorder'}
