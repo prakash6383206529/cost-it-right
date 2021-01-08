@@ -6,6 +6,259 @@ import PartCompoment from '../CostingHeadCosts/Part'
 import { getRMCCTabData, saveCostingRMCCTab } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
+import AssemblyPart from '../CostingHeadCosts/SubAssembly';
+
+
+const SinglePartComponent = {
+  title: "Fake article title.",
+  comments: [
+    {
+      PartName: 'ABCD',
+      Type: 'Component',
+      CostingPartDetails: {
+        CostingRawMaterialsCost: [],
+        CostingBoughtOutPartCost: [],
+        CostingConversionCost: [],
+      },
+      value: 4,
+      children: []
+    },
+  ]
+}
+
+const AssemblyLevelArray = {
+  title: "Fake article title.",
+  comments: [
+    {
+      PartName: 'ABCD',
+      Type: 'Assembly',
+      IsOpen: false,
+      CostingPartDetails: {},
+      value: 5,
+      level: 'L0',
+      children: [
+        {
+          PartName: 'EF',
+          Type: 'Part',
+          IsOpen: false,
+          CostingPartDetails: {
+            CostingRawMaterialsCost: [],
+            CostingBoughtOutPartCost: [],
+            CostingConversionCost: [],
+          },
+          value: 10,
+          level: 'L1',
+          children: []
+        },
+        {
+          PartName: 'BOP1',
+          Type: 'BOP',
+          IsOpen: false,
+          CostingPartDetails: {},
+          value: 10,
+          level: 'L1',
+          children: []
+        },
+        {
+          PartName: 'PQRS',
+          Type: 'Sub Assembly',
+          IsOpen: false,
+          CostingPartDetails: {
+            CostingRawMaterialsCost: [],
+            CostingBoughtOutPartCost: [],
+            CostingConversionCost: [],
+          },
+          value: 5,
+          level: 'L1',
+          children: [
+            {
+              PartName: 'PQ',
+              Type: 'Part',
+              IsOpen: false,
+              CostingPartDetails: {
+                CostingRawMaterialsCost: [],
+                CostingBoughtOutPartCost: [],
+                CostingConversionCost: [],
+              },
+              value: 10,
+              level: 'L2',
+              children: []
+            },
+            {
+              PartName: 'BOP12',
+              Type: 'BOP',
+              IsOpen: false,
+              CostingPartDetails: {},
+              value: 10,
+              level: 'L2',
+              children: []
+            },
+            {
+              PartName: 'GH',
+              Type: 'Part',
+              IsOpen: false,
+              CostingPartDetails: {
+                CostingRawMaterialsCost: [],
+                CostingBoughtOutPartCost: [],
+                CostingConversionCost: [],
+              },
+              value: 20,
+              level: 'L2',
+              children: []
+            },
+            {
+              PartName: 'XUV',
+              Type: 'Sub Assembly',
+              IsOpen: false,
+              CostingPartDetails: {
+                CostingRawMaterialsCost: [],
+                CostingBoughtOutPartCost: [],
+                CostingConversionCost: [],
+              },
+              value: 5,
+              level: 'L2',
+              children: [
+                {
+                  PartName: 'XX',
+                  Type: 'Part',
+                  IsOpen: false,
+                  CostingPartDetails: {
+                    CostingRawMaterialsCost: [],
+                    CostingBoughtOutPartCost: [],
+                    CostingConversionCost: [],
+                  },
+                  value: 10,
+                  level: 'L3',
+                  children: []
+                },
+                {
+                  PartName: 'BOP12',
+                  Type: 'BOP',
+                  IsOpen: false,
+                  CostingPartDetails: {},
+                  value: 10,
+                  level: 'L3',
+                  children: []
+                },
+                {
+                  PartName: 'YY',
+                  Type: 'Part',
+                  IsOpen: false,
+                  CostingPartDetails: {
+                    CostingRawMaterialsCost: [],
+                    CostingBoughtOutPartCost: [],
+                    CostingConversionCost: [],
+                  },
+                  value: 20,
+                  level: 'L3',
+                  children: []
+                },
+                {
+                  PartName: 'VVVVVV',
+                  Type: 'Sub Assembly',
+                  IsOpen: false,
+                  CostingPartDetails: {
+                    CostingRawMaterialsCost: [],
+                    CostingBoughtOutPartCost: [],
+                    CostingConversionCost: [],
+                  },
+                  value: 5,
+                  level: 'L3',
+                  children: [
+                    {
+                      PartName: 'XX',
+                      Type: 'Part',
+                      IsOpen: false,
+                      CostingPartDetails: {
+                        CostingRawMaterialsCost: [],
+                        CostingBoughtOutPartCost: [],
+                        CostingConversionCost: [],
+                      },
+                      value: 10,
+                      level: 'L4',
+                      children: []
+                    },
+                    {
+                      PartName: 'BOP12',
+                      Type: 'BOP',
+                      IsOpen: false,
+                      CostingPartDetails: {},
+                      value: 10,
+                      level: 'L4',
+                      children: []
+                    },
+                    {
+                      PartName: 'YY',
+                      Type: 'Part',
+                      IsOpen: false,
+                      CostingPartDetails: {
+                        CostingRawMaterialsCost: [],
+                        CostingBoughtOutPartCost: [],
+                        CostingConversionCost: [],
+                      },
+                      value: 20,
+                      level: 'L4',
+                      children: []
+                    }
+                  ]
+                },
+                {
+                  PartName: 'UUUUUV',
+                  Type: 'Sub Assembly',
+                  IsOpen: false,
+                  CostingPartDetails: {
+                    CostingRawMaterialsCost: [],
+                    CostingBoughtOutPartCost: [],
+                    CostingConversionCost: [],
+                  },
+                  value: 5,
+                  level: 'L3',
+                  children: [
+                    {
+                      PartName: 'XX',
+                      Type: 'Part',
+                      IsOpen: false,
+                      CostingPartDetails: {
+                        CostingRawMaterialsCost: [],
+                        CostingBoughtOutPartCost: [],
+                        CostingConversionCost: [],
+                      },
+                      value: 10,
+                      level: 'L4',
+                      children: []
+                    },
+                    {
+                      PartName: 'BOP12',
+                      Type: 'BOP',
+                      IsOpen: false,
+                      CostingPartDetails: {},
+                      value: 10,
+                      level: 'L4',
+                      children: []
+                    },
+                    {
+                      PartName: 'YY',
+                      Type: 'Part',
+                      IsOpen: false,
+                      CostingPartDetails: {
+                        CostingRawMaterialsCost: [],
+                        CostingBoughtOutPartCost: [],
+                        CostingConversionCost: [],
+                      },
+                      value: 20,
+                      level: 'L4',
+                      children: []
+                    }
+                  ]
+                },
+              ]
+            },
+          ]
+        },
+      ]
+    },
+  ]
+}
 
 function TabRMCC(props) {
 
@@ -16,7 +269,7 @@ function TabRMCC(props) {
   const [netProcessCost, setNetProcessCost] = useState('');
   const [netOperationCost, setNetOperationCost] = useState('');
   const [netToolsCost, setNetToolsCost] = useState(0);
-  const [tabData, setTabData] = useState([]);
+  const [tabData, setTabData] = useState(AssemblyLevelArray.comments);
   const [costingData, setCostingData] = useState({});
 
   const dispatch = useDispatch()
@@ -24,20 +277,20 @@ function TabRMCC(props) {
   const costData = useContext(costingInfoContext);
 
   useEffect(() => {
-    if (Object.keys(costData).length > 0) {
-      const data = {
-        CostingId: costData.CostingId,
-        PartId: costData.PartId,
-        //PlantId: costData.PlantId,
-      }
-      dispatch(getRMCCTabData(data, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setCostingData(Data)
-          setTabData(Data.CostingPartDetails)
-        }
-      }))
-    }
+    // if (Object.keys(costData).length > 0) {
+    //   const data = {
+    //     CostingId: costData.CostingId,
+    //     PartId: costData.PartId,
+    //     //PlantId: costData.PlantId,
+    //   }
+    //   dispatch(getRMCCTabData(data, (res) => {
+    //     if (res && res.data && res.data.Result) {
+    //       let Data = res.data.Data;
+    //       setCostingData(Data)
+    //       setTabData(Data.CostingPartDetails)
+    //     }
+    //   }))
+    // }
   }, [costData]);
 
   //MANIPULATE TOP HEADER COSTS
@@ -328,38 +581,67 @@ function TabRMCC(props) {
                       </thead>
                       <tbody>
                         {
+                          // tabData && tabData.map((item, index) => {
+                          //   return (
+                          //     < >
+                          //       <tr key={index} onClick={() => toggle(index)}>
+                          //         <td><span className="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
+                          //         <td>{item.Type}</td>
+                          //         <td>{item.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.TotalRawMaterialsCost, 2) : 0}</td>
+                          //         <td>{item.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.TotalBoughtOutPartCost, 2) : 0}</td>
+                          //         <td>{item.TotalConversionCost !== null ? checkForDecimalAndNull(item.TotalConversionCost, 2) : 0}</td>
+                          //         <td>{item.Quantity !== null ? item.Quantity : 1}</td>
+                          //         <td>{item.GrandTotalCost !== null ? checkForDecimalAndNull(item.GrandTotalCost, 2) : 0}</td>
+                          //       </tr>
+                          //       {item.IsOpen && <tr>
+                          //         <td colSpan={7} className="cr-innerwrap-td">
+                          //           <div>
+                          //             <PartCompoment
+                          //               index={index}
+                          //               rmData={item.CostingRawMaterialsCost}
+                          //               bopData={item.CostingBoughtOutPartCost}
+                          //               ccData={item.CostingConversionCost}
+                          //               costData={costData}
+                          //               setRMCost={setRMCost}
+                          //               setBOPCost={setBOPCost}
+                          //               setProcessCost={setProcessCost}
+                          //               setOperationCost={setOperationCost}
+                          //               setToolCost={setToolCost}
+                          //             />
+                          //           </div>
+                          //         </td>
+                          //       </tr>}
+                          //     </>
+                          //   )
+                          // })
+
                           tabData && tabData.map((item, index) => {
-                            return (
-                              < >
-                                <tr key={index} onClick={() => toggle(index)}>
-                                  <td><span className="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                                  <td>{item.Type}</td>
-                                  <td>{item.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.TotalRawMaterialsCost, 2) : 0}</td>
-                                  <td>{item.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.TotalBoughtOutPartCost, 2) : 0}</td>
-                                  <td>{item.TotalConversionCost !== null ? checkForDecimalAndNull(item.TotalConversionCost, 2) : 0}</td>
-                                  <td>{item.Quantity !== null ? item.Quantity : 1}</td>
-                                  <td>{item.GrandTotalCost !== null ? checkForDecimalAndNull(item.GrandTotalCost, 2) : 0}</td>
-                                </tr>
-                                {item.IsOpen && <tr>
-                                  <td colSpan={7} className="cr-innerwrap-td">
-                                    <div>
-                                      <PartCompoment
-                                        index={index}
-                                        rmData={item.CostingRawMaterialsCost}
-                                        bopData={item.CostingBoughtOutPartCost}
-                                        ccData={item.CostingConversionCost}
-                                        costData={costData}
-                                        setRMCost={setRMCost}
-                                        setBOPCost={setBOPCost}
-                                        setProcessCost={setProcessCost}
-                                        setOperationCost={setOperationCost}
-                                        setToolCost={setToolCost}
-                                      />
-                                    </div>
-                                  </td>
-                                </tr>}
-                              </>
-                            )
+                            if (item.Type === 'Component') {
+
+                              return (
+                                < >
+                                  <PartCompoment
+                                    index={index}
+                                    item={item}
+                                    rmData={item.CostingPartDetails.CostingRawMaterialsCost}
+                                    bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
+                                    ccData={item.CostingPartDetails.CostingConversionCost}
+                                  />
+                                </>
+                              )
+
+                            } else {
+
+                              return (
+                                < >
+                                  <AssemblyPart
+                                    index={index}
+                                    item={item}
+                                    children={item.children}
+                                  />
+                                </>
+                              )
+                            }
                           })
                         }
 

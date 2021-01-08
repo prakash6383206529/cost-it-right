@@ -33,7 +33,7 @@ function ProcessCost(props) {
   const [tabData, setTabData] = useState(props.data);
 
   useEffect(() => {
-    props.setProcessCost(tabData, props.index)
+    //props.setProcessCost(tabData, props.index)
   }, [tabData]);
 
   /**

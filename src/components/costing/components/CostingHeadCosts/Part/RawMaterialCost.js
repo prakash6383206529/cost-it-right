@@ -26,7 +26,7 @@ function RawMaterialCost(props) {
 
   useEffect(() => {
     setTimeout(() => {
-      props.setRMCost(gridData, props.index)
+      //props.setRMCost(gridData, props.index)
     }, 200)
   }, [gridData]);
 

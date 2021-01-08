@@ -22,7 +22,7 @@ function ToolCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    props.setToolCost(gridData, 0)
+    //props.setToolCost(gridData, 0)
   }, [gridData]);
 
   /**

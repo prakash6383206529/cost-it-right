@@ -22,7 +22,7 @@ function BOPCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    props.setBOPCost(gridData, props.index)
+    //props.setBOPCost(gridData, props.index)
   }, [gridData]);
 
   /**

@@ -22,7 +22,7 @@ function OperationCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    props.setOperationCost(gridData, 0)
+    //props.setOperationCost(gridData, 0)
   }, [gridData]);
 
   /**
