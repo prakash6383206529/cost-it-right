@@ -268,23 +268,28 @@ class ExchangeRateListing extends Component {
             )
         }
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
             <>
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4"><h3>Exchange Rate Master</h3></div>
-                    <hr />
-                    <Row className="pt-30">
-                        <Col md="9" className="filter-block">
+                    <div class="col-sm-4 pl-0"><h1>Exchange Rate Master</h1></div>
+                    <hr className="mb-0" />
+                    <Row className="pt-4">
+                        <Col md="7" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -325,7 +330,7 @@ class ExchangeRateListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="3" className="search-user-block">
+                        <Col md="5" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {AddAccessibility && <button
@@ -361,6 +366,7 @@ class ExchangeRateListing extends Component {
                     <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
+            </div>
             </ >
         );
     }

@@ -393,22 +393,27 @@ class InterestRateListing extends Component {
             )
         }
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
             <>
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4"><h3>Interest Rate</h3></div>
-                    <hr />
-                    <Row className="pt-30 filter-row-large">
+                    <div class="col-sm-4 pl-0"><h1>Interest Rate</h1></div>
+                    <hr className="mb-0" />
+                    <Row className="pt-4 filter-row-large">
                         <Col md="9"  className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
@@ -534,6 +539,7 @@ class InterestRateListing extends Component {
                     messageLabel={'Interest Rate'}
                     anchor={'right'}
                 />}
+            </div>
             </ >
         );
     }

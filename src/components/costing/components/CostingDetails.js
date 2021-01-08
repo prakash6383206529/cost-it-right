@@ -82,7 +82,6 @@ function CostingDetails() {
   const [type, setType] = useState('')
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
-
   //console.log('watch', watch('zbcPlantGridFields'))
   const fieldValues = useWatch({
     control,
@@ -176,7 +175,6 @@ function CostingDetails() {
       setIsTechnologySelected(false)
     }
   }
-
   /**
    * @method handlePartChange
    * @description  USED TO HANDLE PART CHANGE
@@ -222,7 +220,6 @@ function CostingDetails() {
       dispatch(getPartInfo('', () => {}))
     }
   }
-
   /**
    * @method handleEffectiveDateChange
    * @description Handle Effective Date
@@ -478,7 +475,6 @@ function CostingDetails() {
       return tempData.SelectedCostingVersion !== undefined ? true : false
     }
   }
-
   /**
    * @method checkForError
    * @description HANDLE COSTING VERSION SELECTED
@@ -490,7 +486,6 @@ function CostingDetails() {
       return true
     }
   }
-
   /**
    * @method warningMessageHandle
    * @description VIEW COSTING DETAILS IN READ ONLY MODE
@@ -614,7 +609,6 @@ function CostingDetails() {
       moveToCostingDetail(index, type)
     }
   }
-
   /**
    * @method editCosting
    * @description EDIT COSTING DETAILS
@@ -632,7 +626,6 @@ function CostingDetails() {
       moveToCostingDetail(index, type)
     }
   }
-
   /**
    * @method checkSOBChanged
    * @description CHECK SOB CHANGED FOR UPDATE COSTING AND TRIGGER CONFIRMATION FOR DRAFT ALL PENDING COSTINGS
@@ -642,13 +635,11 @@ function CostingDetails() {
       let tempData = zbcPlantGrid[index]
       return tempData && tempData.isSOBChanged ? true : false
     }
-
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       return tempData && tempData.isSOBChanged ? true : false
     }
   }
-
   /**
    * @method editCostingAlert
    * @description CONFIRM EDIT COSTING FOR SOB CHANGE CONFIRMATION
@@ -688,7 +679,6 @@ function CostingDetails() {
         }),
       )
     }
-
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -719,7 +709,6 @@ function CostingDetails() {
       setStepTwo(true)
       setStepOne(false)
     }
-
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -727,7 +716,6 @@ function CostingDetails() {
       setStepOne(false)
     }
   }
-
   /**
    * @method copyCosting
    * @description COPY EXIS COSTING
@@ -770,7 +758,6 @@ function CostingDetails() {
     }
     setType(type)
   }
-
   /**
    * @method cancel
    * @description used to Reset form
@@ -784,7 +771,6 @@ function CostingDetails() {
       Part: '',
     })
   }
-
   /**
    * @method backToFirstStep
    * @description used to Reset form
@@ -796,7 +782,6 @@ function CostingDetails() {
   }
 
   //console.log('errors >>>', errors);
-
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -830,7 +815,6 @@ function CostingDetails() {
                       <Col md="12">
                         <div className="left-border">{'Part Details:'}</div>
                       </Col>
-
                       <Col className="col-md-15">
                         <SearchableSelectHookForm
                           label={'Technology'}
@@ -849,7 +833,6 @@ function CostingDetails() {
                           errors={errors.Technology}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <SearchableSelectHookForm
                           label={'Assembly No./Part No.'}
@@ -866,7 +849,6 @@ function CostingDetails() {
                           errors={errors.Part}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly Name/Part Name"
@@ -892,7 +874,6 @@ function CostingDetails() {
                           disabled={true}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly/Part Description"
@@ -910,7 +891,6 @@ function CostingDetails() {
                           disabled={true}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="ECO No."
@@ -927,7 +907,6 @@ function CostingDetails() {
                           disabled={true}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Drawing No."
@@ -944,7 +923,6 @@ function CostingDetails() {
                           disabled={true}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Revision No."
@@ -961,7 +939,6 @@ function CostingDetails() {
                           disabled={true}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Price(Approved SOB)"
@@ -978,7 +955,6 @@ function CostingDetails() {
                           disabled={true}
                         />
                       </Col>
-
                       <Col className="col-md-15">
                         <div className="form-group">
                           <label>Effective Date</label>
@@ -1003,7 +979,6 @@ function CostingDetails() {
                         </div>
                       </Col>
                     </Row>
-
                     {IsOpenVendorSOBDetails && (
                       <Row>
                         <Col md="12">
@@ -1063,7 +1038,7 @@ function CostingDetails() {
                                   return (
                                     <tr key={index}>
                                       <td>{item.PlantCode}</td>
-                                      <td className="cr-select-height">
+                                      <td className="cr-select-height w-100px">
                                         <TextFieldHookForm
                                           label={''}
                                           name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
@@ -1100,7 +1075,7 @@ function CostingDetails() {
                                           disabled={isSOBEnabled ? true : false}
                                         />
                                       </td>
-                                      <td className="cr-select-height">
+                                      <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={''}
                                           name={`${zbcPlantGridFields}[${index}]CostingVersion`}
@@ -1207,7 +1182,6 @@ function CostingDetails() {
                             ''
                           )}
                         </Col>
-
                         {/* ZBC PLANT GRID FOR COSTING */}
                         <Col md="12">
                           <Table className="table cr-brdr-main" size="sm">
@@ -1231,7 +1205,7 @@ function CostingDetails() {
                                   return (
                                     <tr key={index}>
                                       <td>{item.VendorName}</td>
-                                      <td>
+                                      <td className="w-100px">
                                         <TextFieldHookForm
                                           label=""
                                           name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
@@ -1355,7 +1329,6 @@ function CostingDetails() {
                         </Col>
                       </Row>
                     )}
-
                     {!IsOpenVendorSOBDetails && (
                       <Row className="sf-btn-footer justify-content-between">
                         <div className="col-sm-12 text-right">
@@ -1372,7 +1345,6 @@ function CostingDetails() {
                             </div>{' '}
                             {'Clear'}
                           </button>
-
                           <button
                             type="button"
                             className="submit-button save-btn"

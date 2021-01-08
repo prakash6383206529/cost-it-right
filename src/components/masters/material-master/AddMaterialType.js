@@ -103,59 +103,65 @@ class AddMaterialType extends Component {
     render() {
         const { handleSubmit, isEditFlag } = this.props;
         return (
-            <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <Container>
-                        <div className={'drawer-wrapper'}>
-                            <form
-                                noValidate
-                                className="form"
-                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                            >
-                                <Row className="drawer-heading">
-                                    <Col>
-                                        <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update Material' : 'Add Material'}</h3>
-                                        </div>
-                                        <div
-                                            onClick={(e) => this.toggleDrawer(e)}
-                                            className={'close-button right'}>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="12">
-                                        <Field
-                                            label={`Material`}
-                                            name={"MaterialType"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            className=" "
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                    <Col md="12">
-                                        <Field
-                                            label={`Density (g/cm3)`}
-                                            name={"CalculatedDensityValue"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required, decimalLengthFour]}
-                                            component={renderNumberInputField}
-                                            required={true}
-                                            className=" withoutBorder"
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                </Row>
+          <div>
+            <Drawer
+              anchor={this.props.anchor}
+              open={this.props.isOpen}
+              onClose={(e) => this.toggleDrawer(e)}
+            >
+              <Container>
+                <div className={"drawer-wrapper"}>
+                  <form
+                    noValidate
+                    className="form"
+                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  >
+                    <Row className="drawer-heading">
+                      <Col>
+                        <div className={"header-wrapper left"}>
+                          <h3>
+                            {isEditFlag ? "Update Material" : "Add Material"}
+                          </h3>
+                        </div>
+                        <div
+                          onClick={(e) => this.toggleDrawer(e)}
+                          className={"close-button right"}
+                        ></div>
+                      </Col>
+                    </Row>
+                    <Row className="pl-3">
+                      <Col md="12">
+                        <Field
+                          label={`Material`}
+                          name={"MaterialType"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required]}
+                          component={renderText}
+                          required={true}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
+                      </Col>
+                      <Col md="12">
+                        <Field
+                          label={`Density (g/cm3)`}
+                          name={"CalculatedDensityValue"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required, decimalLengthFour]}
+                          component={renderNumberInputField}
+                          required={true}
+                          className=" withoutBorder"
+                          customClassName=" withBorder"
+                        />
+                      </Col>
+                    </Row>
 
-                                <Row className=" no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-right ">
-                                            {/* <input
+                    <Row className=" no-gutters justify-content-between">
+                      <div className="col-md-12">
+                        <div className="text-right ">
+                          {/* <input
                                                 //disabled={pristine || submitting}
                                                 onClick={this.cancel}
                                                 type="button"
@@ -168,30 +174,42 @@ class AddMaterialType extends Component {
                                                 value={isEditFlag ? 'Update' : 'Save'}
                                                 className="submit-button mr5 save-btn"
                                             /> */}
-                                            <button
-                                                onClick={this.cancel}
-                                                type="submit"
-                                                value="CANCEL"
-                                                className="reset mr15 cancel-btn">
-
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
-                                            <button
-                                                type="submit"
-                                                // disabled={isSubmitted ? true : false}
-                                                className="btn-primary save-btn"
-                                            >	<div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
-                                                </div>
-                                                {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </Row>
-                            </form>
+                          <button
+                            onClick={this.cancel}
+                            type="submit"
+                            value="CANCEL"
+                            className="reset mr15 cancel-btn"
+                          >
+                            <div className={"cross-icon"}>
+                              <img
+                                src={require("../../../assests/images/times.png")}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>
+                            CANCEL
+                          </button>
+                          <button
+                            type="submit"
+                            // disabled={isSubmitted ? true : false}
+                            className="btn-primary save-btn"
+                          >
+                            {" "}
+                            <div className={"check-icon"}>
+                              <img
+                                src={require("../../../assests/images/check.png")}
+                                alt="check-icon.jpg"
+                              />
+                            </div>
+                            {this.state.isEditFlag ? "UPDATE" : "SAVE"}
+                          </button>
                         </div>
-
-                    </Container>
-                </Drawer>
-            </div>
+                      </div>
+                    </Row>
+                  </form>
+                </div>
+              </Container>
+            </Drawer>
+          </div>
         );
     }
 }

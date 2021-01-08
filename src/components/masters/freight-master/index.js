@@ -126,16 +126,17 @@ class FreightMaster extends Component {
 
         return (
             <>
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
-                        <h3>{`Freight & Packaging Master`}</h3>
+                        <h1>{`Freight & Packaging Master`}</h1>
                     </Col>
                 </Row>
 
                 <Row>
                     <Col>
-                        <Nav tabs className="subtabs">
+                        <Nav tabs className="subtabs mt-0">
                             <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                     Manage Freight
@@ -172,8 +173,8 @@ class FreightMaster extends Component {
 
                     </Col>
                 </Row>
-
-            </ >
+                </div>
+                </ >
         );
     }
 }

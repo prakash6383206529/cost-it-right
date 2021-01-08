@@ -264,209 +264,245 @@ class AddInterestRate extends Component {
         const { handleSubmit, } = this.props;
         const { isEditFlag, } = this.state;
         return (
-            <div>
-                {/* {isLoader && <Loader />} */}
-                <div className="login-container signup-form">
+          <div className="container-fluid">
+            {/* {isLoader && <Loader />} */}
+            <div className="login-container signup-form">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="shadow-lgg login-formg">
                     <div className="row">
-                        <div className="col-md-12">
-                            <div className="shadow-lgg login-formg">
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-heading mb-0">
-                                            <h2>{this.state.isEditFlag ? 'Update Interest Rate' : 'Add Interest Rate'}</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="4" className="switch mb15">
-                                            <label className="switch-level">
-                                                <div className={'left-title'}>Zero Based</div>
-                                                <Switch
-                                                    onChange={this.onPressVendor}
-                                                    checked={this.state.IsVendor}
-                                                    id="normal-switch"
-                                                    disabled={isEditFlag ? true : false}
-                                                    background="#4DC771"
-                                                    onColor="#4DC771"
-                                                    onHandleColor="#ffffff"
-                                                    offColor="#4DC771"
-                                                    uncheckedIcon={false}
-                                                    checkedIcon={false}
-                                                    height={20}
-                                                    width={46}
-                                                />
-                                                <div className={'right-title'}>Vendor Based</div>
-                                            </label>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        {this.state.IsVendor &&
-                                            <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            name="VendorName"
-                                                            type="text"
-                                                            label="Vendor Name"
-                                                            component={searchableSelect}
-                                                            placeholder={'--select--'}
-                                                            options={this.renderListing('VendorNameList')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleVendorName}
-                                                            valueDescription={this.state.vendorName}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>}
-                                    </Row>
-
-                                    <Row>
-                                        <Col md="12">
-                                            <div className="left-border">
-                                                {'ICC:'}
-                                            </div>
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                name="ICCApplicability"
-                                                type="text"
-                                                label="ICC Applicability"
-                                                component={searchableSelect}
-                                                placeholder={'--select--'}
-                                                options={this.renderListing('ICC')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleICCApplicability}
-                                                valueDescription={this.state.ICCApplicability}
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Annual ICC (%)`}
-                                                name={"ICCPercent"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName=" withBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col md="12">
-                                            <div className="left-border">
-                                                {'Payment Terms:'}
-                                            </div>
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                name="PaymentTermsApplicability"
-                                                type="text"
-                                                label="Payment Terms Applicability"
-                                                component={searchableSelect}
-                                                placeholder={'--select--'}
-                                                options={this.renderListing('PaymentTerms')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handlePaymentApplicability}
-                                                valueDescription={this.state.PaymentTermsApplicability}
-                                                disabled={false}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Repayment Period (Days)`}
-                                                name={"RepaymentPeriod"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName=" withBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Payment Term (%)`}
-                                                name={"PaymentTermPercent"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName=" withBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <div className="form-group">
-                                                <label>
-                                                    Effective Date
-                                                    {/* <span className="asterisk-required">*</span> */}
-                                                </label>
-                                                <div className="inputbox date-section">
-                                                    <DatePicker
-                                                        name="EffectiveDate"
-                                                        selected={this.state.effectiveDate}
-                                                        onChange={this.handleEffectiveDateChange}
-                                                        showMonthDropdown
-                                                        showYearDropdown
-                                                        dateFormat="dd/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        className="withBorder"
-                                                        autoComplete={'off'}
-                                                        disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    </Row>
-
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-right bluefooter-butn">
-                                            <button
-                                                type={'button'}
-                                                className="reset mr15 cancel-btn"
-                                                onClick={this.cancel} >
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="submit-button mr5 save-btn" >
-                                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                                {isEditFlag ? 'Update' : 'Save'}
-                                            </button>
-                                        </div>
-                                    </Row>
-                                </form>
-                            </div>
+                      <div className="col-md-6">
+                        <div className="form-heading mb-0">
+                          <h1>
+                            {this.state.isEditFlag
+                              ? "Update Interest Rate"
+                              : "Add Interest Rate"}
+                          </h1>
                         </div>
+                      </div>
                     </div>
-                </div>
+                    <form
+                      noValidate
+                      className="form"
+                      onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    >
+                      <Row>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className={"left-title"}>Zero Based</div>
+                            <Switch
+                              onChange={this.onPressVendor}
+                              checked={this.state.IsVendor}
+                              id="normal-switch"
+                              disabled={isEditFlag ? true : false}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={"right-title"}>Vendor Based</div>
+                          </label>
+                        </Col>
+                      </Row>
+                      <Row>
+                        {this.state.IsVendor && (
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="VendorName"
+                                  type="text"
+                                  label="Vendor Name"
+                                  component={searchableSelect}
+                                  placeholder={"--select--"}
+                                  options={this.renderListing("VendorNameList")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.vendorName == null ||
+                                    this.state.vendorName.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleVendorName
+                                  }
+                                  valueDescription={this.state.vendorName}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                        )}
+                      </Row>
 
+                      <Row>
+                        <Col md="12">
+                          <div className="left-border">{"ICC:"}</div>
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            name="ICCApplicability"
+                            type="text"
+                            label="ICC Applicability"
+                            component={searchableSelect}
+                            placeholder={"--select--"}
+                            options={this.renderListing("ICC")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.ICCApplicability == null ||
+                              this.state.ICCApplicability.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={
+                              this.handleICCApplicability
+                            }
+                            valueDescription={this.state.ICCApplicability}
+                            disabled={false}
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Annual ICC (%)`}
+                            name={"ICCPercent"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, number]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                      </Row>
+
+                      <Row>
+                        <Col md="12">
+                          <div className="left-border">{"Payment Terms:"}</div>
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            name="PaymentTermsApplicability"
+                            type="text"
+                            label="Payment Terms Applicability"
+                            component={searchableSelect}
+                            placeholder={"--select--"}
+                            options={this.renderListing("PaymentTerms")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.PaymentTermsApplicability == null ||
+                              this.state.PaymentTermsApplicability.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={
+                              this.handlePaymentApplicability
+                            }
+                            valueDescription={
+                              this.state.PaymentTermsApplicability
+                            }
+                            disabled={false}
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Repayment Period (Days)`}
+                            name={"RepaymentPeriod"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, number]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Payment Term (%)`}
+                            name={"PaymentTermPercent"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, number]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
+                            <label>
+                              Effective Date
+                              {/* <span className="asterisk-required">*</span> */}
+                            </label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dateFormat="dd/MM/yyyy"
+                                //maxDate={new Date()}
+                                dropdownMode="select"
+                                placeholderText="Select date"
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </div>
+                          </div>
+                        </Col>
+                      </Row>
+
+                      <Row className="sf-btn-footer no-gutters justify-content-between">
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                          <button
+                            type={"button"}
+                            className="reset mr15 cancel-btn"
+                            onClick={this.cancel}
+                          >
+                            <div className={"cross-icon"}>
+                              <img
+                                src={require("../../../assests/images/times.png")}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>{" "}
+                            {"Cancel"}
+                          </button>
+                          <button
+                            type="submit"
+                            className="submit-button mr5 save-btn"
+                          >
+                            <div className={"check-icon"}>
+                              <img
+                                src={require("../../../assests/images/check.png")}
+                                alt="check-icon.jpg"
+                              />{" "}
+                            </div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                        </div>
+                      </Row>
+                    </form>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         );
     }
 }

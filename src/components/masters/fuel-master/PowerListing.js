@@ -350,199 +350,286 @@ class PowerListing extends Component {
         const { handleSubmit, AddAccessibility } = this.props;
         const { isEditFlag, } = this.state;
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
-            <div>
-                {this.props.loading && <Loader />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="3" className="switch mb15">
-                            <label className="switch-level">
-                                <div className={'left-title'}>Zero Based</div>
-                                <Switch
-                                    onChange={this.onPressVendor}
-                                    checked={this.state.IsVendor}
-                                    id="normal-switch"
-                                    disabled={isEditFlag ? true : false}
-                                    background="#4DC771"
-                                    onColor="#4DC771"
-                                    onHandleColor="#ffffff"
-                                    offColor="#4DC771"
-                                    uncheckedIcon={false}
-                                    checkedIcon={false}
-                                    height={20}
-                                    width={46}
-                                />
-                                <div className={'right-title'}>Vendor Based</div>
-                            </label>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md="9" className="filter-block ">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                {!this.state.IsVendor &&
-                                    <>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="state"
-                                                type="text"
-                                                label={''}
-                                                component={searchableSelect}
-                                                placeholder={'--- Select State ---'}
-                                                isClearable={false}
-                                                options={this.renderListing('state')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                                                //required={true}
-                                                handleChangeDescription={this.handleState}
-                                                valueDescription={this.state.StateName}
-                                                disabled={false}
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="plant"
-                                                type="text"
-                                                label={''}
-                                                component={searchableSelect}
-                                                placeholder={'--Select Plant'}
-                                                isClearable={false}
-                                                options={this.renderListing('plant')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
-                                                //required={true}
-                                                handleChangeDescription={this.handlePlant}
-                                                valueDescription={this.state.plant}
-                                            />
-                                        </div>
-                                    </>}
-                                {this.state.IsVendor &&
-                                    <>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="VendorName"
-                                                type="text"
-                                                label={''}
-                                                component={searchableSelect}
-                                                placeholder={'--Vendor Name--'}
-                                                isClearable={false}
-                                                options={this.renderListing('VendorNameList')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleVendorName}
-                                                valueDescription={this.state.vendorName}
-                                                disabled={isEditFlag ? true : false}
-                                                className="fullinput-icon"
-                                            />
-                                        </div>
-                                        <div className="flex-fill">
-                                            <Field
-                                                name="VendorPlant"
-                                                type="text"
-                                                label={''}
-                                                component={searchableSelect}
-                                                placeholder={'--Vendor Plant--'}
-                                                isClearable={false}
-                                                options={this.renderListing('VendorPlant')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.vendorPlant == null || this.state.vendorPlant.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleVendorPlant}
-                                                valueDescription={this.state.vendorPlant}
-                                                disabled={isEditFlag ? true : false}
-                                                className="fullinput-icon"
-                                            />
-                                        </div>
-                                    </>}
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col md="3" className="search-user-block">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    <>
-                                        {AddAccessibility && <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD</button>}
-                                    </>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+          <div>
+            {this.props.loading && <Loader />}
+            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+              <Row className="pt-4">
+                <Col md="3" className="switch mb15">
+                  <label className="switch-level">
+                    <div className={"left-title"}>Zero Based</div>
+                    <Switch
+                      onChange={this.onPressVendor}
+                      checked={this.state.IsVendor}
+                      id="normal-switch"
+                      disabled={isEditFlag ? true : false}
+                      background="#4DC771"
+                      onColor="#4DC771"
+                      onHandleColor="#ffffff"
+                      offColor="#4DC771"
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      height={20}
+                      width={46}
+                    />
+                    <div className={"right-title"}>Vendor Based</div>
+                  </label>
+                </Col>
+              </Row>
+              <Row>
+                <Col md="8" className="filter-block ">
+                  <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
+                    </div>
+                    {!this.state.IsVendor && (
+                      <>
+                        <div className="flex-fill">
+                          <Field
+                            name="state"
+                            type="text"
+                            label={""}
+                            component={searchableSelect}
+                            placeholder={"--- Select State ---"}
+                            isClearable={false}
+                            options={this.renderListing("state")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                            //required={true}
+                            handleChangeDescription={this.handleState}
+                            valueDescription={this.state.StateName}
+                            disabled={false}
+                          />
+                        </div>
+                        <div className="flex-fill">
+                          <Field
+                            name="plant"
+                            type="text"
+                            label={""}
+                            component={searchableSelect}
+                            placeholder={"--Select Plant"}
+                            isClearable={false}
+                            options={this.renderListing("plant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                            //required={true}
+                            handleChangeDescription={this.handlePlant}
+                            valueDescription={this.state.plant}
+                          />
+                        </div>
+                      </>
+                    )}
+                    {this.state.IsVendor && (
+                      <>
+                        <div className="flex-fill">
+                          <Field
+                            name="VendorName"
+                            type="text"
+                            label={""}
+                            component={searchableSelect}
+                            placeholder={"--Vendor Name--"}
+                            isClearable={false}
+                            options={this.renderListing("VendorNameList")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.vendorName == null ||
+                              this.state.vendorName.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleVendorName}
+                            valueDescription={this.state.vendorName}
+                            disabled={isEditFlag ? true : false}
+                            className="fullinput-icon"
+                          />
+                        </div>
+                        <div className="flex-fill">
+                          <Field
+                            name="VendorPlant"
+                            type="text"
+                            label={""}
+                            component={searchableSelect}
+                            placeholder={"--Vendor Plant--"}
+                            isClearable={false}
+                            options={this.renderListing("VendorPlant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.vendorPlant == null ||
+                              this.state.vendorPlant.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleVendorPlant}
+                            valueDescription={this.state.vendorPlant}
+                            disabled={isEditFlag ? true : false}
+                            className="fullinput-icon"
+                          />
+                        </div>
+                      </>
+                    )}
+                    <div className="flex-fill">
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.resetFilter}
+                        className="reset mr10"
+                      >
+                        {"Reset"}
+                      </button>
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.filterList}
+                        className="apply mr5"
+                      >
+                        {"Apply"}
+                      </button>
+                    </div>
+                  </div>
+                </Col>
+                <Col md="4" className="search-user-block mb-3">
+                  <div className="d-flex justify-content-end bd-highlight w100">
+                    <div>
+                      <>
+                        {AddAccessibility && (
+                          <button
+                            type="button"
+                            className={"user-btn"}
+                            onClick={this.formToggle}
+                          >
+                            <div className={"plus"}></div>ADD
+                          </button>
+                        )}
+                      </>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </form>
+            <Row>
+              <Col>
+                {/* ZBC POWER LISTING */}
+                {!this.state.IsVendor && (
+                  <BootstrapTable
+                    data={this.state.tableData}
+                    striped={false}
+                    hover={false}
+                    bordered={false}
+                    options={options}
+                    search
+                    // exportCSV
+                    //ignoreSinglePage
+                    ref={"table"}
+                    pagination
+                  >
+                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                    <TableHeaderColumn
+                      dataField="StateName"
+                      width={100}
+                      columnTitle={true}
+                      dataAlign="center"
+                      dataSort={true}
+                    >
+                      {"State"}
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="PlantName"
+                      width={100}
+                      columnTitle={true}
+                      dataAlign="center"
+                      dataSort={true}
+                    >
+                      {"Plant"}
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="NetPowerCostPerUnit"
+                      width={100}
+                      columnTitle={true}
+                      dataAlign="center"
+                      dataSort={true}
+                    >
+                      {"Net Cost Per Unit"}
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      width={100}
+                      dataField="PowerId"
+                      export={false}
+                      isKey={true}
+                      dataFormat={this.buttonFormatter}
+                    >
+                      Actions
+                    </TableHeaderColumn>
+                  </BootstrapTable>
+                )}
 
-                </form>
-                <Row>
-                    <Col>
-
-                        {/* ZBC POWER LISTING */}
-                        {!this.state.IsVendor &&
-                            <BootstrapTable
-                                data={this.state.tableData}
-                                striped={false}
-                                hover={false}
-                                bordered={false}
-                                options={options}
-                                search
-                                // exportCSV
-                                //ignoreSinglePage
-                                ref={'table'}
-                                pagination>
-                                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                                <TableHeaderColumn dataField="StateName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NetPowerCostPerUnit" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                            </BootstrapTable>}
-
-                        {/* VENDOR POWER LISTING */}
-                        {this.state.IsVendor &&
-                            <BootstrapTable
-                                data={this.state.tableData}
-                                striped={false}
-                                hover={false}
-                                bordered={false}
-                                options={options}
-                                search
-                                // exportCSV
-                                //ignoreSinglePage
-                                ref={'table'}
-                                pagination>
-                                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="VendorPlantName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NetPowerCostPerUnit" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                            </BootstrapTable>}
-
-                    </Col>
-                </Row>
-            </div >
+                {/* VENDOR POWER LISTING */}
+                {this.state.IsVendor && (
+                  <BootstrapTable
+                    data={this.state.tableData}
+                    striped={false}
+                    hover={false}
+                    bordered={false}
+                    options={options}
+                    search
+                    // exportCSV
+                    //ignoreSinglePage
+                    ref={"table"}
+                    pagination
+                  >
+                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                    <TableHeaderColumn
+                      dataField="VendorName"
+                      width={100}
+                      columnTitle={true}
+                      dataAlign="center"
+                      dataSort={true}
+                    >
+                      {"Vendor Name"}
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="VendorPlantName"
+                      width={100}
+                      columnTitle={true}
+                      dataAlign="center"
+                      dataSort={true}
+                    >
+                      {"Vendor Plant"}
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="NetPowerCostPerUnit"
+                      width={100}
+                      columnTitle={true}
+                      dataAlign="center"
+                      dataSort={true}
+                    >
+                      {"Net Cost Per Unit"}
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      width={100}
+                      dataField="PowerDetailId"
+                      export={false}
+                      isKey={true}
+                      dataFormat={this.buttonFormatter}
+                    >
+                      Actions
+                    </TableHeaderColumn>
+                  </BootstrapTable>
+                )}
+              </Col>
+            </Row>
+          </div>
         );
     }
 }

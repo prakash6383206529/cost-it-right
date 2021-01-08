@@ -262,7 +262,7 @@ class AddClientDrawer extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="6">
                                         <Field
                                             label={`Company Name`}
@@ -300,7 +300,7 @@ class AddClientDrawer extends Component {
                                             required={true}
                                             maxLength={70}
                                             isDisabled={this.state.isEditFlag ? true : false}
-                                            customClassName={'withBorderEmail'}
+                                            customClassName={'withBorderEmail withBorder'}
                                         />
                                     </Col>
 
@@ -320,7 +320,7 @@ class AddClientDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col className="Ext phoneNumber" md="4">
+                                            <Col className="Ext phoneNumber pr-0" md="4">
                                                 <Field
                                                     label="Ex."
                                                     name={"Extension"}
@@ -338,7 +338,7 @@ class AddClientDrawer extends Component {
                                     </Col>
                                 </Row>
 
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md='6'>
                                         <Field
                                             name="MobileNumber"
@@ -369,7 +369,7 @@ class AddClientDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     {(country.length === 0 || country.label === 'India') &&
                                         <Col md='6'>
                                             <Field

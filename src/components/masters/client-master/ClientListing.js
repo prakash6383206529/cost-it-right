@@ -227,66 +227,100 @@ class ClientListing extends Component {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
-            <>
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4"><h3>Client</h3></div>
-                    <hr />
-                    <Row className="pt-30">
-                        <Col md="10" className="filter-block">
-                        </Col>
-                        <Col md="2" className="search-user-block">
-                            <div className="d-flex justify-content-end bd-highlight">
-                                {AddAccessibility && <button
-                                    type="button"
-                                    className={'user-btn'}
-                                    onClick={this.formToggle}>
-                                    <div className={'plus'}></div>ADD</button>}
-                            </div>
-                        </Col>
-                    </Row>
-
-                </form>
-                <BootstrapTable
-                    data={this.state.tableData}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    // exportCSV
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header client-table'
-                    className={'client-table'}
-                    pagination>
-                    <TableHeaderColumn dataField="CompanyName" dataAlign="center" >{'Company'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ClientName" dataAlign="center" >{'Client Name'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ClientEmailId" dataAlign="center" >{'Email Id'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CountryName" dataAlign="center" >{'Country'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="StateName" dataAlign="center" >{'State'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CityName" dataAlign="center" >{'City'}</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="ClientId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
-                {isOpenVendor && <AddClientDrawer
-                    isOpen={isOpenVendor}
-                    closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={isEditFlag}
-                    ID={this.state.ID}
-                    anchor={'right'}
-                />}
-            </ >
+          <>
+            <div className="container-fluid">
+              {/* {this.props.loading && <Loader />} */}
+              <form
+                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                noValidate
+              >
+                <h1>Client</h1>
+                <hr />
+                <Row className="pt-1">
+                  <Col md="10" className="filter-block"></Col>
+                  <Col md="2" className="search-user-block">
+                    <div className="d-flex justify-content-end bd-highlight">
+                      {AddAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn"}
+                          onClick={this.formToggle}
+                        >
+                          <div className={"plus"}></div>ADD
+                        </button>
+                      )}
+                    </div>
+                  </Col>
+                </Row>
+              </form>
+              <BootstrapTable
+                data={this.state.tableData}
+                striped={false}
+                hover={false}
+                bordered={false}
+                options={options}
+                search
+                // exportCSV
+                //ignoreSinglePage
+                ref={"table"}
+                trClassName={"userlisting-row"}
+                tableHeaderClass="my-custom-header client-table"
+                className={"client-table"}
+                pagination
+              >
+                <TableHeaderColumn dataField="CompanyName" dataAlign="center">
+                  {"Company"}
+                </TableHeaderColumn>
+                <TableHeaderColumn dataField="ClientName" dataAlign="center">
+                  {"Client Name"}
+                </TableHeaderColumn>
+                <TableHeaderColumn dataField="ClientEmailId" dataAlign="center">
+                  {"Email Id"}
+                </TableHeaderColumn>
+                <TableHeaderColumn dataField="CountryName" dataAlign="center">
+                  {"Country"}
+                </TableHeaderColumn>
+                <TableHeaderColumn dataField="StateName" dataAlign="center">
+                  {"State"}
+                </TableHeaderColumn>
+                <TableHeaderColumn dataField="CityName" dataAlign="center">
+                  {"City"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  className="action"
+                  dataField="ClientId"
+                  export={false}
+                  isKey={true}
+                  dataFormat={this.buttonFormatter}
+                >
+                  Actions
+                </TableHeaderColumn>
+              </BootstrapTable>
+              {isOpenVendor && (
+                <AddClientDrawer
+                  isOpen={isOpenVendor}
+                  closeDrawer={this.closeVendorDrawer}
+                  isEditFlag={isEditFlag}
+                  ID={this.state.ID}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }

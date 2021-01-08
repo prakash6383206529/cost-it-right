@@ -465,180 +465,266 @@ class LabourListing extends Component {
             )
         }
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
-            <>
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4"><h3>Labour</h3></div>
-                    <hr />
-                    <Row className="pt-30 filter-row-large">
-                        <Col md="12" className="filter-block col-lg-9">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="Employment Terms"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Employment-'}
-                                        isClearable={false}
-                                        options={this.renderListing('EmploymentTerms')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.EmploymentTerms == null || this.state.EmploymentTerms.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleHeadChange}
-                                        valueDescription={this.state.EmploymentTerms}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="state"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'-State-'}
-                                        isClearable={false}
-                                        options={this.renderListing('state')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleState}
-                                        valueDescription={this.state.StateName}
-                                        disabled={false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="plant"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'-Plant-'}
-                                        isClearable={false}
-                                        options={this.renderListing('plant')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handlePlant}
-                                        valueDescription={this.state.plant}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="LabourTypeIds"
-                                        type="text"
-                                        label=''
-                                        component={searchableSelect}
-                                        placeholder={'-Labour-'}
-                                        isClearable={false}
-                                        options={this.renderListing('labourList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.labourHandler}
-                                        valueDescription={this.state.labourType}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="MachineType"
-                                        type="text"
-                                        label=''
-                                        component={searchableSelect}
-                                        placeholder={'-Machine Type-'}
-                                        isClearable={false}
-                                        options={this.renderListing('MachineTypeList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleMachineType}
-                                        valueDescription={this.state.machineType}
-                                        disabled={false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr5"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr0"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col md="12" className="search-user-block col-lg-3 mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>}
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-
-                </form>
-                <BootstrapTable
-                    data={this.state.tableData}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    // exportCSV
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="IsContractBase" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{'Employment Terms '}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{'Vendor Name'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="center" >{'Plant'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="State" columnTitle={true} dataAlign="center" >{'State'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="MachineType" columnTitle={true} dataAlign="center" >{'Machine Type'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="LabourType" columnTitle={true} dataAlign="center" >{'Labour Type'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="LabourRate" columnTitle={true} dataAlign="center" >{'Rate Per Person/Annum'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="LabourId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'Labour'}
-                    isZBCVBCTemplate={false}
-                    messageLabel={'Labour'}
-                    anchor={'right'}
-                />}
-            </ >
+          <>
+            <div className="container-fluid">
+              {/* {this.props.loading && <Loader />} */}
+              <form
+                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                noValidate
+              >
+                <h1>Labour</h1>
+                <hr />
+                <Row className="pt-1 filter-row-large">
+                  <Col md="12" className="filter-block col-lg-9">
+                    <div className="d-inline-flex justify-content-start align-items-top w100">
+                      <div className="flex-fills">
+                        <h5>{`Filter By:`}</h5>
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="Employment Terms"
+                          type="text"
+                          label=""
+                          component={searchableSelect}
+                          placeholder={"-Employment-"}
+                          isClearable={false}
+                          options={this.renderListing("EmploymentTerms")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          validate={
+                            this.state.EmploymentTerms == null ||
+                            this.state.EmploymentTerms.length === 0
+                              ? [required]
+                              : []
+                          }
+                          required={true}
+                          handleChangeDescription={this.handleHeadChange}
+                          valueDescription={this.state.EmploymentTerms}
+                        />
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="state"
+                          type="text"
+                          label={""}
+                          component={searchableSelect}
+                          placeholder={"-State-"}
+                          isClearable={false}
+                          options={this.renderListing("state")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.handleState}
+                          valueDescription={this.state.StateName}
+                          disabled={false}
+                        />
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="plant"
+                          type="text"
+                          label={""}
+                          component={searchableSelect}
+                          placeholder={"-Plant-"}
+                          isClearable={false}
+                          options={this.renderListing("plant")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.plant == null || this.state.plant.length == 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.handlePlant}
+                          valueDescription={this.state.plant}
+                        />
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="LabourTypeIds"
+                          type="text"
+                          label=""
+                          component={searchableSelect}
+                          placeholder={"-Labour-"}
+                          isClearable={false}
+                          options={this.renderListing("labourList")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.labourHandler}
+                          valueDescription={this.state.labourType}
+                        />
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="MachineType"
+                          type="text"
+                          label=""
+                          component={searchableSelect}
+                          placeholder={"-Machine Type-"}
+                          isClearable={false}
+                          options={this.renderListing("MachineTypeList")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.handleMachineType}
+                          valueDescription={this.state.machineType}
+                          disabled={false}
+                        />
+                      </div>
+                      <div className="flex-fill">
+                        <button
+                          type="button"
+                          //disabled={pristine || submitting}
+                          onClick={this.resetFilter}
+                          className="reset mr5"
+                        >
+                          {"Reset"}
+                        </button>
+                        <button
+                          type="button"
+                          //disabled={pristine || submitting}
+                          onClick={this.filterList}
+                          className="apply mr0"
+                        >
+                          {"Apply"}
+                        </button>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md="12" className="search-user-block col-lg-3 mb-3">
+                    <div className="d-flex justify-content-end bd-highlight w100">
+                      <div>
+                        {BulkUploadAccessibility && (
+                          <button
+                            type="button"
+                            className={"user-btn mr5"}
+                            onClick={this.bulkToggle}
+                          >
+                            <div className={"upload"}></div>Bulk Upload
+                          </button>
+                        )}
+                        {AddAccessibility && (
+                          <button
+                            type="button"
+                            className={"user-btn"}
+                            onClick={this.formToggle}
+                          >
+                            <div className={"plus"}></div>ADD
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </form>
+              <BootstrapTable
+                data={this.state.tableData}
+                striped={false}
+                hover={false}
+                bordered={false}
+                options={options}
+                search
+                // exportCSV
+                //ignoreSinglePage
+                ref={"table"}
+                trClassName={"userlisting-row"}
+                tableHeaderClass="my-custom-header"
+                pagination
+              >
+                {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                <TableHeaderColumn
+                  dataField="IsContractBase"
+                  columnTitle={true}
+                  dataAlign="center"
+                  dataSort={true}
+                  dataFormat={this.costingHeadFormatter}
+                >
+                  {"Employment Terms "}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="Vendor"
+                  columnTitle={true}
+                  dataAlign="center"
+                  dataFormat={this.dashFormatter}
+                >
+                  {"Vendor Name"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="Plant"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Plant"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="State"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"State"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="MachineType"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Machine Type"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="LabourType"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Labour Type"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="LabourRate"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Rate Per Person/Annum"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="EffectiveDate"
+                  columnTitle={true}
+                  dataAlign="center"
+                  dataFormat={this.effectiveDateFormatter}
+                >
+                  {"Effective Date"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  className="action"
+                  dataField="LabourId"
+                  export={false}
+                  isKey={true}
+                  dataFormat={this.buttonFormatter}
+                >
+                  Actions
+                </TableHeaderColumn>
+              </BootstrapTable>
+              {isBulkUpload && (
+                <BulkUpload
+                  isOpen={isBulkUpload}
+                  closeDrawer={this.closeBulkUploadDrawer}
+                  isEditFlag={false}
+                  fileName={"Labour"}
+                  isZBCVBCTemplate={false}
+                  messageLabel={"Labour"}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }

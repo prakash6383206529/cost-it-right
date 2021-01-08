@@ -108,17 +108,18 @@ class FuelMaster extends Component {
 
         return (
             <>
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader/>} */}
                 <Row>
                     <Col sm="4">
-                        <h3>{`Fuel & Power Master`}</h3>
+                        <h1>{`Fuel & Power Master`}</h1>
                     </Col>
                 </Row>
 
                 <Row>
                     <Col>
                         <div>
-                            <Nav tabs className="subtabs">
+                            <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Manage Fuel
@@ -162,7 +163,7 @@ class FuelMaster extends Component {
                         </div>
                     </Col>
                 </Row>
-
+            </div>
             </ >
         );
     }

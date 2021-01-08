@@ -7,6 +7,7 @@ import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
+import $ from 'jquery';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import {
@@ -331,6 +332,7 @@ class VendorListing extends Component {
     }
 
     bulkToggle = () => {
+        $("html,body").animate({ scrollTop: 0 }, "slow");
         this.setState({ isBulkUpload: true })
     }
 
@@ -369,6 +371,7 @@ class VendorListing extends Component {
     }
 
     formToggle = () => {
+        $('html, body').animate({ scrollTop: 0 }, 'slow');
         this.setState({ isOpenVendor: true })
     }
 
@@ -398,137 +401,219 @@ class VendorListing extends Component {
         const { handleSubmit, } = this.props;
         const { isOpenVendor, isEditFlag, isBulkUpload, AddAccessibility, BulkUploadAccessibility } = this.state;
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
-            <div className="container-fluid">
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="mr15">
-                    <div class="col-sm-4"><h3>Vendor</h3></div>
-                    <hr />
-                    <Row className="pt-30 px-15 filter-row-large">
-                        <Col md="12" lg="9" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="VendorType"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Vendor Type-'}
-                                        options={this.renderListing('vendorType')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorType == null || this.state.vendorType.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleVendorType}
-                                        valueDescription={this.state.vendorType}
-                                        disabled={this.state.isEditFlag ? true : false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="Vendors"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Vendor Name-'}
-                                        options={this.renderListing('vendorList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleVendorName}
-                                        valueDescription={this.state.vendorName}
-                                        disabled={this.state.isEditFlag ? true : false}
-                                    />
-                                </div>
+          <div className="container-fluid">
+            {/* {this.props.loading && <Loader />} */}
+            <form
+              onSubmit={handleSubmit(this.onSubmit.bind(this))}
+              noValidate
+              className="mr15"
+            >
+             <h1>Vendor</h1> 
+              <hr />
+              <Row className="pt-1 px-15">
+                <Col md="12" lg="8" className="filter-block">
+                  <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="VendorType"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"-Vendor Type-"}
+                        options={this.renderListing("vendorType")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.vendorType == null ||
+                          this.state.vendorType.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleVendorType}
+                        valueDescription={this.state.vendorType}
+                        disabled={this.state.isEditFlag ? true : false}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="Vendors"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"-Vendor Name-"}
+                        options={this.renderListing("vendorList")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.vendorName == null ||
+                          this.state.vendorName.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleVendorName}
+                        valueDescription={this.state.vendorName}
+                        disabled={this.state.isEditFlag ? true : false}
+                      />
+                    </div>
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col md="12" lg="3" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD VENDOR</button>}
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-
-                </form>
-                <BootstrapTable
-                    data={this.state.tableData}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    className={"mr15 pr15"}
-                    search
-                    // exportCSV
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="VendorType" dataAlign="center" dataSort={true}>Vendor Type</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorName" dataAlign="center" dataSort={true}>Vendor Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorCode" dataAlign="center" dataSort={true}>Vendor Code</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Country" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="State" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="City" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    isZBCVBCTemplate={false}
-                    fileName={'Vendor'}
-                    messageLabel={'Vendor'}
-                    anchor={'right'}
-                />}
-                {isOpenVendor && <AddVendorDrawer
-                    isOpen={isOpenVendor}
-                    closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={isEditFlag}
-                    ID={this.state.ID}
-                    anchor={'right'}
-                />}
-            </ div>
+                    <div className="flex-fill">
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.resetFilter}
+                        className="reset mr10"
+                      >
+                        {"Reset"}
+                      </button>
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.filterList}
+                        className="apply mr5"
+                      >
+                        {"Apply"}
+                      </button>
+                    </div>
+                  </div>
+                </Col>
+                <Col md="12" lg="4" className="search-user-block mb-3">
+                  <div className="d-flex justify-content-end bd-highlight w100">
+                    <div>
+                      {BulkUploadAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn mr5"}
+                          onClick={this.bulkToggle}
+                        >
+                          <div className={"upload"}></div>Bulk Upload
+                        </button>
+                      )}
+                      {AddAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn"}
+                          onClick={this.formToggle}
+                        >
+                          <div className={"plus"}></div>ADD VENDOR
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </form>
+            <BootstrapTable
+              data={this.state.tableData}
+              striped={false}
+              hover={false}
+              bordered={false}
+              options={options}
+              className={"mr15 pr15"}
+              search
+              // exportCSV
+              //ignoreSinglePage
+              ref={"table"}
+              trClassName={"userlisting-row"}
+              tableHeaderClass="my-custom-header"
+              pagination
+            >
+              <TableHeaderColumn
+                dataField="VendorType"
+                dataAlign="center"
+                dataSort={true}
+              >
+                Vendor Type
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="VendorName"
+                dataAlign="center"
+                dataSort={true}
+              >
+                Vendor Name
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="VendorCode"
+                dataAlign="center"
+                dataSort={true}
+              >
+                Vendor Code
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="Country"
+                dataAlign="center"
+                dataSort={true}
+              >
+                Country
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="State"
+                dataAlign="center"
+                dataSort={true}
+              >
+                State
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="City"
+                dataAlign="center"
+                dataSort={true}
+              >
+                City
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="IsActive"
+                export={false}
+                dataFormat={this.statusButtonFormatter}
+              >
+                Status
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                className="action"
+                dataField="VendorId"
+                export={false}
+                isKey={true}
+                dataFormat={this.buttonFormatter}
+              >
+                Actions
+              </TableHeaderColumn>
+            </BootstrapTable>
+            {isBulkUpload && (
+              <BulkUpload
+                isOpen={isBulkUpload}
+                closeDrawer={this.closeBulkUploadDrawer}
+                isEditFlag={false}
+                isZBCVBCTemplate={false}
+                fileName={"Vendor"}
+                messageLabel={"Vendor"}
+                anchor={"right"}
+              />
+            )}
+            {isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer}
+                isEditFlag={isEditFlag}
+                ID={this.state.ID}
+                anchor={"right"}
+              />
+            )}
+          </div>
         );
     }
 }

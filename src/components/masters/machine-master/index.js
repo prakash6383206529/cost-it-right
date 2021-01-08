@@ -166,16 +166,17 @@ class MachineMaster extends Component {
 
         return (
             <>
+            <div className="container-fluid">
                 <Row>
                     <Col sm="4">
-                        <h3>{`Machine Master`}</h3>
+                        <h1>{`Machine Master`}</h1>
                     </Col>
                 </Row>
 
                 <Row>
                     <Col>
                         <div>
-                            <Nav tabs className="subtabs">
+                            <Nav tabs className="subtabs mt-0">
                                 <NavItem>
                                     <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
                                         Machine Rate
@@ -214,6 +215,7 @@ class MachineMaster extends Component {
                         </div>
                     </Col>
                 </Row>
+            </div>
             </>
         );
     }

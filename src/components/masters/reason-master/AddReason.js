@@ -127,42 +127,45 @@ class AddReason extends Component {
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
         return (
-            <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                <Container>
-                    <div className={'drawer-wrapper'}>
-                        <form
-                            noValidate
-                            className="form"
-                            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                        >
-                            <Row className="drawer-heading">
-                                <Col>
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{isEditFlag ? 'UPDATE REASON' : 'ADD REASON'}</h3>
-                                    </div>
-                                    <div
-                                        onClick={(e) => this.toggleDrawer(e)}
-                                        className={'close-button right'}>
-                                    </div>
-                                </Col>
-                            </Row>
-                            <Row>
-
-                                <Col md="12">
-                                    <Field
-                                        label={`Reason`}
-                                        name={"Reason"}
-                                        type="text"
-                                        placeholder={''}
-                                        validate={[required]}
-                                        component={renderText}
-                                        required={true}
-                                        className=" "
-                                        customClassName=" withBorder"
-                                        disabled={this.state.isEditFlag ? true : false}
-                                    />
-                                </Col>
-                                {/* <Col md="6">
+          <Drawer
+            anchor={this.props.anchor}
+            open={this.props.isOpen}
+            onClose={(e) => this.toggleDrawer(e)}
+          >
+            <Container>
+              <div className={"drawer-wrapper"}>
+                <form
+                  noValidate
+                  className="form"
+                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                >
+                  <Row className="drawer-heading">
+                    <Col>
+                      <div className={"header-wrapper left"}>
+                        <h3>{isEditFlag ? "UPDATE REASON" : "ADD REASON"}</h3>
+                      </div>
+                      <div
+                        onClick={(e) => this.toggleDrawer(e)}
+                        className={"close-button right"}
+                      ></div>
+                    </Col>
+                  </Row>
+                  <Row className="pl-3">
+                    <Col md="12">
+                      <Field
+                        label={`Reason`}
+                        name={"Reason"}
+                        type="text"
+                        placeholder={""}
+                        validate={[required]}
+                        component={renderText}
+                        required={true}
+                        className=" "
+                        customClassName=" withBorder"
+                        disabled={this.state.isEditFlag ? true : false}
+                      />
+                    </Col>
+                    {/* <Col md="6">
                                     <Col className={'pull-right'}>
                                         <label
                                             className="custom-checkbox pull-right"
@@ -182,28 +185,40 @@ class AddReason extends Component {
                                         </label>
                                     </Col>
                                 </Col> */}
-                            </Row>
-                        </form>
-                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
-                                    <button
-                                        type={'button'}
-                                        className="reset mr15 cancel-btn"
-                                        onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="submit-button mr5 save-btn" >
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                        {isEditFlag ? 'Update' : 'Save'}
-                                    </button>
-                                </div>
-                            </Row>
-                        
-                    </div>
-                </Container>
-            </Drawer>
+                  </Row>
+                </form>
+                <Row className="sf-btn-footer no-gutters justify-content-between">
+                  <div className="col-sm-12 text-right bluefooter-butn">
+                    <button
+                      type={"button"}
+                      className="reset mr15 cancel-btn"
+                      onClick={this.cancel}
+                    >
+                      <div className={"cross-icon"}>
+                        <img
+                          src={require("../../../assests/images/times.png")}
+                          alt="cancel-icon.jpg"
+                        />
+                      </div>{" "}
+                      {"Cancel"}
+                    </button>
+                    <button
+                      type="submit"
+                      className="submit-button mr5 save-btn"
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                      {isEditFlag ? "Update" : "Save"}
+                    </button>
+                  </div>
+                </Row>
+              </div>
+            </Container>
+          </Drawer>
         );
     }
 }
