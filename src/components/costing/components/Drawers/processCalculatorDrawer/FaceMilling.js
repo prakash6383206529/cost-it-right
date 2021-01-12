@@ -58,7 +58,7 @@ function FaceMilling(props) {
     setValue('cutTime', tCut)
   }
   const onWidthChange = (e) => {
-    const cutterDiameter = Number(getValues('cutterDiameter'))
+    const cutterDiameter = Number(getValues('cutterDiameter')) // Need to ask
     const cutLengthOfArea = Number(getValues('cutLengthOfArea'))
     const areaWidth = Number(e.target.value)
     const cutLength =

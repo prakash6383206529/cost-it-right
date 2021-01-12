@@ -43,15 +43,14 @@ function EndMill(props) {
   const onToothFeedChange = (e) => {
     const toothNo = getValues('toothNo')
     const rpm = getValues('rpm')
-    const cutLength = getValues('cutLength')
-
+    const removedMaterial = getValues('removedMaterial')
     const slotNo = getValues('slotNo')
     const toothFeed = e.target.value
     const feedRev = toothNo * toothFeed
     setValue('feedRev', feedRev)
     const feedMin = feedRev * rpm
     setValue('feedMin', feedMin)
-    const tCut = (cutLength / feedMin) * slotNo
+    const tCut = (removedMaterial / feedMin) * slotNo
     setValue('cutTime', tCut)
   }
 
