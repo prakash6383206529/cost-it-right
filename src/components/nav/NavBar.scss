@@ -766,9 +766,13 @@ label.btn.btn-link.align-middle.checkbox-label {
     width: 100%;
 }
 .MuiDrawer-root.MuiDrawer-modal{
-  top: 47px !important;
+  top: 0 !important;
+  max-height: 100vh;
+  overflow-y: auto;
   .MuiBackdrop-root,.MuiDrawer-paper{
-    top: 47px;
+    top: 0;
+    padding-bottom: 50px;
+    overflow-x: hidden;
   }
 }
 .cr-other-logo{
