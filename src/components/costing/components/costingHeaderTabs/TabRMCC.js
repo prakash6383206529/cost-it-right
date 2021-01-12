@@ -1,27 +1,31 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useForm, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
-import { Row, Col, Table, } from 'reactstrap';
+import React, { useState, useEffect, useContext } from 'react'
+import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import { Row, Col, Table } from 'reactstrap'
 import PartCompoment from '../CostingHeadCosts/Part'
-import { getRMCCTabData, saveCostingRMCCTab } from '../../actions/Costing';
-import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
+import { getRMCCTabData, saveCostingRMCCTab } from '../../actions/Costing'
+import { costingInfoContext } from '../CostingDetailStepTwo'
+import {
+  checkForDecimalAndNull,
+  checkForNull,
+  loggedInUserId,
+} from '../../../../helper'
 
 function TabRMCC(props) {
+  const { netPOPrice } = props.netPOPrice ? props.netPOPrice : ''
 
-  const { netPOPrice } = props;
+  const { handleSubmit } = useForm()
 
-  const { handleSubmit, } = useForm();
-
-  const [netProcessCost, setNetProcessCost] = useState('');
-  const [netOperationCost, setNetOperationCost] = useState('');
-  const [netToolsCost, setNetToolsCost] = useState(0);
-  const [tabData, setTabData] = useState([]);
-  const [costingData, setCostingData] = useState({});
+  const [netProcessCost, setNetProcessCost] = useState('')
+  const [netOperationCost, setNetOperationCost] = useState('')
+  const [netToolsCost, setNetToolsCost] = useState(0)
+  const [tabData, setTabData] = useState([])
+  console.log(tabData, 'Tab data')
+  const [costingData, setCostingData] = useState({})
 
   const dispatch = useDispatch()
 
-  const costData = useContext(costingInfoContext);
+  const costData = useContext(costingInfoContext)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -30,15 +34,30 @@ function TabRMCC(props) {
         PartId: costData.PartId,
         //PlantId: costData.PlantId,
       }
-      dispatch(getRMCCTabData(data, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setCostingData(Data)
-          setTabData(Data.CostingPartDetails)
-        }
-      }))
+      dispatch(
+        getRMCCTabData(data, (res) => {
+          if (res && res.data && res.data.Result) {
+            let Data = res.data.Data
+            setCostingData(Data)
+            //setTabData(Data.CostingPartDetails)
+            // This is for temporary purpose
+            setTabData([
+              {
+                PartName: 'IZABC0001244',
+                Type: 'Part',
+                TotalRawMaterialsCost: '',
+                TotalBoughtOutPartCost: '',
+                TotalConversionCost: '',
+                Quantity: '',
+                GrandTotalCost: '',
+                NetConversionCost: '',
+              },
+            ])
+          }
+        }),
+      )
     }
-  }, [costData]);
+  }, [costData])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -49,47 +68,57 @@ function TabRMCC(props) {
       NetOperationCost: netOperationCost,
       NetProcessCost: netProcessCost,
       NetToolsCost: netToolsCost,
-      NetTotalRMBOPCC: getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost(),
+      NetTotalRMBOPCC:
+        getGrandNetRMCost() +
+        getGrandNetBOPCost() +
+        getGrandNetConversionCost(),
     }
     props.setHeaderCost(topHeaderData)
-  }, [tabData]);
+  }, [tabData])
 
   const toggle = (index) => {
-    let tempData = tabData[index];
+    let tempData = tabData[index]
     let tempObj = { ...tempData, IsOpen: !tempData.IsOpen }
     let tempArr = Object.assign([...tabData], { [index]: tempObj })
     setTabData(tempArr)
   }
 
   /**
-  * @method setRMCost
-  * @description SET RM COST
-  */
+   * @method setRMCost
+   * @description SET RM COST
+   */
   const setRMCost = (rmGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(tempObj.TotalConversionCost)
+    let tempObj = tabData[index]
+    let GrandTotalCost =
+      checkForNull(netRMCost(rmGrid)) +
+      checkForNull(tempObj.TotalBoughtOutPartCost) +
+      checkForNull(tempObj.TotalConversionCost)
 
     let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        { GrandTotalCost: GrandTotalCost, TotalRawMaterialsCost: netRMCost(rmGrid), CostingRawMaterialsCost: rmGrid })
+      [index]: Object.assign({}, tabData[index], {
+        GrandTotalCost: GrandTotalCost,
+        TotalRawMaterialsCost: netRMCost(rmGrid),
+        CostingRawMaterialsCost: rmGrid,
+      }),
     })
 
     setTimeout(() => {
       setTabData(tempArr)
     }, 200)
-
   }
 
   /**
-  * @method netRMCost
-  * @description GET RM COST
-  */
+   * @method netRMCost
+   * @description GET RM COST
+   */
   const netRMCost = (item) => {
-    let NetRMCost = 0;
-    NetRMCost = item && item.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetLandedCost);
-    }, 0)
-    return NetRMCost;
+    let NetRMCost = 0
+    NetRMCost =
+      item &&
+      item.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.NetLandedCost)
+      }, 0)
+    return NetRMCost
   }
 
   /**
@@ -97,30 +126,37 @@ function TabRMCC(props) {
    * @description SET BOP COST
    */
   const setBOPCost = (bopGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(tempObj.TotalConversionCost);
+    let tempObj = tabData[index]
+    let GrandTotalCost =
+      checkForNull(tempObj.TotalRawMaterialsCost) +
+      checkForNull(netBOPCost(bopGrid)) +
+      checkForNull(tempObj.TotalConversionCost)
 
     let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        { GrandTotalCost: GrandTotalCost, TotalBoughtOutPartCost: checkForDecimalAndNull(netBOPCost(bopGrid), 2), CostingBoughtOutPartCost: bopGrid })
+      [index]: Object.assign({}, tabData[index], {
+        GrandTotalCost: GrandTotalCost,
+        TotalBoughtOutPartCost: checkForDecimalAndNull(netBOPCost(bopGrid), 2),
+        CostingBoughtOutPartCost: bopGrid,
+      }),
     })
 
     setTimeout(() => {
       setTabData(tempArr)
     }, 200)
-
   }
 
   /**
-  * @method netBOPCost
-  * @description GET BOP COST
-  */
+   * @method netBOPCost
+   * @description GET BOP COST
+   */
   const netBOPCost = (item) => {
-    let NetCost = 0;
-    NetCost = item && item.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetBoughtOutPartCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      item &&
+      item.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.NetBoughtOutPartCost)
+      }, 0)
+    return NetCost
   }
 
   /**
@@ -128,27 +164,41 @@ function TabRMCC(props) {
    * @description SET PROCESS COST
    */
   const setProcessCost = (conversionGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(conversionGrid && conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0);
+    let tempObj = tabData[index]
+    let GrandTotalCost =
+      checkForNull(tempObj.TotalRawMaterialsCost) +
+      checkForNull(tempObj.TotalBoughtOutPartCost) +
+      checkForNull(
+        conversionGrid && conversionGrid.NetConversionCost !== null
+          ? conversionGrid.NetConversionCost
+          : 0,
+      )
 
-    let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
-      return el;
-    })
+    let data =
+      conversionGrid &&
+      conversionGrid.CostingProcessCostResponse &&
+      conversionGrid.CostingProcessCostResponse.map((el) => {
+        return el
+      })
 
     let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          GrandTotalCost: GrandTotalCost,
-          TotalConversionCost: conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0,
-          CostingConversionCost: { ...conversionGrid, CostingProcessCostResponse: data }
-        })
+      [index]: Object.assign({}, tabData[index], {
+        GrandTotalCost: GrandTotalCost,
+        TotalConversionCost:
+          conversionGrid.NetConversionCost !== null
+            ? conversionGrid.NetConversionCost
+            : 0,
+        CostingConversionCost: {
+          ...conversionGrid,
+          CostingProcessCostResponse: data,
+        },
+      }),
     })
 
     setTimeout(() => {
       setTabData(tempArr)
       setNetProcessCost(conversionGrid.ProcessCostTotal)
     }, 200)
-
   }
 
   /**
@@ -156,20 +206,35 @@ function TabRMCC(props) {
    * @description SET OPERATION COST
    */
   const setOperationCost = (operationGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0)
+    let tempObj = tabData[index]
+    let GrandTotalCost =
+      checkForNull(tempObj.TotalRawMaterialsCost) +
+      checkForNull(tempObj.TotalBoughtOutPartCost) +
+      checkForNull(
+        operationGrid && operationGrid.NetConversionCost !== null
+          ? operationGrid.NetConversionCost
+          : 0,
+      )
 
-    let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
-      return el;
-    })
+    let data =
+      operationGrid &&
+      operationGrid.CostingOperationCostResponse &&
+      operationGrid.CostingOperationCostResponse.map((el) => {
+        return el
+      })
 
     let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          GrandTotalCost: GrandTotalCost,
-          TotalConversionCost: operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0,
-          CostingConversionCost: { ...operationGrid, CostingOperationCostResponse: data },
-        })
+      [index]: Object.assign({}, tabData[index], {
+        GrandTotalCost: GrandTotalCost,
+        TotalConversionCost:
+          operationGrid && operationGrid.NetConversionCost !== null
+            ? operationGrid.NetConversionCost
+            : 0,
+        CostingConversionCost: {
+          ...operationGrid,
+          CostingOperationCostResponse: data,
+        },
+      }),
     })
     setTimeout(() => {
       setTabData(tempArr)
@@ -182,27 +247,31 @@ function TabRMCC(props) {
    * @description SET TOOL COST
    */
   const setToolCost = (toolGrid, index) => {
-
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(toolGrid.NetConversionCost)
+    let tempObj = tabData[index]
+    let GrandTotalCost =
+      checkForNull(tempObj.TotalRawMaterialsCost) +
+      checkForNull(tempObj.TotalBoughtOutPartCost) +
+      checkForNull(toolGrid.NetConversionCost)
     //let GrandTotalCost = 0;
 
-    let data = toolGrid && toolGrid.CostingOperationCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
-      return el;
-    })
+    let data =
+      toolGrid &&
+      toolGrid.CostingOperationCostResponse &&
+      toolGrid.CostingToolsCostResponse.map((el) => {
+        return el
+      })
 
     let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          GrandTotalCost: GrandTotalCost,
-          IsShowToolCost: true,
-          CostingConversionCost: {
-            ...toolGrid,
-            //NetConversionCost: toolGrid.NetConversionCost,
-            //ToolsCostTotal: checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
-            CostingToolsCostResponse: data,
-          },
-        })
+      [index]: Object.assign({}, tabData[index], {
+        GrandTotalCost: GrandTotalCost,
+        IsShowToolCost: true,
+        CostingConversionCost: {
+          ...toolGrid,
+          //NetConversionCost: toolGrid.NetConversionCost,
+          //ToolsCostTotal: checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
+          CostingToolsCostResponse: data,
+        },
+      }),
     })
 
     setTimeout(() => {
@@ -212,53 +281,61 @@ function TabRMCC(props) {
   }
 
   /**
-  * @method getGrandNetRMCost
-  * @description GET GRAND TOTAL RM COST
-  */
+   * @method getGrandNetRMCost
+   * @description GET GRAND TOTAL RM COST
+   */
   const getGrandNetRMCost = () => {
-    let NetCost = 0;
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalRawMaterialsCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      tabData &&
+      tabData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.TotalRawMaterialsCost)
+      }, 0)
+    return NetCost
   }
 
   /**
-  * @method getGrandNetBOPCost
-  * @description GET GRAND TOTAL BOP COST
-  */
+   * @method getGrandNetBOPCost
+   * @description GET GRAND TOTAL BOP COST
+   */
   const getGrandNetBOPCost = () => {
-    let NetCost = 0;
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalBoughtOutPartCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      tabData &&
+      tabData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.TotalBoughtOutPartCost)
+      }, 0)
+    return NetCost
   }
 
   /**
-  * @method getGrandNetConversionCost
-  * @description GET GRAND TOTAL CONVERSION COST
-  */
+   * @method getGrandNetConversionCost
+   * @description GET GRAND TOTAL CONVERSION COST
+   */
   const getGrandNetConversionCost = () => {
-    let NetCost = 0;
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalConversionCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      tabData &&
+      tabData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.TotalConversionCost)
+      }, 0)
+    return NetCost
   }
 
   /**
-  * @method getTotalCost
-  * @description GET TOTAL COST
-  */
+   * @method getTotalCost
+   * @description GET TOTAL COST
+   */
   const getTotalCost = () => {
-    return getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost();
+    return (
+      getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost()
+    )
   }
 
   /**
-  * @method saveCosting
-  * @description SAVE COSTING
-  */
+   * @method saveCosting
+   * @description SAVE COSTING
+   */
   const saveCosting = () => {
     const data = {
       NetRawMaterialsCost: getGrandNetRMCost(),
@@ -267,7 +344,10 @@ function TabRMCC(props) {
       NetOperationCost: netOperationCost,
       NetProcessCost: netProcessCost,
       NetToolsCost: netToolsCost,
-      NetTotalRMBOPCC: getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost(),
+      NetTotalRMBOPCC:
+        getGrandNetRMCost() +
+        getGrandNetBOPCost() +
+        getGrandNetConversionCost(),
       NetSurfaceTreatmentCost: 0,
       NetOverheadAndProfitCost: 0,
       NetPackagingAndFreight: 0,
@@ -285,18 +365,18 @@ function TabRMCC(props) {
       CostingPartDetails: tabData,
     }
 
-    dispatch(saveCostingRMCCTab(data, res => {
-      console.log('saveCostingRMCCTab: ', res);
-    }))
+    dispatch(
+      saveCostingRMCCTab(data, (res) => {
+        console.log('saveCostingRMCCTab: ', res)
+      }),
+    )
   }
 
   /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => {
-
-  }
+   * @method onSubmit
+   * @description Used to Submit the form
+   */
+  const onSubmit = (values) => {}
 
   return (
     <>
@@ -311,58 +391,102 @@ function TabRMCC(props) {
                   </div>
                 </Col>
               </Row>
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Row>
                   <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm" >
+                    <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
                           <th style={{ width: '100px' }}>{`Type`}</th>
                           <th style={{ width: '150px' }}>{`RM Cost`}</th>
                           <th style={{ width: '150px' }}>{`BOP Cost`}</th>
-                          <th style={{ width: '200px' }}>{`Conversion Cost`}</th>
+                          <th
+                            style={{ width: '200px' }}
+                          >{`Conversion Cost`}</th>
                           <th style={{ width: '200px' }}>{`Quantity`}</th>
-                          <th style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
+                          <th
+                            style={{ width: '200px' }}
+                          >{`RM + CC Cost/Part`}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {
-                          tabData && tabData.map((item, index) => {
+                        {tabData &&
+                          tabData.map((item, index) => {
                             return (
-                              < >
+                              <>
                                 <tr key={index} onClick={() => toggle(index)}>
-                                  <td><span className="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                                  <td>{item.Type}</td>
-                                  <td>{item.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.TotalRawMaterialsCost, 2) : 0}</td>
-                                  <td>{item.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.TotalBoughtOutPartCost, 2) : 0}</td>
-                                  <td>{item.TotalConversionCost !== null ? checkForDecimalAndNull(item.TotalConversionCost, 2) : 0}</td>
-                                  <td>{item.Quantity !== null ? item.Quantity : 1}</td>
-                                  <td>{item.GrandTotalCost !== null ? checkForDecimalAndNull(item.GrandTotalCost, 2) : 0}</td>
-                                </tr>
-                                {item.IsOpen && <tr>
-                                  <td colSpan={7} className="cr-innerwrap-td">
-                                    <div>
-                                      <PartCompoment
-                                        index={index}
-                                        rmData={item.CostingRawMaterialsCost}
-                                        bopData={item.CostingBoughtOutPartCost}
-                                        ccData={item.CostingConversionCost}
-                                        costData={costData}
-                                        setRMCost={setRMCost}
-                                        setBOPCost={setBOPCost}
-                                        setProcessCost={setProcessCost}
-                                        setOperationCost={setOperationCost}
-                                        setToolCost={setToolCost}
-                                      />
-                                    </div>
+                                  <td>
+                                    <span className="cr-prt-nm cr-prt-link">
+                                      {item.PartName}
+                                    </span>
                                   </td>
-                                </tr>}
+                                  <td>{item.Type}</td>
+                                  <td>
+                                    {item.TotalRawMaterialsCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.TotalRawMaterialsCost,
+                                          2,
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.TotalBoughtOutPartCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.TotalBoughtOutPartCost,
+                                          2,
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.TotalConversionCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.TotalConversionCost,
+                                          2,
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.Quantity !== null ? item.Quantity : 1}
+                                  </td>
+                                  <td>
+                                    {item.GrandTotalCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.GrandTotalCost,
+                                          2,
+                                        )
+                                      : 0}
+                                  </td>
+                                </tr>
+                                {item.IsOpen && (
+                                  <tr>
+                                    <td colSpan={7} className="cr-innerwrap-td">
+                                      <div>
+                                        <PartCompoment
+                                          index={index}
+                                          rmData={item.CostingRawMaterialsCost}
+                                          bopData={
+                                            item.CostingBoughtOutPartCost
+                                          }
+                                          ccData={item.CostingConversionCost}
+                                          costData={costData}
+                                          setRMCost={setRMCost}
+                                          setBOPCost={setBOPCost}
+                                          setProcessCost={setProcessCost}
+                                          setOperationCost={setOperationCost}
+                                          setToolCost={setToolCost}
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )}
                               </>
                             )
-                          })
-                        }
-
+                          })}
                       </tbody>
                     </Table>
                   </Col>
@@ -370,7 +494,6 @@ function TabRMCC(props) {
 
                 <Row className="sf-btn-footer no-gutters justify-content-between mt25">
                   <div className="col-sm-12 text-right bluefooter-butn">
-
                     {/* <button
                   type={'button'}
                   className="reset mr15 cancel-btn"
@@ -381,22 +504,25 @@ function TabRMCC(props) {
                     <button
                       type={'button'}
                       className="submit-button mr5 save-btn"
-                      onClick={saveCosting}>
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                      onClick={saveCosting}
+                    >
+                      <div className={'check-icon'}>
+                        <img
+                          src={require('../../../../assests/images/check.png')}
+                          alt="check-icon.jpg"
+                        />{' '}
+                      </div>
                       {'Save'}
                     </button>
                   </div>
                 </Row>
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
-  );
-};
+  )
+}
 
-
-export default TabRMCC;
+export default TabRMCC

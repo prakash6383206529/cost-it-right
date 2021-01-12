@@ -1,29 +1,29 @@
-import React from 'react';
-import BOPCost from './BOPCost';
-import ProcessCost from './ProcessCost';
-import RawMaterialCost from './RawMaterialCost';
+import React from 'react'
+import BOPCost from './BOPCost'
+import ProcessCost from './ProcessCost'
+import RawMaterialCost from './RawMaterialCost'
 
 function PartCompoment(props) {
-  const { rmData, bopData, ccData, } = props;
+  const { rmData, bopData, ccData } = props
   /**
-  * @method render
-  * @description Renders the component
-  */
+   * @method render
+   * @description Renders the component
+   */
   return (
     <>
       <div className="user-page p-0">
         <div>
-          <RawMaterialCost
+          {/* <RawMaterialCost
             index={props.index}
             data={rmData}
             setRMCost={props.setRMCost}
-          />
+          /> */}
 
-          <BOPCost
+          {/* <BOPCost
             index={props.index}
             data={bopData}
             setBOPCost={props.setBOPCost}
-          />
+          /> */}
 
           <ProcessCost
             index={props.index}
@@ -33,9 +33,9 @@ function PartCompoment(props) {
             setToolCost={props.setToolCost}
           />
         </div>
-      </div >
-    </ >
-  );
+      </div>
+    </>
+  )
 }
 
-export default PartCompoment;
+export default PartCompoment
