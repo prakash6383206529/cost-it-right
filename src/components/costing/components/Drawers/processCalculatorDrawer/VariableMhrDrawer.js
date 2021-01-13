@@ -119,11 +119,12 @@ function VariableMhrDrawer(props) {
   return (
     <div>
       <Drawer
+        className="drawer-md calculator-drawer"
         anchor={props.anchor}
         open={props.isOpen}
         onClose={(e) => toggleDrawer(e)}
       >
-        <Container>
+        <div className="container-fluid">
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
@@ -161,10 +162,10 @@ function VariableMhrDrawer(props) {
                   <span>{calculatorData.UOM}</span>
                 </span>
               </Col>
-              <div>{getProcessComponent()}</div>
+              <div className="w-100">{getProcessComponent()}</div>
             </Row>
           </div>
-        </Container>
+        </div>
       </Drawer>
     </div>
   )

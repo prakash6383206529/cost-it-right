@@ -110,7 +110,7 @@ function FaceMilling(props) {
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
             <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
-                <Col md="10">
+                <Col md="12">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
@@ -296,7 +296,7 @@ function FaceMilling(props) {
                   </Row>
                 </Col>
 
-                <Col md="10 mt-25">
+                <Col md="12 mt-25">
                   <div className="left-border">{'Speed:'}</div>
                 </Col>
                 <Col md="12">

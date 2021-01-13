@@ -731,14 +731,14 @@ function ProcessCost(props) {
                               : '0.00'}{' '} */}
                             {/* <button
                               className="CalculatorIcon cr-cl-icon mt15"
-                              type={'button'}
+                              type={"button"}
                               onClick={() => toggleWeightCalculator(index)}
                             /> */}
                           </td>
                           <td>
                             {/* <button
                               className="Edit mt15 mr-2"
-                              type={'button'}
+                              type={"button"}
                               onClick={() => editItem(index)}
                             /> */}
                             <button
@@ -767,8 +767,6 @@ function ProcessCost(props) {
             data={props.data && props.data.CostingOperationCostResponse}
             setOperationCost={setOperationCost}
           /> */}
-
-          <hr />
           {/* {isOpen && (
             <ToolCost
               data={props.data && props.data.CostingToolsCostResponse}
