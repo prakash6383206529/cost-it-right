@@ -183,10 +183,10 @@ class TaxListing extends Component {
               {/* {this.props.loading && <Loader />} */}
               <Row>
                 <Col md={12}>
-                  <h1>{`Tax Details`}</h1>
+                  <h1>{`Tax Details Master`}</h1>
                 </Col>
                 <Col md={12}>
-                  <hr className="mt-0"        />
+                  <hr className="mt-0" />
                 </Col>
 
                 {AddAccessibility && (

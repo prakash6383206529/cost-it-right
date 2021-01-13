@@ -239,7 +239,7 @@ class UOMMaster extends Component {
                       onClick={this.openModel}
                     >
                       <div className={"plus"}></div>
-                      {`ADD UOM`}
+                      {`ADD`}
                     </button>
                   </Col>
                 )}

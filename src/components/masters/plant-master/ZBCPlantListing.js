@@ -438,7 +438,7 @@ class ZBCPlantListing extends Component {
                           className={"user-btn"}
                           onClick={this.formToggle}
                         >
-                          <div className={"plus"}></div>ADD ZBC PLANT
+                          <div className={"plus"}></div>ADD
                         </button>
                       )}
                     </div>

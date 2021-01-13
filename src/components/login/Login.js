@@ -69,10 +69,10 @@ class Login extends Component {
     }
 
     return (
-      <div className="login-bg">
+      <div className="login-bg d-flex align-items-center">
         {isLoader && <Loader />}
         <div className="container ">
-          <div className="login-form">
+          <div className="login-form pt-0">
 
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">

@@ -276,7 +276,7 @@ class AssemblyPartListing extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={this.displayForm}>
-                                    <div className={'plus'}></div>ADD BOM</button>}
+                                    <div className={'plus'}></div>ADD</button>}
                             </div>
                         </div>
                     </Col>

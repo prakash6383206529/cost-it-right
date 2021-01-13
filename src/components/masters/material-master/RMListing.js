@@ -165,7 +165,7 @@ class RMListing extends Component {
                             type={'button'}
                             className={'user-btn'}
                             onClick={this.openModel}>
-                            <div className={'plus'}></div>{`Add Material`}</button>}
+                            <div className={'plus'}></div>{`Add`}</button>}
                     </Col>
                 </Row>
 

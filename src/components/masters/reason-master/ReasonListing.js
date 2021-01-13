@@ -232,76 +232,76 @@ class ReasonListing extends Component {
         return (
           <>
             <div className="container-fluid p-0">
-                {/* {this.props.loading && <Loader />} */}
-                <Col md="12" className="search-user-block">
-                <h1>Reason</h1>
+              {/* {this.props.loading && <Loader />} */}
+              <Col md="12" className="search-user-block">
+                <h1>Reason Master</h1>
                 <hr />
                 <div className="d-flex justify-content-end bd-highlight w100 mb15">
-                    <div>
+                  <div>
                     {AddAccessibility && (
-                        <button
+                      <button
                         type="button"
                         className={"user-btn"}
                         onClick={this.formToggle}
-                        >
-                        <div className={"plus"}></div>ADD REASON
-                        </button>
+                      >
+                        <div className={"plus"}></div>ADD
+                      </button>
                     )}
-                    </div>
+                  </div>
                 </div>
-                </Col>
-                <Col md="12">
+              </Col>
+              <Col md="12">
                 <BootstrapTable
-                    data={this.state.tableData}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    // exportCSV
-                    //ignoreSinglePage
-                    ref={"table"}
-                    trClassName={"userlisting-row"}
-                    tableHeaderClass="my-custom-header"
-                    pagination
+                  data={this.state.tableData}
+                  striped={false}
+                  hover={false}
+                  bordered={false}
+                  options={options}
+                  search
+                  // exportCSV
+                  //ignoreSinglePage
+                  ref={"table"}
+                  trClassName={"userlisting-row"}
+                  tableHeaderClass="my-custom-header"
+                  pagination
                 >
-                    {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                    <TableHeaderColumn
+                  {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+                  <TableHeaderColumn
                     dataField="Reason"
                     dataAlign="center"
                     dataSort={true}
-                    >
+                  >
                     Reason
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
                     dataField="IsActive"
                     dataAlign="center"
                     export={false}
                     dataFormat={this.statusButtonFormatter}
-                    >
+                  >
                     Status
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
                     className="action"
                     dataField="ReasonId"
                     dataAlign="center"
                     export={false}
                     isKey={true}
                     dataFormat={this.buttonFormatter}
-                    >
+                  >
                     Actions
-                    </TableHeaderColumn>
+                  </TableHeaderColumn>
                 </BootstrapTable>
                 {isOpenDrawer && (
-                    <AddReason
+                  <AddReason
                     isOpen={isOpenDrawer}
                     closeDrawer={this.closeVendorDrawer}
                     isEditFlag={isEditFlag}
                     ID={this.state.ID}
                     anchor={"right"}
-                    />
+                  />
                 )}
-                </Col>
+              </Col>
             </div>
           </>
         );

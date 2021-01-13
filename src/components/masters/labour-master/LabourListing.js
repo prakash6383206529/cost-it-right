@@ -486,7 +486,7 @@ class LabourListing extends Component {
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 noValidate
               >
-                <h1>Labour</h1>
+                <h1>Labour Master</h1>
                 <hr />
                 <Row className="pt-1 filter-row-large">
                   <Col md="12" className="filter-block col-lg-9">

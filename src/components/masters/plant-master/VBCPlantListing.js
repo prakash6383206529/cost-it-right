@@ -438,7 +438,7 @@ class VBCPlantListing extends Component {
                           className={"user-btn"}
                           onClick={this.formToggle}
                         >
-                          <div className={"plus"}></div>ADD VBC PLANT
+                          <div className={"plus"}></div>ADD
                         </button>
                       )}
                     </div>

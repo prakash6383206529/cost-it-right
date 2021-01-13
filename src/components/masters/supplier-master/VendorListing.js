@@ -422,7 +422,7 @@ class VendorListing extends Component {
               noValidate
               className="mr15"
             >
-             <h1>Vendor</h1> 
+             <h1>Vendor Master</h1> 
               <hr />
               <Row className="pt-1 px-15">
                 <Col md="12" lg="8" className="filter-block">
@@ -511,7 +511,7 @@ class VendorListing extends Component {
                           className={"user-btn"}
                           onClick={this.formToggle}
                         >
-                          <div className={"plus"}></div>ADD VENDOR
+                          <div className={"plus"}></div>ADD
                         </button>
                       )}
                     </div>

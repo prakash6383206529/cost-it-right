@@ -858,7 +858,7 @@ class AddFreight extends Component {
                                 </button>
                                 <button
                                   type="button"
-                                  className={"cancel-btn mt30 pull-left"}
+                                  className={"reset-btn mt30 pull-left"}
                                   onClick={this.resetGridData}
                                 >
                                   Cancel

@@ -277,162 +277,221 @@ class BOMViewer extends Component {
         const { isOpenChildDrawer, isOpenVisualDrawer, } = this.state;
 
         return (
-            <>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <>
-                        <div className={'drawer-wrapper drawer-full-width'}>
-
-                            <Row className="drawer-heading">
-                                <Col md="6">
-                                    <div className={'header-wrapper left'}>
-                                        <h3>{'BOM VIEWER'}</h3>
-                                    </div>
-                                </Col>
-                                <Col md="6">
-                                    <div
-                                        onClick={(e) => this.toggleDrawer(e)}
-                                        className={'close-button right'}>
-                                    </div>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col md="8">
-                                </Col>
-                                {(!isEditFlag || initialConfiguration.IsBOMEditable) && !isFromVishualAd &&
-                                    <Col md="4">
-                                        <button
-                                            type={'button'}
-                                            className="reset mr15 cancel-btn pull-right"
-                                            onClick={() => this.setState({ displayDeleteIcon: !this.state.displayDeleteIcon, displayEditIcon: false, })} >
-                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Delete'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => this.setState({ displayEditIcon: !this.state.displayEditIcon, displayDeleteIcon: false, })}
-                                            className={'user-btn mr15 pull-right mt10'}>
-                                            <div className={'EDIT'}></div>EDIT</button>
-                                        <button
-                                            type="button"
-                                            onClick={this.childDrawerToggle}
-                                            className={'user-btn mr15 pull-right mt10'}>
-                                            <div className={'plus'}></div>ADD</button>
-                                    </Col>}
-                            </Row>
-
-                            <form
-                                noValidate
-                                className="form"
-                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+          <>
+            <Drawer
+              anchor={this.props.anchor}
+              open={this.props.isOpen}
+              onClose={(e) => this.toggleDrawer(e)}
+            >
+              <>
+                <div className={"drawer-wrapper drawer-full-width"}>
+                  <Row className="drawer-heading">
+                    <Col md="6">
+                      <div className={"header-wrapper left"}>
+                        <h3>{"BOM VIEWER"}</h3>
+                      </div>
+                    </Col>
+                    <Col md="6">
+                      <div
+                        onClick={(e) => this.toggleDrawer(e)}
+                        className={"close-button right"}
+                      ></div>
+                    </Col>
+                  </Row>
+                  <form
+                    noValidate
+                    className="form bom-drawer-form"
+                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  >
+                    <Row>
+                      <Col md="8"></Col>
+                      {(!isEditFlag || initialConfiguration.IsBOMEditable) &&
+                        !isFromVishualAd && (
+                          <Col md="4">
+                            <button
+                              type={"button"}
+                              className="reset-btn  pull-right mt-2 btn-danger"
+                              onClick={() =>
+                                this.setState({
+                                  displayDeleteIcon: !this.state
+                                    .displayDeleteIcon,
+                                  displayEditIcon: false,
+                                })
+                              }
                             >
-
-                                <Row>
-                                    <Flowspace
-                                        theme="#2196f3"
-                                        variant="outlined"
-                                        arrowStart={false}
-                                        arrowEnd={false}
-                                        outputColor="#0c00ff"
-                                        inputColor="#ff0022"
-                                        style={{ height: "100vh", width: "100vw" }}
-                                        onClick={e => this.setState({ selected_point: null })}
-                                        selected={this.state.selected_point}>
-
-                                        {
-                                            this.state.flowpoints && this.state.flowpoints.map((el, i) => {
-
-                                                return (
-                                                    <Flowpoint
-                                                        key={el.Input}
-                                                        snap={{ 'x': 10, 'y': 10 }}
-                                                        startPosition={el.Position}
-                                                        outputs={el.Outputs}
-                                                        selected={false}
-                                                        width={200}
-                                                        height={120}
-                                                        onClick={() => {
-                                                            var selected_point = this.state.selected_point
-                                                            if (selected_point === el.PartNumber) {
-                                                                selected_point = null
-                                                            } else {
-                                                                selected_point = el.PartNumber
-                                                            }
-                                                            this.setState({ selected_point })
-                                                        }}
-                                                    // onDrag={position => {
-                                                    //     var flowpoints = this.state.flowpoints
-                                                    //     flowpoints[i].Position = position
-                                                    //     this.setState({ flowpoints })
-                                                    // }}
-                                                    >
-                                                        <div className="flowpoint-header">
-                                                            <h3>{el.PartNumber}</h3>
-                                                            <span className="flowpoint-header-level">{el.Level}</span>
-                                                            <span className="flowpoint-header-qty">Qty:<strong>{el.Quantity}</strong></span>
-                                                            {this.state.displayEditIcon && el.Level === 'L1' &&
-                                                                <span className="flowpoint-header-edit">
-                                                                    <button className="Edit" onClick={() => this.editLevelOne(i, el.Quantity)} />
-                                                                </span>}
-                                                            {this.state.displayDeleteIcon && el.Level === 'L1' &&
-                                                                <span className="flowpoint-header-delete">
-                                                                    <button onClick={() => this.deleteLevelOne(i)}>x</button>
-                                                                </span>}
-                                                        </div>
-                                                        <div className="flowpoint-body">
-
-                                                            <p>Name:<strong>{el.PartName}</strong></p>
-                                                            <p>Part Type:<strong>{el.PartType}</strong></p>
-                                                            {/* {`X=:${el.Position.x}`}
-                                                            {`Y=:${el.Position.y}`} */}
-                                                        </div>
-                                                    </Flowpoint>
-                                                )
-                                            })
-                                        }
-
-                                    </Flowspace>
-                                </Row>
-
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/times.png")}
+                                  alt="cancel-icon.jpg"
+                                />
+                              </div>{" "}
+                              {"Delete"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                this.setState({
+                                  displayEditIcon: !this.state.displayEditIcon,
+                                  displayDeleteIcon: false,
+                                })
+                              }
+                              className={"user-btn mr15 pull-right mt10"}
+                            >
+                              <div className={"EDIT"}></div>EDIT
+                            </button>
+                            <button
+                              type="button"
+                              onClick={this.childDrawerToggle}
+                              className={"user-btn mr15 pull-right mt10"}
+                            >
+                              <div className={"plus"}></div>ADD
+                            </button>
+                          </Col>
+                        )}
+                    </Row>
+                    <Row>
+                      <Flowspace
+                        theme="#2196f3"
+                        variant="outlined"
+                        arrowStart={false}
+                        arrowEnd={false}
+                        outputColor="#0c00ff"
+                        inputColor="#ff0022"
+                        style={{
+                          width: "100vw",
+                        }}
+                        onClick={(e) => this.setState({ selected_point: null })}
+                        selected={this.state.selected_point}
+                      >
+                        {this.state.flowpoints &&
+                          this.state.flowpoints.map((el, i) => {
+                            return (
+                              <Flowpoint
+                                key={el.Input}
+                                snap={{ x: 10, y: 10 }}
+                                startPosition={el.Position}
+                                outputs={el.Outputs}
+                                selected={false}
+                                width={200}
+                                height={120}
+                                onClick={() => {
+                                  var selected_point = this.state
+                                    .selected_point;
+                                  if (selected_point === el.PartNumber) {
+                                    selected_point = null;
+                                  } else {
+                                    selected_point = el.PartNumber;
+                                  }
+                                  this.setState({ selected_point });
+                                }}
+                                // onDrag={position => {
+                                //     var flowpoints = this.state.flowpoints
+                                //     flowpoints[i].Position = position
+                                //     this.setState({ flowpoints })
+                                // }}
+                              >
+                                <div className="flowpoint-header">
+                                  <h3>{el.PartNumber}</h3>
+                                  <span className="flowpoint-header-level">
+                                    {el.Level}
+                                  </span>
+                                  <span className="flowpoint-header-qty">
+                                    Qty:<strong>{el.Quantity}</strong>
+                                  </span>
+                                  {this.state.displayEditIcon &&
+                                    el.Level === "L1" && (
+                                      <span className="flowpoint-header-edit">
                                         <button
-                                            type={'button'}
-                                            className="reset mr15 cancel-btn"
-                                            onClick={this.cancel} >
-                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                        </button>
-                                        {!isFromVishualAd && <button
-                                            type="submit"
-                                            className="submit-button mr5 save-btn"
+                                          className="Edit"
+                                          onClick={() =>
+                                            this.editLevelOne(i, el.Quantity)
+                                          }
+                                        />
+                                      </span>
+                                    )}
+                                  {this.state.displayDeleteIcon &&
+                                    el.Level === "L1" && (
+                                      <span className="flowpoint-header-delete">
+                                        <button
+                                          onClick={() => this.deleteLevelOne(i)}
                                         >
-                                            <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                            {'Save'}
-                                        </button>}
-                                    </div>
-                                </Row>
+                                          x
+                                        </button>
+                                      </span>
+                                    )}
+                                </div>
+                                <div className="flowpoint-body">
+                                  <p>
+                                    Name:<strong>{el.PartName}</strong>
+                                  </p>
+                                  <p>
+                                    Part Type:<strong>{el.PartType}</strong>
+                                  </p>
+                                  {/* {`X=:${el.Position.x}`}
+                                                            {`Y=:${el.Position.y}`} */}
+                                </div>
+                              </Flowpoint>
+                            );
+                          })}
+                      </Flowspace>
+                    </Row>
 
-                            </form>
-
-
-                        </div>
-                        {isOpenChildDrawer && <AddChildDrawer
-                            isOpen={isOpenChildDrawer}
-                            closeDrawer={this.closeChildDrawer}
-                            isEditFlag={false}
-                            ID={''}
-                            anchor={'right'}
-                            setChildPartsData={this.setChildPartsData}
-                            BOMViewerData={this.state.flowpoints}
-                        />}
-                        {isOpenVisualDrawer && <VisualAdDrawer
-                            isOpen={isOpenVisualDrawer}
-                            closeDrawer={this.closeVisualDrawer}
-                            isEditFlag={true}
-                            anchor={'right'}
-                            updatedQuantity={this.state.updatedQuantity}
-                        />}
-                    </>
-                </Drawer>
-            </>
+                    <Row className="sf-btn-footer no-gutters justify-content-between">
+                      <div className="col-sm-12 text-right bluefooter-butn">
+                        <button
+                          type={"button"}
+                          className="reset mr15 cancel-btn"
+                          onClick={this.cancel}
+                        >
+                          <div className={"cross-icon"}>
+                            <img
+                              src={require("../../../assests/images/times.png")}
+                              alt="cancel-icon.jpg"
+                            />
+                          </div>{" "}
+                          {"Cancel"}
+                        </button>
+                        {!isFromVishualAd && (
+                          <button
+                            type="submit"
+                            className="submit-button mr5 save-btn"
+                          >
+                            <div className={"check-icon"}>
+                              <img
+                                src={require("../../../assests/images/check.png")}
+                                alt="check-icon.jpg"
+                              />{" "}
+                            </div>
+                            {"Save"}
+                          </button>
+                        )}
+                      </div>
+                    </Row>
+                  </form>
+                </div>
+                {isOpenChildDrawer && (
+                  <AddChildDrawer
+                    isOpen={isOpenChildDrawer}
+                    closeDrawer={this.closeChildDrawer}
+                    isEditFlag={false}
+                    ID={""}
+                    anchor={"right"}
+                    setChildPartsData={this.setChildPartsData}
+                    BOMViewerData={this.state.flowpoints}
+                  />
+                )}
+                {isOpenVisualDrawer && (
+                  <VisualAdDrawer
+                    isOpen={isOpenVisualDrawer}
+                    closeDrawer={this.closeVisualDrawer}
+                    isEditFlag={true}
+                    anchor={"right"}
+                    updatedQuantity={this.state.updatedQuantity}
+                  />
+                )}
+              </>
+            </Drawer>
+          </>
         );
     }
 }

@@ -1356,7 +1356,7 @@ class AddPower extends Component {
                                         <button
                                           type="button"
                                           className={
-                                            "cancel-btn mt30 pull-left"
+                                            "reset-btn mt30 pull-left"
                                           }
                                           onClick={() =>
                                             this.setState({
@@ -1598,7 +1598,7 @@ class AddPower extends Component {
                                         <button
                                           type="button"
                                           className={
-                                            "cancel-btn mt30 pull-left"
+                                            "reset-btn mt30 pull-left"
                                           }
                                           onClick={this.resetPowerGridData}
                                         >

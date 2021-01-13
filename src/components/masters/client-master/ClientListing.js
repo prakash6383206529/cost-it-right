@@ -248,7 +248,7 @@ class ClientListing extends Component {
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 noValidate
               >
-                <h1>Client</h1>
+                <h1>Client Master</h1>
                 <hr />
                 <Row className="pt-1">
                   <Col md="10" className="filter-block"></Col>

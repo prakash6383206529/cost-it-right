@@ -476,7 +476,7 @@ class OperationListing extends Component {
             <div className="container-fluid">
               {/* {this.props.loading && <Loader />} */}
               <form>
-                <h1>Operation</h1>
+                <h1>Operation Master</h1>
                 <hr />
                 <Row className="pt-1 filter-row-large">
                   <Col md="12" lg="9" className="filter-block">
