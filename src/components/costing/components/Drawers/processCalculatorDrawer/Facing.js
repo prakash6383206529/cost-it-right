@@ -75,10 +75,10 @@ function Facing(props) {
         <Col>
           <form noValidate className="form" onSubmit={() => {}}>
             <Col md="12" className={'mt25'}>
-              <Col md="10">
+              <Col md="12">
                 <div className="left-border">{'Distance:'}</div>
               </Col>
-              <Col md="10">
+              <Col md="12">
                 <Row className={'mt15'}>
                   <Col md="3">
                     <TextFieldHookForm
@@ -238,10 +238,10 @@ function Facing(props) {
             </Col>
 
             <Col md="12" className={'mt25'}>
-              <Col md="10">
+              <Col md="12">
                 <div className="left-border">{'Speed:'}</div>
               </Col>
-              <Col md="10">
+              <Col md="12">
                 <Row className={'mt15'}>
                   <Col md="3">
                     <TextFieldHookForm
@@ -346,10 +346,10 @@ function Facing(props) {
               </Col>
             </Col>
             <Col md="12" className={'mt25'}>
-              <Col md="10">
+              <Col md="12">
                 <div className="left-border">{'Time'}</div>
               </Col>
-              <Col md="10">
+              <Col md="12">
                 <Row className={'mt15'}>
                   <Col md="3">
                     <TextFieldHookForm

@@ -345,7 +345,7 @@ function ProcessCost(props) {
       <div className="user-page p-0">
         <Row>
           <Col md="12">
-            <div className="left-border">{'Conversion Cost:'}</div>
+            <div className="left-border">{"Conversion Cost:"}</div>
           </Col>
         </Row>
         <div className="cr-process-costwrap">
@@ -367,7 +367,7 @@ function ProcessCost(props) {
             }`}</Col>
             <Col md="3" className="switch cr-costlabel">
               <label className="switch-level">
-                <div className={'left-title'}>{''}</div>
+                <div className={"left-title"}>{""}</div>
                 <Switch
                   onChange={onToolToggle}
                   checked={isOpen}
@@ -382,22 +382,22 @@ function ProcessCost(props) {
                   height={20}
                   width={46}
                 />
-                <div className={'right-title'}>Show Tool Cost</div>
+                <div className={"right-title"}>Show Tool Cost</div>
               </label>
             </Col>
           </Row>
 
           <Row>
             <Col md="10">
-              <div className="left-border">{'Process Cost:'}</div>
+              <div className="left-border">{"Process Cost:"}</div>
             </Col>
-            <Col col={'2'}>
+            <Col col={"2"}>
               <button
                 type="button"
-                className={'user-btn'}
+                className={"user-btn"}
                 onClick={DrawerToggle}
               >
-                <div className={'plus'}></div>ADD PROCESS
+                <div className={"plus"}></div>ADD PROCESS
               </button>
             </Col>
           </Row>
@@ -587,12 +587,12 @@ function ProcessCost(props) {
                           <td>
                             <button
                               className="SaveIcon mt15 mr-2"
-                              type={'button'}
+                              type={"button"}
                               onClick={() => SaveItem(index)}
                             />
                             <button
                               className="CancelIcon mt15"
-                              type={'button'}
+                              type={"button"}
                               onClick={() => CancelItem(index)}
                             />
                           </td>
@@ -612,27 +612,27 @@ function ProcessCost(props) {
                           <td>
                             {item.ProcessCost
                               ? checkForDecimalAndNull(item.ProcessCost, 2)
-                              : 0}{' '}
+                              : 0}{" "}
                             <button
                               className="CalculatorIcon cr-cl-icon mt15"
-                              type={'button'}
+                              type={"button"}
                               onClick={() => toggleWeightCalculator(index)}
                             />
                           </td>
                           <td>
                             <button
                               className="Edit mt15 mr-2"
-                              type={'button'}
+                              type={"button"}
                               onClick={() => editItem(index)}
                             />
                             <button
                               className="Delete mt15"
-                              type={'button'}
+                              type={"button"}
                               onClick={() => deleteItem(index)}
                             />
                           </td>
                         </tr>
-                      )
+                      );
                     })}
                   {gridData && gridData.length === 0 && (
                     <tr>
@@ -651,8 +651,6 @@ function ProcessCost(props) {
             data={props.data && props.data.CostingOperationCostResponse}
             setOperationCost={setOperationCost}
           /> */}
-
-          <hr />
           {/* {isOpen && (
             <ToolCost
               data={props.data && props.data.CostingToolsCostResponse}
@@ -666,22 +664,22 @@ function ProcessCost(props) {
           isOpen={isDrawerOpen}
           closeDrawer={closeDrawer}
           isEditFlag={false}
-          ID={''}
-          anchor={'right'}
+          ID={""}
+          anchor={"right"}
           Ids={Ids}
         />
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={'Machining'}
-          process={'End Mill'}
+          technology={"Machining"}
+          process={"End Mill"}
           isOpen={isCalculator}
           closeDrawer={closeCalculatorDrawer}
-          anchor={'right'}
+          anchor={"right"}
         />
       )}
     </>
-  )
+  );
 }
 
 export default ProcessCost

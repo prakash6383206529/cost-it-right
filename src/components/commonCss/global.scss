@@ -1897,7 +1897,7 @@ ul.bread-list.d-inline-flex{
 // Added on 16-09-2020
 .drawer-1500px{
   width: 100%;
-  max-width: 1500px;
+  max-width: calc(100vw - 430px);
 }
 .drawer-700px{
   width: 100%;
@@ -2077,3 +2077,18 @@ body {
   margin-bottom: 15px;
 }
 }
+
+// drawer medium (i.e. used on costing page calculator drawer)
+.drawer-md{
+  .MuiDrawer-paperAnchorRight{
+    left: 430px;
+  }
+}
+.calculator-drawer{
+  .form-group{
+    label{
+      min-height: 44px;
+    }
+  }
+}
+// drawer medium end
