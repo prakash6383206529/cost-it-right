@@ -2125,9 +2125,6 @@ body {
   .mb-15 {
     margin-bottom: 15px;
   }
-  .height-auto {
-    height: 20px;
-  }
 }
 
 // drawer medium (i.e. used on costing page calculator drawer)
@@ -2144,3 +2141,14 @@ body {
   }
 }
 // drawer medium end
+// costing page ui fixes
+.w90px{
+  width: 90px;
+}
+.calc-icon-middle{
+  margin: 0px;
+  height: auto;
+  min-height:20px;
+  vertical-align: middle;
+}
+// costing page ui fixes

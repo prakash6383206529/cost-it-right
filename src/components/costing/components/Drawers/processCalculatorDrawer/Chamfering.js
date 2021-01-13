@@ -472,8 +472,8 @@ function Chamfering(props) {
                   </Row>
                 </Col>
                 <div className="bluefooter-butn border row">
-                  Total Machining Time{' '}
-                  <span className="col-sm-12 text-right">
+                  <div className="col-ms-8">Total Machining Time{' '}</div>
+                  <span className="col-sm-4 text-right">
                     {totalMachiningTime === '0.00'
                       ? totalMachiningTime
                       : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}
