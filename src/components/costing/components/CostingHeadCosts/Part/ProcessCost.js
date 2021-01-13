@@ -789,7 +789,7 @@ function ProcessCost(props) {
         <VariableMhrDrawer
           technology={'Machining'}
           calculatorData={calculatorData}
-          process={'Face Miling'}
+          process={'Facing'}
           isOpen={isCalculator}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}
