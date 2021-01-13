@@ -645,8 +645,8 @@ function ProcessCost(props) {
                           <td>{item.MachineName}</td>
                           <td>{item.MachineRate}</td>
                           <td>{item.UOM}</td>
-                          <td style={{ width: 50 }}>
-                            <span>
+                          <td style={{ width: 150 }}>
+                            <span className="d-inline-block w90px mr-2">
                               {
                                 <TextFieldHookForm
                                   label=""
@@ -675,7 +675,7 @@ function ProcessCost(props) {
                               }
                             </span>
                             <button
-                              className="CalculatorIcon cr-cl-icon "
+                              className="CalculatorIcon cr-cl-icon calc-icon-middle"
                               type={'button'}
                               onClick={() => toggleWeightCalculator(index)}
                             />

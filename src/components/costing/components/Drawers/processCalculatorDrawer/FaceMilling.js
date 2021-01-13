@@ -108,17 +108,17 @@ function FaceMilling(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={'mt25'}>
+            <Col md="12" className={"mt25"}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="12">
-                  <div className="left-border">{'Distance:'}</div>
+                  <div className="left-border">{"Distance:"}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={'mt15'}>
+                  <Row className={"mt15"}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cutter Diameter(mm)`}
-                        name={'cutterDiameter'}
+                        name={"cutterDiameter"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -128,14 +128,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.OuterDiameter}
                         disabled={false}
                       />
@@ -143,7 +143,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Length of Area Cut(mm)`}
-                        name={'cutLengthOfArea'}
+                        name={"cutLengthOfArea"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -153,14 +153,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.cutLengthOfArea}
                         disabled={false}
                       />
@@ -168,7 +168,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Width of area to cut`}
-                        name={'areaWidth'}
+                        name={"areaWidth"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -178,14 +178,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onWidthChange}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.areaWidth}
                         disabled={false}
                       />
@@ -193,7 +193,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
-                        name={'cutLength'}
+                        name={"cutLength"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -208,9 +208,9 @@ function FaceMilling(props) {
                         //   // maxLength: 4,
                         // }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.cutLength}
                         disabled={true}
                       />
@@ -221,7 +221,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Material To be removed`}
-                        name={'removedMaterial'}
+                        name={"removedMaterial"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -231,14 +231,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.removedMaterial}
                         disabled={false}
                       />
@@ -246,7 +246,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Depth of cut`}
-                        name={'doc'}
+                        name={"doc"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -256,14 +256,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onDocChange}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.doc}
                         disabled={false}
                       />
@@ -271,7 +271,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label="No. of Passes"
-                        name={'numberOfPasses'}
+                        name={"numberOfPasses"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -281,14 +281,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.numberOfPasses}
                         disabled={true}
                       />
@@ -297,14 +297,14 @@ function FaceMilling(props) {
                 </Col>
 
                 <Col md="12 mt-25">
-                  <div className="left-border">{'Speed:'}</div>
+                  <div className="left-border">{"Speed:"}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={'mt15'}>
+                  <Row className={"mt15"}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
-                        name={'cuttingSpeed'}
+                        name={"cuttingSpeed"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -314,14 +314,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onSpeedChange}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.cuttingSpeed}
                         disabled={false}
                       />
@@ -329,7 +329,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`RPM`}
-                        name={'rpm'}
+                        name={"rpm"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -339,14 +339,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.rpm}
                         disabled={true}
                       />
@@ -354,7 +354,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`No. of Teeth on Cutter`}
-                        name={'toothNo'}
+                        name={"toothNo"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -368,9 +368,9 @@ function FaceMilling(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.toothNo}
                         disabled={true}
                       />
@@ -378,7 +378,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/ Tooth`}
-                        name={'toothFeed'}
+                        name={"toothFeed"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -387,14 +387,14 @@ function FaceMilling(props) {
                           required: false,
                           pattern: {
                             value: /^[0-9\b]+$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onToothFeedChange}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.toothFeed}
                         disabled={false}
                       />
@@ -402,7 +402,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
-                        name={'feedRev'}
+                        name={"feedRev"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -416,9 +416,9 @@ function FaceMilling(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.feedRev}
                         disabled={true}
                       />
@@ -426,7 +426,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
-                        name={'feedMin'}
+                        name={"feedMin"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -436,14 +436,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.feedMin}
                         disabled={true}
                       />
@@ -452,14 +452,14 @@ function FaceMilling(props) {
                 </Col>
 
                 <Col md="10 mt-25">
-                  <div className="left-border">{'Time:'}</div>
+                  <div className="left-border">{"Time:"}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={'mt15'}>
+                  <Row className={"mt15"}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
-                        name={'cutTime'}
+                        name={"cutTime"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -469,14 +469,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.cutTime}
                         disabled={true}
                       />
@@ -484,7 +484,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
-                        name={'clampingPercentage'}
+                        name={"clampingPercentage"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -494,14 +494,14 @@ function FaceMilling(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
+                            message: "Invalid Number.",
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onClampingPercantageChange}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.clampingPercentage}
                         disabled={false}
                       />
@@ -509,7 +509,7 @@ function FaceMilling(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
-                        name={'clampingValue'}
+                        name={"clampingValue"}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -523,9 +523,9 @@ function FaceMilling(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={''}
+                        defaultValue={""}
                         className=""
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                         errors={errors.clampingValue}
                         disabled={true}
                       />
@@ -533,11 +533,11 @@ function FaceMilling(props) {
                   </Row>
                 </Col>
                 <div className="bluefooter-butn border row">
-                  Total Machining Time{' '}
-                  <span className="col-sm-12 text-right">
-                    {totalMachiningTime === '0.00'
+                  <div className="col-sm-8">Total Machining Time </div>
+                  <span className="col-sm-4 text-right">
+                    {totalMachiningTime === "0.00"
                       ? totalMachiningTime
-                      : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}
+                      : checkForDecimalAndNull(totalMachiningTime, trim)}{" "}
                     min
                   </span>
                 </div>
@@ -550,9 +550,9 @@ function FaceMilling(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={'cross-icon'}>
+                <div className={"cross-icon"}>
                   <img
-                    src={require('../../../../../assests/images/times.png')}
+                    src={require("../../../../../assests/images/times.png")}
                     alt="cancel-icon.jpg"
                   />
                 </div>
@@ -563,17 +563,17 @@ function FaceMilling(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
+                <div className={"check-icon"}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {"SAVE"}
               </button>
             </div>
           </form>
         </Col>
       </Row>
     </Fragment>
-  )
+  );
 }
 
 export default FaceMilling
