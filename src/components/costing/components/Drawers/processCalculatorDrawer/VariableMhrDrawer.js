@@ -15,9 +15,25 @@ import SideFaceMiling from './SideFaceMiling'
 import SlotCutting from './SlotCutting'
 import ChamferingMiller from './ChamferingMiller'
 import EndMill from './EndMill'
+import { useDispatch } from 'react-redux'
+import { saveProcessCostCalculationData } from '../../../actions/ProcessCost'
+import { toastr } from 'react-redux-toastr'
 function VariableMhrDrawer(props) {
-  const { technology, process } = props
-  console.log(process, 'Process')
+  const { technology, process, calculatorData } = props
+  console.log(calculatorData, 'Process')
+  const dispatch = useDispatch()
+  const calculateMachineTime = (value, formValue) => {
+    console.log('Form Value in drawer', value)
+
+    // dispatch(
+    //   saveProcessCostCalculationData(formValue, () => {
+    //     if (res.Data.result) {
+    //       toastr.success('Calculation data saved successfully!')
+    //     }
+    //   }),
+    // )
+    toggleDrawer('', value)
+  }
   /**
    * @method toggleDrawer
    * @description TOGGLE DRAWER
@@ -35,23 +51,68 @@ function VariableMhrDrawer(props) {
     console.log('Entered in switch case')
     switch (process) {
       case 'Facing':
-        return <Facing technology={technology} />
+        return (
+          <Facing
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'Drilling':
-        return <Drilling technology={technology} />
+        return (
+          <Drilling
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'Turning':
-        return <Turning technology={technology} />
+        return (
+          <Turning
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'Chamfering':
-        return <Chamfering technology={technology} />
+        return (
+          <Chamfering
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'Face Miling':
-        return <FaceMilling technology={technology} />
+        return (
+          <FaceMilling
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'Side face Miling':
-        return <SideFaceMiling technology={technology} />
+        return (
+          <SideFaceMiling
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'Slot Cutting':
-        return <SlotCutting technology={technology} />
+        return (
+          <SlotCutting
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'Chamfering Miller':
-        return <ChamferingMiller technology={technology} />
+        return (
+          <ChamferingMiller
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
       case 'End Mill':
-        return <EndMill technology={technology} />
+        return (
+          <EndMill
+            calculateMachineTime={calculateMachineTime}
+            technology={technology}
+          />
+        )
     }
   }
 
@@ -76,6 +137,30 @@ function VariableMhrDrawer(props) {
               </Col>
             </Row>
             <Row>
+              <Col md="12" className={'mt-2'}>
+                <span className="d-inline-block mr-4 mb-3 pl-3">
+                  <span className="cr-tbl-label d-block">Process Name:</span>
+                  <span>{calculatorData.ProcessName}</span>
+                </span>
+                <span className="d-inline-block mr-4 mb-3">
+                  <span className="cr-tbl-label d-block">
+                    Process Description:
+                  </span>
+                  <span>{calculatorData.ProcessDescription}</span>
+                </span>
+                <span className="d-inline-block mr-4 mb-3">
+                  <span className="cr-tbl-label d-block">Machine Name:</span>
+                  <span>{calculatorData.MachineName}</span>
+                </span>
+                <span className="d-inline-block mr-4 mb-3">
+                  <span className="cr-tbl-label d-block">Machine Rate:</span>
+                  <span>{calculatorData.MachineRate}</span>
+                </span>
+                <span className="d-inline-block mr-4 mb-3 pr-3">
+                  <span className="cr-tbl-label d-block">UOM:</span>
+                  <span>{calculatorData.UOM}</span>
+                </span>
+              </Col>
               <div>{getProcessComponent()}</div>
             </Row>
           </div>

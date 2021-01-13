@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { Col, Row, Table } from 'reactstrap'
 import Switch from 'react-switch'
 import OperationCost from './OperationCost'
@@ -31,37 +31,95 @@ function ProcessCost(props) {
       ProcessDetailId: '',
       MachineId: '',
       MachineRateId: '',
-      ProcessName: 'Packaging Nmame',
+      ProcessName: 'Facing',
       ProcessDescription: 'LoreumIpsum',
       MachineName: 'Machine 1',
-      Tonnage: 9,
       UOM: 'Hours',
-      MHR: '123.023',
-      CycleTime: 0,
-      Efficiency: 0,
-      Cavity: 0,
-      Quantity: '',
-      ProcessCost: '',
+      Quantity: '0.00',
+      MachineRate: '123.023',
+      NetCost: '',
+    },
+    {
+      ProcessId: '',
+      ProcessDetailId: '',
+      MachineId: '',
+      MachineRateId: '',
+      ProcessName: 'Face Milling',
+      ProcessDescription: 'LoreumIpsum',
+      MachineName: 'Machine 1',
+      UOM: 'Hours',
+      Quantity: '0.00',
+      MachineRate: '125.023',
+      NetCost: '',
     },
   ])
+  console.log('grid data', gridData)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
+  const [calciIndex, setCalciIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const [Ids, setIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
+  const [calculatorData, setCalculatorData] = useState({})
+  const fieldValues = useWatch({
+    control,
+    name: ['ProcessGridFields'],
+    //defaultValue: 'default' // default value before the render
+  })
+
   // This is for temporary
   // useEffect(() => {
   //   props.setProcessCost(tabData, props.index)
   // }, [tabData])
   const toggleWeightCalculator = (id) => {
+    console.log(id, 'id of calculator')
+    setCalciIndex(id)
+    const calciData = gridData[id]
+    console.log(calciData, 'Calaci Data')
+    setCalculatorData(calciData)
     setIsCalculator(true)
   }
 
-  const closeCalculatorDrawer = (e) => {
+  const closeCalculatorDrawer = (e, formValue) => {
     setIsCalculator(false)
+    console.log(formValue, 'Form Value', calciIndex)
+    let tempData = gridData[calciIndex]
+    let time
+    let netCost
+    let tempArray
+    if (tempData.UOM === 'Hours') {
+      time = formValue / 60
+      netCost =
+        formValue === '0.00' ? '0.00' : time * Number(tempData.MachineRate)
+    } else {
+      time = formValue
+      netCost =
+        formValue === '0.00' ? '0.00' : time * Number(tempData.MachineRate)
+    }
+    tempData = {
+      ...tempData,
+      Quantity: time,
+      NetCost: netCost,
+      // ProcessId: tempData.ProcessId,
+      // ProcessDetailId: tempData.ProcessDetailId,
+      // MachineId: tempData.MachineId,
+      // MachineRateId: tempData.MachineRateId,
+      // ProcessName: tempData.ProcessName,
+      // UOM: tempData.UOM,
+      // ProcessDescription: tempData.ProcessDescription,
+      // MachineName: tempData.MachineName,
+      // Quantity: time,
+      // MachineRate: tempData.MachineRate,
+
+      // NetCost: netCost,
+    }
+    console.log(tempData, 'TEmpSata')
+    tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
+    console.log(tempArray, 'Temporary Array')
+    setGridData(tempArray)
   }
   /**
    * @method onToolToggle
@@ -93,16 +151,12 @@ function ProcessCost(props) {
             ProcessDetailId: '',
             MachineId: el.MachineId,
             MachineRateId: el.MachineRateId,
+            MachineRate: '123.023',
             ProcessName: el.ProcessName,
             ProcessDescription: el.Description,
             MachineName: el.MachineName,
-            Tonnage: el.MachineTonnage,
             UOM: el.UnitOfMeasurement,
-            MHR: el.MachineRate,
-            CycleTime: 0,
-            Efficiency: 0,
-            Cavity: 0,
-            Quantity: '',
+
             ProcessCost: '',
           }
         })
@@ -412,13 +466,9 @@ function ProcessCost(props) {
                     <th>{`Process Name`}</th>
                     <th>{`Process Description`}</th>
                     <th>{`Machine Name`}</th>
-                    <th>{`Tonnage`}</th>
+                    <th>{`Machine Rate`}</th>
                     <th>{`UOM`}</th>
-                    <th>{`MHR`}</th>
-                    {/* <th style={{ width: 150 }}>{`Cycle Time`}</th>
-                    <th style={{ width: 150 }}>{`Efficiency`}</th>
-                    <th style={{ width: 150 }}>{`Cavity`}</th>
-                    <th style={{ width: 150 }}>{`Quantity`}</th> */}
+                    <th>{`Quantity`}</th>
                     <th>{`Net Cost`}</th>
                     <th>{`Action`}</th>
                   </tr>
@@ -431,81 +481,72 @@ function ProcessCost(props) {
                           <td>{item.ProcessName}</td>
                           <td>{item.ProcessDescription}</td>
                           <td>{item.MachineName}</td>
-                          <td>{item.Tonnage}</td>
+                          <td>{item.MachineRate}</td>
                           <td>{item.UOM}</td>
-                          <td>{item.MHR}</td>
-                          {/*
-                            <td style={{ width: 200 }}>
-                            {
-                              <TextFieldHookForm
-                                label=""
-                                name={`${ProcessGridFields}[${index}]CycleTime`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  //required: true,
-                                  pattern: {
-                                    value: /^[0-9]\d*(\.\d+)?$/i,
-                                    message: 'Invalid Number.',
-                                  },
-                                }}
-                                defaultValue={item.CycleTime}
-                                className=""
-                                customClassName={'withBorder'}
-                                handleChange={(e) => {
-                                  e.preventDefault()
-                                  handleCycleTimeChange(e, index)
-                                }}
-                                errors={
-                                  errors &&
-                                  errors.ProcessGridFields &&
-                                  errors.ProcessGridFields[index] !== undefined
-                                    ? errors.ProcessGridFields[index]
-                                        .GrossWeight
-                                    : ''
-                                }
-                                disabled={true}
-                              />
-                            }
-                          </td>
+                          {/* <td>{item.Time ? item.Time : '0.00'}</td> */}
+                          {/* <td>{item.NetCost? item.NetCost : '0.00'}</td> */}
+
                           <td style={{ width: 200 }}>
                             {
                               <TextFieldHookForm
                                 label=""
-                                name={`${ProcessGridFields}[${index}]Efficiency`}
+                                name={`${ProcessGridFields}[${index}]Time`}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
                                 mandatory={false}
-                                rules={{
-                                  //required: true,
-                                  pattern: {
-                                    value: /^[1-9]*$/i,
-                                    //value: /^[0-9]\d*(\.\d+)?$/i,
-                                    message: 'Invalid Number.',
-                                  },
-                                }}
-                                defaultValue={item.Efficiency}
+                                // rules={{
+                                //   //required: true,
+                                //   pattern: {
+                                //     value: /^[0-9]\d*(\.\d+)?$/i,
+                                //     message: 'Invalid Number.',
+                                //   },
+                                // }}
+                                defaultValue={item.Time ? item.Time : '0.00'}
                                 className=""
                                 customClassName={'withBorder'}
                                 handleChange={(e) => {
                                   e.preventDefault()
-                                  handleEfficiencyChange(e, index)
+                                  // handleCycleTimeChange(e, index)
                                 }}
-                                errors={
-                                  errors &&
-                                  errors.ProcessGridFields &&
-                                  errors.ProcessGridFields[index] !== undefined
-                                    ? errors.ProcessGridFields[index]
-                                        .GrossWeight
-                                    : ''
-                                }
+                                // errors={}
                                 disabled={true}
                               />
                             }
                           </td>
+
+                          <td style={{ width: 200 }}>
+                            {
+                              <TextFieldHookForm
+                                label=""
+                                name={`${ProcessGridFields}[${index}]NetCost`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                // rules={{
+                                //   //required: true,
+                                //   pattern: {
+                                //     value: /^[1-9]*$/i,
+                                //     //value: /^[0-9]\d*(\.\d+)?$/i,
+                                //     message: 'Invalid Number.',
+                                //   },
+                                // }}
+                                defaultValue={
+                                  item.NetCost ? item.NetCost : '0.00'
+                                }
+                                className=""
+                                customClassName={'withBorder'}
+                                handleChange={(e) => {
+                                  e.preventDefault()
+                                  // handleEfficiencyChange(e, index)
+                                }}
+                                // errors={}
+                                disabled={true}
+                              />
+                            }
+                          </td>
+                          {/* 
                           <td style={{ width: 200 }}>
                             {
                               <TextFieldHookForm
@@ -579,11 +620,11 @@ function ProcessCost(props) {
 
   */}
 
-                          <td>
+                          {/* <td>
                             {item.ProcessCost
                               ? checkForDecimalAndNull(item.ProcessCost, 2)
                               : 0}
-                          </td>
+                          </td> */}
                           <td>
                             <button
                               className="SaveIcon mt15 mr-2"
@@ -602,29 +643,104 @@ function ProcessCost(props) {
                           <td>{item.ProcessName}</td>
                           <td>{item.ProcessDescription}</td>
                           <td>{item.MachineName}</td>
-                          <td>{item.Tonnage}</td>
+                          <td>{item.MachineRate}</td>
                           <td>{item.UOM}</td>
-                          <td>{item.MHR}</td>
-                          {/* <td>{item.CycleTime ? item.CycleTime : '-'}</td>
-                          <td>{item.Efficiency ? item.Efficiency : '-'}</td>
-                          <td>{item.Cavity ? item.Cavity : '-'}</td>
-                          <td>{item.Quantity}</td> */}
-                          <td>
-                            {item.ProcessCost
-                              ? checkForDecimalAndNull(item.ProcessCost, 2)
-                              : 0}{' '}
+                          <td style={{ width: 50 }}>
+                            <span>
+                              {
+                                <TextFieldHookForm
+                                  label=""
+                                  name={`${ProcessGridFields}[${index}]Quantity`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  // rules={{
+                                  //   //required: true,
+                                  //   pattern: {
+                                  //     value: /^[0-9]\d*(\.\d+)?$/i,
+                                  //     message: 'Invalid Number.',
+                                  //   },
+                                  // }}
+                                  defaultValue={item.Quantity}
+                                  className=""
+                                  customClassName={'withBorder'}
+                                  handleChange={(e) => {
+                                    e.preventDefault()
+                                    // handleCycleTimeChange(e, index)
+                                  }}
+                                  // errors={}
+                                  disabled={true}
+                                />
+                              }
+                            </span>
                             <button
-                              className="CalculatorIcon cr-cl-icon mt15"
+                              className="CalculatorIcon cr-cl-icon "
                               type={'button'}
                               onClick={() => toggleWeightCalculator(index)}
                             />
                           </td>
-                          <td>
+                          {/* <td>
+                            <span className={'mr-2'}>
+                              {item.Quantity
+                                ? checkForDecimalAndNull(item.Quantity, 4)
+                                : '0.00'}
+                            </span>
                             <button
+                              className="CalculatorIcon cr-cl-icon height-auto"
+                              type={'button'}
+                              onClick={() => toggleWeightCalculator(index)}
+                            />
+                          </td> */}
+                          {/* <td>{item.NetCost}</td> */}
+                          {/* <td>{item.CycleTime ? item.CycleTime : '-'}</td>
+                          <td>{item.Efficiency ? item.Efficiency : '-'}</td>
+                          <td>{item.Cavity ? item.Cavity : '-'}</td>
+                          <td>{item.Quantity}</td> */}
+                          <td style={{ width: 100 }}>
+                            {
+                              <TextFieldHookForm
+                                label=""
+                                name={`${ProcessGridFields}[${index}]NetCost`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                // rules={{
+                                //   //required: true,
+                                //   pattern: {
+                                //     value: /^[0-9]\d*(\.\d+)?$/i,
+                                //     message: 'Invalid Number.',
+                                //   },
+                                // }}
+                                defaultValue={
+                                  item.NetCost ? item.NetCost : '0.00'
+                                }
+                                className=""
+                                customClassName={'withBorder'}
+                                handleChange={(e) => {
+                                  e.preventDefault()
+                                  // handleCycleTimeChange(e, index)
+                                }}
+                                // errors={}
+                                disabled={true}
+                              />
+                            }
+                            {/* {item.NetCost
+                              ? checkForDecimalAndNull(item.NetCost, 2)
+                              : '0.00'}{' '} */}
+                            {/* <button
+                              className="CalculatorIcon cr-cl-icon mt15"
+                              type={'button'}
+                              onClick={() => toggleWeightCalculator(index)}
+                            /> */}
+                          </td>
+                          <td>
+                            {/* <button
                               className="Edit mt15 mr-2"
                               type={'button'}
                               onClick={() => editItem(index)}
-                            />
+                            /> */}
                             <button
                               className="Delete mt15"
                               type={'button'}
@@ -674,7 +790,8 @@ function ProcessCost(props) {
       {isCalculator && (
         <VariableMhrDrawer
           technology={'Machining'}
-          process={'End Mill'}
+          calculatorData={calculatorData}
+          process={'Face Miling'}
           isOpen={isCalculator}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}
