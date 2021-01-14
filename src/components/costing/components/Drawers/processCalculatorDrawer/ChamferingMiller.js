@@ -19,6 +19,17 @@ import {
 } from '../../../../../helper'
 
 function ChamferingMiller(props) {
+  const defaultValues = {
+    cutLength: '',
+    //removedMaterial: '',
+    rpm: '',
+    feedRev: '',
+    feedMin: '',
+    cutTime: '',
+    numberOfPasses: '',
+    clampingPercentage: '',
+    clampingValue: '',
+  }
   const {
     register,
     handleSubmit,
@@ -30,8 +41,41 @@ function ChamferingMiller(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
+  const fieldValues = useWatch({
+    control,
+    name: [
+      'cutterDiameter',
+      'cutLengthOfArea',
+      'areaWidth',
+      'slotNo',
+      // 'cutLength',
+      //'turningLength',
+      'removedMaterial',
+      'doc',
+      'cuttingSpeed',
+      'toothFeed',
+      // 'rpm',
+      // 'feedRev',
+      'clampingPercentage',
+      // 'feedMin',
+      // 'cutTime',
+      // 'clampingPercentage',
+      // 'clampingValue',
+    ],
+  })
+
+  useEffect(() => {
+    onClampingPercantageChange()
+    // onFinishDiameterChange()
+    onDocChange()
+    onSlotChange()
+    // onWidthChange()
+    // onFeedRevChange()
+    onToothFeedChange()
+    onSpeedChange()
+  }, [fieldValues])
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
   const { technology, process, calculateMachineTime } = props
@@ -43,8 +87,7 @@ function ChamferingMiller(props) {
 
   const onDocChange = (e) => {
     const removedMaterial = getValues('removedMaterial')
-    const doc = e.target.value
-    console.log(removedMaterial, 'd', doc)
+    const doc = getValues('doc')
     if (technology === 'Machining') {
       const numberOfPasses = passesNo(removedMaterial, doc)
       setValue('numberOfPasses', numberOfPasses)
@@ -53,7 +96,7 @@ function ChamferingMiller(props) {
 
   const onSpeedChange = (e) => {
     const cutterDiameter = getValues('cutterDiameter')
-    const cuttingSpeed = e.target.value
+    const cuttingSpeed = getValues('cuttingSpeed')
     const rpm = findRpm(cuttingSpeed, cutterDiameter)
     setValue('rpm', rpm)
   }
@@ -62,8 +105,11 @@ function ChamferingMiller(props) {
     const rpm = getValues('rpm')
     const cutLength = getValues('cutLength')
     const numberOfPasses = getValues('numberOfPasses')
-    const toothFeed = e.target.value
+    const toothFeed = getValues('toothFeed')
     const feedRev = checkForDecimalAndNull(toothNo * toothFeed, trim)
+    if (!feedRev) {
+      return ''
+    }
     setValue('feedRev', feedRev)
     const feedMin = feedByMin(feedRev, rpm)
     setValue('feedMin', feedMin)
@@ -76,7 +122,7 @@ function ChamferingMiller(props) {
 
   const onClampingPercantageChange = (e) => {
     const tcut = Number(getValues('cutTime'))
-    const clampingPercentage = e.target.value
+    const clampingPercentage = getValues('clampingPercentage')
     const clampingValue = clampingTime(tcut, clampingPercentage)
     const totalMachiningTime = totalMachineTime(tcut, clampingValue)
     setValue('clampingValue', clampingValue)
@@ -84,14 +130,18 @@ function ChamferingMiller(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSlotChange = (e) => {
-    const slotNo = e.target.value
+    const slotNo = getValues('slotNo')
     const cutLengthOfArea = Number(getValues('cutLengthOfArea'))
-    const cutterDiameter = Number(getValues('cutterDiameter'))
+    // const cutterDiameter = Number(getValues('cutterDiameter'))
     const areaWidth = Number(getValues('areaWidth'))
+
     const cutLength = checkForDecimalAndNull(
       (cutLengthOfArea + areaWidth * 2) * slotNo,
       trim,
     )
+    if (!cutLengthOfArea || !areaWidth || !slotNo || !cutLength) {
+      return ''
+    }
     setValue('cutLength', cutLength)
   }
   const onSubmit = (value) => {
@@ -557,7 +607,7 @@ function ChamferingMiller(props) {
                   </Row>
                 </Col>
                 <div className="bluefooter-butn border row">
-                  <div className="col-sm-8"> Total Machining Time{' '}</div>
+                  <div className="col-sm-8"> Total Machining Time </div>
                   <span className="col-sm-4 text-right">
                     {totalMachiningTime === '0.00'
                       ? totalMachiningTime

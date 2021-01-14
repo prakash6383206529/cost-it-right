@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -20,6 +20,16 @@ import {
 import { trim } from 'jquery'
 
 function Chamfering(props) {
+  const defaultValues = {
+    cutLength: '',
+    removedMaterial: '',
+    rpm: '',
+    feedMin: '',
+    cutTime: '',
+    numberOfPasses: '',
+    clampingPercentage: '',
+    clampingValue: '',
+  }
   const {
     register,
     handleSubmit,
@@ -31,23 +41,54 @@ function Chamfering(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
+  const fieldValues = useWatch({
+    control,
+    name: [
+      'turningDiameter',
+      'finishDiameter',
+      'turningLength',
+      //'cutLength',
+      'removedMaterial',
+      'cuttingSpeed',
+      'doc',
+      // 'rpm',
+      'feedRev',
+      'clampingPercentage',
+      // 'feedMin',
+      // 'cutTime',
+      // 'clampingPercentage',
+      // 'clampingValue',
+    ],
+  })
+
+  useEffect(() => {
+    onTurningLength()
+    onClampingPercantageChange()
+    // onFinishDiameterChange()
+    onDocChange()
+    onFeedRevChange()
+    onSpeedChange()
+  }, [fieldValues])
+
   const { technology, process, calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState('')
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
   const fieldForProcess = () => {}
 
-  const onTurningLength = (e) => {
-    const cutLength = checkForDecimalAndNull(e.target.value, trim)
+  const onTurningLength = () => {
+    const cutLength = checkForDecimalAndNull(getValues('turningLength'), trim)
+    if (cutLength === 0) {
+      return ''
+    }
     setValue('cutLength', cutLength)
   }
 
-  const onDocChange = (e) => {
+  const onDocChange = () => {
     const removedMaterial = getValues('removedMaterial')
-    const doc = e.target.value
-    console.log(removedMaterial, 'd', doc)
+    const doc = getValues('doc')
     if (technology === 'Machining') {
       const numberOfPasses = passesNo(removedMaterial, doc)
       setValue('numberOfPasses', numberOfPasses)
@@ -55,27 +96,29 @@ function Chamfering(props) {
   }
 
   const onSpeedChange = (e) => {
-    console.log(e, 'Eveny')
     const turningDiameter = getValues('turningDiameter')
     const finishDiameter = getValues('finishDiameter')
-    const cuttingSpeed = e.target.value
+    const cuttingSpeed = getValues('cuttingSpeed')
     const rpm = findRpm(cuttingSpeed, turningDiameter)
     //(1000 * cuttingSpeed) / (3.14 * turningDiameter)
     setValue('rpm', rpm)
   }
   const onFeedRevChange = (e) => {
-    const feedRev = e.target.value
+    const feedRev = getValues('feedRev')
     const rpm = getValues('rpm')
     const cutLength = getValues('cutLength')
     const passesNo = getValues('numberOfPasses')
     const feedMin = feedByMin(feedRev, rpm)
     const tCut = checkForDecimalAndNull((cutLength * passesNo) / feedMin, trim)
+    if (!tCut) {
+      return false
+    }
     setValue('feedMin', feedMin)
     setValue('cutTime', tCut)
   }
-  const onClampingPercantageChange = (e) => {
+  const onClampingPercantageChange = () => {
     const tcut = Number(getValues('cutTime'))
-    const clampingPercentage = e.target.value
+    const clampingPercentage = getValues('clampingPercentage')
     const clampingValue = clampingTime(tcut, clampingPercentage)
     const totalMachiningTime = totalMachineTime(tcut, clampingValue)
     setValue('clampingValue', clampingValue)
@@ -96,7 +139,7 @@ function Chamfering(props) {
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
             <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
-                <Col md="12">
+                <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
@@ -168,7 +211,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={onTurningLength}
+                        handleChange={() => {}}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -184,34 +227,6 @@ function Chamfering(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        // rules={{
-                        //   required: false,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.cutLength}
-                        disabled={true}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Material To be removed`}
-                        name={'removedMaterial'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
                         rules={{
                           required: true,
                           pattern: {
@@ -225,13 +240,39 @@ function Chamfering(props) {
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.removedMaterial}
-                        disabled={false}
+                        errors={errors.cutLength}
+                        disabled={true}
                       />
                     </Col>
                     <Col md="3">
                       <TextFieldHookForm
-                        label={`Depth of cut(mm)`}
+                        label={`Material To be Removed`}
+                        name={'removedMaterial'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^[0-9\b]+$/i,
+                            //value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.',
+                          },
+                          // maxLength: 4,
+                        }}
+                        handleChange={() => {}}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.removedMaterial}
+                        disabled={false}
+                      />
+                    </Col>
+
+                    <Col md="3">
+                      <TextFieldHookForm
+                        label={`Depth of Cut(mm)`}
                         name={'doc'}
                         Controller={Controller}
                         control={control}
@@ -250,20 +291,20 @@ function Chamfering(props) {
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.ScrapLength}
+                        errors={errors.doc}
                         disabled={false}
                       />
                     </Col>
                     <Col md="3">
                       <TextFieldHookForm
-                        label="No. of Passes(mm)"
+                        label={`No. of Passes`}
                         name={'numberOfPasses'}
                         Controller={Controller}
                         control={control}
                         register={register}
                         mandatory={false}
                         rules={{
-                          required: false,
+                          required: true,
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
@@ -275,14 +316,14 @@ function Chamfering(props) {
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.NumberOfPartsPerSheet}
+                        errors={errors.numberOfPasses}
                         disabled={true}
                       />
                     </Col>
                   </Row>
                 </Col>
 
-                <Col md="12 mt-25">
+                <Col md="10 mt-25">
                   <div className="left-border">{'Speed:'}</div>
                 </Col>
                 <Col md="12">
@@ -337,6 +378,7 @@ function Chamfering(props) {
                         disabled={true}
                       />
                     </Col>
+
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
@@ -347,17 +389,17 @@ function Chamfering(props) {
                         mandatory={true}
                         rules={{
                           required: false,
-                          pattern: {
-                            value: /^[0-9]*$/i,
-                            message: 'Invalid Number.',
-                          },
+                          // pattern: {
+                          //   value: /^[0-9]*$/i,
+                          //   message: 'Invalid Number.'
+                          // },
                           // maxLength: 4,
                         }}
                         handleChange={onFeedRevChange}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.InnerDiameter}
+                        errors={errors.feedRev}
                         disabled={false}
                       />
                     </Col>
@@ -471,8 +513,9 @@ function Chamfering(props) {
                     <Col md="3"></Col>
                   </Row>
                 </Col>
+
                 <div className="bluefooter-butn border row">
-                  <div className="col-ms-8">Total Machining Time{' '}</div>
+                  <div className="col-sm-8">Total Machining Time </div>
                   <span className="col-sm-4 text-right">
                     {totalMachiningTime === '0.00'
                       ? totalMachiningTime

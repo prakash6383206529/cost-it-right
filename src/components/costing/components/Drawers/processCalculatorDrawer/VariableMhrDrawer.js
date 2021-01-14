@@ -19,14 +19,36 @@ import { useDispatch } from 'react-redux'
 import { saveProcessCostCalculationData } from '../../../actions/ProcessCost'
 import { toastr } from 'react-redux-toastr'
 function VariableMhrDrawer(props) {
-  const { technology, process, calculatorData } = props
+  const { technology, calculatorData } = props
   console.log(calculatorData, 'Process')
   const dispatch = useDispatch()
   const calculateMachineTime = (value, formValue) => {
     console.log('Form Value in drawer', value)
+    //   let obj={}
+    //    obj.TurningDiameter = formValue.turningDiameter,
+    //    obj.FinishDiameter = formValue.finishDiameter,
+    //   obj.CutLength= formValue.cutLength,
+    //   obj.RemovedMaterial= formValue.removedMaterial,
+    //   obj.Rpm= formValue.rpm,
+    //   obj.FeedRev= formValue.feedRev,
+    //   obj.FeedMin= formValue.feedMin,
+    //   obj.CutTime=formValue.cutTime,
+    //   obj.NumberOfPasses=formValue.numberOfPasses,
+    //   obj.ClampingPercentage= formValue.clampingPercentage,
+    //   obj.ClampingValue=formValue.clampingValue,
+    //   obj.CutterDiameter=formValue.cutterDiameter,
+    //   obj.CutLengthOfArea=formValue.cutLengthOfArea,
+    //   obj.AreaWidth=formValue.areaWidth,
+    //   obj.SlotNo=formValue.slotNo,
+    //   obj.CutLength=formValue.cutLength,
+    //   obj.TurningLength=formValue.turningLength,
+    //   obj.RemovedMaterial=formValue.removedMaterial,
+    //   obj.Doc=formValue.doc,
+    //   obj.CuttingSpeed=formValue.cuttingSpeed,
+    //   obj.ToothFeed=formValue.toothFeed,
 
     // dispatch(
-    //   saveProcessCostCalculationData(formValue, () => {
+    //   saveProcessCostCalculationData(obj, () => {
     //     if (res.Data.result) {
     //       toastr.success('Calculation data saved successfully!')
     //     }
@@ -47,7 +69,7 @@ function VariableMhrDrawer(props) {
     }
     props.closeDrawer('', weightData)
   }
-  const getProcessComponent = () => {
+  const getProcessComponent = (process) => {
     console.log('Entered in switch case')
     switch (process) {
       case 'Facing':
@@ -78,7 +100,7 @@ function VariableMhrDrawer(props) {
             technology={technology}
           />
         )
-      case 'Face Miling':
+      case 'Face Milling':
         return (
           <FaceMilling
             calculateMachineTime={calculateMachineTime}
@@ -162,7 +184,9 @@ function VariableMhrDrawer(props) {
                   <span>{calculatorData.UOM}</span>
                 </span>
               </Col>
-              <div className="w-100">{getProcessComponent()}</div>
+              <div className="w-100">
+                {getProcessComponent(calculatorData.ProcessName)}
+              </div>
             </Row>
           </div>
         </div>

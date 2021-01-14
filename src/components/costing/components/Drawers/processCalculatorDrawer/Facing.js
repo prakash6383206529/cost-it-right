@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -19,6 +19,16 @@ import {
   trimDecimalPlace,
 } from '../../../../../helper'
 function Facing(props) {
+  const defaultValues = {
+    cutLength: '',
+    // removedMaterial: '',
+    rpm: '',
+    feedMin: '',
+    cutTime: '',
+    numberOfPasses: '',
+    clampingPercentage: '',
+    clampingValue: '',
+  }
   const {
     register,
     handleSubmit,
@@ -30,8 +40,37 @@ function Facing(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
+  const fieldValues = useWatch({
+    control,
+    name: [
+      'turningDiameter',
+      'finishDiameter',
+      // 'turningLength',
+      //'cutLength',
+      'removedMaterial',
+      'cuttingSpeed',
+      'doc',
+      // 'rpm',
+      'feedRev',
+      'clampingPercentage',
+      // 'feedMin',
+      // 'cutTime',
+      // 'clampingPercentage',
+      // 'clampingValue',
+    ],
+  })
+
+  useEffect(() => {
+    // onTurningLength()
+    onClampingPercantageChange()
+    onFinishDiameterChange()
+    onDocChange()
+    onFeedRevChange()
+    onSpeedChange()
+  }, [fieldValues])
+
   const { technology, process, calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState('0.00')
   const trimVal = getConfigurationKey()
@@ -42,18 +81,21 @@ function Facing(props) {
 
   const onFinishDiameterChange = (e) => {
     const turningDiameter = getValues('turningDiameter')
-    const finishDiameter = e.target.value
+    const finishDiameter = getValues('finishDiameter')
+
     const cutLength = checkForDecimalAndNull(
       (turningDiameter - finishDiameter) / 2,
       trim,
     )
+    if (!turningDiameter || !finishDiameter || cutLength) {
+      return ''
+    }
     setValue('cutLength', cutLength)
   }
 
   const onDocChange = (e) => {
     const removedMaterial = getValues('removedMaterial')
-    const doc = e.target.value
-    console.log(removedMaterial, 'd', doc)
+    const doc = getValues('doc')
     if (technology === 'Machining') {
       const numberOfPasses = passesNo(removedMaterial, doc)
       setValue('numberOfPasses', numberOfPasses)
@@ -61,27 +103,29 @@ function Facing(props) {
   }
 
   const onSpeedChange = (e) => {
-    console.log(e, 'Eveny')
     const turningDiameter = getValues('turningDiameter')
     const finishDiameter = getValues('finishDiameter')
-    const cuttingSpeed = e.target.value
+    const cuttingSpeed = getValues('cuttingSpeed')
     const Diameter = (Number(turningDiameter) + Number(finishDiameter)) / 2
     const rpm = findRpm(cuttingSpeed, Diameter)
     setValue('rpm', rpm)
   }
   const onFeedRevChange = (e) => {
-    const feedRev = e.target.value
+    const feedRev = getValues('feedRev')
     const rpm = getValues('rpm')
     const cutLength = getValues('cutLength')
     const passesNo = getValues('numberOfPasses')
     const feedMin = feedByMin(feedRev, rpm)
+    if (!feedMin) {
+      return ''
+    }
     const tCut = checkForDecimalAndNull((cutLength * passesNo) / feedMin, trim)
     setValue('feedMin', feedMin)
     setValue('cutTime', tCut)
   }
   const onClampingPercantageChange = (e) => {
     const tcut = Number(getValues('cutTime'))
-    const clampingPercentage = e.target.value
+    const clampingPercentage = getValues('clampingPercentage')
     const clampingValue = clampingTime(tcut, clampingPercentage)
     const totalMachiningTime = totalMachineTime(tcut, clampingValue)
     setValue('clampingValue', clampingValue)
@@ -89,6 +133,7 @@ function Facing(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSubmit = (value) => {
+    console.log('coming')
     console.log(value, 'Handle Value in Facing')
     calculateMachineTime(totalMachiningTime, value)
   }
@@ -101,17 +146,17 @@ function Facing(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={"mt25"}>
+            <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
-                <Col md="12">
-                  <div className="left-border">{"Distance:"}</div>
+                <Col md="10">
+                  <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={"mt15"}>
+                  <Row className={'mt15'}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Turning Diameter(mm)`}
-                        name={"turningDiameter"}
+                        name={'turningDiameter'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -121,22 +166,22 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
-                        errors={errors.turningDiameter}
+                        customClassName={'withBorder'}
+                        errors={errors.cutterDiameter}
                         disabled={false}
                       />
                     </Col>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Finish Diameter(mm)`}
-                        name={"finishDiameter"}
+                        name={'finishDiameter'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -146,47 +191,22 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={onFinishDiameterChange}
-                        defaultValue={""}
+                        handleChange={() => {}}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
-                        errors={errors.Thickness}
+                        customClassName={'withBorder'}
+                        errors={errors.cutLengthOfArea}
                         disabled={false}
                       />
                     </Col>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
-                        name={"cutLength"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: false,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => {}}
-                        defaultValue={""}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.SheetLength}
-                        disabled={true}
-                      />
-                    </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Material To be removed(mm)`}
-                        name={"removedMaterial"}
+                        name={'cutLength'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -196,15 +216,40 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
+                          },
+                          // maxLength: 4,
+                        }}
+                        handleChange={onFinishDiameterChange}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.areaWidth}
+                        disabled={false}
+                      />
+                    </Col>
+                    <Col md="3">
+                      <TextFieldHookForm
+                        label={`Material To be Removed`}
+                        name={'removedMaterial'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: false,
+                          pattern: {
+                            value: /^[0-9\b]+$/i,
+                            //value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
-                        errors={errors.PartLength}
+                        customClassName={'withBorder'}
+                        errors={errors.slotNo}
                         disabled={false}
                       />
                     </Col>
@@ -213,8 +258,8 @@ function Facing(props) {
                   <Row>
                     <Col md="3">
                       <TextFieldHookForm
-                        label={`Depth of cut`}
-                        name={"doc"}
+                        label={`Depth of Cut(mm)`}
+                        name={'doc'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -224,55 +269,55 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onDocChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
-                        errors={errors.doc}
+                        customClassName={'withBorder'}
+                        errors={errors.cutLength}
                         disabled={false}
                       />
                     </Col>
                     <Col md="3">
                       <TextFieldHookForm
-                        label="No. of Passes"
-                        name={"numberOfPasses"}
+                        label={`No. of Passes`}
+                        name={'numberOfPasses'}
                         Controller={Controller}
                         control={control}
                         register={register}
                         mandatory={false}
                         rules={{
-                          required: false,
+                          required: true,
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
-                        errors={errors.NumberOfPartsPerSheet}
+                        customClassName={'withBorder'}
+                        errors={errors.numberOfPasses}
                         disabled={true}
                       />
                     </Col>
                   </Row>
                 </Col>
 
-                <Col md="12 mt-25">
-                  <div className="left-border">{"Speed:"}</div>
+                <Col md="10 mt-25">
+                  <div className="left-border">{'Speed:'}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={"mt15"}>
+                  <Row className={'mt15'}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
-                        name={"cuttingSpeed"}
+                        name={'cuttingSpeed'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -282,14 +327,14 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onSpeedChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
                         disabled={false}
                       />
@@ -297,7 +342,7 @@ function Facing(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`RPM`}
-                        name={"rpm"}
+                        name={'rpm'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -307,46 +352,47 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.rpm}
                         disabled={true}
                       />
                     </Col>
+
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
-                        name={"feedRev"}
+                        name={'feedRev'}
                         Controller={Controller}
                         control={control}
                         register={register}
                         mandatory={true}
                         rules={{
                           required: false,
-                          pattern: {
-                            value: /^[0-9]*$/i,
-                            message: "Invalid Number.",
-                          },
+                          // pattern: {
+                          //   value: /^[0-9]*$/i,
+                          //   message: 'Invalid Number.'
+                          // },
                           // maxLength: 4,
                         }}
                         handleChange={onFeedRevChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
-                        errors={errors.InnerDiameter}
+                        customClassName={'withBorder'}
+                        errors={errors.feedRev}
                         disabled={false}
                       />
                     </Col>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
-                        name={"feedMin"}
+                        name={'feedMin'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -356,14 +402,14 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.feedMin}
                         disabled={true}
                       />
@@ -372,14 +418,14 @@ function Facing(props) {
                 </Col>
 
                 <Col md="10 mt-25">
-                  <div className="left-border">{"Time:"}</div>
+                  <div className="left-border">{'Time:'}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={"mt15"}>
+                  <Row className={'mt15'}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
-                        name={"cutTime"}
+                        name={'cutTime'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -389,14 +435,14 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.cutTime}
                         disabled={true}
                       />
@@ -404,7 +450,7 @@ function Facing(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
-                        name={"clampingPercentage"}
+                        name={'clampingPercentage'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -414,14 +460,14 @@ function Facing(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onClampingPercantageChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
                         disabled={false}
                       />
@@ -429,7 +475,7 @@ function Facing(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
-                        name={"clampingValue"}
+                        name={'clampingValue'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -443,9 +489,9 @@ function Facing(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.clampingValue}
                         disabled={true}
                       />
@@ -453,12 +499,13 @@ function Facing(props) {
                     <Col md="3"></Col>
                   </Row>
                 </Col>
+
                 <div className="bluefooter-butn border row">
                   <div className="col-sm-8">Total Machining Time </div>
                   <span className="col-sm-4 text-right">
-                    {totalMachiningTime === "0.00"
+                    {totalMachiningTime === '0.00'
                       ? totalMachiningTime
-                      : checkForDecimalAndNull(totalMachiningTime, trim)}{" "}
+                      : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}
                     min
                   </span>
                 </div>
@@ -471,9 +518,9 @@ function Facing(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={"cross-icon"}>
+                <div className={'cross-icon'}>
                   <img
-                    src={require("../../../../../assests/images/times.png")}
+                    src={require('../../../../../assests/images/times.png')}
                     alt="cancel-icon.jpg"
                   />
                 </div>
@@ -484,17 +531,17 @@ function Facing(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={"check-icon"}>
+                <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {"SAVE"}
+                {'SAVE'}
               </button>
             </div>
           </form>
         </Col>
       </Row>
     </Fragment>
-  );
+  )
 }
 
 export default Facing

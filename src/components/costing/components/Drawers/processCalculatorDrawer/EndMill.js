@@ -18,6 +18,17 @@ import {
 } from '../../../../../helper'
 
 function EndMill(props) {
+  const defaultValues = {
+    //cutLength: '',
+    removedMaterial: '',
+    rpm: '',
+    feedRev: '',
+    feedMin: '',
+    cutTime: '',
+    // numberOfPasses: '',
+    clampingPercentage: '',
+    clampingValue: '',
+  }
   const {
     register,
     handleSubmit,
@@ -29,8 +40,41 @@ function EndMill(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
+  const fieldValues = useWatch({
+    control,
+    name: [
+      'cutterDiameter',
+      'cutLengthOfArea',
+      'areaWidth',
+      'slotNo',
+      'cutLength',
+      //'turningLength',
+      // 'removedMaterial',
+      // 'doc',
+      'cuttingSpeed',
+      'toothFeed',
+      // 'rpm',
+      // 'feedRev',
+      'clampingPercentage',
+      // 'feedMin',
+      // 'cutTime',
+      // 'clampingPercentage',
+      // 'clampingValue',
+    ],
+  })
+
+  useEffect(() => {
+    onClampingPercantageChange()
+    // onFinishDiameterChange()
+    // onDocChange()
+    onCutChange()
+    // onWidthChange()
+    // onFeedRevChange()
+    onToothFeedChange()
+    onSpeedChange()
+  }, [fieldValues])
   const { technology, process, calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState('')
   const trimValue = getConfigurationKey()
@@ -41,14 +85,17 @@ function EndMill(props) {
   }, [])
 
   const onCutChange = (e) => {
-    const cutLength = e.target.value
+    const cutLength = getValues('cutLength')
     const slotNo = getValues('slotNo')
     const removedMaterial = checkForDecimalAndNull(cutLength * slotNo, trim)
+    if (!cutLength || !slotNo || !removedMaterial) {
+      return ''
+    }
     setValue('removedMaterial', removedMaterial)
   }
   const onSpeedChange = (e) => {
     const cutterDiameter = getValues('cutterDiameter')
-    const cuttingSpeed = e.target.value
+    const cuttingSpeed = getValues('cuttingSpeed')
     const rpm = findRpm(cuttingSpeed, cutterDiameter)
     setValue('rpm', rpm)
   }
@@ -57,8 +104,11 @@ function EndMill(props) {
     const rpm = getValues('rpm')
     const removedMaterial = getValues('removedMaterial')
     const slotNo = getValues('slotNo')
-    const toothFeed = e.target.value
+    const toothFeed = getValues('toothFeed')
     const feedRev = checkForDecimalAndNull(toothNo * toothFeed, trim)
+    if (!feedRev) {
+      return ''
+    }
     setValue('feedRev', feedRev)
     const feedMin = feedByMin(feedRev, rpm)
     setValue('feedMin', feedMin)
@@ -71,7 +121,7 @@ function EndMill(props) {
 
   const onClampingPercantageChange = (e) => {
     const tcut = Number(getValues('cutTime'))
-    const clampingPercentage = e.target.value
+    const clampingPercentage = getValues('clampingPercentage')
     const clampingValue = clampingTime(tcut, clampingPercentage)
     const totalMachiningTime = totalMachineTime(tcut, clampingValue)
     setValue('clampingValue', clampingValue)
@@ -90,17 +140,17 @@ function EndMill(props) {
       <Row>
         <Col>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Col md="12" className={"mt25"}>
+            <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
-                  <div className="left-border">{"Distance:"}</div>
+                  <div className="left-border">{'Distance:'}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={"mt15"}>
+                  <Row className={'mt15'}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cutter Diameter(mm)`}
-                        name={"cutterDiameter"}
+                        name={'cutterDiameter'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -110,14 +160,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.cutterDiameter}
                         disabled={false}
                       />
@@ -125,7 +175,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Length of Area Cut(mm)`}
-                        name={"cutLengthOfArea"}
+                        name={'cutLengthOfArea'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -135,14 +185,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.cutLengthOfArea}
                         disabled={false}
                       />
@@ -150,7 +200,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Width of area to cut(mm)`}
-                        name={"areaWidth"}
+                        name={'areaWidth'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -160,14 +210,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.areaWidth}
                         disabled={false}
                       />
@@ -175,7 +225,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`No. of slots/T-nut entry`}
-                        name={"slotNo"}
+                        name={'slotNo'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -185,14 +235,14 @@ function EndMill(props) {
                           pattern: {
                             value: /^[0-9\b]+$/i,
                             //value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.slotNo}
                         disabled={false}
                       />
@@ -203,7 +253,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cut Length(mm)`}
-                        name={"cutLength"}
+                        name={'cutLength'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -213,14 +263,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onCutChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.cutLength}
                         disabled={false}
                       />
@@ -228,7 +278,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Material To be removed`}
-                        name={"removedMaterial"}
+                        name={'removedMaterial'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -238,14 +288,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.removedMaterial}
                         disabled={true}
                       />
@@ -254,14 +304,14 @@ function EndMill(props) {
                 </Col>
 
                 <Col md="10 mt-25">
-                  <div className="left-border">{"Speed:"}</div>
+                  <div className="left-border">{'Speed:'}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={"mt15"}>
+                  <Row className={'mt15'}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Cutting Speed(m/sec)`}
-                        name={"cuttingSpeed"}
+                        name={'cuttingSpeed'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -271,14 +321,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onSpeedChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.cuttingSpeed}
                         disabled={false}
                       />
@@ -286,7 +336,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`RPM`}
-                        name={"rpm"}
+                        name={'rpm'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -296,14 +346,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.rpm}
                         disabled={true}
                       />
@@ -311,7 +361,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`No. of Teeth on Cutter`}
-                        name={"toothNo"}
+                        name={'toothNo'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -325,9 +375,9 @@ function EndMill(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.toothNo}
                         disabled={true}
                       />
@@ -335,7 +385,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/ Tooth`}
-                        name={"toothFeed"}
+                        name={'toothFeed'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -344,14 +394,14 @@ function EndMill(props) {
                           required: false,
                           pattern: {
                             value: /^[0-9\b]+$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onToothFeedChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.toothFeed}
                         disabled={false}
                       />
@@ -359,7 +409,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Rev`}
-                        name={"feedRev"}
+                        name={'feedRev'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -373,9 +423,9 @@ function EndMill(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.feedRev}
                         disabled={true}
                       />
@@ -383,7 +433,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Feed/Min(mm/min)`}
-                        name={"feedMin"}
+                        name={'feedMin'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -393,14 +443,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.feedMin}
                         disabled={true}
                       />
@@ -409,14 +459,14 @@ function EndMill(props) {
                 </Col>
 
                 <Col md="10 mt-25">
-                  <div className="left-border">{"Time:"}</div>
+                  <div className="left-border">{'Time:'}</div>
                 </Col>
                 <Col md="12">
-                  <Row className={"mt15"}>
+                  <Row className={'mt15'}>
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Total Cut time (min)`}
-                        name={"cutTime"}
+                        name={'cutTime'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -426,14 +476,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.cutTime}
                         disabled={true}
                       />
@@ -441,7 +491,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(%)`}
-                        name={"clampingPercentage"}
+                        name={'clampingPercentage'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -451,14 +501,14 @@ function EndMill(props) {
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: "Invalid Number.",
+                            message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
                         handleChange={onClampingPercantageChange}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.clampingPercentage}
                         disabled={false}
                       />
@@ -466,7 +516,7 @@ function EndMill(props) {
                     <Col md="3">
                       <TextFieldHookForm
                         label={`Additional Time(min)`}
-                        name={"clampingValue"}
+                        name={'clampingValue'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -480,9 +530,9 @@ function EndMill(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => {}}
-                        defaultValue={""}
+                        defaultValue={''}
                         className=""
-                        customClassName={"withBorder"}
+                        customClassName={'withBorder'}
                         errors={errors.clampingValue}
                         disabled={true}
                       />
@@ -494,9 +544,9 @@ function EndMill(props) {
                 <div className="bluefooter-butn border row">
                   <div className="col-sm-8">Total Machining Time </div>
                   <span className="col-sm-4 text-right">
-                    {totalMachiningTime === "0.00"
+                    {totalMachiningTime === '0.00'
                       ? totalMachiningTime
-                      : checkForDecimalAndNull(totalMachiningTime, trim)}{" "}
+                      : checkForDecimalAndNull(totalMachiningTime, trim)}{' '}
                     min
                   </span>
                 </div>
@@ -509,9 +559,9 @@ function EndMill(props) {
                 value="CANCEL"
                 className="reset mr15 cancel-btn"
               >
-                <div className={"cross-icon"}>
+                <div className={'cross-icon'}>
                   <img
-                    src={require("../../../../../assests/images/times.png")}
+                    src={require('../../../../../assests/images/times.png')}
                     alt="cancel-icon.jpg"
                   />
                 </div>
@@ -522,17 +572,17 @@ function EndMill(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={"check-icon"}>
+                <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {"SAVE"}
+                {'SAVE'}
               </button>
             </div>
           </form>
         </Col>
       </Row>
     </Fragment>
-  );
+  )
 }
 
 export default EndMill
