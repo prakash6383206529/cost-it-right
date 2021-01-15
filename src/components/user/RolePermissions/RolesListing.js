@@ -153,7 +153,7 @@ class RolesListing extends Component {
                   type="button"
                   className={'user-btn'}
                   onClick={this.formToggle}>
-                  <div className={'plus'}></div>ADD ROLE</button>
+                  <div className={'plus'}></div>ADD</button>
               </div>
             </div>}
           </Col>

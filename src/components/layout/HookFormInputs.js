@@ -183,18 +183,15 @@ export const RadioHookForm = ({
         onChange && onChange(val);
     };
     const flexContainer = {
-     display: 'flex',
-     flexDirection: 'row',
-     padding: '10px 30px'
    };
     return (
         <div className={`te-radio-button ${className}`}>
           <div>
                {dataArray && dataArray.length !== 0 && (
-                 <ul style={flexContainer} className={"radio-button-list"}>
+                 <ul style={flexContainer} className={"radio-button-list d-flex"}>
                     {dataArray.map((data, index) => {
                       return (
-                            <li style={{padding:'10px'}} key={index}>
+                            <li className="p-3" key={index}>
                                <label className="radio-button-wrapper">
                                     <input
                                         name={name}

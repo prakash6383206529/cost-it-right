@@ -39,7 +39,7 @@ import Drawer from '@material-ui/core/Drawer'
               </Col>
             </Row>
 
-            <Row>
+            <Row className="px-3">
               <Col md="12">
                 <Table className="table cr-brdr-main" size="sm" >
                   <thead>

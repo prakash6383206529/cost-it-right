@@ -344,181 +344,183 @@ const SendForApproval = (props) => {
           viewApprovalData.map((data, index) => {
             return (
               <Container>
-                <div className={'drawer-wrapper drawer-md'}>
+                <div className={"drawer-wrapper drawer-md"}>
                   <Row className="drawer-heading">
                     <Col>
-                      <div className={'header-wrapper left'}>
-                        <h3>{'Send for Approval'}</h3>
+                      <div className={"header-wrapper left"}>
+                        <h3>{"Send for Approval"}</h3>
                       </div>
                       <div
                         onClick={(e) => toggleDrawer(e)}
-                        className={'close-button right'}
+                        className={"close-button right"}
                       ></div>
                     </Col>
                   </Row>
-                  <Row>
+                  <Row className="px-3">
                     <Col md="12">
                       <h6 className="left-border d-inline-block mr-3">
                         {data.typeOfCosting}
                       </h6>
                       <div className="text-small d-inline-block mr-3">
-                        {`Plant Code:`}{' '}
+                        {`Plant Code:`}{" "}
                         <span className="small-grey-text">{`${data.plantCode}`}</span>
                       </div>
                       <div className="text-small d-inline-block">
-                        {`Costing Id:`}{' '}
+                        {`Costing Id:`}{" "}
                         <span className="small-grey-text">{`${data.costingName}`}</span>
                       </div>
                     </Col>
                   </Row>
-                  <div className="border-box border p-3 mb-4">
-                    <Row>
-                      <Col md="4">
-                        <SearchableSelectHookForm
-                          label={'Reason'}
-                          name={'reason'}
-                          placeholder={'-Select-'}
-                          Controller={Controller}
-                          control={control}
-                          rules={{ required: true }}
-                          register={register}
-                          defaultValue={data.reason != '' ? data.reason : ''}
-                          options={renderDropdownListing('Reason')}
-                          mandatory={true}
-                          handleChange={(e) => {
-                            handleReasonChange(e, index)
-                          }}
-                          errors={errors.reason}
-                        />
-                      </Col>
-                      <Col md="4">
-                        <TextFieldHookForm
-                          label="ECN Ref No"
-                          name={'encNumber'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          rules={{ required: false }}
-                          mandatory={false}
-                          handleChange={(e) => {
-                            handleECNNoChange(e.target.value, index)
-                          }}
-                          defaultValue={data.ecnNo != '' ? data.ecnNo : ''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.encNumber}
-                          // disabled={true}
-                        />
-                      </Col>
-                      <Col md="4">
-                        <div className="form-group">
-                          <label>Effective Date</label>
-                          <div className="d-flex">
-                            <div className="inputbox date-section">
-                              <DatePicker
-                                name="EffectiveDate"
-                                selected={
-                                  data.effectiveDate != ''
-                                    ? data.effectiveDate
-                                    : ''
-                                }
-                                onChange={(date) => {
-                                  handleEffectiveDateChange(date, index)
-                                }}
-                                showMonthDropdown
-                                showYearDropdown
-                                dateFormat="dd/MM/yyyy"
-                                //maxDate={new Date()}
-                                dropdownMode="select"
-                                placeholderText="Select date"
-                                className="withBorder"
-                                autoComplete={'off'}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                disabled={false}
-                                required={true}
-                              />
+                  <div className="px-3">
+                    <div className="border-box border p-3 mb-4">
+                      <Row>
+                        <Col md="4">
+                          <SearchableSelectHookForm
+                            label={"Reason"}
+                            name={"reason"}
+                            placeholder={"-Select-"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={data.reason != "" ? data.reason : ""}
+                            options={renderDropdownListing("Reason")}
+                            mandatory={true}
+                            handleChange={(e) => {
+                              handleReasonChange(e, index);
+                            }}
+                            errors={errors.reason}
+                          />
+                        </Col>
+                        <Col md="4">
+                          <TextFieldHookForm
+                            label="ECN Ref No"
+                            name={"encNumber"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            rules={{ required: false }}
+                            mandatory={false}
+                            handleChange={(e) => {
+                              handleECNNoChange(e.target.value, index);
+                            }}
+                            defaultValue={data.ecnNo != "" ? data.ecnNo : ""}
+                            className=""
+                            customClassName={"withBorder"}
+                            errors={errors.encNumber}
+                            // disabled={true}
+                          />
+                        </Col>
+                        <Col md="4">
+                          <div className="form-group">
+                            <label>Effective Date</label>
+                            <div className="d-flex">
+                              <div className="inputbox date-section">
+                                <DatePicker
+                                  name="EffectiveDate"
+                                  selected={
+                                    data.effectiveDate != ""
+                                      ? data.effectiveDate
+                                      : ""
+                                  }
+                                  onChange={(date) => {
+                                    handleEffectiveDateChange(date, index);
+                                  }}
+                                  showMonthDropdown
+                                  showYearDropdown
+                                  dateFormat="dd/MM/yyyy"
+                                  //maxDate={new Date()}
+                                  dropdownMode="select"
+                                  placeholderText="Select date"
+                                  className="withBorder"
+                                  autoComplete={"off"}
+                                  disabledKeyboardNavigation
+                                  onChangeRaw={(e) => e.preventDefault()}
+                                  disabled={false}
+                                  required={true}
+                                />
+                              </div>
+                              <i className="fa fa-calendar icon-small-primary ml-2"></i>
                             </div>
-                            <i className="fa fa-calendar icon-small-primary ml-2"></i>
                           </div>
-                        </div>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="4">
-                        <label>Old/Current Price</label>
-                        <label className="form-control bg-grey">
-                          {data.oldPrice ? data.oldPrice : '-'}
-                        </label>
-                      </Col>
-                      <Col md="4">
-                        <label>Revised Price</label>
-                        <label className="form-control bg-grey">
-                          {data.revisedPrice ? data.revisedPrice : '-'}
-                        </label>
-                      </Col>
-                      <Col md="4">
-                        <label>Variance</label>
-                        <label className="form-control bg-grey">
-                          {data.variance ? data.variance : '-'}
-                        </label>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="4">
-                        <label>Consumpion Quantity</label>
-                        <div className="d-flex">
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="4">
+                          <label>Old/Current Price</label>
                           <label className="form-control bg-grey">
-                            {data.consumptionQty ? data.consumptionQty : '-'}
+                            {data.oldPrice ? data.oldPrice : "-"}
                           </label>
-                          <i className="fa fa-plus icon-small-primary ml-2"></i>
-                        </div>
-                      </Col>
-                      <Col md="4">
-                        <label>Remaining Quantity</label>
-                        <label className="form-control bg-grey">
-                          {data.remainingQty !== '' ? data.remainingQty : '-'}
-                        </label>
-                      </Col>
-                      <Col md="4">
-                        <label>Annual Impact</label>
-                        <label className="form-control bg-grey">
-                          {data.annualImpact ? data.annualImpact : '-'}
-                        </label>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="4">
-                        <label>Impact for the Year</label>
-                        <label className="form-control bg-grey">
-                          {data.yearImpact ? data.yearImpact : '-'}
-                        </label>
-                      </Col>
-                    </Row>
+                        </Col>
+                        <Col md="4">
+                          <label>Revised Price</label>
+                          <label className="form-control bg-grey">
+                            {data.revisedPrice ? data.revisedPrice : "-"}
+                          </label>
+                        </Col>
+                        <Col md="4">
+                          <label>Variance</label>
+                          <label className="form-control bg-grey">
+                            {data.variance ? data.variance : "-"}
+                          </label>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="4">
+                          <label>Consumpion Quantity</label>
+                          <div className="d-flex align-items-center">
+                            <label className="form-control bg-grey">
+                              {data.consumptionQty ? data.consumptionQty : "-"}
+                            </label>
+                            <div class="plus-icon-square  right m-0 mb-1"></div>
+                          </div>
+                        </Col>
+                        <Col md="4">
+                          <label>Remaining Quantity</label>
+                          <label className="form-control bg-grey">
+                            {data.remainingQty !== "" ? data.remainingQty : "-"}
+                          </label>
+                        </Col>
+                        <Col md="4">
+                          <label>Annual Impact</label>
+                          <label className="form-control bg-grey">
+                            {data.annualImpact ? data.annualImpact : "-"}
+                          </label>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="4">
+                          <label>Impact for the Year</label>
+                          <label className="form-control bg-grey">
+                            {data.yearImpact ? data.yearImpact : "-"}
+                          </label>
+                        </Col>
+                      </Row>
+                    </div>
                   </div>
                 </div>
               </Container>
-            )
+            );
           })}
         <Container>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Row>
+            <Row className="px-3">
               <Col md="4">
-                <div className="left-border">{'Approver'}</div>
+                <div className="left-border">{"Approver"}</div>
               </Col>
             </Row>
-            <Row>
+            <Row className="px-3">
               <Col md="6">
                 <SearchableSelectHookForm
-                  label={'Department'}
-                  name={'dept'}
-                  placeholder={'-Select-'}
+                  label={"Department"}
+                  name={"dept"}
+                  placeholder={"-Select-"}
                   Controller={Controller}
                   control={control}
                   rules={{ required: true }}
                   register={register}
-                  defaultValue={''}
-                  options={renderDropdownListing('Dept')}
+                  defaultValue={""}
+                  options={renderDropdownListing("Dept")}
                   // mandatory={true}
                   handleChange={handleDepartmentChange}
                   errors={errors.dept}
@@ -527,13 +529,13 @@ const SendForApproval = (props) => {
               <Col md="6">
                 {
                   <SearchableSelectHookForm
-                    label={'Approver'}
-                    name={'approver'}
-                    placeholder={'-Select-'}
+                    label={"Approver"}
+                    name={"approver"}
+                    placeholder={"-Select-"}
                     Controller={Controller}
                     control={control}
                     register={register}
-                    defaultValue={''}
+                    defaultValue={""}
                     options={approvalDropDown}
                     mandatory={false}
                     handleChange={handleApproverChange}
@@ -544,35 +546,35 @@ const SendForApproval = (props) => {
               <Col md="12">
                 <TextAreaHookForm
                   label="Remarks"
-                  name={'remarks'}
+                  name={"remarks"}
                   Controller={Controller}
                   control={control}
                   register={register}
                   mandatory={false}
                   handleChange={() => {}}
-                  defaultValue={''}
+                  defaultValue={""}
                   className=""
-                  customClassName={'withBorder'}
+                  customClassName={"withBorder"}
                   errors={errors.remarks}
                   disabled={false}
                 />
               </Col>
             </Row>
             <Row>
-              <Col md="12" className="text-right mb-3">
+              <Col md="12" className="d-flex justify-content-end align-items-center">
                 <button
-                  className="cancel-btn btn btn-outline-secondary mr-2"
-                  type={'button'}
+                  className="cancel-btn mr-2"
+                  type={"button"}
                   onClick={toggleDrawer}
                   // className="reset mr15 cancel-btn"
                 >
-                  <div className={'cross-icon'}>
+                  <div className={"cross-icon"}>
                     <img
-                      src={require('../../../../assests/images/times.png')}
+                      src={require("../../../../assests/images/times.png")}
                       alt="cancel-icon.jpg"
                     />
-                  </div>{' '}
-                  {'Clear'}
+                  </div>{" "}
+                  {"Clear"}
                 </button>
 
                 <button
@@ -581,13 +583,13 @@ const SendForApproval = (props) => {
                   // className="submit-button save-btn"
                   // onClick={() => handleSubmit(onSubmit)}
                 >
-                  <div className={'check-icon'}>
+                  <div className={"check-icon"}>
                     <img
-                      src={require('../../../../assests/images/check.png')}
+                      src={require("../../../../assests/images/check.png")}
                       alt="check-icon.jpg"
-                    />{' '}
+                    />{" "}
                   </div>
-                  {'Submit'}
+                  {"Submit"}
                 </button>
               </Col>
             </Row>
@@ -595,7 +597,7 @@ const SendForApproval = (props) => {
         </Container>
       </Drawer>
     </Fragment>
-  )
+  );
 }
 
 export default SendForApproval

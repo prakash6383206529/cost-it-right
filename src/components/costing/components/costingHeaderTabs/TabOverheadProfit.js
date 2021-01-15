@@ -245,16 +245,16 @@ function TabOverheadProfit(props) {
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
-                    <h2>{''}</h2>
+                    <h2>{""}</h2>
                   </div>
                 </Col>
               </Row>
 
               <Row>
-                <Col md="1" >{'Applicability:'}</Col>
+                <Col md="1">{"Applicability:"}</Col>
                 <Col md="8" className="switch mb15">
-                  <label className="switch-level">
-                    <div className={'left-title'}>{' Assembly Level'}</div>
+                  <label className="switch-level d-inline-flex w-auto">
+                    <div className={"left-title"}>{" Assembly Level"}</div>
                     <span className="cr-sw-level">
                       <span className="cr-switch-icon">
                         <Switch
@@ -272,77 +272,120 @@ function TabOverheadProfit(props) {
                           width={46}
                         />
                       </span>
-                      <div className={'right-title'}>{'Sub Assembly Level'}</div>
+                      <div className={"right-title"}>
+                        {"Sub Assembly Level"}
+                      </div>
                     </span>
                   </label>
                 </Col>
               </Row>
 
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Row>
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '100px' }}>{`Net Overheads`}</th>
-                          <th style={{ width: '150px' }}>{`Net Profit`}</th>
-                          <th style={{ width: '150px' }}>{`Net Rejection`}</th>
-                          <th style={{ width: '150px' }}>{`Net ICC`}</th>
-                          <th style={{ width: '150px' }}>{`Payment Terms`}</th>
+                          <th style={{ width: "100px" }}>{``}</th>
+                          <th style={{ width: "100px" }}>{`Net Overheads`}</th>
+                          <th style={{ width: "150px" }}>{`Net Profit`}</th>
+                          <th style={{ width: "150px" }}>{`Net Rejection`}</th>
+                          <th style={{ width: "150px" }}>{`Net ICC`}</th>
+                          <th style={{ width: "150px" }}>{`Payment Terms`}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {
-                          tabData && tabData.map((item, index) => {
+                        {tabData &&
+                          tabData.map((item, index) => {
                             return (
-                              < >
+                              <>
                                 <tr key={index} onClick={() => toggle(index)}>
-                                  <td><span class="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                                  <td>{item.OverheadNetCost !== null ? checkForDecimalAndNull(item.OverheadNetCost, 2) : 0}</td>
-                                  <td>{item.ProfitNetCost !== null ? checkForDecimalAndNull(item.ProfitNetCost, 2) : 0}</td>
-                                  <td>{item.RejectionNetCost !== null ? checkForDecimalAndNull(item.RejectionNetCost, 2) : 0}</td>
-                                  <td>{item.ICCCost !== null ? checkForDecimalAndNull(item.ICCCost, 2) : 0}</td>
-                                  <td>{item.PaymentTermCost !== null ? checkForDecimalAndNull(item.PaymentTermCost, 2) : 0}</td>
+                                  <td>
+                                    <span class="cr-prt-nm cr-prt-link">
+                                      {item.PartName}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    {item.OverheadNetCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.OverheadNetCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.ProfitNetCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.ProfitNetCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.RejectionNetCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.RejectionNetCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.ICCCost !== null
+                                      ? checkForDecimalAndNull(item.ICCCost, 2)
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.PaymentTermCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.PaymentTermCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
                                 </tr>
-                                {item.IsOpen &&
+                                {item.IsOpen && (
                                   <tr>
                                     <td colSpan={6}>
                                       <div>
                                         <OverheadProfit
                                           index={index}
                                           tabData={item}
-                                          headCostRMCCBOPData={props.headCostRMCCBOPData}
+                                          headCostRMCCBOPData={
+                                            props.headCostRMCCBOPData
+                                          }
                                           OverheadCost={OverheadCost}
                                           ProfitCost={ProfitCost}
                                           setOverheadDetail={setOverheadDetail}
                                           setProfitDetail={setProfitDetail}
-                                          setRejectionDetail={setRejectionDetail}
+                                          setRejectionDetail={
+                                            setRejectionDetail
+                                          }
                                           setICCDetail={setICCDetail}
-                                          setPaymentTermsDetail={setPaymentTermsDetail}
+                                          setPaymentTermsDetail={
+                                            setPaymentTermsDetail
+                                          }
                                           saveCosting={saveCosting}
                                         />
                                       </div>
                                     </td>
                                   </tr>
-                                }
+                                )}
                               </>
-                            )
-                          })
-                        }
-
+                            );
+                          })}
                       </tbody>
                     </Table>
                   </Col>
                 </Row>
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };

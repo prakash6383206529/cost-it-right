@@ -174,7 +174,7 @@ class DepartmentsListing extends Component {
               type={'button'}
               className={'user-btn'}
               onClick={this.openModel}>
-              <div className={'plus'}></div>{`ADD DEPARTMENT`}</button>
+              <div className={'plus'}></div>{`ADD`}</button>
           </Col>}
         </Row>
 

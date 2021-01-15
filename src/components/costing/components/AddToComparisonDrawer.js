@@ -513,63 +513,63 @@ function AddToComparisonDrawer(props) {
         onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={'drawer-wrapper'}>
+          <div className={"drawer-wrapper"}>
             <Row className="drawer-heading">
               <Col>
-                <div className={'header-wrapper left'}>
+                <div className={"header-wrapper left"}>
                   <h3>
-                    {isEditFlag ? 'Edit for' : 'Add to'}
-                    {' Comparison: '}
+                    {isEditFlag ? "Edit for" : "Add to"}
+                    {" Comparison: "}
                   </h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}
+                  className={"close-button right"}
                 ></div>
               </Col>
             </Row>
-            <Row>
+            <Row className="pl-3">
               <Col md="12">
-                <div className="left-border">{'Costing Head:'}</div>
+                <div className="left-border mb-0">{"Costing Head:"}</div>
               </Col>
             </Row>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Row>
+              <Row className="pl-3 mb-2">
                 <RadioHookForm
-                  className={'filter-from-section'}
-                  name={'comparisonValue'}
+                  className={"filter-from-section"}
+                  name={"comparisonValue"}
                   register={register}
                   onChange={handleComparison}
-                  defaultValue={'ZBC'}
+                  defaultValue={"ZBC"}
                   dataArray={[
                     {
-                      label: 'ZBC',
-                      optionsValue: 'ZBC',
+                      label: "ZBC",
+                      optionsValue: "ZBC",
                     },
                     {
-                      label: 'VBC',
-                      optionsValue: 'VBC',
+                      label: "VBC",
+                      optionsValue: "VBC",
                     },
                     {
-                      label: 'CBC',
-                      optionsValue: 'CBC',
+                      label: "CBC",
+                      optionsValue: "CBC",
                     },
                   ]}
                 />
               </Row>
-              <Row>
+              <Row className="pl-3">
                 {isZbcSelected && (
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={'Plant'}
-                      name={'plant'}
-                      placeholder={'-Select-'}
+                      label={"Plant"}
+                      name={"plant"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={isEditFlag ? plantName : ''}
+                      defaultValue={isEditFlag ? plantName : ""}
                       options={plantDropDownList}
                       mandatory={true}
                       handleChange={handlePlantChange}
@@ -581,9 +581,9 @@ function AddToComparisonDrawer(props) {
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={'Vendor'}
-                        name={'vendor'}
-                        placeholder={'-Select-'}
+                        label={"Vendor"}
+                        name={"vendor"}
+                        placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -598,9 +598,9 @@ function AddToComparisonDrawer(props) {
                     {loggedIn && (
                       <Col md="12">
                         <SearchableSelectHookForm
-                          label={'Vendor Plant'}
-                          name={'vendorPlant'}
-                          placeholder={'-Select-'}
+                          label={"Vendor Plant"}
+                          name={"vendorPlant"}
+                          placeholder={"-Select-"}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}
@@ -619,9 +619,9 @@ function AddToComparisonDrawer(props) {
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={'Client Name'}
-                        name={'clientName'}
-                        placeholder={'-Select-'}
+                        label={"Client Name"}
+                        name={"clientName"}
+                        placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -637,15 +637,15 @@ function AddToComparisonDrawer(props) {
                 )}
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={'Costing Version'}
-                    name={'costings'}
-                    placeholder={'-Select-'}
+                    label={"Costing Version"}
+                    name={"costings"}
+                    placeholder={"-Select-"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
                     register={register}
                     defaultValue={
-                      costingDropdown.length !== 0 ? costingDropdown : ''
+                      costingDropdown.length !== 0 ? costingDropdown : ""
                     }
                     options={costingDropdown}
                     mandatory={true}
@@ -655,34 +655,39 @@ function AddToComparisonDrawer(props) {
                 </Col>
               </Row>
             </form>
-            <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-right bluefooter-butn">
+            <Row className="justify-content-between my-3">
+              <div className="col-sm-12 text-right">
                 <button
-                  type={'button'}
+                  type={"button"}
                   className="reset mr15 cancel-btn"
                   onClick={toggleDrawer}
                 >
-                  <div className={'cross-icon'}>
+                  <div className={"cross-icon"}>
                     <img
-                      src={require('../../../assests/images/times.png')}
+                      src={require("../../../assests/images/times.png")}
                       alt="cancel-icon.jpg"
                     />
-                  </div>{' '}
-                  {'Cancel'}
+                  </div>{" "}
+                  {"Cancel"}
                 </button>
 
                 <button
                   type="submit"
-                  className="submit-button mr5 save-btn"
+                  className="submit-button mr-3 save-btn"
                   // onClick={addHandler}
                 >
-                  <div className={'check-icon'}>
-                    <img
-                      src={require('../../../assests/images/check.png')}
-                      alt="check-icon.jpg"
-                    />{' '}
-                  </div>
-                  {isEditFlag ? 'Edit' : 'Add'}
+                  {isEditFlag ? (
+                    <div className={"check-icon"}>
+                      {" "}
+                      <img
+                        src={require("../../../assests/images/check.png")}
+                        alt="check-icon.jpg"
+                      />{" "}
+                    </div>
+                  ) : (
+                    <div class="plus"></div>
+                  )}{" "}
+                  {isEditFlag ? "Edit" : "Add"}
                 </button>
               </div>
             </Row>
@@ -690,7 +695,7 @@ function AddToComparisonDrawer(props) {
         </Container>
       </Drawer>
     </div>
-  )
+  );
 }
 
 export default React.memo(AddToComparisonDrawer)

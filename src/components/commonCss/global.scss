@@ -1161,7 +1161,7 @@ p {
     margin-top: 1rem;
 
     a.nav-link {
-      color: #7e7e7e;
+      color: #8A91AC;
       font-size: $font-15;
       font-weight: $font-regular;
       padding-left: 0;
@@ -1330,14 +1330,15 @@ button .fas {
     width: 18px;
     height: 18px;
     background-color: transparent;
-    border: 1px solid #c1b8b8;
+    border:2px solid #C2CBE8;
     top: 3px;
     left: 0;
-    border-radius: 3px;
+    border-radius: 1px;
   }
 
   input[type="checkbox"]:checked + .before-box:before {
-    content: "\2714";
+    // content: "\2714";
+    content: "";
     font-size: 13px;
     text-align: center;
     color: $white;
@@ -1345,6 +1346,7 @@ button .fas {
     line-height: 17px;
     border-color: #4dc771;
     background: #4dc771;
+    background-image: url('../../assests/images/check.png');
   }
 }
 

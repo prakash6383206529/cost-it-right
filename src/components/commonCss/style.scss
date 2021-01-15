@@ -744,9 +744,10 @@ button.add-btn {
   margin-bottom: 15px;
   color: #3D4465;
   padding-left: 15px;
+  line-height: initial;
 }
 .table.cr-brdr-main thead th{color:#3D4465;}
-.withBorder input.form-control {
+.withBorder .form-control {
   border: 1px solid #c2cbe8;
 }
 
@@ -1075,7 +1076,7 @@ button.add-btn {
 .dzu-dropzone {  overflow-x: hidden;
   overflow-y: auto;
   border: none;
-  min-height: 100px;
+  min-height: 156px;
   display: flex;
   padding: 0;
   flex-direction: column;
@@ -1097,6 +1098,11 @@ button.add-btn {
     background: transparent;
     border-radius: 4px;
     position: absolute;
+    font-size: 14px;
+    color: #7C828A;
+    i{
+      font-size: 20px;
+    }
   }
 }
 .attachment-wrapper {
@@ -1999,3 +2005,77 @@ input:disabled{
   }
   .workflow-row .col-lg-3:nth-child(2) .card-border:after{display:none;}
 }
+.error-page{
+  .blue-box{
+      padding: 30px;
+      .content-page {
+      width: 100%;
+      .middleContainer{
+        min-height: calc(100vh - 96px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}
+.btn-primary{
+  &:hover,&:focus,&:active:focus{
+    background-color: #1d59af !important;
+    color: #fff !important;
+  }
+}
+.costing-table-next{
+  thead{
+    tr{
+      th{
+        &:first-child{width: 20%;}
+        &:nth-child(2){width: 20%;}
+        &:nth-child(3){width: 20%;}
+        &:nth-child(4){width: 28%;}
+        &:nth-child(5){width: 12%;}
+      }
+    }
+  }
+}
+.dark-blue{color: #3D4465;}
+.height152-label{
+  .dzu-dropzone{
+    .dzu-inputLabel{height: 152px;}
+  }
+}
+
+
+// responsive media query start
+@media(max-width:1366px){
+  .costing-table-next{
+    thead{
+      tr{
+        th{
+          &:first-child{width: 20%;}
+          &:nth-child(2){width: 20%;}
+          &:nth-child(3){width: 20%;}
+          &:nth-child(4){width: 25%;}
+          &:nth-child(5){width: 15%;}
+        }// th
+      }// tr
+    }// thead
+  }// costing-table-next
+}// 1366
+
+@media(max-width:1280px){
+  .costing-table-next{
+    thead{
+      tr{
+        th{
+          &:first-child{width: 20%;}
+          &:nth-child(2){width: 20%;}
+          &:nth-child(3){width: 20%;}
+          &:nth-child(4){width: 25%;}
+          &:nth-child(5){width: 15%;min-width: 200px;}
+        }// th
+      }// tr
+    }// thead
+  }// costing-table-next
+}// 1366
+// responsive media query start

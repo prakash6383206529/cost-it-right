@@ -326,29 +326,29 @@ function CopyCosting(props) {
         onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={'drawer-wrapper'}>
+          <div className={"drawer-wrapper"}>
             <form onSubmit={handleSubmit(submitForm)}>
               <Row className="drawer-heading">
                 <Col>
-                  <div className={'header-wrapper left'}>
-                    <h3>{'Copy Costing'}</h3>
+                  <div className={"header-wrapper left"}>
+                    <h3>{"Copy Costing"}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
-                    className={'close-button right'}
+                    className={"close-button right"}
                   ></div>
                 </Col>
               </Row>
-              <Row>
+              <Row className="pl-3 align-items-center">
                 <Col md="6">
-                  <div className="left-border">{'From:'}</div>
+                  <div className="left-border">{"From:"}</div>
                 </Col>
                 <Col md="6">
                   <div className="right-border">
                     {
-                      <Col md="12" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={'left-title'}>ZBC</div>
+                      <Col md="12" className="switch mb15 p-0">
+                        <label className="switch-level justify-content-end">
+                          <div className={"left-title"}>ZBC</div>
                           <Switch
                             onChange={() => {}}
                             checked={fromtype}
@@ -364,7 +364,7 @@ function CopyCosting(props) {
                             height={20}
                             width={46}
                           />
-                          <div className={'right-title'}>VBC</div>
+                          <div className={"right-title"}>VBC</div>
                         </label>
                       </Col>
                     }
@@ -373,12 +373,12 @@ function CopyCosting(props) {
               </Row>
               {/* From data for ZBC */}
               {isFromZbc && (
-                <Row>
+                <Row className="pl-3">
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={'Plant'}
-                      name={'fromPlant'}
-                      placeholder={'-Select-'}
+                      label={"Plant"}
+                      name={"fromPlant"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -392,9 +392,9 @@ function CopyCosting(props) {
                   </div>
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={'Costing ID'}
-                      name={'fromcostingId'}
-                      placeholder={'-Select-'}
+                      label={"Costing ID"}
+                      name={"fromcostingId"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -410,17 +410,17 @@ function CopyCosting(props) {
               )}
               {/* From data for VBC */}
               {isFromVbc && (
-                <Row>
+                <Row className="pl-3">
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={'Vendor'}
-                      name={'fromVendorName'}
-                      placeholder={'-Select-'}
+                      label={"Vendor"}
+                      name={"fromVendorName"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={''}
+                      defaultValue={""}
                       options={vendorName}
                       mandatory={true}
                       handleChange={handleFromVendorName}
@@ -430,14 +430,14 @@ function CopyCosting(props) {
                   {loggedIn && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={'Vendor Plant'}
-                        name={'fromVendorPlant'}
-                        placeholder={'-Select-'}
+                        label={"Vendor Plant"}
+                        name={"fromVendorPlant"}
+                        placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
                         register={register}
-                        defaultValue={''}
+                        defaultValue={""}
                         options={vendorFromPlantDropdown}
                         mandatory={true}
                         handleChange={() => {}}
@@ -448,14 +448,14 @@ function CopyCosting(props) {
 
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={'Costing ID'}
-                      name={'fromVbccostingId'}
-                      placeholder={'-Select-'}
+                      label={"Costing ID"}
+                      name={"fromVbccostingId"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={''}
+                      defaultValue={""}
                       options={vendorCostingId}
                       mandatory={true}
                       handleChange={() => {}}
@@ -466,16 +466,16 @@ function CopyCosting(props) {
               )}
               <hr />
 
-              <Row>
+              <Row className="pl-3 align-items-center">
                 <Col md="6">
-                  <div className="left-border">{'To:'}</div>
+                  <div className="left-border">{"To:"}</div>
                 </Col>
                 <Col md="6">
                   <div className="right-border">
                     {
                       <Col md="12" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={'left-title'}>ZBC</div>
+                        <label className="switch-level justify-content-end">
+                          <div className={"left-title"}>ZBC</div>
                           <Switch
                             onChange={handleToSwitch}
                             checked={toSwitch}
@@ -490,7 +490,7 @@ function CopyCosting(props) {
                             height={20}
                             width={46}
                           />
-                          <div className={'right-title'}>VBC</div>
+                          <div className={"right-title"}>VBC</div>
                         </label>
                       </Col>
                     }
@@ -499,12 +499,12 @@ function CopyCosting(props) {
               </Row>
               {/* To data for ZBC */}
               {isToZbc && (
-                <Row>
+                <Row className="pl-3">
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={'Plant'}
-                      name={'toPlant'}
-                      placeholder={'-Select-'}
+                      label={"Plant"}
+                      name={"toPlant"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -536,17 +536,17 @@ function CopyCosting(props) {
               )}
               {/* To data for VBC */}
               {isToVbc && (
-                <Row>
+                <Row className="pl-3">
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={'Vendor'}
-                      name={'toVendorName'}
-                      placeholder={'-Select-'}
+                      label={"Vendor"}
+                      name={"toVendorName"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={''}
+                      defaultValue={""}
                       options={vendorName}
                       mandatory={true}
                       handleChange={handleToVendorName}
@@ -556,14 +556,14 @@ function CopyCosting(props) {
                   {loggedIn && (
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={'Vendor Plant'}
-                        name={'toVendorPlant'}
-                        placeholder={'-Select-'}
+                        label={"Vendor Plant"}
+                        name={"toVendorPlant"}
+                        placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
                         register={register}
-                        defaultValue={''}
+                        defaultValue={""}
                         options={vendorToPlantDropdown}
                         mandatory={true}
                         handleChange={() => {}}
@@ -590,44 +590,43 @@ function CopyCosting(props) {
                 </div> */}
                 </Row>
               )}
-              <Row className="sf-btn-footer no-gutters justify-content-between">
-                <div className="col-sm-12 text-right bluefooter-butn">
+              <Row className="justify-content-between my-3">
+                <div className="col-sm-12 text-right">
                   <button
-                    type={'button'}
+                    type={"button"}
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
                   >
-                    <div className={'cross-icon'}>
+                    <div className={"cross-icon"}>
                       <img
-                        src={require('../../../../assests/images/times.png')}
+                        src={require("../../../../assests/images/times.png")}
                         alt="cancel-icon.jpg"
                       />
-                    </div>{' '}
-                    {'Cancel'}
+                    </div>{" "}
+                    {"Cancel"}
                   </button>
 
                   <button
                     type="submit"
-                    className="submit-button mr5 save-btn"
+                    className="submit-button save-btn"
                     // onClick={addHandler}
                   >
-                    <div className={'check-icon'}>
+                    <div className={"check-icon"}>
                       <img
-                        src={require('../../../../assests/images/check.png')}
+                        src={require("../../../../assests/images/check.png")}
                         alt="check-icon.jpg"
-                      />{' '}
+                      />{" "}
                     </div>
-                    {'Save'}
+                    {"Save"}
                   </button>
                 </div>
               </Row>
-              <hr />
             </form>
           </div>
         </Container>
       </Drawer>
     </>
-  )
+  );
 }
 
 export default React.memo(CopyCosting)

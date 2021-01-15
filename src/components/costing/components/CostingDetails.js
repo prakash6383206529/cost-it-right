@@ -800,7 +800,7 @@ function CostingDetails() {
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
-                    <h2>{''}</h2>
+                    <h2>{""}</h2>
                   </div>
                 </Col>
               </Row>
@@ -813,21 +813,21 @@ function CostingDetails() {
                   <>
                     <Row>
                       <Col md="12">
-                        <div className="left-border">{'Part Details:'}</div>
+                        <div className="left-border">{"Part Details:"}</div>
                       </Col>
                       <Col className="col-md-15">
                         <SearchableSelectHookForm
-                          label={'Technology'}
-                          name={'Technology'}
-                          placeholder={'-Select-'}
+                          label={"Technology"}
+                          name={"Technology"}
+                          placeholder={"-Select-"}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}
                           register={register}
                           defaultValue={
-                            technology.length !== 0 ? technology : ''
+                            technology.length !== 0 ? technology : ""
                           }
-                          options={renderListing('Technology')}
+                          options={renderListing("Technology")}
                           mandatory={true}
                           handleChange={handleTechnologyChange}
                           errors={errors.Technology}
@@ -835,15 +835,15 @@ function CostingDetails() {
                       </Col>
                       <Col className="col-md-15">
                         <SearchableSelectHookForm
-                          label={'Assembly No./Part No.'}
-                          name={'Part'}
-                          placeholder={'-Select-'}
+                          label={"Assembly No./Part No."}
+                          name={"Part"}
+                          placeholder={"-Select-"}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}
                           register={register}
-                          defaultValue={part.length !== 0 ? part : ''}
-                          options={renderListing('PartList')}
+                          defaultValue={part.length !== 0 ? part : ""}
+                          options={renderListing("PartList")}
                           mandatory={true}
                           handleChange={handlePartChange}
                           errors={errors.Part}
@@ -852,7 +852,7 @@ function CostingDetails() {
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly Name/Part Name"
-                          name={'PartName'}
+                          name={"PartName"}
                           Controller={Controller}
                           control={control}
                           //register={register({ required: "PartName is required." })} //Working for required and msg
@@ -867,9 +867,9 @@ function CostingDetails() {
                             // maxLength: 4,
                           }}
                           handleChange={() => {}}
-                          defaultValue={''}
+                          defaultValue={""}
                           className=""
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                           errors={errors.PartName}
                           disabled={true}
                         />
@@ -877,16 +877,16 @@ function CostingDetails() {
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Assembly/Part Description"
-                          name={'Description'}
+                          name={"Description"}
                           Controller={Controller}
                           control={control}
                           register={register}
                           rules={{ required: false }}
                           mandatory={false}
                           handleChange={() => {}}
-                          defaultValue={''}
+                          defaultValue={""}
                           className=""
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                           errors={errors.Description}
                           disabled={true}
                         />
@@ -894,15 +894,15 @@ function CostingDetails() {
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="ECO No."
-                          name={'ECNNumber'}
+                          name={"ECNNumber"}
                           Controller={Controller}
                           control={control}
                           register={register}
                           mandatory={false}
                           handleChange={() => {}}
-                          defaultValue={''}
+                          defaultValue={""}
                           className=""
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                           errors={errors.ECNNumber}
                           disabled={true}
                         />
@@ -910,15 +910,15 @@ function CostingDetails() {
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Drawing No."
-                          name={'DrawingNumber'}
+                          name={"DrawingNumber"}
                           Controller={Controller}
                           control={control}
                           register={register}
                           mandatory={false}
                           handleChange={() => {}}
-                          defaultValue={''}
+                          defaultValue={""}
                           className=""
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                           errors={errors.DrawingNumber}
                           disabled={true}
                         />
@@ -926,15 +926,15 @@ function CostingDetails() {
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Revision No."
-                          name={'RevisionNumber'}
+                          name={"RevisionNumber"}
                           Controller={Controller}
                           control={control}
                           register={register}
                           mandatory={false}
                           handleChange={() => {}}
-                          defaultValue={''}
+                          defaultValue={""}
                           className=""
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                           errors={errors.RevisionNumber}
                           disabled={true}
                         />
@@ -942,15 +942,15 @@ function CostingDetails() {
                       <Col className="col-md-15">
                         <TextFieldHookForm
                           label="Price(Approved SOB)"
-                          name={'ShareOfBusiness'}
+                          name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
                           register={register}
                           mandatory={false}
                           handleChange={() => {}}
-                          defaultValue={''}
+                          defaultValue={""}
                           className=""
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                           errors={errors.ShareOfBusiness}
                           disabled={true}
                         />
@@ -970,7 +970,7 @@ function CostingDetails() {
                               dropdownMode="select"
                               placeholderText="Select date"
                               className="withBorder"
-                              autoComplete={'off'}
+                              autoComplete={"off"}
                               disabledKeyboardNavigation
                               onChangeRaw={(e) => e.preventDefault()}
                               disabled={true}
@@ -983,64 +983,67 @@ function CostingDetails() {
                       <Row>
                         <Col md="12">
                           <div className="left-border mt-15 mb-0">
-                            {'SOB Details:'}
+                            {"SOB Details:"}
                           </div>
                         </Col>
                       </Row>
                     )}
                     {IsOpenVendorSOBDetails && (
                       <Row>
-                        <Col md="3" className={'mb15 mt15'}>
+                        <Col md="3" className={"mb15 mt15"}>
                           ZBC:
                         </Col>
-                        <Col md="7" className={'mb15 mt15'}></Col>
-                        <Col md="2" className={'mb15 mt15'}>
+                        <Col md="7" className={"mb15 mt15"}></Col>
+                        <Col md="2" className={"mb15 mt15"}>
                           <button
                             type="button"
-                            className={'user-btn'}
+                            className={"user-btn"}
                             onClick={plantDrawerToggle}
                           >
-                            <div className={'plus'}></div>ADD PLANT
+                            <div className={"plus"}></div>ADD PLANT
                           </button>
                         </Col>
                         {/* ZBC PLANT GRID FOR COSTING */}
                         <Col md="12">
-                          <Table className="table cr-brdr-main" size="sm">
+                          <Table
+                            className="table cr-brdr-main costing-table-next"
+                            size="sm"
+                          >
                             <thead>
                               <tr>
                                 <th
-                                  style={{ width: '100px' }}
+                                  style={{ }}
                                 >{`Plant Code`}</th>
-                                <th style={{ width: '150px' }}>
+                                <th style={{ }}>
                                   {`SOB`}
                                   <button
                                     className="edit-details-btn mr-2 ml5"
-                                    type={'button'}
+                                    type={"button"}
                                     onClick={() =>
                                       setEnableSOBField(!isSOBEnabled)
                                     }
                                   />
                                 </th>
                                 <th
-                                  style={{ width: '150px' }}
+                                  style={{ }}
                                 >{`Costing Version`}</th>
                                 <th
                                   className="text-center"
-                                  style={{ width: '200px' }}
+                                  style={{ }}
                                 >{`Status`}</th>
-                                <th style={{ width: '200px' }}>{`Actions`}</th>
+                                <th style={{ }}>{`Actions`}</th>
                               </tr>
                             </thead>
                             <tbody>
                               {zbcPlantGrid &&
                                 zbcPlantGrid.map((item, index) => {
-                                  console.log(item, 'itemk')
+                                  console.log(item, "itemk");
                                   return (
                                     <tr key={index}>
                                       <td>{item.PlantCode}</td>
                                       <td className="cr-select-height w-100px">
                                         <TextFieldHookForm
-                                          label={''}
+                                          label={""}
                                           name={`${zbcPlantGridFields}[${index}]ShareOfBusinessPercent`}
                                           Controller={Controller}
                                           control={control}
@@ -1051,17 +1054,17 @@ function CostingDetails() {
                                             pattern: {
                                               //value: /^[0-9]*$/i,
                                               value: /^[0-9]\d*(\.\d+)?$/i,
-                                              message: 'Invalid Number.',
+                                              message: "Invalid Number.",
                                             },
                                           }}
                                           defaultValue={
                                             item.ShareOfBusinessPercent
                                           }
                                           className=""
-                                          customClassName={'withBorder'}
+                                          customClassName={"withBorder"}
                                           handleChange={(e) => {
-                                            e.preventDefault()
-                                            handleZBCSOBChange(e, index)
+                                            e.preventDefault();
+                                            handleZBCSOBChange(e, index);
                                           }}
                                           errors={
                                             errors &&
@@ -1070,16 +1073,16 @@ function CostingDetails() {
                                               undefined
                                               ? errors.zbcPlantGridFields[index]
                                                   .ShareOfBusinessPercent
-                                              : ''
+                                              : ""
                                           }
                                           disabled={isSOBEnabled ? true : false}
                                         />
                                       </td>
                                       <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
-                                          label={''}
+                                          label={""}
                                           name={`${zbcPlantGridFields}[${index}]CostingVersion`}
-                                          placeholder={'-Select-'}
+                                          placeholder={"-Select-"}
                                           Controller={Controller}
                                           control={control}
                                           rules={{ required: false }}
@@ -1088,14 +1091,14 @@ function CostingDetails() {
                                             item.SelectedCostingVersion
                                           }
                                           options={renderCostingOption(
-                                            item.CostingOptions,
+                                            item.CostingOptions
                                           )}
                                           mandatory={false}
                                           handleChange={(newValue) =>
                                             handleCostingChange(
                                               newValue,
                                               ZBC,
-                                              index,
+                                              index
                                             )
                                           }
                                           errors={`${zbcPlantGridFields}[${index}]CostingVersion`}
@@ -1106,18 +1109,18 @@ function CostingDetails() {
                                           {item.Status}
                                         </div>
                                       </td>
-                                      <td style={{ width: '200px' }}>
+                                      <td style={{ width: "200px" }}>
                                         <button
                                           className="Add-file mr-2"
-                                          type={'button'}
-                                          title={'Add Costing'}
+                                          type={"button"}
+                                          title={"Add Costing"}
                                           onClick={() => addDetails(index, ZBC)}
                                         />
                                         {!item.IsNewCosting && (
                                           <button
                                             className="View mr-2"
-                                            type={'button'}
-                                            title={'View Costing'}
+                                            type={"button"}
+                                            title={"View Costing"}
                                             onClick={() =>
                                               viewDetails(index, ZBC)
                                             }
@@ -1126,8 +1129,8 @@ function CostingDetails() {
                                         {!item.IsNewCosting && (
                                           <button
                                             className="Edit mr-2"
-                                            type={'button'}
-                                            title={'Edit Costing'}
+                                            type={"button"}
+                                            title={"Edit Costing"}
                                             onClick={() =>
                                               editCosting(index, ZBC)
                                             }
@@ -1136,8 +1139,8 @@ function CostingDetails() {
                                         {!item.IsNewCosting && (
                                           <button
                                             className="Copy All mr-2"
-                                            type={'button'}
-                                            title={'Copy Costing'}
+                                            type={"button"}
+                                            title={"Copy Costing"}
                                             onClick={() =>
                                               copyCosting(index, ZBC)
                                             }
@@ -1145,7 +1148,7 @@ function CostingDetails() {
                                         )}
                                       </td>
                                     </tr>
-                                  )
+                                  );
                                 })}
                               {zbcPlantGrid.length === 0 && (
                                 <tr>
@@ -1164,39 +1167,42 @@ function CostingDetails() {
 
                     {IsOpenVendorSOBDetails && (
                       <Row>
-                        <Col md="3" className={'mb15 mt15'}>
+                        <Col md="3" className={"mb15 mt15"}>
                           VBC:
                         </Col>
-                        <Col md="7" className={'mb15 mt15'}></Col>
-                        <Col md="2" className={'mb15 mt15'}>
+                        <Col md="7" className={"mb15 mt15"}></Col>
+                        <Col md="2" className={"mb15 mt15"}>
                           {vbcVendorGrid.length <
                           initialConfiguration.NumberOfVendorsForCostDetails ? (
                             <button
                               type="button"
-                              className={'user-btn'}
+                              className={"user-btn"}
                               onClick={vendorDrawerToggle}
                             >
-                              <div className={'plus'}></div>ADD VENDOR
+                              <div className={"plus"}></div>ADD VENDOR
                             </button>
                           ) : (
-                            ''
+                            ""
                           )}
                         </Col>
                         {/* ZBC PLANT GRID FOR COSTING */}
                         <Col md="12">
-                          <Table className="table cr-brdr-main" size="sm">
+                          <Table
+                            className="table cr-brdr-main costing-table-next"
+                            size="sm"
+                          >
                             <thead>
                               <tr>
-                                <th style={{ width: '100px' }}>{`Vendor`}</th>
-                                <th style={{ width: '150px' }}>{`SOB`}</th>
+                                <th style={{}}>{`Vendor`}</th>
+                                <th style={{}}>{`SOB`}</th>
                                 <th
-                                  style={{ width: '150px' }}
+                                  style={{}}
                                 >{`Costing Version`}</th>
                                 <th
                                   className="text-center"
-                                  style={{ width: '200px' }}
+                                  style={{}}
                                 >{`Status`}</th>
-                                <th style={{ width: '200px' }}>{`Actions`}</th>
+                                <th style={{}}>{`Actions`}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -1218,17 +1224,17 @@ function CostingDetails() {
                                             pattern: {
                                               //value: /^[0-9]*$/i,
                                               value: /^[0-9]\d*(\.\d+)?$/i,
-                                              message: 'Invalid Number.',
+                                              message: "Invalid Number.",
                                             },
                                           }}
                                           defaultValue={
                                             item.ShareOfBusinessPercent
                                           }
                                           className=""
-                                          customClassName={'withBorder'}
+                                          customClassName={"withBorder"}
                                           handleChange={(e) => {
-                                            e.preventDefault()
-                                            handleVBCSOBChange(e, index)
+                                            e.preventDefault();
+                                            handleVBCSOBChange(e, index);
                                           }}
                                           errors={
                                             errors &&
@@ -1237,16 +1243,16 @@ function CostingDetails() {
                                               undefined
                                               ? errors.vbcGridFields[index]
                                                   .ShareOfBusinessPercent
-                                              : ''
+                                              : ""
                                           }
                                           disabled={isSOBEnabled ? true : false}
                                         />
                                       </td>
                                       <td>
                                         <SearchableSelectHookForm
-                                          label={''}
+                                          label={""}
                                           name={`${vbcGridFields}[${index}]CostingVersion`}
-                                          placeholder={'-Select-'}
+                                          placeholder={"-Select-"}
                                           Controller={Controller}
                                           control={control}
                                           rules={{ required: false }}
@@ -1255,14 +1261,14 @@ function CostingDetails() {
                                             item.SelectedCostingVersion
                                           }
                                           options={renderCostingOption(
-                                            item.CostingOptions,
+                                            item.CostingOptions
                                           )}
                                           mandatory={false}
                                           handleChange={(newValue) =>
                                             handleCostingChange(
                                               newValue,
                                               VBC,
-                                              index,
+                                              index
                                             )
                                           }
                                           errors={`${vbcGridFields}[${index}]CostingVersion`}
@@ -1276,16 +1282,16 @@ function CostingDetails() {
                                       <td>
                                         <button
                                           className="Add-file mr-2"
-                                          type={'button'}
-                                          title={'Add Costing'}
+                                          type={"button"}
+                                          title={"Add Costing"}
                                           onClick={() => addDetails(index, VBC)}
                                         />
                                         {/* <button className="Copy All mr-2" type={'button'} title={'Edit Costing'} onClick={()=>{copyCosting(index,VBC)}} /> */}
                                         {!item.IsNewCosting && (
                                           <button
                                             className="View mr-2"
-                                            type={'button'}
-                                            title={'View Costing'}
+                                            type={"button"}
+                                            title={"View Costing"}
                                             onClick={() =>
                                               viewDetails(index, VBC)
                                             }
@@ -1294,8 +1300,8 @@ function CostingDetails() {
                                         {!item.IsNewCosting && (
                                           <button
                                             className="Edit mr-2"
-                                            type={'button'}
-                                            title={'Edit Costing'}
+                                            type={"button"}
+                                            title={"Edit Costing"}
                                             onClick={() =>
                                               editCosting(index, VBC)
                                             }
@@ -1304,8 +1310,8 @@ function CostingDetails() {
                                         {!item.IsNewCosting && (
                                           <button
                                             className="Copy All mr-2"
-                                            title={'Copy Costing'}
-                                            type={'button'}
+                                            title={"Copy Costing"}
+                                            type={"button"}
                                             onClick={() =>
                                               copyCosting(index, VBC)
                                             }
@@ -1313,7 +1319,7 @@ function CostingDetails() {
                                         )}
                                       </td>
                                     </tr>
-                                  )
+                                  );
                                 })}
                               {vbcVendorGrid.length === 0 && (
                                 <tr>
@@ -1333,30 +1339,30 @@ function CostingDetails() {
                       <Row className="sf-btn-footer justify-content-between">
                         <div className="col-sm-12 text-right">
                           <button
-                            type={'button'}
+                            type={"button"}
                             className="reset mr15 cancel-btn"
                             onClick={cancel}
                           >
-                            <div className={'cross-icon'}>
+                            <div className={"cross-icon"}>
                               <img
-                                src={require('../../../assests/images/times.png')}
+                                src={require("../../../assests/images/times.png")}
                                 alt="cancel-icon.jpg"
                               />
-                            </div>{' '}
-                            {'Clear'}
+                            </div>{" "}
+                            {"Clear"}
                           </button>
                           <button
                             type="button"
                             className="submit-button save-btn"
                             onClick={nextToggle}
                           >
-                            <div className={'check-icon'}>
+                            {"Next"}
+                            <div className={"check-icon ml-1"}>
                               <img
-                                src={require('../../../assests/images/check.png')}
+                                src={require("../../../assests/images/right-arrow-white.svg")}
                                 alt="check-icon.jpg"
-                              />{' '}
+                              />{" "}
                             </div>
-                            {'Next'}
                           </button>
                         </div>
                       </Row>
@@ -1399,8 +1405,8 @@ function CostingDetails() {
           closeDrawer={closePlantDrawer}
           isEditFlag={false}
           zbcPlantGrid={zbcPlantGrid}
-          ID={''}
-          anchor={'right'}
+          ID={""}
+          anchor={"right"}
         />
       )}
       {IsVendorDrawerOpen && (
@@ -1409,8 +1415,8 @@ function CostingDetails() {
           closeDrawer={closeVendorDrawer}
           isEditFlag={false}
           vbcVendorGrid={vbcVendorGrid}
-          ID={''}
-          anchor={'right'}
+          ID={""}
+          anchor={"right"}
         />
       )}
       {isCopyCostingDrawer && (
@@ -1420,15 +1426,15 @@ function CostingDetails() {
           copyCostingData={copyCostingData}
           zbcPlantGrid={zbcPlantGrid}
           vbcVendorGrid={vbcVendorGrid}
-          partNo={getValues('Part')}
+          partNo={getValues("Part")}
           type={type}
           selectedCostingId={costingIdForCopy}
           //isEditFlag={false}
-          anchor={'right'}
+          anchor={"right"}
         />
       )}
     </>
-  )
+  );
 }
 
 export default CostingDetails

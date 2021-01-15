@@ -293,7 +293,7 @@ export function renderEmailInputField(field) {
     ...others
   } = field;
   const disabled = isDisabled === true ? true : false;
-  const inputbox = `border-0 inputbox input-group ${active ? "active" : ""}`;
+  const inputbox = `inputbox input-group ${active ? "active" : ""}`;
   const className = `form-group ${
     field.customClassName ? field.customClassName : ""
   } ${touched && error ? "has-danger" : ""}`;

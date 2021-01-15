@@ -126,7 +126,7 @@ class LevelTechnologyListing extends Component {
 							className={'user-btn'}
 							onClick={this.props.mappingToggler}>
 							<div className={'plus'}></div>
-							{'Add Mapping'}</button>}
+							{'Add'}</button>}
 					</Col>
 
 					<Col className="level-table">

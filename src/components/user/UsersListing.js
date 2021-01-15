@@ -477,7 +477,7 @@ class UsersListing extends Component {
 											type="button"
 											className={'user-btn'}
 											onClick={this.formToggle}>
-											<div className={'plus'}></div>ADD USER</button>
+											<div className={'plus'}></div>ADD</button>
 									</div>
 								</div>}
 						</Col>

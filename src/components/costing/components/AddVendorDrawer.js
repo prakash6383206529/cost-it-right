@@ -146,78 +146,85 @@ function AddVendorDrawer(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+        onClose={(e) => toggleDrawer(e)}
+      >
         <Container>
-          <div className={'drawer-wrapper'}>
-
+          <div className={"drawer-wrapper"}>
             <Row className="drawer-heading">
               <Col>
-                <div className={'header-wrapper left'}>
-                  <h3>{'ADD VENDOR'}</h3>
+                <div className={"header-wrapper left"}>
+                  <h3>{"ADD VENDOR"}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
-                  className={'close-button right'}>
-                </div>
+                  className={"close-button right"}
+                ></div>
               </Col>
             </Row>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Row>
-
+              <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={'Vendor'}
-                    name={'Vendor'}
-                    placeholder={'-Select-'}
+                    label={"Vendor"}
+                    name={"Vendor"}
+                    placeholder={"-Select-"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
                     register={register}
-                    defaultValue={vendor.length !== 0 ? vendor : ''}
-                    options={renderListing('Vendor')}
+                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                    options={renderListing("Vendor")}
                     mandatory={true}
                     handleChange={handleChange}
                     errors={errors.Vendor}
                   />
                 </Col>
-                {checkVendorPlantConfigurable() &&
+                {checkVendorPlantConfigurable() && (
                   <Col md="12">
                     <SearchableSelectHookForm
-                      label={'Vendor Plant'}
-                      name={'VendorPlant'}
-                      placeholder={'-Select-'}
+                      label={"Vendor Plant"}
+                      name={"VendorPlant"}
+                      placeholder={"-Select-"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
                       register={register}
-                      defaultValue={vendorPlant.length !== 0 ? vendorPlant : ''}
-                      options={renderListing('VendorPlant')}
+                      defaultValue={vendorPlant.length !== 0 ? vendorPlant : ""}
+                      options={renderListing("VendorPlant")}
                       mandatory={true}
                       handleChange={handleChangeVendorPlant}
                       errors={errors.VendorPlant}
                     />
-                  </Col>}
+                  </Col>
+                )}
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between">
-                <div className="col-sm-12 text-right bluefooter-butn">
+              <Row className="justify-content-between my-3">
+                <div className="col-sm-12 text-right">
                   <button
-                    type={'button'}
+                    type={"button"}
                     className="reset mr15 cancel-btn"
-                    onClick={cancel} >
-                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                    onClick={cancel}
+                  >
+                    <div className={"cross-icon"}>
+                      <img
+                        src={require("../../../assests/images/times.png")}
+                        alt="cancel-icon.jpg"
+                      />
+                    </div>{" "}
+                    {"Cancel"}
                   </button>
 
-                  <button
-                    type="submit"
-                    className="submit-button mr5 save-btn" >
-                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                    {'ADD'}
+                  <button type="submit" className="submit-button save-btn">
+                    <div class="plus"></div>
+                    {"ADD"}
                   </button>
                 </div>
               </Row>
-
             </form>
           </div>
         </Container>

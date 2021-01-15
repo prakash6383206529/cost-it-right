@@ -212,7 +212,7 @@ class LevelsListing extends Component {
 									className={'user-btn'}
 									onClick={this.levelToggler}>
 									<div className={'plus'}></div>
-									{'Add Level'}</button>}
+									{'Add'}</button>}
 							</Col>
 							<Col className="mt-0 level-table">
 								<BootstrapTable

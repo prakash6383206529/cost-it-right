@@ -61,7 +61,7 @@ function ViewConversionCost(props) {
               </Col>
             </Row>
 
-            <div
+            <div className="px-3"
             // className="cr-process-costwrap"
             >
               <Row>

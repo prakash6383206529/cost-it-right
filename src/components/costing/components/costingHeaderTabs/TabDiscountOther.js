@@ -222,7 +222,7 @@ function TabDiscountOther(props) {
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
-                    <h2>{''}</h2>
+                    <h2>{""}</h2>
                   </div>
                 </Col>
               </Row>
@@ -243,13 +243,16 @@ function TabDiscountOther(props) {
                 </Col>
               </Row>
 
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Row>
-                  <Col md="4">
+                  <Col md="4" className="border-right">
                     <TextFieldHookForm
                       label="Hundi/Other Discount(%)"
-                      name={'HundiOrDiscountPercentage'}
+                      name={"HundiOrDiscountPercentage"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -258,25 +261,25 @@ function TabDiscountOther(props) {
                         required: true,
                         pattern: {
                           value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
+                          message: "Invalid Number.",
                         },
                         // maxLength: 4,
                       }}
                       handleChange={(e) => {
-                        e.preventDefault()
-                        handleDiscountChange(e)
+                        e.preventDefault();
+                        handleDiscountChange(e);
                       }}
-                      defaultValue={''}
+                      defaultValue={""}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={"withBorder"}
                       errors={errors.HundiOrDiscountPercentage}
                       disabled={false}
                     />
                   </Col>
-                  <Col md="4">
+                  <Col md="4" className="border-right">
                     <TextFieldHookForm
                       label="Other Cost Description"
-                      name={'OtherCostDescription'}
+                      name={"OtherCostDescription"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -289,10 +292,10 @@ function TabDiscountOther(props) {
                         // },
                         // maxLength: 4,
                       }}
-                      handleChange={() => { }}
-                      defaultValue={''}
+                      handleChange={() => {}}
+                      defaultValue={""}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={"withBorder"}
                       errors={errors.OtherCostDescription}
                       disabled={false}
                     />
@@ -300,7 +303,7 @@ function TabDiscountOther(props) {
                   <Col md="4">
                     <TextFieldHookForm
                       label="Net PO Price(INR)"
-                      name={'NetPOPriceAfterDiscount'}
+                      name={"NetPOPriceAfterDiscount"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -313,10 +316,10 @@ function TabDiscountOther(props) {
                         // },
                         // maxLength: 4,
                       }}
-                      handleChange={() => { }}
-                      defaultValue={''}
+                      handleChange={() => {}}
+                      defaultValue={""}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={"withBorder"}
                       errors={errors.NetPOPriceAfterDiscount}
                       disabled={true}
                     />
@@ -324,10 +327,10 @@ function TabDiscountOther(props) {
                 </Row>
 
                 <Row>
-                  <Col md="4">
+                  <Col md="4" className="border-right">
                     <TextFieldHookForm
                       label="Hundi/Discount Value"
-                      name={'HundiPerDiscountValue'}
+                      name={"HundiPerDiscountValue"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -336,22 +339,22 @@ function TabDiscountOther(props) {
                         required: true,
                         pattern: {
                           value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
+                          message: "Invalid Number.",
                         },
                         // maxLength: 4,
                       }}
-                      handleChange={() => { }}
-                      defaultValue={''}
+                      handleChange={() => {}}
+                      defaultValue={""}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={"withBorder"}
                       errors={errors.HundiPerDiscountValue}
                       disabled={true}
                     />
                   </Col>
-                  <Col md="4">
+                  <Col md="4" className="border-right">
                     <TextFieldHookForm
                       label="Any Other Cost"
-                      name={'AnyOtherCost'}
+                      name={"AnyOtherCost"}
                       Controller={Controller}
                       control={control}
                       register={register}
@@ -360,22 +363,19 @@ function TabDiscountOther(props) {
                         //required: true,
                         pattern: {
                           value: /^[0-9]*$/i,
-                          message: 'Invalid Number.'
+                          message: "Invalid Number.",
                         },
                         // maxLength: 4,
                       }}
-                      handleChange={() => { }}
-                      defaultValue={''}
+                      handleChange={() => {}}
+                      defaultValue={""}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={"withBorder"}
                       errors={errors.AnyOtherCost}
                       disabled={false}
                     />
                   </Col>
-                </Row>
-
-                <Row>
-                  <Col md="2" className="mb15">
+                  <Col md="4">
                     <label
                       className={`custom-checkbox`}
                       onChange={onPressChangeCurrency}
@@ -392,33 +392,32 @@ function TabDiscountOther(props) {
                         onChange={onPressChangeCurrency}
                       />
                     </label>
-                  </Col>
 
-                  <Col md="2" ></Col>
-
-                  {IsCurrencyChange &&
-                    <>
-                      <Col md="4">
+                    {IsCurrencyChange && (
+                      <>
                         <SearchableSelectHookForm
-                          label={'Select Currency'}
-                          name={'Currency'}
-                          placeholder={'-Select-'}
+                          label={"Select Currency"}
+                          name={"Currency"}
+                          placeholder={"-Select-"}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}
                           register={register}
-                          defaultValue={currency.length !== 0 ? currency : ''}
-                          options={renderListing('Currency')}
+                          defaultValue={currency.length !== 0 ? currency : ""}
+                          options={renderListing("Currency")}
                           mandatory={true}
                           handleChange={handleCurrencyChange}
                           errors={errors.Currency}
                           disabled={false}
                         />
-                      </Col>
-                      <Col md="4">
+
                         <TextFieldHookForm
-                          label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
-                          name={'NetPOPriceCurrency'}
+                          label={`Net PO Price${
+                            Object.keys(currency).length > 0
+                              ? "(" + currency.label + ")"
+                              : ""
+                          }`}
+                          name={"NetPOPriceCurrency"}
                           Controller={Controller}
                           control={control}
                           register={register}
@@ -431,52 +430,56 @@ function TabDiscountOther(props) {
                             // },
                             // maxLength: 4,
                           }}
-                          handleChange={() => { }}
-                          defaultValue={''}
+                          handleChange={() => {}}
+                          defaultValue={""}
                           className=""
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                           errors={errors.NetPOPriceCurrency}
                           disabled={true}
                         />
-                      </Col>
-                    </>}
+                      </>
+                    )}
+                  </Col>
                 </Row>
 
                 <Row>
                   <Col md="12">
-                    <div className="left-border">
-                      {'Remark & Attachments'}
-                    </div>
+                    <div className="left-border">{"Remark & Attachments"}</div>
                   </Col>
 
                   <Col md="6">
                     <TextAreaHookForm
                       label="Remarks & Attachments"
-                      name={'Remarks'}
+                      name={"Remarks"}
                       Controller={Controller}
                       control={control}
                       register={register}
+                      rows={6}
                       mandatory={false}
-                      rules={{
-                        //required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
+                      rules={
+                        {
+                          //required: true,
+                          // pattern: {
+                          //   value: /^[0-9]*$/i,
+                          //   message: 'Invalid Number.'
+                          // },
+                          // maxLength: 4,
+                        }
+                      }
+                      handleChange={() => {}}
+                      defaultValue={""}
                       className=""
-                      customClassName={'withBorder'}
+                      customClassName={"withBorder"}
                       errors={errors.Remarks}
                       disabled={false}
                     />
                   </Col>
 
-                  <Col md="3">
+                  <Col md="3" className="height152-label">
                     <label>Upload Files (upload up to 3 files)</label>
-                    {files && files.length >= 8 ? '' :
+                    {files && files.length >= 8 ? (
+                      ""
+                    ) : (
                       <Dropzone
                         getUploadParams={getUploadParams}
                         onChangeStatus={handleChangeStatus}
@@ -486,23 +489,44 @@ function TabDiscountOther(props) {
                         initialFiles={initialFiles}
                         maxFiles={8}
                         maxSizeBytes={2000000}
-                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                        inputContent={(files, extra) =>
+                          extra.reject ? (
+                            "Image, audio and video files only"
+                          ) : (
+                            <div className="text-center">
+                              <i className="text-primary fa fa-cloud-upload"></i>
+                              <span className="d-block">
+                                Drag and Drop or{" "}
+                                <span className="text-primary">Browse</span>
+                                <br />
+                                file to upload
+                              </span>
+                            </div>
+                          )
+                        }
                         styles={{
-                          dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                          inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                          dropzoneReject: {
+                            borderColor: "red",
+                            backgroundColor: "#DAA",
+                          },
+                          inputLabel: (files, extra) =>
+                            extra.reject ? { color: "red" } : {},
                         }}
                         classNames="draper-drop"
-                      />}
+                      />
+                    )}
                   </Col>
                   <Col md="3">
-                    <div className={'attachment-wrapper'}>
-                      {
-                        files && files.map(f => {
-                          const withOutTild = f.FileURL.replace('~', '')
+                    <div className={"attachment-wrapper"}>
+                      {files &&
+                        files.map((f) => {
+                          const withOutTild = f.FileURL.replace("~", "");
                           const fileURL = `${FILE_URL}${withOutTild}`;
                           return (
-                            <div className={'attachment images'}>
-                              <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                            <div className={"attachment images"}>
+                              <a href={fileURL} target="_blank">
+                                {f.OriginalFileName}
+                              </a>
                               {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
@@ -510,33 +534,40 @@ function TabDiscountOther(props) {
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                              <img alt={''} className="float-right" onClick={() => deleteFile(f.FileId, f.FileName)} src={require('../../../../assests/images/red-cross.png')}></img>
+                              <img
+                                alt={""}
+                                className="float-right"
+                                onClick={() => deleteFile(f.FileId, f.FileName)}
+                                src={require("../../../../assests/images/red-cross.png")}
+                              ></img>
                             </div>
-                          )
-                        })
-                      }
+                          );
+                        })}
                     </div>
                   </Col>
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between mt25">
                   <div className="col-sm-12 text-right bluefooter-butn">
-
                     <button
-                      type={'submit'}
-                      className="submit-button mr5 save-btn" >
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
+                      type={"submit"}
+                      className="submit-button mr5 save-btn"
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                      {"Save"}
                     </button>
                   </div>
                 </Row>
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };

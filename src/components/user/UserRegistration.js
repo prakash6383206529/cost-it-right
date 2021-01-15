@@ -782,7 +782,7 @@ class UserRegistration extends Component {
                     customClass={'Personal-Details'} />
 
                   <div className=" row form-group">
-                    <div className="input-group col-md-3 input-withouticon" >
+                    <div className="input-group col-md-3" >
                       <Field
                         label="First Name"
                         name={"FirstName"}
@@ -796,7 +796,7 @@ class UserRegistration extends Component {
                       />
                     </div>
 
-                    <div className="input-group col-md-3 input-withouticon">
+                    <div className="input-group col-md-3">
                       <Field
                         label="Last Name"
                         name={"LastName"}
