@@ -713,7 +713,8 @@ class PermissionsUserWise extends Component {
                                                     type="checkbox"
                                                     value={'All'}
                                                     checked={this.isCheckAll(index, item.Actions)}
-                                                    onClick={() => this.selectAllHandler(index, item.Actions)} />}</td>
+                                                    onClick={() => this.selectAllHandler(index, item.Actions)} />}
+                                                </td>
 
                                                 {this.renderAction(item.Actions, index)}
                                             </tr>

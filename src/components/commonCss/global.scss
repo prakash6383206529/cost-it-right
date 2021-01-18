@@ -445,6 +445,7 @@ a:hover {
 
     label {
       margin-bottom: 0 !important;
+      >div{vertical-align: middle;}
     }
   }
 
@@ -604,7 +605,7 @@ a:hover {
 
     th,
     td {
-      padding: 8px 27px;
+      padding: 10px 27px;
       border: 0 !important;
       border-top: 1px solid #dfe6f1 !important;
       vertical-align: middle !important;
@@ -614,11 +615,18 @@ a:hover {
       font-size: $font-16;
       padding: 15px 27px;
       color: $lightblue;
+      label[for="normal-switch"]{
+        margin-bottom: 0px !important;
+        >div{
+          vertical-align: middle;
+        }
+      }
 
       .custom-checkbox {
         color: $lightblue;
         font-size: $font-16;
         font-weight: $font-regular;
+        margin-bottom: 0 !important;
 
         label {
           margin-bottom: 0 !important;
@@ -641,8 +649,7 @@ a:hover {
         font-weight: $font-regular;
       }
 
-      span,
-      input {
+      span{
         display: inline-block;
         vertical-align: middle;
       }
@@ -1113,13 +1120,13 @@ p {
   background-color: #FFFFFF;
   // height: calc(100vh - 169px);
   width: calc(100% - 205px);
-.basic-multi-select{
-  .select__control{
-    height: auto;
+  .basic-multi-select{
+    .select__control{
+      height: auto;
+    }
   }
-}
   .nav-item {
-    margin-right: 48px;
+    margin-right: 30px;
   }
 
   h1,
@@ -1164,11 +1171,12 @@ p {
       color: #8A91AC;
       font-size: $font-15;
       font-weight: $font-regular;
-      padding-left: 0;
-      padding-right: 0;
+      padding-left: 10px;
+      padding-right: 10px;
       padding-top: 0;
       background: transparent;
       border: none;
+      padding-bottom: 10px;
 
       &:hover {
         border: none;

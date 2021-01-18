@@ -762,37 +762,58 @@ class UserRegistration extends Component {
         {loading && <Loader />}
         <div className="login-container signup-form">
           <div className="row">
-
             <div className="col-md-12">
               <div className="shadow-lgg login-formg ">
                 <div className="row">
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
-                      <h2>{this.state.isEditFlag ? 'Update User' : 'Add User'}</h2>
+                      <h2>
+                        {this.state.isEditFlag ? "Update User" : "Add User"}
+                      </h2>
                     </div>
                   </div>
-                  {this.state.isEditFlag && !this.state.isShowPwdField && <div className="col-md-6">
-                    <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
-                  </div>}
+                  {this.state.isEditFlag && !this.state.isShowPwdField && (
+                    <div className="col-md-6">
+                      <Button
+                        className={"user-btn"}
+                        onClick={() =>
+                          this.setState({
+                            isShowPwdField: !this.state.isShowPwdField,
+                          })
+                        }
+                      >
+                        Change Password
+                      </Button>
+                    </div>
+                  )}
                 </div>
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
-
+                <form
+                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  noValidate
+                  className="manageuser"
+                >
                   <HeaderTitle
-                    title={'Personal Details:'}
-                    customClass={'Personal-Details'} />
+                    title={"Personal Details:"}
+                    customClass={"Personal-Details"}
+                  />
 
                   <div className=" row form-group">
-                    <div className="input-group col-md-3" >
+                    <div className="input-group col-md-3">
                       <Field
                         label="First Name"
                         name={"FirstName"}
                         type="text"
-                        placeholder={'Enter'}
-                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                        placeholder={"Enter"}
+                        validate={[
+                          required,
+                          minLength3,
+                          maxLength25,
+                          alphabetsOnlyForName,
+                        ]}
                         component={renderText}
                         required={true}
                         maxLength={26}
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                       />
                     </div>
 
@@ -801,12 +822,17 @@ class UserRegistration extends Component {
                         label="Last Name"
                         name={"LastName"}
                         type="text"
-                        placeholder={'Enter'}
-                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                        placeholder={"Enter"}
+                        validate={[
+                          required,
+                          minLength3,
+                          maxLength25,
+                          alphabetsOnlyForName,
+                        ]}
                         component={renderText}
                         required={true}
                         maxLength={26}
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                       />
                     </div>
                     <div className="input-group col-md-3">
@@ -814,13 +840,13 @@ class UserRegistration extends Component {
                         name="Mobile"
                         label="Mobile"
                         type="text"
-                        placeholder={'Enter'}
+                        placeholder={"Enter"}
                         component={renderText}
                         isDisabled={false}
                         validate={[required, number, minLength10, maxLength10]}
                         required={true}
                         maxLength={10}
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                       />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
@@ -830,12 +856,12 @@ class UserRegistration extends Component {
                             label="Phone Number"
                             name={"PhoneNumber"}
                             type="text"
-                            placeholder={'Enter'}
+                            placeholder={"Enter"}
                             validate={[number, minLength10, maxLength12]}
                             component={renderText}
                             //required={true}
                             maxLength={10}
-                            customClassName={'withBorder'}
+                            customClassName={"withBorder"}
                           />
                         </div>
                         <div className="ext phoneNumber col-md-4 input-withouticon pl-0 pr-0">
@@ -843,21 +869,19 @@ class UserRegistration extends Component {
                             label="Extension"
                             name={"Extension"}
                             type="text"
-                            placeholder={'Ext'}
+                            placeholder={"Ext"}
                             validate={[number]}
                             component={renderText}
                             //required={true}
                             maxLength={3}
-                            customClassName={'withBorder w100'}
+                            customClassName={"withBorder w100"}
                           />
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <HeaderTitle
-                    title={'ID & Password:'}
-                    customClass={''} />
+                  <HeaderTitle title={"ID & Password:"} customClass={""} />
 
                   <div className="row form-group">
                     <div className="input-group col-md-3">
@@ -865,33 +889,37 @@ class UserRegistration extends Component {
                         name="EmailAddress"
                         label="Email ID"
                         component={renderEmailInputField}
-                        placeholder={'Enter'}
+                        placeholder={"Enter"}
                         validate={[required, email, minLength7, maxLength70]}
                         required={true}
                         maxLength={70}
                         isDisabled={this.state.isEditFlag ? true : false}
-                        customClassName={'withBorderEmail'}
+                        customClassName={"withBorderEmail"}
                       />
                     </div>
-                    {!initialConfiguration.IsLoginEmailConfigure &&
+                    {!initialConfiguration.IsLoginEmailConfigure && (
                       <div className="input-group col-md-3">
                         <Field
                           name="UserName"
                           label="User name"
                           type="text"
-                          placeholder={'Enter'}
+                          placeholder={"Enter"}
                           component={renderText}
                           isDisabled={false}
                           validate={[required, minLength7]}
                           required={true}
                           maxLength={70}
                           disabled={this.state.isEditFlag ? true : false}
-                          customClassName={'withBorder'}
+                          customClassName={"withBorder"}
                         />
-                      </div>}
-                    {this.state.isShowPwdField &&
+                      </div>
+                    )}
+                    {this.state.isShowPwdField && (
                       <>
-                        <div id="password" className="input-group password col-md-3">
+                        <div
+                          id="password"
+                          className="input-group password col-md-3"
+                        >
                           <Field
                             name="Password"
                             label="Password"
@@ -904,14 +932,14 @@ class UserRegistration extends Component {
                             required={true}
                             maxLength={26}
                             isEyeIcon={true}
-                            customClassName={'withBorderPWD'}
+                            customClassName={"withBorderPWD"}
                           />
                         </div>
                         <div className="input-group col-md-3">
                           <Field
                             name="passwordConfirm"
                             label="Confirm Password"
-                            placeholder={'Enter'}
+                            placeholder={"Enter"}
                             component={renderPasswordInputField}
                             validate={[required, minLength6, maxLength18]}
                             required={true}
@@ -919,15 +947,14 @@ class UserRegistration extends Component {
                             isShowHide={this.state.isShowHide}
                             showHide={this.showHideHandler}
                             isEyeIcon={true}
-                            customClassName={'withBorderPWD'}
+                            customClassName={"withBorderPWD"}
                           />
                         </div>
-                      </>}
+                      </>
+                    )}
                   </div>
 
-                  <HeaderTitle
-                    title={'Address:'}
-                    customClass={''} />
+                  <HeaderTitle title={"Address:"} customClass={""} />
 
                   <div className="row form-group">
                     <div className="input-group  col-md-3 input-withouticon">
@@ -935,12 +962,12 @@ class UserRegistration extends Component {
                         label="Address 1"
                         name={"AddressLine1"}
                         type="text"
-                        placeholder={'Enter'}
+                        placeholder={"Enter"}
                         //validate={[required]}
                         component={renderText}
                         //required={true}
                         maxLength={45}
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                       />
                     </div>
                     <div className="input-group col-md-3 input-withouticon">
@@ -948,12 +975,12 @@ class UserRegistration extends Component {
                         label="Address 2"
                         name={"AddressLine2"}
                         type="text"
-                        placeholder={'Enter'}
+                        placeholder={"Enter"}
                         //validate={[required]}
                         component={renderText}
                         //required={true}
                         maxLength={45}
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                       />
                     </div>
                     <div className="col-md-3">
@@ -962,8 +989,8 @@ class UserRegistration extends Component {
                         type="text"
                         label="City"
                         component={searchableSelect}
-                        placeholder={'Select city'}
-                        options={this.searchableSelectType('city')}
+                        placeholder={"Select city"}
+                        options={this.searchableSelectType("city")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         //validate={[required]}
                         //required={true}
@@ -976,19 +1003,17 @@ class UserRegistration extends Component {
                         label="ZipCode"
                         name={"ZipCode"}
                         type="text"
-                        placeholder={'Enter'}
+                        placeholder={"Enter"}
                         validate={[number, maxLength6]}
                         component={renderText}
                         //required={true}
                         maxLength={6}
-                        customClassName={'withBorder'}
+                        customClassName={"withBorder"}
                       />
                     </div>
                   </div>
 
-                  <HeaderTitle
-                    title={'Role & Department:'}
-                    customClass={''} />
+                  <HeaderTitle title={"Role & Department:"} customClass={""} />
 
                   <div className="row form-group">
                     <div className="col-md-3">
@@ -997,10 +1022,15 @@ class UserRegistration extends Component {
                         type="text"
                         label="Role"
                         component={searchableSelect}
-                        placeholder={'Select role'}
-                        options={this.searchableSelectType('role')}
+                        placeholder={"Select role"}
+                        options={this.searchableSelectType("role")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={(this.state.role == null || this.state.role.length === 0) ? [required] : []}
+                        validate={
+                          this.state.role == null ||
+                          this.state.role.length === 0
+                            ? [required]
+                            : []
+                        }
                         required={true}
                         handleChangeDescription={this.roleHandler}
                         valueDescription={this.state.role}
@@ -1012,10 +1042,15 @@ class UserRegistration extends Component {
                         type="text"
                         label="Department"
                         component={searchableSelect}
-                        placeholder={'Select department'}
-                        options={this.searchableSelectType('department')}
+                        placeholder={"Select department"}
+                        options={this.searchableSelectType("department")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
+                        validate={
+                          this.state.department == null ||
+                          this.state.department.length === 0
+                            ? [required]
+                            : []
+                        }
                         required={true}
                         handleChangeDescription={this.departmentHandler}
                         valueDescription={this.state.department}
@@ -1023,27 +1058,24 @@ class UserRegistration extends Component {
                     </div>
                   </div>
 
-
-
-
-
                   {/* ///////////////////////////////////////////////
                               ////////////////////////////////////////////////////
                               /////////////// USER WISE PERMISSION START ////////
                               //////////////////////////////////////////////////
                               ///////////////////////////////////////////////// */}
 
-
-
-
-                  <div className=" row form-group">
-                    <div className={'col-md-3'}>
+                  <div className=" row form-group pt-2">
+                    <div className={"col-md-3"}>
                       <label
                         className="custom-checkbox"
                         onChange={this.onPressUserPermission}
                       >
                         Grant User Wise Permission
-                        <input type="checkbox" disabled={false} checked={this.state.IsShowAdditionalPermission} />
+                        <input
+                          type="checkbox"
+                          disabled={false}
+                          checked={this.state.IsShowAdditionalPermission}
+                        />
                         <span
                           className=" before-box"
                           checked={this.state.IsShowAdditionalPermission}
@@ -1053,29 +1085,25 @@ class UserRegistration extends Component {
                     </div>
                   </div>
 
-                  {this.state.IsShowAdditionalPermission &&
+                  {this.state.IsShowAdditionalPermission && (
                     <div className=" row form-group grant-user-grid">
                       <div className="col-md-12">
                         <PermissionsTabIndex
-                          onRef={ref => (this.child = ref)}
+                          onRef={(ref) => (this.child = ref)}
                           isEditFlag={this.state.isEditFlag}
                           setInitialModuleData={this.setInitialModuleData}
                           moduleData={this.moduleDataHandler}
                           isNewRole={false}
                         />
                       </div>
-                    </div>}
-
+                    </div>
+                  )}
 
                   {/* ///////////////////////////////////////////////
                               ////////////////////////////////////////////////////
                               /////////////// USER WISE PERMISSION END ////////
                               //////////////////////////////////////////////////
                               ///////////////////////////////////////////////// */}
-
-
-
-
 
                   {/* ///////////////////////////////////////////////
                               ////////////////////////////////////////////////////
@@ -1084,8 +1112,9 @@ class UserRegistration extends Component {
                               ///////////////////////////////////////////////// */}
 
                   <HeaderTitle
-                    title={'Technology & Level:'}
-                    customClass={''} />
+                    title={"Technology & Level:"}
+                    customClass={"mt-3"}
+                  />
 
                   <div className="row form-group">
                     <div className="col-md-3">
@@ -1094,7 +1123,7 @@ class UserRegistration extends Component {
                         type="text"
                         label="Technology"
                         component={searchableSelect}
-                        options={this.searchableSelectType('technology')}
+                        options={this.searchableSelectType("technology")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
                         //required={true}
@@ -1108,7 +1137,7 @@ class UserRegistration extends Component {
                         type="text"
                         label="Level"
                         component={searchableSelect}
-                        options={this.searchableSelectType('level')}
+                        options={this.searchableSelectType("level")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
                         //required={true}
@@ -1117,32 +1146,39 @@ class UserRegistration extends Component {
                       />
                     </div>
                     <div className="col-md-3 mt25 d-flex">
-                      {this.state.isEditIndex ?
+                      {this.state.isEditIndex ? (
                         <>
                           <button
                             type="button"
-                            className={'add-button add-button-big'}
+                            className={"add-button mr-2 mt-2"}
                             onClick={this.updateTechnologyLevel}
-                          >Update</button>
+                          >
+                            Update
+                          </button>
 
                           <button
                             type="button"
-                            className={'add-button add-button-big ml-2'}
+                            className={"user-btn pull-left mt-2"}
                             onClick={this.resetTechnologyLevel}
-                          >Cancel</button>
+                          >
+                            Cancel
+                          </button>
                         </>
-                        :
+                      ) : (
                         <button
                           type="button"
-                          className={'add-button add-button-big ml-2'}
+                          className={"user-btn pull-left mt-2"}
                           onClick={this.setTechnologyLevel}
-                        ><div className={'plus'}></div>ADD</button>}
+                        >
+                          <div className={"plus"}></div>ADD
+                        </button>
+                      )}
                     </div>
                   </div>
 
                   <div className="row form-group">
                     <div className="col-md-12">
-                      <Table className="table" size="sm" >
+                      <Table className="table" size="sm">
                         <thead>
                           <tr>
                             <th>{`Technology`}</th>
@@ -1150,25 +1186,37 @@ class UserRegistration extends Component {
                             <th className="text-right">{`Action`}</th>
                           </tr>
                         </thead>
-                        <tbody >
-                          {
-                            this.state.TechnologyLevelGrid &&
-                            this.state.TechnologyLevelGrid.map((item, index) => {
-                              return (
-                                <tr key={index}>
-                                  <td>{item.Technology}</td>
-                                  <td>{item.Level}</td>
-                                  <td className="text-right">
-                                    <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                    <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                  </td>
-                                </tr>
-                              )
-                            })
-                          }
+                        <tbody>
+                          {this.state.TechnologyLevelGrid &&
+                            this.state.TechnologyLevelGrid.map(
+                              (item, index) => {
+                                return (
+                                  <tr key={index}>
+                                    <td>{item.Technology}</td>
+                                    <td>{item.Level}</td>
+                                    <td className="text-right">
+                                      <button
+                                        className="Edit mr-2"
+                                        type={"button"}
+                                        onClick={() =>
+                                          this.editItemDetails(index)
+                                        }
+                                      />
+                                      <button
+                                        className="Delete"
+                                        type={"button"}
+                                        onClick={() => this.deleteItem(index)}
+                                      />
+                                    </td>
+                                  </tr>
+                                );
+                              }
+                            )}
                         </tbody>
-                        {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                       </Table>
+                      {this.state.TechnologyLevelGrid.length === 0 && (
+                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                      )}
                     </div>
                   </div>
 
@@ -1178,32 +1226,41 @@ class UserRegistration extends Component {
                       ////////////////////////////////////////////////////
                       ///////////////////////////////////////////////// */}
 
-
                   <div className="text-right btn-blue-block">
-
                     <button
                       onClick={this.cancel}
                       type="submit"
                       value="CANCEL"
-                      className="reset mr15 cancel-btn">
-                      <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
+                      className="reset mr15 cancel-btn"
+                    >
+                      <div className={"cross-icon"}>
+                        <img
+                          alt={""}
+                          src={require("../../assests/images/times.png")}
+                        ></img>
+                      </div>
                       CANCEL
-                      </button>
+                    </button>
 
                     <button
                       type="submit"
                       disabled={isSubmitted ? true : false}
-                      className="btn-primary save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
-                      {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                      className="btn-primary save-btn"
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          alt={""}
+                          src={require("../../assests/images/check.png")}
+                        ></img>
+                      </div>
+                      {this.state.isEditFlag ? "UPDATE" : "SAVE"}
                     </button>
                   </div>
-
                 </form>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     );
   }

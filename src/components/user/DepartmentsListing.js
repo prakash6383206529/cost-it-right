@@ -164,12 +164,17 @@ class DepartmentsListing extends Component {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
+      paginationSize: 2,
     };
     return (
       <>
         {this.props.loading && <Loader />}
-        <Row className="pt-30 mb-30">
-          {AddAccessibility && <Col className="text-right">
+        <Row className="pt-30">
+          {AddAccessibility && <Col className="text-right mb-3">
             <button
               type={'button'}
               className={'user-btn'}

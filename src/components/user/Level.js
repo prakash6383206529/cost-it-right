@@ -303,7 +303,7 @@ class Level extends Component {
               <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 
                 <Row className="drawer-heading">
-                  <Col>
+                  <Col className="d-flex">
                     {
                       isShowForm ?
                         <div className={'header-wrapper left'}>
@@ -324,7 +324,7 @@ class Level extends Component {
                 <div className="drawer-body">
 
                   {this.props.isShowForm &&
-                    <div className="row">
+                    <div className="row pr-0">
                       <div className="input-group  form-group col-md-12 input-withouticon" >
                         <Field
                           label="Level Name"
