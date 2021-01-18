@@ -19,6 +19,13 @@ import {
     GET_COSTING_DATA_BY_COSTINGID,
     GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
     GET_RATE_CRITERIA_BY_CAPACITY,
+    SET_RMCC_TAB_DATA,
+    SET_COSTING_DATALIST_BY_COSTINGID,
+    SET_PO_PRICE,
+    SET_RMCCBOP_DATA,
+    SET_SURFACE_COST_DATA,
+    SET_OVERHEAD_PROFIT_COST_DATA,
+    SET_DISCOUNT_COST_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -202,6 +209,48 @@ export default function costingReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 rateCriteriaByCapacitySelectList: action.payload
+            };
+        case SET_RMCC_TAB_DATA:
+            return {
+                ...state,
+                loading: false,
+                RMCCTabData: action.payload
+            };
+        case SET_COSTING_DATALIST_BY_COSTINGID:
+            return {
+                ...state,
+                loading: false,
+                CostingDataList: action.payload
+            };
+        case SET_PO_PRICE:
+            return {
+                ...state,
+                loading: false,
+                NetPOPrice: action.payload
+            };
+        case SET_RMCCBOP_DATA:
+            return {
+                ...state,
+                loading: false,
+                RMCCBOPCost: action.payload
+            };
+        case SET_SURFACE_COST_DATA:
+            return {
+                ...state,
+                loading: false,
+                SurfaceCostData: action.payload
+            };
+        case SET_OVERHEAD_PROFIT_COST_DATA:
+            return {
+                ...state,
+                loading: false,
+                OverheadProfitCostData: action.payload
+            };
+        case SET_DISCOUNT_COST_DATA:
+            return {
+                ...state,
+                loading: false,
+                DiscountCostData: action.payload
             };
         default:
             return state;

@@ -25,9 +25,14 @@ function RawMaterialCost(props) {
   const costData = useContext(costingInfoContext)
 
   useEffect(() => {
-    setTimeout(() => {
-      //props.setRMCost(gridData, props.index)
-    }, 200)
+    //setTimeout(() => {
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setRMCost(gridData, Params)
+    //}, 200)
   }, [gridData]);
 
   /**
@@ -43,7 +48,6 @@ function RawMaterialCost(props) {
   * @description HIDE RM DRAWER
   */
   const closeDrawer = (e = '', rowData = {}) => {
-    console.log('rowData: ', rowData);
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
         RMName: rowData.RawMaterial,
@@ -114,7 +118,6 @@ function RawMaterialCost(props) {
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
       tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
-      console.log('tempData: ', tempData);
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 

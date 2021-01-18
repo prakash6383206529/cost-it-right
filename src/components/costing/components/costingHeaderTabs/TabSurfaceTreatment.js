@@ -11,8 +11,7 @@ function TabSurfaceTreatment(props) {
 
   const { netPOPrice } = props;
 
-  const { handleSubmit, watch, reset } = useForm();
-  const [isOpen, setIsOpen] = useState(false);
+  const { handleSubmit, } = useForm();
   const [tabData, setTabData] = useState([]);
   const [costingData, setCostingData] = useState({});
   const [surfaceTotal, setSurfaceTotal] = useState('');
@@ -266,4 +265,4 @@ function TabSurfaceTreatment(props) {
   );
 };
 
-export default TabSurfaceTreatment;
+export default React.memo(TabSurfaceTreatment);

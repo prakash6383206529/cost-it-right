@@ -22,7 +22,12 @@ function BOPCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    //props.setBOPCost(gridData, props.index)
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setBOPCost(gridData, Params)
   }, [gridData]);
 
   /**
@@ -209,7 +214,7 @@ function BOPCost(props) {
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="SaveIcon mt15" type={'button'} onClick={() => SaveItem(index)} />
+                                <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
                                 <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
                               </td>
                             </tr>

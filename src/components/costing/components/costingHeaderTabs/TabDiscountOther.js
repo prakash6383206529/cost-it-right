@@ -44,10 +44,8 @@ function TabDiscountOther(props) {
         PlantId: costData.PlantId,
       }
       dispatch(getDiscountOtherCostTabData(data, (res) => {
-        console.log('res: >>>>>>>>> ddddddd ', res);
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
-          //setTabData(Data)
           if (Data && Data.CostingPartDetails[0] && Data.CostingPartDetails[0].DiscountCost !== null) {
             let OtherCostDetails = Data.CostingPartDetails[0].OtherCostDetails;
             setCurrency(OtherCostDetails.IsCurrencyChange ? true : false)
@@ -74,8 +72,8 @@ function TabDiscountOther(props) {
   useEffect(() => {
     const { DiscountTabData } = props;
     setTimeout(() => {
-      setValue('NetPOPriceINR', DiscountTabData.NetPOPriceINR)
-      setValue('HundiOrDiscountValue', DiscountTabData.HundiOrDiscountValue)
+      setValue('NetPOPriceINR', DiscountTabData && DiscountTabData.NetPOPriceINR)
+      setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
     }, 500)
   }, [props]);
 
@@ -302,7 +300,7 @@ function TabDiscountOther(props) {
                         <th>{``}</th>
                         <th>{``}</th>
                         <th>{``}</th>
-                        <th>{`Total Cost: ${DiscountTabData.HundiOrDiscountValue}`}</th>
+                        <th>{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue}`}</th>
                       </tr>
                     </thead>
                   </Table>
@@ -607,4 +605,4 @@ function TabDiscountOther(props) {
   );
 };
 
-export default TabDiscountOther;
+export default React.memo(TabDiscountOther);

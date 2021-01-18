@@ -257,7 +257,7 @@ class ClientListing extends Component {
 
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.clientDataList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -295,10 +295,11 @@ class ClientListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, auth }) {
+function mapStateToProps({ comman, auth, client }) {
     const { loading, } = comman;
     const { leftMenuData } = auth;
-    return { loading, leftMenuData, };
+    const { clientDataList } = client;
+    return { loading, leftMenuData, clientDataList };
 }
 
 /**

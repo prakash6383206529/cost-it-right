@@ -20,6 +20,13 @@ import {
   GET_COSTING_DATA_BY_COSTINGID,
   GET_FREIGHT_FULL_TRUCK_CAPACITY_SELECTLIST,
   GET_RATE_CRITERIA_BY_CAPACITY,
+  SET_RMCC_TAB_DATA,
+  SET_COSTING_DATALIST_BY_COSTINGID,
+  SET_PO_PRICE,
+  SET_RMCCBOP_DATA,
+  SET_SURFACE_COST_DATA,
+  SET_OVERHEAD_PROFIT_COST_DATA,
+  SET_DISCOUNT_COST_DATA,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -246,6 +253,10 @@ export function getZBCCostingByCostingId(CostingId, callback) {
           type: GET_COSTING_DATA_BY_COSTINGID,
           payload: response.data.Data,
         })
+        dispatch({
+          type: SET_COSTING_DATALIST_BY_COSTINGID,
+          payload: response.data.DataList,
+        })
         callback(response);
       }
     }).catch((error) => {
@@ -255,6 +266,90 @@ export function getZBCCostingByCostingId(CostingId, callback) {
     });
   };
 }
+
+/**
+ * @method setCostingDataList
+ * @description SET COSTING DATA LIST
+ */
+export function setCostingDataList(CostingDataList, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COSTING_DATALIST_BY_COSTINGID,
+      payload: CostingDataList,
+    })
+    callback();
+  }
+};
+
+/**
+ * @method setPOPrice
+ * @description SET PO PRICE
+ */
+export function setPOPrice(POPrice, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PO_PRICE,
+      payload: POPrice,
+    })
+    callback();
+  }
+};
+
+/**
+ * @method setRMCCBOPCostData
+ * @description SET HEAD COST RMCCBOP DATA
+ */
+export function setRMCCBOPCostData(Data, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_RMCCBOP_DATA,
+      payload: Data,
+    })
+    callback();
+  }
+};
+
+/**
+ * @method setSurfaceCostData
+ * @description SET HEAD COST SURFACE DATA
+ */
+export function setSurfaceCostData(Data, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_COST_DATA,
+      payload: Data,
+    })
+    callback();
+  }
+};
+
+/**
+ * @method setOverheadProfitCostData
+ * @description SET OVERHEAD PROFIT COST DATA
+ */
+export function setOverheadProfitCostData(Data, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_COST_DATA,
+      payload: Data,
+    })
+    callback();
+  }
+};
+
+/**
+ * @method setDiscountCost
+ * @description SET DISCOUNT COST DATA
+ */
+export function setDiscountCost(Data, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_DISCOUNT_COST_DATA,
+      payload: Data,
+    })
+    callback();
+  }
+};
 
 /**
  * @method getZBCDetailByPlantId
@@ -300,12 +395,19 @@ export function getVBCDetailByVendorId(data, callback) {
  * @method getRMCCTabData
  * @description GET RM+CC TAB DATA IN COSTING DETAIL
  */
-export function getRMCCTabData(data, callback) {
+export function getRMCCTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
+      if (IsUseReducer && response.data.Result) {
+        let TabData = response.data.DataList;
+        dispatch({
+          type: SET_RMCC_TAB_DATA,
+          payload: TabData,
+        });
+        //callback(response);
+      } else {
         callback(response);
       }
     }).catch((error) => {
@@ -315,6 +417,20 @@ export function getRMCCTabData(data, callback) {
     });
   };
 }
+
+/**
+ * @method setRMCCData
+ * @description SET RMCC TAB DATA  
+ */
+export function setRMCCData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_RMCC_TAB_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
 
 /**
  * @method getRMDrawerDataList

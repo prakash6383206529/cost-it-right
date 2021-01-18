@@ -22,7 +22,12 @@ function OperationCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    //props.setOperationCost(gridData, 0)
+    const Params = {
+      index: 0,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setOperationCost(gridData, Params)
   }, [gridData]);
 
   /**

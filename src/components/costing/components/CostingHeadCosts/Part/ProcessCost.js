@@ -33,7 +33,12 @@ function ProcessCost(props) {
   const [tabData, setTabData] = useState(props.data);
 
   useEffect(() => {
-    //props.setProcessCost(tabData, props.index)
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setProcessCost(tabData, Params)
   }, [tabData]);
 
   /**
@@ -525,12 +530,14 @@ function ProcessCost(props) {
           <OperationCost
             data={props.data && props.data.CostingOperationCostResponse}
             setOperationCost={setOperationCost}
+            item={props.item}
           />
 
           <hr />
           {isOpen && <ToolCost
             data={props.data && props.data.CostingToolsCostResponse}
             setToolCost={setToolCost}
+            item={props.item}
           />}
 
         </div>

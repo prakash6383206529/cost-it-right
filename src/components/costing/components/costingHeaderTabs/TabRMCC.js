@@ -1,264 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useForm, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
-import { getRMCCTabData, saveCostingRMCCTab } from '../../actions/Costing';
+import { getRMCCTabData, saveCostingRMCCTab, setRMCCData } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
-
-
-const SinglePartComponent = {
-  title: "Fake article title.",
-  comments: [
-    {
-      PartName: 'ABCD',
-      Type: 'Component',
-      CostingPartDetails: {
-        CostingRawMaterialsCost: [],
-        CostingBoughtOutPartCost: [],
-        CostingConversionCost: [],
-      },
-      value: 4,
-      children: []
-    },
-  ]
-}
-
-const AssemblyLevelArray = {
-  title: "Fake article title.",
-  comments: [
-    {
-      PartName: 'ABCD',
-      Type: 'Assembly',
-      IsOpen: false,
-      CostingPartDetails: {},
-      value: 5,
-      level: 'L0',
-      children: [
-        {
-          PartName: 'EF',
-          Type: 'Part',
-          IsOpen: false,
-          CostingPartDetails: {
-            CostingRawMaterialsCost: [],
-            CostingBoughtOutPartCost: [],
-            CostingConversionCost: [],
-          },
-          value: 10,
-          level: 'L1',
-          children: []
-        },
-        {
-          PartName: 'BOP1',
-          Type: 'BOP',
-          IsOpen: false,
-          CostingPartDetails: {},
-          value: 10,
-          level: 'L1',
-          children: []
-        },
-        {
-          PartName: 'PQRS',
-          Type: 'Sub Assembly',
-          IsOpen: false,
-          CostingPartDetails: {
-            CostingRawMaterialsCost: [],
-            CostingBoughtOutPartCost: [],
-            CostingConversionCost: [],
-          },
-          value: 5,
-          level: 'L1',
-          children: [
-            {
-              PartName: 'PQ',
-              Type: 'Part',
-              IsOpen: false,
-              CostingPartDetails: {
-                CostingRawMaterialsCost: [],
-                CostingBoughtOutPartCost: [],
-                CostingConversionCost: [],
-              },
-              value: 10,
-              level: 'L2',
-              children: []
-            },
-            {
-              PartName: 'BOP12',
-              Type: 'BOP',
-              IsOpen: false,
-              CostingPartDetails: {},
-              value: 10,
-              level: 'L2',
-              children: []
-            },
-            {
-              PartName: 'GH',
-              Type: 'Part',
-              IsOpen: false,
-              CostingPartDetails: {
-                CostingRawMaterialsCost: [],
-                CostingBoughtOutPartCost: [],
-                CostingConversionCost: [],
-              },
-              value: 20,
-              level: 'L2',
-              children: []
-            },
-            {
-              PartName: 'XUV',
-              Type: 'Sub Assembly',
-              IsOpen: false,
-              CostingPartDetails: {
-                CostingRawMaterialsCost: [],
-                CostingBoughtOutPartCost: [],
-                CostingConversionCost: [],
-              },
-              value: 5,
-              level: 'L2',
-              children: [
-                {
-                  PartName: 'XX',
-                  Type: 'Part',
-                  IsOpen: false,
-                  CostingPartDetails: {
-                    CostingRawMaterialsCost: [],
-                    CostingBoughtOutPartCost: [],
-                    CostingConversionCost: [],
-                  },
-                  value: 10,
-                  level: 'L3',
-                  children: []
-                },
-                {
-                  PartName: 'BOP12',
-                  Type: 'BOP',
-                  IsOpen: false,
-                  CostingPartDetails: {},
-                  value: 10,
-                  level: 'L3',
-                  children: []
-                },
-                {
-                  PartName: 'YY',
-                  Type: 'Part',
-                  IsOpen: false,
-                  CostingPartDetails: {
-                    CostingRawMaterialsCost: [],
-                    CostingBoughtOutPartCost: [],
-                    CostingConversionCost: [],
-                  },
-                  value: 20,
-                  level: 'L3',
-                  children: []
-                },
-                {
-                  PartName: 'VVVVVV',
-                  Type: 'Sub Assembly',
-                  IsOpen: false,
-                  CostingPartDetails: {
-                    CostingRawMaterialsCost: [],
-                    CostingBoughtOutPartCost: [],
-                    CostingConversionCost: [],
-                  },
-                  value: 5,
-                  level: 'L3',
-                  children: [
-                    {
-                      PartName: 'XX',
-                      Type: 'Part',
-                      IsOpen: false,
-                      CostingPartDetails: {
-                        CostingRawMaterialsCost: [],
-                        CostingBoughtOutPartCost: [],
-                        CostingConversionCost: [],
-                      },
-                      value: 10,
-                      level: 'L4',
-                      children: []
-                    },
-                    {
-                      PartName: 'BOP12',
-                      Type: 'BOP',
-                      IsOpen: false,
-                      CostingPartDetails: {},
-                      value: 10,
-                      level: 'L4',
-                      children: []
-                    },
-                    {
-                      PartName: 'YY',
-                      Type: 'Part',
-                      IsOpen: false,
-                      CostingPartDetails: {
-                        CostingRawMaterialsCost: [],
-                        CostingBoughtOutPartCost: [],
-                        CostingConversionCost: [],
-                      },
-                      value: 20,
-                      level: 'L4',
-                      children: []
-                    }
-                  ]
-                },
-                {
-                  PartName: 'UUUUUV',
-                  Type: 'Sub Assembly',
-                  IsOpen: false,
-                  CostingPartDetails: {
-                    CostingRawMaterialsCost: [],
-                    CostingBoughtOutPartCost: [],
-                    CostingConversionCost: [],
-                  },
-                  value: 5,
-                  level: 'L3',
-                  children: [
-                    {
-                      PartName: 'XX',
-                      Type: 'Part',
-                      IsOpen: false,
-                      CostingPartDetails: {
-                        CostingRawMaterialsCost: [],
-                        CostingBoughtOutPartCost: [],
-                        CostingConversionCost: [],
-                      },
-                      value: 10,
-                      level: 'L4',
-                      children: []
-                    },
-                    {
-                      PartName: 'BOP12',
-                      Type: 'BOP',
-                      IsOpen: false,
-                      CostingPartDetails: {},
-                      value: 10,
-                      level: 'L4',
-                      children: []
-                    },
-                    {
-                      PartName: 'YY',
-                      Type: 'Part',
-                      IsOpen: false,
-                      CostingPartDetails: {
-                        CostingRawMaterialsCost: [],
-                        CostingBoughtOutPartCost: [],
-                        CostingConversionCost: [],
-                      },
-                      value: 20,
-                      level: 'L4',
-                      children: []
-                    }
-                  ]
-                },
-              ]
-            },
-          ]
-        },
-      ]
-    },
-  ]
-}
 
 function TabRMCC(props) {
 
@@ -269,28 +17,24 @@ function TabRMCC(props) {
   const [netProcessCost, setNetProcessCost] = useState('');
   const [netOperationCost, setNetOperationCost] = useState('');
   const [netToolsCost, setNetToolsCost] = useState(0);
-  const [tabData, setTabData] = useState(AssemblyLevelArray.comments);
+  const [tabData, setTabData] = useState([]);
   const [costingData, setCostingData] = useState({});
 
   const dispatch = useDispatch()
 
+  const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
+
   const costData = useContext(costingInfoContext);
 
   useEffect(() => {
-    // if (Object.keys(costData).length > 0) {
-    //   const data = {
-    //     CostingId: costData.CostingId,
-    //     PartId: costData.PartId,
-    //     //PlantId: costData.PlantId,
-    //   }
-    //   dispatch(getRMCCTabData(data, (res) => {
-    //     if (res && res.data && res.data.Result) {
-    //       let Data = res.data.Data;
-    //       setCostingData(Data)
-    //       setTabData(Data.CostingPartDetails)
-    //     }
-    //   }))
-    // }
+    if (Object.keys(costData).length > 0) {
+      const data = {
+        CostingId: costData.CostingId,
+        PartId: costData.PartId,
+        //PlantId: costData.PlantId,
+      }
+      dispatch(getRMCCTabData(data, true, (res) => { }))
+    }
   }, [costData]);
 
   //MANIPULATE TOP HEADER COSTS
@@ -307,30 +51,59 @@ function TabRMCC(props) {
     props.setHeaderCost(topHeaderData)
   }, [tabData]);
 
-  const toggle = (index) => {
-    let tempData = tabData[index];
-    let tempObj = { ...tempData, IsOpen: !tempData.IsOpen }
-    let tempArr = Object.assign([...tabData], { [index]: tempObj })
-    setTabData(tempArr)
-  }
-
   /**
   * @method setRMCost
   * @description SET RM COST
   */
-  const setRMCost = (rmGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(tempObj.TotalConversionCost)
+  const setRMCost = (rmGrid, params) => {
+    console.log('rmGrid: ', rmGrid, params);
+    setRMCostInDataList(rmGrid, params, RMCCTabData)
+    // let tempObj = tabData[index];
+    // let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(tempObj.TotalConversionCost)
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        { GrandTotalCost: GrandTotalCost, TotalRawMaterialsCost: netRMCost(rmGrid), CostingRawMaterialsCost: rmGrid })
-    })
+    // let tempArr = Object.assign([...tabData], {
+    //   [index]: Object.assign({}, tabData[index],
+    //     { GrandTotalCost: GrandTotalCost, TotalRawMaterialsCost: netRMCost(rmGrid), CostingRawMaterialsCost: rmGrid })
+    // })
 
-    setTimeout(() => {
-      setTabData(tempArr)
-    }, 200)
+    // setTimeout(() => {
+    //   setTabData(tempArr)
+    // }, 200)
 
+  }
+
+  const setRMCostInDataList = (rmGrid, params, arr) => {
+    try {
+
+      let tempArr = [];
+      tempArr = arr && arr.map(i => {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          // let tempObj = tabData[index];
+          let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(i.TotalBoughtOutPartCost) + checkForNull(i.TotalConversionCost)
+
+          // let tempArr = Object.assign([...tabData], {
+          //   [index]: Object.assign({}, tabData[index],
+          //     { GrandTotalCost: GrandTotalCost, TotalRawMaterialsCost: netRMCost(rmGrid), CostingRawMaterialsCost: rmGrid })
+          // })
+
+          //i.CostingChildPartDetails = params.BOMLevel !== "L0" ? ChangeBOMLeveL(Children, BOMLevel) : i.CostingChildPartDetails;
+          i.CostingPartDetails.CostingRawMaterialsCost = rmGrid;
+          i.GrandTotalCost = GrandTotalCost;
+          i.TotalRawMaterialsCost = netRMCost(rmGrid);
+          //i.IsOpen = !i.IsOpen;
+
+        } else {
+          setRMCostInDataList(rmGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+      console.log('tempArr: ', tempArr);
+      dispatch(setRMCCData(tempArr, () => { }))
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   /**
@@ -349,19 +122,47 @@ function TabRMCC(props) {
    * @method setBOPCost
    * @description SET BOP COST
    */
-  const setBOPCost = (bopGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(tempObj.TotalConversionCost);
+  const setBOPCost = (bopGrid, params) => {
+    setBOPCostInDataList(bopGrid, params, RMCCTabData)
+    // let tempObj = tabData[index];
+    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(tempObj.TotalConversionCost);
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        { GrandTotalCost: GrandTotalCost, TotalBoughtOutPartCost: checkForDecimalAndNull(netBOPCost(bopGrid), 2), CostingBoughtOutPartCost: bopGrid })
-    })
+    // let tempArr = Object.assign([...tabData], {
+    //   [index]: Object.assign({}, tabData[index],
+    //     { GrandTotalCost: GrandTotalCost, TotalBoughtOutPartCost: checkForDecimalAndNull(netBOPCost(bopGrid), 2), CostingBoughtOutPartCost: bopGrid })
+    // })
 
-    setTimeout(() => {
-      setTabData(tempArr)
-    }, 200)
+    // setTimeout(() => {
+    //   setTabData(tempArr)
+    // }, 200)
 
+  }
+
+  const setBOPCostInDataList = (bopGrid, params, arr) => {
+    try {
+
+      let tempArr = [];
+      tempArr = arr && arr.map(i => {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let GrandTotalCost = checkForNull(i.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(i.TotalConversionCost);
+
+          i.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
+          i.GrandTotalCost = GrandTotalCost;
+          i.TotalBoughtOutPartCost = netBOPCost(bopGrid);
+          //i.IsOpen = !i.IsOpen;
+
+        } else {
+          setBOPCostInDataList(bopGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+      console.log('tempArr: ', tempArr);
+      dispatch(setRMCCData(tempArr, () => { }))
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   /**
@@ -380,88 +181,176 @@ function TabRMCC(props) {
    * @method setProcessCost
    * @description SET PROCESS COST
    */
-  const setProcessCost = (conversionGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(conversionGrid && conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0);
+  const setProcessCost = (conversionGrid, params) => {
+    setProcessCostInDataList(conversionGrid, params, RMCCTabData)
+    // let tempObj = tabData[index];
+    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(conversionGrid && conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0);
 
-    let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
-      return el;
-    })
+    // let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
+    //   return el;
+    // })
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          GrandTotalCost: GrandTotalCost,
-          TotalConversionCost: conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0,
-          CostingConversionCost: { ...conversionGrid, CostingProcessCostResponse: data }
-        })
-    })
+    // let tempArr = Object.assign([...tabData], {
+    //   [index]: Object.assign({}, tabData[index],
+    //     {
+    //       GrandTotalCost: GrandTotalCost,
+    //       TotalConversionCost: conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0,
+    //       CostingConversionCost: { ...conversionGrid, CostingProcessCostResponse: data }
+    //     })
+    // })
 
-    setTimeout(() => {
-      setTabData(tempArr)
-      setNetProcessCost(conversionGrid.ProcessCostTotal)
-    }, 200)
+    // setTimeout(() => {
+    //   setTabData(tempArr)
+    //   setNetProcessCost(conversionGrid.ProcessCostTotal)
+    // }, 200)
 
+  }
+
+  const setProcessCostInDataList = (conversionGrid, params, arr) => {
+    try {
+
+      let tempArr = [];
+      tempArr = arr && arr.map(i => {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let GrandTotalCost = checkForNull(i.TotalRawMaterialsCost) + checkForNull(i.TotalBoughtOutPartCost) + checkForNull(conversionGrid && conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0);
+          let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
+            return el;
+          })
+
+          i.CostingPartDetails.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: data };
+          i.GrandTotalCost = GrandTotalCost;
+          i.TotalConversionCost = conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0;
+          //i.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: data }
+          //i.IsOpen = !i.IsOpen;
+
+        } else {
+          setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+      dispatch(setRMCCData(tempArr, () => { }))
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   /**
    * @method setOperationCost
    * @description SET OPERATION COST
    */
-  const setOperationCost = (operationGrid, index) => {
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0)
+  const setOperationCost = (operationGrid, params) => {
+    setOperationCostInDataList(operationGrid, params, RMCCTabData)
+    // let tempObj = tabData[index];
+    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0)
 
-    let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
-      return el;
-    })
+    // let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
+    //   return el;
+    // })
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          GrandTotalCost: GrandTotalCost,
-          TotalConversionCost: operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0,
-          CostingConversionCost: { ...operationGrid, CostingOperationCostResponse: data },
-        })
-    })
-    setTimeout(() => {
-      setTabData(tempArr)
-      setNetOperationCost(operationGrid.OperationCostTotal)
-    }, 200)
+    // let tempArr = Object.assign([...tabData], {
+    //   [index]: Object.assign({}, tabData[index],
+    //     {
+    //       GrandTotalCost: GrandTotalCost,
+    //       TotalConversionCost: operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0,
+    //       CostingConversionCost: { ...operationGrid, CostingOperationCostResponse: data },
+    //     })
+    // })
+    // setTimeout(() => {
+    //   setTabData(tempArr)
+    //   setNetOperationCost(operationGrid.OperationCostTotal)
+    // }, 200)
+  }
+
+  const setOperationCostInDataList = (operationGrid, params, arr) => {
+    try {
+
+      let tempArr = [];
+      tempArr = arr && arr.map(i => {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let GrandTotalCost = checkForNull(i.TotalRawMaterialsCost) + checkForNull(i.TotalBoughtOutPartCost) + checkForNull(operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0)
+          let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
+            return el;
+          })
+
+          i.GrandTotalCost = GrandTotalCost;
+          i.CostingPartDetails.CostingConversionCost = { ...operationGrid, CostingOperationCostResponse: data };
+          i.TotalConversionCost = operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0;
+          //i.IsOpen = !i.IsOpen;
+
+        } else {
+          setProcessCostInDataList(operationGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+      dispatch(setRMCCData(tempArr, () => { }))
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   /**
    * @method setToolCost
    * @description SET TOOL COST
    */
-  const setToolCost = (toolGrid, index) => {
+  const setToolCost = (toolGrid, params) => {
+    setToolCostInDataList(toolGrid, params, RMCCTabData)
+    // let tempObj = tabData[index];
+    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(toolGrid.NetConversionCost)
 
-    let tempObj = tabData[index];
-    let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(toolGrid.NetConversionCost)
-    //let GrandTotalCost = 0;
+    // let data = toolGrid && toolGrid.CostingOperationCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
+    //   return el;
+    // })
 
-    let data = toolGrid && toolGrid.CostingOperationCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
-      return el;
-    })
+    // let tempArr = Object.assign([...tabData], {
+    //   [index]: Object.assign({}, tabData[index],
+    //     {
+    //       GrandTotalCost: GrandTotalCost,
+    //       IsShowToolCost: true,
+    //       CostingConversionCost: {
+    //         ...toolGrid,
+    //         CostingToolsCostResponse: data,
+    //       },
+    //     })
+    // })
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          GrandTotalCost: GrandTotalCost,
-          IsShowToolCost: true,
-          CostingConversionCost: {
-            ...toolGrid,
-            //NetConversionCost: toolGrid.NetConversionCost,
-            //ToolsCostTotal: checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2),
-            CostingToolsCostResponse: data,
-          },
-        })
-    })
+    // setTimeout(() => {
+    //   setNetToolsCost(checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2))
+    //   setTabData(tempArr)
+    // }, 500)
+  }
 
-    setTimeout(() => {
-      setNetToolsCost(checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2))
-      setTabData(tempArr)
-    }, 500)
+  const setToolCostInDataList = (toolGrid, params, arr) => {
+    try {
+
+      let tempArr = [];
+      tempArr = arr && arr.map(i => {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let GrandTotalCost = checkForNull(i.TotalRawMaterialsCost) + checkForNull(i.TotalBoughtOutPartCost) + checkForNull(toolGrid.NetConversionCost)
+
+          let data = toolGrid && toolGrid.CostingOperationCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
+            return el;
+          })
+
+          i.GrandTotalCost = GrandTotalCost;
+          i.IsShowToolCost = true;
+          i.CostingPartDetails.CostingConversionCost = { ...toolGrid, CostingToolsCostResponse: data };
+          //i.IsOpen = !i.IsOpen;
+
+        } else {
+          setToolCostInDataList(toolGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+      dispatch(setRMCCData(tempArr, () => { }))
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   /**
@@ -506,6 +395,89 @@ function TabRMCC(props) {
   */
   const getTotalCost = () => {
     return getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost();
+  }
+
+  /**
+  * @method toggleAssembly
+  * @description SET PART DETAILS
+  */
+  const toggleAssembly = (BOMLevel, PartName, Children = []) => {
+    setAssembly(BOMLevel, PartName, Children, RMCCTabData)
+  }
+
+  /**
+  * @method formatData
+  * @description SET PART DETAILS
+  */
+  const setAssembly = (BOMLevel, PartName, Children, RMCCTabData) => {
+
+    try {
+
+      let tempArr = [];
+      tempArr = RMCCTabData && RMCCTabData.map(i => {
+        if (i.PartName === PartName && i.BOMLevel === BOMLevel) {
+          i.CostingChildPartDetails = BOMLevel !== "L0" ? ChangeBOMLeveL(Children, BOMLevel) : i.CostingChildPartDetails;
+          i.IsOpen = !i.IsOpen;
+        } else {
+          setAssembly(BOMLevel, PartName, Children, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+      dispatch(setRMCCData(tempArr, () => { }))
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+
+  }
+
+  /**
+  * @method ChangeBOMLeveL
+  * @description INCREASE BOM LEVEL BY 1 
+  */
+  const ChangeBOMLeveL = (item, level) => {
+    let tempArr = [];
+    const ChangedLevel = parseInt(level.substr(1, level.length - 1)) + 1;
+    tempArr = item && item.map(i => {
+      i.BOMLevel = "L" + ChangedLevel;
+      return i;
+    });
+    return tempArr;
+  }
+
+  /**
+  * @method setPartDetails
+  * @description SET PART DETAILS
+  */
+  const setPartDetails = (BOMLevel, PartNumber, Data) => {
+    formatData(BOMLevel, PartNumber, Data, RMCCTabData)
+  }
+
+  /**
+  * @method formatData
+  * @description FORMATE DATA FOR SET PART DETAILS
+  */
+  const formatData = (BOMLevel, PartNumber, Data, RMCCTabData) => {
+
+    try {
+      let tempArr = [];
+
+      tempArr = RMCCTabData && RMCCTabData.map(i => {
+        if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+          i.CostingPartDetails = Data;
+          i.IsOpen = !i.IsOpen;
+        } else {
+          formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+      console.log('tempArr: AA', tempArr);
+      dispatch(setRMCCData(tempArr, () => { }))
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+
   }
 
   /**
@@ -581,42 +553,8 @@ function TabRMCC(props) {
                       </thead>
                       <tbody>
                         {
-                          // tabData && tabData.map((item, index) => {
-                          //   return (
-                          //     < >
-                          //       <tr key={index} onClick={() => toggle(index)}>
-                          //         <td><span className="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                          //         <td>{item.Type}</td>
-                          //         <td>{item.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.TotalRawMaterialsCost, 2) : 0}</td>
-                          //         <td>{item.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.TotalBoughtOutPartCost, 2) : 0}</td>
-                          //         <td>{item.TotalConversionCost !== null ? checkForDecimalAndNull(item.TotalConversionCost, 2) : 0}</td>
-                          //         <td>{item.Quantity !== null ? item.Quantity : 1}</td>
-                          //         <td>{item.GrandTotalCost !== null ? checkForDecimalAndNull(item.GrandTotalCost, 2) : 0}</td>
-                          //       </tr>
-                          //       {item.IsOpen && <tr>
-                          //         <td colSpan={7} className="cr-innerwrap-td">
-                          //           <div>
-                          //             <PartCompoment
-                          //               index={index}
-                          //               rmData={item.CostingRawMaterialsCost}
-                          //               bopData={item.CostingBoughtOutPartCost}
-                          //               ccData={item.CostingConversionCost}
-                          //               costData={costData}
-                          //               setRMCost={setRMCost}
-                          //               setBOPCost={setBOPCost}
-                          //               setProcessCost={setProcessCost}
-                          //               setOperationCost={setOperationCost}
-                          //               setToolCost={setToolCost}
-                          //             />
-                          //           </div>
-                          //         </td>
-                          //       </tr>}
-                          //     </>
-                          //   )
-                          // })
-
-                          tabData && tabData.map((item, index) => {
-                            if (item.Type === 'Component') {
+                          RMCCTabData && RMCCTabData.map((item, index) => {
+                            if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
 
                               return (
                                 < >
@@ -626,18 +564,31 @@ function TabRMCC(props) {
                                     rmData={item.CostingPartDetails.CostingRawMaterialsCost}
                                     bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
                                     ccData={item.CostingPartDetails.CostingConversionCost}
+                                    setPartDetails={setPartDetails}
+                                    setRMCost={setRMCost}
+                                    setBOPCost={setBOPCost}
+                                    setProcessCost={setProcessCost}
+                                    setOperationCost={setOperationCost}
+                                    setToolCost={setToolCost}
                                   />
                                 </>
                               )
 
                             } else {
-
+                              console.log('Assembly from parent')
                               return (
                                 < >
                                   <AssemblyPart
                                     index={index}
                                     item={item}
-                                    children={item.children}
+                                    children={item.CostingChildPartDetails}
+                                    setPartDetails={setPartDetails}
+                                    toggleAssembly={toggleAssembly}
+                                    setRMCost={setRMCost}
+                                    setBOPCost={setBOPCost}
+                                    setProcessCost={setProcessCost}
+                                    setOperationCost={setOperationCost}
+                                    setToolCost={setToolCost}
                                   />
                                 </>
                               )
@@ -674,3 +625,4 @@ function TabRMCC(props) {
 
 
 export default TabRMCC;
+//export default React.memo(TabRMCC);

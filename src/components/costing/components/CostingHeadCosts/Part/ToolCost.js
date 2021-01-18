@@ -22,7 +22,12 @@ function ToolCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    //props.setToolCost(gridData, 0)
+    const Params = {
+      index: 0,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setToolCost(gridData, Params)
   }, [gridData]);
 
   /**

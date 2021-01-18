@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import PartCompoment from '../Part';
 
 function BoughtOutPart(props) {
   const { children, item } = props;
@@ -20,8 +19,13 @@ function BoughtOutPart(props) {
   return (
     <>
       <tr>
-        <td><span className={`cr-prt-nm cr-prt-link ${item.level} ${IsOpen ? 'Open' : 'Close'}`}>{item.PartName}</span></td>
-        <td>{item.Type}</td>
+        <td>
+          <span style={{ position: 'relative' }} className={`cr-prt-nm cr-prt-link ${item && item.BOMLevel}`}>
+            {item && item.PartName}
+            {/* <div className={`${IsOpen ? 'Open' : 'Close'}`}></div> */}
+          </span>
+        </td>
+        <td>{item && item.PartType}</td>
         <td>{''}</td>
         <td>{0}</td>
         <td>{''}</td>

@@ -1384,3 +1384,25 @@ button.user-btn.pull-right {
     max-width: 20%;
   }
 }
+
+.cr-prt-nm.cr-prt-link .Open {
+  position: absolute;
+  right: -20px;
+  top: 3px;
+  height: 15px;
+  width: 15px;
+  background: transparent url("../../assests/images/down-sorting-arrow.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+
+.cr-prt-nm.cr-prt-link .Close {
+  position: absolute;
+  right: -20px;
+  top: 3px;
+  height: 15px;
+  width: 15px;
+  background: transparent url("../../assests/images/up-sorting-arrow.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}

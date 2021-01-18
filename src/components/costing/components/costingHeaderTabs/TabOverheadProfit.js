@@ -347,4 +347,4 @@ function TabOverheadProfit(props) {
   );
 };
 
-export default TabOverheadProfit;
+export default React.memo(TabOverheadProfit);

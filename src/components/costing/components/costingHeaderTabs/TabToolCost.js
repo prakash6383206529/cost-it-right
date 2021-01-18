@@ -245,4 +245,4 @@ function TabToolCost(props) {
   );
 };
 
-export default TabToolCost;
+export default React.memo(TabToolCost);

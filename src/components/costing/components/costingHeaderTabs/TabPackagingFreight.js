@@ -239,4 +239,4 @@ function TabPackagingFreight(props) {
   );
 };
 
-export default TabPackagingFreight;
+export default React.memo(TabPackagingFreight);

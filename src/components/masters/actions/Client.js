@@ -5,6 +5,7 @@ import {
     API_FAILURE,
     GET_CLIENT_DATA_SUCCESS,
     GET_CLIENT_SELECTLIST_SUCCESS,
+    GET_CLIENT_DATALIST_SUCCESS,
     config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -86,6 +87,20 @@ export function getClientDataList(filterData, callback) {
         const QueryParams = `clientName=${filterData.clientName}&companyName=${filterData.companyName}`
         axios.get(`${API.getClientDataList}?${QueryParams}`, { headers })
             .then((response) => {
+                if (response.status === 204 && response.data === '') {
+                    dispatch({
+                        type: GET_CLIENT_DATALIST_SUCCESS,
+                        payload: [],
+                    });
+                } else if (response && response.data && response.data.DataList) {
+                    let Data = response.data.DataList;
+                    dispatch({
+                        type: GET_CLIENT_DATALIST_SUCCESS,
+                        payload: Data,
+                    });
+                } else {
+
+                }
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
