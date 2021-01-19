@@ -1147,7 +1147,7 @@ label for[normal-switch]{
   .drawer-wrapper{
     width: 600px;
     .grant-user-grid .role-depatment{
-      overflow-x: auto;
+    overflow-x: auto;
     width: 550px;
     
     display: block;
@@ -1990,13 +1990,53 @@ input:disabled{
     }
   }
 }
-
-
+.grant-user-grid{
+  min-height: calc(100vh - 524px);
+}
+.shadow-lgg{
+  .form{
+    .sf-btn-footer{
+      margin: 0 -30px -15px;
+    }
+  }
+}
+.bottom-footer{
+  margin: 0 -30px -15px;
+}
+.add-min-height {
+  min-height: calc(100vh - 325px);
+}
+.remove-double-border{
+  .inputbox.input-group{
+    border: none;
+  }
+}
+.shadow-lgg {
+  .form {
+      .mb-35-minus{
+        margin-bottom: -35px;    
+    }
+  }
+}
+.mb-35-minus{
+  margin-bottom: -35px;
+}
 // ============issues fixing =============
 
 @media(max-width:1367px){
   .filter-row-large{
      .col-md-12{-ms-flex: 0 0 100%;flex: 0 0 100%;max-width: 100%;}
+  }
+  .process {
+    .card {
+      .card-block {
+        p {
+          br{
+            display: none;
+          }
+        }
+      }
+    }
   }
 }
 

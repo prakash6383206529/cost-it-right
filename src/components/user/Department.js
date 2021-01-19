@@ -136,7 +136,7 @@ class Department extends Component {
 								</Row>
 
 								<div className="drawer-body">
-									<Row>
+									<Row className="pr-0">
 										<div className="input-group col-md-12 input-withouticon" >
 											<Field
 												label="Department Name"

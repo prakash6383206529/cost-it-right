@@ -566,17 +566,17 @@ class AddProfit extends Component {
                   <div className="col-md-12">
                     <div className="shadow-lgg login-formg">
                       <div className="row">
-                        <div className="col-md-6">  
-                            <h1>
-                                {isEditFlag
-                                ? `Update Profit Details`
-                                : `Add Profit Details`}
-                            </h1>
+                        <div className="col-md-6">
+                          <h1>
+                            {isEditFlag
+                              ? `Update Profit Details`
+                              : `Add Profit Details`}
+                          </h1>
                         </div>
                       </div>
                       <form
                         noValidate
-                        className="form"
+                        className="form add-min-height"
                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       >
                         <Row>
@@ -879,37 +879,36 @@ class AddProfit extends Component {
                             </div>
                           </Col>
                         </Row>
-
-                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                          <div className="col-sm-12 text-right bluefooter-butn">
-                            <button
-                              type={"button"}
-                              className="reset mr15 cancel-btn"
-                              onClick={this.cancel}
-                            >
-                              <div className={"cross-icon"}>
-                                <img
-                                  src={require("../../../assests/images/times.png")}
-                                  alt="cancel-icon.jpg"
-                                />
-                              </div>{" "}
-                              {"Cancel"}
-                            </button>
-                            <button
-                              type="submit"
-                              className="submit-button mr5 save-btn"
-                            >
-                              <div className={"check-icon"}>
-                                <img
-                                  src={require("../../../assests/images/check.png")}
-                                  alt="check-icon.jpg"
-                                />{" "}
-                              </div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
-                          </div>
-                        </Row>
                       </form>
+                      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                          <button
+                            type={"button"}
+                            className="reset mr15 cancel-btn"
+                            onClick={this.cancel}
+                          >
+                            <div className={"cross-icon"}>
+                              <img
+                                src={require("../../../assests/images/times.png")}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>{" "}
+                            {"Cancel"}
+                          </button>
+                          <button
+                            type="submit"
+                            className="submit-button mr5 save-btn"
+                          >
+                            <div className={"check-icon"}>
+                              <img
+                                src={require("../../../assests/images/check.png")}
+                                alt="check-icon.jpg"
+                              />{" "}
+                            </div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                        </div>
+                      </Row>
                     </div>
                   </div>
                 </div>

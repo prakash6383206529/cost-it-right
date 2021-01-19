@@ -380,7 +380,7 @@ class Level extends Component {
 
 
                   {this.props.isShowMappingForm &&
-                    <div className="row">
+                    <div className="row pr-0">
                       <div className="input-group  form-group col-md-12 input-withouticon" >
                         <Field
                           name="TechnologyId"

@@ -183,7 +183,7 @@ function TabToolCost(props) {
                     </span>
                   </label>
                 </Col>
-                <Col md="1">{"Net Tool Cost"}</Col>
+                <Col md="2">{"Net Tool Cost"}</Col>
               </Row>
 
               <form

@@ -300,7 +300,7 @@ class AddClientDrawer extends Component {
                                             required={true}
                                             maxLength={70}
                                             isDisabled={this.state.isEditFlag ? true : false}
-                                            customClassName={'withBorderEmail withBorder'}
+                                            customClassName={'withBorderEmail withBorder remove-double-border'}
                                         />
                                     </Col>
 

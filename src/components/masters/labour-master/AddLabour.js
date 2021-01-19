@@ -518,7 +518,7 @@ class AddLabour extends Component {
                     </div>
                     <form
                       noValidate
-                      className="form"
+                      className="form add-min-height"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     >
                       <Row>
@@ -676,7 +676,7 @@ class AddLabour extends Component {
                             )}
                           </div>
                         </Col>
-                        <Col md="" className="col">
+                        <Col md="3" className="col">
                           <Field
                             name="LabourTypeIds"
                             type="text"
@@ -691,7 +691,7 @@ class AddLabour extends Component {
                             valueDescription={this.state.labourType}
                           />
                         </Col>
-                        <Col md="" className="col">
+                        <Col md="3" className="col">
                           <Field
                             label={`Rate Per Person/Annum (INR)`}
                             name={"LabourRate"}
@@ -705,7 +705,7 @@ class AddLabour extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="" className="col">
+                        <Col md="3" className="col">
                           <div className="form-group">
                             <label>
                               Effective Date
@@ -731,7 +731,7 @@ class AddLabour extends Component {
                             </div>
                           </div>
                         </Col>
-                        <Col md="" className="col">
+                        <Col md="2" className="col">
                           <div>
                             {this.state.isEditIndex ? (
                               <>
@@ -756,7 +756,7 @@ class AddLabour extends Component {
                             ) : (
                               <button
                                 type="button"
-                                className={"user-btn mt30 pull-left"}
+                                className={"user-btn mb-4 pull-left"}
                                 onClick={this.gridHandler}
                               >
                                 <div className={"plus"}></div>ADD
@@ -814,8 +814,9 @@ class AddLabour extends Component {
                           )}
                         </Col>
                       </Row>
+                      </form>
 
-                      <Row className="sf-btn-footer no-gutters justify-content-between">
+                      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button
                             type={"button"}
@@ -844,7 +845,7 @@ class AddLabour extends Component {
                           </button>
                         </div>
                       </Row>
-                    </form>
+                    
                   </div>
                 </div>
               </div>

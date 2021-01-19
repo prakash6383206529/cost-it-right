@@ -416,7 +416,7 @@ class UsersListing extends Component {
 			<>
 				{/* {this.props.loading && <Loader />} */}
 				<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-					<Row className="pt-30">
+					<Row className="pt-4">
 						<Col md="8" className="filter-block">
 							<div className="d-inline-flex justify-content-start align-items-top w100">
 								<div className="flex-fills"><h5>{`Filter By:`}</h5></div>

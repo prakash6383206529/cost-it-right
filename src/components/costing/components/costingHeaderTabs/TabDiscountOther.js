@@ -547,7 +547,7 @@ function TabDiscountOther(props) {
                   </Col>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25">
+                <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button
                       type={"submit"}

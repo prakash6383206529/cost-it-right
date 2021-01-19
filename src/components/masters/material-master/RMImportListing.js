@@ -431,150 +431,273 @@ class RMImportListing extends Component {
         };
 
         return (
-            <div>
-                {this.props.loading && <Loader />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4">
-                        <Col md="9" className="filter-block ">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="RawMaterialId"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'Raw Material'}
-                                        isClearable={false}
-                                        options={this.renderListing('material')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleRMChange}
-                                        valueDescription={this.state.RawMaterial}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="RawMaterialGradeId"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'RM Grade'}
-                                        isClearable={false}
-                                        options={this.renderListing('grade')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleGradeChange}
-                                        valueDescription={this.state.RMGrade}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="VendorId"
-                                        type="text"
-                                        label={''}
-                                        component={searchableSelect}
-                                        placeholder={'-Vendor-'}
-                                        isClearable={false}
-                                        options={this.renderListing('VendorNameList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleVendorName}
-                                        valueDescription={this.state.vendorName}
-                                    />
-                                </div>
-                                <div className="flex-fill sliderange">
-                                    <InputRange
-                                        maxValue={this.state.maxRange}
-                                        minValue={0}
-                                        value={this.state.value}
-                                        onChange={value => this.setState({ value })} />
-                                </div>
+          <div>
+            {this.props.loading && <Loader />}
+            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+              <Row className="pt-4 filter-row-large">
+                <Col lg="9" md="12" className="filter-block ">
+                  <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="RawMaterialId"
+                        type="text"
+                        label={""}
+                        component={searchableSelect}
+                        placeholder={"Raw Material"}
+                        isClearable={false}
+                        options={this.renderListing("material")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.RawMaterial == null ||
+                          this.state.RawMaterial.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleRMChange}
+                        valueDescription={this.state.RawMaterial}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="RawMaterialGradeId"
+                        type="text"
+                        label={""}
+                        component={searchableSelect}
+                        placeholder={"RM Grade"}
+                        isClearable={false}
+                        options={this.renderListing("grade")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.RMGrade == null ||
+                          this.state.RMGrade.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleGradeChange}
+                        valueDescription={this.state.RMGrade}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="VendorId"
+                        type="text"
+                        label={""}
+                        component={searchableSelect}
+                        placeholder={"-Vendor-"}
+                        isClearable={false}
+                        options={this.renderListing("VendorNameList")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.vendorName == null ||
+                          this.state.vendorName.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleVendorName}
+                        valueDescription={this.state.vendorName}
+                      />
+                    </div>
+                    <div className="flex-fill sliderange">
+                      <InputRange
+                        maxValue={this.state.maxRange}
+                        minValue={0}
+                        value={this.state.value}
+                        onChange={(value) => this.setState({ value })}
+                      />
+                    </div>
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
+                    <div className="flex-fill">
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.resetFilter}
+                        className="reset mr10"
+                      >
+                        {"Reset"}
+                      </button>
 
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col md="3" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>}
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-
-                </form>
-                <Row>
-                    <Col>
-                        <BootstrapTable
-                            data={this.state.tableData}
-                            striped={false}
-                            bordered={false}
-                            hover={false}
-                            options={options}
-                            search
-                            // exportCSV
-                            //ignoreSinglePage
-                            ref={'table'}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="center" >{this.renderRawMaterial()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="center" >{this.renderRMGrade()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Category" >Category</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" >UOM</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRate" >{this.renderBasicRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="RawMaterialId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                        </BootstrapTable>
-                    </Col>
-                </Row>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    densityAlert={this.densityAlert}
-                    fileName={'RMImport'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'RM Import'}
-                    anchor={'right'}
-                />}
-            </div >
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.filterList}
+                        className="apply mr5"
+                      >
+                        {"Apply"}
+                      </button>
+                    </div>
+                  </div>
+                </Col>
+                <Col lg="3" md="12" className="search-user-block mb-3">
+                  <div className="d-flex justify-content-end bd-highlight w100">
+                    <div>
+                      {BulkUploadAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn mr5"}
+                          onClick={this.bulkToggle}
+                        >
+                          <div className={"upload"}></div>Bulk Upload
+                        </button>
+                      )}
+                      {AddAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn"}
+                          onClick={this.formToggle}
+                        >
+                          <div className={"plus"}></div>ADD
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </form>
+            <Row>
+              <Col>
+                <BootstrapTable
+                  data={this.state.tableData}
+                  striped={false}
+                  bordered={false}
+                  hover={false}
+                  options={options}
+                  search
+                  // exportCSV
+                  //ignoreSinglePage
+                  ref={"table"}
+                  pagination
+                >
+                  {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                  <TableHeaderColumn
+                    dataField="CostingHead"
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataSort={true}
+                    dataFormat={this.costingHeadFormatter}
+                  >
+                    {this.renderCostingHead()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    dataField="RawMaterial"
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                  >
+                    {this.renderRawMaterial()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    dataField="RMGrade"
+                    width={70}
+                    columnTitle={true}
+                    dataAlign="center"
+                  >
+                    {this.renderRMGrade()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="RMSpec"
+                  >
+                    {this.renderRMSpec()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="Category"
+                  >
+                    Category
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="VendorName"
+                  >
+                    Vendor
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="VendorLocation"
+                  >
+                    {this.renderVendorLocation()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="UOM"
+                  >
+                    UOM
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="BasicRate"
+                  >
+                    {this.renderBasicRate()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="ScrapRate"
+                  >
+                    {this.renderScrapRate()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={120}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="NetLandedCost"
+                  >
+                    {this.renderNetCost()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    columnTitle={true}
+                    dataAlign="center"
+                    dataField="EffectiveDate"
+                    dataFormat={this.effectiveDateFormatter}
+                  >
+                    {this.renderEffectiveDate()}
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    width={100}
+                    dataField="RawMaterialId"
+                    export={false}
+                    isKey={true}
+                    dataFormat={this.buttonFormatter}
+                  >
+                    Actions
+                  </TableHeaderColumn>
+                </BootstrapTable>
+              </Col>
+            </Row>
+            {isBulkUpload && (
+              <BulkUpload
+                isOpen={isBulkUpload}
+                closeDrawer={this.closeBulkUploadDrawer}
+                isEditFlag={false}
+                densityAlert={this.densityAlert}
+                fileName={"RMImport"}
+                isZBCVBCTemplate={true}
+                messageLabel={"RM Import"}
+                anchor={"right"}
+              />
+            )}
+          </div>
         );
     }
 }

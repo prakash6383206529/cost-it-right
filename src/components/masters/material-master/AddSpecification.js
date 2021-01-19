@@ -336,7 +336,7 @@ class AddSpecification extends Component {
                         ></div>
                       </Col>
                     </Row>
-                    <div className="ml-3 mr-3">
+                    <div className="ml-3">
                       <Row>
                         <Col md="12">
                           <div className="d-flex align-items-center">

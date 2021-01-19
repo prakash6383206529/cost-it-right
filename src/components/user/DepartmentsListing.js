@@ -173,7 +173,7 @@ class DepartmentsListing extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
-        <Row className="pt-30">
+        <Row className="pt-4">
           {AddAccessibility && <Col className="text-right mb-3">
             <button
               type={'button'}

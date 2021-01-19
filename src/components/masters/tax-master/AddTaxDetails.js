@@ -251,7 +251,7 @@ class AddTaxDetails extends Component {
                         customClassName={"withBorder"}
                       />
                     </div>
-                    <div className="input-group form-group col-md-12 input-withouticon">
+                    <div className="input-group form-group col-md-12 input-withouticon mb-4">
                       <div className="form-group">
                         <label>
                           Effective Date

@@ -182,157 +182,171 @@ class AddExchangeRate extends Component {
         const { handleSubmit, } = this.props;
         const { isEditFlag, } = this.state;
         return (
-            <div className="container-fluid">
-                {/* {isLoader && <Loader />} */}
-                <div className="login-container signup-form">
+          <div className="container-fluid">
+            {/* {isLoader && <Loader />} */}
+            <div className="login-container signup-form">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="shadow-lgg login-formg">
                     <div className="row">
-                        <div className="col-md-12">
-                            <div className="shadow-lgg login-formg">
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-heading mb-0">
-                                            <h1>{isEditFlag ? 'Update Exchange Rate' : 'Add Exchange Rate'}</h1>
-                                        </div>
-                                    </div>
-                                </div>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-
-                                    <Row>
-                                        <Col md="3">
-                                            <Field
-                                                name="Currency"
-                                                type="text"
-                                                label="Currency"
-                                                component={searchableSelect}
-                                                placeholder={'--Select Currency--'}
-                                                options={this.renderListing('currency')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleCurrency}
-                                                valueDescription={this.state.currency}
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Currency Exchange Rate(INR)`}
-                                                name={"CurrencyExchangeRate"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName=" withBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Bank Rate(INR)`}
-                                                name={"BankRate"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName=" withBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Bank Commission(%)`}
-                                                name={"BankCommissionPercentage"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName=" withBorder"
-                                            />
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Custom Rate(INR)`}
-                                                name={"CustomRate"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[required, number]}
-                                                component={renderText}
-                                                required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName=" withBorder"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <div className="form-group">
-                                                <label>
-                                                    Effective Date
-                                                        {/* <span className="asterisk-required">*</span> */}
-                                                </label>
-                                                <div className="inputbox date-section">
-                                                    <DatePicker
-                                                        name="EffectiveDate"
-                                                        selected={this.state.effectiveDate}
-                                                        onChange={this.handleEffectiveDateChange}
-                                                        showMonthDropdown
-                                                        showYearDropdown
-                                                        dateFormat="dd/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        className="withBorder"
-                                                        autoComplete={'off'}
-                                                        disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={false}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </Col>
-                                    </Row>
-
-
-
-
-
-
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-right bluefooter-butn">
-                                            <button
-                                                type={'button'}
-                                                className="reset mr15 cancel-btn"
-                                                onClick={this.cancel} >
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="submit-button mr5 save-btn" >
-                                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                                {isEditFlag ? 'Update' : 'Save'}
-                                            </button>
-                                        </div>
-                                    </Row>
-                                </form>
-                            </div>
+                      <div className="col-md-6">
+                        <div className="form-heading mb-0">
+                          <h1>
+                            {isEditFlag
+                              ? "Update Exchange Rate"
+                              : "Add Exchange Rate"}
+                          </h1>
                         </div>
+                      </div>
                     </div>
-                </div>
-            </div>
+                    <form
+                      noValidate
+                      className="form add-min-height"
+                      onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    >
+                      <Row>
+                        <Col md="3">
+                          <Field
+                            name="Currency"
+                            type="text"
+                            label="Currency"
+                            component={searchableSelect}
+                            placeholder={"--Select Currency--"}
+                            options={this.renderListing("currency")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.currency == null ||
+                              this.state.currency.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleCurrency}
+                            valueDescription={this.state.currency}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Currency Exchange Rate(INR)`}
+                            name={"CurrencyExchangeRate"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, number]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Bank Rate(INR)`}
+                            name={"BankRate"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, number]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Bank Commission(%)`}
+                            name={"BankCommissionPercentage"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, number]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                      </Row>
 
+                      <Row>
+                        <Col md="3">
+                          <Field
+                            label={`Custom Rate(INR)`}
+                            name={"CustomRate"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, number]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
+                            <label>
+                              Effective Date
+                              {/* <span className="asterisk-required">*</span> */}
+                            </label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dateFormat="dd/MM/yyyy"
+                                //maxDate={new Date()}
+                                dropdownMode="select"
+                                placeholderText="Select date"
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={false}
+                              />
+                            </div>
+                          </div>
+                        </Col>
+                      </Row>
+                    </form>
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                      <div className="col-sm-12 text-right bluefooter-butn">
+                        <button
+                          type={"button"}
+                          className="reset mr15 cancel-btn"
+                          onClick={this.cancel}
+                        >
+                          <div className={"cross-icon"}>
+                            <img
+                              src={require("../../../assests/images/times.png")}
+                              alt="cancel-icon.jpg"
+                            />
+                          </div>{" "}
+                          {"Cancel"}
+                        </button>
+                        <button
+                          type="submit"
+                          className="submit-button mr5 save-btn"
+                        >
+                          <div className={"check-icon"}>
+                            <img
+                              src={require("../../../assests/images/check.png")}
+                              alt="check-icon.jpg"
+                            />{" "}
+                          </div>
+                          {isEditFlag ? "Update" : "Save"}
+                        </button>
+                      </div>
+                    </Row>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         );
     }
 }

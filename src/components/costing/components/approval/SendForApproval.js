@@ -560,7 +560,7 @@ const SendForApproval = (props) => {
                 />
               </Col>
             </Row>
-            <Row>
+            <Row className="mb-4">
               <Col md="12" className="d-flex justify-content-end align-items-center">
                 <button
                   className="cancel-btn mr-2"

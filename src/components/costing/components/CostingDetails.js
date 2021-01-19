@@ -1336,7 +1336,7 @@ function CostingDetails() {
                       </Row>
                     )}
                     {!IsOpenVendorSOBDetails && (
-                      <Row className="sf-btn-footer justify-content-between">
+                      <Row className="justify-content-between">
                         <div className="col-sm-12 text-right">
                           <button
                             type={"button"}

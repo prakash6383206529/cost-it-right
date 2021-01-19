@@ -295,7 +295,7 @@ class AddIndivisualPart extends Component {
                         </Row>
                         <form
                           noValidate
-                          className="form"
+                          className="form add-min-height"
                           onSubmit={handleSubmit(this.onSubmit.bind(this))}
                         >
                           <Row>
@@ -556,37 +556,37 @@ class AddIndivisualPart extends Component {
                               </div>
                             </Col>
                           </Row>
-
-                          <Row className="sf-btn-footer no-gutters justify-content-between">
-                            <div className="col-sm-12 text-right bluefooter-butn">
-                              <button
-                                type={"button"}
-                                className="reset mr15 cancel-btn"
-                                onClick={this.cancel}
-                              >
-                                <div className={"cross-icon"}>
-                                  <img
-                                    src={require("../../../assests/images/times.png")}
-                                    alt="cancel-icon.jpg"
-                                  />
-                                </div>{" "}
-                                {"Cancel"}
-                              </button>
-                              <button
-                                type="submit"
-                                className="submit-button mr5 save-btn"
-                              >
-                                <div className={"check-icon"}>
-                                  <img
-                                    src={require("../../../assests/images/check.png")}
-                                    alt="check-icon.jpg"
-                                  />{" "}
-                                </div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
-                            </div>
-                          </Row>
                         </form>
+
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                          <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                              type={"button"}
+                              className="reset mr15 cancel-btn"
+                              onClick={this.cancel}
+                            >
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/times.png")}
+                                  alt="cancel-icon.jpg"
+                                />
+                              </div>{" "}
+                              {"Cancel"}
+                            </button>
+                            <button
+                              type="submit"
+                              className="submit-button mr5 save-btn"
+                            >
+                              <div className={"check-icon"}>
+                                <img
+                                  src={require("../../../assests/images/check.png")}
+                                  alt="check-icon.jpg"
+                                />{" "}
+                              </div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          </div>
+                        </Row>
                       </div>
                     </Col>
                   </Row>

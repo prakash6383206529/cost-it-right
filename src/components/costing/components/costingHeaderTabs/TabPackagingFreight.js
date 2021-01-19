@@ -164,77 +164,103 @@ function TabPackagingFreight(props) {
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
-                    <h2>{''}</h2>
+                    <h2>{""}</h2>
                   </div>
                 </Col>
               </Row>
 
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Row>
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '100px' }}>{`Net Packaging Cost`}</th>
-                          <th style={{ width: '150px' }}>{`Net Freight Cost`}</th>
+                          <th style={{ width: "100px" }}>{``}</th>
+                          <th
+                            style={{ width: "100px" }}
+                          >{`Net Packaging Cost`}</th>
+                          <th
+                            style={{ width: "150px" }}
+                          >{`Net Freight Cost`}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {
-                          tabData && tabData.map((item, index) => {
+                        {tabData &&
+                          tabData.map((item, index) => {
                             return (
-                              < >
+                              <>
                                 <tr key={index} onClick={() => toggle(index)}>
                                   <td>{item.PartName}</td>
-                                  <td>{item.PackagingNetCost !== null ? checkForDecimalAndNull(item.PackagingNetCost, 2) : 0}</td>
-                                  <td>{item.FreightNetCost !== null ? checkForDecimalAndNull(item.FreightNetCost, 2) : 0}</td>
+                                  <td>
+                                    {item.PackagingNetCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.PackagingNetCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.FreightNetCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.FreightNetCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
                                 </tr>
-                                {item.IsOpen &&
+                                {item.IsOpen && (
                                   <tr>
                                     <td colSpan={3}>
                                       <div>
                                         <PackageAndFreight
                                           index={index}
-                                          packageData={item.CostingPackagingDetail}
-                                          freightData={item.CostingFreightDetail}
+                                          packageData={
+                                            item.CostingPackagingDetail
+                                          }
+                                          freightData={
+                                            item.CostingFreightDetail
+                                          }
                                           setPackageCost={setPackageCost}
                                           setFreightCost={setFreightCost}
                                         />
                                       </div>
                                     </td>
                                   </tr>
-                                }
+                                )}
                               </>
-                            )
-                          })
-                        }
-
+                            );
+                          })}
                       </tbody>
                     </Table>
                   </Col>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25">
+                <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
                   <div className="col-sm-12 text-right bluefooter-butn">
-
                     <button
-                      type={'button'}
+                      type={"button"}
                       className="submit-button mr5 save-btn"
-                      onClick={saveCosting}>
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
+                      onClick={saveCosting}
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                      {"Save"}
                     </button>
                   </div>
                 </Row>
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };
