@@ -307,7 +307,7 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="EffectiveDate" width={'130'} dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn width={'100'} className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
                 {isOpenVisualDrawer && <BOMViewer

@@ -422,7 +422,7 @@ class MachineRateListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
-                        <Col md="12" lg="10" className="filter-block">
+                        <Col md="12" lg="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -546,7 +546,7 @@ class MachineRateListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="12" lg="2" className="search-user-block pl-0 mb-3">
+                        <Col md="12" lg="3" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {BulkUploadAccessibility && <button
@@ -588,7 +588,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="MachineTonnage" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Tonnage'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineRate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="MachineId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn width={150} dataField="MachineId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

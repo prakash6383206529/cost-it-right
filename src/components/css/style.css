@@ -1093,9 +1093,9 @@ button.add-btn {
   -webkit-box-align: end;
       -ms-flex-align: end;
           align-items: flex-end;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
 }
 
 .dzu-dropzone .dzu-previewContainer {
@@ -2176,6 +2176,25 @@ input:disabled {
 
 .mb-35-minus {
   margin-bottom: -35px;
+}
+
+input[type="number"].form-control {
+  -moz-appearance: textfield;
+}
+
+.select__control .select__value-container {
+  max-height: 65px;
+  overflow-y: auto;
+}
+
+.select__control .select__indicators {
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
+
+.select__control .select__indicators .select__indicator {
+  padding: 5px;
 }
 
 @media (max-width: 1367px) {

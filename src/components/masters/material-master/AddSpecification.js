@@ -376,7 +376,7 @@ class AddSpecification extends Component {
                               : AddAccessibilityRMANDGRADE && (
                                   <div
                                     onClick={() => this.rawMaterialToggler("")}
-                                    className={"plus-icon-square mt30  right"}
+                                    className={"plus-icon-square mt-2  right"}
                                   ></div>
                                 )}
                           </div>

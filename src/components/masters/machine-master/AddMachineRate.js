@@ -1268,7 +1268,7 @@ class AddMachineRate extends Component {
                             <Col md="3">
                               <label>Upload Files (upload up to 3 files)</label>
                               {this.state.files.length >= 3 ? (
-                                ""
+                                <div class="alert alert-danger" role="alert">Max file uploaded.</div>
                               ) : (
                                 <Dropzone
                                   getUploadParams={this.getUploadParams}

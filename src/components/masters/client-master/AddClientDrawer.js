@@ -417,7 +417,7 @@ class AddClientDrawer extends Component {
                                     </Col>
                                 </Row>
 
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
+                                <Row className="sf-btn-footer no-gutters justify-content-between mb-4">
                                     <div className="col-md-12  text-right">
                                         <div className="">
                                             <button

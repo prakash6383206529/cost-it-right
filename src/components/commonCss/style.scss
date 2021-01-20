@@ -1082,7 +1082,7 @@ button.add-btn {
   flex-direction: column;
   height: 130px;
   align-items: flex-end;
-    justify-content: center;
+    justify-content: flex-start;
   .dzu-previewContainer{
     width: 50%;
     border-bottom: none;
@@ -2020,6 +2020,21 @@ input:disabled{
 }
 .mb-35-minus{
   margin-bottom: -35px;
+}
+input[type="number"].form-control {
+	-moz-appearance: textfield;
+}
+.select__control{
+  .select__value-container{
+    max-height: 65px;
+    overflow-y: auto;
+  }
+  .select__indicators{
+    align-items: flex-start;
+    .select__indicator{
+      padding:10px 5px;
+    }
+  }
 }
 // ============issues fixing =============
 

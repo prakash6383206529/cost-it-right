@@ -481,7 +481,7 @@ class AddVBCPlant extends Component {
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                    <div className="col-sm-12 text-right pr-3">
                                         <button
                                             type={'button'}
                                             className="reset mr15 cancel-btn"
@@ -490,7 +490,7 @@ class AddVBCPlant extends Component {
                                         </button>
                                         <button
                                             type="submit"
-                                            className="submit-button mr5 save-btn" >
+                                            className="submit-button save-btn" >
                                             <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
                                             </div> {isEditFlag ? 'Update' : 'Save'}
                                         </button>
