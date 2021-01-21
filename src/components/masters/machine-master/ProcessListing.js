@@ -39,8 +39,8 @@ class ProcessListing extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
-    this.props.getInitialPlantSelectList(() => {})
-    this.props.getInitialMachineSelectList(() => {})
+    this.props.getInitialPlantSelectList(() => { })
+    this.props.getInitialMachineSelectList(() => { })
     this.getDataList()
   }
 
@@ -69,11 +69,11 @@ class ProcessListing extends Component {
     if (newValue && newValue !== '') {
       this.setState({ plant: newValue }, () => {
         const { plant } = this.state
-        this.props.getMachineSelectListByPlant(plant.value, () => {})
+        this.props.getMachineSelectListByPlant(plant.value, () => { })
       })
     } else {
       this.setState({ plant: [] })
-      this.props.getInitialMachineSelectList(() => {})
+      this.props.getInitialMachineSelectList(() => { })
     }
   }
 
@@ -85,11 +85,11 @@ class ProcessListing extends Component {
     if (newValue && newValue !== '') {
       this.setState({ machine: newValue }, () => {
         const { machine } = this.state
-        this.props.getPlantSelectListByMachine(machine.value, () => {})
+        this.props.getPlantSelectListByMachine(machine.value, () => { })
       })
     } else {
       this.setState({ machine: [] })
-      this.props.getInitialPlantSelectList(() => {})
+      this.props.getInitialPlantSelectList(() => { })
     }
   }
 
@@ -266,8 +266,8 @@ class ProcessListing extends Component {
         machine: [],
       },
       () => {
-        this.props.getInitialPlantSelectList(() => {})
-        this.props.getInitialMachineSelectList(() => {})
+        this.props.getInitialPlantSelectList(() => { })
+        this.props.getInitialMachineSelectList(() => { })
         this.getDataList()
       },
     )
@@ -287,7 +287,7 @@ class ProcessListing extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {}
+  onSubmit = (values) => { }
 
   /**
    * @method render
@@ -437,6 +437,7 @@ class ProcessListing extends Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width={100}
+                searchable={false}
                 dataField="ProcessId"
                 export={false}
                 isKey={true}

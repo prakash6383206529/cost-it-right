@@ -52,7 +52,7 @@ class OverheadListing extends Component {
         this.getDataList(null, null, null, null)
     }
 
-    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, ) => {
+    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
@@ -492,12 +492,12 @@ class OverheadListing extends Component {
                             <TableHeaderColumn dataField="ClientName" width={150} columnTitle={true} dataAlign="center" >{this.renderClient()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="center" >{this.renderModelType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="OverheadApplicabilityType" width={150} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter} >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter} >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
                             {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                            <TableHeaderColumn width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

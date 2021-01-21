@@ -251,7 +251,7 @@ class UOMMaster extends Component {
                             <TableHeaderColumn dataField="Unit" dataAlign="center" dataSort={true} dataFormat={this.applySuperScriptFormatter}>Unit</TableHeaderColumn>
                             <TableHeaderColumn dataField="UnitType" dataSort={true} >Unit Type</TableHeaderColumn>
                             <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Id" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="Id" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>

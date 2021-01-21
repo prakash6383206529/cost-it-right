@@ -393,10 +393,10 @@ class SpecificationListing extends Component {
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMSpec" dataAlign="center">Specification</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>

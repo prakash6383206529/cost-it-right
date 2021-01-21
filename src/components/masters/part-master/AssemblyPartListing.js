@@ -294,16 +294,16 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="BOMNumber" width={'100'}>BOM NO.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" width={'100'}>Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plants" width={'100'} >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" width={'150'}>No. of Child Parts</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMLevelCount" width={'150'}>BOM Level Count</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" width={'70'}>ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" width={'100'} >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RevisionNumber" width={'100'} >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" width={'130'} dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Plants" searchable={false} width={'100'} >Plant</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'150'}>No. of Child Parts</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'150'}>BOM Level Count</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'70'}>ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'100'} >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'100'} >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'130'} dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartId" searchable={false} dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="PartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
                 {isOpenVisualDrawer && <BOMViewer

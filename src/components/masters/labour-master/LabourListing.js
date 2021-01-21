@@ -90,9 +90,9 @@ class LabourListing extends Component {
       }
     })
 
-    this.props.getZBCPlantList(() => {})
-    this.props.getStateSelectList(() => {})
-    this.props.getMachineTypeSelectList(() => {})
+    this.props.getZBCPlantList(() => { })
+    this.props.getStateSelectList(() => { })
+    this.props.getMachineTypeSelectList(() => { })
     this.getTableListData()
   }
 
@@ -291,11 +291,11 @@ class LabourListing extends Component {
     if (newValue && newValue !== '') {
       this.setState({ StateName: newValue }, () => {
         const { StateName } = this.state
-        this.props.getPlantListByState(StateName.value, () => {})
+        this.props.getPlantListByState(StateName.value, () => { })
       })
     } else {
       this.setState({ StateName: [] })
-      this.props.getZBCPlantList(() => {})
+      this.props.getZBCPlantList(() => { })
     }
   }
 
@@ -307,7 +307,7 @@ class LabourListing extends Component {
     if (newValue && newValue !== '') {
       this.setState({ plant: newValue }, () => {
         const { plant } = this.state
-        this.props.getLabourTypeByPlantSelectList(plant.value, () => {})
+        this.props.getLabourTypeByPlantSelectList(plant.value, () => { })
       })
     } else {
       this.setState({ plant: [] })
@@ -453,9 +453,9 @@ class LabourListing extends Component {
         machineType: [],
       },
       () => {
-        this.props.getZBCPlantList(() => {})
-        this.props.getStateSelectList(() => {})
-        this.props.getMachineTypeSelectList(() => {})
+        this.props.getZBCPlantList(() => { })
+        this.props.getStateSelectList(() => { })
+        this.props.getMachineTypeSelectList(() => { })
         this.getTableListData()
       },
     )
@@ -509,7 +509,7 @@ class LabourListing extends Component {
    * @desc Submit the signup form values.
    * @returns {{}}
    */
-  onSubmit(values) {}
+  onSubmit(values) { }
 
   /**
    * @method render
@@ -564,7 +564,7 @@ class LabourListing extends Component {
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     validate={
                       this.state.EmploymentTerms == null ||
-                      this.state.EmploymentTerms.length === 0
+                        this.state.EmploymentTerms.length === 0
                         ? [required]
                         : []
                     }
@@ -762,6 +762,7 @@ class LabourListing extends Component {
           </TableHeaderColumn>
           <TableHeaderColumn
             className="action"
+            searchable={false}
             dataField="LabourId"
             export={false}
             isKey={true}

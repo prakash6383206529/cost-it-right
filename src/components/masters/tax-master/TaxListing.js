@@ -215,7 +215,7 @@ class TaxListing extends Component {
                             <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
                             <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
                             <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>

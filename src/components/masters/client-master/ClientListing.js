@@ -277,7 +277,7 @@ class ClientListing extends Component {
                     <TableHeaderColumn dataField="CountryName" dataAlign="center" >{'Country'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="StateName" dataAlign="center" >{'State'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="CityName" dataAlign="center" >{'City'}</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="ClientId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn className="action" searchable={false} dataField="ClientId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
                 {isOpenVendor && <AddClientDrawer
                     isOpen={isOpenVendor}
