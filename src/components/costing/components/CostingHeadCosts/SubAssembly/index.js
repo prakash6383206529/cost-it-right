@@ -107,11 +107,11 @@ function AssemblyPart(props) {
           </span>
         </td>
         <td>{item && item.PartType}</td>
-        <td>{0}</td>
-        <td>{0}</td>
-        <td>{0}</td>
-        <td>{0}</td>
-        <td>{0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? item.CostingPartDetails.TotalRawMaterialsCost : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? item.CostingPartDetails.TotalBoughtOutPartCost : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? item.CostingPartDetails.TotalConversionCost : 0}</td>
+        <td>{1}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.GrandTotalCost : 0}</td>
       </tr>
       {IsOpen &&
         <tr>
