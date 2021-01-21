@@ -1017,7 +1017,7 @@ function CostingDetails() {
                                 <th style={{ }}>
                                   {`SOB`}
                                   <button
-                                    className="edit-details-btn mr-2 ml5"
+                                    className="edit-details-btn mr-2 ml5 align-middle"
                                     type={"button"}
                                     onClick={() =>
                                       setEnableSOBField(!isSOBEnabled)

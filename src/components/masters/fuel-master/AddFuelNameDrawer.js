@@ -123,7 +123,7 @@ class AddFuelNameDrawer extends Component {
                   </Row>
                 </form>
                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                  <div className="col-sm-12 text-right bluefooter-butn">
+                  <div className="col-sm-12 text-right px-3">
                     <button
                       type={"button"}
                       className="reset mr15 cancel-btn"

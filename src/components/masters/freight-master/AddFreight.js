@@ -707,7 +707,7 @@ class AddFreight extends Component {
                       </Row>
                       <Row>
                         {this.state.IsLoadingUnloadingApplicable && (
-                          <Col md="3">
+                          <Col md="3" className="hide-label-inside">
                             <Field
                               label={``}
                               name={"LoadingUnloadingCharges"}
@@ -717,7 +717,7 @@ class AddFreight extends Component {
                               component={renderText}
                               //required={true}
                               disabled={false}
-                              className=" "
+                              className=""
                               customClassName=" withBorder"
                             />
                           </Col>
@@ -850,7 +850,7 @@ class AddFreight extends Component {
                                 <button
                                   type="button"
                                   className={
-                                    "btn btn-primary mt30 pull-left mr5"
+                                    "btn btn-primary mt30 pull-left mr5 px-2"
                                   }
                                   onClick={this.updateGrid}
                                 >

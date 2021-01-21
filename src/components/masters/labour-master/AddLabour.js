@@ -731,14 +731,14 @@ class AddLabour extends Component {
                             </div>
                           </div>
                         </Col>
-                        <Col md="2" className="col">
+                        <Col md="3" className="col">
                           <div>
                             {this.state.isEditIndex ? (
                               <>
                                 <button
                                   type="button"
                                   className={
-                                    "btn btn-primary mt30 pull-left mr5"
+                                    "btn btn-primary mb-4 pull-left mr5"
                                   }
                                   onClick={this.updateGrid}
                                 >
@@ -747,7 +747,7 @@ class AddLabour extends Component {
 
                                 <button
                                   type="button"
-                                  className={"reset-btn mt30 pull-left"}
+                                  className={"reset-btn mb-4 pull-left"}
                                   onClick={this.resetGridData}
                                 >
                                   Cancel

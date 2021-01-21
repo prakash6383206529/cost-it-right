@@ -94,7 +94,7 @@ class EfficiencyDrawer extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="12">
                                         <Field
                                             label={`No. Of Working Hrs/Annum`}
@@ -126,7 +126,7 @@ class EfficiencyDrawer extends Component {
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
+                                    <div className="col-sm-12 text-right px-3">
                                         <button
                                             type={'button'}
                                             className="reset mr15 cancel-btn"
@@ -135,7 +135,7 @@ class EfficiencyDrawer extends Component {
                                         </button>
                                         <button
                                             type="button"
-                                            className="submit-button mr5 save-btn"
+                                            className="submit-button save-btn"
                                             onClick={this.calculateEfficiency} >
                                             <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                             {isEditFlag ? 'Update' : 'Calculate'}

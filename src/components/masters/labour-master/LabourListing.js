@@ -564,7 +564,7 @@ class LabourListing extends Component {
                           valueDescription={this.state.labourType}
                         />
                       </div>
-                      <div className="flex-fill">
+                      <div className="flex-fill pr-0">
                         <Field
                           name="MachineType"
                           type="text"
@@ -586,7 +586,7 @@ class LabourListing extends Component {
                           type="button"
                           //disabled={pristine || submitting}
                           onClick={this.resetFilter}
-                          className="reset mr5"
+                          className="reset mr5 px-2"
                         >
                           {"Reset"}
                         </button>

@@ -215,8 +215,8 @@ class AddUOM extends Component {
                     </div>
                   </Row>
                 </form>
-                <Row className="sf-btn-footer no-gutters justify-content-between">
-                  <div className="col-sm-12 text-right bluefooter-butn">
+                <Row className="sf-btn-footer no-gutters justify-content-between px-3">
+                  <div className="col-sm-12 text-right px-3">
                     <button
                       type={"button"}
                       className="reset mr15 cancel-btn"
@@ -232,7 +232,7 @@ class AddUOM extends Component {
                     </button>
                     <button
                       type="submit"
-                      className="submit-button mr-3 save-btn"
+                      className="submit-button save-btn"
                     >
                       <div className={"check-icon"}>
                         <img

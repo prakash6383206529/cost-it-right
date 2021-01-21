@@ -163,7 +163,7 @@ function AddProcess(props) {
             </Row>
 
             <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-left bluefooter-butn">
+              <div className="col-sm-12 text-left px-3">
                 <button
                   type={'button'}
                   className="submit-button mr5 save-btn"

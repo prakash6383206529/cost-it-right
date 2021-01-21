@@ -424,7 +424,7 @@ class VolumeListing extends Component {
                 </div>
                 <hr className="mb-0" />
                 <Row className="pt-4 filter-row-large">
-                  <Col md="12" lg="8" className="filter-block">
+                  <Col md="12" lg="7" className="filter-block">
                     <div className="d-inline-flex justify-content-start align-items-top w100">
                       <div className="flex-fills">
                         <h5>{`Filter By:`}</h5>
@@ -524,7 +524,7 @@ class VolumeListing extends Component {
                           type="button"
                           //disabled={pristine || submitting}
                           onClick={this.resetFilter}
-                          className="reset mr10"
+                          className="reset mr10 px-2"
                         >
                           {"Reset"}
                         </button>
@@ -539,7 +539,7 @@ class VolumeListing extends Component {
                       </div>
                     </div>
                   </Col>
-                  <Col md="12" lg="4" className="search-user-block mb-3">
+                  <Col md="12" lg="5" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight">
                       <div>
                         {BulkUploadAccessibility && (

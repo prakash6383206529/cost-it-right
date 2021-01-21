@@ -2194,7 +2194,15 @@ input[type="number"].form-control {
 }
 
 .select__control .select__indicators .select__indicator {
-  padding: 5px;
+  padding: 10px 5px;
+}
+
+.drawer-wrapper {
+  padding-bottom: 20px;
+}
+
+.hide-label-inside label {
+  display: none;
 }
 
 @media (max-width: 1367px) {

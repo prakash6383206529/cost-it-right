@@ -1166,7 +1166,7 @@ class AddMachineRate extends Component {
                                       <button
                                         type="button"
                                         className={
-                                          "user-btn mt30 pull-left mr-3"
+                                          "user-btn mt30 pull-left mr-1"
                                         }
                                         onClick={this.processTableHandler}
                                       >

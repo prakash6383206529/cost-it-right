@@ -652,7 +652,7 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     {this.checkVendorSelection() && checkVendorPlantConfigurable() &&
                                         <>
                                             <Col md="12">
@@ -682,8 +682,8 @@ class AddVendorDrawer extends Component {
                                         </>}
                                 </Row>
                             </form>
-                            <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-sm-12 text-right bluefooter-butn">
+                            <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
+                                <div className="col-sm-12 text-right px-3">
                                     <button
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
@@ -692,7 +692,7 @@ class AddVendorDrawer extends Component {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="submit-button mr5 save-btn">
+                                        className="submit-button save-btn">
                                         <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                         {isEditFlag ? 'Update' : 'Save'}
                                     </button>

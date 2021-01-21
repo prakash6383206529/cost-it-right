@@ -2036,6 +2036,14 @@ input[type="number"].form-control {
     }
   }
 }
+.drawer-wrapper{
+  padding-bottom: 20px;
+}
+.hide-label-inside{
+  label{
+    display: none;
+  }
+}
 // ============issues fixing =============
 
 @media(max-width:1367px){

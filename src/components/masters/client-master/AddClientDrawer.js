@@ -418,7 +418,7 @@ class AddClientDrawer extends Component {
                                 </Row>
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between mb-4">
-                                    <div className="col-md-12  text-right">
+                                    <div className="col-md-12  text-right px-3">
                                         <div className="">
                                             <button
                                                 type={'button'}
@@ -428,7 +428,7 @@ class AddClientDrawer extends Component {
                                             </button>
                                             <button
                                                 type="submit"
-                                                className="submit-button mr5 save-btn" >
+                                                className="submit-button save-btn" >
                                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
                                                 </div> {this.props.isEditFlag ? 'Update' : 'Save'}
                                             </button>
