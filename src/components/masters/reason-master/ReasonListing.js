@@ -255,7 +255,7 @@ class ReasonListing extends Component {
                     {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="Reason" dataAlign="center" dataSort={true}>Reason</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="ReasonId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="ReasonId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
                 {isOpenDrawer && <AddReason
                     isOpen={isOpenDrawer}

@@ -291,9 +291,9 @@ class AssemblyPartListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="BOMNumber" width={'100'}>BOM NO.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" width={'100'}>Part No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMNumber" width={'150'}>BOM NO.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" width={'200'}>Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartName" width={'200'}>Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="Plants" width={'100'} >Plant</TableHeaderColumn>
                     <TableHeaderColumn dataField="NumberOfParts" width={'150'}>No. of Child Parts</TableHeaderColumn>
                     <TableHeaderColumn dataField="BOMLevelCount" width={'150'}>BOM Level Count</TableHeaderColumn>

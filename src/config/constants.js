@@ -449,6 +449,7 @@ export const API = {
   getProcessDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-cc-machine-detail`,
   getProcessDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-cc-machine-detail`,
   saveCostingRMCCTab: `${BASE_URL}/costing/save-costing-detail-for-rm-bop-cc`,
+  saveComponentCostingRMCCTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-rm-bop-cc`,
 
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-costing-detail-for-surface-treatment`,
   saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,

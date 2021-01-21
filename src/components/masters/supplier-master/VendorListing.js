@@ -510,7 +510,7 @@ class VendorListing extends Component {
                     <TableHeaderColumn dataField="State" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
                     <TableHeaderColumn dataField="City" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="VendorId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}

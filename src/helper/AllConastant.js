@@ -58,3 +58,5 @@ export const CONSTANT = {
   EMPTY_DATA: 'No Content Found',
   COSTING: 'Costing',
 };
+
+export const LEVEL0 = 'L0';

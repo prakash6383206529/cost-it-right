@@ -20,8 +20,8 @@ function BoughtOutPart(props) {
     <>
       <tr>
         <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm cr-prt-link ${item && item.BOMLevel}`}>
-            {item && item.PartName}
+          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
+            {item && item.PartNumber}-{item && item.BOMLevel}
             {/* <div className={`${IsOpen ? 'Open' : 'Close'}`}></div> */}
           </span>
         </td>

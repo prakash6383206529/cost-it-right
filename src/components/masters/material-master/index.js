@@ -161,7 +161,7 @@ class RowMaterialMaster extends Component {
             <Container fluid>
                 <Row>
                     <Col sm="4">
-                        <h1>{`${CONSTANT.MATERIAL} ${CONSTANT.MASTER}`}</h1>
+                        <h1>{`Raw Material Master`}</h1>
                     </Col>
                 </Row>
                 <Row>

@@ -56,8 +56,8 @@ function TabRMCC(props) {
   * @description SET RM COST
   */
   const setRMCost = (rmGrid, params) => {
-    console.log('rmGrid: ', rmGrid, params);
-    setRMCostInDataList(rmGrid, params, RMCCTabData)
+    let arr = setRMCostInDataList(rmGrid, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
     // let tempObj = tabData[index];
     // let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(tempObj.TotalConversionCost)
 
@@ -73,37 +73,31 @@ function TabRMCC(props) {
   }
 
   const setRMCostInDataList = (rmGrid, params, arr) => {
+    let tempArr = [];
     try {
-
-      let tempArr = [];
       tempArr = arr && arr.map(i => {
         if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          // let tempObj = tabData[index];
           let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(i.TotalBoughtOutPartCost) + checkForNull(i.TotalConversionCost)
 
-          // let tempArr = Object.assign([...tabData], {
-          //   [index]: Object.assign({}, tabData[index],
-          //     { GrandTotalCost: GrandTotalCost, TotalRawMaterialsCost: netRMCost(rmGrid), CostingRawMaterialsCost: rmGrid })
-          // })
+          if (i.BOMLevel === 'L0') {
 
-          //i.CostingChildPartDetails = params.BOMLevel !== "L0" ? ChangeBOMLeveL(Children, BOMLevel) : i.CostingChildPartDetails;
+          }
+
           i.CostingPartDetails.CostingRawMaterialsCost = rmGrid;
           i.GrandTotalCost = GrandTotalCost;
           i.TotalRawMaterialsCost = netRMCost(rmGrid);
-          //i.IsOpen = !i.IsOpen;
 
         } else {
           setRMCostInDataList(rmGrid, params, i.CostingChildPartDetails)
         }
         return i;
       });
-      console.log('tempArr: ', tempArr);
-      dispatch(setRMCCData(tempArr, () => { }))
 
     } catch (error) {
       console.log('error: ', error);
     }
+    return tempArr;
   }
 
   /**
@@ -123,25 +117,13 @@ function TabRMCC(props) {
    * @description SET BOP COST
    */
   const setBOPCost = (bopGrid, params) => {
-    setBOPCostInDataList(bopGrid, params, RMCCTabData)
-    // let tempObj = tabData[index];
-    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(tempObj.TotalConversionCost);
-
-    // let tempArr = Object.assign([...tabData], {
-    //   [index]: Object.assign({}, tabData[index],
-    //     { GrandTotalCost: GrandTotalCost, TotalBoughtOutPartCost: checkForDecimalAndNull(netBOPCost(bopGrid), 2), CostingBoughtOutPartCost: bopGrid })
-    // })
-
-    // setTimeout(() => {
-    //   setTabData(tempArr)
-    // }, 200)
-
+    let arr = setBOPCostInDataList(bopGrid, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
   }
 
   const setBOPCostInDataList = (bopGrid, params, arr) => {
+    let tempArr = [];
     try {
-
-      let tempArr = [];
       tempArr = arr && arr.map(i => {
         if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
@@ -150,19 +132,17 @@ function TabRMCC(props) {
           i.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
           i.GrandTotalCost = GrandTotalCost;
           i.TotalBoughtOutPartCost = netBOPCost(bopGrid);
-          //i.IsOpen = !i.IsOpen;
 
         } else {
           setBOPCostInDataList(bopGrid, params, i.CostingChildPartDetails)
         }
         return i;
       });
-      console.log('tempArr: ', tempArr);
-      dispatch(setRMCCData(tempArr, () => { }))
 
     } catch (error) {
       console.log('error: ', error);
     }
+    return tempArr;
   }
 
   /**
@@ -182,34 +162,13 @@ function TabRMCC(props) {
    * @description SET PROCESS COST
    */
   const setProcessCost = (conversionGrid, params) => {
-    setProcessCostInDataList(conversionGrid, params, RMCCTabData)
-    // let tempObj = tabData[index];
-    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(conversionGrid && conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0);
-
-    // let data = conversionGrid && conversionGrid.CostingProcessCostResponse && conversionGrid.CostingProcessCostResponse.map(el => {
-    //   return el;
-    // })
-
-    // let tempArr = Object.assign([...tabData], {
-    //   [index]: Object.assign({}, tabData[index],
-    //     {
-    //       GrandTotalCost: GrandTotalCost,
-    //       TotalConversionCost: conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0,
-    //       CostingConversionCost: { ...conversionGrid, CostingProcessCostResponse: data }
-    //     })
-    // })
-
-    // setTimeout(() => {
-    //   setTabData(tempArr)
-    //   setNetProcessCost(conversionGrid.ProcessCostTotal)
-    // }, 200)
-
+    let arr = setProcessCostInDataList(conversionGrid, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
   }
 
   const setProcessCostInDataList = (conversionGrid, params, arr) => {
+    let tempArr = [];
     try {
-
-      let tempArr = [];
       tempArr = arr && arr.map(i => {
         if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
@@ -221,19 +180,17 @@ function TabRMCC(props) {
           i.CostingPartDetails.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: data };
           i.GrandTotalCost = GrandTotalCost;
           i.TotalConversionCost = conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0;
-          //i.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: data }
-          //i.IsOpen = !i.IsOpen;
 
         } else {
           setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails)
         }
         return i;
       });
-      dispatch(setRMCCData(tempArr, () => { }))
 
     } catch (error) {
       console.log('error: ', error);
     }
+    return tempArr;
   }
 
   /**
@@ -241,32 +198,13 @@ function TabRMCC(props) {
    * @description SET OPERATION COST
    */
   const setOperationCost = (operationGrid, params) => {
-    setOperationCostInDataList(operationGrid, params, RMCCTabData)
-    // let tempObj = tabData[index];
-    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0)
-
-    // let data = operationGrid && operationGrid.CostingOperationCostResponse && operationGrid.CostingOperationCostResponse.map(el => {
-    //   return el;
-    // })
-
-    // let tempArr = Object.assign([...tabData], {
-    //   [index]: Object.assign({}, tabData[index],
-    //     {
-    //       GrandTotalCost: GrandTotalCost,
-    //       TotalConversionCost: operationGrid && operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0,
-    //       CostingConversionCost: { ...operationGrid, CostingOperationCostResponse: data },
-    //     })
-    // })
-    // setTimeout(() => {
-    //   setTabData(tempArr)
-    //   setNetOperationCost(operationGrid.OperationCostTotal)
-    // }, 200)
+    let arr = setOperationCostInDataList(operationGrid, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
   }
 
   const setOperationCostInDataList = (operationGrid, params, arr) => {
+    let tempArr = [];
     try {
-
-      let tempArr = [];
       tempArr = arr && arr.map(i => {
         if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
@@ -278,18 +216,16 @@ function TabRMCC(props) {
           i.GrandTotalCost = GrandTotalCost;
           i.CostingPartDetails.CostingConversionCost = { ...operationGrid, CostingOperationCostResponse: data };
           i.TotalConversionCost = operationGrid.NetConversionCost !== null ? operationGrid.NetConversionCost : 0;
-          //i.IsOpen = !i.IsOpen;
 
         } else {
-          setProcessCostInDataList(operationGrid, params, i.CostingChildPartDetails)
+          setOperationCostInDataList(operationGrid, params, i.CostingChildPartDetails)
         }
         return i;
       });
-      dispatch(setRMCCData(tempArr, () => { }))
-
     } catch (error) {
       console.log('error: ', error);
     }
+    return tempArr;
   }
 
   /**
@@ -297,36 +233,13 @@ function TabRMCC(props) {
    * @description SET TOOL COST
    */
   const setToolCost = (toolGrid, params) => {
-    setToolCostInDataList(toolGrid, params, RMCCTabData)
-    // let tempObj = tabData[index];
-    // let GrandTotalCost = checkForNull(tempObj.TotalRawMaterialsCost) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(toolGrid.NetConversionCost)
-
-    // let data = toolGrid && toolGrid.CostingOperationCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
-    //   return el;
-    // })
-
-    // let tempArr = Object.assign([...tabData], {
-    //   [index]: Object.assign({}, tabData[index],
-    //     {
-    //       GrandTotalCost: GrandTotalCost,
-    //       IsShowToolCost: true,
-    //       CostingConversionCost: {
-    //         ...toolGrid,
-    //         CostingToolsCostResponse: data,
-    //       },
-    //     })
-    // })
-
-    // setTimeout(() => {
-    //   setNetToolsCost(checkForDecimalAndNull(toolGrid.ToolsCostTotal, 2))
-    //   setTabData(tempArr)
-    // }, 500)
+    let arr = setToolCostInDataList(toolGrid, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
   }
 
   const setToolCostInDataList = (toolGrid, params, arr) => {
+    let tempArr = [];
     try {
-
-      let tempArr = [];
       tempArr = arr && arr.map(i => {
         if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
@@ -346,11 +259,12 @@ function TabRMCC(props) {
         }
         return i;
       });
-      dispatch(setRMCCData(tempArr, () => { }))
+
 
     } catch (error) {
       console.log('error: ', error);
     }
+    return tempArr;
   }
 
   /**
@@ -401,33 +315,35 @@ function TabRMCC(props) {
   * @method toggleAssembly
   * @description SET PART DETAILS
   */
-  const toggleAssembly = (BOMLevel, PartName, Children = []) => {
-    setAssembly(BOMLevel, PartName, Children, RMCCTabData)
+  const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
+    let arr = setAssembly(BOMLevel, PartNumber, Children, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
   }
 
   /**
   * @method formatData
   * @description SET PART DETAILS
   */
-  const setAssembly = (BOMLevel, PartName, Children, RMCCTabData) => {
-
+  const setAssembly = (BOMLevel, PartNumber, Children, RMCCTabData) => {
+    let tempArr = [];
     try {
 
-      let tempArr = [];
       tempArr = RMCCTabData && RMCCTabData.map(i => {
-        if (i.PartName === PartName && i.BOMLevel === BOMLevel) {
-          i.CostingChildPartDetails = BOMLevel !== "L0" ? ChangeBOMLeveL(Children, BOMLevel) : i.CostingChildPartDetails;
+        if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+          i.CostingChildPartDetails = BOMLevel !== "L0" ? ChangeBOMLeveL(Children.CostingChildPartDetails, BOMLevel) : i.CostingChildPartDetails;
+          //i.CostingPartDetails = BOMLevel !== "L0" ? ChangeBOMLeveL(Children.CostingPartDetails, BOMLevel) : i.CostingChildPartDetails;
+          i.CostingPartDetails = Children.CostingPartDetails;
           i.IsOpen = !i.IsOpen;
         } else {
-          setAssembly(BOMLevel, PartName, Children, i.CostingChildPartDetails)
+          setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
         }
         return i;
       });
-      dispatch(setRMCCData(tempArr, () => { }))
 
     } catch (error) {
       console.log('error: ', error);
     }
+    return tempArr;
 
   }
 
@@ -450,7 +366,8 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (BOMLevel, PartNumber, Data) => {
-    formatData(BOMLevel, PartNumber, Data, RMCCTabData)
+    let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
   }
 
   /**
@@ -458,10 +375,8 @@ function TabRMCC(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (BOMLevel, PartNumber, Data, RMCCTabData) => {
-
+    let tempArr = [];
     try {
-      let tempArr = [];
-
       tempArr = RMCCTabData && RMCCTabData.map(i => {
         if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
           i.CostingPartDetails = Data;
@@ -471,13 +386,100 @@ function TabRMCC(props) {
         }
         return i;
       });
-      console.log('tempArr: AA', tempArr);
-      dispatch(setRMCCData(tempArr, () => { }))
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+  }
+
+  /**
+  * @method setAssemblyOperationCost
+  * @description SET RM COST
+  */
+  const setAssemblyOperationCost = (OperationGrid, params) => {
+    let arr = setAssemblyOperationCostInDataList(OperationGrid, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
+  }
+
+  const setAssemblyOperationCostInDataList = (OperationGrid, params, arr) => {
+    let tempArr = [];
+    try {
+      tempArr = arr && arr.map(i => {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let GrandTotalCost = GetOperationCostTotal(OperationGrid) + checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
+
+          i.CostingPartDetails.CostingOperationCostResponse = OperationGrid;
+          i.CostingPartDetails.GrandTotalCost = GrandTotalCost;
+          i.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(OperationGrid);
+
+        } else {
+          setAssemblyOperationCostInDataList(OperationGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+  }
+
+  /**
+  * @method GetOperationCostTotal
+  * @description GET TOTAL OPERATION COST FOR ASSEMBLY
+  */
+  const GetOperationCostTotal = (item) => {
+    let NetCost = 0;
+    NetCost = item && item.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.OperationCost);
+    }, 0)
+    return NetCost;
+  }
+
+  /**
+  * @method setAssemblyToolCost
+  * @description SET RM COST
+  */
+  const setAssemblyToolCost = (ToolGrid, params) => {
+    let arr = setAssemblyToolCostInDataList(ToolGrid, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
+  }
+
+  const setAssemblyToolCostInDataList = (ToolGrid, params, arr) => {
+    let tempArr = [];
+    try {
+
+      tempArr = arr && arr.map(i => {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let GrandTotalCost = GetToolCostTotal(ToolGrid) + checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly);
+
+          i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
+          i.CostingPartDetails.GrandTotalCost = GrandTotalCost;
+          i.CostingPartDetails.TotalToolCostPerAssembly = GetToolCostTotal(ToolGrid);
+
+        } else {
+          setAssemblyToolCostInDataList(ToolGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
 
     } catch (error) {
       console.log('error: ', error);
     }
+    return tempArr;
+  }
 
+  /**
+  * @method GetToolCostTotal
+  * @description GET TOTAL OPERATION COST FOR ASSEMBLY
+  */
+  const GetToolCostTotal = (item) => {
+    let NetCost = 0;
+    NetCost = item && item.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.TotalToolCost);
+    }, 0)
+    return NetCost;
   }
 
   /**
@@ -589,6 +591,8 @@ function TabRMCC(props) {
                                     setProcessCost={setProcessCost}
                                     setOperationCost={setOperationCost}
                                     setToolCost={setToolCost}
+                                    setAssemblyOperationCost={setAssemblyOperationCost}
+                                    setAssemblyToolCost={setAssemblyToolCost}
                                   />
                                 </>
                               )
@@ -622,7 +626,6 @@ function TabRMCC(props) {
     </>
   );
 };
-
 
 export default TabRMCC;
 //export default React.memo(TabRMCC);

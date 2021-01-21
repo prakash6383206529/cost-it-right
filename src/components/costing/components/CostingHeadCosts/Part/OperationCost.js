@@ -21,13 +21,18 @@ function OperationCost(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
+
   useEffect(() => {
     const Params = {
       index: 0,
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    props.setOperationCost(gridData, Params)
+    if (props.IsAssemblyCalculation) {
+      props.setAssemblyOperationCost(gridData, Params)
+    } else {
+      props.setOperationCost(gridData, Params)
+    }
   }, [gridData]);
 
   /**
@@ -44,7 +49,7 @@ function OperationCost(props) {
    */
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0) {
-
+      let GridArray = gridData !== null ? gridData : [];
       let rowArray = rowData && rowData.map(el => {
         const WithLaboutCost = checkForNull(el.Rate) * checkForNull(el.Quantity);
         const WithOutLabourCost = el.IsLabourRateExist ? checkForNull(el.LabourRate) * el.LabourQuantity : 0;
@@ -64,8 +69,8 @@ function OperationCost(props) {
           IsChecked: el.IsChecked,
         }
       })
-
-      let tempArr = [...gridData, ...rowArray]
+      console.log('gridData: ', GridArray);
+      let tempArr = [...GridArray, ...rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
     }

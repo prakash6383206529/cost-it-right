@@ -609,6 +609,22 @@ export function saveCostingRMCCTab(data, callback) {
 }
 
 /**
+ * @method saveComponentCostingRMCCTab
+ * @description SAVE COMPONENT COSTING RM+CC TAB
+ */
+export function saveComponentCostingRMCCTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveComponentCostingRMCCTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
  * @method getSurfaceTreatmentTabData
  * @description GET SURFACE TREATMENT DATA IN COSTING DETAIL
  */

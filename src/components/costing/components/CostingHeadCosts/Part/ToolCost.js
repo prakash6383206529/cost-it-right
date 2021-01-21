@@ -27,7 +27,11 @@ function ToolCost(props) {
       BOMLevel: props.item.BOMLevel,
       PartNumber: props.item.PartNumber,
     }
-    props.setToolCost(gridData, Params)
+    if (props.IsAssemblyCalculation) {
+      props.setAssemblyToolCost(gridData, Params)
+    } else {
+      props.setToolCost(gridData, Params)
+    }
   }, [gridData]);
 
   /**
