@@ -448,9 +448,10 @@ class AddVolume extends Component {
                       </div>
                       <form
                         noValidate
-                        className="form add-min-height"
+                        className="form"
                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       >
+                        <div className="add-min-height">
                         <Row>
                           <Col md="4" className="switch mb15">
                             <label className="switch-level">
@@ -626,7 +627,7 @@ class AddVolume extends Component {
                             </BootstrapTable>
                           </Col>
                         </Row>
-                      </form>
+                      </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button
@@ -656,7 +657,7 @@ class AddVolume extends Component {
                           </button>
                         </div>
                       </Row>
-                    </div>
+                    </form></div>
                   </div>
                 </div>
                 {isOpenVendor && (

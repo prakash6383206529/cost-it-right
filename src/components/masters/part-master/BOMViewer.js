@@ -310,7 +310,7 @@ class BOMViewer extends Component {
                           <Col md="4">
                             <button
                               type={"button"}
-                              className="reset-btn  pull-right mt-2 btn-danger"
+                              className="reset-btn  pull-right mt10 btn-danger"
                               onClick={() =>
                                 this.setState({
                                   displayDeleteIcon: !this.state
@@ -359,6 +359,7 @@ class BOMViewer extends Component {
                         inputColor="#ff0022"
                         style={{
                           width: "100vw",
+                          overflow:"auto",
                         }}
                         onClick={(e) => this.setState({ selected_point: null })}
                         selected={this.state.selected_point}

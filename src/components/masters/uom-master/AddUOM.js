@@ -214,7 +214,7 @@ class AddUOM extends Component {
                       />
                     </div>
                   </Row>
-                </form>
+                
                 <Row className="sf-btn-footer no-gutters justify-content-between px-3">
                   <div className="col-sm-12 text-right px-3">
                     <button
@@ -244,6 +244,7 @@ class AddUOM extends Component {
                     </button>
                   </div>
                 </Row>
+                </form>
               </div>
             </Container>
           </Drawer>

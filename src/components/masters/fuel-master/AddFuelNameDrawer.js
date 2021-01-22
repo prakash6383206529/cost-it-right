@@ -121,7 +121,7 @@ class AddFuelNameDrawer extends Component {
                       />
                     </div>
                   </Row>
-                </form>
+                
                 <Row className="sf-btn-footer no-gutters justify-content-between">
                   <div className="col-sm-12 text-right px-3">
                     <button
@@ -139,7 +139,7 @@ class AddFuelNameDrawer extends Component {
                     </button>
                     <button
                       type="submit"
-                      className="submit-button mr-3 save-btn"
+                      className="submit-button  save-btn"
                     >
                       <div className={"check-icon"}>
                         <img
@@ -151,6 +151,7 @@ class AddFuelNameDrawer extends Component {
                     </button>
                   </div>
                 </Row>
+                </form>
               </div>
             </Container>
           </Drawer>

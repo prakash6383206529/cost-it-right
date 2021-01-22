@@ -654,7 +654,7 @@ function AddToComparisonDrawer(props) {
                   />
                 </Col>
               </Row>
-            </form>
+            
             <Row className="justify-content-between my-3">
               <div className="col-sm-12 text-right">
                 <button
@@ -673,7 +673,7 @@ function AddToComparisonDrawer(props) {
 
                 <button
                   type="submit"
-                  className="submit-button mr-3 save-btn"
+                  className="submit-button save-btn"
                   // onClick={addHandler}
                 >
                   {isEditFlag ? (
@@ -691,6 +691,7 @@ function AddToComparisonDrawer(props) {
                 </button>
               </div>
             </Row>
+            </form>
           </div>
         </Container>
       </Drawer>

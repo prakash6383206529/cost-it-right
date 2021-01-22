@@ -550,9 +550,10 @@ class AddAssemblyPart extends Component {
                       </Row>
                       <form
                         noValidate
-                        className="form add-min-height"
+                        className="form"
                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       >
+                        <div className="add-min-height">
                         <Row>
                           <Col md="12">
                             <div className="left-border">
@@ -826,7 +827,7 @@ class AddAssemblyPart extends Component {
                             </div>
                           </Col>
                         </Row>
-                      </form>
+                      </div>
 
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
@@ -857,7 +858,7 @@ class AddAssemblyPart extends Component {
                           </button>
                         </div>
                       </Row>
-                    </div>
+                    </form></div>
                   </Col>
                 </Row>
               </div>

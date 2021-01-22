@@ -295,9 +295,10 @@ class AddIndivisualPart extends Component {
                         </Row>
                         <form
                           noValidate
-                          className="form add-min-height"
+                          className="form"
                           onSubmit={handleSubmit(this.onSubmit.bind(this))}
                         >
+                          <div className="add-min-height">
                           <Row>
                             <Col md="3">
                               <Field
@@ -558,7 +559,7 @@ class AddIndivisualPart extends Component {
                               </div>
                             </Col>
                           </Row>
-                        </form>
+                        </div>
 
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                           <div className="col-sm-12 text-right bluefooter-butn">
@@ -589,6 +590,7 @@ class AddIndivisualPart extends Component {
                             </button>
                           </div>
                         </Row>
+                      </form>
                       </div>
                     </Col>
                   </Row>

@@ -186,7 +186,7 @@ class AddReason extends Component {
                                     </Col>
                                 </Col> */}
                   </Row>
-                </form>
+                
                 <Row className="sf-btn-footer no-gutters justify-content-between px-3">
                   <div className="col-sm-12 text-right px-3">
                     <button
@@ -216,6 +216,7 @@ class AddReason extends Component {
                     </button>
                   </div>
                 </Row>
+                </form>
               </div>
             </Container>
           </Drawer>

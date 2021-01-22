@@ -278,7 +278,7 @@ class AddTaxDetails extends Component {
                       </div>
                     </div>
                   </Row>
-                </form>
+                
                 <Row className="sf-btn-footer no-gutters justify-content-between">
                   <div className="col-sm-12 text-right px-3">
                     <button
@@ -308,6 +308,7 @@ class AddTaxDetails extends Component {
                     </button>
                   </div>
                 </Row>
+                </form>
               </div>
             </Container>
           </Drawer>

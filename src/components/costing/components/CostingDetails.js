@@ -1029,9 +1029,9 @@ function CostingDetails() {
                                 >{`Costing Version`}</th>
                                 <th
                                   className="text-center"
-                                  style={{ }}
+                                  style={{}}
                                 >{`Status`}</th>
-                                <th style={{ }}>{`Actions`}</th>
+                                <th style={{minWidth:"200px" }}>{`Actions`}</th>
                               </tr>
                             </thead>
                             <tbody>

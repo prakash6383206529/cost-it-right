@@ -343,7 +343,7 @@ const SendForApproval = (props) => {
         {viewApprovalData &&
           viewApprovalData.map((data, index) => {
             return (
-              <Container>
+              <div>
                 <div className={"drawer-wrapper drawer-md"}>
                   <Row className="drawer-heading">
                     <Col>
@@ -499,10 +499,10 @@ const SendForApproval = (props) => {
                     </div>
                   </div>
                 </div>
-              </Container>
+              </div>
             );
           })}
-        <Container>
+        <div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Row className="px-3">
               <Col md="4">
@@ -594,7 +594,7 @@ const SendForApproval = (props) => {
               </Col>
             </Row>
           </form>
-        </Container>
+        </div>
       </Drawer>
     </Fragment>
   );
