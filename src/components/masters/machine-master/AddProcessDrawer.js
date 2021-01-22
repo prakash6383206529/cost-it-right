@@ -32,8 +32,8 @@ class AddProcessDrawer extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    this.props.getPlantSelectList(() => {})
-    this.props.getMachineSelectList(() => {})
+    this.props.getPlantSelectList(() => { })
+    this.props.getMachineSelectList(() => { })
     this.getData()
   }
 
@@ -62,7 +62,7 @@ class AddProcessDrawer extends Component {
         })
       })
     } else {
-      this.props.getProcessData('', (res) => {})
+      this.props.getProcessData('', (res) => { })
     }
   }
 
@@ -267,7 +267,7 @@ class AddProcessDrawer extends Component {
                       placeholder="--Select--"
                       selection={
                         this.state.selectedPlants == null ||
-                        this.state.selectedPlants.length === 0
+                          this.state.selectedPlants.length === 0
                           ? []
                           : this.state.selectedPlants
                       }
@@ -275,6 +275,7 @@ class AddProcessDrawer extends Component {
                       selectionChanged={this.handlePlants}
                       optionValue={(option) => option.Value}
                       optionLabel={(option) => option.Text}
+                      validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
                       component={renderMultiSelectField}
                       mendatory={true}
                       className="multiselect-with-border"
@@ -289,7 +290,7 @@ class AddProcessDrawer extends Component {
                         placeholder="--Select--"
                         selection={
                           this.state.selectedMachine == null ||
-                          this.state.selectedMachine.length === 0
+                            this.state.selectedMachine.length === 0
                             ? []
                             : this.state.selectedMachine
                         }
@@ -297,6 +298,7 @@ class AddProcessDrawer extends Component {
                         selectionChanged={this.handleMachine}
                         optionValue={(option) => option.Value}
                         optionLabel={(option) => option.Text}
+                        validate={(this.state.selectedMachine == null || this.state.selectedMachine.length === 0) ? [required] : []}
                         component={renderMultiSelectField}
                         mendatory={true}
                         className="multiselect-with-border"
