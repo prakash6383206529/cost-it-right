@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   Row,
@@ -12,27 +12,14 @@ import {
 } from 'reactstrap'
 import classnames from 'classnames'
 import Drawer from '@material-ui/core/Drawer'
-import Pipe from './Pipe'
-import Plate from './Plate'
-import Bracket from './Bracket'
-import SectionL from './SectionL'
-import SectionC from './SectionC'
-import SectionZ from './SectionZ'
+import WeightCalculator from './sheetMetal'
+import ForgingCalculator from './forging'
+import Plastic from './Plastic'
 
-function WeightCalculator(props) {
-  const { rmRowData } = props
-  const [activeTab, setActiveTab] = useState('1')
-
-  /**
-   * @method toggle
-   * @description toggling the tabs
-   */
-  const toggle = (tab) => {
-    if (activeTab !== tab) {
-      setActiveTab(tab)
-    }
-  }
-
+function OpenWeightCalculator(props) {
+  const { rmRowData, isEditFlag } = props
+  console.log(rmRowData, ' 1 page')
+  const technology = props.technology ? props.technology : 'Plastic'
   /**
    * @method toggleDrawer
    * @description TOGGLE DRAWER
@@ -46,13 +33,38 @@ function WeightCalculator(props) {
     }
     props.closeDrawer('', weightData)
   }
+  //   useEffect(() => {
+  //     openConditionalDrawer(technology)
+  //   }, [])
 
-  const dispatch = useDispatch()
-
-  /**
-   * @method render
-   * @description Renders the component
-   */
+  const openConditionalDrawer = () => {
+    switch (technology) {
+      case 'Sheet Metal':
+        return (
+          <WeightCalculator
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            toggleDrawer={toggleDrawer}
+          />
+        )
+      case 'Forging':
+        return (
+          <ForgingCalculator
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            toggleDrawer={toggleDrawer}
+          />
+        )
+      case 'Plastic':
+        return (
+          <Plastic
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            toggleDrawer={toggleDrawer}
+          />
+        )
+    }
+  }
   return (
     <div>
       <Drawer
@@ -73,7 +85,6 @@ function WeightCalculator(props) {
                 ></div>
               </Col>
             </Row>
-
             <Row>
               <Col md="2">{`RM Name: ${
                 rmRowData.RMName !== undefined ? rmRowData.RMName : ''
@@ -83,112 +94,17 @@ function WeightCalculator(props) {
                   ? rmRowData.MaterialType
                   : ''
               }`}</Col>
-              <Col md="2">{`Density(g/cm2) ${
+              <Col md="2">{`Density(g/cm2): ${
                 rmRowData.Density !== undefined ? rmRowData.Density : ''
               }`}</Col>
+              <Col md="2">{`RM Rate: ${
+                rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''
+              }`}</Col>
+              <Col md="2">{`Scrap Rate: ${
+                rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''
+              }`}</Col>
             </Row>
-
-            <Row>
-              <Col>
-                <Nav tabs className="subtabs">
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: activeTab === '1' })}
-                      onClick={() => {
-                        toggle('1')
-                      }}
-                    >
-                      Pipe
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: activeTab === '2' })}
-                      onClick={() => {
-                        toggle('2')
-                      }}
-                    >
-                      Bracket
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: activeTab === '3' })}
-                      onClick={() => {
-                        toggle('3')
-                      }}
-                    >
-                      Plate
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: activeTab === '4' })}
-                      onClick={() => {
-                        toggle('4')
-                      }}
-                    >
-                      L Section
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: activeTab === '5' })}
-                      onClick={() => {
-                        toggle('5')
-                      }}
-                    >
-                      C Section
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({ active: activeTab === '6' })}
-                      onClick={() => {
-                        toggle('6')
-                      }}
-                    >
-                      Z Section
-                    </NavLink>
-                  </NavItem>
-                </Nav>
-                <TabContent activeTab={activeTab}>
-                  {activeTab === '1' && (
-                    <TabPane tabId="1">
-                      <Pipe
-                        rmRowData={props.rmRowData}
-                        toggleDrawer={toggleDrawer}
-                      />
-                    </TabPane>
-                  )}
-                  {activeTab === '2' && (
-                    <TabPane tabId="2">
-                      <Bracket />
-                    </TabPane>
-                  )}
-                  {activeTab === '3' && (
-                    <TabPane tabId="3">
-                      <Plate />
-                    </TabPane>
-                  )}
-                  {activeTab === '4' && (
-                    <TabPane tabId="4">
-                      <SectionL />
-                    </TabPane>
-                  )}
-                  {activeTab === '5' && (
-                    <TabPane tabId="5">
-                      <SectionC />
-                    </TabPane>
-                  )}
-                  {activeTab === '6' && (
-                    <TabPane tabId="6">
-                      <SectionZ />
-                    </TabPane>
-                  )}
-                </TabContent>
-              </Col>
-            </Row>
+            {openConditionalDrawer()}
           </div>
         </Container>
       </Drawer>
@@ -196,4 +112,4 @@ function WeightCalculator(props) {
   )
 }
 
-export default WeightCalculator
+export default OpenWeightCalculator

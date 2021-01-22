@@ -13,11 +13,11 @@ function PartCompoment(props) {
     <>
       <div className="user-page p-0">
         <div>
-          {/* <RawMaterialCost
+          <RawMaterialCost
             index={props.index}
             data={rmData}
             setRMCost={props.setRMCost}
-          /> */}
+          />
 
           {/* <BOPCost
             index={props.index}

@@ -35,9 +35,10 @@ function ProcessCost(props) {
       ProcessDetailId: '',
       MachineId: '',
       MachineRateId: '',
-      ProcessName: 'Chamfering',
+      ProcessName: 'Facing',
       ProcessDescription: 'LoreumIpsum',
       MachineName: 'Machine 1',
+      Tonnage: 9,
       UOM: 'Hours',
       Quantity: '',
       MachineRate: '123.023',
@@ -51,6 +52,7 @@ function ProcessCost(props) {
       ProcessName: 'Face Milling',
       ProcessDescription: 'LoreumIpsum',
       MachineName: 'Machine 1',
+      Tonnage: 12,
       UOM: 'Hours',
       Quantity: '',
       MachineRate: '125.023',
@@ -412,21 +414,18 @@ function ProcessCost(props) {
         </Row>
         <div className="cr-process-costwrap">
           <Row className="cr-innertool-cost">
-            <Col md="3" className="cr-costlabel">{`Process Cost: ${
-              tabData && tabData.ProcessCostTotal !== null
+            <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null
                 ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2)
                 : 0
-            }`}</Col>
-            <Col md="3" className="cr-costlabel">{`Operation Cost: ${
-              tabData && tabData.OperationCostTotal !== null
+              }`}</Col>
+            <Col md="3" className="cr-costlabel">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null
                 ? checkForDecimalAndNull(tabData.OperationCostTotal, 2)
                 : 0
-            }`}</Col>
-            <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${
-              tabData && tabData.NetConversionCost !== null
+              }`}</Col>
+            <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null
                 ? checkForDecimalAndNull(tabData.NetConversionCost, 2)
                 : 0
-            }`}</Col>
+              }`}</Col>
             <Col md="3" className="switch cr-costlabel">
               <label className="switch-level">
                 <div className={'left-title'}>{''}</div>
@@ -675,9 +674,9 @@ function ProcessCost(props) {
                                   defaultValue={
                                     item.Quantity
                                       ? checkForDecimalAndNull(
-                                          item.Quantity,
-                                          trimForMeasurment,
-                                        )
+                                        item.Quantity,
+                                        trimForMeasurment,
+                                      )
                                       : '0.00'
                                   }
                                   className=""
@@ -733,9 +732,9 @@ function ProcessCost(props) {
                                 defaultValue={
                                   item.NetCost
                                     ? checkForDecimalAndNull(
-                                        item.NetCost,
-                                        trimForCost,
-                                      )
+                                      item.NetCost,
+                                      trimForCost,
+                                    )
                                     : '0.00'
                                 }
                                 className=""
@@ -809,6 +808,8 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
+          // technology={'Machining'}
+          // technology={'Sheet Metal'}
           technology={'Machining'}
           calculatorData={calculatorData}
           process={'End Mill'}

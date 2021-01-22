@@ -18,9 +18,12 @@ import EndMill from './EndMill'
 import { useDispatch } from 'react-redux'
 import { saveProcessCostCalculationData } from '../../../actions/ProcessCost'
 import { toastr } from 'react-redux-toastr'
+import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
+import InjectionMoulding from './InjectionMoulding'
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
   console.log(calculatorData, 'Process')
+  const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (value, formValue) => {
     console.log('Form Value in drawer', value)
@@ -60,7 +63,7 @@ function VariableMhrDrawer(props) {
    * @method toggleDrawer
    * @description TOGGLE DRAWER
    */
-  const toggleDrawer = (event, weightData = {}) => {
+  const toggleDrawer = (event, weightData = '0.00') => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
@@ -71,70 +74,89 @@ function VariableMhrDrawer(props) {
   }
   const getProcessComponent = (process) => {
     console.log('Entered in switch case')
-    switch (process) {
-      case 'Facing':
-        return (
-          <Facing
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'Drilling':
-        return (
-          <Drilling
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'Turning':
-        return (
-          <Turning
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'Chamfering':
-        return (
-          <Chamfering
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'Face Milling':
-        return (
-          <FaceMilling
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'Side face Miling':
-        return (
-          <SideFaceMiling
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'Slot Cutting':
-        return (
-          <SlotCutting
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'Chamfering Miller':
-        return (
-          <ChamferingMiller
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
-      case 'End Mill':
-        return (
-          <EndMill
-            calculateMachineTime={calculateMachineTime}
-            technology={technology}
-          />
-        )
+    if (technology === 'Machining') {
+      switch (process) {
+        case 'Facing':
+          return (
+            <Facing
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'Drilling':
+          return (
+            <Drilling
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'Turning':
+          return (
+            <Turning
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'Chamfering':
+          return (
+            <Chamfering
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'Face Milling':
+          return (
+            <FaceMilling
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'Side face Miling':
+          return (
+            <SideFaceMiling
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'Slot Cutting':
+          return (
+            <SlotCutting
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'Chamfering Miller':
+          return (
+            <ChamferingMiller
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+        case 'End Mill':
+          return (
+            <EndMill
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+            />
+          )
+      }
+    } else if (technology === 'Sheet Metal') {
+      switch (process) {
+        default:
+          return (
+            <SheetMetalBaicDrawer
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+            />
+          )
+      }
+    } else if (technology === 'Plastic') {
+      switch (process) {
+        case 'Injection Moulding':
+          return (
+            <InjectionMoulding calculateMachineTime={calculateMachineTime} />
+          )
+      }
     }
   }
 

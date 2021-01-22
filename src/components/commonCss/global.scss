@@ -2128,27 +2128,32 @@ body {
 }
 
 // drawer medium (i.e. used on costing page calculator drawer)
-.drawer-md{
-  .MuiDrawer-paperAnchorRight{
+.drawer-md {
+  .MuiDrawer-paperAnchorRight {
     left: 430px;
   }
 }
-.calculator-drawer{
-  .form-group{
-    label{
+.calculator-drawer {
+  .form-group {
+    label {
       min-height: 44px;
     }
   }
 }
 // drawer medium end
 // costing page ui fixes
-.w90px{
+.w90px {
   width: 90px;
 }
-.calc-icon-middle{
+.calc-icon-middle {
   margin: 0px;
   height: auto;
-  min-height:20px;
+  min-height: 20px;
   vertical-align: middle;
 }
 // costing page ui fixes
+.m-height-44-label-inside {
+  label {
+    min-height: 44px;
+  }
+}

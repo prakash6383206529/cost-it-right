@@ -9,6 +9,7 @@ import { TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
 import WeightCalculator from '../../WeightCalculatorDrawer'
+import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 
 function RawMaterialCost(props) {
   const { register, handleSubmit, control, setValue, errors } = useForm({
@@ -19,7 +20,21 @@ function RawMaterialCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
-  const [gridData, setGridData] = useState(props.data)
+  // const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState([
+    {
+      RMName: 'Mould',
+      RMRate: 1,
+      MaterialType: 'Type1',
+      Density: 25,
+      UOM: 'Hours',
+      ScrapRate: 2,
+      FinishWeight: '',
+      GrossWeight: '',
+      NetLandedCost: '',
+      RawMaterialId: 1,
+    },
+  ])
 
   const costData = useContext(costingInfoContext)
 
@@ -347,7 +362,7 @@ function RawMaterialCost(props) {
         />
       )}
       {isWeightDrawerOpen && (
-        <WeightCalculator
+        <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
           closeDrawer={closeWeightDrawer}
           isEditFlag={false}
