@@ -284,7 +284,7 @@ class BOMViewer extends Component {
               onClose={(e) => this.toggleDrawer(e)}
             >
               <>
-                <div className={"drawer-wrapper drawer-full-width"}>
+                <div className={"drawer-wrapper drawer-full-width bom-drawer"}>
                   <Row className="drawer-heading">
                     <Col md="6">
                       <div className={"header-wrapper left"}>
@@ -358,7 +358,7 @@ class BOMViewer extends Component {
                         outputColor="#0c00ff"
                         inputColor="#ff0022"
                         style={{
-                          width: "100vw",
+                          width: "100%",
                           overflow:"auto",
                         }}
                         onClick={(e) => this.setState({ selected_point: null })}

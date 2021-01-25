@@ -365,7 +365,7 @@ class PowerListing extends Component {
             {this.props.loading && <Loader />}
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
               <Row className="pt-4">
-                <Col md="3" className="switch mb15">
+                <Col md="4" className="switch mb15">
                   <label className="switch-level">
                     <div className={"left-title"}>Zero Based</div>
                     <Switch
@@ -563,7 +563,7 @@ class PowerListing extends Component {
                       {"Net Cost Per Unit"}
                     </TableHeaderColumn>
                     <TableHeaderColumn
-                      width={100}
+                      width={"50px"}
                       dataField="PowerId"
                       export={false}
                       isKey={true}

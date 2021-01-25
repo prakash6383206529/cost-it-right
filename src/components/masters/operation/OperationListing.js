@@ -582,7 +582,7 @@ class OperationListing extends Component {
                           type="button"
                           //disabled={pristine || submitting}
                           onClick={this.filterList}
-                          className="apply mr5"
+                          className="apply"
                         >
                           {"Apply"}
                         </button>
@@ -698,6 +698,7 @@ class OperationListing extends Component {
                   export={false}
                   isKey={true}
                   dataFormat={this.buttonFormatter}
+                  width={"100px"}
                 >
                   Actions
                 </TableHeaderColumn>

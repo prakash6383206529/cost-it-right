@@ -1854,7 +1854,7 @@ html {
 }
 .fas.fa-eye-slash {
 	&:before {
-		content: "\f06e";
+		content: "\f070";
 		color: black;
 		font-family: $FontAwesome;
 		color: #959CB6;
@@ -1926,6 +1926,7 @@ html {
 			}
 		}
 		&:nth-child(2) {
+      left: 0 !important;
 			.input-range__label--value {
 				span {
 					opacity: 0;
@@ -2044,11 +2045,27 @@ input[type="number"].form-control {
     display: none;
   }
 }
-// ============issues fixing =============
+
+.fas{
+  font-family: "FontAwesome";
+}
+
+
+
+// ============issues fixing end=============
 
 @media(max-width:1367px){
   .filter-row-large{
      .col-md-12{-ms-flex: 0 0 100%;flex: 0 0 100%;max-width: 100%;}
+  }
+  .content-page {
+    .filter-row-large{
+      .filter-block{
+        .flex-fill:last-child{
+          text-align: right;
+        }
+      }
+    }
   }
   .process {
     .card {
@@ -2141,5 +2158,13 @@ input[type="number"].form-control {
       }// tr
     }// thead
   }// costing-table-next
+
+  body {
+    label{font-size: 14px;}
+  }
+  .blue-box{
+    padding: 0 15px 15px;
+  }
+
 }// 1366
 // responsive media query end

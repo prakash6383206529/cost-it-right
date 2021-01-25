@@ -247,6 +247,7 @@ class TaxListing extends Component {
                     <TableHeaderColumn
                       dataField="TaxDetailId"
                       export={false}
+                      width={100}
                       isKey={true}
                       dataFormat={this.buttonFormatter}
                     >

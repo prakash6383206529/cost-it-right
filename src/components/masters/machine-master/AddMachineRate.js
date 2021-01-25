@@ -993,7 +993,7 @@ class AddMachineRate extends Component {
                                 {!isEditFlag && (
                                   <div
                                     onClick={this.machineTypeToggler}
-                                    className={"plus-icon-square mr5 right"}
+                                    className={"plus-icon-square right"}
                                   ></div>
                                 )}
                               </div>
@@ -1103,7 +1103,7 @@ class AddMachineRate extends Component {
                                 {!isEditFlag && (
                                   <div
                                     onClick={this.processToggler}
-                                    className={"plus-icon-square mr5 right"}
+                                    className={"plus-icon-square right"}
                                   ></div>
                                 )}
                               </div>

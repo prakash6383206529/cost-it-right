@@ -232,7 +232,7 @@ class ViewUserDetails extends Component {
                     <div className={'right-details'}>{address}</div>
                   </Col>
                 </Row>
-                <Row className="mt-15 grant-user-grid drawer-table-sm">
+                <Row className="mt-15 drawer-table-sm">
                   <Col md="12">
                     <div className={'left-details'}>
                       <HeaderTitle
@@ -277,7 +277,7 @@ class ViewUserDetails extends Component {
 
                 </Row>
 
-                <Row className="mt-15 grant-user-grid ">
+                <Row className="mt-15 ">
                   <Col md="12">
                     <div className={'left-details'}>
                       <HeaderTitle
@@ -285,14 +285,14 @@ class ViewUserDetails extends Component {
                         customClass={'technology-level-details'} />
                     </div>
                     <div className={'right-details'}>
-                      <div
+                      <a
                         onClick={this.technologyToggle}
-                        className={`${isTechnologyOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></div>
+                        className={`${isTechnologyOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                     </div>
                   </Col>
                   {isTechnologyOpen &&
                     <Col md="12">
-                      <Table className="table table-bordered table table-sm" size="sm" >
+                      <Table className="table border table table-sm" size="sm" >
                         <thead>
                           <tr>
                             <th className="text-left" >{`Technology`}</th>
@@ -312,13 +312,12 @@ class ViewUserDetails extends Component {
                             })
                           }
                         </tbody>
-                        {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-
                       </Table>
+                      {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                     </Col>}
 
                 </Row>
-                <Row className="mt-15 grant-user-grid drawer-table-sm">
+                <Row className="mt-15 drawer-table-sm">
                   <Col md="12">&nbsp;</Col>
                 </Row>
               </div>

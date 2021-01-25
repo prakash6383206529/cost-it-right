@@ -851,7 +851,7 @@ class AddFreight extends Component {
                                 <button
                                   type="button"
                                   className={
-                                    "btn btn-primary mt30 pull-left mr5 px-2"
+                                    "btn btn-primary mt30 pull-left mr5 px-2 mb-2"
                                   }
                                   onClick={this.updateGrid}
                                 >
@@ -859,7 +859,7 @@ class AddFreight extends Component {
                                 </button>
                                 <button
                                   type="button"
-                                  className={"reset-btn mt30 pull-left"}
+                                  className={"reset-btn mt30 pull-left mb-2 w-auto px-1"}
                                   onClick={this.resetGridData}
                                 >
                                   Cancel

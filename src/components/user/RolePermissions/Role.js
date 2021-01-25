@@ -216,73 +216,94 @@ class Role extends Component {
 		const { isLoader, isSubmitted, isEditFlag } = this.state;
 
 		return (
-			<div>
-				{isLoader && <Loader />}
-				<div className="login-container signup-form ">
-					<div className="row mb-30">
-						<div className="col-md-12">
-							<div className="shadow-lgg login-formg ">
-								<div className="form-headingg">
-									<h2>{isEditFlag ? 'Update Role' : 'Add Role'}</h2>
-								</div>
-								<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-									<div className="row form-group role-form">
-										<div className="col-md-6 ">
-											<div className="row">
-												<div className="col-md-3">
-													<div class="header-title  Personal-Details"><h5>Role Name:</h5></div>
-												</div>
-												<Field
-													name={"RoleName"}
-													type="text"
-													placeholder={'Enter'}
-													validate={[required, alphabetsOnlyForName]}
-													component={renderText}
-													required={true}
-													maxLength={26}
-													customClassName={'withBorder col-md-5'}
-												/>
-											</div>
-										</div>
-									</div>
+      <div>
+        {isLoader && <Loader />}
+        <div className="login-container signup-form ">
+          <div className="row mb-30">
+            <div className="col-md-12">
+              <div className="shadow-lgg login-formg ">
+                <div className="form-headingg px-3">
+                  <h2>{isEditFlag ? "Update Role" : "Add Role"}</h2>
+                </div>
+                <form
+                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  noValidate
+                >
+                  <div className="px-3">
+                    <div className="row form-group role-form mb-0">
+                      <div className="col-md-6 ">
+                        <div className="row">
+                          <div className="col-md-4">
+                            <div class="header-title  Personal-Details">
+                              <h5>Role Name:</h5>
+                            </div>
+                          </div>
+                          <Field
+                            name={"RoleName"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[required, alphabetsOnlyForName]}
+                            component={renderText}
+                            required={true}
+                            maxLength={26}
+                            customClassName={"withBorder col-md-5 mb-0"}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-									<div className="row form-group grant-user-grid">
-										<div className="col-md-12">
-											<PermissionsTabIndex
-												onRef={ref => (this.child = ref)}
-												isEditFlag={this.state.isEditFlag}
-												setInitialModuleData={this.setInitialModuleData}
-												moduleData={this.moduleDataHandler}
-												isNewRole={this.state.isNewRole}
-											/>
-										</div>
-									</div>
-									<div class="role-footer">
-										<div className="text-right btn-blue-block">
-											<button
-												//disabled={pristine || submitting}
-												onClick={this.cancel}
-												type="button"
-												value="Cancel"
-												className="reset mr15 cancel-btn">
-												<div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> Cancel</button>
-											<button
-												disabled={isSubmitted ? true : false}
-												type="submit"
-												className="btn-primary save-btn"
-											>	<div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
-												</div>
-												{isEditFlag ? 'Update' : 'Save'}
-											</button>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		);
+                    <div className="row form-group grant-user-grid">
+                      <div className="col-md-12">
+                        <PermissionsTabIndex
+                          onRef={(ref) => (this.child = ref)}
+                          isEditFlag={this.state.isEditFlag}
+                          setInitialModuleData={this.setInitialModuleData}
+                          moduleData={this.moduleDataHandler}
+                          isNewRole={this.state.isNewRole}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="role-footer">
+                    <div className="text-right btn-blue-block">
+                      <button
+                        //disabled={pristine || submitting}
+                        onClick={this.cancel}
+                        type="button"
+                        value="Cancel"
+                        className="reset mr15 cancel-btn"
+                      >
+                        <div className={"cross-icon"}>
+                          <img
+                            src={require("../../../assests/images/times.png")}
+                            alt="cancel-icon.jpg"
+                          />
+                        </div>{" "}
+                        Cancel
+                      </button>
+                      <button
+                        disabled={isSubmitted ? true : false}
+                        type="submit"
+                        className="btn-primary save-btn"
+                      >
+                        {" "}
+                        <div className={"check-icon"}>
+                          <img
+                            src={require("../../../assests/images/check.png")}
+                            alt="check-icon.jpg"
+                          />
+                        </div>
+                        {isEditFlag ? "Update" : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
 	}
 }
 

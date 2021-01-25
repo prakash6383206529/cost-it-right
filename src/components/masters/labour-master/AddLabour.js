@@ -672,7 +672,7 @@ class AddLabour extends Component {
                             {!isEditFlag && (
                               <div
                                 onClick={this.machineTypeToggler}
-                                className={"plus-icon-square mr15 right"}
+                                className={"plus-icon-square right"}
                               ></div>
                             )}
                           </div>
