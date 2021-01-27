@@ -222,14 +222,14 @@ class Role extends Component {
           <div className="row mb-30">
             <div className="col-md-12">
               <div className="shadow-lgg login-formg ">
-                <div className="form-headingg px-3">
+                <div className="form-heading px-3">
                   <h2>{isEditFlag ? "Update Role" : "Add Role"}</h2>
                 </div>
                 <form
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
                   noValidate
                 >
-                  <div className="px-3">
+                  <div className="px-3 add-min-height">
                     <div className="row form-group role-form mb-0">
                       <div className="col-md-6 ">
                         <div className="row">

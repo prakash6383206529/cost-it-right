@@ -1915,6 +1915,18 @@ html {
 	}
 }
 .input-range {
+  .input-range__track--background
+  {
+    &:before {
+      content: 'Net Landed Range (INR)';
+      position: absolute;
+      left: -7px;
+      font-family: $roboto !important;
+      font-size: 10px;
+      top: -27px;
+      color: #A4ABC5;
+    }
+  }
 	position: relative;
 	font-family: $roboto !important;
 	.input-range__slider-container {
@@ -1926,17 +1938,9 @@ html {
 			}
 		}
 		&:nth-child(2) {
-      left: 0 !important;
 			.input-range__label--value {
 				span {
 					opacity: 0;
-				}
-				&:before {
-					content: 'Net Landed Range (INR)';
-					position: absolute;
-					left: -7px;
-					font-family: $roboto !important;
-					font-size: 10px;
 				}
 			}
 		}
@@ -2050,7 +2054,20 @@ input[type="number"].form-control {
   font-family: "FontAwesome";
 }
 
-
+.drawer-wrapper{
+  .file-uploadsection{
+    margin: 0 0 15px;
+  }
+}
+.bom-viewer-main{
+  .MuiDrawer-paper{
+    width: calc(100% - 230px);
+  }
+}
+.react-bs-table-search-form {
+  .btn-secondary:hover{background-color: #1d59af;
+  }
+}
 
 // ============issues fixing end=============
 

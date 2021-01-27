@@ -325,7 +325,7 @@ class Level extends Component {
 
                   {this.props.isShowForm &&
                     <div className="row pr-0">
-                      <div className="input-group  form-group col-md-12 input-withouticon" >
+                      <div className="col-md-12 input-withouticon" >
                         <Field
                           label="Level Name"
                           name={"LevelName"}
@@ -338,7 +338,7 @@ class Level extends Component {
                           customClassName={'withBorder'}
                         />
                       </div>
-                      <div className="input-group  form-group col-md-12 input-withouticon mb-0" >
+                      <div className="col-md-12 input-withouticon mb-0" >
                         <Field
                           label="Sequence"
                           name={"Sequence"}

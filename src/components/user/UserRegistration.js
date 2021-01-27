@@ -792,7 +792,7 @@ class UserRegistration extends Component {
                   noValidate
                   className="manageuser"
                 >
-                  <div class="filled-container px-3">
+                  <div class="filled-container px-3 add-min-height">
                     <HeaderTitle
                       title={"Personal Details:"}
                       customClass={"Personal-Details"}

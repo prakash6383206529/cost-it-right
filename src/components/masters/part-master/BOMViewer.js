@@ -279,6 +279,7 @@ class BOMViewer extends Component {
         return (
           <>
             <Drawer
+              className={"bom-viewer-main"}
               anchor={this.props.anchor}
               open={this.props.isOpen}
               onClose={(e) => this.toggleDrawer(e)}
@@ -359,7 +360,9 @@ class BOMViewer extends Component {
                         inputColor="#ff0022"
                         style={{
                           width: "100%",
-                          overflow:"auto",
+                          overflow: "auto",
+                          maxWidth: "100vw",
+                          maxHeight: "calc(100vh - 210px)",
                         }}
                         onClick={(e) => this.setState({ selected_point: null })}
                         selected={this.state.selected_point}
