@@ -94,66 +94,83 @@ class AddGrade extends Component {
     render() {
         const { handleSubmit, isEditFlag } = this.props;
         return (
-            <>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
-                    <Container>
-                        <div className={'drawer-wrapper'}>
-                            <form
-                                noValidate
-                                className="form"
-                                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                            >
-                                <Row className="drawer-heading">
-                                    <Col>
-                                        <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update RM Grade' : 'Add RM Grade'}</h3>
-                                        </div>
-                                        <div
-                                            onClick={(e) => this.toggleDrawer(e)}
-                                            className={'close-button right'}>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col md="12">
-                                        <Field
-                                            label={`RM Grade`}
-                                            name={"Grade"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required]}
-                                            component={renderText}
-                                            required={true}
-                                            className=" "
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                </Row>
-                                </form>
-                                <div className="col-md-12">
-                                    <Row className="sf-btn-footer no-gutters justify-content-between m-0">
-                                        <div className="text-right w-100">
-                                            <button
-                                                onClick={this.cancel}
-                                                type="submit"
-                                                value="CANCEL"
-                                                className="reset mr15 cancel-btn">
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div>CANCEL</button>
-                                            <button
-                                                type="submit"
-                                                // disabled={isSubmitted ? true : false}
-                                                className="btn-primary save-btn"
-                                            >	<div className={'check-icon'}><i class="fa fa-check" aria-hidden="true"></i>
-                                                </div>
-                                                {this.props.isEditFlag ? 'UPDATE' : 'SAVE'}
-                                            </button>
-                                        </div>
-                                    </Row>
-                                </div>
+          <>
+            <Drawer
+              anchor={this.props.anchor}
+              open={this.props.isOpen}
+              onClose={(e) => this.toggleDrawer(e)}
+            >
+              <Container>
+                <div className={"drawer-wrapper"}>
+                  <form
+                    noValidate
+                    className="form"
+                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  >
+                    <Row className="drawer-heading">
+                      <Col>
+                        <div className={"header-wrapper left"}>
+                          <h3>
+                            {isEditFlag ? "Update RM Grade" : "Add RM Grade"}
+                          </h3>
                         </div>
-                    </Container>
-                </Drawer>
-            </>
+                        <div
+                          onClick={(e) => this.toggleDrawer(e)}
+                          className={"close-button right"}
+                        ></div>
+                      </Col>
+                    </Row>
+                    
+                      <Col md="12">
+                        <Field
+                          label={`RM Grade`}
+                          name={"Grade"}
+                          type="text"
+                          placeholder={""}
+                          validate={[required]}
+                          component={renderText}
+                          required={true}
+                          className=" "
+                          customClassName=" withBorder"
+                        />
+                      </Col>
+
+                    
+                    <Row className="sf-btn-footer no-gutters justify-content-between m-0">
+                        <div className="text-right w-100">
+                          <button
+                            onClick={this.cancel}
+                            type="submit"
+                            value="CANCEL"
+                            className="reset mr15 cancel-btn"
+                          >
+                            <div className={"cross-icon"}>
+                              <img
+                                src={require("../../../assests/images/times.png")}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>
+                            CANCEL
+                          </button>
+                          <button
+                            type="submit"
+                            // disabled={isSubmitted ? true : false}
+                            className="btn-primary save-btn"
+                          >
+                            {" "}
+                            <div className={"check-icon"}>
+                              <i class="fa fa-check" aria-hidden="true"></i>
+                            </div>
+                            {this.props.isEditFlag ? "UPDATE" : "SAVE"}
+                          </button>
+                        </div>
+                      </Row>
+                    
+                  </form>
+                </div>
+              </Container>
+            </Drawer>
+          </>
         );
     }
 }
