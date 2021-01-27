@@ -633,7 +633,7 @@ class OperationListing extends Component {
                 <TableHeaderColumn
                   dataField="CostingHead"
                   columnTitle={true}
-                  dataAlign="center"
+                  dataAlign="left"
                   dataSort={true}
                   dataFormat={this.costingHeadFormatter}
                 >

@@ -946,8 +946,8 @@ class AddRMDomestic extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isEditFlag
-                            ? `Update Raw Material Domestic Details`
-                            : `Add Raw Material Domestic Details`}
+                            ? `Update Raw Material (Domestic)`
+                            : `Add Raw Material (Domestic)`}
                         </h1>
                       </div>
                     </div>

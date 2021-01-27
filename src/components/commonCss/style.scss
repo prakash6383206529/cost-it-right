@@ -745,6 +745,7 @@ button.add-btn {
   color: #3D4465;
   padding-left: 15px;
   line-height: initial;
+  font-size: 17px;
 }
 .table.cr-brdr-main thead th{color:#3D4465;}
 .withBorder .form-control {
@@ -1772,6 +1773,11 @@ html {
 
 .react-bs-table-container {
 	.react-bs-table-pagination {
+    .react-bs-table-sizePerPage-dropdown{
+      .dropdown-toggle{
+        box-shadow: none;
+      }
+    }
 		.col-md-6 {
 			&:nth-last-child(1) {
 				ul.pagination {
@@ -1917,6 +1923,7 @@ html {
 .input-range {
   .input-range__track--background
   {
+    position: relative;
     &:before {
       content: 'Net Landed Range (INR)';
       position: absolute;
@@ -1930,6 +1937,7 @@ html {
 	position: relative;
 	font-family: $roboto !important;
 	.input-range__slider-container {
+    right: 0;
 		&:nth-child(3) {
 			right: 0px;
 			.input-range__label--value {
@@ -1939,8 +1947,20 @@ html {
 		}
 		&:nth-child(2) {
 			.input-range__label--value {
+        right: 0px;
 				span {
-					opacity: 0;
+          right: 20px;
+          color: #3D4465;
+          font-family: "Roboto", sans-serif;;
+          font-size: 10px;
+          top: -2px;
+          &:after{
+            content: "-";
+            right: -5px;
+            position: absolute;
+            top: -3px;
+            font-size: 12px;
+          }
 				}
 			}
 		}
@@ -1995,9 +2015,9 @@ input:disabled{
     }
   }
 }
-.grant-user-grid{
-  min-height: calc(100vh - 524px);
-}
+// .grant-user-grid{
+//   min-height: calc(100vh - 524px);
+// }
 .shadow-lgg{
   .form{
     .sf-btn-footer{
@@ -2071,11 +2091,40 @@ input[type="number"].form-control {
   .btn-secondary:hover{background-color: #1d59af;
   }
 }
+table{
+    thead{
+      th{
+      color: #3D4465;
+    }
+  }
+}
 .text-dark-blue{
   color: #3D4465;
 }
+.add-min-height{
+  .btn-primary,.user-btn{
+    height: 40px;
+  }
+  .reset-btn{
+    height: 40px;
+  }
+  .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: 27px;}
+}
+
 
 // ============issues fixing end=============
+
+@media(max-width:1600px){
+  .input-range {
+    .input-range__track--background{
+        &:before {
+          width: 60px;
+          top: -39px;
+        }// before
+      }// input-range__track--background
+    }// input-range
+}// 1600px media query end
+
 
 @media(max-width:1367px){
   .filter-row-large{

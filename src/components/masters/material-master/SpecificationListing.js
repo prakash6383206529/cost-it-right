@@ -396,7 +396,7 @@ class SpecificationListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMSpec" dataAlign="center">Specification</TableHeaderColumn>

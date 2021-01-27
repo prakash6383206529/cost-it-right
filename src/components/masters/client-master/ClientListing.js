@@ -282,7 +282,7 @@ class ClientListing extends Component {
                 className={"client-table"}
                 pagination
               >
-                <TableHeaderColumn dataField="CompanyName" dataAlign="center">
+                <TableHeaderColumn dataField="CompanyName" dataAlign="left">
                   {"Company"}
                 </TableHeaderColumn>
                 <TableHeaderColumn dataField="ClientName" dataAlign="center">

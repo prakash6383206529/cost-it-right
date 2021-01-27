@@ -578,7 +578,7 @@ class RMImportListing extends Component {
                     dataField="CostingHead"
                     width={100}
                     columnTitle={true}
-                    dataAlign="center"
+                    dataAlign="left"
                     dataSort={true}
                     dataFormat={this.costingHeadFormatter}
                   >

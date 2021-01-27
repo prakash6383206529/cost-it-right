@@ -225,7 +225,7 @@ class TaxListing extends Component {
                   >
                     <TableHeaderColumn
                       dataField="TaxName"
-                      dataAlign="center"
+                      dataAlign="left"
                       dataSort={true}
                     >
                       Tax Name

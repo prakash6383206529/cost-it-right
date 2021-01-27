@@ -192,11 +192,22 @@ class LevelsListing extends Component {
 		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId,
 			AddAccessibility, EditAccessibility, DeleteAccessibility } = this.state;
 		const options = {
-			//clearSearch: true,
-			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-			afterSearch: this.afterSearch,
-			paginationShowsTotal: this.renderPaginationShowsTotal,
-		};
+      //clearSearch: true,
+      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      afterSearch: this.afterSearch,
+      paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+	  lastPage: <span className="last-page-pg"></span>,
+	  sizePerPageList: [ {
+        text: '5', value: 5
+      }, {
+        text: '10', value: 10
+      }],
+      sizePerPage: 5,
+	  paginationSize: 2,
+    };
 		return (
 			<>
 				{this.props.loading && <Loader />}
@@ -225,7 +236,7 @@ class LevelsListing extends Component {
 									ignoreSinglePage
 									ref={'table'}
 									trClassName={'userlisting-row'}
-									tableHeaderClass='my-custom-header'
+									tableHeaderClass={'my-custom-header'}
 									pagination>
 									<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
 									<TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>

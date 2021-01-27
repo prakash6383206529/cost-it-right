@@ -531,7 +531,7 @@ class ProfitListing extends Component {
                     dataField="IsVendor"
                     width={100}
                     columnTitle={true}
-                    dataAlign="center"
+                    dataAlign="left"
                     dataSort={true}
                     dataFormat={this.costingHeadFormatter}
                   >

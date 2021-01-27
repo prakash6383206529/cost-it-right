@@ -1159,7 +1159,7 @@ class UserRegistration extends Component {
                           <>
                             <button
                               type="button"
-                              className={"add-button mr-2 mt-2"}
+                              className={"user-btn mr-2 mt-1"}
                               onClick={this.updateTechnologyLevel}
                             >
                               Update
@@ -1167,7 +1167,7 @@ class UserRegistration extends Component {
 
                             <button
                               type="button"
-                              className={"user-btn pull-left mt-2"}
+                              className={"user-btn pull-left mt-1"}
                               onClick={this.resetTechnologyLevel}
                             >
                               Cancel
@@ -1176,7 +1176,7 @@ class UserRegistration extends Component {
                         ) : (
                           <button
                             type="button"
-                            className={"user-btn pull-left mt-2"}
+                            className={"user-btn pull-left mt-1"}
                             onClick={this.setTechnologyLevel}
                           >
                             <div className={"plus"}></div>ADD

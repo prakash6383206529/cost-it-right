@@ -536,7 +536,7 @@ class VendorListing extends Component {
             >
               <TableHeaderColumn
                 dataField="VendorType"
-                dataAlign="center"
+                dataAlign="left"
                 dataSort={true}
               >
                 Vendor Type

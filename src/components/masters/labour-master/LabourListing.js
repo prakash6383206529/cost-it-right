@@ -645,7 +645,7 @@ class LabourListing extends Component {
                 <TableHeaderColumn
                   dataField="IsContractBase"
                   columnTitle={true}
-                  dataAlign="center"
+                  dataAlign="left"
                   dataSort={true}
                   dataFormat={this.costingHeadFormatter}
                 >

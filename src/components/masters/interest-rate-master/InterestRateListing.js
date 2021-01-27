@@ -542,7 +542,7 @@ class InterestRateListing extends Component {
                 <TableHeaderColumn
                   dataField="Isvendor"
                   columnTitle={true}
-                  dataAlign="center"
+                  dataAlign="left"
                   dataSort={true}
                   dataFormat={this.costingHeadFormatter}
                 >

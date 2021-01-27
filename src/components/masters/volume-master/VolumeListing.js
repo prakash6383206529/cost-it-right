@@ -591,7 +591,7 @@ class VolumeListing extends Component {
                 <TableHeaderColumn
                   dataField="IsVendor"
                   columnTitle={true}
-                  dataAlign="center"
+                  dataAlign="left"
                   dataSort={true}
                   dataFormat={this.costingHeadFormatter}
                 >

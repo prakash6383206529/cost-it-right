@@ -268,7 +268,7 @@ class ReasonListing extends Component {
                   {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                   <TableHeaderColumn
                     dataField="Reason"
-                    dataAlign="center"
+                    dataAlign="left"
                     dataSort={true}
                   >
                     Reason
@@ -284,7 +284,7 @@ class ReasonListing extends Component {
                   <TableHeaderColumn
                     className="action"
                     dataField="ReasonId"
-                    dataAlign="center"
+                    dataAlign="right"
                     export={false}
                     isKey={true}
                     dataFormat={this.buttonFormatter}

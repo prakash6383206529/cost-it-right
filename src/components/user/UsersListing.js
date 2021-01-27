@@ -498,7 +498,7 @@ class UsersListing extends Component {
 					tableHeaderClass='my-custom-header'
 					pagination>
 					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="center" dataSort={true}>Name</TableHeaderColumn>
+					<TableHeaderColumn dataField="FullName" csvHeader='Full-Name' dataFormat={this.linkableFormatter} dataAlign="left" dataSort={true}>Name</TableHeaderColumn>
 					{!initialConfiguration.IsLoginEmailConfigure ? <TableHeaderColumn dataField="UserName" width={'150'} dataSort={true}>User name</TableHeaderColumn> : null}
 					<TableHeaderColumn dataField="EmailAddress" columnTitle width={'200'} dataSort={true}>Email Id</TableHeaderColumn>
 					<TableHeaderColumn dataField="Mobile" width={'140'} dataSort={false}>Mobile No.</TableHeaderColumn>

@@ -462,7 +462,7 @@ class ZBCPlantListing extends Component {
             >
               <TableHeaderColumn
                 dataField="PlantName"
-                dataAlign="center"
+                dataAlign="left"
                 dataSort={true}
               >
                 Plant Name

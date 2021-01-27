@@ -357,7 +357,7 @@ class ExchangeRateListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Currency" columnTitle={true} dataAlign="center" dataSort={true} >{'Currency'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Currency" columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="CurrencyExchangeRate" width={150} columnTitle={true} dataAlign="center" >{'Exchange Rate(INR)'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BankRate" columnTitle={true} dataAlign="center" >{'Bank Rate(INR)'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BankCommissionPercentage" columnTitle={true} dataAlign="center" >{'Bank Commission %'}</TableHeaderColumn>

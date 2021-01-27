@@ -1378,6 +1378,7 @@ class AddMoreDetails extends Component {
                         className="form"
                         onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       >
+                        <div className="add-min-height">
                         <Row>
                           <Col md="12">
                             <HeaderTitle
@@ -2788,8 +2789,8 @@ class AddMoreDetails extends Component {
                             </div>
                           </Col>
                         </Row>
-
-                        <Row className="sf-btn-footer no-gutters justify-content-between">
+                      </div>
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                           <div className="col-sm-12 text-right bluefooter-butn">
                             <button
                               type={"button"}

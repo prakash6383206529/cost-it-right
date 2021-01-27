@@ -543,8 +543,8 @@ class AddFreight extends Component {
                         <div className="form-heading mb-0">
                           <h1>
                             {isEditFlag
-                              ? `Update Freight Details`
-                              : `Add Freight Details`}
+                              ? `Update Freight`
+                              : `Add Freight`}
                           </h1>
                         </div>
                       </div>
@@ -880,7 +880,7 @@ class AddFreight extends Component {
                       </Row>
                       <Row>
                         <Col md="12">
-                          <Table className="table" size="sm">
+                          <Table className="table border" size="sm">
                             <thead>
                               <tr>
                                 <th>{`Capacity`}</th>

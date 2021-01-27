@@ -539,7 +539,7 @@ class PowerListing extends Component {
                       dataField="StateName"
                       width={100}
                       columnTitle={true}
-                      dataAlign="center"
+                      dataAlign="left"
                       dataSort={true}
                     >
                       {"State"}

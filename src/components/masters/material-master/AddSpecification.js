@@ -327,7 +327,7 @@ class AddSpecification extends Component {
                           <h3>
                             {isEditFlag
                               ? "Update  Specification"
-                              : "Add Specification"}
+                              : "Add Raw Material Specification"}
                           </h3>
                         </div>
                         <div

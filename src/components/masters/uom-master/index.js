@@ -263,7 +263,7 @@ class UOMMaster extends Component {
                   >
                     <TableHeaderColumn
                       dataField="Unit"
-                      dataAlign="center"
+                      dataAlign="left"
                       dataSort={true}
                       dataFormat={this.applySuperScriptFormatter}
                     >

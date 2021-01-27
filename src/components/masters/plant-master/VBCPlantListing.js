@@ -462,7 +462,7 @@ class VBCPlantListing extends Component {
             >
               <TableHeaderColumn
                 dataField="VendorName"
-                dataAlign="center"
+                dataAlign="left"
                 dataSort={true}
               >
                 Vendor Name

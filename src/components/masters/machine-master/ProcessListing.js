@@ -365,7 +365,7 @@ class ProcessListing extends Component {
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Process Name'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessCode" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Code'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Machines" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine'}</TableHeaderColumn>
