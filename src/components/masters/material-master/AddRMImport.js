@@ -782,313 +782,409 @@ class AddRMImport extends Component {
                           onSubmit={handleSubmit(this.onSubmit.bind(this))}
                         >
                           <div className="add-min-height">
-                          <Row>
-                            <Col md="4" className="switch mb15">
-                              <label className="switch-level">
-                                <div className={"left-title"}>Zero Based</div>
-                                <Switch
-                                  onChange={this.onPressVendor}
-                                  checked={this.state.IsVendor}
-                                  id="normal-switch"
-                                  disabled={isEditFlag ? true : false}
-                                  background="#4DC771"
-                                  onColor="#4DC771"
-                                  onHandleColor="#ffffff"
-                                  offColor="#4DC771"
-                                  uncheckedIcon={false}
-                                  checkedIcon={false}
-                                  height={20}
-                                  width={46}
-                                />
-                                <div className={"right-title"}>
-                                  Vendor Based
-                                </div>
-                              </label>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col md="12" className="filter-block">
-                              <div className=" flex-fills mb-2 pl-0">
-                                <h5>{"Raw Material:"}</h5>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="RawMaterialId"
-                                    type="text"
-                                    label="Raw Material"
-                                    component={searchableSelect}
-                                    placeholder={"-Raw Material-"}
-                                    options={this.renderListing("material")}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.RawMaterial == null ||
-                                      this.state.RawMaterial.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleRMChange
-                                    }
-                                    valueDescription={this.state.RawMaterial}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.rmToggler}
-                                    className={"plus-icon-square  right"}
-                                  ></div>
-                                )}
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="RawMaterialGradeId"
-                                    type="text"
-                                    label="RM Grade"
-                                    component={searchableSelect}
-                                    placeholder={"-RM Grade-"}
-                                    options={this.renderListing("grade")}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.RMGrade == null ||
-                                      this.state.RMGrade.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleGradeChange
-                                    }
-                                    valueDescription={this.state.RMGrade}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                                {this.state.RawMaterial == null ||
-                                this.state.RawMaterial.length === 0 ? (
-                                  <div
-                                    className={
-                                      "plus-icon-square blurPlus-icon-square right"
-                                    }
-                                  ></div>
-                                ) : (
-                                  !isEditFlag && (
-                                    <div
-                                      onClick={this.gradeToggler}
-                                      className={"plus-icon-square right"}
-                                    ></div>
-                                  )
-                                )}
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="RawMaterialSpecificationId"
-                                    type="text"
-                                    label="RM Spec"
-                                    component={searchableSelect}
-                                    placeholder={"-RM Spec-"}
-                                    options={this.renderListing(
-                                      "specification"
-                                    )}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.RMSpec == null ||
-                                      this.state.RMSpec.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleSpecChange
-                                    }
-                                    valueDescription={this.state.RMSpec}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.specificationToggler}
-                                    className={"plus-icon-square  right"}
-                                  ></div>
-                                )}
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="CategoryId"
-                                    type="text"
-                                    label="Category"
-                                    component={searchableSelect}
-                                    placeholder={"-Category-"}
-                                    options={this.renderListing("category")}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.Category == null ||
-                                      this.state.Category.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleCategoryChange
-                                    }
-                                    valueDescription={this.state.Category}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                          </Row>
-                          {!this.state.IsVendor && (
                             <Row>
-                              <Col md="3">
-                                <Field
-                                  label="Plant"
-                                  name="SourceSupplierPlantId"
-                                  placeholder="-Select-"
-                                  selection={
-                                    this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                      ? []
-                                      : this.state.selectedPlants
-                                  }
-                                  options={this.renderListing("plant")}
-                                  selectionChanged={
-                                    this.handleSourceSupplierPlant
-                                  }
-                                  optionValue={(option) => option.Value}
-                                  optionLabel={(option) => option.Text}
-                                  component={renderMultiSelectField}
-                                  mendatory={true}
-                                  className="multiselect-with-border"
-                                  disabled={
-                                    this.state.IsVendor || isEditFlag
-                                      ? true
-                                      : false
-                                  }
-                                />
+                              <Col md="4" className="switch mb15">
+                                <label className="switch-level">
+                                  <div className={"left-title"}>Zero Based</div>
+                                  <Switch
+                                    onChange={this.onPressVendor}
+                                    checked={this.state.IsVendor}
+                                    id="normal-switch"
+                                    disabled={isEditFlag ? true : false}
+                                    background="#4DC771"
+                                    onColor="#4DC771"
+                                    onHandleColor="#ffffff"
+                                    offColor="#4DC771"
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    height={20}
+                                    width={46}
+                                  />
+                                  <div className={"right-title"}>
+                                    Vendor Based
+                                  </div>
+                                </label>
                               </Col>
                             </Row>
-                          )}
-
-                          <Row>
-                            <Col md="12" className="filter-block">
-                              <div className=" flex-fills mb-2 pl-0">
-                                <h5>{"Vendor"}</h5>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="DestinationSupplierId"
-                                    type="text"
-                                    label="Vendor Name"
-                                    component={searchableSelect}
-                                    placeholder={"-Vendor-"}
-                                    options={this.renderListing(
-                                      "VendorNameList"
-                                    )}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.vendorName == null ||
-                                      this.state.vendorName.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={
-                                      this.handleVendorName
-                                    }
-                                    valueDescription={this.state.vendorName}
-                                    disabled={isEditFlag ? true : false}
-                                  />
+                            <Row>
+                              <Col md="12" className="filter-block">
+                                <div className=" flex-fills mb-2 pl-0">
+                                  <h5>{"Raw Material:"}</h5>
                                 </div>
-                                {!isEditFlag && (
-                                  <div
-                                    onClick={this.vendorToggler}
-                                    className={"plus-icon-square  right"}
-                                  ></div>
-                                )}
-                              </div>
-                            </Col>
-                            {checkVendorPlantConfigurable() &&
-                              this.state.IsVendor && (
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      name="RawMaterialId"
+                                      type="text"
+                                      label="Raw Material"
+                                      component={searchableSelect}
+                                      placeholder={"-Raw Material-"}
+                                      options={this.renderListing("material")}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      validate={
+                                        this.state.RawMaterial == null ||
+                                        this.state.RawMaterial.length === 0
+                                          ? [required]
+                                          : []
+                                      }
+                                      required={true}
+                                      handleChangeDescription={
+                                        this.handleRMChange
+                                      }
+                                      valueDescription={this.state.RawMaterial}
+                                      disabled={isEditFlag ? true : false}
+                                    />
+                                  </div>
+                                  {!isEditFlag && (
+                                    <div
+                                      onClick={this.rmToggler}
+                                      className={"plus-icon-square  right"}
+                                    ></div>
+                                  )}
+                                </div>
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      name="RawMaterialGradeId"
+                                      type="text"
+                                      label="RM Grade"
+                                      component={searchableSelect}
+                                      placeholder={"-RM Grade-"}
+                                      options={this.renderListing("grade")}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      validate={
+                                        this.state.RMGrade == null ||
+                                        this.state.RMGrade.length === 0
+                                          ? [required]
+                                          : []
+                                      }
+                                      required={true}
+                                      handleChangeDescription={
+                                        this.handleGradeChange
+                                      }
+                                      valueDescription={this.state.RMGrade}
+                                      disabled={isEditFlag ? true : false}
+                                    />
+                                  </div>
+                                  {this.state.RawMaterial == null ||
+                                  this.state.RawMaterial.length === 0 ? (
+                                    <div
+                                      className={
+                                        "plus-icon-square blurPlus-icon-square right"
+                                      }
+                                    ></div>
+                                  ) : (
+                                    !isEditFlag && (
+                                      <div
+                                        onClick={this.gradeToggler}
+                                        className={"plus-icon-square right"}
+                                      ></div>
+                                    )
+                                  )}
+                                </div>
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      name="RawMaterialSpecificationId"
+                                      type="text"
+                                      label="RM Spec"
+                                      component={searchableSelect}
+                                      placeholder={"-RM Spec-"}
+                                      options={this.renderListing(
+                                        "specification"
+                                      )}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      validate={
+                                        this.state.RMSpec == null ||
+                                        this.state.RMSpec.length === 0
+                                          ? [required]
+                                          : []
+                                      }
+                                      required={true}
+                                      handleChangeDescription={
+                                        this.handleSpecChange
+                                      }
+                                      valueDescription={this.state.RMSpec}
+                                      disabled={isEditFlag ? true : false}
+                                    />
+                                  </div>
+                                  {!isEditFlag && (
+                                    <div
+                                      onClick={this.specificationToggler}
+                                      className={"plus-icon-square  right"}
+                                    ></div>
+                                  )}
+                                </div>
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      name="CategoryId"
+                                      type="text"
+                                      label="Category"
+                                      component={searchableSelect}
+                                      placeholder={"-Category-"}
+                                      options={this.renderListing("category")}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      validate={
+                                        this.state.Category == null ||
+                                        this.state.Category.length === 0
+                                          ? [required]
+                                          : []
+                                      }
+                                      required={true}
+                                      handleChangeDescription={
+                                        this.handleCategoryChange
+                                      }
+                                      valueDescription={this.state.Category}
+                                      disabled={isEditFlag ? true : false}
+                                    />
+                                  </div>
+                                </div>
+                              </Col>
+                            </Row>
+                            {!this.state.IsVendor && (
+                              <Row>
                                 <Col md="3">
                                   <Field
-                                    label="Vendor Plant"
-                                    name="DestinationSupplierPlantId"
-                                    placeholder="--Select--"
+                                    label="Plant"
+                                    name="SourceSupplierPlantId"
+                                    placeholder="-Select-"
                                     selection={
-                                      this.state.selectedVendorPlants == null ||
-                                      this.state.selectedVendorPlants.length ==
-                                        0
+                                      this.state.selectedPlants == null ||
+                                      this.state.selectedPlants.length === 0
                                         ? []
-                                        : this.state.selectedVendorPlants
+                                        : this.state.selectedPlants
                                     }
-                                    options={this.renderListing("VendorPlant")}
-                                    selectionChanged={this.handleVendorPlant}
+                                    options={this.renderListing("plant")}
+                                    selectionChanged={
+                                      this.handleSourceSupplierPlant
+                                    }
                                     optionValue={(option) => option.Value}
                                     optionLabel={(option) => option.Text}
                                     component={renderMultiSelectField}
                                     mendatory={true}
                                     className="multiselect-with-border"
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </Col>
-                              )}
-                          </Row>
-
-                          {!this.state.IsVendor && (
-                            <Row>
-                              <Col md="4" className="mb15">
-                                <label
-                                  className={`custom-checkbox ${
-                                    this.state.IsVendor ? "disabled" : ""
-                                  }`}
-                                  onChange={this.onPressDifferentSource}
-                                >
-                                  Has Difference Source?
-                                  <input
-                                    type="checkbox"
-                                    checked={this.state.HasDifferentSource}
                                     disabled={
-                                      this.state.IsVendor ? true : false
+                                      this.state.IsVendor || isEditFlag
+                                        ? true
+                                        : false
                                     }
                                   />
-                                  <span
-                                    className=" before-box"
-                                    checked={this.state.HasDifferentSource}
-                                    onChange={this.onPressDifferentSource}
-                                  />
-                                </label>
-                              </Col>
-                            </Row>
-                          )}
+                                </Col>
+                              </Row>
+                            )}
 
-                          {(this.state.HasDifferentSource ||
-                            this.state.IsVendor) && (
                             <Row>
+                              <Col md="12" className="filter-block">
+                                <div className=" flex-fills mb-2 pl-0">
+                                  <h5>{"Vendor"}</h5>
+                                </div>
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      name="DestinationSupplierId"
+                                      type="text"
+                                      label="Vendor Name"
+                                      component={searchableSelect}
+                                      placeholder={"-Vendor-"}
+                                      options={this.renderListing(
+                                        "VendorNameList"
+                                      )}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      validate={
+                                        this.state.vendorName == null ||
+                                        this.state.vendorName.length === 0
+                                          ? [required]
+                                          : []
+                                      }
+                                      required={true}
+                                      handleChangeDescription={
+                                        this.handleVendorName
+                                      }
+                                      valueDescription={this.state.vendorName}
+                                      disabled={isEditFlag ? true : false}
+                                    />
+                                  </div>
+                                  {!isEditFlag && (
+                                    <div
+                                      onClick={this.vendorToggler}
+                                      className={"plus-icon-square  right"}
+                                    ></div>
+                                  )}
+                                </div>
+                              </Col>
+                              {checkVendorPlantConfigurable() &&
+                                this.state.IsVendor && (
+                                  <Col md="3">
+                                    <Field
+                                      label="Vendor Plant"
+                                      name="DestinationSupplierPlantId"
+                                      placeholder="--Select--"
+                                      selection={
+                                        this.state.selectedVendorPlants ==
+                                          null ||
+                                        this.state.selectedVendorPlants
+                                          .length == 0
+                                          ? []
+                                          : this.state.selectedVendorPlants
+                                      }
+                                      options={this.renderListing(
+                                        "VendorPlant"
+                                      )}
+                                      selectionChanged={this.handleVendorPlant}
+                                      optionValue={(option) => option.Value}
+                                      optionLabel={(option) => option.Text}
+                                      component={renderMultiSelectField}
+                                      mendatory={true}
+                                      className="multiselect-with-border"
+                                      disabled={isEditFlag ? true : false}
+                                    />
+                                  </Col>
+                                )}
+                            </Row>
+
+                            {!this.state.IsVendor && (
+                              <Row>
+                                <Col md="4" className="mb15">
+                                  <label
+                                    className={`custom-checkbox ${
+                                      this.state.IsVendor ? "disabled" : ""
+                                    }`}
+                                    onChange={this.onPressDifferentSource}
+                                  >
+                                    Has Difference Source?
+                                    <input
+                                      type="checkbox"
+                                      checked={this.state.HasDifferentSource}
+                                      disabled={
+                                        this.state.IsVendor ? true : false
+                                      }
+                                    />
+                                    <span
+                                      className=" before-box"
+                                      checked={this.state.HasDifferentSource}
+                                      onChange={this.onPressDifferentSource}
+                                    />
+                                  </label>
+                                </Col>
+                              </Row>
+                            )}
+
+                            {(this.state.HasDifferentSource ||
+                              this.state.IsVendor) && (
+                              <Row>
+                                <Col md="3">
+                                  <Field
+                                    label={`Source`}
+                                    name={"Source"}
+                                    type="text"
+                                    placeholder={"Enter"}
+                                    //validate={[required]}
+                                    component={renderText}
+                                    //required={true}
+                                    disabled={false}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </Col>
+                                <Col md="3">
+                                  <Field
+                                    name="SourceSupplierCityId"
+                                    type="text"
+                                    label="Source Location"
+                                    component={searchableSelect}
+                                    placeholder={"-Location-"}
+                                    options={this.renderListing(
+                                      "SourceLocation"
+                                    )}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
+                                    //required={true}
+                                    handleChangeDescription={
+                                      this.handleSourceSupplierCity
+                                    }
+                                    valueDescription={this.state.sourceLocation}
+                                  />
+                                </Col>
+                              </Row>
+                            )}
+
+                            <Row>
+                              <Col md="12" className="filter-block">
+                                <div className=" flex-fills mb-2 pl-0">
+                                  <h5>{"Cost:"}</h5>
+                                </div>
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      name="UnitOfMeasurementId"
+                                      type="text"
+                                      label="UOM"
+                                      component={searchableSelect}
+                                      placeholder={"-UOM-"}
+                                      options={this.renderListing("uom")}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      validate={
+                                        this.state.UOM == null ||
+                                        this.state.UOM.length === 0
+                                          ? [required]
+                                          : []
+                                      }
+                                      required={true}
+                                      handleChangeDescription={this.handleUOM}
+                                      valueDescription={this.state.UOM}
+                                      disabled={isEditFlag ? true : false}
+                                    />
+                                  </div>
+                                  {/* {!isEditFlag && <div
+                                                        onClick={this.uomToggler}
+                                                        className={'plus-icon-square  right'}>
+                                                    </div>} */}
+                                </div>
+                              </Col>
                               <Col md="3">
                                 <Field
-                                  label={`Source`}
-                                  name={"Source"}
+                                  name="Currency"
+                                  type="text"
+                                  label="Currency"
+                                  component={searchableSelect}
+                                  placeholder={"-Currency-"}
+                                  options={this.renderListing("currency")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.currency == null ||
+                                    this.state.currency.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={this.handleCurrency}
+                                  valueDescription={this.state.currency}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Basic Rate/UOM (INR)`}
+                                  name={"BasicRate"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  //validate={[required]}
-                                  component={renderText}
-                                  //required={true}
+                                  validate={[required]}
+                                  component={renderNumberInputField}
+                                  onChange={this.handleBasicRate}
+                                  required={true}
                                   disabled={false}
                                   className=" "
                                   customClassName=" withBorder"
@@ -1096,273 +1192,196 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3">
                                 <Field
-                                  name="SourceSupplierCityId"
+                                  label={`Scrap Rate (INR)`}
+                                  name={"ScrapRate"}
                                   type="text"
-                                  label="Source Location"
-                                  component={searchableSelect}
-                                  placeholder={"-Location-"}
-                                  options={this.renderListing("SourceLocation")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
-                                  //required={true}
-                                  handleChangeDescription={
-                                    this.handleSourceSupplierCity
-                                  }
-                                  valueDescription={this.state.sourceLocation}
+                                  placeholder={"Enter"}
+                                  validate={[required]}
+                                  component={renderNumberInputField}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
                                 />
                               </Col>
-                            </Row>
-                          )}
-
-                          <Row>
-                            <Col md="12" className="filter-block">
-                              <div className=" flex-fills mb-2 pl-0">
-                                <h5>{"Cost:"}</h5>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="UnitOfMeasurementId"
-                                    type="text"
-                                    label="UOM"
-                                    component={searchableSelect}
-                                    placeholder={"-UOM-"}
-                                    options={this.renderListing("uom")}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={
-                                      this.state.UOM == null ||
-                                      this.state.UOM.length === 0
-                                        ? [required]
-                                        : []
-                                    }
-                                    required={true}
-                                    handleChangeDescription={this.handleUOM}
-                                    valueDescription={this.state.UOM}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                                {/* {!isEditFlag && <div
-                                                        onClick={this.uomToggler}
-                                                        className={'plus-icon-square  right'}>
-                                                    </div>} */}
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                name="Currency"
-                                type="text"
-                                label="Currency"
-                                component={searchableSelect}
-                                placeholder={"-Currency-"}
-                                options={this.renderListing("currency")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.currency == null ||
-                                  this.state.currency.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={this.handleCurrency}
-                                valueDescription={this.state.currency}
-                                disabled={isEditFlag ? true : false}
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label={`Basic Rate/UOM (INR)`}
-                                name={"BasicRate"}
-                                type="text"
-                                placeholder={"Enter"}
-                                validate={[required]}
-                                component={renderNumberInputField}
-                                onChange={this.handleBasicRate}
-                                required={true}
-                                disabled={false}
-                                className=" "
-                                customClassName=" withBorder"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label={`Scrap Rate (INR)`}
-                                name={"ScrapRate"}
-                                type="text"
-                                placeholder={"Enter"}
-                                validate={[required]}
-                                component={renderNumberInputField}
-                                required={true}
-                                className=""
-                                customClassName=" withBorder"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label={`Net Landed Cost (INR/UOM)`}
-                                name={"NetLandedCost"}
-                                type="text"
-                                placeholder={""}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                disabled={true}
-                                className=" "
-                                customClassName=" withBorder"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <div className="form-group">
-                                <label>
-                                  Effective Date
-                                  <span className="asterisk-required">*</span>
-                                </label>
-                                <div className="inputbox date-section">
-                                  <DatePicker
-                                    name="EffectiveDate"
-                                    selected={this.state.effectiveDate}
-                                    onChange={this.handleEffectiveDateChange}
-                                    showMonthDropdown
-                                    showYearDropdown
-                                    dateFormat="dd/MM/yyyy"
-                                    minDate={new Date()}
-                                    dropdownMode="select"
-                                    placeholderText="Select date"
-                                    className="withBorder form-control"
-                                    autoComplete={"off"}
-                                    disabledKeyboardNavigation
-                                    onChangeRaw={(e) => e.preventDefault()}
-                                    disabled={false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                          </Row>
-
-                          <Row>
-                            <Col md="12" className="filter-block">
-                              <div className=" flex-fills mb-2 pl-0">
-                                <h5>{"Remark & Attachments"}</h5>
-                              </div>
-                            </Col>
-                            <Col md="6">
-                              <Field
-                                label={"Remarks"}
-                                name={`Remark`}
-                                placeholder="Type here..."
-                                value={this.state.remarks}
-                                className=""
-                                customClassName=" textAreaWithBorder"
-                                onChange={this.handleMessageChange}
-                                validate={[maxLength100]}
-                                //required={true}
-                                component={renderTextAreaField}
-                                maxLength="5000"
-                                rows="10"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <label>Upload Files (upload up to 3 files)</label>
-                              {this.state.files.length >= 3 ? (
-                                <div class="alert alert-danger" role="alert">
-                                  Max file uploaded.
-                                </div>
-                              ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject
-                                      ? "Image, audio and video files only"
-                                      : "Drag Files"
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
+                              <Col md="3">
+                                <Field
+                                  label={`Net Landed Cost (INR/UOM)`}
+                                  name={"NetLandedCost"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[required]}
+                                  component={renderText}
+                                  required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder"
                                 />
-                              )}
-                            </Col>
-                            <Col md="3">
-                              <div className={"attachment-wrapper"}>
-                                {this.state.files &&
-                                  this.state.files.map((f) => {
-                                    const withOutTild = f.FileURL.replace(
-                                      "~",
-                                      ""
-                                    );
-                                    const fileURL = `${FILE_URL}${withOutTild}`;
-                                    return (
-                                      <div className={"attachment images"}>
-                                        <a href={fileURL} target="_blank">
-                                          {f.OriginalFileName}
-                                        </a>
-                                        {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                              </Col>
+                              <Col md="3">
+                                <div className="form-group">
+                                  <label>
+                                    Effective Date
+                                    <span className="asterisk-required">*</span>
+                                  </label>
+                                  <div className="inputbox date-section">
+                                    <DatePicker
+                                      name="EffectiveDate"
+                                      selected={this.state.effectiveDate}
+                                      onChange={this.handleEffectiveDateChange}
+                                      showMonthDropdown
+                                      showYearDropdown
+                                      dateFormat="dd/MM/yyyy"
+                                      minDate={new Date()}
+                                      dropdownMode="select"
+                                      placeholderText="Select date"
+                                      className="withBorder form-control"
+                                      autoComplete={"off"}
+                                      disabledKeyboardNavigation
+                                      onChangeRaw={(e) => e.preventDefault()}
+                                      disabled={false}
+                                    />
+                                  </div>
+                                </div>
+                              </Col>
+                            </Row>
+
+                            <Row>
+                              <Col md="12" className="filter-block">
+                                <div className=" flex-fills mb-2 pl-0">
+                                  <h5>{"Remark & Attachments"}</h5>
+                                </div>
+                              </Col>
+                              <Col md="6">
+                                <Field
+                                  label={"Remarks"}
+                                  name={`Remark`}
+                                  placeholder="Type here..."
+                                  value={this.state.remarks}
+                                  className=""
+                                  customClassName=" textAreaWithBorder"
+                                  onChange={this.handleMessageChange}
+                                  validate={[maxLength100]}
+                                  //required={true}
+                                  component={renderTextAreaField}
+                                  maxLength="5000"
+                                  rows="10"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <label>
+                                  Upload Files (upload up to 3 files)
+                                </label>
+                                {this.state.files.length >= 3 ? (
+                                  <div class="alert alert-danger" role="alert">
+                                    Max file uploaded.
+                                  </div>
+                                ) : (
+                                  <Dropzone
+                                    getUploadParams={this.getUploadParams}
+                                    onChangeStatus={this.handleChangeStatus}
+                                    PreviewComponent={this.Preview}
+                                    //onSubmit={this.handleSubmit}
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                    initialFiles={this.state.initialFiles}
+                                    maxFiles={3}
+                                    maxSizeBytes={2000000}
+                                    inputContent={(files, extra) =>
+                                      extra.reject ? (
+                                        "Image, audio and video files only"
+                                      ) : (
+                                        <div className="text-center">
+                                          <i className="text-primary fa fa-cloud-upload"></i>
+                                          <span className="d-block">
+                                            Drag and Drop or{" "}
+                                            <span className="text-primary">
+                                              Browse
+                                            </span>
+                                            <br />
+                                            file to upload
+                                          </span>
+                                        </div>
+                                      )
+                                    }
+                                    styles={{
+                                      dropzoneReject: {
+                                        borderColor: "red",
+                                        backgroundColor: "#DAA",
+                                      },
+                                      inputLabel: (files, extra) =>
+                                        extra.reject ? { color: "red" } : {},
+                                    }}
+                                    classNames="draper-drop"
+                                  />
+                                )}
+                              </Col>
+                              <Col md="3">
+                                <div className={"attachment-wrapper"}>
+                                  {this.state.files &&
+                                    this.state.files.map((f) => {
+                                      const withOutTild = f.FileURL.replace(
+                                        "~",
+                                        ""
+                                      );
+                                      const fileURL = `${FILE_URL}${withOutTild}`;
+                                      return (
+                                        <div className={"attachment images"}>
+                                          <a href={fileURL} target="_blank">
+                                            {f.OriginalFileName}
+                                          </a>
+                                          {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
-                                        {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                          {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                        <img
-                                          className="float-right"
-                                          alt={""}
-                                          onClick={() =>
-                                            this.deleteFile(
-                                              f.FileId,
-                                              f.FileName
-                                            )
-                                          }
-                                          src={require("../../../assests/images/red-cross.png")}
-                                        ></img>
-                                      </div>
-                                    );
-                                  })}
-                              </div>
-                            </Col>
-                          </Row>
-                        </div>
-                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                          <div className="col-sm-12 text-right bluefooter-butn">
-                            <button
-                              type={"button"}
-                              className="reset mr15 cancel-btn"
-                              onClick={this.cancel}
-                            >
-                              <div className={"cross-icon"}>
-                                <img
-                                  src={require("../../../assests/images/times.png")}
-                                  alt="cancel-icon.jpg"
-                                />
-                              </div>{" "}
-                              {"Cancel"}
-                            </button>
-                            <button
-                              type="submit"
-                              className="submit-button mr5 save-btn"
-                            >
-                              <div className={"check-icon"}>
-                                <img
-                                  src={require("../../../assests/images/check.png")}
-                                  alt="check-icon.jpg"
-                                />
-                              </div>{" "}
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
+                                          <img
+                                            className="float-right"
+                                            alt={""}
+                                            onClick={() =>
+                                              this.deleteFile(
+                                                f.FileId,
+                                                f.FileName
+                                              )
+                                            }
+                                            src={require("../../../assests/images/red-cross.png")}
+                                          ></img>
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </Col>
+                            </Row>
                           </div>
-                        </Row>
+                          <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                            <div className="col-sm-12 text-right bluefooter-butn">
+                              <button
+                                type={"button"}
+                                className="reset mr15 cancel-btn"
+                                onClick={this.cancel}
+                              >
+                                <div className={"cross-icon"}>
+                                  <img
+                                    src={require("../../../assests/images/times.png")}
+                                    alt="cancel-icon.jpg"
+                                  />
+                                </div>{" "}
+                                {"Cancel"}
+                              </button>
+                              <button
+                                type="submit"
+                                className="submit-button mr5 save-btn"
+                              >
+                                <div className={"check-icon"}>
+                                  <img
+                                    src={require("../../../assests/images/check.png")}
+                                    alt="check-icon.jpg"
+                                  />
+                                </div>{" "}
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            </div>
+                          </Row>
                         </form>
                       </div>
                     </div>

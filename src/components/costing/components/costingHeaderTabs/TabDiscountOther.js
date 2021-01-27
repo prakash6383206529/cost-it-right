@@ -229,7 +229,10 @@ function TabDiscountOther(props) {
 
               <Row>
                 <Col md="12">
-                  <Table className="table cr-brdr-main" size="sm">
+                  <Table
+                    className="table cr-brdr-main bluefooter-butn"
+                    size="sm"
+                  >
                     <thead>
                       <tr>
                         <th>{``}</th>

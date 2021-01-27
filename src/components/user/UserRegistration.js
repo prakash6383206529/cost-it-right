@@ -1185,14 +1185,14 @@ class UserRegistration extends Component {
                       </div>
                     </div>
 
-                    <div className="row form-group">
+                    <div className="row form-group ">
                       <div className="col-md-12">
-                        <Table className="table" size="sm">
+                        <Table className="table border" size="sm">
                           <thead>
                             <tr>
-                              <th>{`Technology`}</th>
-                              <th>{`Level`}</th>
-                              <th className="text-right">{`Action`}</th>
+                              <th className="text-dark-blue">{`Technology`}</th>
+                              <th className="text-left text-dark-blue">{`Level`}</th>
+                              <th className="text-right text-dark-blue">{`Action`}</th>
                             </tr>
                           </thead>
                           <tbody>

@@ -2058,6 +2058,9 @@ input[type="number"].form-control {
   .file-uploadsection{
     margin: 0 0 15px;
   }
+  table{
+    td{color: #8A91AC;}
+  }
 }
 .bom-viewer-main{
   .MuiDrawer-paper{
@@ -2067,6 +2070,9 @@ input[type="number"].form-control {
 .react-bs-table-search-form {
   .btn-secondary:hover{background-color: #1d59af;
   }
+}
+.text-dark-blue{
+  color: #3D4465;
 }
 
 // ============issues fixing end=============
@@ -2139,7 +2145,7 @@ input[type="number"].form-control {
 .dark-blue{color: #3D4465;}
 .height152-label{
   .dzu-dropzone{
-    .dzu-inputLabel{height: 152px;}
+    label{height: 152px;}
   }
 }
 
