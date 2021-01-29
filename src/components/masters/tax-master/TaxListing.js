@@ -193,18 +193,25 @@ class TaxListing extends Component {
                 <Col md={12}>
                   <hr className="mt-0" />
                 </Col>
+                </Row>
 
+                <Row className="no-filter-row">
                 {AddAccessibility && (
-                  <Col md={12} className="text-right mb15 no-filter-row">
+                  <>
+                  <Col md={6} className="filter-block"></Col>
+                  <Col md={6} className="text-right search-user-block pr-0">
+                    <div className="d-flex justify-content-end bd-highlight w100">
                     <button
                       type={"button"}
-                      className={"user-btn search-user-block"}
+                      className={"user-btn"}
                       onClick={this.openModel}
                     >
                       <div className={"plus"}></div>
                       {`ADD`}
                     </button>
+                    </div>
                   </Col>
+                  </>
                 )}
               </Row>
               <Row>

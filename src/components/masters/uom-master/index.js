@@ -230,18 +230,22 @@ class UOMMaster extends Component {
                 <Col md={12}>
                   <hr className="mt-0" />
                 </Col>
-
+                </Row>
+                <Row className="no-filter-row">
                 {AddAccessibility && (
-                  <Col md={12} className="text-right mb15 no-filter-row">
+                  <>
+                  <Col md={6} className="text-right filter-block"></Col>
+                  <Col md={6} className="text-right search-user-block pr-0">
                     <button
                       type={"button"}
-                      className={"user-btn search-user-block"}
+                      className={"user-btn"}
                       onClick={this.openModel}
                     >
                       <div className={"plus"}></div>
                       {`ADD`}
                     </button>
                   </Col>
+                  </>
                 )}
               </Row>
 

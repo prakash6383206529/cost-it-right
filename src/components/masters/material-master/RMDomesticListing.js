@@ -448,9 +448,7 @@ class RMDomesticListing extends Component {
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
               <Row className="filter-row-large pt-4">
                   {this.state.shown ? (
-                      ""
-                  ) : (
-                    <Col md="12" lg="9" className="filter-block ">
+                      <Col md="12" lg="9" className="filter-block ">
                         <div className="d-inline-flex justify-content-start align-items-top w100">
                         <div className="flex-fills">
                             <h5>{`Filter By:`}</h5>
@@ -549,12 +547,15 @@ class RMDomesticListing extends Component {
                         </div>
                         </div>
                     </Col>
-                  )}
-                <Col md="6" lg="3" className="search-user-block mb-3">
+                  ) : ("")
+                  }
+                <Col md="6" lg="6" className="search-user-block mb-3">
                   <div className="d-flex justify-content-end bd-highlight w100">
                     <div>
                       <>
-                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Filter</button>
+                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>
+                            {this.state.shown ? ("Hide Filter") : ("Show Filter")}
+                        </button>
                         {BulkUploadAccessibility && (
                           <button
                             type="button"

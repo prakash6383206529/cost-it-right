@@ -173,18 +173,21 @@ class DepartmentsListing extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
-        <Row className="pt-4">
+        <Row className="pt-4 no-filter-row">
           {AddAccessibility && (
-            <Col className="text-right mb-3 no-filter-row">
+            <>
+            <Col md="6" className="filter-block"></Col>
+            <Col md="6" className="text-right search-user-block pr-0">
               <button
                 type={"button"}
-                className={"user-btn search-user-block"}
+                className={"user-btn "}
                 onClick={this.openModel}
               >
                 <div className={"plus"}></div>
                 {`ADD`}
               </button>
             </Col>
+            </>
           )}
         </Row>
 

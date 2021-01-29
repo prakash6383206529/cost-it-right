@@ -160,11 +160,11 @@ class RMListing extends Component {
           <div>
             {this.props.loading && <Loader />}
             <Row className="pt-4 mb-3 no-filter-row">
-              <Col md={12} className="text-right ">
+              <Col md={6} className="text-right search-user-block pr-0">
                 {AddAccessibility && (
                   <button
                     type={"button"}
-                    className={"user-btn search-user-block "}
+                    className={"user-btn  "}
                     onClick={this.openModel}
                   >
                     <div className={"plus"}></div>

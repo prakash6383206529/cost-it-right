@@ -244,7 +244,7 @@ class IndivisualPartListing extends Component {
                     <Col md="8" className="filter-block">
 
                     </Col>
-                    <Col md="4" className="search-user-block">
+                    <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {AddAccessibility && <button

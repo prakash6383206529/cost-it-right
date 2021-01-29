@@ -1372,6 +1372,9 @@ button .fas {
 
 .rrt-confirm-holder .rrt-confirm .rrt-message {
   font-family: "IBM Plex Sans", sans-serif !important;
+  padding: 10px;
+  color: #3D4465;
+  font-size: 18px;
 }
 
 .banner-section {
@@ -1551,42 +1554,51 @@ form .form-control {
 
 .rrt-confirm-holder .rrt-confirm {
   .rrt-buttons-holder {
-    padding: 15px;
+    padding: 0 10px;
     display: inline-block;
     width: 100%;
     text-align: center;
+    padding-bottom: 30px;
 
     .rrt-button {
-      background: #000;
-      color: $white;
-      padding: 0.375rem 2rem;
+      background:#fff;
+      color: #8A91AC;
+      border: 1px solid #8a91ac;
+      padding: 0.375rem;
       border-radius: 5px;
       height: 42px;
       text-transform: uppercase;
       margin: 15px;
       float: inherit;
       margin: 0 10px;
+      min-width: 120px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
       &:hover {
-        color: $white;
-        background-color: #5a6268;
+        background-color: #fff;
+        border-color: #256bd1;
+        color: #256bd1;
 
         &:active {
-          color: $white;
-          background-color: #5a6268;
+          background-color: #fff;
+          border-color: #256bd1;
+          color: #256bd1;
         }
       }
     }
 
     .rrt-button.rrt-ok-btn {
       background: $colorPrimary;
+      color: #fff;
 
       &:hover {
-        background: $customPrimary-Hover;
+        background: #1d59af;
       }
 
       &:active {
-        background: $customPrimary-Hover;
+        background: #1d59af;
       }
     }
   }

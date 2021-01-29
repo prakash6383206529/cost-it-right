@@ -18,6 +18,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import Row from 'reactstrap/lib/Row';
 
 class ReasonListing extends Component {
     constructor(props) {
@@ -236,20 +237,23 @@ class ReasonListing extends Component {
               <Col md="12" className="">
                 <h1>Reason Master</h1>
                 <hr />
-                <div className="d-flex justify-content-end bd-highlight w100 mb15 no-filter-row ">
-                  <div>
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn search-user-block"}
-                        onClick={this.formToggle}
-                      >
-                        <div className={"plus"}></div>ADD
-                      </button>
-                    )}
-                  </div>
-                </div>
               </Col>
+              <Row className=" no-filter-row">
+                    <Col md="6" className="filter-block"></Col>
+                    <Col md="6" className="search-user-block">
+                        <div className="d-flex justify-content-end bd-highlight w100">
+                            {AddAccessibility && (
+                            <button
+                                type="button"
+                                className={"user-btn"}
+                                onClick={this.formToggle}
+                            >
+                                <div className={"plus"}></div>ADD
+                            </button>
+                            )}
+                        </div>
+                    </Col>
+              </Row>
               <Col md="12">
                 <BootstrapTable
                   data={this.state.tableData}
