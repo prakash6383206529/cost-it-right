@@ -531,6 +531,7 @@ function ProcessCost(props) {
             data={props.data && props.data.CostingOperationCostResponse}
             setOperationCost={setOperationCost}
             item={props.item}
+            IsAssemblyCalculation={false}
           />
 
           <hr />
@@ -538,6 +539,7 @@ function ProcessCost(props) {
             data={props.data && props.data.CostingToolsCostResponse}
             setToolCost={setToolCost}
             item={props.item}
+            IsAssemblyCalculation={false}
           />}
 
         </div>

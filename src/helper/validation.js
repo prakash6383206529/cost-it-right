@@ -234,7 +234,7 @@ export const trimFourDecimalPlace = (floatValue) => {
 export const trimDecimalPlace = (floatValue, Number) => {
     var decimalTextLength = 0;
     if (floatValue !== undefined) {
-        if (floatValue.toString().split('.')[1] !== undefined) {
+        if (floatValue.toString().split('.')[1] !== undefined && floatValue.toString() !== null) {
             decimalTextLength = (floatValue.toString().split('.')[1]).length;
         }
     }

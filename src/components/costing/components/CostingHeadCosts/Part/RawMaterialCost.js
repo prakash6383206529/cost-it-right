@@ -25,14 +25,14 @@ function RawMaterialCost(props) {
   const costData = useContext(costingInfoContext)
 
   useEffect(() => {
-    //setTimeout(() => {
-    const Params = {
-      index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
-    }
-    props.setRMCost(gridData, Params)
-    //}, 200)
+    setTimeout(() => {
+      const Params = {
+        index: props.index,
+        BOMLevel: props.item.BOMLevel,
+        PartNumber: props.item.PartNumber,
+      }
+      props.setRMCost(gridData, Params)
+    }, 100)
   }, [gridData]);
 
   /**

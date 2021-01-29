@@ -52,6 +52,7 @@ function ToolCost(props) {
   const closeDrawer = (e = '', rowData = {}) => {
     if (Object.keys(rowData).length > 0) {
       let rowArray = {
+        IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
         ToolOperationId: rowData.ToolOperationId,
         ProcessOrOperation: rowData.ProcessOrOperation,
         ToolCategory: rowData.ToolCategory,

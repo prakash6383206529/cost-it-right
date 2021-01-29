@@ -423,6 +423,7 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
+  console.log('TabData: From Action ', TabData);
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -431,6 +432,27 @@ export function setRMCCData(TabData, callback) {
     callback();
   }
 };
+
+/**
+ * @method getBOPData
+ * @description GET BOP DATA IN COSTING DETAIL
+ */
+export function getBOPData(data, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getBOPData}/${data.CostingId}/${data.PartId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        let TabData = response.data.DataList;
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
 
 /**
  * @method getRMDrawerDataList
@@ -615,6 +637,22 @@ export function saveCostingRMCCTab(data, callback) {
 export function saveComponentCostingRMCCTab(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.saveComponentCostingRMCCTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveAssemblyCostingRMCCTab
+ * @description SAVE ASSEMBLY COSTING RM+CC TAB
+ */
+export function saveAssemblyCostingRMCCTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveAssemblyCostingRMCCTab, data, headers);
     request.then((response) => {
       callback(response);
     }).catch((error) => {

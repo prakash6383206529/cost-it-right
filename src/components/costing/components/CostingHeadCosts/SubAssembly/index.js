@@ -1,23 +1,24 @@
-import React, { useContext, useState } from 'react';
-import { useDispatch, } from 'react-redux';
+import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, saveCostingRMCCTab } from '../../../actions/Costing';
+import { getRMCCTabData, saveCostingRMCCTab, saveAssemblyCostingRMCCTab } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { Col, Row, Table } from 'reactstrap';
 import OperationCost from '../Part/OperationCost';
 import ToolCost from '../Part/ToolCost';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 
 function AssemblyPart(props) {
   const { children, item, index } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
   const [IsOpenTool, setIsOpenTool] = useState(false);
+  const [Count, setCount] = useState(0);
 
   const costData = useContext(costingInfoContext);
-
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
   /**
@@ -30,6 +31,7 @@ function AssemblyPart(props) {
 
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
+    setCount(Count + 1)
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
@@ -50,7 +52,6 @@ function AssemblyPart(props) {
 
   const nestedPartComponent = children && children.map(el => {
     if (el.PartType === 'Part') {
-      console.log('Part Component', el)
       return <PartCompoment
         index={index}
         item={el}
@@ -94,6 +95,70 @@ function AssemblyPart(props) {
     />
   })
 
+
+  useEffect(() => {
+
+    if (IsOpen === false && Count > 0) {
+      let requestData = {
+        "CostingId": item.CostingId,
+        "CostingNumber": item.CostingNumber,
+        "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+        "PartId": item.PartId,
+        "PartNumber": item.PartNumber,
+        "PartTypeId": item.PartTypeId,
+        "Type": item.PartType,
+
+        "PlantId": costData.PlantId,
+        "VendorId": costData.VendorId,
+        "VendorCode": costData.VendorCode,
+        "VendorPlantId": costData.VendorPlantId,
+        "TechnologyName": item.Technology,
+        "TechnologyId": item.TechnologyId,
+        "TypeOfCosting": costData.VendorType,
+        "PlantCode": costData.PlantCode,
+        "PlantName": costData.PlantName,
+        "Version": item.Version,
+        "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
+        "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
+        "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
+        "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
+        "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "LoggedInUserId": loggedInUserId(),
+        "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+        "NetOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
+        "NetToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
+        "CostingPartDetails": {
+          "CostingId": item.CostingId,
+          "CostingNumber": item.CostingNumber,
+          "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+          "PartId": item.PartId,
+          "PartNumber": item.PartNumber,
+          "PartName": item.PartName,
+          "PartTypeId": item.PartTypeId,
+          "Type": item.PartType,
+          "TotalRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
+          "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
+          "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
+          "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+          "Quantity": item.CostingPartDetails.Quantity,
+          "IsOpen": true,
+          "IsShowToolCost": item.CostingPartDetails.IsShowToolCost,
+          "TotalOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
+          "TotalToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,
+          "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse,
+          "AssemblyCostingToolsCostRequest": item.CostingPartDetails.CostingToolCostResponse,
+        }
+      }
+      console.log('requestData', requestData)
+      dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
+        console.log('Success', res)
+      }))
+    }
+
+  }, [IsOpen])
+
+
   /**
   * @method render
   * @description Renders the component
@@ -111,7 +176,7 @@ function AssemblyPart(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? item.CostingPartDetails.TotalBoughtOutPartCost : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? item.CostingPartDetails.TotalConversionCost : 0}</td>
         <td>{1}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.GrandTotalCost : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
       </tr>
       {IsOpen &&
         <tr>
@@ -122,7 +187,7 @@ function AssemblyPart(props) {
 
                   <Col md="3" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</Col>
                   <Col md="3" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
-                  <Col md="3" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.GrandTotalCost : 0}`}</Col>
+                  <Col md="3" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
 
                   <Col md="3" className="switch cr-costlabel">
                     <label className="switch-level">
@@ -145,6 +210,7 @@ function AssemblyPart(props) {
                     </label>
                   </Col>
                 </Row>
+
                 <hr />
                 <OperationCost
                   data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}

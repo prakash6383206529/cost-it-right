@@ -6,11 +6,13 @@ import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 import { getRMCCTabData, saveCostingRMCCTab, saveComponentCostingRMCCTab } from '../../../actions/Costing';
 import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
+import { LEVEL1 } from '../../../../../helper/AllConastant';
 
 function PartCompoment(props) {
   const { rmData, bopData, ccData, item } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
+  const [Count, setCount] = useState(0);
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -19,6 +21,7 @@ function PartCompoment(props) {
 
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
+    setCount(Count + 1)
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
@@ -38,9 +41,7 @@ function PartCompoment(props) {
 
   useEffect(() => {
 
-    //return () => {
-    if (IsOpen === false) {
-      console.log('Save API Called!')
+    if (IsOpen === false && Count > 0) {
       let requestData = {
         "NetRawMaterialsCost": item.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": item.TotalBoughtOutPartCost,
@@ -48,31 +49,31 @@ function PartCompoment(props) {
         "NetOperationCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
         "NetProcessCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
-        "NetTotalRMBOPCC": item.GrandTotalCost,
-        "NetSurfaceTreatmentCost": 0,
-        "NetOverheadAndProfitCost": 0,
-        "NetPackagingAndFreight": 0,
-        "NetToolCost": 0,
-        "DiscountsAndOtherCost": 0,
-        "TotalCost": 0,
-        "NetPOPrice": 0,
+        "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
-        "IsSubAssemblyComponentPart": true,
+
+        "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": item.CostingId,
-        "PartId": item.PartId,
-        "CostingNumber": "",
-        "PartNumber": item.PartNumber,
-        "AssemblyPartId": item.AssemblyPartId,
-        "AssemblyPartNumber": item.AssemblyPartNumber,
-        "PlantId": "00000000-0000-0000-0000-000000000000",
-        "VendorId": "00000000-0000-0000-0000-000000000000",
-        "VendorCode": "",
-        "VendorPlantId": "00000000-0000-0000-0000-000000000000",
-        "TechnologyId": "00000000-0000-0000-0000-000000000000",
-        "TypeOfCosting": "",
-        "PlantCode": "",
-        "Version": "",
-        "ShareOfBusinessPercent": 0,
+        "PartId": item.PartId,                              //ROOT ID
+        "CostingNumber": costData.CostingNumber,            //ROOT    
+        "PartNumber": item.PartNumber,                      //ROOT
+
+        "AssemblyCostingId": item.BOMLevel === LEVEL1 ? costData.CostingId : item.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyCostingNumber": item.BOMLevel === LEVEL1 ? costData.CostingNumber : item.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartId": item.BOMLevel === LEVEL1 ? item.PartId : item.AssemblyPartId,                                        //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartNumber": item.BOMLevel === LEVEL1 ? item.PartNumber : item.AssemblyPartNumber,                                //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+
+        "PlantId": costData.PlantId,
+        "VendorId": costData.VendorId,
+        "VendorCode": costData.VendorCode,
+        "VendorPlantId": costData.VendorPlantId,
+        "TechnologyId": item.TechnologyId,
+        "Technology": item.Technology,
+        "TypeOfCosting": costData.VendorType,
+        "PlantCode": costData.PlantCode,
+        "Version": item.Version,
+        "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
         CostingPartDetails: item.CostingPartDetails,
       }
       console.log('requestData', requestData)
@@ -80,7 +81,7 @@ function PartCompoment(props) {
         console.log('Success', res)
       }))
     }
-    //}
+
   }, [IsOpen])
 
   /**
@@ -96,11 +97,11 @@ function PartCompoment(props) {
           </span>
         </td>
         <td>{item && item.PartType}</td>
-        <td>{checkForDecimalAndNull(item.TotalRawMaterialsCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
-        <td>{checkForDecimalAndNull(item.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
-        <td>{checkForDecimalAndNull(item.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{1}</td>
-        <td>{checkForDecimalAndNull(item.GrandTotalCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={7} className="cr-innerwrap-td">

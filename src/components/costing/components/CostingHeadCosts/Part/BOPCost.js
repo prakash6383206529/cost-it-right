@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
@@ -22,12 +23,14 @@ function BOPCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    const Params = {
-      index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
-    }
-    props.setBOPCost(gridData, Params)
+    setTimeout(() => {
+      const Params = {
+        index: props.index,
+        BOMLevel: props.item.BOMLevel,
+        PartNumber: props.item.PartNumber,
+      }
+      props.setBOPCost(gridData, Params)
+    }, 100)
   }, [gridData]);
 
   /**

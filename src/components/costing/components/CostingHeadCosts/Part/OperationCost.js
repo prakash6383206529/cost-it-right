@@ -56,6 +56,7 @@ function OperationCost(props) {
         const OperationCost = WithLaboutCost + WithOutLabourCost;
 
         return {
+          IsCostForPerAssembly: props.IsAssemblyCalculation ? true : false,
           OperationId: el.OperationId,
           OperationName: el.OperationName,
           OperationCode: el.OperationCode,

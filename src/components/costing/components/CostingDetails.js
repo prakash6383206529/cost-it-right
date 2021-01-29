@@ -703,7 +703,18 @@ function CostingDetails() {
   const backToFirstStep = () => {
     setStepOne(true);
     setStepTwo(false);
-    dispatch(getPartInfo(part.value, () => { }))
+    setZBCPlantGrid([])
+    nextToggle()
+    dispatch(getPartInfo(part.value, (res) => {
+      let Data = res.data.Data;
+      setValue('PartName', Data.PartName)
+      setValue("Description", Data.Description)
+      setValue("ECNNumber", Data.ECNNumber)
+      setValue("DrawingNumber", Data.DrawingNumber)
+      setValue("RevisionNumber", Data.RevisionNumber)
+      setValue("ShareOfBusiness", Data.Price)
+      setEffectiveDate(moment(Data.EffectiveDate)._d)
+    }))
   }
 
   //console.log('errors >>>', errors);
