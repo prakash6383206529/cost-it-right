@@ -148,11 +148,11 @@ class RolesListing extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
-        <Row className="pt-4">
-          <Col md="8" className="filter-block">
+        <Row className="pt-4 ">
+          <Col md="8" className="filter-block ">
 
           </Col>
-          <Col md="4" className="search-user-block mb-2">
+          <Col md="4" >
             {AddAccessibility && <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 <button
@@ -164,8 +164,8 @@ class RolesListing extends Component {
             </div>}
           </Col>
         </Row>
-        <Row class="mt-2">
-          <Col>
+        <Row class="">
+          <Col className="table-mt-0">
             <BootstrapTable
               data={this.state.tableData}
               striped={false}

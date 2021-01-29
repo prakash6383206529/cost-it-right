@@ -195,10 +195,10 @@ class TaxListing extends Component {
                 </Col>
 
                 {AddAccessibility && (
-                  <Col md={12} className="text-right mb15">
+                  <Col md={12} className="text-right mb15 no-filter-row">
                     <button
                       type={"button"}
-                      className={"user-btn"}
+                      className={"user-btn search-user-block"}
                       onClick={this.openModel}
                     >
                       <div className={"plus"}></div>

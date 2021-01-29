@@ -427,7 +427,8 @@ class BOPImportListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="12" lg="3" className="search-user-block mb-3">
+                        
+                        <Col md="6" lg="3" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                     {BulkUploadAccessibility && <button

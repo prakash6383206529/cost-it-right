@@ -250,7 +250,7 @@ class ClientListing extends Component {
               >
                 <h1>Client Master</h1>
                 <hr />
-                <Row className="pt-1">
+                <Row className="pt-1 no-filter-row">
                   <Col md="10" className="filter-block"></Col>
                   <Col md="2" className="search-user-block">
                     <div className="d-flex justify-content-end bd-highlight">

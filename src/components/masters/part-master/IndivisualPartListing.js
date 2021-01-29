@@ -240,7 +240,7 @@ class IndivisualPartListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
 
-                <Row className="pt-4">
+                <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
                     </Col>

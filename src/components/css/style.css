@@ -736,6 +736,7 @@ button.add-btn {
   color: #3D4465;
   padding-left: 15px;
   line-height: initial;
+  font-size: 17px;
 }
 
 .table.cr-brdr-main thead th {
@@ -1402,12 +1403,6 @@ button.user-btn.pull-right {
   display: none;
 }
 
-.client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-4 {
-  position: absolute;
-  right: 70px;
-  top: -44px;
-}
-
 .download-btn span {
   width: 100%;
 }
@@ -1444,7 +1439,7 @@ button.user-btn.pull-right {
 }
 
 .cr-brdr-main tbody td {
-  color: #C2CBE8;
+  color: #3D4465;
   font-size: 16px;
 }
 
@@ -1930,6 +1925,11 @@ html body .cancel-btn {
   border: 2px solid #f4f4f4;
 }
 
+.react-bs-table-container .react-bs-table-pagination .react-bs-table-sizePerPage-dropdown .dropdown-toggle {
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
 .react-bs-table-container .react-bs-table-pagination .col-md-6:nth-last-child(1) ul.pagination .page-link {
   border: none;
 }
@@ -2005,7 +2005,7 @@ html body .cancel-btn {
 }
 
 .fas.fa-eye-slash:before {
-  content: "\f06e";
+  content: "\f070";
   color: black;
   font-family: "FontAwesome";
   color: #959CB6;
@@ -2059,6 +2059,10 @@ html body .cancel-btn {
   padding-left: 15px;
   padding-right: 15px;
   width: auto;
+  -webkit-transition: all ease 0.3s;
+  transition: all ease 0.3s;
+  border-color: #8a91ac;
+  color: #8a91ac;
 }
 
 .filter-block .apply {
@@ -2072,6 +2076,24 @@ html body .cancel-btn {
   font-family: "Roboto", sans-serif !important;
 }
 
+.input-range .input-range__track--background {
+  position: relative;
+}
+
+.input-range .input-range__track--background:before {
+  content: 'Net Landed Range (INR)';
+  position: absolute;
+  left: -7px;
+  font-family: "Roboto", sans-serif !important;
+  font-size: 10px;
+  top: -27px;
+  color: #A4ABC5;
+}
+
+.input-range .input-range__slider-container {
+  right: 0;
+}
+
 .input-range .input-range__slider-container:nth-child(3) {
   right: 0px;
 }
@@ -2081,16 +2103,24 @@ html body .cancel-btn {
   font-size: 10px;
 }
 
-.input-range .input-range__slider-container:nth-child(2) .input-range__label--value span {
-  opacity: 0;
+.input-range .input-range__slider-container:nth-child(2) .input-range__label--value {
+  right: 0px;
 }
 
-.input-range .input-range__slider-container:nth-child(2) .input-range__label--value:before {
-  content: 'Net Landed Range (INR)';
-  position: absolute;
-  left: -7px;
-  font-family: "Roboto", sans-serif !important;
+.input-range .input-range__slider-container:nth-child(2) .input-range__label--value span {
+  right: 20px;
+  color: #3D4465;
+  font-family: "Roboto", sans-serif;
   font-size: 10px;
+  top: -2px;
+}
+
+.input-range .input-range__slider-container:nth-child(2) .input-range__label--value span:after {
+  content: "-";
+  right: -5px;
+  position: absolute;
+  top: -3px;
+  font-size: 12px;
 }
 
 .input-range .input-range__label-container {
@@ -2150,10 +2180,6 @@ input:disabled {
           filter: brightness(10);
 }
 
-.grant-user-grid {
-  min-height: calc(100vh - 524px);
-}
-
 .shadow-lgg .form .sf-btn-footer {
   margin: 0 -30px -15px;
 }
@@ -2205,12 +2231,166 @@ input[type="number"].form-control {
   display: none;
 }
 
+.fas {
+  font-family: "FontAwesome";
+}
+
+.drawer-wrapper .file-uploadsection {
+  margin: 0 0 15px;
+}
+
+.drawer-wrapper table td {
+  color: #8A91AC;
+}
+
+.bom-viewer-main .MuiDrawer-paper {
+  width: calc(100% - 230px);
+}
+
+.react-bs-table-search-form .btn-secondary:hover {
+  background-color: #1d59af;
+}
+
+table thead th {
+  color: #3D4465;
+}
+
+.text-dark-blue {
+  color: #3D4465;
+}
+
+.add-min-height .btn-primary, .add-min-height .user-btn {
+  height: 40px;
+}
+
+.add-min-height .reset-btn {
+  height: 40px;
+}
+
+.add-min-height .mt30.reset-btn, .add-min-height .mt30.btn-primary, .add-min-height .user-btn.mt30 {
+  margin-top: 27px;
+}
+
+.costing-details-page .costing-table-next tbody td .mb-15 {
+  margin-bottom: 0px;
+}
+
+.costing-details-page .costing-table-next tbody td label, .costing-details-page .costing-table-next tbody td label:empty {
+  display: none;
+}
+
+.costing-details-page .costing-table-next tbody td .form-group {
+  margin-bottom: 0px;
+}
+
+.costing-details-page .nodate-section {
+  margin: 12px 0;
+}
+
+.costing-details-page .nodate-section img {
+  width: 60px;
+}
+
+.costing-details-page .nodate-section .my-2 {
+  margin: 2px 0 !important;
+}
+
+.costing-details-page .nodate-section h5 {
+  font-size: 0.9rem;
+}
+
+.table th.sort-column {
+  position: relative;
+}
+
+.table th.sort-column > ::text {
+  max-width: calc(100% - 10px);
+}
+
+.table th.sort-column span.order {
+  position: absolute;
+  cursor: pointer;
+  margin-left: -3px;
+}
+
+.table th.sort-column span.order span {
+  margin: 0px !important;
+  margin-left: 5px !important;
+}
+
+.table th.sort-column span.order span span {
+  margin: 0px !important;
+}
+
+.edit-btn .cross-icon {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.edit-btn .cross-icon img {
+  -webkit-filter: invert(0%) sepia(13%) saturate(100%) hue-rotate(271deg) brightness(1000%) contrast(1000%);
+          filter: invert(0%) sepia(13%) saturate(100%) hue-rotate(271deg) brightness(1000%) contrast(1000%);
+}
+
+.react-bs-table-tool-bar .col-lg-8 {
+  display: none;
+}
+
+.search-user-block {
+  position: absolute;
+  bottom: -47px;
+  z-index: 99;
+  right: 0;
+}
+
+.no-filter-row {
+  height: 0px;
+  margin: 0px !important;
+}
+
+.no-filter-row .search-user-block {
+  bottom: 0;
+}
+
+.table-mt-0 .react-bs-table-container .react-bs-table {
+  margin-top: 0;
+}
+
+.sticky-top-0 {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background-color: #fff;
+}
+
+.row {
+  position: relative;
+}
+
+@media (max-width: 1600px) {
+  .input-range .input-range__track--background:before {
+    width: 60px;
+    top: -39px;
+  }
+}
+
 @media (max-width: 1367px) {
   .filter-row-large .col-md-12 {
     -ms-flex: 0 0 100%;
     -webkit-box-flex: 0;
             flex: 0 0 100%;
     max-width: 100%;
+  }
+  .content-page .filter-row-large .filter-block .flex-fill:last-child {
+    text-align: right;
   }
   .process .card .card-block p br {
     display: none;
@@ -2286,7 +2466,7 @@ input[type="number"].form-control {
   color: #3D4465;
 }
 
-.height152-label .dzu-dropzone .dzu-inputLabel {
+.height152-label .dzu-dropzone label {
   height: 152px;
 }
 
@@ -2324,5 +2504,11 @@ input[type="number"].form-control {
   .costing-table-next thead tr th:nth-child(5) {
     width: 15%;
     min-width: 200px;
+  }
+  body label {
+    font-size: 14px;
+  }
+  .blue-box {
+    padding: 0 15px 15px;
   }
 }

@@ -435,6 +435,9 @@ class RMImportListing extends Component {
             {this.props.loading && <Loader />}
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
               <Row className="pt-4 filter-row-large">
+                {this.state.shown ? (
+                      ""
+                  ) : (
                 <Col lg="9" md="12" className="filter-block ">
                   <div className="d-inline-flex justify-content-start align-items-top w100">
                     <div className="flex-fills">
@@ -533,15 +536,13 @@ class RMImportListing extends Component {
                     </div>
                   </div>
                 </Col>
-                <Col lg="3" md="12" className="search-user-block mb-3">
+                  )}
+                <Col lg="3" md="6" className="search-user-block mb-3">
                   <div className="d-flex justify-content-end bd-highlight w100">
                     <div>
+                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Filter</button>
                       {BulkUploadAccessibility && (
-                        <button
-                          type="button"
-                          className={"user-btn mr5"}
-                          onClick={this.bulkToggle}
-                        >
+                        <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
                           <div className={"upload"}></div>Bulk Upload
                         </button>
                       )}
@@ -557,6 +558,7 @@ class RMImportListing extends Component {
                     </div>
                   </div>
                 </Col>
+              
               </Row>
             </form>
             <Row>

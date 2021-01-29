@@ -376,10 +376,6 @@ li.nav-item .logo img {
   height: 19px;
 }
 
-.sf-mainheader .cr-logout-btn .nav-link img:hover {
-  opacity: 0.6;
-}
-
 .sf-mainheader .top-menu.logout button:after {
   content: none;
 }

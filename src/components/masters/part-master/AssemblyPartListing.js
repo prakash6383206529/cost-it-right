@@ -260,7 +260,7 @@ class AssemblyPartListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
 
-                <Row className="pt-4">
+                <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
                     </Col>
@@ -306,7 +306,7 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="RevisionNumber" width={'100'} >Revision No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" width={'130'} dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
+                    <TableHeaderColumn width={'100'} dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
                     <TableHeaderColumn width={'100'} className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 

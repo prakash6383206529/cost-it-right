@@ -203,7 +203,14 @@ a:hover {
   &:hover,
   &:focus,
   &:not(.disabled):active:focus {
-    background-color: #e0e0e0 !important;
+    background-color: #fff !important;
+    border-color: #256bd1;
+    color: #256bd1;
+    .cross-icon{
+      img{
+        filter: invert(56%) sepia(86%) saturate(6810%) hue-rotate(198deg) brightness(74%) contrast(90%);
+      }
+    }
   }
 }
 
@@ -1518,7 +1525,7 @@ form .form-control {
 }
 
 .nodate-section {
-  margin: 5% 0;
+  margin: 30px 0;
 
   img {
     width: 120px;

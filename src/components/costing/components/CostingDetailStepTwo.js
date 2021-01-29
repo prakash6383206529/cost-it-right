@@ -317,7 +317,7 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
-              <Row>
+              <Row className="sticky-top-0">
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
                     <tbody>

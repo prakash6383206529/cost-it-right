@@ -112,6 +112,18 @@ class LevelTechnologyListing extends Component {
 			//clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
 			afterSearch: this.afterSearch,
+			paginationShowsTotal: this.renderPaginationShowsTotal,
+			prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
+			pagination: true,
+			sizePerPageList: [ {
+			text: '5', value: 5
+			}, {
+			text: '10', value: 10
+			}],
+			sizePerPage: 5,
 		};
 		return (
 			<>

@@ -157,7 +157,10 @@ class AddRawMaterial extends Component {
                             className="btn-primary save-btn"
                           >
                             <div className={"check-icon"}>
-                              <i class="fa fa-check" aria-hidden="true"></i>
+                              <img
+                                src={require("../../../assests/images/check.png")}
+                                alt=""
+                              />
                             </div>
                             {this.props.isEditFlag ? "UPDATE" : "SAVE"}
                           </button>

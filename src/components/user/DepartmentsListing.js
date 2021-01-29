@@ -174,13 +174,18 @@ class DepartmentsListing extends Component {
       <>
         {this.props.loading && <Loader />}
         <Row className="pt-4">
-          {AddAccessibility && <Col className="text-right mb-3">
-            <button
-              type={'button'}
-              className={'user-btn'}
-              onClick={this.openModel}>
-              <div className={'plus'}></div>{`ADD`}</button>
-          </Col>}
+          {AddAccessibility && (
+            <Col className="text-right mb-3 no-filter-row">
+              <button
+                type={"button"}
+                className={"user-btn search-user-block"}
+                onClick={this.openModel}
+              >
+                <div className={"plus"}></div>
+                {`ADD`}
+              </button>
+            </Col>
+          )}
         </Row>
 
         <Row>
@@ -193,12 +198,26 @@ class DepartmentsListing extends Component {
               options={options}
               search
               ignoreSinglePage
-              ref={'table'}
-              trClassName={'userlisting-row'}
-              tableHeaderClass='my-custom-header'
-              pagination>
-              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>Department</TableHeaderColumn>
-              <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+              ref={"table"}
+              trClassName={"userlisting-row"}
+              tableHeaderClass="my-custom-header"
+              pagination
+            >
+              <TableHeaderColumn
+                dataField="DepartmentName"
+                isKey={true}
+                dataAlign="left"
+                dataSort={true}
+              >
+                Department
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="DepartmentId"
+                dataAlign="right"
+                dataFormat={this.buttonFormatter}
+              >
+                Actions
+              </TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>
@@ -208,11 +227,11 @@ class DepartmentsListing extends Component {
             closeDrawer={this.closeDrawer}
             isEditFlag={isEditFlag}
             DepartmentId={DepartmentId}
-            anchor={'right'}
+            anchor={"right"}
             className={"test-rahul"}
           />
         )}
-      </ >
+      </>
     );
   }
 }

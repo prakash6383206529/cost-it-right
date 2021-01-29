@@ -793,7 +793,7 @@ function CostingDetails() {
 
   return (
     <>
-      <div className="login-container signup-form">
+      <div className="login-container signup-form costing-details-page">
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
@@ -1017,7 +1017,7 @@ function CostingDetails() {
                                 <th style={{ }}>
                                   {`SOB`}
                                   <button
-                                    className="edit-details-btn mr-2 ml5 align-middle"
+                                    className="edit-details-btn mr-2 ml5"
                                     type={"button"}
                                     onClick={() =>
                                       setEnableSOBField(!isSOBEnabled)
@@ -1111,14 +1111,14 @@ function CostingDetails() {
                                       </td>
                                       <td style={{ width: "200px" }}>
                                         <button
-                                          className="Add-file mr-2"
+                                          className="Add-file mr-2 my-1"
                                           type={"button"}
                                           title={"Add Costing"}
                                           onClick={() => addDetails(index, ZBC)}
                                         />
                                         {!item.IsNewCosting && (
                                           <button
-                                            className="View mr-2"
+                                            className="View mr-2 my-1"
                                             type={"button"}
                                             title={"View Costing"}
                                             onClick={() =>
@@ -1128,7 +1128,7 @@ function CostingDetails() {
                                         )}
                                         {!item.IsNewCosting && (
                                           <button
-                                            className="Edit mr-2"
+                                            className="Edit mr-2 my-1"
                                             type={"button"}
                                             title={"Edit Costing"}
                                             onClick={() =>
@@ -1138,7 +1138,7 @@ function CostingDetails() {
                                         )}
                                         {!item.IsNewCosting && (
                                           <button
-                                            className="Copy All mr-2"
+                                            className="Copy All my-1"
                                             type={"button"}
                                             title={"Copy Costing"}
                                             onClick={() =>
@@ -1281,7 +1281,7 @@ function CostingDetails() {
                                       </td>
                                       <td>
                                         <button
-                                          className="Add-file mr-2"
+                                          className="Add-file mr-2 my-1"
                                           type={"button"}
                                           title={"Add Costing"}
                                           onClick={() => addDetails(index, VBC)}
@@ -1289,7 +1289,7 @@ function CostingDetails() {
                                         {/* <button className="Copy All mr-2" type={'button'} title={'Edit Costing'} onClick={()=>{copyCosting(index,VBC)}} /> */}
                                         {!item.IsNewCosting && (
                                           <button
-                                            className="View mr-2"
+                                            className="View mr-2 my-1"
                                             type={"button"}
                                             title={"View Costing"}
                                             onClick={() =>
@@ -1299,7 +1299,7 @@ function CostingDetails() {
                                         )}
                                         {!item.IsNewCosting && (
                                           <button
-                                            className="Edit mr-2"
+                                            className="Edit mr-2 my-1"
                                             type={"button"}
                                             title={"Edit Costing"}
                                             onClick={() =>
@@ -1309,7 +1309,7 @@ function CostingDetails() {
                                         )}
                                         {!item.IsNewCosting && (
                                           <button
-                                            className="Copy All mr-2"
+                                            className="Copy All my-1"
                                             title={"Copy Costing"}
                                             type={"button"}
                                             onClick={() =>

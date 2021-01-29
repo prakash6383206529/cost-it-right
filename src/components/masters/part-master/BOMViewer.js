@@ -322,8 +322,8 @@ class BOMViewer extends Component {
                             >
                               <div className={"cross-icon"}>
                                 <img
-                                  src={require("../../../assests/images/times.png")}
-                                  alt="cancel-icon.jpg"
+                                  src={require("../../../assests/images/trash-red.svg")}
+                                  alt="delete-icon.jpg"
                                 />
                               </div>{" "}
                               {"Delete"}
@@ -336,9 +336,15 @@ class BOMViewer extends Component {
                                   displayDeleteIcon: false,
                                 })
                               }
-                              className={"user-btn mr15 pull-right mt10"}
+                              className={"user-btn edit-btn mr15 pull-right mt10"}
                             >
-                              <div className={"EDIT"}></div>EDIT
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/edit-yellow.svg")}
+                                  alt="delete-icon.jpg"
+                                />
+                              </div>
+                              {"EDIT"}
                             </button>
                             <button
                               type="button"

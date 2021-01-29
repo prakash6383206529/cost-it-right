@@ -52,7 +52,7 @@ class Breadcrumb extends Component {
 			<div className="breadcrumbs fixed-top">
 				<div className="container-fluid">
 					<div className="row">
-						<div className="col-12">
+						<div className="col-12 pl-0">
 							<div className="bread-inner">
 								<ul className="bread-list d-inline-flex">
 									<li><a href="/">Home</a></li>

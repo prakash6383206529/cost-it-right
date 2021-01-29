@@ -233,15 +233,15 @@ class ReasonListing extends Component {
           <>
             <div className="container-fluid p-0">
               {/* {this.props.loading && <Loader />} */}
-              <Col md="12" className="search-user-block">
+              <Col md="12" className="">
                 <h1>Reason Master</h1>
                 <hr />
-                <div className="d-flex justify-content-end bd-highlight w100 mb15">
+                <div className="d-flex justify-content-end bd-highlight w100 mb15 no-filter-row ">
                   <div>
                     {AddAccessibility && (
                       <button
                         type="button"
-                        className={"user-btn"}
+                        className={"user-btn search-user-block"}
                         onClick={this.formToggle}
                       >
                         <div className={"plus"}></div>ADD

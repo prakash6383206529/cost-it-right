@@ -157,48 +157,71 @@ class RMListing extends Component {
         };
 
         return (
-            <div>
-                {this.props.loading && <Loader />}
-                <Row className="pt-4 mb-3">
-                    <Col md={12} className="text-right ">
-                        {AddAccessibility && <button
-                            type={'button'}
-                            className={'user-btn'}
-                            onClick={this.openModel}>
-                            <div className={'plus'}></div>{`Add`}</button>}
-                    </Col>
-                </Row>
+          <div>
+            {this.props.loading && <Loader />}
+            <Row className="pt-4 mb-3 no-filter-row">
+              <Col md={12} className="text-right ">
+                {AddAccessibility && (
+                  <button
+                    type={"button"}
+                    className={"user-btn search-user-block "}
+                    onClick={this.openModel}
+                  >
+                    <div className={"plus"}></div>
+                    {`Add`}
+                  </button>
+                )}
+              </Col>
+            </Row>
 
-                <Row>
-                    <Col>
-                        <BootstrapTable
-                            data={this.props.rawMaterialTypeDataList}
-                            striped={false}
-                            bordered={false}
-                            hover={false}
-                            options={options}
-                            search
-                            // exportCSV
-                            //ignoreSinglePage
-                            ref={'table'}
-                            className={'RM-table'}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="MaterialType" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Density" dataSort={true}>Density (g/cm3)</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialTypeId" dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-                        </BootstrapTable>
-                    </Col>
-                </Row>
-                {isOpen && <AddMaterialType
-                    isOpen={isOpen}
-                    closeDrawer={this.closeDrawer}
-                    isEditFlag={isEditFlag}
-                    ID={ID}
-                    anchor={'right'}
-                />}
-            </div>
+            <Row>
+              <Col>
+                <BootstrapTable
+                  data={this.props.rawMaterialTypeDataList}
+                  striped={false}
+                  bordered={false}
+                  hover={false}
+                  options={options}
+                  search
+                  // exportCSV
+                  //ignoreSinglePage
+                  ref={"table"}
+                  className={"RM-table"}
+                  pagination
+                >
+                  {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+                  <TableHeaderColumn
+                    dataField="MaterialType"
+                    dataAlign="left"
+                    dataSort={true}
+                  >
+                    Material
+                  </TableHeaderColumn>
+                  <TableHeaderColumn dataField="Density" dataSort={true}>
+                    Density (g/cm3)
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    dataField="MaterialTypeId"
+                    dataAlign="right"
+                    export={false}
+                    isKey={true}
+                    dataFormat={this.buttonFormatter}
+                  >
+                    Actions
+                  </TableHeaderColumn>
+                </BootstrapTable>
+              </Col>
+            </Row>
+            {isOpen && (
+              <AddMaterialType
+                isOpen={isOpen}
+                closeDrawer={this.closeDrawer}
+                isEditFlag={isEditFlag}
+                ID={ID}
+                anchor={"right"}
+              />
+            )}
+          </div>
         );
     }
 }

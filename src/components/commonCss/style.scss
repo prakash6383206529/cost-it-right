@@ -1322,12 +1322,6 @@ button.user-btn.pull-right {
 .client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-8 {
   display: none;
 }
-
-.client-table .react-bs-table-tool-bar .col-xs-6.col-sm-6.col-md-6.col-lg-4 {
-  position: absolute;
-  right: 70px;
-  top: -44px;
-}
 .download-btn{
   span{
     width: 100%;
@@ -1343,7 +1337,7 @@ button.user-btn.pull-right {
  .cr-innertool-cost.row{background-color: #E7F2FC;color:#3D4465;border-bottom:1px solid #C2CBE8;    margin-bottom: 15px;}
  .cr-tbl-label{color:#A4ABC5;font-size:16px}
  .cr-bg-tbl{background-color: #E7F2FC;}
- .cr-brdr-main tbody td{color:#C2CBE8;font-size:16px;}
+ .cr-brdr-main tbody td{color:#3D4465;font-size:16px;}
  .cr-subtabs-head{background-color: #E0E9F5;}
  .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: 16px;padding: 10px 15px;border-top:2px solid transparent}
  .content-page .cr-subtabs-head.nav-tabs .nav-link.active,.content-page .cr-subtabs-head.nav-tabs .nav-link:hover{border-top: #d62c8c 2px solid;border-radius: 0;border-bottom: 0;background-color: #fff; }
@@ -1912,7 +1906,10 @@ html {
 	.reset {
 		padding-left: 15px;
 		padding-right: 15px;
-		width: auto;
+    width: auto;
+    transition: all ease 0.3s;
+    border-color: #8a91ac;
+    color: #8a91ac;
 	}
 	.apply {
 		padding-left: 15px;
@@ -2111,7 +2108,101 @@ table{
   .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: 27px;}
 }
 
-
+//=============== costing details page only
+.costing-details-page{
+  .costing-table-next{
+    tbody{
+      td{
+        .mb-15{
+          margin-bottom: 0px;
+        }
+        label,label:empty{
+          display: none;
+        }
+        .form-group{
+          margin-bottom: 0px;
+        }
+      }
+    }
+  }// costing-table-next
+  .nodate-section{
+    margin: 12px 0;
+    img{
+      width: 60px;
+    }
+    .my-2{
+      margin: 2px 0 !important;
+    }
+    h5{
+      font-size: 0.9rem;
+    }
+  }
+}// costing-details-page
+//=============== costing details page only end
+.table {
+  th.sort-column{
+    > ::text{
+      max-width: calc(100% - 10px);
+    }
+    position: relative;
+    span.order{
+      position: absolute;
+      cursor: pointer;
+      margin-left: -3px;
+      span{
+        margin: 0px !important;
+        margin-left: 5px !important;
+        span{
+          margin: 0px !important;
+        }
+      }
+    }
+  }
+}
+.edit-btn{
+  .cross-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    img{
+      filter:invert(0%) sepia(13%) saturate(100%) hue-rotate(271deg) brightness(1000%) contrast(1000%);
+    }
+  }
+}
+.react-bs-table-tool-bar{
+  .col-lg-8{
+    display: none;
+  }
+}
+.search-user-block{
+  position: absolute;
+  bottom: -47px;
+  z-index: 99;
+  right: 0;
+}
+.no-filter-row{
+  height: 0px;
+  margin: 0px !important;
+  .search-user-block{
+    bottom: -32px;
+  }
+}
+.table-mt-0{
+  .react-bs-table-container{
+    .react-bs-table{
+      margin-top: 0;
+    }
+  }
+}
+.sticky-top-0{
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background-color: #fff;
+}
+.row{
+  position: relative;
+}
 // ============issues fixing end=============
 
 @media(max-width:1600px){
