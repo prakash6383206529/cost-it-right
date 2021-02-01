@@ -12,6 +12,7 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { ROLE } from '../../../config/constants';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class RolesListing extends Component {
   constructor(props) {
@@ -93,7 +94,8 @@ class RolesListing extends Component {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked')
+      onCancel: () => console.log('CANCEL: clicked'),
+      component: () => <ConfirmComponent/>
     };
     return toastr.confirm(`${MESSAGES.ROLE_DELETE_ALERT}`, toastrConfirmOptions);
   }

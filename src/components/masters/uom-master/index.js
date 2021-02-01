@@ -165,21 +165,24 @@ class UOMMaster extends Component {
     */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
+          <>
+            <label htmlFor="normal-switch">
+              {/* <span>Switch with default style</span> */}
+              <Switch
+                onChange={() =>
+                  this.handleChange(cell, row, enumObject, rowIndex)
+                }
+                checked={cell}
+                background="#ff6600"
+                onColor="#4DC771"
+                offColor="#FC5774"
+                onHandleColor="#ffffff"
+                id="normal-switch"
+                height={24}
+              />
+            </label>
+          </>
+        );
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {

@@ -1679,8 +1679,7 @@ class AddPower extends Component {
                               </Row>
                             </>
                           )}
-                        
-
+                        </div>
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                           <div className="col-sm-12 text-right bluefooter-butn">
                             <button
@@ -1710,7 +1709,7 @@ class AddPower extends Component {
                             </button>
                           </div>
                         </Row>
-                      </div>
+                      
                       </form>
                       </div>
                     </div>

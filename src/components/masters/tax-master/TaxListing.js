@@ -15,6 +15,7 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import AddTaxDetails from './AddTaxDetails';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class TaxListing extends Component {
     constructor(props) {
@@ -118,7 +119,8 @@ class TaxListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log('CANCEL: clicked'),
+            component: () => <ConfirmComponent/>
         };
         return toastr.confirm(MESSAGES.TAX_DELETE_ALERT, toastrConfirmOptions);
     }

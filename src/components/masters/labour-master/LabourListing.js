@@ -22,6 +22,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class LabourListing extends Component {
     constructor(props) {
@@ -172,7 +173,8 @@ class LabourListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log('CANCEL: clicked'),
+            component: () => <ConfirmComponent/>
         };
         return toastr.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
     }

@@ -10,6 +10,7 @@ import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import ConfirmComponent from '../../helper/ConfirmComponent';
 
 class LevelTechnologyListing extends Component {
 	constructor(props) {
@@ -65,7 +66,8 @@ class LevelTechnologyListing extends Component {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
 			},
-			onCancel: () => console.log('CANCEL: clicked')
+			onCancel: () => console.log('CANCEL: clicked'),
+			component: () => <ConfirmComponent/>
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}

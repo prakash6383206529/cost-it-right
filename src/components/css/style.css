@@ -2351,12 +2351,12 @@ table thead th {
 }
 
 .no-filter-row {
-  height: 0px;
+  height: 0.25rem;
   margin: 0px !important;
 }
 
 .no-filter-row .search-user-block {
-  bottom: 0;
+  bottom: -32px;
 }
 
 .table-mt-0 .react-bs-table-container .react-bs-table {
@@ -2364,8 +2364,8 @@ table thead th {
 }
 
 .sticky-top-0 {
-  position: -webkit-sticky;
-  position: sticky;
+  position: -webkit-sticky !important;
+  position: sticky !important;
   top: 0;
   z-index: 9;
   background-color: #fff;
@@ -2373,6 +2373,96 @@ table thead th {
 
 .row {
   position: relative;
+}
+
+.redux-toastr .rrt-confirm {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.redux-toastr .confirm-con-main {
+  -webkit-box-ordinal-group: 0;
+      -ms-flex-order: -1;
+          order: -1;
+}
+
+.rrt-confirm-holder .header-bar {
+  padding: 16px 20px;
+  border-bottom: 1px solid #C2CBE8;
+  margin-bottom: 25px;
+}
+
+.rrt-confirm-holder .header-bar h4 {
+  color: #256BD1;
+  font-size: 24px;
+}
+
+.rrt-confirm-holder .rrt-ok-btn:before {
+  background: transparent url("../../assests/images/check-white.svg") 0% 0% no-repeat padding-box;
+  width: 18px;
+  height: 14px;
+  content: "";
+  display: inline-block;
+  background-size: contain;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.rrt-confirm-holder .rrt-cancel-btn:hover:before {
+  -webkit-filter: invert(56%) sepia(86%) saturate(6810%) hue-rotate(198deg) brightness(84%) contrast(90%);
+          filter: invert(56%) sepia(86%) saturate(6810%) hue-rotate(198deg) brightness(84%) contrast(90%);
+}
+
+.rrt-confirm-holder .rrt-cancel-btn:before {
+  background: transparent url("../../assests/images/cross.svg") 0% 0% no-repeat padding-box;
+  width: 18px;
+  height: 14px;
+  content: "";
+  display: inline-block;
+  background-size: contain;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn {
+  margin-left: -30px;
+  padding: 5px;
+  background-color: transparent !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:hover, .react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:active, .react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:focus, .react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:visited {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:before {
+  content: "";
+  background: transparent url("../../assests/images/cross.svg") 0% 0% no-repeat padding-box;
+  width: 18px;
+  height: 14px;
+  content: "";
+  display: inline-block;
+  background-size: contain;
+  vertical-align: middle;
+}
+
+.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn span {
+  display: none;
 }
 
 @media (max-width: 1600px) {

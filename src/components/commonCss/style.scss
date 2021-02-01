@@ -2235,6 +2235,45 @@ table{
       height: 14px;content: "";display: inline-block;background-size: contain;vertical-align: middle;margin-right: 5px;}
     }
 }
+.react-bs-table-container {
+  .react-bs-table-search-form{
+    input.form-control{
+      padding: 6px 30px 6px 10px !important;
+      &:hover,&:focus,&:active,&:visited{
+        border:1px solid #256bd1;
+      }
+    }
+    .input-group-btn{
+      opacity: 0;
+      .react-bs-table-search-clear-btn{
+        margin-left: -30px;
+        padding: 5px;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        &:before{
+          content: "";
+          background: transparent url("../../assests/images/cross.svg") 0% 0% no-repeat padding-box;width: 18px;height: 14px;content: "";display: inline-block;background-size: contain;vertical-align: middle;
+        }
+        &:hover,&:active,&:focus,&:visited{
+          background-color: transparent;
+          box-shadow: none;
+          &:before{filter: invert(56%) sepia(86%) saturate(6810%) hue-rotate(198deg) brightness(84%) contrast(90%);}
+        }
+        span{
+          display: none;
+        }
+      }
+    }
+    input:not(:placeholder-shown) + .input-group-btn{opacity: 1;}
+  }
+}
+.css-1pahdxg-control{
+  border:1px solid #256bd1;
+  box-shadow: none;
+}
 
 
 // ============issues fixing end=============

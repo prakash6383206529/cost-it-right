@@ -15,6 +15,7 @@ import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
+import ConfirmComponent from '../../helper/ConfirmComponent';
 
 class LevelsListing extends Component {
 	constructor(props) {
@@ -144,7 +145,8 @@ class LevelsListing extends Component {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
 			},
-			onCancel: () => console.log('CANCEL: clicked')
+			onCancel: () => console.log('CANCEL: clicked'),
+			component: () => <ConfirmComponent/>
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
