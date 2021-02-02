@@ -4,7 +4,7 @@ import { Row, Col, Table } from 'reactstrap';
 import moment from 'moment';
 import { getZBCCostingByCostingId } from '../actions/Costing';
 import { checkForDecimalAndNull, checkForNull } from '../../../helper';
-import CostingHeadTabs from './CostingHeaderTabs/index'
+import CostingHeadTabs from './costingHeaderTabs/index'
 import { VBC, ZBC } from '../../../config/constants';
 
 

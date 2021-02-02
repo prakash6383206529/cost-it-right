@@ -324,7 +324,7 @@ class SpecificationListing extends Component {
                                         type="text"
                                         // label="Raw Material"
                                         component={searchableSelect}
-                                        placeholder={'-Raw Material-'}
+                                        placeholder={'Raw Material'}
                                         options={this.renderListing('material')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
@@ -340,7 +340,7 @@ class SpecificationListing extends Component {
                                         type="text"
                                         // label="RM Grade"
                                         component={searchableSelect}
-                                        placeholder={'-RM Grade-'}
+                                        placeholder={'RM Grade'}
                                         options={this.renderListing('grade')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
@@ -373,9 +373,12 @@ class SpecificationListing extends Component {
                         ""
                         )} 
                         <Col md={6} className="text-right mb-3 search-user-block">
-                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                {this.state.shown ? ("Hide Filter") : ("Show Filter")}
-                            </button>
+                        {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                             {BulkUploadAccessibility && <button
                                 type="button"
                                 className={'user-btn mr5 '}

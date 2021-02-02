@@ -1188,9 +1188,29 @@ label for[normal-switch]{
 .pl0 {
   padding-left: 0;
 }
-.content-page .filter-block {
-  height: 32px!important;
-  margin-bottom: 12px;
+.content-page {
+  .tab-pane{
+    .filter-block {
+      position: initial;
+      height: 32px!important;
+      margin-bottom: 25px;
+      background-color: #F8FCFF;
+      &:before{
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        right: 15px;
+        bottom: 10px;
+        content: "";
+        background-color: #F8FCFF;
+        z-index: 0;
+      }
+      &:empty{
+        background-color: #fff;
+        &:before{display: none;}
+      }
+    }
+  }
 }
 .form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm 
 {
@@ -1729,7 +1749,8 @@ html {
 	}
 	.filter-block {
 		.flex-fill {
-			padding-right: 10px;
+      padding-right: 10px;
+      z-index: 9;
 		}
 		.flex-fills {
 			padding-right: 10px;
@@ -2135,10 +2156,13 @@ table{
     }
     h5{
       font-size: 0.9rem;
+      color: #cdcfd1;
     }
   }
 }// costing-details-page
 //=============== costing details page only end
+
+
 .table {
   th.sort-column{
     > ::text{
@@ -2237,6 +2261,7 @@ table{
 }
 .react-bs-table-container {
   .react-bs-table-search-form{
+    max-width: 245px;
     input.form-control{
       padding: 6px 30px 6px 10px !important;
       &:hover,&:focus,&:active,&:visited{
@@ -2273,6 +2298,29 @@ table{
 .css-1pahdxg-control{
   border:1px solid #256bd1;
   box-shadow: none;
+}
+
+.filter-btn-top{
+  position: absolute !important;
+  z-index: 9;
+  top: -56px;
+  right: 20px;
+  width: 32px;
+  padding: 5px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  img{
+    filter: brightness(100);
+  }
+}
+
+.react-switch-bg{
+  div{
+    svg{
+      display: none;
+    }
+  }
 }
 
 

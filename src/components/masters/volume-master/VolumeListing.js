@@ -439,7 +439,7 @@ class VolumeListing extends Component {
                           type="text"
                           label=""
                           component={searchableSelect}
-                          placeholder={"-Year-"}
+                          placeholder={"Year"}
                           isClearable={false}
                           options={this.renderListing("year")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -461,7 +461,7 @@ class VolumeListing extends Component {
                           type="text"
                           label=""
                           component={searchableSelect}
-                          placeholder={"-Month-"}
+                          placeholder={"Month"}
                           isClearable={false}
                           options={this.renderListing("month")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -483,7 +483,7 @@ class VolumeListing extends Component {
                           type="text"
                           label=""
                           component={searchableSelect}
-                          placeholder={"-Vendors-"}
+                          placeholder={"Vendors"}
                           isClearable={false}
                           options={this.renderListing("VendorList")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -505,7 +505,7 @@ class VolumeListing extends Component {
                           type="text"
                           label=""
                           component={searchableSelect}
-                          placeholder={"-Plant-"}
+                          placeholder={"Plant"}
                           isClearable={false}
                           options={this.renderListing("plant")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -546,9 +546,12 @@ class VolumeListing extends Component {
                   <Col md="6" lg="8" className="search-user-block mb-3">
                     <div className="d-flex justify-content-end bd-highlight">
                       <div>
-                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>
-                            {this.state.shown ? ("Hide Filter") : ("Show Filter")}
-                        </button>
+                      {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                         {BulkUploadAccessibility && (
                           <button
                             type="button"

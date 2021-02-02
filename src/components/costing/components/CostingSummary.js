@@ -393,7 +393,7 @@ function CostingSummary() {
                         <SearchableSelectHookForm
                           label={'Technology'}
                           name={'Technology'}
-                          placeholder={'-Select-'}
+                          placeholder={'Select'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}
@@ -412,7 +412,7 @@ function CostingSummary() {
                         <SearchableSelectHookForm
                           label={'Assembly No./Part No.'}
                           name={'Part'}
-                          placeholder={'-Select-'}
+                          placeholder={'Select'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}

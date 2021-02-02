@@ -434,7 +434,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Head-'}
+                                        placeholder={'Head'}
                                         isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -450,7 +450,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'-Plant-'}
+                                        placeholder={'Plant'}
                                         isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -466,7 +466,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-technology-'}
+                                        placeholder={'Technology'}
                                         isClearable={false}
                                         options={this.renderListing('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -482,7 +482,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'-Vendor-'}
+                                        placeholder={'Vendor'}
                                         isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -500,7 +500,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=''
                                         component={searchableSelect}
-                                        placeholder={'-Machine-'}
+                                        placeholder={'Machine'}
                                         isClearable={false}
                                         options={this.renderListing('MachineTypeList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -517,7 +517,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Process-'}
+                                        placeholder={'Process'}
                                         isClearable={false}
                                         options={this.renderListing('ProcessNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -553,9 +553,12 @@ class MachineRateListing extends Component {
                         <Col md="6" lg="6" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                        {this.state.shown ? ("Hide Filter") : ("Show Filter")}
-                                    </button>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}

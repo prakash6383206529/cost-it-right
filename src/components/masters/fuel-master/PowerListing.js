@@ -403,7 +403,7 @@ class PowerListing extends Component {
                             type="text"
                             label={""}
                             component={searchableSelect}
-                            placeholder={"--- Select State ---"}
+                            placeholder={"Select State"}
                             isClearable={false}
                             options={this.renderListing("state")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -420,7 +420,7 @@ class PowerListing extends Component {
                             type="text"
                             label={""}
                             component={searchableSelect}
-                            placeholder={"--Select Plant"}
+                            placeholder={"Select Plant"}
                             isClearable={false}
                             options={this.renderListing("plant")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -440,7 +440,7 @@ class PowerListing extends Component {
                             type="text"
                             label={""}
                             component={searchableSelect}
-                            placeholder={"--Vendor Name--"}
+                            placeholder={"Vendor Name"}
                             isClearable={false}
                             options={this.renderListing("VendorNameList")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -463,7 +463,7 @@ class PowerListing extends Component {
                             type="text"
                             label={""}
                             component={searchableSelect}
-                            placeholder={"--Vendor Plant--"}
+                            placeholder={"Vendor Plant"}
                             isClearable={false}
                             options={this.renderListing("VendorPlant")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -506,9 +506,12 @@ class PowerListing extends Component {
                   <div className="d-flex justify-content-end bd-highlight w100">
                     <div>
                       <>
-                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>
-                            {this.state.shown ? ("Hide Filter") : ("Show Filter")}
-                        </button>
+                      {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                         {AddAccessibility && (
                           <button
                             type="button"

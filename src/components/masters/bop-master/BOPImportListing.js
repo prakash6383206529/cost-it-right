@@ -350,7 +350,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Costing Head-'}
+                                        placeholder={'Costing Head'}
                                         isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -366,7 +366,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Category-'}
+                                        placeholder={'Category'}
                                         isClearable={false}
                                         options={this.renderListing('BOPCategory')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -382,7 +382,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Vendor-'}
+                                        placeholder={'Vendor'}
                                         isClearable={false}
                                         options={this.renderListing('vendor')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -398,7 +398,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Plant-'}
+                                        placeholder={'Plant'}
                                         isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -435,9 +435,12 @@ class BOPImportListing extends Component {
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                        {this.state.shown ? ("Hide Filter") : ("Show Filter")}
-                                    </button>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
