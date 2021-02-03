@@ -361,7 +361,7 @@ class BOMViewer extends Component {
                         theme="#2196f3"
                         variant="outlined"
                         arrowStart={false}
-                        arrowEnd={false}
+                        arrowEnd={true}
                         outputColor="#0c00ff"
                         inputColor="#ff0022"
                         style={{
@@ -424,8 +424,10 @@ class BOMViewer extends Component {
                                       <span className="flowpoint-header-delete">
                                         <button
                                           onClick={() => this.deleteLevelOne(i)}
-                                        >
-                                          x
+                                        ><img
+                                        src={require("../../../assests/images/times.png")}
+                                        alt="cancel-icon.jpg"
+                                      />
                                         </button>
                                       </span>
                                     )}

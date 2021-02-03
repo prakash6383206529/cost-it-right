@@ -768,7 +768,7 @@ class UserRegistration extends Component {
                   <div className="col-md-6">
                     <div className="form-heading mb-0">
                       <h2>
-                        {this.state.isEditFlag ? "Update User" : "Add User"}
+                        {this.state.isEditFlag ? "Edit User Details" : "Add User"}
                       </h2>
                     </div>
                   </div>
@@ -971,7 +971,7 @@ class UserRegistration extends Component {
                           placeholder={"Enter"}
                           //validate={[required]}
                           component={renderText}
-                          //required={true}
+                          required={true}
                           maxLength={45}
                           customClassName={"withBorder"}
                         />
@@ -999,7 +999,7 @@ class UserRegistration extends Component {
                           options={this.searchableSelectType("city")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           //validate={[required]}
-                          //required={true}
+                          required={true}
                           handleChangeDescription={this.cityHandler}
                           valueDescription={this.state.city}
                         />
@@ -1012,7 +1012,7 @@ class UserRegistration extends Component {
                           placeholder={"Enter"}
                           validate={[number, maxLength6]}
                           component={renderText}
-                          //required={true}
+                          required={true}
                           maxLength={6}
                           customClassName={"withBorder"}
                         />
@@ -1135,7 +1135,7 @@ class UserRegistration extends Component {
                           options={this.searchableSelectType("technology")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
-                          //required={true}
+                          required={true}
                           handleChangeDescription={this.technologyHandler}
                           valueDescription={this.state.technology}
                         />
@@ -1149,7 +1149,7 @@ class UserRegistration extends Component {
                           options={this.searchableSelectType("level")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           //validate={(this.state.level == null || this.state.level.length == 0) ? [required] : []}
-                          //required={true}
+                          required={true}
                           handleChangeDescription={this.levelHandler}
                           valueDescription={this.state.level}
                         />

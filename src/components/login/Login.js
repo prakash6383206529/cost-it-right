@@ -118,7 +118,7 @@ class Login extends Component {
                     <Field
                       name="Password"
                       // label="Password"
-                      placeholder="Must have atleast 5 characters"
+                      placeholder="Password"
                       component={renderPasswordInputField}
                       validate={[required, minLength5, maxLength25]}
                       required={true}

@@ -1985,6 +1985,12 @@ ul.bread-list.d-inline-flex{
 
 
 .flowpoint {
+  margin-top: 10px;
+  border: 2px solid #256BD1 !important;
+  .flowconnection{
+    stroke-width: 2px;
+    stroke: #256BD1;
+  }
   .flowpoint-header {
     border-bottom: 1px solid #256bd1;
     position: relative;
@@ -2030,12 +2036,15 @@ ul.bread-list.d-inline-flex{
         height: 19px;
         border: none;
         background: #FC5774 0% 0% no-repeat padding-box;
-        box-shadow: 0px 3px 10px;
+        box-shadow: 0px 3px 10px #fc57746b;
         outline: none;
         border-radius: 50%;
         line-height: 6px;
         text-transform: lowercase;
         text-align: center;
+        img{
+          filter: brightness(100);
+        }
       }
     }
   }
@@ -2043,7 +2052,7 @@ ul.bread-list.d-inline-flex{
     font-size: 12px;
     color: #8A91AC;
     strong {
-      font-size: 14px;
+      font-size: 13px;
       color: #3D4465;
       font-weight: 500;
       padding-left: 5px;

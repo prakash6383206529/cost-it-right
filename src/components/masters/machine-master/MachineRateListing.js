@@ -592,7 +592,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Technologies" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plants'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineNumber" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Number'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTypeName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Type'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTonnage" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Tonnage'}</TableHeaderColumn>
