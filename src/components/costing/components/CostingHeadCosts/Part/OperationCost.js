@@ -21,7 +21,6 @@ function OperationCost(props) {
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
-
   useEffect(() => {
     const Params = {
       index: 0,

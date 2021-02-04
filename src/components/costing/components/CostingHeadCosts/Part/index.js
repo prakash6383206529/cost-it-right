@@ -43,9 +43,9 @@ function PartCompoment(props) {
 
     if (IsOpen === false && Count > 0) {
       let requestData = {
-        "NetRawMaterialsCost": item.TotalRawMaterialsCost,
-        "NetBoughtOutPartCost": item.TotalBoughtOutPartCost,
-        "NetConversionCost": item.TotalConversionCost,
+        "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
+        "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
+        "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
         "NetOperationCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
         "NetProcessCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
         "NetToolsCost": item.CostingPartDetails.CostingConversionCost && item.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? item.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
@@ -61,8 +61,8 @@ function PartCompoment(props) {
 
         "AssemblyCostingId": item.BOMLevel === LEVEL1 ? costData.CostingId : item.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
         "AssemblyCostingNumber": item.BOMLevel === LEVEL1 ? costData.CostingNumber : item.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-        "AssemblyPartId": item.BOMLevel === LEVEL1 ? item.PartId : item.AssemblyPartId,                                        //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-        "AssemblyPartNumber": item.BOMLevel === LEVEL1 ? item.PartNumber : item.AssemblyPartNumber,                                //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartId": item.BOMLevel === LEVEL1 ? item.PartId : item.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartNumber": item.BOMLevel === LEVEL1 ? item.PartNumber : item.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
 
         "PlantId": costData.PlantId,
         "VendorId": costData.VendorId,
@@ -76,7 +76,6 @@ function PartCompoment(props) {
         "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
         CostingPartDetails: item.CostingPartDetails,
       }
-      console.log('requestData', requestData)
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         console.log('Success', res)
       }))
@@ -102,9 +101,10 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{1}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{''}</td>
       </tr>
       {item.IsOpen && <tr>
-        <td colSpan={7} className="cr-innerwrap-td">
+        <td colSpan={8} className="cr-innerwrap-td">
           <div className="user-page p-0">
             <div>
               <RawMaterialCost

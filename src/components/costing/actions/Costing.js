@@ -423,7 +423,6 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
-  console.log('TabData: From Action ', TabData);
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -440,7 +439,7 @@ export function setRMCCData(TabData, callback) {
 export function getBOPData(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBOPData}/${data.CostingId}/${data.PartId}`, headers);
+    const request = axios.get(`${API.getBOPData}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         let TabData = response.data.DataList;
@@ -969,7 +968,6 @@ export function getDiscountOtherCostTabData(data, callback) {
         callback(response);
       }
     }).catch((error) => {
-      console.log('error: ', error);
       dispatch({ type: API_FAILURE });
       callback(error);
       //apiErrors(error);

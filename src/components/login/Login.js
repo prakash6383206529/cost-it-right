@@ -109,7 +109,7 @@ class Login extends Component {
                         validate={[required, minLength5, maxLength70]}
                         component={renderText}
                         required={true}
-                        maxLength={26}
+                        maxLength={71}
                         customClassName={'withBorder'}
                       />
                     }
