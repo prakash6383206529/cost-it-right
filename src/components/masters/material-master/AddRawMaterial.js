@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { alphabetsOnlyForName, required } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import {
     createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName
@@ -126,7 +126,7 @@ class AddRawMaterial extends Component {
                           name={"RawMaterialName"}
                           type="text"
                           placeholder={""}
-                          validate={[required]}
+                          validate={[required,alphabetsOnlyForName]}
                           component={renderText}
                           required={true}
                           className=" "

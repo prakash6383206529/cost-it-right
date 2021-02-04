@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { alphabetsOnlyForName, required } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRMGradeAPI, getRMGradeDataAPI, updateRMGradeAPI, getRowMaterialDataAPI, getMaterialTypeSelectList } from '../actions/Material';
 import { getRawMaterialSelectList } from '../../../actions/Common';
@@ -127,7 +127,7 @@ class AddGrade extends Component {
                           name={"Grade"}
                           type="text"
                           placeholder={""}
-                          validate={[required]}
+                          validate={[required,alphabetsOnlyForName]}
                           component={renderText}
                           required={true}
                           className=" "

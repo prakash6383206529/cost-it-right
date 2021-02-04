@@ -1064,8 +1064,7 @@ class AddMachineRate extends Component {
                                               )
                                             }
                                           >
-                                            <div className={"plus"}></div>ADD
-                                            MORE DETAILS
+                                            <div className={"plus"}></div>ADD MORE DETAILS
                                           </button>
                                         )}
                                   </div>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number } from "../../../helper/validation";
+import { required, maxLength100, number, specialName } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
@@ -251,7 +251,7 @@ class AddAssemblyPart extends Component {
         const { BOMViewerData, isEditFlag } = this.state;
 
         if (this.checkIsFormFilled() === false) {
-            toastr.warning('All fields are mandatory.')
+            toastr.warning("Fields with 'asterisk sign *' are mandatory.")
             return false;
         }
 
@@ -566,7 +566,7 @@ class AddAssemblyPart extends Component {
                                 name={"BOMNumber"}
                                 type="text"
                                 placeholder={""}
-                                validate={[required]}
+                                validate={[required,specialName]}
                                 component={renderText}
                                 required={true}
                                 className=""
@@ -580,7 +580,7 @@ class AddAssemblyPart extends Component {
                                 name={"AssemblyPartNumber"}
                                 type="text"
                                 placeholder={""}
-                                validate={[required]}
+                                validate={[required,specialName]}
                                 component={renderText}
                                 required={true}
                                 className=""
@@ -594,7 +594,7 @@ class AddAssemblyPart extends Component {
                                 name={"AssemblyPartName"}
                                 type="text"
                                 placeholder={""}
-                                validate={[required]}
+                                validate={[required,specialName]}
                                 component={renderText}
                                 required={true}
                                 className=""
@@ -607,7 +607,7 @@ class AddAssemblyPart extends Component {
                                 name={"Description"}
                                 type="text"
                                 placeholder={""}
-                                validate={[required]}
+                                validate={[required,specialName]}
                                 component={renderText}
                                 required={true}
                                 className=""

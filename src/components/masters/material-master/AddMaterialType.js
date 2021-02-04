@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, decimalLengthFour } from "../../../helper/validation";
+import { required, decimalLengthFour, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, renderNumberInputField } from "../../layout/FormInputs";
 import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
@@ -136,11 +136,12 @@ class AddMaterialType extends Component {
                           name={"MaterialType"}
                           type="text"
                           placeholder={""}
-                          validate={[required]}
+                          validate={[required, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           className=" "
                           customClassName=" withBorder"
+                          maxLength="30"
                         />
                       </Col>
                       <Col md="12">
@@ -149,11 +150,12 @@ class AddMaterialType extends Component {
                           name={"CalculatedDensityValue"}
                           type="text"
                           placeholder={""}
-                          validate={[required, decimalLengthFour]}
+                          validate={[required]}
                           component={renderNumberInputField}
                           required={true}
                           className=" withoutBorder"
                           customClassName=" withBorder"
+                          maxLength={10}
                         />
                       </Col>
                     </Row>

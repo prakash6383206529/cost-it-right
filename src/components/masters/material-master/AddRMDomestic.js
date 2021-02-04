@@ -6,6 +6,7 @@ import {
   required,
   maxLength100,
   getVendorCode,
+  maxLength2,
 } from '../../../helper/validation'
 import {
   renderText,
@@ -1328,13 +1329,14 @@ class AddRMDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required]}
+                              validate={[required,maxLength2]}
                               component={renderNumberInputField}
                               onChange={this.handleBasicRate}
                               required={true}
                               disabled={false}
                               className=" "
                               customClassName=" withBorder"
+                              maxLength={2}
                             />
                           </Col>
                           <Col md="3">
@@ -1343,11 +1345,12 @@ class AddRMDomestic extends Component {
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required]}
+                              validate={[required,maxLength2]}
                               component={renderNumberInputField}
                               required={true}
                               className=""
                               customClassName=" withBorder"
+                              maxLength="10"
                             />
                           </Col>
                           <Col md="3">

@@ -78,8 +78,8 @@ export const MESSAGES = {
   SPECIFICATION_UPDATE_SUCCESS: 'RM specification has been updated successfully',
 
   //RAW MATERIAL
-  MATERIAL_ADDED_SUCCESS: 'Raw material added successfully',
-  MATERIAL_UPDATE_SUCCESS: 'Raw material updated successfully',
+  MATERIAL_ADDED_SUCCESS: 'Material added successfully',
+  MATERIAL_UPDATE_SUCCESS: 'Material updated successfully',
   MATERIAL_DELETE_ALERT: 'Are you sure you want to delete this Raw material?',
   DELETE_MATERIAL_SUCCESS: 'Raw material has been deleted successfully',
 

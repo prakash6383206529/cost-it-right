@@ -15,6 +15,7 @@ export const minLength6 = minLength(6);
 export const minLength7 = minLength(7);
 export const minLength10 = minLength(10);
 
+export const maxLength2 = maxLength(2);
 export const maxLength6 = maxLength(6);
 export const maxLength7 = maxLength(7);
 export const maxLength10 = maxLength(10);
@@ -84,6 +85,12 @@ export const required = value =>
 export const selectRequired = value =>
     ((typeof value !== 'undefined' && value !== null && value !== "")
         ? undefined : 'This field is required.');
+
+
+export const checkWhiteSpaces = value=>
+value && !value.replace(/\s/g, '').length
+        ? 'This field is invalid.' : undefined;
+
 
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0)

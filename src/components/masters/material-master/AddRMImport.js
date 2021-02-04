@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength100, getVendorCode } from "../../../helper/validation";
+import { required, maxLength100, getVendorCode, maxLength2 } from "../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect,
     renderMultiSelectField, renderTextAreaField
@@ -1181,7 +1181,7 @@ class AddRMImport extends Component {
                                   name={"BasicRate"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  validate={[required]}
+                                  validate={[required,maxLength2]}
                                   component={renderNumberInputField}
                                   onChange={this.handleBasicRate}
                                   required={true}
@@ -1196,7 +1196,7 @@ class AddRMImport extends Component {
                                   name={"ScrapRate"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  validate={[required]}
+                                  validate={[required,maxLength2]}
                                   component={renderNumberInputField}
                                   required={true}
                                   className=""

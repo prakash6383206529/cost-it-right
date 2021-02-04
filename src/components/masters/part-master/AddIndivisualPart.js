@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, number, maxLength100 } from "../../../helper/validation";
+import { required, number, maxLength100, specialName } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderMultiSelectField, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
@@ -306,7 +306,7 @@ class AddIndivisualPart extends Component {
                                   name={"PartNumber"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[required]}
+                                  validate={[required,specialName]}
                                   component={renderText}
                                   required={true}
                                   className=""
@@ -335,7 +335,7 @@ class AddIndivisualPart extends Component {
                                       name={"BOMNumber"}
                                       type="text"
                                       placeholder={""}
-                                      validate={[required]}
+                                      validate={[required,specialName]}
                                       component={renderText}
                                       required={true}
                                       className=""
@@ -350,7 +350,7 @@ class AddIndivisualPart extends Component {
                                   name={"Description"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[required]}
+                                  validate={[required,specialName]}
                                   component={renderText}
                                   required={true}
                                   className=""
