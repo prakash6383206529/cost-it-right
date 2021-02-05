@@ -2,9 +2,9 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, decimalLength2 } from "../../../helper/validation";
+import { required, decimalLength2, number } from "../../../helper/validation";
 import {
-    renderNumberInputField, searchableSelect, focusOnError,
+    renderNumberInputField, searchableSelect, focusOnError, renderText,
 } from "../../layout/FormInputs";
 import { } from '../../../actions/Common';
 import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
@@ -145,15 +145,33 @@ class AddFuel extends Component {
         }
     };
 
+    checkForSpecialCharacter =(value) =>{
+      if(value && /[^a-zA-Z0-9 ]/i.test(value)){
+        return false;
+      }
+      return true;
+    }
+
+
     rateTableHandler = () => {
         const { StateName, rateGrid, effectiveDate, } = this.state;
-        if (StateName.length === 0 || effectiveDate === '') {
-            toastr.warning('Fields should not be empty');
-            return false;
-        }
         const { fieldsObj } = this.props;
         const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
         const tempArray = [];
+
+        if (!this.checkForSpecialCharacter(Rate)){
+          toastr.warning("Enter valid value")
+          return false
+
+        }else{
+          if (StateName.length === 0 || effectiveDate === ''  ) {
+            console.log("Enter in else ke if blck");
+            toastr.warning('Fields should not be empty');
+            return false;
+          }
+        }
+
+        
 
         tempArray.push(...rateGrid, {
             Id: '',
@@ -493,7 +511,7 @@ class AddFuel extends Component {
                                     options={this.renderListing("state")}
                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                     //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                                    //required={true}
+                                    required={true}
                                     handleChangeDescription={this.handleState}
                                     valueDescription={this.state.StateName}
                                     disabled={false}
@@ -507,21 +525,21 @@ class AddFuel extends Component {
                                 name={"Rate"}
                                 type="text"
                                 placeholder={"Enter"}
-                                validate={[decimalLength2]}
-                                component={renderNumberInputField}
-                                //required={true}
+                                validate={[number,decimalLength2]}
+                                component={renderText}
+                                required={true}
                                 className=""
                                 customClassName=" withBorder"
                               />
                             </Col>
                             <Col md="3">
                               <div className="form-group">
-                                <label>
-                                  Effective Date
+                                <label>Effective Date<span className="asterisk-required">*</span>
                                   {/* <span className="asterisk-required">*</span> */}
                                 </label>
                                 <div className="inputbox date-section">
                                   <DatePicker
+                                    required
                                     name="EffectiveDate"
                                     selected={this.state.effectiveDate}
                                     onChange={this.handleEffectiveDateChange}
@@ -544,20 +562,8 @@ class AddFuel extends Component {
                               <div>
                                 {this.state.isEditIndex ? (
                                   <>
-                                    <button
-                                      type="button"
-                                      className={
-                                        "btn btn-primary mt30 pull-left mr5"
-                                      }
-                                      onClick={this.updateRateGrid}
-                                    >
-                                      Update
-                                    </button>
-                                    {/* <button
-                                                                type="button"
-                                                                className={'btn btn-secondary mt30 pull-left'}
-                                                                onClick={this.resetRateGridData}
-                                                            >Cancel</button> */}
+                                    <button type="button" className={"btn btn-primary mt30 pull-left mr5"} onClick={this.updateRateGrid}>Update</button>
+                                    {/* <button type="button" className={'btn btn-secondary mt30 pull-left'} onClick={this.resetRateGridData} >Cancel</button> */}
                                   </>
                                 ) : (
                                   <button

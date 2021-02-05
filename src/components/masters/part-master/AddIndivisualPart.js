@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, number, maxLength100, specialName } from "../../../helper/validation";
+import { required, number, maxLength100, specialName, alphabetsOnly, checkWhiteSpaces } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderMultiSelectField, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
@@ -306,7 +306,7 @@ class AddIndivisualPart extends Component {
                                   name={"PartNumber"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[required,specialName]}
+                                  validate={[required,specialName,checkWhiteSpaces]}
                                   component={renderText}
                                   required={true}
                                   className=""
@@ -320,7 +320,7 @@ class AddIndivisualPart extends Component {
                                   name={"PartName"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[required]}
+                                  validate={[required,checkWhiteSpaces]}
                                   component={renderText}
                                   required={true}
                                   className=""
@@ -335,7 +335,7 @@ class AddIndivisualPart extends Component {
                                       name={"BOMNumber"}
                                       type="text"
                                       placeholder={""}
-                                      validate={[required,specialName]}
+                                      validate={[required,specialName,checkWhiteSpaces]}
                                       component={renderText}
                                       required={true}
                                       className=""
@@ -350,7 +350,7 @@ class AddIndivisualPart extends Component {
                                   name={"Description"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[required,specialName]}
+                                  validate={[required,specialName,checkWhiteSpaces]}
                                   component={renderText}
                                   required={true}
                                   className=""
@@ -366,7 +366,7 @@ class AddIndivisualPart extends Component {
                                   name={"ECNNumber"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[number]}
+                                  validate={[alphabetsOnly,checkWhiteSpaces]}
                                   component={renderText}
                                   //required={true}
                                   className=""
@@ -379,7 +379,7 @@ class AddIndivisualPart extends Component {
                                   name={"RevisionNumber"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[number]}
+                                  validate={[alphabetsOnly,checkWhiteSpaces]}
                                   component={renderText}
                                   //required={true}
                                   className=""
@@ -392,7 +392,7 @@ class AddIndivisualPart extends Component {
                                   name={"DrawingNumber"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[number]}
+                                  validate={[alphabetsOnly,checkWhiteSpaces]}
                                   component={renderText}
                                   //required={true}
                                   className=""
@@ -407,7 +407,7 @@ class AddIndivisualPart extends Component {
                                       name={"GroupCode"}
                                       type="text"
                                       placeholder={""}
-                                      validate={[required]}
+                                      validate={[required,checkWhiteSpaces]}
                                       component={renderText}
                                       //required={true}
                                       className=""
@@ -481,7 +481,7 @@ class AddIndivisualPart extends Component {
                                   placeholder="Type here..."
                                   className=""
                                   customClassName=" textAreaWithBorder"
-                                  validate={[maxLength100]}
+                                  validate={[maxLength100,checkWhiteSpaces]}
                                   //required={true}
                                   component={renderTextAreaField}
                                   maxLength="5000"

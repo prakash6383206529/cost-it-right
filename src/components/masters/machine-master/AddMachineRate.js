@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../helper/validation";
+import { required, checkForNull, maxLength100, checkWhiteSpaces, number } from "../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
     renderMultiSelectField,
@@ -1007,7 +1007,7 @@ class AddMachineRate extends Component {
                                   name={"TonnageCapacity"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  validate={[required]}
+                                  validate={[required,number]}
                                   component={renderText}
                                   required={true}
                                   disabled={isEditFlag ? true : false}
@@ -1021,7 +1021,7 @@ class AddMachineRate extends Component {
                                   name={"Description"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  validate={[required]}
+                                  validate={[checkWhiteSpaces]}
                                   component={renderText}
                                   required={true}
                                   disabled={isEditFlag ? true : false}
@@ -1033,39 +1033,14 @@ class AddMachineRate extends Component {
                               {!this.state.IsVendor && (
                                 <Col md="12">
                                   <div>
-                                    {this.state.IsDetailedEntry
-                                      ? EditAccessibility && (
-                                          <button
-                                            type="button"
-                                            className={"user-btn"}
-                                            onClick={() =>
-                                              this.moreDetailsToggler(
-                                                this.state.MachineID,
-                                                true
-                                              )
-                                            }
-                                          >
-                                            <div
-                                              className={"edit_pencil_icon"}
-                                            ></div>
-                                            EDIT MORE DETAILS
+                                    {this.state.IsDetailedEntry ? EditAccessibility && (
+                                          <button type="button" className={"user-btn"} onClick={() => this.moreDetailsToggler(this.state.MachineID,true)}>
+                                            <div className={"edit_pencil_icon"} ></div> EDIT MORE DETAILS 
                                           </button>
                                         )
                                       : AddAccessibility && (
-                                          <button
-                                            type="button"
-                                            className={"user-btn"}
-                                            onClick={() =>
-                                              this.moreDetailsToggler(
-                                                isEditFlag
-                                                  ? this.state.MachineID
-                                                  : "",
-                                                false
-                                              )
-                                            }
-                                          >
-                                            <div className={"plus"}></div>ADD MORE DETAILS
-                                          </button>
+                                          <button type="button" className={"user-btn"} onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : "",false)}>
+                                            <div className={"plus"}></div>ADD MORE DETAILS</button>
                                         )}
                                   </div>
                                 </Col>
@@ -1132,7 +1107,7 @@ class AddMachineRate extends Component {
                                   name={"MachineRate"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  //validate={[required]}
+                                  validate={[number]}
                                   component={renderNumberInputField}
                                   onChange={this.handleMachineRate}
                                   //required={true}
