@@ -423,6 +423,15 @@ export function calculatePercentage(value) {
 }
 
 /**
+ * @description CHECK PERMISSION AND PRIVILEGE 
+ * @param checkPermission
+ * @returns {string}
+ */
+export function calculatePercentageValue(value, percent) {
+    return value * percent / 100
+}
+
+/**
  * @description getRandomSixDigit 
  * @returns {number}
  */

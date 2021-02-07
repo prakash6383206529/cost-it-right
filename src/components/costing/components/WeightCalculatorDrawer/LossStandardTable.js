@@ -41,14 +41,24 @@ function LossStandardTable(props) {
   }, [fieldValues])
 
   const { dropDownMenu } = props
-
+  console.log(props, "Proos");
   const [tableData, setTableData] = useState([])
   const [isEdit, setIsEdit] = useState(false)
   const [editIndex, setEditIndex] = useState('')
   const [oldNetWeight, setOldNetWeight] = useState('')
   const [netWeight, setNetWeight] = useState(0)
 
+  useEffect(() => {
+    // if (props.sendTable.length === 0) {
+    //   return false
+    // } else {
 
+    setTableData(props.sendTable)
+    // setNetWeight(props.netWeight.LostSum)
+    // setNetWeight(props.sendTable.LostSum)
+    // }
+
+  }, [])
   /**
    * @method calculateLossWeight
    * @description for calculating loss weight  and net loss weight
@@ -72,6 +82,7 @@ function LossStandardTable(props) {
     const lostPercent = Number(getValues('lostPercent'))
     const lossType = getValues('lossType').label
     const lossWeight = Number(getValues('lossWeight'))
+    let tempArray = []
     let NetWeight
     if (isEdit) {
       const oldWeight = netWeight - Number(oldNetWeight)
@@ -89,13 +100,14 @@ function LossStandardTable(props) {
       lossWeight: lossWeight,
     }
     if (isEdit) {
-      const tempArray = Object.assign([...tableData], { [editIndex]: obj })
+      tempArray = Object.assign([...tableData], { [editIndex]: obj })
       setTableData(tempArray)
       setIsEdit(false)
     } else {
-      const tempArray = [...tableData, obj]
+      tempArray = [...tableData, obj]
       setTableData(tempArray)
     }
+    props.tableValue(tempArray)
     reset({
       lostPercent: '',
       lossType: '',
@@ -144,6 +156,7 @@ function LossStandardTable(props) {
       }
       return true
     })
+    props.tableValue(tempData)
     setTableData(tempData)
   }
   return (
@@ -325,7 +338,7 @@ function LossStandardTable(props) {
               <div className="col-md-12 text-right">
                 <span className="col-md-12">
                   {`Net Loss Weight:`}
-                  {checkForDecimalAndNull(netWeight, trim)}
+                  {checkForDecimalAndNull(props.netWeight ? props.netWeight.LostSum : netWeight, trim)}
                 </span>
               </div>
             </div>

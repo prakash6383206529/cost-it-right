@@ -17,7 +17,8 @@ import {
     GET_OPERATION_SELECTLIST_SUCCESS,
     GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
     GET_INITIAL_TECHNOLOGY_SELECTLIST,
-    config
+    config,
+    GET_OPERATION_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -252,6 +253,10 @@ export function getOperationsDataList(filterData, callback) {
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, { headers })
             .then((response) => {
+                dispatch({
+                    type: GET_OPERATION_DATA_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: GET_CED_OTHER_OPERATION_FAILURE });

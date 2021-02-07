@@ -340,7 +340,7 @@ class ExchangeRateListing extends Component {
 
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.exchangeRateDataList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -372,9 +372,9 @@ class ExchangeRateListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ exchangeRate, auth }) {
-    const { currencySelectList } = exchangeRate;
+    const { currencySelectList, exchangeRateDataList } = exchangeRate;
     const { leftMenuData } = auth;
-    return { leftMenuData, currencySelectList };
+    return { leftMenuData, currencySelectList, exchangeRateDataList };
 }
 
 /**

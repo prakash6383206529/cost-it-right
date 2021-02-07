@@ -349,7 +349,7 @@ class FuelListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.fuelDataList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -389,8 +389,8 @@ class FuelListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ fuel }) {
-    const { fuelComboSelectList } = fuel;
-    return { fuelComboSelectList, }
+    const { fuelComboSelectList, fuelDataList } = fuel;
+    return { fuelComboSelectList, fuelDataList }
 }
 
 /**

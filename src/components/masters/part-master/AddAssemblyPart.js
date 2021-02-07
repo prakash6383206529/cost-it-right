@@ -726,7 +726,7 @@ class AddAssemblyPart extends Component {
                                     <Row>
                                         <Col md="12">
                                             <div className="left-border">
-                                                {'Remark & Attachments:'}
+                                                {'Remarks & Attachments:'}
                                             </div>
                                         </Col>
                                         <Col md="6">

@@ -33,7 +33,7 @@ class EfficiencyDrawer extends Component {
             const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
             const ActualWorkingHrs = fieldsObj && fieldsObj.ActualWorkingHrs !== undefined ? checkForNull(fieldsObj.ActualWorkingHrs) : 0;
 
-            this.setState({ calculatedEfficiency: NumberOfWorkingHoursPerYear / ActualWorkingHrs })
+            this.setState({ calculatedEfficiency: ActualWorkingHrs / NumberOfWorkingHoursPerYear * 100 })
         }
     }
 

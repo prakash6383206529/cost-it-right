@@ -6,6 +6,7 @@ import {
     GET_INTEREST_RATE_DATA_SUCCESS,
     GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
     GET_ICC_APPLICABILITY_SELECTLIST,
+    GET_INTEREST_RATE_DATA_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -55,6 +56,12 @@ export default function InterestRateReducer(state = initialState, action) {
                 loading: false,
                 iccApplicabilitySelectList: action.payload
             };
+        case GET_INTEREST_RATE_DATA_LIST:
+            return {
+                ...state,
+                loading: false,
+                interestRateDataList: action.payload
+            }
         default:
             return state;
     }

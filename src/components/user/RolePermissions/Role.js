@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
-import { required, alphabetsOnlyForName, } from "../../../helper/validation";
+import { required, alphabetsOnlyForName, checkWhiteSpaces, } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import "../UserRegistration.scss";
 import {
@@ -236,7 +236,7 @@ class Role extends Component {
 													name={"RoleName"}
 													type="text"
 													placeholder={'Enter'}
-													validate={[required, alphabetsOnlyForName]}
+													validate={[required, alphabetsOnlyForName, checkWhiteSpaces]}
 													component={renderText}
 													required={true}
 													maxLength={26}

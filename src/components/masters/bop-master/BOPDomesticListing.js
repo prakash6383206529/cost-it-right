@@ -457,7 +457,7 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.bopDomesticList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -504,8 +504,8 @@ class BOPDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ boughtOutparts }) {
-    const { bopCategorySelectList, vendorAllSelectList, plantSelectList } = boughtOutparts;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, }
+    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList }
 }
 
 /**

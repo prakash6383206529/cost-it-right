@@ -236,7 +236,7 @@ class UOMMaster extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.dataList}
+                            data={this.props.unitOfMeasurementList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -276,7 +276,7 @@ class UOMMaster extends Component {
 * @param {*} state
 */
 function mapStateToProps({ unitOfMeasrement, auth }) {
-    const { unitOfMeasurementList, loading } = unitOfMeasrement;
+    const { unitOfMeasurementList, loading, } = unitOfMeasrement;
     const { leftMenuData } = auth;
     return { unitOfMeasurementList, leftMenuData, loading }
 }

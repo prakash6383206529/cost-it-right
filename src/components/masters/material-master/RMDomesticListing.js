@@ -547,7 +547,7 @@ class RMDomesticListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.rmDataList}
                             striped={false}
                             bordered={false}
                             hover={false}
@@ -596,8 +596,8 @@ class RMDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, }) {
-    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList } = material;
-    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, }
+    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList } = material;
+    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList }
 }
 
 /**

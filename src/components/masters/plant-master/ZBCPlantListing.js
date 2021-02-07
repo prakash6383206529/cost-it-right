@@ -336,7 +336,7 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, } = this.props;
+        const { handleSubmit, AddAccessibility, plantZBCList } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
             clearSearch: true,
@@ -438,7 +438,8 @@ class ZBCPlantListing extends Component {
 
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.plantDataList}
+                    // data={plantZBCList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -476,11 +477,12 @@ class ZBCPlantListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, auth }) {
+function mapStateToProps({ comman, auth, plant }) {
+    console.log(plant, "Plant");
     const { countryList, stateList, cityList } = comman;
     const { loading } = auth;
-
-    return { loading, countryList, stateList, cityList };
+    const { plantDataList } = plant;
+    return { loading, countryList, stateList, cityList, plantDataList };
 }
 
 /**

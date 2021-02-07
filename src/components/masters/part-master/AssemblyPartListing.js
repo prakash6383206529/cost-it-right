@@ -279,7 +279,7 @@ class AssemblyPartListing extends Component {
                 </Row>
 
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.partsListing}
                     striped={false}
                     bordered={false}
                     hover={false}
@@ -333,8 +333,9 @@ class AssemblyPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps() {
-    return {};
+function mapStateToProps({ part }) {
+    const { partsListing } = part
+    return { partsListing };
 }
 
 /**

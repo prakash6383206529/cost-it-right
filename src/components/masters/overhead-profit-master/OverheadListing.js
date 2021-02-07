@@ -476,7 +476,7 @@ class OverheadListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.overheadProfitList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -514,9 +514,9 @@ class OverheadListing extends Component {
 function mapStateToProps(state) {
     const { overheadProfit, } = state;
 
-    const { filterOverheadSelectList, } = overheadProfit;
+    const { filterOverheadSelectList, overheadProfitList } = overheadProfit;
 
-    return { filterOverheadSelectList, }
+    return { filterOverheadSelectList, overheadProfitList }
 
 }
 

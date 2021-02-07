@@ -6,6 +6,7 @@ import {
     GET_INTEREST_RATE_DATA_SUCCESS,
     GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST,
     GET_ICC_APPLICABILITY_SELECTLIST,
+    GET_INTEREST_RATE_DATA_LIST,
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -41,6 +42,11 @@ export function getInterestRateDataList(data, callback) {
         let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}`
         axios.get(`${API.getInterestRateDataList}?${queryParams}`, { headers })
             .then((response) => {
+
+                dispatch({
+                    type: GET_INTEREST_RATE_DATA_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

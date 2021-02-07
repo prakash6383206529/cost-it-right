@@ -85,8 +85,18 @@ export const selectRequired = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
+export const checkWhiteSpaces = value =>
+    value && !value.replace(/\s/g, '').length
+        ? 'This field is invalid.' : undefined;
+
+
+
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0)
+        ? 'This field is invalid.' : undefined;
+
+export const postiveNumber = value =>
+    value && !/^\+?(0|[1-9]\d*)$/.test(value)
         ? 'This field is invalid.' : undefined;
 
 export const alphabetsOnly = value =>
@@ -108,6 +118,11 @@ export const validatePassword = value => {
 export const alphaNumeric = value =>
     value && /[^a-zA-Z0-9 ]/i.test(value)
         ? 'Please enter only alphabets or numbers.'
+        : undefined;
+
+export const notSingleSpecialCharacter = value =>
+    value && !/^[a-zA-Z0-9 ]*$/i.test(value)
+        ? 'Please enter some alphabets and numbers also.'
         : undefined;
 
 export const alphaNumericTitle = value =>

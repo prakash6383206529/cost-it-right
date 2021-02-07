@@ -15,6 +15,37 @@ import LossStandardTable from '../LossStandardTable'
 function HotForging(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+  const defaultValues = {
+    forgeWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ForgeWeight !== undefined
+      ? WeightCalculatorRequest.ForgeWeight
+      : '',
+    inputWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.InputWeight !== undefined
+      ? WeightCalculatorRequest.InputWeight
+      : '',
+    slugWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.SlugWeight !== undefined
+      ? WeightCalculatorRequest.SlugWeight
+      : '',
+    scrapWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ScrapWeight !== undefined
+      ? WeightCalculatorRequest.ScrapWeight
+      : '',
+    scrapCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ScrapCost !== undefined
+      ? WeightCalculatorRequest.ScrapCost
+      : '',
+    finishedWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FinishedWeight !== undefined
+      ? WeightCalculatorRequest.FinishedWeight
+      : '',
+    machiningStock: WeightCalculatorRequest &&
+      WeightCalculatorRequest.MachiningStock !== undefined
+      ? WeightCalculatorRequest.MachiningStock
+      : ''
+  }
   const {
     register,
     handleSubmit,
@@ -26,30 +57,20 @@ function HotForging(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    //defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
-  const defaultValues = {
-    forgeWeight: '',
-    sacleLoss: '',
-    trimmingLoss: '',
-    barCutting: '',
-    billetLoss: '',
-    inputWeight: '',
-    slugWeight: '',
-    scrapWeight: '',
-    scrapCost: '',
-  }
+
   const fieldValues = useWatch({
     control,
     name: ['finishedWeight', 'machiningStock'],
   })
   const [inputWeightValue, setInputWeightValue] = useState(0)
+  const [lostWeight, setLostWeight] = useState(0)
+  const { rmRowData } = props
+  const [tableVal, setTableVal] = useState([])
   useEffect(() => {
     calculateForgeWeight()
     calculateSacleLoss()
-    calculateTrimmingLoss()
-    calculateBarCutting()
-    calculateBilletHeatingloss()
     calculateInputWeight()
     calculateSlugWeight()
     calculateScrapWeight()
@@ -86,41 +107,16 @@ function HotForging(props) {
     setValue('sacleLoss', sacleLoss)
   }
 
-  /**
-   * @method calculateTrimmingLoss
-   * @description Calculate Trimming Loss
-   */
 
-  const calculateTrimmingLoss = () => {
-    //Need to ask formula
-  }
-  /**
-   * @method calculateBarCutting
-   * @description calculate Bar cutting allowance
-   */
-  const calculateBarCutting = () => {
-    //Need to ask Formula
-  }
-  /**
-   * @method billetHeatingloss
-   * @description Calculate Billet Heating Loss
-   */
-  const calculateBilletHeatingloss = () => {
-    //Need to ask formula
-  }
   /**
    * @method calculateInputWeight
    * @description Calculate Input Weight
    */
 
   const calculateInputWeight = (netLossWeight = 0) => {
+    setLostWeight(netLossWeight)
     console.log(netLossWeight, 'LossWeight')
     const forgeWeight = Number(getValues('forgeWeight'))
-
-    // const sacleLoss = Number(getValues('sacleLoss'))
-    // const trimmingLoss = Number(getValues('trimmingLoss'))
-    // const barCutting = Number(getValues('barCutting'))
-    // const billetLoss = Number(getValues('billetLoss'))
     const inputWeight = checkForDecimalAndNull(
       forgeWeight + netLossWeight,
       trim,
@@ -165,13 +161,27 @@ function HotForging(props) {
    */
   const calculateScrapCost = () => {
     const scrapWeight = Number(getValues('scrapWeight'))
+    const scrapCost = checkForDecimalAndNull(scrapWeight * rmRowData.ScrapRate, trim)
+    setValue('scrapCost', scrapCost)
     //Need to confirm this formula
   }
   /**
    * @method onSubmit
    * @description Form submission Function
    */
-  const onSubmit = (values) => { }
+  const onSubmit = (values) => {
+    let obj = {}
+    obj.ForgeWeight = getValues('forgeWeight')
+    obj.InputWeight = getValues('inputWeight')
+    obj.SlugWeight = getValues('slugWeight')
+    obj.ScrapWeight = getValues('scrapWeight')
+    obj.ScrapCost = getValues('scrapCost')
+    obj.FinishedWeight = getValues('finishedWeight')
+    obj.MachiningStock = getValues('machiningStock')
+    obj.LossData = tableVal
+    obj.LostSum = lostWeight
+    props.toggleDrawer('', obj)
+  }
   /**
    * @method onCancel
    * @description on cancel close the drawer
@@ -180,6 +190,10 @@ function HotForging(props) {
     props.toggleDrawer('')
   }
 
+  const tableData = (value = []) => {
+    console.log(value, "Value of table");
+    setTableVal(value)
+  }
   const dropDown = [
     {
       label: 'Scale Loss',
@@ -202,7 +216,7 @@ function HotForging(props) {
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form">
             <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
@@ -494,6 +508,9 @@ function HotForging(props) {
                   dropDownMenu={dropDown}
                   calculation={calculateInputWeight}
                   weightValue={inputWeightValue}
+                  netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                  sendTable={WeightCalculatorRequest ? WeightCalculatorRequest.LossData : []}
+                  tableValue={tableData}
                 />
               </div>
             </Col>
@@ -514,6 +531,7 @@ function HotForging(props) {
               </button>
               <button
                 type="submit"
+                onClick={onSubmit}
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >

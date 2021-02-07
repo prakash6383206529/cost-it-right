@@ -440,7 +440,7 @@ class VBCPlantListing extends Component {
 
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.plantDataList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -479,11 +479,11 @@ class VBCPlantListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, auth }) {
+function mapStateToProps({ comman, auth, plant }) {
     const { countryList, stateList, cityList } = comman;
     const { loading } = auth;
-
-    return { loading, countryList, stateList, cityList };
+    const { plantDataList } = plant;
+    return { loading, countryList, stateList, cityList, plantDataList };
 }
 
 

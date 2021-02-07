@@ -52,7 +52,7 @@ export function loginUserAPI(requestData, callback) {
             })
             .catch((error) => {
                 dispatch(getFailure(error));
-                apiErrors(error);
+                // apiErrors(error);
                 callback(error);
             });
     };
@@ -114,7 +114,7 @@ export function registerUserAPI(requestData, callback) {
             .catch((error) => {
                 dispatch(getRegisterFailure(error));
                 apiErrors(error);
-                //callback(error);
+                callback(error);
             });
     };
 }

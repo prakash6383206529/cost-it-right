@@ -381,7 +381,7 @@ class SpecificationListing extends Component {
                     <Col>
                         {/* <hr /> */}
                         <BootstrapTable
-                            data={this.state.specificationData}
+                            data={this.props.rmDataList}
                             striped={false}
                             bordered={false}
                             hover={false}
@@ -431,8 +431,8 @@ class SpecificationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material }) {
-    const { rmSpecificationDetail, filterRMSelectList } = material;
-    return { rmSpecificationDetail, filterRMSelectList }
+    const { rmSpecificationDetail, filterRMSelectList, rmDataList } = material;
+    return { rmSpecificationDetail, filterRMSelectList, rmDataList }
 }
 
 export default connect(mapStateToProps, {

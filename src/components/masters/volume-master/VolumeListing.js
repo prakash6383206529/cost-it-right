@@ -712,7 +712,7 @@ class VolumeListing extends Component {
           </Row>
         </form>
         <BootstrapTable
-          data={this.state.tableData}
+          data={this.props.volumeDataList}
           striped={false}
           hover={false}
           bordered={false}
@@ -844,7 +844,7 @@ class VolumeListing extends Component {
 function mapStateToProps({ comman, material, volume, auth }) {
   const { loading, plantSelectList } = comman
   const { vendorListByVendorType } = material
-  const { financialYearSelectList } = volume
+  const { financialYearSelectList, volumeDataList } = volume
   const { leftMenuData } = auth
   return {
     loading,
@@ -852,6 +852,7 @@ function mapStateToProps({ comman, material, volume, auth }) {
     plantSelectList,
     financialYearSelectList,
     leftMenuData,
+    volumeDataList
   }
 }
 

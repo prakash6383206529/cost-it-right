@@ -3,6 +3,7 @@ import {
     API_FAILURE,
     GET_VOLUME_DATA_SUCCESS,
     GET_FINANCIAL_YEAR_SELECTLIST,
+    GET_VOLUME_DATA_LIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -33,6 +34,12 @@ export default function VolumeReducer(state = initialState, action) {
                 loading: false,
                 financialYearSelectList: action.payload
             };
+        case GET_VOLUME_DATA_LIST:
+            return {
+                ...state,
+                loading: false,
+                volumeDataList: action.payload
+            }
         default:
             return state;
     }

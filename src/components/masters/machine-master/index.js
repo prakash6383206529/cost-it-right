@@ -112,6 +112,10 @@ class MachineMaster extends Component {
         this.setState({ isMachineRateForm: false, data: {}, editDetails: {} })
     }
 
+    addMoreDetailsData = (data) => {
+        console.log(data);
+    }
+
     /**
     * @method displayMoreDetailsForm
     * @description DISPLAY MORE DETAILS FORM
@@ -126,13 +130,13 @@ class MachineMaster extends Component {
 
     /**
     * @method hideMoreDetailsForm
-    * @description HIDE MORE DETAILS FORM
+    * @description HIDE MORE DETAILS FORM(save and cancel button(more confirmation from Tanmay sir))
     */
-    hideMoreDetailsForm = () => {
+    hideMoreDetailsForm = (data = {}) => {
         this.setState({
             isAddMoreDetails: false,
-            isMachineRateForm: false,
-            data: {},
+            isMachineRateForm: true,
+            data: data,
             editDetails: {},
         })
     }

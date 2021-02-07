@@ -20,15 +20,56 @@ import {
 import { trim } from 'jquery'
 
 function Chamfering(props) {
+  const { technology, process, calculateMachineTime } = props
+  const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
   const defaultValues = {
-    cutLength: '',
-    removedMaterial: '',
-    rpm: '',
-    feedMin: '',
-    cutTime: '',
-    numberOfPasses: '',
-    clampingPercentage: '',
-    clampingValue: '',
+    cutLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutLength !== undefined
+      ? WeightCalculatorRequest.CutLength
+      : '',
+    // removedMaterial: '',
+    rpm: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Rpm !== undefined
+      ? WeightCalculatorRequest.Rpm : '',
+    feedMin: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedMin !== undefined
+      ? WeightCalculatorRequest.FeedMin : '',
+    cutTime: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutTime !== undefined
+      ? WeightCalculatorRequest.CutTime : '',
+    numberOfPasses: WeightCalculatorRequest &&
+      WeightCalculatorRequest.NumberOfPasses !== undefined
+      ? WeightCalculatorRequest.NumberOfPasses : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingValue !== undefined
+      ? WeightCalculatorRequest.ClampingValue : '',
+    turningDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TurningDiameter !== undefined
+      ? WeightCalculatorRequest.TurningDiameter : '',
+    finishDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FinishDiameter !== undefined
+      ? WeightCalculatorRequest.FinishDiameter : '',
+    removedMaterial: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RemovedMaterial !== undefined
+      ? WeightCalculatorRequest.RemovedMaterial : '',
+    cuttingSpeed: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CuttingSpeed !== undefined
+      ? WeightCalculatorRequest.CuttingSpeed : '',
+    doc: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Doc !== undefined
+      ? WeightCalculatorRequest.Doc : '',
+    feedRev: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedRev !== undefined
+      ? WeightCalculatorRequest.FeedRev : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage : '',
+    turningLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TurningLength !== undefined
+      ? WeightCalculatorRequest.TurningLength : ''
   }
   const {
     register,
@@ -46,20 +87,14 @@ function Chamfering(props) {
   const fieldValues = useWatch({
     control,
     name: [
-      'turningDiameter',
-      'finishDiameter',
+      'turningDiameter',//
+      'finishDiameter',//
       'turningLength',
-      //'cutLength',
-      'removedMaterial',
-      'cuttingSpeed',
-      'doc',
-      // 'rpm',
-      'feedRev',
-      'clampingPercentage',
-      // 'feedMin',
-      // 'cutTime',
-      // 'clampingPercentage',
-      // 'clampingValue',
+      'removedMaterial',//
+      'cuttingSpeed',//
+      'doc',//
+      'feedRev',//
+      'clampingPercentage',//
     ],
   })
 
@@ -72,11 +107,12 @@ function Chamfering(props) {
     onSpeedChange()
   }, [fieldValues])
 
-  const { technology, process, calculateMachineTime } = props
+
   const [totalMachiningTime, setTotalMachiningTime] = useState('')
   const trimValue = getConfigurationKey()
+  const isEditFlag = WeightCalculatorRequest ? true : false
   const trim = trimValue.NumberOfDecimalForWeightCalculation
-  const fieldForProcess = () => {}
+  const fieldForProcess = () => { }
 
   const onTurningLength = () => {
     const cutLength = checkForDecimalAndNull(getValues('turningLength'), trim)
@@ -125,9 +161,31 @@ function Chamfering(props) {
     // setValue('totalmachineTime', totalMachiningTime)
     setTotalMachiningTime(totalMachiningTime)
   }
-  const onSubmit = (value) => {
-    console.log(value, 'Handle Value in Facing')
-    calculateMachineTime(totalMachiningTime, value)
+  // const onSubmit = (value) => {
+  //   console.log(value, 'Handle Value in Facing')
+  //   calculateMachineTime(totalMachiningTime, value)
+  // }
+  const onSubmit = (formValue) => {
+    console.log('coming')
+    console.log(formValue, 'Handle Value in Facing')
+    let obj = {}
+    obj.TurningDiameter = formValue.turningDiameter
+    obj.FinishDiameter = formValue.finishDiameter
+    obj.CutLength = formValue.cutLength
+    obj.RemovedMaterial = formValue.removedMaterial
+    obj.Rpm = formValue.rpm
+    obj.FeedRev = formValue.feedRev
+    obj.FeedMin = formValue.feedMin
+    obj.CutTime = formValue.cutTime
+    obj.NumberOfPasses = formValue.numberOfPasses
+    obj.ClampingPercentage = formValue.clampingPercentage
+    obj.ClampingValue = formValue.clampingValue
+    obj.CuttingSpeed = formValue.cuttingSpeed
+    obj.Doc = formValue.doc
+    obj.TurningLength = formValue.turningLength
+    obj.TotalMachiningTime = totalMachiningTime
+
+    calculateMachineTime(totalMachiningTime, obj)
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -161,7 +219,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -186,7 +244,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -211,7 +269,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -236,7 +294,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -261,7 +319,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -312,7 +370,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -370,7 +428,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -420,7 +478,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -453,7 +511,7 @@ function Chamfering(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -502,7 +560,7 @@ function Chamfering(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -548,7 +606,7 @@ function Chamfering(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>
           </form>

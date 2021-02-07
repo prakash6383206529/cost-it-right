@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, maxLength25, maxLength11, maxLength12, required, email,
-  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10
+  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10, checkWhiteSpaces
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
@@ -451,12 +451,18 @@ class UserRegistration extends Component {
   setTechnologyLevel = () => {
     const { technology, level, TechnologyLevelGrid } = this.state;
     const tempArray = [];
-
+    console.log(technology, level, TechnologyLevelGrid, "Tech");
+    if (technology.length === 0 || level.length === 0) {
+      toastr.warning('Please select technology and level')
+      return false;
+    }
     const isExistTechnology = TechnologyLevelGrid && TechnologyLevelGrid.findIndex(el => {
-      return el.TechnologyId === technology.value && el.LevelId === level.value
+      return el.TechnologyId === technology.value
+      // && el.LevelId === level.value
     })
     if (isExistTechnology !== -1) {
-      toastr.warning('Technology and Level already allowed.')
+      // toastr.warning('Technology and Level already allowed.')
+      toastr.warning('Technology cannot have multiple level.')
       return false;
     }
 
@@ -466,7 +472,7 @@ class UserRegistration extends Component {
       Level: level.label,
       LevelId: level.value,
     })
-
+    console.log(tempArray, "temp Array");
     this.setState({
       TechnologyLevelGrid: tempArray,
       level: [],
@@ -788,7 +794,7 @@ class UserRegistration extends Component {
                         name={"FirstName"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName, checkWhiteSpaces]}
                         component={renderText}
                         required={true}
                         maxLength={26}
@@ -802,7 +808,7 @@ class UserRegistration extends Component {
                         name={"LastName"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName]}
+                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName, checkWhiteSpaces]}
                         component={renderText}
                         required={true}
                         maxLength={26}
@@ -817,7 +823,7 @@ class UserRegistration extends Component {
                         placeholder={'Enter'}
                         component={renderText}
                         isDisabled={false}
-                        validate={[required, number, minLength10, maxLength10]}
+                        validate={[required, number, minLength10, maxLength10, checkWhiteSpaces]}
                         required={true}
                         maxLength={10}
                         customClassName={'withBorder'}
@@ -866,7 +872,7 @@ class UserRegistration extends Component {
                         label="Email ID"
                         component={renderEmailInputField}
                         placeholder={'Enter'}
-                        validate={[required, email, minLength7, maxLength70]}
+                        validate={[required, email, minLength7, maxLength70, checkWhiteSpaces]}
                         required={true}
                         maxLength={70}
                         isDisabled={this.state.isEditFlag ? true : false}
@@ -882,7 +888,7 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[required, minLength7]}
+                          validate={[required, minLength7, checkWhiteSpaces]}
                           required={true}
                           maxLength={70}
                           disabled={this.state.isEditFlag ? true : false}
@@ -898,7 +904,7 @@ class UserRegistration extends Component {
                             placeholder="Enter"
                             component={renderPasswordInputField}
                             onChange={this.passwordPatternHandler}
-                            validate={[required, minLength6, maxLength18]}
+                            validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
                             isShowHide={this.state.isShowHidePassword}
                             showHide={this.showHidePasswordHandler}
                             required={true}
@@ -913,7 +919,7 @@ class UserRegistration extends Component {
                             label="Confirm Password"
                             placeholder={'Enter'}
                             component={renderPasswordInputField}
-                            validate={[required, minLength6, maxLength18]}
+                            validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
                             required={true}
                             maxLength={26}
                             isShowHide={this.state.isShowHide}

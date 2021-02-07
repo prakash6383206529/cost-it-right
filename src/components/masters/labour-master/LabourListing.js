@@ -686,7 +686,7 @@ class LabourListing extends Component {
           </Row>
         </form>
         <BootstrapTable
-          data={this.state.tableData}
+          data={this.props.labourDataList}
           striped={false}
           hover={false}
           bordered={false}
@@ -793,7 +793,7 @@ class LabourListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ labour, auth, fuel, machine }) {
-  const { loading, labourTypeByPlantSelectList } = labour
+  const { loading, labourTypeByPlantSelectList, labourDataList } = labour
   const { plantSelectList, stateSelectList } = fuel
   const { machineTypeSelectList } = machine
   const { leftMenuData } = auth
@@ -804,6 +804,7 @@ function mapStateToProps({ labour, auth, fuel, machine }) {
     stateSelectList,
     labourTypeByPlantSelectList,
     machineTypeSelectList,
+    labourDataList
   }
 }
 

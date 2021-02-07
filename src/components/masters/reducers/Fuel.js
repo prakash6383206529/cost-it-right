@@ -15,6 +15,7 @@ import {
     GET_ZBC_PLANT_SELECTLIST,
     GET_STATE_SELECTLIST,
     GET_ZBC_POWER_DATA_SUCCESS,
+    GET_POWER_DATA_LIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -138,6 +139,13 @@ export default function fuelReducer(state = initialState, action) {
                 loading: false,
                 error: true,
             };
+        case GET_POWER_DATA_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                powerDataList: action.payload
+            }
         default:
             return state;
     }

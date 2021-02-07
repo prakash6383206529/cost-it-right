@@ -9,6 +9,59 @@ import {
 
 function InjectionMoulding(props) {
   const { calculateMachineTime } = props
+
+  const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  const isEditFlag = WeightCalculatorRequest ? true : false
+  const defaultValues = {
+    cavity: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Cavity !== undefined
+      ? WeightCalculatorRequest.Cavity
+      : '',
+    tonnage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Tonnage !== undefined
+      ? WeightCalculatorRequest.Tonnage
+      : '',
+    mhr: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Mhr !== undefined
+      ? WeightCalculatorRequest.Mhr
+      : '',
+    cycleTime: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CycleTime !== undefined
+      ? WeightCalculatorRequest.CycleTime
+      : '',
+    shotNumber: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ShotNumber !== undefined
+      ? WeightCalculatorRequest.ShotNumber
+      : '',
+    processCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ProcessCost !== undefined
+      ? WeightCalculatorRequest.ProcessCost
+      : '',
+    totalMfgCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TotalMfgCost !== undefined
+      ? WeightCalculatorRequest.TotalMfgCost
+      : '',
+    withoutPaintPartCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.WithoutPaintPartCost !== undefined
+      ? WeightCalculatorRequest.WithoutPaintPartCost
+      : '',
+    paintedPartCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.PaintedPartCost !== undefined
+      ? WeightCalculatorRequest.PaintedPartCost
+      : '',
+    packingCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.PackingCost !== undefined
+      ? WeightCalculatorRequest.PackingCost
+      : '',
+    transportCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TransportCost !== undefined
+      ? WeightCalculatorRequest.TransportCost
+      : '',
+    finalPartCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FinalPartCost !== undefined
+      ? WeightCalculatorRequest.FinalPartCost
+      : '',
+  }
   const {
     register,
     handleSubmit,
@@ -20,9 +73,24 @@ function InjectionMoulding(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    //defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
-  const onSubmit = (values) => {}
+  const onSubmit = (values) => {
+    let obj = {}
+    obj.Cavity = values.cavity
+    obj.Tonnage = values.tonnage
+    obj.Mhr = values.mhr
+    obj.CycleTime = values.cycleTime
+    obj.ShotNumber = values.shotNumber
+    obj.ProcessCost = values.processCost
+    obj.TotalMfgCost = values.totalMfgCost
+    obj.WithoutPaintPartCost = values.withoutPaintPartCost
+    obj.PaintedPartCost = values.paintedPartCost
+    obj.PackingCost = values.packingCost
+    obj.TransportCost = values.transportCost
+    obj.FinalPartCost = values.finalPartCost
+    calculateMachineTime('0.00', obj)
+  }
   const onCancel = () => {
     calculateMachineTime('0.00')
   }
@@ -98,7 +166,7 @@ function InjectionMoulding(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -123,7 +191,7 @@ function InjectionMoulding(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -148,7 +216,7 @@ function InjectionMoulding(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -173,7 +241,7 @@ function InjectionMoulding(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -199,7 +267,7 @@ function InjectionMoulding(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -224,7 +292,7 @@ function InjectionMoulding(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -249,7 +317,7 @@ function InjectionMoulding(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -282,7 +350,7 @@ function InjectionMoulding(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -307,7 +375,7 @@ function InjectionMoulding(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -331,7 +399,7 @@ function InjectionMoulding(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -355,7 +423,7 @@ function InjectionMoulding(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -379,7 +447,7 @@ function InjectionMoulding(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -532,7 +600,7 @@ function InjectionMoulding(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>
           </form>

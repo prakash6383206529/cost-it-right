@@ -12,6 +12,46 @@ import LossStandardTable from './LossStandardTable'
 function Plastic(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
+  console.log(WeightCalculatorRequest, "Weight Calci");
+  const defaultValues = {
+    netWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.NetWeight !== undefined
+      ? WeightCalculatorRequest.NetWeight
+      : '',
+    runnerWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RunnerWeight !== undefined
+      ? WeightCalculatorRequest.RunnerWeight
+      : '',
+    grossWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.GrossWeight !== undefined
+      ? WeightCalculatorRequest.GrossWeight
+      : '',
+    finishedWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FinishedWeight !== undefined
+      ? WeightCalculatorRequest.FinishedWeight
+      : '',
+    scrapWeight: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ScrapWeight !== undefined
+      ? WeightCalculatorRequest.ScrapWeight
+      : '',
+    rmCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RmCost !== undefined
+      ? WeightCalculatorRequest.RmCost
+      : '',
+    scrapCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ScrapCost !== undefined
+      ? WeightCalculatorRequest.ScrapCost
+      : '',
+    materialCost: WeightCalculatorRequest &&
+      WeightCalculatorRequest.MaterialCost !== undefined
+      ? WeightCalculatorRequest.MaterialCost
+      : '',
+
+  }
+
+  const [tableVal, setTableVal] = useState([])
+  const [lostWeight, setLostWeight] = useState(0)
   const { rmRowData } = props
   const {
     register,
@@ -24,9 +64,12 @@ function Plastic(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    //defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
-
+  // if (WeightCalculatorRequest &&
+  //   WeightCalculatorRequest.LossData !== undefined) {
+  //   setTableVal(WeightCalculatorRequest.LossData)
+  // }
   const fieldValues = useWatch({
     control,
     name: ['netWeight', 'runnerWeight'],
@@ -45,7 +88,7 @@ function Plastic(props) {
 
   useEffect(() => {
     calculateGrossWeight()
-    calculateRemainingCalculation()
+    calculateRemainingCalculation(WeightCalculatorRequest ? WeightCalculatorRequest.LostSum : 0)
   }, [fieldValues])
 
 
@@ -55,6 +98,7 @@ function Plastic(props) {
    * @description For Calculating gross weight
    */
   const calculateGrossWeight = () => {
+    console.log("Entered here gross");
     const netWeight = Number(getValues('netWeight'))
     const runnerWeight = Number(getValues('runnerWeight'))
     if (!netWeight || !runnerWeight) {
@@ -68,6 +112,8 @@ function Plastic(props) {
    * @description Calculating finished weight,scrap weight,RM cost, scrap cost,material cost
    */
   const calculateRemainingCalculation = (lostSum = 0) => {
+    console.log("Eneterd in remaining");
+    setLostWeight(lostSum)
     const grossWeight = Number(getValues('grossWeight'))
     const netWeight = Number(getValues('netWeight'))
     const finishedWeight = checkForDecimalAndNull(grossWeight + lostSum, trim)
@@ -81,7 +127,20 @@ function Plastic(props) {
     setValue('scrapCost', scrapCost)
     setValue('materialCost', materialCost)
   }
-  const onSubmit = (value) => { }
+  const onSubmit = () => {
+    let obj = {}
+    obj.NetWeight = getValues('netWeight')
+    obj.RunnerWeight = getValues('runnerWeight')
+    obj.GrossWeight = getValues('grossWeight')
+    obj.FinishedWeight = getValues('finishedWeight')
+    obj.ScrapWeight = getValues('scrapWeight')
+    obj.RmCost = getValues('rmCost')
+    obj.ScrapCost = getValues('scrapCost')
+    obj.MaterialCost = getValues('materialCost')
+    obj.LossData = tableVal
+    obj.LostSum = lostWeight
+    props.toggleDrawer('', obj)
+  }
   /**
    * @method onCancel
    * @description on cancel close the drawer
@@ -89,11 +148,18 @@ function Plastic(props) {
   const onCancel = () => {
     props.toggleDrawer('')
   }
+
+  const tableData = (value = []) => {
+    console.log(value, "Value of table");
+    setTableVal(value)
+  }
   return (
     <Fragment>
       <Row>
         <Col>
-          <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate className="form"
+          // onSubmit={handleSubmit(onSubmit)}
+          >
             <Col md="12" className={'mt25'}>
               <div className="border pl-3 pr-3 pt-3">
                 <Col md="10">
@@ -285,6 +351,9 @@ function Plastic(props) {
                   dropDownMenu={dropDown}
                   calculation={calculateRemainingCalculation}
                   weightValue={Number(getValues('grossWeight'))}
+                  netWeight={WeightCalculatorRequest ? WeightCalculatorRequest : ''}
+                  sendTable={WeightCalculatorRequest ? WeightCalculatorRequest.LossData : []}
+                  tableValue={tableData}
                 />
                 <Col md="12">
                   <Row className={'mt15'}>
@@ -331,7 +400,10 @@ function Plastic(props) {
                         //   // maxLength: 4,
                         // }}
                         handleChange={() => { }}
-                        defaultValue={''}
+                        defaultValue={WeightCalculatorRequest &&
+                          WeightCalculatorRequest.ScrapWeight !== undefined
+                          ? WeightCalculatorRequest.ScrapWeight
+                          : ''}
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.scrapWeight}
@@ -439,6 +511,7 @@ function Plastic(props) {
               <button
                 type="submit"
                 // disabled={isSubmitted ? true : false}
+                onClick={onSubmit}
                 className="btn-primary save-btn"
               >
                 <div className={'check-icon'}>

@@ -15,6 +15,7 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
+import Rubber from './Rubber'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, isEditFlag } = props
@@ -63,6 +64,13 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
           />
         )
+      case 'Rubber':
+        return <Rubber
+          rmRowData={props.rmRowData}
+          inputDiameter={props.inputDiameter}
+          isEditFlag={props.isEditFlag}
+          toggleDrawer={toggleDrawer}
+        />
     }
   }
   return (
@@ -86,23 +94,18 @@ function OpenWeightCalculator(props) {
               </Col>
             </Row>
             <Row>
-              <Col md="2">{`RM Name: ${
-                rmRowData.RMName !== undefined ? rmRowData.RMName : ''
-              }`}</Col>
-              <Col md="2">{`Material: ${
-                rmRowData.MaterialType !== undefined
-                  ? rmRowData.MaterialType
-                  : ''
-              }`}</Col>
-              <Col md="2">{`Density(g/cm2): ${
-                rmRowData.Density !== undefined ? rmRowData.Density : ''
-              }`}</Col>
-              <Col md="2">{`RM Rate: ${
-                rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''
-              }`}</Col>
-              <Col md="2">{`Scrap Rate: ${
-                rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''
-              }`}</Col>
+              <Col md="2">{`RM Name: ${rmRowData.RMName !== undefined ? rmRowData.RMName : ''
+                }`}</Col>
+              <Col md="2">{`Material: ${rmRowData.MaterialType !== undefined
+                ? rmRowData.MaterialType
+                : ''
+                }`}</Col>
+              <Col md="2">{`Density(g/cm2): ${rmRowData.Density !== undefined ? rmRowData.Density : ''
+                }`}</Col>
+              <Col md="2">{`RM Rate: ${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''
+                }`}</Col>
+              <Col md="2">{`Scrap Rate: ${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''
+                }`}</Col>
             </Row>
             {openConditionalDrawer()}
           </div>

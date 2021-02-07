@@ -304,6 +304,7 @@ class InterestRateListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+        console.log(cell, "Cell");
         return cell ? 'Vendor Based' : 'Zero Based';
     }
 
@@ -503,7 +504,7 @@ class InterestRateListing extends Component {
 
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.interestRateDataList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -515,7 +516,7 @@ class InterestRateListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Isvendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{'ICC Applicability'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{'Annual ICC (%)'}</TableHeaderColumn>
@@ -547,8 +548,8 @@ class InterestRateListing extends Component {
 function mapStateToProps({ material, auth, interestRate }) {
     const { leftMenuData } = auth;
     const { vendorListByVendorType } = material;
-    const { paymentTermsSelectList, iccApplicabilitySelectList, } = interestRate;
-    return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData };
+    const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateDataList } = interestRate;
+    return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList };
 }
 
 /**

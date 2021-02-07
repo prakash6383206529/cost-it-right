@@ -19,15 +19,53 @@ import {
   trimDecimalPlace,
 } from '../../../../../helper'
 function Facing(props) {
+  const { technology, process, calculateMachineTime } = props
+  const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
   const defaultValues = {
-    cutLength: '',
+    cutLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutLength !== undefined
+      ? WeightCalculatorRequest.CutLength
+      : '',
     // removedMaterial: '',
-    rpm: '',
-    feedMin: '',
-    cutTime: '',
-    numberOfPasses: '',
-    clampingPercentage: '',
-    clampingValue: '',
+    rpm: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Rpm !== undefined
+      ? WeightCalculatorRequest.Rpm : '',
+    feedMin: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedMin !== undefined
+      ? WeightCalculatorRequest.FeedMin : '',
+    cutTime: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutTime !== undefined
+      ? WeightCalculatorRequest.CutTime : '',
+    numberOfPasses: WeightCalculatorRequest &&
+      WeightCalculatorRequest.NumberOfPasses !== undefined
+      ? WeightCalculatorRequest.NumberOfPasses : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage : '',
+    clampingValue: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingValue !== undefined
+      ? WeightCalculatorRequest.ClampingValue : '',
+    turningDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TurningDiameter !== undefined
+      ? WeightCalculatorRequest.TurningDiameter : '',
+    finishDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FinishDiameter !== undefined
+      ? WeightCalculatorRequest.FinishDiameter : '',
+    removedMaterial: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RemovedMaterial !== undefined
+      ? WeightCalculatorRequest.RemovedMaterial : '',
+    cuttingSpeed: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CuttingSpeed !== undefined
+      ? WeightCalculatorRequest.CuttingSpeed : '',
+    doc: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Doc !== undefined
+      ? WeightCalculatorRequest.Doc : '',
+    feedRev: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedRev !== undefined
+      ? WeightCalculatorRequest.FeedRev : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage : '',
   }
   const {
     register,
@@ -71,13 +109,14 @@ function Facing(props) {
     onSpeedChange()
   }, [fieldValues])
 
-  const { technology, process, calculateMachineTime } = props
+
   const [totalMachiningTime, setTotalMachiningTime] = useState('0.00')
+  const isEditFlag = WeightCalculatorRequest ? true : false
   const trimVal = getConfigurationKey()
   const trim = trimVal.NumberOfDecimalForWeightCalculation
   console.log(trim, 'Trim')
 
-  const fieldForProcess = () => {}
+  const fieldForProcess = () => { }
 
   const onFinishDiameterChange = (e) => {
     const turningDiameter = getValues('turningDiameter')
@@ -132,10 +171,26 @@ function Facing(props) {
     // setValue('totalmachineTime', totalMachiningTime)
     setTotalMachiningTime(totalMachiningTime)
   }
-  const onSubmit = (value) => {
+  const onSubmit = (formValue) => {
     console.log('coming')
-    console.log(value, 'Handle Value in Facing')
-    calculateMachineTime(totalMachiningTime, value)
+    console.log(formValue, 'Handle Value in Facing')
+    let obj = {}
+    obj.TurningDiameter = formValue.turningDiameter
+    obj.FinishDiameter = formValue.finishDiameter
+    obj.CutLength = formValue.cutLength
+    obj.RemovedMaterial = formValue.removedMaterial
+    obj.Rpm = formValue.rpm
+    obj.FeedRev = formValue.feedRev
+    obj.FeedMin = formValue.feedMin
+    obj.CutTime = formValue.cutTime
+    obj.NumberOfPasses = formValue.numberOfPasses
+    obj.ClampingPercentage = formValue.clampingPercentage
+    obj.ClampingValue = formValue.clampingValue
+    obj.CuttingSpeed = formValue.cuttingSpeed
+    obj.Doc = formValue.doc
+    obj.TotalMachiningTime = totalMachiningTime
+
+    calculateMachineTime(totalMachiningTime, obj)
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -170,7 +225,7 @@ function Facing(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -195,7 +250,7 @@ function Facing(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -245,7 +300,7 @@ function Facing(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -298,7 +353,7 @@ function Facing(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -356,7 +411,7 @@ function Facing(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -406,7 +461,7 @@ function Facing(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -439,7 +494,7 @@ function Facing(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -488,7 +543,7 @@ function Facing(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -534,7 +589,7 @@ function Facing(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>
           </form>

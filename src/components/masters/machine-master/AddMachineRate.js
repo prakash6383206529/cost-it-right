@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100 } from "../../../helper/validation";
+import { required, checkForNull, maxLength100, number, postiveNumber } from "../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
     renderMultiSelectField,
@@ -71,7 +71,7 @@ class AddMachineRate extends Component {
      */
     componentDidMount() {
         const { data, editDetails, initialConfiguration } = this.props;
-
+        console.log(data, "Data from more detail form");
         this.props.getTechnologySelectList(() => { })
         this.props.getVendorListByVendorType(true, () => { })
         this.props.getPlantSelectListByType(ZBC, () => { })
@@ -87,9 +87,13 @@ class AddMachineRate extends Component {
         }
 
         //USED TO SET PREVIOUS VALUES OF FORM AFTER SUCCESS OR CANCEL OF ADD MORE DETAILS FORM
-        if (data && data !== undefined) {
+        if (data && data !== undefined && Object.keys(data).length > 0 && data.constructor === Object) {
+            this.showFormData()
             this.setOldValue(data)
         }
+        // } else if (Object.keys(data).length > 0 && data.constructor === Object) {
+        //     this.showFormData()
+        // }
 
         //GET MACHINE VALUES IN EDIT MODE
         this.getDetails()
@@ -116,6 +120,7 @@ class AddMachineRate extends Component {
     * @description USED TO SET OLD VALUES
     */
     setOldValue = (data) => {
+        console.log("Entered here", data);
         this.setState({
             selectedTechnology: data.selectedTechnology,
             selectedPlants: data.selectedPlants,
@@ -156,6 +161,7 @@ class AddMachineRate extends Component {
                         let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
 
                         let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
+                            console.log(el, "elellllll");
                             return {
                                 processName: el.ProcessName,
                                 ProcessId: el.ProcessId,
@@ -671,6 +677,7 @@ class AddMachineRate extends Component {
     }
 
 
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -765,6 +772,57 @@ class AddMachineRate extends Component {
             });
         }
     }
+
+    showFormData = () => {
+        console.log("Welcome");
+        const { data } = this.props
+        this.props.getVendorListByVendorType(data.IsVendor, () => { })
+        if (data.IsVendor) {
+            this.props.getPlantBySupplier(data.VendorId, () => { })
+        }
+        setTimeout(() => {
+            const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
+
+            let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+
+            let MachineProcessArray = data && data.MachineProcessRates.map(el => {
+                return {
+                    processName: el.processName,
+                    ProcessId: el.ProcessId,
+                    UnitOfMeasurement: el.UnitOfMeasurement,
+                    UnitOfMeasurementId: el.UnitOfMeasurementId,
+                    MachineRate: el.MachineRate,
+                }
+            })
+            this.props.change('MachineName', data.MachineName)
+            this.props.change('MachineNumber', data.MachineNumber)
+            this.props.change('TonnageCapacity', data.TonnageCapacity)
+            this.props.change('Description', data.Description)
+            const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === data.VendorId)
+            const plantObj = data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === data.Plant[0].PlantId)
+            let vendorPlantArray = data && data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+
+            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === data.MachineTypeId)
+
+            this.setState({
+                isEditFlag: false,
+                //IsDetailedEntry:false,
+                isLoader: false,
+                IsVendor: data.IsVendor,
+                IsCopied: data.IsCopied,
+                IsDetailedEntry: false,
+                selectedTechnology: technologyArray,
+                selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+                vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                selectedVendorPlants: vendorPlantArray,
+                machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+                processGrid: MachineProcessArray,
+                remarks: data.Remark,
+                files: data.Attachements,
+            })
+        }, 100)
+    }
+
 
     /**
     * @method render
@@ -914,9 +972,9 @@ class AddMachineRate extends Component {
                                                     name={"MachineName"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    // validate={[required]}
                                                     component={renderText}
-                                                    required={true}
+                                                    // required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -952,7 +1010,7 @@ class AddMachineRate extends Component {
                                                     name={"TonnageCapacity"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    validate={[required, number, postiveNumber]}
                                                     component={renderText}
                                                     required={true}
                                                     disabled={isEditFlag ? true : false}
@@ -966,9 +1024,9 @@ class AddMachineRate extends Component {
                                                     name={"Description"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    // validate={[required]}
                                                     component={renderText}
-                                                    required={true}
+                                                    // required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1053,7 +1111,7 @@ class AddMachineRate extends Component {
                                                     name={"MachineRate"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
+                                                    validate={[number, postiveNumber]}
                                                     component={renderNumberInputField}
                                                     onChange={this.handleMachineRate}
                                                     //required={true}
@@ -1112,6 +1170,7 @@ class AddMachineRate extends Component {
                                                         {
                                                             this.state.processGrid &&
                                                             this.state.processGrid.map((item, index) => {
+                                                                console.log(item, "Item of Process Grid");
                                                                 return (
                                                                     <tr key={index}>
                                                                         <td>{item.processName}</td>
@@ -1143,7 +1202,7 @@ class AddMachineRate extends Component {
                                         <Row>
                                             <Col md="12" className="filter-block">
                                                 <div className=" flex-fills mb-2">
-                                                    <h5>{'Remark & Attachments'}</h5>
+                                                    <h5>{'Remarks & Attachments'}</h5>
                                                 </div>
                                             </Col>
                                             <Col md="6">

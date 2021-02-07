@@ -533,7 +533,7 @@ class RMImportListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.rmDataList}
                             striped={false}
                             bordered={false}
                             hover={false}
@@ -581,9 +581,9 @@ class RMImportListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, }) {
-    const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList } = material;
+    const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmDataList } = material;
     const { supplierSelectList, } = comman;
-    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, }
+    return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmDataList }
 }
 
 /**

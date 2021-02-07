@@ -445,7 +445,7 @@ class BOPImportListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.bopImportList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -492,9 +492,9 @@ class BOPImportListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ boughtOutparts, comman }) {
-    const { bopCategorySelectList, vendorAllSelectList } = boughtOutparts;
+    const { bopCategorySelectList, vendorAllSelectList, bopImportList } = boughtOutparts;
     const { plantSelectList, } = comman;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList }
 }
 
 /**

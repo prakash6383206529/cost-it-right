@@ -272,7 +272,7 @@ class ReasonListing extends Component {
           </div>
         </Col>
         <BootstrapTable
-          data={this.state.tableData}
+          data={this.props.reasonDataList}
           striped={false}
           hover={false}
           bordered={false}
@@ -331,9 +331,9 @@ class ReasonListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ reason, auth }) {
-  const { loading } = reason
+  const { loading, reasonDataList } = reason
   const { leftMenuData } = auth
-  return { loading, leftMenuData }
+  return { loading, leftMenuData, reasonDataList }
 }
 
 /**

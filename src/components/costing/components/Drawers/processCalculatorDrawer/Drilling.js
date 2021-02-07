@@ -13,6 +13,53 @@ import {
 import { clampingTime, feedByMin, totalMachineTime } from './CommonFormula'
 
 function Drilling(props) {
+  const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  const defaultValues = {
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage
+      : '',
+    clampingValue: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingValue !== undefined
+      ? WeightCalculatorRequest.ClampingValue
+      : '',
+    cutLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutLength !== undefined
+      ? WeightCalculatorRequest.CutLength
+      : '',
+    cutTime: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutTime !== undefined
+      ? WeightCalculatorRequest.CutTime
+      : '',
+    cuttingSpeed: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CuttingSpeed !== undefined
+      ? WeightCalculatorRequest.CuttingSpeed
+      : '',
+    feedMin: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedMin !== undefined
+      ? WeightCalculatorRequest.FeedMin
+      : '',
+    feedRev: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedRev !== undefined
+      ? WeightCalculatorRequest.FeedRev
+      : '',
+    removedMaterial: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RemovedMaterial !== undefined
+      ? WeightCalculatorRequest.RemovedMaterial
+      : '',
+    rpm: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Rpm !== undefined
+      ? WeightCalculatorRequest.Rpm
+      : '',
+    turningDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TurningDiameter !== undefined
+      ? WeightCalculatorRequest.TurningDiameter
+      : '',
+    turningLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TurningLength !== undefined
+      ? WeightCalculatorRequest.TurningLength
+      : '',
+  }
   const {
     register,
     handleSubmit,
@@ -24,7 +71,7 @@ function Drilling(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
   const fieldValues = useWatch({
     control,
@@ -53,9 +100,10 @@ function Drilling(props) {
 
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const isEditFlag = WeightCalculatorRequest ? true : false
   const { technology, calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState('')
-  const fieldForProcess = () => {}
+  const fieldForProcess = () => { }
 
   // const onFinishDiameterChange = () => {
   //   const turningDiameter = getValues('turningDiameter')
@@ -96,9 +144,22 @@ function Drilling(props) {
   }
   const onSubmit = (value) => {
     console.log(value, 'Handle Value in Facing')
-    calculateMachineTime(totalMachiningTime, value)
+    let obj = {}
+    obj.ClampingPercentage = value.clampingPercentage
+    obj.ClampingValue = value.clampingValue
+    obj.CutLength = value.cutLength
+    obj.CutTime = value.cutTime
+    obj.CuttingSpeed = value.cuttingSpeed
+    obj.FeedMin = value.feedMin
+    obj.FeedRev = value.feedRev
+    obj.RemovedMaterial = value.removedMaterial
+    obj.Rpm = value.rpm
+    obj.TurningDiameter = value.turningDiameter
+    obj.TurningLength = value.turningLength
+    calculateMachineTime(totalMachiningTime, obj)
   }
   const onCancel = () => {
+
     calculateMachineTime('0.00')
   }
   return (
@@ -130,7 +191,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -155,7 +216,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -180,7 +241,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -205,7 +266,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -238,7 +299,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -263,7 +324,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -287,7 +348,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -312,7 +373,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -345,7 +406,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -370,7 +431,7 @@ function Drilling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -394,7 +455,7 @@ function Drilling(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -438,7 +499,7 @@ function Drilling(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>
           </form>

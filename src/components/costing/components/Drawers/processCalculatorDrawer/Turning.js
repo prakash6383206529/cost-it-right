@@ -19,15 +19,69 @@ import {
 } from '../../../../../helper'
 
 function Turning(props) {
+  const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  const isEditFlag = WeightCalculatorRequest ? true : false
   const defaultValues = {
-    cutLength: '',
-    removedMaterial: '',
-    rpm: '',
-    feedMin: '',
-    cutTime: '',
-    numberOfPasses: '',
-    clampingPercentage: '',
-    clampingValue: '',
+    cutLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutLength !== undefined
+      ? WeightCalculatorRequest.CutLength
+      : '',
+    removedMaterial: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RemovedMaterial !== undefined
+      ? WeightCalculatorRequest.RemovedMaterial
+      : '',
+    rpm: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Rpm !== undefined
+      ? WeightCalculatorRequest.Rpm
+      : '',
+    feedMin: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedMin !== undefined
+      ? WeightCalculatorRequest.FeedMin
+      : '',
+    cutTime: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutTime !== undefined
+      ? WeightCalculatorRequest.CutTime
+      : '',
+    numberOfPasses: WeightCalculatorRequest &&
+      WeightCalculatorRequest.NumberOfPasses !== undefined
+      ? WeightCalculatorRequest.NumberOfPasses
+      : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage
+      : '',
+    clampingValue: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingValue !== undefined
+      ? WeightCalculatorRequest.ClampingValue
+      : '',
+    turningDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TurningDiameter !== undefined
+      ? WeightCalculatorRequest.TurningDiameter
+      : '',
+    finishDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FinishDiameter !== undefined
+      ? WeightCalculatorRequest.FinishDiameter
+      : '',
+    turningLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.TurningLength !== undefined
+      ? WeightCalculatorRequest.TurningLength
+      : '',
+    cuttingSpeed: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CuttingSpeed !== undefined
+      ? WeightCalculatorRequest.CuttingSpeed
+      : '',
+    doc: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Doc !== undefined
+      ? WeightCalculatorRequest.Doc
+      : '',
+    feedRev: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedRev !== undefined
+      ? WeightCalculatorRequest.FeedRev
+      : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage
+      : ''
   }
   const {
     register,
@@ -48,17 +102,10 @@ function Turning(props) {
       'turningDiameter',
       'finishDiameter',
       'turningLength',
-      //'cutLength',
-      //'removedMaterial',
       'cuttingSpeed',
       'doc',
-      // 'rpm',
       'feedRev',
       'clampingPercentage',
-      // 'feedMin',
-      // 'cutTime',
-      // 'clampingPercentage',
-      // 'clampingValue',
     ],
   })
 
@@ -75,7 +122,7 @@ function Turning(props) {
 
   const { technology, process, calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState('')
-  const fieldForProcess = () => {}
+  const fieldForProcess = () => { }
 
   const onTurningLength = () => {
     const cutLength = getValues('turningLength')
@@ -148,7 +195,22 @@ function Turning(props) {
   }
   const onSubmit = (value) => {
     console.log(value, 'Handle Value in Facing')
-    calculateMachineTime(totalMachiningTime)
+    let obj = {}
+    obj.CutLength = value.cutLength
+    obj.RemovedMaterial = value.removedMaterial
+    obj.Rpm = value.rpm
+    obj.FeedMin = value.feedMin
+    obj.CutTime = value.cutTime
+    obj.NumberOfPasses = value.numberOfPasses
+    obj.ClampingPercentage = value.clampingPercentage
+    obj.ClampingValue = value.clampingValue
+    obj.TurningDiameter = value.turningDiameter
+    obj.FinishDiameter = value.finishDiameter
+    obj.TurningLength = value.turningLength
+    obj.CuttingSpeed = value.cuttingSpeed
+    obj.Doc = value.doc
+    obj.FeedRev = value.feedRev
+    calculateMachineTime(totalMachiningTime, obj)
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -182,7 +244,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -207,7 +269,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -232,7 +294,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -282,7 +344,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -333,7 +395,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -391,7 +453,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -441,7 +503,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -474,7 +536,7 @@ function Turning(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -523,7 +585,7 @@ function Turning(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -569,7 +631,7 @@ function Turning(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>
           </form>

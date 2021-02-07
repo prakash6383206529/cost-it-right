@@ -33,6 +33,7 @@ import {
     GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
+    GET_RM_DOMESTIC_LIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -280,6 +281,13 @@ export default function materialReducer(state = initialState, action) {
                 error: true,
                 MaterialSelectList: action.payload
             };
+        case GET_RM_DOMESTIC_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rmDataList: action.payload
+            }
         default:
             return state;
     }

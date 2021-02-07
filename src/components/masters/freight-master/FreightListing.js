@@ -426,7 +426,7 @@ class FreightListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.freightDetail}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -457,10 +457,10 @@ class FreightListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ freight, material, comman }) {
-    const { } = freight;
+    const { freightDetail } = freight;
     const { vendorListByVendorType } = material;
     const { cityList, } = comman;
-    return { vendorListByVendorType, cityList }
+    return { vendorListByVendorType, cityList, freightDetail }
 }
 
 /**

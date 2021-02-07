@@ -19,16 +19,72 @@ import {
 } from '../../../../../helper'
 
 function SideFaceMiling(props) {
+  const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
   const defaultValues = {
-    cutLength: '',
-    //removedMaterial: '',
-    rpm: '',
-    feedRev: '',
-    feedMin: '',
-    cutTime: '',
-    numberOfPasses: '',
-    clampingPercentage: '',
-    clampingValue: '',
+    cutLength: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutLength !== undefined
+      ? WeightCalculatorRequest.CutLength
+      : '',
+    rpm: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Rpm !== undefined
+      ? WeightCalculatorRequest.Rpm
+      : '',
+    feedRev: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedRev !== undefined
+      ? WeightCalculatorRequest.FeedRev
+      : '',
+    feedMin: WeightCalculatorRequest &&
+      WeightCalculatorRequest.FeedMin !== undefined
+      ? WeightCalculatorRequest.FeedMin
+      : '',
+    cutTime: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutTime !== undefined
+      ? WeightCalculatorRequest.CutTime
+      : '',
+    numberOfPasses: WeightCalculatorRequest &&
+      WeightCalculatorRequest.NumberOfPasses !== undefined
+      ? WeightCalculatorRequest.NumberOfPasses
+      : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage
+      : '',
+    clampingValue: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingValue !== undefined
+      ? WeightCalculatorRequest.ClampingValue
+      : '',
+    cutterDiameter: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutterDiameter !== undefined
+      ? WeightCalculatorRequest.CutterDiameter
+      : '',
+    cutLengthOfArea: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CutLengthOfArea !== undefined
+      ? WeightCalculatorRequest.CutLengthOfArea
+      : '',
+    areaWidth: WeightCalculatorRequest &&
+      WeightCalculatorRequest.AreaWidth !== undefined
+      ? WeightCalculatorRequest.AreaWidth
+      : '',
+    removedMaterial: WeightCalculatorRequest &&
+      WeightCalculatorRequest.RemovedMaterial !== undefined
+      ? WeightCalculatorRequest.RemovedMaterial
+      : '',
+    doc: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Doc !== undefined
+      ? WeightCalculatorRequest.Doc
+      : '',
+    cuttingSpeed: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CuttingSpeed !== undefined
+      ? WeightCalculatorRequest.CuttingSpeed
+      : '',
+    toothFeed: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ToothFeed !== undefined
+      ? WeightCalculatorRequest.ToothFeed
+      : '',
+    clampingPercentage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.ClampingPercentage !== undefined
+      ? WeightCalculatorRequest.ClampingPercentage
+      : ''
   }
   const {
     register,
@@ -49,19 +105,11 @@ function SideFaceMiling(props) {
       'cutterDiameter',
       'cutLengthOfArea',
       'areaWidth',
-      // 'cutLength',
-      //'turningLength',
       'removedMaterial',
       'doc',
       'cuttingSpeed',
       'toothFeed',
-      // 'rpm',
-      // 'feedRev',
       'clampingPercentage',
-      // 'feedMin',
-      // 'cutTime',
-      // 'clampingPercentage',
-      // 'clampingValue',
     ],
   })
 
@@ -76,6 +124,7 @@ function SideFaceMiling(props) {
   }, [fieldValues])
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const isEditFlag = WeightCalculatorRequest ? true : false
   const { technology, process, calculateMachineTime } = props
   const [totalMachiningTime, setTotalMachiningTime] = useState('')
   useEffect(() => {
@@ -112,7 +161,7 @@ function SideFaceMiling(props) {
     setValue('feedRev', feedRev)
     const feedMin = feedByMin(feedRev, rpm)
     setValue('feedMin', feedMin)
-    const tCut = (cutLength / feedMin) * numberOfPasses
+    const tCut = checkForDecimalAndNull((cutLength / feedMin) * numberOfPasses, trim)
     setValue('cutTime', tCut)
   }
   const onWidthChange = (e) => {
@@ -139,7 +188,24 @@ function SideFaceMiling(props) {
   }
   const onSubmit = (value) => {
     console.log(value, 'Handle Value in Facing')
-    calculateMachineTime(totalMachiningTime, value)
+    let obj = {}
+    obj.CutLength = value.cutLength
+    obj.Rpm = value.rpm
+    obj.FeedRev = value.feedRev
+    obj.FeedMin = value.feedMin
+    obj.CutTime = value.cutTime
+    obj.NumberOfPasses = value.numberOfPasses
+    obj.ClampingPercentage = value.clampingPercentage
+    obj.ClampingValue = value.clampingValue
+    obj.CutterDiameter = value.cutterDiameter
+    obj.CutLengthOfArea = value.cutLengthOfArea
+    obj.AreaWidth = value.areaWidth
+    obj.RemovedMaterial = value.removedMaterial
+    obj.Doc = value.doc
+    obj.CuttingSpeed = value.cuttingSpeed
+    obj.ToothFeed = value.toothFeed
+    obj.ClampingPercentage = value.clampingPercentage
+    calculateMachineTime(totalMachiningTime, obj)
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -173,7 +239,7 @@ function SideFaceMiling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -198,7 +264,7 @@ function SideFaceMiling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -248,7 +314,7 @@ function SideFaceMiling(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -276,7 +342,7 @@ function SideFaceMiling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -326,7 +392,7 @@ function SideFaceMiling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -384,7 +450,7 @@ function SideFaceMiling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -408,7 +474,7 @@ function SideFaceMiling(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -456,7 +522,7 @@ function SideFaceMiling(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -481,7 +547,7 @@ function SideFaceMiling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -514,7 +580,7 @@ function SideFaceMiling(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -563,7 +629,7 @@ function SideFaceMiling(props) {
                           // },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -607,7 +673,7 @@ function SideFaceMiling(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>
           </form>

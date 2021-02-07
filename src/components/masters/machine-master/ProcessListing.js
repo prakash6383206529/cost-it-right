@@ -388,7 +388,7 @@ class ProcessListing extends Component {
         <Row>
           <Col>
             <BootstrapTable
-              data={this.state.tableData}
+              data={this.props.processList}
               striped={false}
               hover={false}
               bordered={false}
@@ -469,8 +469,8 @@ class ProcessListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ process }) {
-  const { filterSelectList } = process
-  return { filterSelectList }
+  const { filterSelectList, processList } = process
+  return { filterSelectList, processList }
 }
 
 /**

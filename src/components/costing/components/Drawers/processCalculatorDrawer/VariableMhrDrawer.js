@@ -25,8 +25,8 @@ function VariableMhrDrawer(props) {
   console.log(calculatorData, 'Process')
   const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const dispatch = useDispatch()
-  const calculateMachineTime = (value, formValue) => {
-    console.log('Form Value in drawer', value)
+  const calculateMachineTime = (time, formValue) => {
+    console.log('Form Value in drawer', time)
     //   let obj={}
     //    obj.TurningDiameter = formValue.turningDiameter,
     //    obj.FinishDiameter = formValue.finishDiameter,
@@ -57,20 +57,20 @@ function VariableMhrDrawer(props) {
     //     }
     //   }),
     // )
-    toggleDrawer('', value)
+    toggleDrawer('', time, formValue)
   }
   /**
    * @method toggleDrawer
    * @description TOGGLE DRAWER
    */
-  const toggleDrawer = (event, weightData = '0.00') => {
+  const toggleDrawer = (event, formValue = '0.00', weightData = {}) => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return
     }
-    props.closeDrawer('', weightData)
+    props.closeDrawer('', formValue, weightData)
   }
   const getProcessComponent = (process) => {
     console.log('Entered in switch case')
@@ -81,6 +81,7 @@ function VariableMhrDrawer(props) {
             <Facing
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'Drilling':
@@ -88,6 +89,7 @@ function VariableMhrDrawer(props) {
             <Drilling
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'Turning':
@@ -95,6 +97,7 @@ function VariableMhrDrawer(props) {
             <Turning
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'Chamfering':
@@ -102,6 +105,7 @@ function VariableMhrDrawer(props) {
             <Chamfering
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'Face Milling':
@@ -109,6 +113,7 @@ function VariableMhrDrawer(props) {
             <FaceMilling
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'Side face Miling':
@@ -116,6 +121,7 @@ function VariableMhrDrawer(props) {
             <SideFaceMiling
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'Slot Cutting':
@@ -123,6 +129,7 @@ function VariableMhrDrawer(props) {
             <SlotCutting
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'Chamfering Miller':
@@ -130,6 +137,7 @@ function VariableMhrDrawer(props) {
             <ChamferingMiller
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
         case 'End Mill':
@@ -137,6 +145,7 @@ function VariableMhrDrawer(props) {
             <EndMill
               calculateMachineTime={calculateMachineTime}
               technology={technology}
+              calculatorData={calculatorData}
             />
           )
       }
@@ -147,6 +156,7 @@ function VariableMhrDrawer(props) {
             <SheetMetalBaicDrawer
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
+              calculatorData={calculatorData}
             />
           )
       }
@@ -154,7 +164,7 @@ function VariableMhrDrawer(props) {
       switch (process) {
         case 'Injection Moulding':
           return (
-            <InjectionMoulding calculateMachineTime={calculateMachineTime} />
+            <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
           )
       }
     }

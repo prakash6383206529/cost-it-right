@@ -581,7 +581,7 @@ class OperationListing extends Component {
 
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.operationList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -625,9 +625,9 @@ class OperationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ otherOperation, auth }) {
-    const { loading, filterOperation } = otherOperation;
+    const { loading, filterOperation, operationList } = otherOperation;
     const { leftMenuData } = auth;
-    return { loading, filterOperation, leftMenuData };
+    return { loading, filterOperation, leftMenuData, operationList };
 }
 
 /**

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, trimTwoDecimalPlace, getVendorCode } from "../../../helper/validation";
+import { required, checkForNull, trimTwoDecimalPlace, getVendorCode, checkForDecimalAndNull } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
@@ -23,6 +23,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import moment from 'moment';
+import { calculatePercentageValue } from '../../../helper';
 const selector = formValueSelector('AddPower');
 
 class AddPower extends Component {
@@ -31,6 +32,7 @@ class AddPower extends Component {
         this.child = React.createRef();
         this.state = {
             isEditFlag: false,
+            isEditFlagForStateElectricity: false,
             PowerDetailID: '',
             IsVendor: false,
 
@@ -56,6 +58,8 @@ class AddPower extends Component {
             checkPowerContribution: false,
             isAddedSEB: false,
             isEditSEBIndex: false,
+
+            netContributionValue: 0
         }
     }
 
@@ -78,7 +82,19 @@ class AddPower extends Component {
             this.SEBPowerCalculation()
             this.selfPowerCalculation()
             this.powerContributionCalculation()
+            this.minMonthlyChargeCalculation()
         }
+    }
+    /**
+     * @method minMonthlyChargeCalculation
+     * @description TO CALCULATE MIN MONTHLY CHARGE
+    */
+    minMonthlyChargeCalculation = () => {
+        const { fieldsObj } = this.props;
+        const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth !== undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0
+        const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW !== undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
+        const minMonthlyCharge = MinDemandKWPerMonth * DemandChargesPerKW
+        this.props.change('MinMonthlyCharge', minMonthlyCharge)
     }
 
     /**
@@ -103,8 +119,14 @@ class AddPower extends Component {
 
         //Formula for SEB COST PER UNIT calculation
         if (!isCostPerUnitConfigurable) {
-            const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth;
-            this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+            if (AvgUnitConsumptionPerMonth <= MinDemandKWPerMonth) {
+                const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
+                this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+            } else {
+                const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth;
+                this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+            }
+
         }
 
         //Formula for TOTAL UNIT CHARGES calculation
@@ -127,11 +149,17 @@ class AddPower extends Component {
         if (source && source.value === GENERATOR_DIESEL) {
             const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? checkForNull(fieldsObj.CostPerUnitOfMeasurement) : 0;
             const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerUnitOfFuel) : 0;
+            if (!CostPerUnitOfMeasurement || !UnitGeneratedPerUnitOfFuel) {
+                return 0
+            }
             const SelfGeneratedCostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
             this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
         } else {
             const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
             const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
+            if (!AnnualCost || !UnitGeneratedPerAnnum) {
+                return 0
+            }
             const SelfGeneratedCostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
             this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
         }
@@ -180,6 +208,12 @@ class AddPower extends Component {
     */
     getDetails = () => {
         const { data } = this.props;
+        console.log(data, "Data");
+        if (data && data.isEditFlag) {
+            this.setState({
+                isEditFlagForStateElectricity: true
+            })
+        }
         if (data && data.isEditFlag && data.IsVendor) {
             this.setState({
                 isEditFlag: false,
@@ -226,6 +260,7 @@ class AddPower extends Component {
                 if (res && res.data && res.data.Result) {
                     const { powerGrid } = this.state;
                     const Data = res.data.Data;
+                    console.log(Data, "DATA POWER");
                     this.props.getPlantListByState(Data.StateId, () => { })
 
                     let tempArray = [];
@@ -264,6 +299,7 @@ class AddPower extends Component {
                             isEditFlag: true,
                             isLoader: false,
                             IsVendor: Data.IsVendor,
+                            netContributionValue: Data.NetPowerCostPerUnit,
                             isAddedSEB: Data.SEBChargesDetails && Data.SEBChargesDetails.length > 0 ? true : false,
                             selectedPlants: plantArray,
                             StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
@@ -337,7 +373,7 @@ class AddPower extends Component {
     */
     handleState = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
-            this.setState({ StateName: newValue, }, () => {
+            this.setState({ StateName: newValue, selectedPlants: [] }, () => {
                 const { StateName } = this.state;
                 this.props.getPlantListByState(StateName.value, () => { })
             })
@@ -430,9 +466,14 @@ class AddPower extends Component {
             OtherCharges: 0,
             isSelfPowerGenerator: isSelfGenerator,
         })
-
+        const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
+            return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+        }, 0)
+        console.log(NetPowerCostPerUnit, "Net Power");
         this.setState({
+            isEditFlagForStateElectricity: true,
             powerGrid: tempArray,
+            netContributionValue: NetPowerCostPerUnit,
             isAddedSEB: true,
         });
     }
@@ -454,9 +495,12 @@ class AddPower extends Component {
         tempData = { ...tempData, CostPerUnit: TotalUnitCharges, PowerContributionPercentage: SEBPowerContributaion, }
 
         tempArray = Object.assign([...powerGrid], { [powerGridEditIndex]: tempData })
-
+        const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
+            return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+        }, 0)
         this.setState({
             powerGrid: tempArray,
+            netContributionValue: NetPowerCostPerUnit,
             powerGridEditIndex: '',
             isEditSEBIndex: false,
             isAddedSEB: true,
@@ -500,9 +544,14 @@ class AddPower extends Component {
             OtherCharges: 0,
             isSelfPowerGenerator: isSelfGenerator,
         })
+        const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
+            return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+        }, 0)
+        console.log(NetPowerCostPerUnit, "Net Power");
 
         this.setState({
             powerGrid: tempArray,
+            netContributionValue: NetPowerCostPerUnit,
             source: [],
             UOM: [],
         }, () => {
@@ -552,11 +601,14 @@ class AddPower extends Component {
         }
 
         tempArray = Object.assign([...powerGrid], { [powerGridEditIndex]: tempData })
-
+        const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
+            return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
+        }, 0)
         this.setState({
             powerGrid: tempArray,
             source: [],
             UOM: [],
+            netContributionValue: NetPowerCostPerUnit,
             powerGridEditIndex: '',
             isEditIndex: false,
         }, () => {
@@ -603,6 +655,7 @@ class AddPower extends Component {
         if (tempData.SourcePowerType === 'SEB') {
 
             this.setState({
+                isEditFlagForStateElectricity: false,
                 powerGridEditIndex: index,
                 isEditSEBIndex: true,
                 isAddedSEB: false,
@@ -614,6 +667,7 @@ class AddPower extends Component {
         } else {
             let UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(el => el.Value === tempData.UnitOfMeasurementId)
             this.setState({
+                isEditFlagForStateElectricity: false,
                 powerGridEditIndex: index,
                 isEditIndex: true,
                 isEditSEBIndex: false,
@@ -692,7 +746,7 @@ class AddPower extends Component {
         if (label === 'UOM') {
             fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
                 if (item.Value === '0') return false;
-                if (item.Text === 'Liter') {
+                if (item.Text === 'Liter' || item.Text === 'Kilogram') {
                     temp.push({ label: item.Text, value: item.Value })
                 }
             });
@@ -753,8 +807,10 @@ class AddPower extends Component {
         if (IsVendor && vendorPlantArray.length === 0) return false;
 
         const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
-            return accummlator + checkForNull(el.CostPerUnit);
+            return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
         }, 0)
+
+
 
         let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
 
@@ -881,8 +937,8 @@ class AddPower extends Component {
     */
     render() {
         const { handleSubmit, } = this.props;
-        const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable,
-            checkPowerContribution, } = this.state;
+        const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
+            checkPowerContribution, netContributionValue } = this.state;
 
         return (
             <>
@@ -1060,7 +1116,7 @@ class AddPower extends Component {
                                                                     required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={isEditFlagForStateElectricity ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1078,7 +1134,25 @@ class AddPower extends Component {
                                                                     required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={isEditFlagForStateElectricity ? true : false}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </Col>
+                                                    <Col md="3">
+                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                            <div className="fullinput-icon">
+                                                                <Field
+                                                                    label={`Min Monthly Charge`}
+                                                                    name={"MinMonthlyCharge"}
+                                                                    type="text"
+                                                                    placeholder={'Enter'}
+                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
+                                                                    component={renderNumberInputField}
+                                                                    required={!isCostPerUnitConfigurable ? true : false}
+                                                                    className=""
+                                                                    customClassName=" withBorder"
+                                                                    disabled={true}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1096,7 +1170,7 @@ class AddPower extends Component {
                                                                     required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={isEditFlagForStateElectricity ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1114,7 +1188,7 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={true}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1132,7 +1206,7 @@ class AddPower extends Component {
                                                                     required={!isCostPerUnitConfigurable ? true : false}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={isEditFlagForStateElectricity ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1168,7 +1242,7 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={isEditFlagForStateElectricity ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1186,7 +1260,7 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={false}
+                                                                    disabled={isEditFlagForStateElectricity ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1195,7 +1269,7 @@ class AddPower extends Component {
                                                         <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                                             <div className="fullinput-icon">
                                                                 <Field
-                                                                    label={`Total Unit Charges`}
+                                                                    label={`Total Charge/Unit`}
                                                                     name={"TotalUnitCharges"}
                                                                     type="text"
                                                                     placeholder={'Enter'}
@@ -1252,7 +1326,7 @@ class AddPower extends Component {
                                                                     required={true}
                                                                     className=""
                                                                     customClassName=" withBorder"
-                                                                    disabled={this.state.isAddedSEB ? true : false}
+                                                                    disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1276,7 +1350,7 @@ class AddPower extends Component {
                                                                 :
                                                                 <button
                                                                     type="button"
-                                                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
+                                                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mb-4 pull-left`}
                                                                     disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
                                                                     onClick={() => this.powerSEBTableHandler(false)}>
                                                                     <div className={'plus'}></div>ADD</button>
@@ -1496,6 +1570,7 @@ class AddPower extends Component {
                                                                     <th>{`Source`}</th>
                                                                     <th>{`Cost/Unit (INR)`}</th>
                                                                     <th>{`Contribution(%)`}</th>
+                                                                    <th>{`Contribution Value`}</th>
                                                                     <th>{`Action`}</th>
                                                                 </tr>
                                                             </thead>
@@ -1506,8 +1581,10 @@ class AddPower extends Component {
                                                                         return (
                                                                             <tr key={index}>
                                                                                 <td>{item.SourcePowerType}</td>
-                                                                                <td>{item.CostPerUnit}</td>
+                                                                                <td>{item.CostPerUnit ? item.CostPerUnit : 0}</td>
                                                                                 <td>{item.PowerContributionPercentage}</td>
+                                                                                {/* Ask which value to use for trim */}
+                                                                                <th>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), 2)}</th>
                                                                                 <td>
                                                                                     <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                                                                     <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -1517,8 +1594,31 @@ class AddPower extends Component {
                                                                     })
                                                                 }
                                                             </tbody>
+
+                                                            <tfoot>
+                                                                {/* <div className="bluefooter-butn border row">
+                                                                    <div className="col-md-12 text-right"> */}
+                                                                <tr className="bluefooter-butn">
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td className="text-right"><label>{`Net Contribution Value:`}</label> </td>
+                                                                    <td><label> {checkForDecimalAndNull(netContributionValue, 2)}</label></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                                {/* </div>
+                                                                </div> */}
+                                                            </tfoot>
+
                                                             {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                                                         </Table>
+                                                        {/* <div className="bluefooter-butn border row">
+                                                            <div className="col-md-12 text-right">
+                                                                <span className="col-md-12">
+                                                                    {`Net Loss Weight:`}
+                                                                    {1}
+                                                                </span>
+                                                            </div>
+                                                        </div> */}
                                                     </Col>
                                                 </Row>
                                             </>

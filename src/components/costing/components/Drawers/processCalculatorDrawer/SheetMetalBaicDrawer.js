@@ -8,6 +8,26 @@ import {
 } from '../../../../layout/HookFormInputs'
 
 function SheetMetalBaicDrawer(props) {
+  const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  console.log(WeightCalculatorRequest, "Wight");
+  const defaultValues = {
+    tonnage: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Tonnage !== undefined
+      ? WeightCalculatorRequest.Tonnage
+      : '',
+    cycleTime: WeightCalculatorRequest &&
+      WeightCalculatorRequest.CycleTime !== undefined
+      ? WeightCalculatorRequest.CycleTime
+      : '',
+    efficiency: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Efficiency !== undefined
+      ? WeightCalculatorRequest.Efficiency
+      : '',
+    cavity: WeightCalculatorRequest &&
+      WeightCalculatorRequest.Cavity !== undefined
+      ? WeightCalculatorRequest.Cavity
+      : ''
+  }
   const {
     register,
     handleSubmit,
@@ -19,9 +39,10 @@ function SheetMetalBaicDrawer(props) {
   } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
+    defaultValues: defaultValues,
   })
   const { technology, process, tonnage, calculateMachineTime } = props
+  const isEditFlag = WeightCalculatorRequest ? true : false
   //   const [totalMachiningTime, setTotalMachiningTime] = useState('0.00')
   //   const trimVal = getConfigurationKey()
   //   const trim = trimVal.NumberOfDecimalForWeightCalculation
@@ -29,7 +50,12 @@ function SheetMetalBaicDrawer(props) {
   const onSubmit = (value) => {
     console.log('coming')
     console.log(value, 'Handle Value in Facing')
-    calculateMachineTime('0.00', value)
+    let obj = {}
+    obj.Tonnage = value.tonnage
+    obj.CycleTime = value.cycleTime
+    obj.Efficiency = value.efficiency
+    obj.Cavity = value.cavity
+    calculateMachineTime('0.00', obj)
   }
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -55,7 +81,7 @@ function SheetMetalBaicDrawer(props) {
                         register={register}
                         mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
@@ -63,7 +89,7 @@ function SheetMetalBaicDrawer(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={tonnage}
                         className=""
                         customClassName={'withBorder'}
@@ -88,7 +114,7 @@ function SheetMetalBaicDrawer(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -113,7 +139,7 @@ function SheetMetalBaicDrawer(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -138,7 +164,7 @@ function SheetMetalBaicDrawer(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -183,7 +209,7 @@ function SheetMetalBaicDrawer(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {'SAVE'}
+                {isEditFlag ? 'UPDATE' : 'SAVE'}
               </button>
             </div>
           </form>

@@ -1151,7 +1151,7 @@ class AddRMDomestic extends Component {
                                         <Row>
                                             <Col md="12" className="filter-block">
                                                 <div className=" flex-fills mb-2">
-                                                    <h5>{'Remark & Attachments'}</h5>
+                                                    <h5>{'Remarks & Attachments'}</h5>
                                                 </div>
                                             </Col>
                                             <Col md="6">

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, checkForDecimalAndNull, postiveNumber } from "../../../helper/validation";
 import {
     renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
 } from "../../layout/FormInputs";
@@ -115,6 +115,11 @@ class AddMoreDetails extends Component {
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.data !== this.props.data) {
             const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
+            console.log(selectedPlants, "Selected Plants");
+            if (selectedPlants.length !== 0) {
+                this.handlePlants(selectedPlants)
+            }
+
             this.props.change('MachineName', fieldsObj.MachineName)
             this.props.change('MachineNumber', fieldsObj.MachineNumber)
             this.props.change('TonnageCapacity', fieldsObj.TonnageCapacity)
@@ -154,8 +159,11 @@ class AddMoreDetails extends Component {
     * @description Used to get Details
     */
     getDetails = () => {
+        console.log("Coming in getDetail ? ");
         const { editDetails } = this.props;
+        console.log(editDetails, "Edit Detail");
         if (editDetails && editDetails.isEditFlag) {
+            console.log("entring in edit fLAG");
             this.setState({
                 isEditFlag: false,
                 isLoader: true,
@@ -320,8 +328,21 @@ class AddMoreDetails extends Component {
     * @description called
     */
     handlePlants = (newValue, actionMeta) => {
+        const { IsUsesSolarPower } = this.state;
         if (newValue && newValue !== '') {
             this.setState({ selectedPlants: newValue, })
+            this.props.getPowerCostUnit(newValue.value, res => {
+                let Data = res.data.DynamicData;
+                if (res && res.data && res.data.Message !== '') {
+                    console.log("Coming in Else", IsUsesSolarPower);
+                    toastr.warning(res.data.Message)
+                    this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
+                } else {
+                    console.log("Coming in Else", IsUsesSolarPower);
+                    //  if(IsUsesSolarPower)
+                    this.props.change('PowerCostPerUnit', IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit)
+                }
+            })
         } else {
             this.setState({ selectedPlants: [] })
         }
@@ -356,9 +377,13 @@ class AddMoreDetails extends Component {
     handleShiftType = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             this.setState({ shiftType: newValue });
+
         } else {
             this.setState({ shiftType: [], })
         }
+        setTimeout(() => {
+            this.calculateWorkingHrsPerAnnum()
+        }, 100);
     }
 
     efficiencyCalculationToggler = () => {
@@ -514,24 +539,24 @@ class AddMoreDetails extends Component {
     onPressUsesSolarPower = () => {
         this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
             const { IsUsesSolarPower, selectedPlants } = this.state;
-            if (IsUsesSolarPower) {
-                if (selectedPlants) {
-                    this.props.getPowerCostUnit(selectedPlants.value, res => {
-                        let Data = res.data.DynamicData;
-                        if (res && res.data && res.data.Message !== '') {
-                            toastr.warning(res.data.Message)
-                            this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
-                        } else {
-                            this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
-                        }
-                    })
-                } else {
-                    toastr.warning('Please select plant.')
-                    this.setState({ IsUsesSolarPower: false, })
-                }
+            // if (IsUsesSolarPower) {
+            if (selectedPlants) {
+                this.props.getPowerCostUnit(selectedPlants.value, res => {
+                    let Data = res.data.DynamicData;
+                    if (res && res.data && res.data.Message !== '') {
+                        toastr.warning(res.data.Message)
+                        this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
+                    } else {
+                        this.props.change('PowerCostPerUnit', IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit)
+                    }
+                })
             } else {
-                this.props.change('PowerCostPerUnit', 0)
+                toastr.warning('Please select plant.')
+                this.setState({ IsUsesSolarPower: false, })
             }
+            // } else {
+            //     this.props.change('PowerCostPerUnit', 0)
+            // }
         });
     }
 
@@ -693,10 +718,12 @@ class AddMoreDetails extends Component {
         const AnnualConsumableAmount = fieldsObj && fieldsObj.AnnualConsumableAmount !== undefined ? checkForNull(fieldsObj.AnnualConsumableAmount) : 0;
         const AnnualInsuranceAmount = fieldsObj && fieldsObj.AnnualInsuranceAmount !== undefined ? checkForNull(fieldsObj.AnnualInsuranceAmount) : 0;
 
-        const anuualAreaCost = BuildingCostPerSquareFeet * MachineFloorAreaPerSquareFeet;
-        const TotalMachineCostPerAnnum = DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + anuualAreaCost;
+        // yearely cost add and annual spelling
+        const OtherYearlyCost = fieldsObj && fieldsObj.OtherYearlyCost !== undefined ? checkForNull(fieldsObj.OtherYearlyCost) : 0;
+        const annualAreaCost = BuildingCostPerSquareFeet * MachineFloorAreaPerSquareFeet;
+        const TotalMachineCostPerAnnum = DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost;
 
-        this.props.change('AnnualAreaCost', trimTwoDecimalPlace(anuualAreaCost))
+        this.props.change('AnnualAreaCost', trimTwoDecimalPlace(annualAreaCost))
         this.props.change('TotalMachineCostPerAnnum', trimTwoDecimalPlace(TotalMachineCostPerAnnum))
     }
 
@@ -705,29 +732,32 @@ class AddMoreDetails extends Component {
     * @description powerCost calculation
     */
     powerCost = () => {
+        console.log("Power");
         const { fieldsObj } = this.props;
         const { IsUsesFuel, IsUsesSolarPower } = this.state;
 
         if (IsUsesFuel) {
+            console.log("Come in if part");
             const FuelCostPerUnit = fieldsObj && fieldsObj.FuelCostPerUnit !== undefined ? checkForNull(fieldsObj.FuelCostPerUnit) : 0;
             const ConsumptionPerYear = fieldsObj && fieldsObj.ConsumptionPerYear !== undefined ? checkForNull(fieldsObj.ConsumptionPerYear) : 0;
 
             this.props.change('TotalFuelCostPerYear', trimTwoDecimalPlace(FuelCostPerUnit * ConsumptionPerYear))
         } else {
 
-            if (IsUsesSolarPower) {
-                this.props.change('FuelCostPerUnit', 0)
-                this.props.change('ConsumptionPerYear', 0)
-                this.props.change('TotalFuelCostPerYear', 0)
+            console.log("Come in else part");
+            // if (IsUsesSolarPower) {
+            this.props.change('FuelCostPerUnit', 0)
+            this.props.change('ConsumptionPerYear', 0)
+            this.props.change('TotalFuelCostPerYear', 0)
 
-                const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
-                const UtilizationFactorPercentage = fieldsObj && fieldsObj.UtilizationFactorPercentage !== undefined ? checkForNull(fieldsObj.UtilizationFactorPercentage) : 0;
-                const PowerRatingPerKW = fieldsObj && fieldsObj.PowerRatingPerKW !== undefined ? checkForNull(fieldsObj.PowerRatingPerKW) : 0;
-                const PowerCostPerUnit = fieldsObj && fieldsObj.PowerCostPerUnit !== undefined ? checkForNull(fieldsObj.PowerCostPerUnit) : 0;
+            const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+            const UtilizationFactorPercentage = fieldsObj && fieldsObj.UtilizationFactorPercentage !== undefined ? checkForNull(fieldsObj.UtilizationFactorPercentage) : 0;
+            const PowerRatingPerKW = fieldsObj && fieldsObj.PowerRatingPerKW !== undefined ? checkForNull(fieldsObj.PowerRatingPerKW) : 0;
+            const PowerCostPerUnit = fieldsObj && fieldsObj.PowerCostPerUnit !== undefined ? checkForNull(fieldsObj.PowerCostPerUnit) : 0;
 
-                const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage)
-                this.props.change('TotalPowerCostPerYear', totalPowerCostPrYer)
-            }
+            const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage)
+            this.props.change('TotalPowerCostPerYear', totalPowerCostPrYer)
+            // }
         }
     }
 
@@ -1157,6 +1187,7 @@ class AddMoreDetails extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
+        console.log(values, "Values of form");
         const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
             IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
             labourGrid, processGrid } = this.state;
@@ -1244,26 +1275,25 @@ class AddMoreDetails extends Component {
         if (editDetails.isIncompleteMachine) {
 
             // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-            let MachineData = { ...requestData, MachineId: editDetails.Id }
-            this.props.updateMachineDetails(MachineData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-                    this.cancel();
-                }
-            })
+            // let MachineData = { ...requestData, MachineId: editDetails.Id }
+            // this.props.updateMachineDetails(MachineData, (res) => {
+            //     if (res.data.Result) {
+            //         toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+            //         this.cancel();
+            //     }
+            // })
 
         } else if (isEditFlag) {
 
             // EXECUTED WHEN:- ADD MACHINE DONE AND EDIT MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-            this.props.updateMachineDetails(requestData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-                    this.cancel();
-                }
-            })
+            // this.props.updateMachineDetails(requestData, (res) => {
+            //     if (res.data.Result) {
+            //         toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+            //         this.cancel();
+            //     }
+            // })
 
         } else {
-
             // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
             const formData = {
                 Manufacture: values.Manufacture,
@@ -1336,14 +1366,15 @@ class AddMoreDetails extends Component {
                 VendorPlant: [],
                 Attachements: files
             }
-
-            this.props.createMachineDetails(formData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-                    this.cancel()
-                }
-            });
+            this.props.hideMoreDetailsForm(formData)
+            // this.props.createMachineDetails(formData, (res) => {
+            //     if (res.data.Result) {
+            //         toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+            //         this.cancel()
+            //     }
+            // });
         }
+
     }
 
     /**
@@ -1351,7 +1382,7 @@ class AddMoreDetails extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, loading } = this.props;
+        const { handleSubmit, loading, initialConfiguration } = this.props;
         const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
 
         return (
@@ -1428,7 +1459,7 @@ class AddMoreDetails extends Component {
                                                     validate={[required]}
                                                     component={renderText}
                                                     required={true}
-                                                    disabled={isEditFlag ? true : false}
+                                                    disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
                                                 />
@@ -1508,7 +1539,7 @@ class AddMoreDetails extends Component {
                                                     name={"TonnageCapacity"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required, number]}
+                                                    validate={[required, number, postiveNumber]}
                                                     component={renderText}
                                                     required={true}
                                                     disabled={isEditFlag ? true : false}
@@ -1540,7 +1571,7 @@ class AddMoreDetails extends Component {
                                                     type="text"
                                                     placeholder={'Enter'}
                                                     validate={[number]}
-                                                    component={renderNumberInputField}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
@@ -1554,7 +1585,7 @@ class AddMoreDetails extends Component {
                                                     type="text"
                                                     placeholder={'Enter'}
                                                     validate={[number]}
-                                                    component={renderNumberInputField}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
@@ -1583,9 +1614,9 @@ class AddMoreDetails extends Component {
                                                     name={"Description"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    // validate={[required]}
                                                     component={renderText}
-                                                    required={true}
+                                                    // required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1763,9 +1794,9 @@ class AddMoreDetails extends Component {
                                                     name={"NumberOfWorkingHoursPerYear"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    // validate={[required]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    // required={true}
                                                     disabled={true}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1812,11 +1843,11 @@ class AddMoreDetails extends Component {
                                             {this.state.depreciationType && this.state.depreciationType.value === SLM &&
                                                 <Col md="3">
                                                     <Field
-                                                        label={`Life Of Assest (Years)`}
+                                                        label={`Life Of Asset (Years)`}
                                                         name={"LifeOfAssetPerYear"}
                                                         type="text"
                                                         placeholder={'Enter'}
-                                                        validate={[required]}
+                                                        validate={[required, number]}
                                                         component={renderNumberInputField}
                                                         required={true}
                                                         disabled={false}
@@ -1870,9 +1901,9 @@ class AddMoreDetails extends Component {
                                                     name={"DepreciationAmount"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    validate={[required]}
+                                                    // validate={[required]}
                                                     component={renderNumberInputField}
-                                                    required={true}
+                                                    // required={true}
                                                     disabled={true}
                                                     className=" "
                                                     customClassName="withBorder"
@@ -1978,8 +2009,8 @@ class AddMoreDetails extends Component {
                                                     name={"AnnualConsumableAmount"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[number, postiveNumber]}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={this.state.IsAnnualConsumableFixed ? true : false}
                                                     className=" "
@@ -2029,8 +2060,8 @@ class AddMoreDetails extends Component {
                                                     name={"AnnualInsuranceAmount"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[number, postiveNumber]}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={this.state.IsInsuranceFixed ? true : false}
                                                     className=" "
@@ -2043,8 +2074,8 @@ class AddMoreDetails extends Component {
                                                     name={"BuildingCostPerSquareFeet"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[number, postiveNumber]}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={false}
                                                     className=" "
@@ -2057,8 +2088,8 @@ class AddMoreDetails extends Component {
                                                     name={"MachineFloorAreaPerSquareFeet"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[number, postiveNumber]}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={isEditFlag ? true : false}
                                                     className=" "
@@ -2071,7 +2102,7 @@ class AddMoreDetails extends Component {
                                                     name={"AnnualAreaCost"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
+                                                    // validate={[number, postiveNumber]}
                                                     component={renderNumberInputField}
                                                     //required={true}
                                                     disabled={true}
@@ -2085,8 +2116,8 @@ class AddMoreDetails extends Component {
                                                     name={"OtherYearlyCost"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[number, postiveNumber]}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={false}
                                                     className=" "
@@ -2188,8 +2219,8 @@ class AddMoreDetails extends Component {
                                                             name={"TotalFuelCostPerYear"}
                                                             type="text"
                                                             placeholder={'Enter'}
-                                                            //validate={[required]}
-                                                            component={renderNumberInputField}
+                                                            validate={[number, postiveNumber]}
+                                                            component={renderText}
                                                             //required={true}
                                                             disabled={true}
                                                             className=" "
@@ -2337,8 +2368,8 @@ class AddMoreDetails extends Component {
                                                     name={"LabourCost"}
                                                     type="text"
                                                     placeholder={'Enter'}
-                                                    //validate={[required]}
-                                                    component={renderNumberInputField}
+                                                    validate={[number, postiveNumber]}
+                                                    component={renderText}
                                                     //required={true}
                                                     disabled={true}
                                                     className=" "
@@ -2586,8 +2617,8 @@ class AddMoreDetails extends Component {
                                                     className=""
                                                     customClassName=" textAreaWithBorder"
                                                     onChange={this.handleMessageChange}
-                                                    validate={[required, maxLength100]}
-                                                    required={true}
+                                                    validate={[maxLength100]}
+                                                    // required={true}
                                                     component={renderTextAreaField}
                                                     maxLength="100"
                                                     rows="6"
@@ -2694,7 +2725,7 @@ class AddMoreDetails extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { comman, material, machine, labour, fuel } = state;
+    const { comman, material, machine, labour, fuel, auth } = state;
     const fieldsObj = selector(state, 'MachineCost', 'AccessoriesCost', 'InstallationCharges', 'LabourCostPerAnnum', 'TotalCost',
         'LoanPercentage', 'LoanValue', 'EquityPercentage', 'EquityValue', 'RateOfInterestPercentage', 'RateOfInterestValue',
         'WorkingHoursPerShift', 'NumberOfWorkingDaysPerYear', 'EfficiencyPercentage', 'NumberOfWorkingHoursPerYear',
@@ -2712,7 +2743,7 @@ function mapStateToProps(state) {
     const { labourTypeByMachineTypeSelectList } = labour;
     const { vendorListByVendorType } = material;
     const { fuelComboSelectList } = fuel;
-
+    const { initialConfiguration } = auth;
     let initialValues = {};
     if (machineData && machineData !== undefined) {
         initialValues = {
@@ -2766,7 +2797,7 @@ function mapStateToProps(state) {
     return {
         vendorListByVendorType, technologySelectList, plantSelectList, UOMSelectList,
         machineTypeSelectList, processSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
-        labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading,
+        initialConfiguration, labourTypeByMachineTypeSelectList, fuelComboSelectList, fieldsObj, initialValues, loading,
     }
 
 }

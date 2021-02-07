@@ -8,7 +8,8 @@ import {
     LABOUR_TYPE_VENDOR_SELECTLIST,
     GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
     GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
-    config
+    config,
+    GET_LABOUR_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -41,6 +42,10 @@ export function getLabourDataList(data, callback) {
         const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}`;
         const request = axios.get(`${API.getLabourDataList}?${queryParams}`, headers);
         request.then((response) => {
+            dispatch({
+                type: GET_LABOUR_DATA_LIST,
+                payload: response.data.DataList
+            })
             callback(response)
         }).catch((error) => {
             dispatch({ type: GET_LABOUR_FAILURE });

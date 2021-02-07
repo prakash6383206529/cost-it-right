@@ -503,7 +503,7 @@ class PowerListing extends Component {
                         {/* ZBC POWER LISTING */}
                         {!this.state.IsVendor &&
                             <BootstrapTable
-                                data={this.state.tableData}
+                                data={this.props.powerDataList}
                                 striped={false}
                                 hover={false}
                                 bordered={false}
@@ -523,7 +523,7 @@ class PowerListing extends Component {
                         {/* VENDOR POWER LISTING */}
                         {this.state.IsVendor &&
                             <BootstrapTable
-                                data={this.state.tableData}
+                                data={this.props.powerDataList}
                                 striped={false}
                                 hover={false}
                                 bordered={false}
@@ -553,10 +553,10 @@ class PowerListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ fuel, comman, supplier }) {
-    const { plantSelectList, stateSelectList } = fuel;
+    const { plantSelectList, stateSelectList, powerDataList } = fuel;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { filterPlantList, } = comman;
-    return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList }
+    return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList, powerDataList }
 }
 
 /**

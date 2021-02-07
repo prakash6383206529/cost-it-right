@@ -6,6 +6,7 @@ import {
   GET_VOLUME_DATA_SUCCESS,
   GET_FINANCIAL_YEAR_SELECTLIST,
   config,
+  GET_VOLUME_DATA_LIST,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 const headers = config
@@ -93,6 +94,10 @@ export function getVolumeDataList(filterData, callback) {
     axios
       .get(`${API.getVolumeDataList}?${QueryParams}`, { headers })
       .then((response) => {
+        dispatch({
+          type: GET_VOLUME_DATA_LIST,
+          payload: response.data.DataList
+        })
         callback(response)
       })
       .catch((error) => {

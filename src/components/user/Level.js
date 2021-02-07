@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, number } from "../../helper/validation";
+import { required, number, checkWhiteSpaces, alphaNumeric, notSingleSpecialCharacter } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
@@ -68,6 +68,7 @@ class Level extends Component {
       //$('html, body').animate({ scrollTop: 200 }, 'slow');
       this.props.getLevelMappingAPI(LevelId, (res) => {
         const { technologyList, levelList } = this.props;
+        console.log(levelList, "List");
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
@@ -75,7 +76,7 @@ class Level extends Component {
 
             let technologyObj = technologyList && technologyList.filter(item => item.Value === Data.TechnologyId)
             let levelObj = levelList && levelList.filter(item => item.LevelId === Data.LevelId)
-
+            console.log(levelObj, "Object");
             this.setState({
               isEditMappingFlag: true,
               LevelId: LevelId,
@@ -98,8 +99,11 @@ class Level extends Component {
     const temp = [];
 
     if (label === 'technology') {
-      technologyList && technologyList.map(item =>
+      technologyList && technologyList.map(item => {
+        if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
+      }
+
       );
       return temp;
     }
@@ -331,7 +335,7 @@ class Level extends Component {
                           name={"LevelName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required]}
+                          validate={[required, checkWhiteSpaces,]}
                           component={renderText}
                           required={true}
                           maxLength={26}

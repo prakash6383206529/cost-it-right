@@ -15,6 +15,7 @@ import NoContentFound from '../../../../common/NoContentFound'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { toastr } from 'react-redux-toastr'
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
+import { event } from 'jquery'
 
 function ProcessCost(props) {
   const { data } = props
@@ -35,7 +36,7 @@ function ProcessCost(props) {
       ProcessDetailId: '',
       MachineId: '',
       MachineRateId: '',
-      ProcessName: 'Facing',
+      ProcessName: 'Turning',
       ProcessDescription: 'LoreumIpsum',
       MachineName: 'Machine 1',
       Tonnage: 9,
@@ -43,13 +44,14 @@ function ProcessCost(props) {
       Quantity: '',
       MachineRate: '123.023',
       NetCost: '',
+      // WeightCalculatorRequest: {}
     },
     {
       ProcessId: '',
       ProcessDetailId: '',
       MachineId: '',
       MachineRateId: '',
-      ProcessName: 'Face Milling',
+      ProcessName: 'Slot Cutting',
       ProcessDescription: 'LoreumIpsum',
       MachineName: 'Machine 1',
       Tonnage: 12,
@@ -57,6 +59,7 @@ function ProcessCost(props) {
       Quantity: '',
       MachineRate: '125.023',
       NetCost: '',
+      // WeightCalculatorRequest: {}
     },
   ])
   console.log('grid data', gridData)
@@ -92,35 +95,42 @@ function ProcessCost(props) {
     setIsCalculator(true)
   }
 
-  const closeCalculatorDrawer = (e, formValue) => {
+  const closeCalculatorDrawer = (e, value, weightData = {}) => {
     setIsCalculator(false)
-    console.log(formValue, 'Form Value', calciIndex)
+    console.log(value, 'Form Value', weightData)
     let tempData = gridData[calciIndex]
     let time
     let netCost
     let tempArray
-    if (formValue === '0.00' && tempData.Quantity != '0.00') {
+    console.log(tempData, "Quan");
+    if (value === '0.00' && tempData.Quantity != '0.00') {
+      console.log("Coming in if?");
       tempData = {
         ...tempData,
+        WeightCalculatorRequest: weightData
       }
     } else {
+      console.log("Coming in else?");
       if (tempData.UOM === 'Hours') {
+        console.log(value, "val in hour");
         time =
-          formValue === '0.00'
+          value === '0.00'
             ? '0.00'
-            : checkForDecimalAndNull(formValue / 60, 4)
+            : checkForDecimalAndNull(value / 60, 4)
         netCost =
-          formValue === '0.00' ? '0.00' : time * Number(tempData.MachineRate)
+          value === '0.00' ? '0.00' : value * Number(tempData.MachineRate)
       } else {
-        time = formValue === '0.00' ? '0.00' : formValue
+        time = value === '0.00' ? '0.00' : value
         netCost =
-          formValue === '0.00' ? '0.00' : time * Number(tempData.MachineRate)
+          value === '0.00' ? '0.00' : value * Number(tempData.MachineRate)
       }
       tempData = {
         ...tempData,
         Quantity: time,
         NetCost: netCost,
+        WeightCalculatorRequest: weightData
       }
+      console.log(tempData, "Temp");
     }
     tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
 
@@ -131,6 +141,9 @@ function ProcessCost(props) {
       setValue(`${ProcessGridFields}[${calciIndex}]NetCost`, netCost)
     }, 100)
   }
+
+
+
   /**
    * @method onToolToggle
    * @description TOOL COST TOGGLE
@@ -166,7 +179,6 @@ function ProcessCost(props) {
             ProcessDescription: el.Description,
             MachineName: el.MachineName,
             UOM: el.UnitOfMeasurement,
-
             ProcessCost: '',
           }
         })
@@ -304,7 +316,20 @@ function ProcessCost(props) {
       toastr.warning('Please enter valid number.')
     }
   }
-
+  const handleQunatity = (event, index) => {
+    let tempData = gridData[index]
+    let netCost = Number(event.target.value) * Number(tempData.MachineRate)
+    tempData = {
+      ...tempData,
+      Quantity: event.target.value,
+      NetCost: netCost,
+    }
+    let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+    setTimeout(() => {
+      setGridData(gridTempArr)
+      setValue(`${ProcessGridFields}[${index}]NetCost`, netCost)
+    }, 100)
+  }
   const handleQuantityChange = (event, index) => {
     let tempArr = []
     let tempData = gridData[index]
@@ -325,20 +350,20 @@ function ProcessCost(props) {
           return accummlator + checkForNull(el.ProcessCost)
         }, 0)
 
-      tempArr = {
-        ...tabData,
-        NetConversionCost:
-          ProcessCostTotal +
-          checkForNull(
-            tabData.OperationCostTotal !== null
-              ? tabData.OperationCostTotal
-              : 0,
-          ),
-        ProcessCostTotal: ProcessCostTotal,
-        CostingProcessCostResponse: gridTempArr,
-      }
+      // tempArr = {
+      //   ...tabData,
+      //   NetConversionCost:
+      //     ProcessCostTotal +
+      //     checkForNull(
+      //       tabData.OperationCostTotal !== null
+      //         ? tabData.OperationCostTotal
+      //         : 0,
+      //     ),
+      //   ProcessCostTotal: ProcessCostTotal,
+      //   CostingProcessCostResponse: gridTempArr,
+      // }
 
-      setTabData(tempArr)
+      // setTabData(tempArr)
       setGridData(gridTempArr)
     } else {
       toastr.warning('Please enter valid number.')
@@ -415,16 +440,16 @@ function ProcessCost(props) {
         <div className="cr-process-costwrap">
           <Row className="cr-innertool-cost">
             <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null
-                ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2)
-                : 0
+              ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2)
+              : 0
               }`}</Col>
             <Col md="3" className="cr-costlabel">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null
-                ? checkForDecimalAndNull(tabData.OperationCostTotal, 2)
-                : 0
+              ? checkForDecimalAndNull(tabData.OperationCostTotal, 2)
+              : 0
               }`}</Col>
             <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null
-                ? checkForDecimalAndNull(tabData.NetConversionCost, 2)
-                : 0
+              ? checkForDecimalAndNull(tabData.NetConversionCost, 2)
+              : 0
               }`}</Col>
             <Col md="3" className="switch cr-costlabel">
               <label className="switch-level">
@@ -683,10 +708,12 @@ function ProcessCost(props) {
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
                                     e.preventDefault()
+                                    handleQunatity(e, index)
                                     // handleCycleTimeChange(e, index)
                                   }}
+
                                   // errors={}
-                                  disabled={true}
+                                  disabled={false}
                                 />
                               }
                             </span>
@@ -741,7 +768,8 @@ function ProcessCost(props) {
                                 customClassName={'withBorder'}
                                 handleChange={(e) => {
                                   e.preventDefault()
-                                  // handleCycleTimeChange(e, index)
+                                  //handleCycleTimeChange(e, index)
+                                  //closeCalculatorDrawer()
                                 }}
                                 // errors={}
                                 disabled={true}
@@ -808,9 +836,9 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          // technology={'Machining'}
-          // technology={'Sheet Metal'}
           technology={'Machining'}
+          // technology={'Sheet Metal'}
+          // technology={'Plastic'}
           calculatorData={calculatorData}
           process={'End Mill'}
           isOpen={isCalculator}

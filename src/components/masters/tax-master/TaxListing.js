@@ -199,7 +199,7 @@ class TaxListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.taxDataList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -239,9 +239,10 @@ class TaxListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ auth }) {
+function mapStateToProps({ auth, tax }) {
     const { leftMenuData } = auth;
-    return { leftMenuData, }
+    const { taxDataList } = tax
+    return { leftMenuData, taxDataList }
 }
 
 export default connect(mapStateToProps,

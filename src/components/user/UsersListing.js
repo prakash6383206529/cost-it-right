@@ -397,6 +397,8 @@ class UsersListing extends Component {
 		const options = {
 			clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+			// defaultSortName: 'FullName',  // default sort column name
+			// defaultSortOrder: 'desc', // default sort order
 			//exportCSVText: 'Download Excel',
 			//onExportToCSV: this.onExportToCSV,
 			//paginationShowsTotal: true,

@@ -565,7 +565,7 @@ class MachineRateListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.machineDatalist}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -578,8 +578,8 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="IsVendor" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Technologies" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plants'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineNumber" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Number'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineNumber" searchable={true} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Number'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTypeName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Type'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Tonnage'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
@@ -612,7 +612,8 @@ function mapStateToProps(state) {
     const { comman, process, machine, } = state;
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
-    return { technologySelectList, filterSelectList }
+    const { machineDatalist } = machine
+    return { technologySelectList, filterSelectList, machineDatalist }
 }
 
 /**
