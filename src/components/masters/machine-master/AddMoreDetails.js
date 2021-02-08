@@ -1366,13 +1366,13 @@ class AddMoreDetails extends Component {
                 VendorPlant: [],
                 Attachements: files
             }
-            this.props.hideMoreDetailsForm(formData)
-            // this.props.createMachineDetails(formData, (res) => {
-            //     if (res.data.Result) {
-            //         toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-            //         this.cancel()
-            //     }
-            // });
+            this.props.createMachineDetails(formData, (res) => {
+                if (res.data.Result) {
+                    this.props.hideMoreDetailsForm(formData)
+                    toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+                    // this.cancel()
+                }
+            });
         }
 
     }
