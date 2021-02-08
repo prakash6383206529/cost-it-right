@@ -14,7 +14,8 @@ import {
     GET_ZBC_PLANT_SELECTLIST,
     GET_STATE_SELECTLIST,
     GET_ZBC_POWER_DATA_SUCCESS,
-    config
+    config,
+    GET_POWER_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -382,6 +383,10 @@ export function getPowerDetailDataList(data, callback) {
         const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}`, headers);
         request.then((response) => {
             if (response && response.status === 200) {
+                dispatch({
+                    type: GET_POWER_DATA_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -403,6 +408,10 @@ export function getVendorPowerDetailDataList(data, callback) {
         const request = axios.get(`${API.getVendorPowerDetailDataList}?vendorId=${vendorID}&plantId=${plantID}`, headers);
         request.then((response) => {
             if (response && response.status === 200) {
+                dispatch({
+                    type: GET_POWER_DATA_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {

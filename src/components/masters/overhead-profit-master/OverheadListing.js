@@ -53,7 +53,7 @@ class OverheadListing extends Component {
         this.getDataList(null, null, null, null)
     }
 
-    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null, ) => {
+    getDataList = (costingHead = null, vendorName = null, overhead = null, modelType = null,) => {
         const filterData = {
             costing_head: costingHead,
             vendor_id: vendorName,
@@ -95,7 +95,7 @@ class OverheadListing extends Component {
                 this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked'),
-            component: () => <ConfirmComponent/>
+            component: () => <ConfirmComponent />
         };
         return toastr.confirm(`${MESSAGES.OVERHEAD_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -375,245 +375,167 @@ class OverheadListing extends Component {
         const { isEditFlag, } = this.state;
 
         const options = {
-          clearSearch: true,
-          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-          paginationShowsTotal: this.renderPaginationShowsTotal,
-          prePage: <span className="prev-page-pg"></span>, // Previous page button text
-          nextPage: <span className="next-page-pg"></span>, // Next page button text
-          firstPage: <span className="first-page-pg"></span>, // First page button text
-          lastPage: <span className="last-page-pg"></span>,
-          paginationSize: 5,
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
+            paginationSize: 5,
         };
 
         return (
-          <div>
-            {this.props.loading && <Loader />}
-            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-              <Row className="pt-4 ">
-                {this.state.shown ? (
-                <Col md="10" className="filter-block">
-                  <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills">
-                      <h5>{`Filter By:`}</h5>
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="costingHead"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Costing Head"}
-                        isClearable={false}
-                        options={this.renderListing("costingHead")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.costingHead == null ||
-                          this.state.costingHead.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleHeadChange}
-                        valueDescription={this.state.costingHead}
-                        //disabled={isEditFlag ? true : false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="ModelType"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Model Type"}
-                        isClearable={false}
-                        options={this.renderListing("ModelType")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.ModelType == null ||
-                          this.state.ModelType.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleModelTypeChange}
-                        valueDescription={this.state.ModelType}
-                        //disabled={isEditFlag ? true : false}
-                      />
-                    </div>
-                    <div className="flex-fill">
-                      <Field
-                        name="vendorName"
-                        type="text"
-                        label=""
-                        component={searchableSelect}
-                        placeholder={"Vendor Name"}
-                        isClearable={false}
-                        options={this.renderListing("VendorNameList")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.vendorName == null ||
-                          this.state.vendorName.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.handleVendorName}
-                        valueDescription={this.state.vendorName}
-                        disabled={isEditFlag ? true : false}
-                      />
-                    </div>
+            <div>
+                {this.props.loading && <Loader />}
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                    <Row className="pt-4 ">
+                        {this.state.shown ? (
+                            <Col md="10" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-top w100">
+                                    <div className="flex-fills">
+                                        <h5>{`Filter By:`}</h5>
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="costingHead"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={"Costing Head"}
+                                            isClearable={false}
+                                            options={this.renderListing("costingHead")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.costingHead == null ||
+                                                    this.state.costingHead.length === 0
+                                                    ? [required]
+                                                    : []
+                                            }
+                                            required={true}
+                                            handleChangeDescription={this.handleHeadChange}
+                                            valueDescription={this.state.costingHead}
+                                        //disabled={isEditFlag ? true : false}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="ModelType"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={"Model Type"}
+                                            isClearable={false}
+                                            options={this.renderListing("ModelType")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.ModelType == null ||
+                                                    this.state.ModelType.length === 0
+                                                    ? [required]
+                                                    : []
+                                            }
+                                            required={true}
+                                            handleChangeDescription={this.handleModelTypeChange}
+                                            valueDescription={this.state.ModelType}
+                                        //disabled={isEditFlag ? true : false}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="vendorName"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={"Vendor Name"}
+                                            isClearable={false}
+                                            options={this.renderListing("VendorNameList")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.vendorName == null ||
+                                                    this.state.vendorName.length === 0
+                                                    ? [required]
+                                                    : []
+                                            }
+                                            required={true}
+                                            handleChangeDescription={this.handleVendorName}
+                                            valueDescription={this.state.vendorName}
+                                            disabled={isEditFlag ? true : false}
+                                        />
+                                    </div>
 
-                    <div className="flex-fill">
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.resetFilter}
-                        className="reset mr10"
-                      >
-                        {"Reset"}
-                      </button>
-                      <button
-                        type="button"
-                        //disabled={pristine || submitting}
-                        onClick={this.filterList}
-                        className="apply mr5"
-                      >
-                        {"Apply"}
-                      </button>
-                    </div>
-                  </div>
-                </Col>
-                ) : ("")}
-                <Col md="6" className="search-user-block mb-3 pl-0">
-                  <div className="d-flex justify-content-end bd-highlight w100">
-                    <div>
-                    {this.state.shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                ) : (
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
-                                )}
-                      {AddAccessibility && (
-                        <button
-                          type="button"
-                          className={"user-btn"}
-                          onClick={this.formToggle}
-                        >
-                          <div className={"plus"}></div>ADD
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-            </form>
-            <Row>
-              <Col>
-                <BootstrapTable
-                  data={this.state.tableData}
-                  striped={false}
-                  hover={false}
-                  bordered={false}
-                  options={options}
-                  search
-                  //exportCSV
-                  //ignoreSinglePage
-                  ref={"table"}
-                  pagination
-                >
-                  {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                  <TableHeaderColumn
-                    dataField="IsVendor"
-                    width={100}
-                    columnTitle={true}
-                    dataAlign="left"
-                    dataSort={true}
-                    dataFormat={this.costingHeadFormatter}
-                  >
-                    {this.renderCostingHead()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="VendorName"
-                    width={150}
-                    columnTitle={true}
-                    dataAlign="center"
-                  >
-                    {this.renderVendor()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="ClientName"
-                    width={150}
-                    columnTitle={true}
-                    dataAlign="center"
-                  >
-                    {this.renderClient()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="ModelType"
-                    width={100}
-                    columnTitle={true}
-                    dataAlign="center"
-                  >
-                    {this.renderModelType()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="OverheadApplicabilityType"
-                    width={150}
-                    columnTitle={true}
-                    dataAlign="center"
-                  >
-                    {this.renderOverheadAppli()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="OverheadPercentage"
-                    width={100}
-                    columnTitle={true}
-                    dataAlign="center"
-                    dataFormat={this.dashFormatter}
-                  >
-                    {this.renderOverheadAppliPercent()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="OverheadMachiningCCPercentage"
-                    width={100}
-                    columnTitle={true}
-                    dataAlign="center"
-                    dataFormat={this.dashFormatter}
-                  >
-                    {this.renderOverheadCC()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="OverheadRMPercentage"
-                    width={100}
-                    columnTitle={true}
-                    dataAlign="center"
-                    dataFormat={this.dashFormatter}
-                  >
-                    {this.renderOverheadRM()}
-                  </TableHeaderColumn>
-                  <TableHeaderColumn
-                    dataField="OverheadBOPPercentage"
-                    width={100}
-                    columnTitle={true}
-                    dataAlign="center"
-                    dataFormat={this.dashFormatter}
-                  >
-                    {this.renderOverheadBOP()}
-                  </TableHeaderColumn>
-                  {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                  <TableHeaderColumn
-                    width={100}
-                    dataField="OverheadId"
-                    export={false}
-                    isKey={true}
-                    dataFormat={this.buttonFormatter}
-                  >
-                    Actions
-                  </TableHeaderColumn>
-                </BootstrapTable>
-              </Col>
-            </Row>
-          </div>
+                                    <div className="flex-fill">
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.resetFilter}
+                                            className="reset mr10"
+                                        >
+                                            {"Reset"}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.filterList}
+                                            className="apply mr5"
+                                        >
+                                            {"Apply"}
+                                        </button>
+                                    </div>
+                                </div>
+                            </Col>
+                        ) : ("")}
+                        <Col md="6" className="search-user-block mb-3 pl-0">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div>
+                                    {this.state.shown ? (
+                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                    ) : (
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
+                                    {AddAccessibility && (
+                                        <button
+                                            type="button"
+                                            className={"user-btn"}
+                                            onClick={this.formToggle}
+                                        >
+                                            <div className={"plus"}></div>ADD
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
+                </form>
+                <Row>
+                    <Col>
+                        <BootstrapTable
+                            data={this.props.overheadProfitList}
+                            striped={false}
+                            hover={false}
+                            bordered={false}
+                            options={options}
+                            search
+                            //exportCSV
+                            //ignoreSinglePage
+                            ref={'table'}
+                            pagination>
+                            {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
+                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={150} columnTitle={true} dataAlign="center" >{this.renderVendor()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ClientName" width={150} columnTitle={true} dataAlign="center" >{this.renderClient()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="center" >{this.renderModelType()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="OverheadApplicabilityType" width={150} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter} >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
+                            <TableHeaderColumn searchable={false} width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        </BootstrapTable>
+                    </Col>
+                </Row>
+            </div >
         );
     }
 }
@@ -626,9 +548,9 @@ class OverheadListing extends Component {
 function mapStateToProps(state) {
     const { overheadProfit, } = state;
 
-    const { filterOverheadSelectList, } = overheadProfit;
+    const { filterOverheadSelectList, overheadProfitList } = overheadProfit;
 
-    return { filterOverheadSelectList, }
+    return { filterOverheadSelectList, overheadProfitList }
 
 }
 

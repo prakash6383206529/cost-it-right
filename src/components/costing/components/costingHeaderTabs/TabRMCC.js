@@ -10,16 +10,16 @@ import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, SUB_ASSEMBLY } from '../../../../helper/AllConastant';
 
 function TabRMCC(props) {
+  const { netPOPrice } = props.netPOPrice ? props.netPOPrice : ''
 
-  const { netPOPrice } = props;
+  const { handleSubmit } = useForm()
 
-  const { handleSubmit, } = useForm();
-
-  const [netProcessCost, setNetProcessCost] = useState('');
-  const [netOperationCost, setNetOperationCost] = useState('');
-  const [netToolsCost, setNetToolsCost] = useState(0);
-  const [tabData, setTabData] = useState([]);
-  const [costingData, setCostingData] = useState({});
+  const [netProcessCost, setNetProcessCost] = useState('')
+  const [netOperationCost, setNetOperationCost] = useState('')
+  const [netToolsCost, setNetToolsCost] = useState(0)
+  const [tabData, setTabData] = useState([])
+  console.log(tabData, 'Tab data')
+  const [costingData, setCostingData] = useState({})
 
   const dispatch = useDispatch()
 
@@ -37,7 +37,7 @@ function TabRMCC(props) {
       }
       dispatch(getRMCCTabData(data, true, (res) => { }))
     }
-  }, [costData]);
+  }, [costData])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -202,15 +202,17 @@ function TabRMCC(props) {
   }
 
   /**
-  * @method netRMCost
-  * @description GET RM COST
-  */
+   * @method netRMCost
+   * @description GET RM COST
+   */
   const netRMCost = (item) => {
-    let NetRMCost = 0;
-    NetRMCost = item && item.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetLandedCost);
-    }, 0)
-    return NetRMCost;
+    let NetRMCost = 0
+    NetRMCost =
+      item &&
+      item.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.NetLandedCost)
+      }, 0)
+    return NetRMCost
   }
 
   /**
@@ -255,15 +257,17 @@ function TabRMCC(props) {
   }
 
   /**
-  * @method netBOPCost
-  * @description GET BOP COST
-  */
+   * @method netBOPCost
+   * @description GET BOP COST
+   */
   const netBOPCost = (item) => {
-    let NetCost = 0;
-    NetCost = item && item.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.NetBoughtOutPartCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      item &&
+      item.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.NetBoughtOutPartCost)
+      }, 0)
+    return NetCost
   }
 
   /**
@@ -404,47 +408,55 @@ function TabRMCC(props) {
   }
 
   /**
-  * @method getGrandNetRMCost
-  * @description GET GRAND TOTAL RM COST
-  */
+   * @method getGrandNetRMCost
+   * @description GET GRAND TOTAL RM COST
+   */
   const getGrandNetRMCost = () => {
-    let NetCost = 0;
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalRawMaterialsCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      tabData &&
+      tabData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.TotalRawMaterialsCost)
+      }, 0)
+    return NetCost
   }
 
   /**
-  * @method getGrandNetBOPCost
-  * @description GET GRAND TOTAL BOP COST
-  */
+   * @method getGrandNetBOPCost
+   * @description GET GRAND TOTAL BOP COST
+   */
   const getGrandNetBOPCost = () => {
-    let NetCost = 0;
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalBoughtOutPartCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      tabData &&
+      tabData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.TotalBoughtOutPartCost)
+      }, 0)
+    return NetCost
   }
 
   /**
-  * @method getGrandNetConversionCost
-  * @description GET GRAND TOTAL CONVERSION COST
-  */
+   * @method getGrandNetConversionCost
+   * @description GET GRAND TOTAL CONVERSION COST
+   */
   const getGrandNetConversionCost = () => {
-    let NetCost = 0;
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalConversionCost);
-    }, 0)
-    return NetCost;
+    let NetCost = 0
+    NetCost =
+      tabData &&
+      tabData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.TotalConversionCost)
+      }, 0)
+    return NetCost
   }
 
   /**
-  * @method getTotalCost
-  * @description GET TOTAL COST
-  */
+   * @method getTotalCost
+   * @description GET TOTAL COST
+   */
   const getTotalCost = () => {
-    return getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost();
+    return (
+      getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost()
+    )
   }
 
   /**
@@ -678,7 +690,10 @@ function TabRMCC(props) {
       NetOperationCost: netOperationCost,
       NetProcessCost: netProcessCost,
       NetToolsCost: netToolsCost,
-      NetTotalRMBOPCC: getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost(),
+      NetTotalRMBOPCC:
+        getGrandNetRMCost() +
+        getGrandNetBOPCost() +
+        getGrandNetConversionCost(),
       NetSurfaceTreatmentCost: 0,
       NetOverheadAndProfitCost: 0,
       NetPackagingAndFreight: 0,
@@ -696,18 +711,18 @@ function TabRMCC(props) {
       CostingPartDetails: tabData,
     }
 
-    dispatch(saveCostingRMCCTab(data, res => {
-      console.log('saveCostingRMCCTab: ', res);
-    }))
+    dispatch(
+      saveCostingRMCCTab(data, (res) => {
+        console.log('saveCostingRMCCTab: ', res)
+      }),
+    )
   }
 
   /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => {
-
-  }
+   * @method onSubmit
+   * @description Used to Submit the form
+   */
+  const onSubmit = (values) => { }
 
   return (
     <>
@@ -722,17 +737,23 @@ function TabRMCC(props) {
                   </div>
                 </Col>
               </Row>
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Row>
                   <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm" >
+                    <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
                           <th style={{ width: '100px' }}>{`Type`}</th>
                           <th style={{ width: '150px' }}>{`RM Cost`}</th>
                           <th style={{ width: '150px' }}>{`BOP Cost`}</th>
-                          <th style={{ width: '200px' }}>{`Conversion Cost`}</th>
+                          <th
+                            style={{ width: '200px' }}
+                          >{`Conversion Cost`}</th>
                           <th style={{ width: '200px' }}>{`Quantity`}</th>
                           <th style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
                           <th style={{ width: '100px' }}>{``}</th>
@@ -794,19 +815,23 @@ function TabRMCC(props) {
                     <button
                       type={'button'}
                       className="submit-button mr5 save-btn"
-                      onClick={saveCosting}>
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                      onClick={saveCosting}
+                    >
+                      <div className={'check-icon'}>
+                        <img
+                          src={require('../../../../assests/images/check.png')}
+                          alt="check-icon.jpg"
+                        />{' '}
+                      </div>
                       {'Save'}
                     </button>
                   </div>
                 </Row>
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };

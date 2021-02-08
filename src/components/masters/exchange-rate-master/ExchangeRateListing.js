@@ -354,7 +354,7 @@ class ExchangeRateListing extends Component {
 
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.exchangeRateDataList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -373,7 +373,7 @@ class ExchangeRateListing extends Component {
                     <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="center" >{'Custom Rate(INR)'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} className="action" dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
             </div>
             </ >
@@ -387,9 +387,9 @@ class ExchangeRateListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ exchangeRate, auth }) {
-    const { currencySelectList } = exchangeRate;
+    const { currencySelectList, exchangeRateDataList } = exchangeRate;
     const { leftMenuData } = auth;
-    return { leftMenuData, currencySelectList };
+    return { leftMenuData, currencySelectList, exchangeRateDataList };
 }
 
 /**

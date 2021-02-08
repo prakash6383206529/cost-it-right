@@ -257,14 +257,14 @@ class FuelListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
         const options = {
-          clearSearch: true,
-          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-          paginationShowsTotal: this.renderPaginationShowsTotal,
-          prePage: <span className="prev-page-pg"></span>, // Previous page button text
-          nextPage: <span className="next-page-pg"></span>, // Next page button text
-          firstPage: <span className="first-page-pg"></span>, // First page button text
-          lastPage: <span className="last-page-pg"></span>,
-          paginationSize: 5,
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
+            paginationSize: 5,
         };
 
         return (
@@ -273,74 +273,74 @@ class FuelListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
                         {this.state.shown ? (
-                        <Col md="8" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="Fuel"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Select Fuel'}
-                                        isClearable={false}
-                                        options={this.renderListing('fuel')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.fuel == null || this.state.fuel.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleFuel}
-                                        valueDescription={this.state.fuel}
-                                        disabled={false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="state"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Select State'}
-                                        isClearable={false}
-                                        options={this.renderListing('state')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleState}
-                                        valueDescription={this.state.StateName}
-                                        disabled={false}
-                                    />
-                                </div>
+                            <Col md="8" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-top w100">
+                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="Fuel"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Select Fuel'}
+                                            isClearable={false}
+                                            options={this.renderListing('fuel')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            //validate={(this.state.fuel == null || this.state.fuel.length == 0) ? [required] : []}
+                                            //required={true}
+                                            handleChangeDescription={this.handleFuel}
+                                            valueDescription={this.state.fuel}
+                                            disabled={false}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="state"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Select State'}
+                                            isClearable={false}
+                                            options={this.renderListing('state')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}
+                                            //required={true}
+                                            handleChangeDescription={this.handleState}
+                                            valueDescription={this.state.StateName}
+                                            disabled={false}
+                                        />
+                                    </div>
 
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
+                                    <div className="flex-fill">
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.resetFilter}
+                                            className="reset mr10"
+                                        >
+                                            {'Reset'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.filterList}
+                                            className="apply mr5"
+                                        >
+                                            {'Apply'}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>) : ("")}
+                            </Col>) : ("")}
                         <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                {this.state.shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                ) : (
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
-                                )}
+                                    {this.state.shown ? (
+                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                    ) : (
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -360,7 +360,7 @@ class FuelListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.fuelDataList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -377,7 +377,7 @@ class FuelListing extends Component {
                             <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={60} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>
@@ -400,8 +400,8 @@ class FuelListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ fuel }) {
-    const { fuelComboSelectList } = fuel;
-    return { fuelComboSelectList, }
+    const { fuelComboSelectList, fuelDataList } = fuel;
+    return { fuelComboSelectList, fuelDataList }
 }
 
 /**

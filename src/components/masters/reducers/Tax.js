@@ -2,6 +2,7 @@ import {
     API_REQUEST,
     API_FAILURE,
     GET_TAX_DETAILS_DATA,
+    GET_TAX_DETAILS_DATALIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -26,6 +27,12 @@ export default function TaxReducer(state = initialState, action) {
                 loading: false,
                 taxDetailsData: action.payload
             };
+        case GET_TAX_DETAILS_DATALIST:
+            return {
+                ...state,
+                loading: false,
+                taxDataList: action.payload
+            }
         default:
             return state;
     }

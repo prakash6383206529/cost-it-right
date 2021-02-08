@@ -10,11 +10,11 @@ import {
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
-import ConfirmComponent from"../../helper/ConfirmComponent"
+import ConfirmComponent from "../../helper/ConfirmComponent"
 
 class SideBar extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       menu: false,
       dropdownOpen: false,
@@ -37,7 +37,7 @@ class SideBar extends Component {
     }
 
     const loginUserId = loggedInUserId();
-    this.props.getModuleSelectList(() => {});
+    this.props.getModuleSelectList(() => { });
     if (loginUserId != null) {
       this.props.getMenuByUser(loginUserId, () => {
         this.setState({ isLoader: false });
@@ -49,23 +49,23 @@ class SideBar extends Component {
    * @method componentDidMount
    * @description used to called after mounting component
    */
-  componentDidMount() {}
+  componentDidMount() { }
 
   /**
    * @method toggleMenue
    * @description Toggle the visibility of sidebar menue.
    */
   toggleMenue = () => {
-    this.setState({ menu: !this.state.menu });
-  };
+    this.setState({ menu: !this.state.menu })
+  }
 
   /**
    * @method logout
    * @description logout
    */
   logout = (e) => {
-    const { userData } = this.props;
-    e.preventDefault();
+    const { userData } = this.props
+    e.preventDefault()
     let requestData = {
       AccessToken: userData.Token,
       UserId: userData.LoggedInUserId,
@@ -76,13 +76,10 @@ class SideBar extends Component {
         //this.props.logUserOut();
       },
       onCancel: () => console.log("CANCEL: clicked"),
-      component: () => <ConfirmComponent/>
+      component: () => <ConfirmComponent />
     };
 
-    return toastr.confirm(
-      `Are you sure do you want to logout?`,
-      toastrConfirmOptions
-    );
+    return toastr.confirm(`Are you sure do you want to logout?`, toastrConfirmOptions);
   };
 
   /**
@@ -126,7 +123,7 @@ class SideBar extends Component {
       case "Audit":
         return this.renderAudit(module);
       default:
-        return null;
+        return null
     }
   };
 
@@ -150,7 +147,7 @@ class SideBar extends Component {
    * @description Render dashboard menu.
    */
   renderDashboard = (module) => {
-    const { menusData } = this.props;
+    const { menusData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -178,7 +175,7 @@ class SideBar extends Component {
             </Link>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -188,7 +185,7 @@ class SideBar extends Component {
    * @description Render master menu.
    */
   renderMaster = (module) => {
-    const { menusData } = this.props;
+    const { menusData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -218,7 +215,7 @@ class SideBar extends Component {
             </>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -228,7 +225,7 @@ class SideBar extends Component {
    * @description Render Addtional master menu.
    */
   renderAdditionalMaster = (module) => {
-    const { menusData } = this.props;
+    const { menusData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -258,7 +255,7 @@ class SideBar extends Component {
             </>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -296,7 +293,7 @@ class SideBar extends Component {
             </Link>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -306,7 +303,7 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { menusData } = this.props;
+    const { menusData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -334,7 +331,7 @@ class SideBar extends Component {
             </Link>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -344,7 +341,7 @@ class SideBar extends Component {
    * @description Render Simulation.
    */
   renderSimulation = (module) => {
-    const { menusData } = this.props;
+    const { menusData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -372,7 +369,7 @@ class SideBar extends Component {
             </Link>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -382,7 +379,7 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderUser = (module) => {
-    const { menusData } = this.props;
+    const { menusData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -410,7 +407,7 @@ class SideBar extends Component {
             </Link>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -420,7 +417,7 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderAudit = (module) => {
-    const { menusData } = this.props;
+    const { menusData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -448,7 +445,7 @@ class SideBar extends Component {
             </Link>
           );
         }
-        return null;
+        return null
       })
     );
   };
@@ -582,8 +579,8 @@ class SideBar extends Component {
                                 {userData.Name}
                               </>
                             ) : (
-                              "Login"
-                            )}
+                                "Login"
+                              )}
                           </DropdownToggle>
 
                           {/* <DropdownMenu>
@@ -621,8 +618,8 @@ class SideBar extends Component {
                       </a>
                     </li>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </ul>
               </div>
             </nav>
@@ -640,7 +637,7 @@ class SideBar extends Component {
           )}
         </div>
       </nav>
-    );
+    )
   }
 }
 
@@ -650,23 +647,21 @@ class SideBar extends Component {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-  const { loading, userData, leftMenuData, menusData, moduleSelectList, } = auth
+  const { loading, userData, leftMenuData, menusData, moduleSelectList } = auth
   return { loading, userData, leftMenuData, menusData, moduleSelectList }
 }
 
 /**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(
-  mapStateToProps, {
+ * @method connect
+ * @description connect with redux
+ * @param {function} mapStateToProps
+ * @param {function} mapDispatchToProps
+ */
+export default connect(mapStateToProps, {
   logoutUserAPI,
   getMenuByUser,
   getModuleSelectList,
   getLeftMenu,
   getPermissionByUser,
   getModuleIdByPathName,
-}
-)(SideBar);
+})(SideBar)

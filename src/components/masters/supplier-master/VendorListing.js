@@ -530,7 +530,7 @@ class VendorListing extends Component {
                     </Row>
                 </form>
                 <BootstrapTable
-                    data={this.state.tableData}
+                    data={this.props.supplierDataList}
                     striped={false}
                     hover={false}
                     bordered={false}
@@ -634,11 +634,11 @@ class VendorListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier, auth, }) {
-    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList } = supplier;
+    const { loading, vendorTypeList, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList } = supplier;
     const { countryList } = comman;
     const { leftMenuData } = auth;
 
-    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList };
+    return { loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList };
 }
 
 /**

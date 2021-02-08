@@ -34,7 +34,8 @@ import {
     GET_RAWMATERIAL_FILTER_BY_VENDOR_SELECTLIST,
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
-    config
+    config,
+    GET_RM_DOMESTIC_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -379,6 +380,10 @@ export function getRMSpecificationDataList(data, callback) {
         const request = axios.get(`${API.getRMSpecificationDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_DOMESTIC_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -981,6 +986,10 @@ export function getRMDomesticDataList(data, callback) {
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_DOMESTIC_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -1087,6 +1096,10 @@ export function getRMImportDataList(data, callback) {
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: GET_RM_DOMESTIC_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {

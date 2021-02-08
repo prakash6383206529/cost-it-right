@@ -26,6 +26,7 @@ import {
     UPDATE_COSTING_OTHER_OPERATION_SUCCESS,
     SAVE_COSTING_AS_DRAFT_SUCCESS,
     ADD_BOP_GRID_COSTING_SUCCESS,
+    GET_RAW_MATERIAL_CALCI_INFO
 } from '../../../config/constants';
 
 const initialState = {
@@ -222,6 +223,13 @@ export default function CostWorkingReducer(state = initialState, action) {
                 loading: false,
                 error: true,
             };
+        case GET_RAW_MATERIAL_CALCI_INFO:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rawMaterialCalciInfo: action.payload
+            }
         default:
             return state;
     }

@@ -161,7 +161,7 @@ class SpecificationListing extends Component {
                 this.confirmDelete(Id)
             },
             onCancel: () => console.log('CANCEL: clicked'),
-            component : () => <ConfirmComponent/>
+            component: () => <ConfirmComponent />
         };
         return toastr.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -302,10 +302,10 @@ class SpecificationListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
-			prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -314,70 +314,70 @@ class SpecificationListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown ? ( 
-                            <Col md="8" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="MaterialTypeId"
-                                        type="text"
-                                        // label="Raw Material"
-                                        component={searchableSelect}
-                                        placeholder={'Raw Material'}
-                                        options={this.renderListing('material')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleMaterialChange}
-                                        valueDescription={this.state.RawMaterial}
-
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="GradeId"
-                                        type="text"
-                                        // label="RM Grade"
-                                        component={searchableSelect}
-                                        placeholder={'RM Grade'}
-                                        options={this.renderListing('grade')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleGrade}
-                                        valueDescription={this.state.RMGrade}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                        ) : (
-                        ""
-                        )} 
-                        <Col md={6} className="text-right mb-3 search-user-block">
                         {this.state.shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                ) : (
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                            <Col md="8" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-top w100">
+                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="MaterialTypeId"
+                                            type="text"
+                                            // label="Raw Material"
+                                            component={searchableSelect}
+                                            placeholder={'Raw Material'}
+                                            options={this.renderListing('material')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleMaterialChange}
+                                            valueDescription={this.state.RawMaterial}
+
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="GradeId"
+                                            type="text"
+                                            // label="RM Grade"
+                                            component={searchableSelect}
+                                            placeholder={'RM Grade'}
+                                            options={this.renderListing('grade')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleGrade}
+                                            valueDescription={this.state.RMGrade}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.resetFilter}
+                                            className="reset mr10"
+                                        >
+                                            {'Reset'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.filterList}
+                                            className="apply mr5"
+                                        >
+                                            {'Apply'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </Col>
+                        ) : (
+                                ""
+                            )}
+                        <Col md={6} className="text-right mb-3 search-user-block">
+                            {this.state.shown ? (
+                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                            ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                                 )}
                             {BulkUploadAccessibility && <button
                                 type="button"
@@ -397,7 +397,7 @@ class SpecificationListing extends Component {
                     <Col>
                         {/* <hr /> */}
                         <BootstrapTable
-                            data={this.state.specificationData}
+                            data={this.props.rmDataList}
                             striped={false}
                             bordered={false}
                             hover={false}
@@ -408,11 +408,11 @@ class SpecificationListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMSpec" dataAlign="center">Specification</TableHeaderColumn>
-                            <TableHeaderColumn dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>
@@ -447,8 +447,8 @@ class SpecificationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material }) {
-    const { rmSpecificationDetail, filterRMSelectList } = material;
-    return { rmSpecificationDetail, filterRMSelectList }
+    const { rmSpecificationDetail, filterRMSelectList, rmDataList } = material;
+    return { rmSpecificationDetail, filterRMSelectList, rmDataList }
 }
 
 export default connect(mapStateToProps, {

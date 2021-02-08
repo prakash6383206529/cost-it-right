@@ -4,7 +4,8 @@ import {
     CREATE_PLANT_FAILURE,
     GET_PLANT_SUCCESS,
     GET_PLANT_UNIT_SUCCESS,
-    GET_PLANT_FAILURE
+    GET_PLANT_FAILURE,
+    GET_PLANT_FILTER_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -50,6 +51,13 @@ export default function plantReducer(state = initialState, action) {
                 loading: false,
                 error: true
             };
+        case GET_PLANT_FILTER_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                plantDataList: action.payload
+            }
         default:
             return state;
     }

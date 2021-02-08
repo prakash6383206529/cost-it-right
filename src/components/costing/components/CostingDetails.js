@@ -137,17 +137,16 @@ function CostingDetails() {
    * @description Used show listing of unit of measurement
    */
   const renderCostingOption = (options) => {
+    const temp = []
 
-    const temp = [];
-
-    options && options.map(item => {
-      if (item.CostingId === '00000000-0000-0000-0000-000000000000') return false;
-      temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
-      return null;
-    });
-    return temp;
-
-
+    options &&
+      options.map((item) => {
+        if (item.CostingId === '00000000-0000-0000-0000-000000000000')
+          return false
+        temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
+        return null
+      })
+    return temp
   }
 
   /**
@@ -235,7 +234,6 @@ function CostingDetails() {
       dispatch(
         getZBCExistingCosting(part.value, (res) => {
           if (res.data.Result) {
-            console.log(res.data, 'mmmmmmmmmmmmmmmmmmm')
             let Data = res.data.DataList
             setZBCPlantGrid(Data)
             setzbcPlantOldArray(Data)

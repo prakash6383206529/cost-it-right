@@ -84,9 +84,9 @@ function PartCompoment(props) {
   }, [IsOpen])
 
   /**
-  * @method render
-  * @description Renders the component
-  */
+   * @method render
+   * @description Renders the component
+   */
   return (
     <>
       <tr onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
@@ -137,4 +137,4 @@ function PartCompoment(props) {
   );
 }
 
-export default PartCompoment;
+export default PartCompoment

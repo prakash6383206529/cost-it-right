@@ -11,7 +11,9 @@ import {
     GET_PLANT_SELECTLIST_BY_VENDOR,
     GET_BOP_SOB_VENDOR_DATA_SUCCESS,
     GET_INITIAL_SOB_VENDORS_SUCCESS,
-    config
+    GET_BOP_DOMESTIC_DATA_LIST,
+    GET_BOP_IMPORT_DATA_LIST,
+    config,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -64,6 +66,10 @@ export function getBOPDomesticDataList(data, callback) {
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: GET_BOP_DOMESTIC_DATA_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {
@@ -85,6 +91,10 @@ export function getBOPImportDataList(data, callback) {
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: GET_BOP_IMPORT_DATA_LIST,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {

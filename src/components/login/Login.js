@@ -13,6 +13,7 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
+import { toastr } from "react-redux-toastr";
 
 class Login extends Component {
   constructor(props) {
@@ -53,6 +54,8 @@ class Login extends Component {
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
+      } else {
+        toastr.error('Entered email id or password is incorrect. Try again')
       }
     });
   }

@@ -30,6 +30,7 @@ import {
   SAVE_COSTING_AS_DRAFT_SUCCESS,
   ADD_BOP_GRID_COSTING_SUCCESS,
   SAVE_BOP_COSTING_SUCCESS,
+  GET_RAW_MATERIAL_CALCI_INFO
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -722,6 +723,28 @@ export function saveCostingAsDraft(data, callback) {
       dispatch({
         type: API_FAILURE
       });
+      apiErrors(error);
+    });
+  };
+}
+
+export function getRawMaterialCalculationByTechnology(technologyName, layoutType, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getRawMaterialCalculationByTechnology}/${technologyName}/${layoutType}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_RAW_MATERIAL_CALCI_INFO,
+          payload: response.data.Data,
+        });
+        callback(response);
+      } else {
+        toastr.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
       apiErrors(error);
     });
   };

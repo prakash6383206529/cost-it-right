@@ -492,7 +492,20 @@ export function calculatePercentage(value) {
 }
 
 /**
+<<<<<<< HEAD
  * @description getRandomSixDigit
+=======
+ * @description CHECK PERMISSION AND PRIVILEGE 
+ * @param checkPermission
+ * @returns {string}
+ */
+export function calculatePercentageValue(value, percent) {
+    return value * percent / 100
+}
+
+/**
+ * @description getRandomSixDigit 
+>>>>>>> m1-frontend-variable-mhr-drawer
  * @returns {number}
  */
 export function getRandomSixDigit() {

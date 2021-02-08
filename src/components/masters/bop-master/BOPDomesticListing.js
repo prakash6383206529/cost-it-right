@@ -51,7 +51,7 @@ class BOPDomesticListing extends Component {
     * @method getDataList
     * @description GET DETAILS OF BOP DOMESTIC
     */
-    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '', ) => {
+    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -89,11 +89,11 @@ class BOPDomesticListing extends Component {
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
-          onOk: () => {
-            this.confirmDelete(Id);
-          },
-          onCancel: () => console.log("CANCEL: clicked"),
-          component: () => <ConfirmComponent />,
+            onOk: () => {
+                this.confirmDelete(Id);
+            },
+            onCancel: () => console.log("CANCEL: clicked"),
+            component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -341,9 +341,9 @@ class BOPDomesticListing extends Component {
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -353,107 +353,107 @@ class BOPDomesticListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
                         {this.state.shown ? (
-                        <Col md="12" lg="9" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="costingHead"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Costing Head'}
-                                        isClearable={false}
-                                        options={this.renderListing('costingHead')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleHeadChange}
-                                        valueDescription={this.state.costingHead}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="category"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Category'}
-                                        isClearable={false}
-                                        options={this.renderListing('BOPCategory')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleCategoryChange}
-                                        valueDescription={this.state.BOPCategory}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="vendor"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Vendor'}
-                                        isClearable={false}
-                                        options={this.renderListing('vendor')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleVendorChange}
-                                        valueDescription={this.state.vendor}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="plant"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Plant'}
-                                        isClearable={false}
-                                        options={this.renderListing('plant')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handlePlantChange}
-                                        valueDescription={this.state.plant}
-                                    />
-                                </div>
+                            <Col md="12" lg="9" className="filter-block">
+                                <div className="d-inline-flex justify-content-start align-items-top w100">
+                                    <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="costingHead"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Costing Head'}
+                                            isClearable={false}
+                                            options={this.renderListing('costingHead')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleHeadChange}
+                                            valueDescription={this.state.costingHead}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="category"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Category'}
+                                            isClearable={false}
+                                            options={this.renderListing('BOPCategory')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.BOPCategory == null || this.state.BOPCategory.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleCategoryChange}
+                                            valueDescription={this.state.BOPCategory}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="vendor"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Vendor'}
+                                            isClearable={false}
+                                            options={this.renderListing('vendor')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.vendor == null || this.state.vendor.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleVendorChange}
+                                            valueDescription={this.state.vendor}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="plant"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Plant'}
+                                            isClearable={false}
+                                            options={this.renderListing('plant')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handlePlantChange}
+                                            valueDescription={this.state.plant}
+                                        />
+                                    </div>
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
+                                    <div className="flex-fill">
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.resetFilter}
+                                            className="reset mr10"
+                                        >
+                                            {'Reset'}
+                                        </button>
 
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply"
-                                    >
-                                        {'Apply'}
-                                    </button>
+                                        <button
+                                            type="button"
+                                            //disabled={pristine || submitting}
+                                            onClick={this.filterList}
+                                            className="apply"
+                                        >
+                                            {'Apply'}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
-                  ) : (
-                        ""
-                  )} 
+                            </Col>
+                        ) : (
+                                ""
+                            )}
                         <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                {this.state.shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                ) : (
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
-                                )}
+                                    {this.state.shown ? (
+                                        <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                    ) : (
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -473,7 +473,7 @@ class BOPDomesticListing extends Component {
                 <Row>
                     <Col>
                         <BootstrapTable
-                            data={this.state.tableData}
+                            data={this.props.bopDomesticList}
                             striped={false}
                             hover={false}
                             bordered={false}
@@ -484,19 +484,19 @@ class BOPDomesticListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" searchable={false} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="PartAssemblyNumber" columnTitle={true} dataAlign="center"  >{'Part Assembly No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="center" >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="center"  >{'Part Assembly No.'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Specification" searchable={false} columnTitle={true} dataAlign="center" >{'Specification'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" searchable={false} columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="center"  >{'No. of Pcs'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="center"  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="center"  >{'No. of Pcs'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="center"  >{'Basic Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>
@@ -520,8 +520,8 @@ class BOPDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ boughtOutparts }) {
-    const { bopCategorySelectList, vendorAllSelectList, plantSelectList } = boughtOutparts;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, }
+    const { bopCategorySelectList, vendorAllSelectList, plantSelectList, bopDomesticList } = boughtOutparts;
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopDomesticList }
 }
 
 /**

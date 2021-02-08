@@ -195,6 +195,7 @@ class AddInterestRate extends Component {
         this.props.hideForm()
     }
 
+
     /**
     * @method onSubmit
     * @description Used to Submit the form
@@ -231,7 +232,7 @@ class AddInterestRate extends Component {
             });
 
         } else {/** Add new detail for creating operation master **/
-
+            console.log(vendorName, "ffffffffffff", userDetail.ZBCSupplierInfo.VendorId);
             let formData = {
                 Isvendor: IsVendor,
                 VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -245,7 +246,7 @@ class AddInterestRate extends Component {
                 CreatedDate: '',
                 CreatedBy: loggedInUserId()
             }
-
+            console.log(formData, "Form Data");
             this.props.createInterestRate(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
