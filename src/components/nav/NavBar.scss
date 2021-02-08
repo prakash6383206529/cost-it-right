@@ -379,9 +379,6 @@ li.nav-item .logo {
       margin-left: 4px;
       img{
         width: 19px;height:19px;
-        &:hover{
-          opacity: 0.6;
-        }
       }
     }
   }
@@ -766,9 +763,9 @@ label.btn.btn-link.align-middle.checkbox-label {
     width: 100%;
 }
 .MuiDrawer-root.MuiDrawer-modal{
-  top: 47px !important;
+  top: 0px !important;
   .MuiBackdrop-root,.MuiDrawer-paper{
-    top: 47px;
+    top: 0px;
   }
 }
 .cr-other-logo{

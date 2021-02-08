@@ -23,6 +23,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -252,10 +253,11 @@ class MachineRateListing extends Component {
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
+          onOk: () => {
+            this.confirmDelete(Id);
+          },
+          onCancel: () => console.log("CANCEL: clicked"),
+          component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -410,6 +412,10 @@ class MachineRateListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -417,8 +423,9 @@ class MachineRateListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="10" className="filter-block">
+                    <Row className="pt-4 filter-row-large">
+                        {this.state.shown ? (
+                        <Col md="12" lg="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -427,7 +434,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Head-'}
+                                        placeholder={'Head'}
                                         isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -443,7 +450,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'-Plant-'}
+                                        placeholder={'Plant'}
                                         isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -459,7 +466,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-technology-'}
+                                        placeholder={'Technology'}
                                         isClearable={false}
                                         options={this.renderListing('technology')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -475,7 +482,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'-Vendor-'}
+                                        placeholder={'Vendor'}
                                         isClearable={false}
                                         options={this.renderListing('VendorNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -493,7 +500,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=''
                                         component={searchableSelect}
-                                        placeholder={'-Machine-'}
+                                        placeholder={'Machine'}
                                         isClearable={false}
                                         options={this.renderListing('MachineTypeList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -510,7 +517,7 @@ class MachineRateListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Process-'}
+                                        placeholder={'Process'}
                                         isClearable={false}
                                         options={this.renderListing('ProcessNameList')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -521,7 +528,7 @@ class MachineRateListing extends Component {
                                         disabled={false}
                                     />
                                 </div>
-                                <div className="flex-fill">
+                                <div className="flex-fill w-180">
                                     <button
                                         type="button"
                                         //disabled={pristine || submitting}
@@ -535,16 +542,23 @@ class MachineRateListing extends Component {
                                         type="button"
                                         //disabled={pristine || submitting}
                                         onClick={this.filterList}
-                                        className="apply mr5"
+                                        className="apply"
                                     >
                                         {'Apply'}
                                     </button>
                                 </div>
                             </div>
                         </Col>
-                        <Col md="2" className="search-user-block">
+                        ):("")}
+                        <Col md="6" lg="6" className="search-user-block pl-0 mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -575,16 +589,16 @@ class MachineRateListing extends Component {
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Technologies" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plants'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineNumber" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Number'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTypeName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Type'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTonnage" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Tonnage'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProcessName" width={150} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineRate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="MachineId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn width={150} dataField="MachineId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

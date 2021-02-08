@@ -385,7 +385,7 @@ class BulkUpload extends Component {
                                 </Col>
                             </Row>
 
-                            <Row>
+                            <Row className="pl-3">
                                 {isZBCVBCTemplate &&
                                     <Col md="12">
                                         <Label sm={4} className={'pl0 pr0'} check>

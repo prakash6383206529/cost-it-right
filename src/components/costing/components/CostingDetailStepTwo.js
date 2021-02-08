@@ -8,6 +8,7 @@ import {
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
+import { VBC, ZBC } from '../../../config/constants';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -341,15 +342,15 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
-              <Row>
+              <Row className="sticky-top-0">
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
                     <tbody>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No.:</span> {costingData.PartNumber}</p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span> {costingData.PartName}</p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">{costingData.VendorType}:</span> SOB:{costingData.ShareOfBusinessPercent}%</p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing ID:</span> {costingData.CostingNumber}</p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Date Time:</span> {moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No.:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">{costingData.VendorType}:</span><span className="dark-blue pl-1"> SOB:{costingData.ShareOfBusinessPercent}%</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing ID:</span><span className="dark-blue pl-1"> {costingData.CostingNumber}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Date Time:</span><span className="dark-blue pl-1"> {moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</span></p></div></td>
                     </tbody>
                   </Table>
                   <Table className="table cr-brdr-main" size="sm">
@@ -375,16 +376,16 @@ function CostingDetailStepTwo(props) {
                           return (
                             <tr key={index} className="cr-bg-tbl">
                               <td><span className="cr-prt-nm">{item.PartNumber}</span></td>
-                              <td>{netRMCostPerAssembly(item)}</td>
-                              <td>{netBOPCostPerAssembly(item)}</td>
-                              <td>{netConversionCostPerAssembly(item)}</td>
-                              <td>{netRMCCcost(item)}</td>
-                              <td>{netSurfaceTreatmentCost(item)}</td>
-                              <td>{netOverheadProfitCost(item)}</td>
-                              <td>{netPackagingFreightCost(item)}</td>
-                              <td>{netToolCost(item)}</td>
-                              <td>{netDiscountOtherCost(item)}</td>
-                              <td>{netTotalCost(item)}</td>
+                              <td><span className="dark-blue">{netRMCostPerAssembly(item)}</span></td>
+                              <td><span className="dark-blue">{netBOPCostPerAssembly(item)}</span></td>
+                              <td><span className="dark-blue">{netConversionCostPerAssembly(item)}</span></td>
+                              <td><span className="dark-blue">{netRMCCcost(item)}</span></td>
+                              <td><span className="dark-blue">{netSurfaceTreatmentCost(item)}</span></td>
+                              <td><span className="dark-blue">{netOverheadProfitCost(item)}</span></td>
+                              <td><span className="dark-blue">{netPackagingFreightCost(item)}</span></td>
+                              <td><span className="dark-blue">{netToolCost(item)}</span></td>
+                              <td><span className="dark-blue">{netDiscountOtherCost(item)}</span></td>
+                              <td><span className="dark-blue">{netTotalCost(item)}</span></td>
                             </tr>
                           )
                         }

@@ -18,6 +18,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class ExchangeRateListing extends Component {
     constructor(props) {
@@ -121,7 +122,8 @@ class ExchangeRateListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log('CANCEL: clicked'),
+            component: () => <ConfirmComponent/>
         };
         return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
     }
@@ -268,23 +270,29 @@ class ExchangeRateListing extends Component {
             )
         }
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
             <>
+            <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4"><h3>Exchange Rate Master</h3></div>
-                    <hr />
-                    <Row className="pt-30">
-                        <Col md="9" className="filter-block">
+                    <div class="col-sm-4 pl-0"><h1>Exchange Rate Master</h1></div>
+                    <hr className="mb-0" />
+                    <Row className="pt-4">
+                        {this.state.shown ? (
+                        <Col md="7" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -293,7 +301,7 @@ class ExchangeRateListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'--Select Currency--'}
+                                        placeholder={'Select Currency'}
                                         isClearable={false}
                                         options={this.renderListing('currency')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -324,10 +332,16 @@ class ExchangeRateListing extends Component {
                                     </button>
                                 </div>
                             </div>
-                        </Col>
-                        <Col md="3" className="search-user-block">
+                        </Col>) : ("")}
+                        <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                                     {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
@@ -352,7 +366,7 @@ class ExchangeRateListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
-                    <TableHeaderColumn dataField="Currency" columnTitle={true} dataAlign="center" dataSort={true} >{'Currency'}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="Currency" columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="CurrencyExchangeRate" width={150} columnTitle={true} dataAlign="center" >{'Exchange Rate(INR)'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BankRate" columnTitle={true} dataAlign="center" >{'Bank Rate(INR)'}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BankCommissionPercentage" columnTitle={true} dataAlign="center" >{'Bank Commission %'}</TableHeaderColumn>
@@ -361,6 +375,7 @@ class ExchangeRateListing extends Component {
                     <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
                     <TableHeaderColumn className="action" dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
+            </div>
             </ >
         );
     }

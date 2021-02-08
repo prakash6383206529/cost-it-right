@@ -12,6 +12,7 @@ import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { ROLE } from '../../../config/constants';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class RolesListing extends Component {
   constructor(props) {
@@ -93,7 +94,8 @@ class RolesListing extends Component {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked')
+      onCancel: () => console.log('CANCEL: clicked'),
+      component: () => <ConfirmComponent/>
     };
     return toastr.confirm(`${MESSAGES.ROLE_DELETE_ALERT}`, toastrConfirmOptions);
   }
@@ -138,28 +140,34 @@ class RolesListing extends Component {
     const options = {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
+      paginationSize: 2,
     };
     return (
       <>
         {this.props.loading && <Loader />}
-        <Row className="pt-30">
-          <Col md="8" className="filter-block">
+        <Row className="pt-4 ">
+          <Col md="8" className="filter-block ">
 
           </Col>
-          <Col md="4" className="search-user-block">
+          <Col md="4" >
             {AddAccessibility && <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 <button
                   type="button"
                   className={'user-btn'}
                   onClick={this.formToggle}>
-                  <div className={'plus'}></div>ADD ROLE</button>
+                  <div className={'plus'}></div>ADD</button>
               </div>
             </div>}
           </Col>
         </Row>
-        <Row class="mt-2">
-          <Col>
+        <Row class="">
+          <Col className="table-mt-0">
             <BootstrapTable
               data={this.state.tableData}
               striped={false}

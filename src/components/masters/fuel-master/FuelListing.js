@@ -257,18 +257,23 @@ class FuelListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
         const { isBulkUpload } = this.state;
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="9" className="filter-block">
+                    <Row className="pt-4">
+                        {this.state.shown ? (
+                        <Col md="8" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -277,7 +282,7 @@ class FuelListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'--- Select Fuel ---'}
+                                        placeholder={'Select Fuel'}
                                         isClearable={false}
                                         options={this.renderListing('fuel')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -294,7 +299,7 @@ class FuelListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'--- Select State ---'}
+                                        placeholder={'Select State'}
                                         isClearable={false}
                                         options={this.renderListing('state')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -326,10 +331,16 @@ class FuelListing extends Component {
                                     </button>
                                 </div>
                             </div>
-                        </Col>
-                        <Col md="3" className="search-user-block">
+                        </Col>) : ("")}
+                        <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -360,13 +371,13 @@ class FuelListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="FuelName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Fuel'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="FuelName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Fuel'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="UnitOfMeasurementName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="StateName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn width={60} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

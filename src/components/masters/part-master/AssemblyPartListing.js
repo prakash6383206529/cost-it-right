@@ -14,6 +14,7 @@ import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -81,9 +82,10 @@ class AssemblyPartListing extends Component {
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
             onOk: () => {
-                this.confirmDeleteItem(Id)
+                this.confirmDeleteItem(Id);
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log("CANCEL: clicked"),
+            component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.BOM_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -249,6 +251,10 @@ class AssemblyPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -256,11 +262,11 @@ class AssemblyPartListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
 
-                <Row className="pt-30">
+                <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
                     </Col>
-                    <Col md="4" className="search-user-block">
+                    <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 <button
@@ -302,8 +308,8 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="RevisionNumber" width={'100'} >Revision No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" width={'130'} dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn width={'100'} dataField="PartId" dataFormat={this.visualAdFormatter}>Visual Aid</TableHeaderColumn>
+                    <TableHeaderColumn width={'100'} className="action" dataField="PartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
                 {isOpenVisualDrawer && <BOMViewer

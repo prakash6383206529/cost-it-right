@@ -13,6 +13,7 @@ import moment from 'moment';
 import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -78,10 +79,11 @@ class IndivisualPartListing extends Component {
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
+          onOk: () => {
+            this.confirmDeleteItem(Id);
+          },
+          onCancel: () => console.log("CANCEL: clicked"),
+          component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
@@ -229,6 +231,10 @@ class IndivisualPartListing extends Component {
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -236,11 +242,11 @@ class IndivisualPartListing extends Component {
             <>
                 {/* {this.props.loading && <Loader />} */}
 
-                <Row className="pt-30">
+                <Row className="pt-4 no-filter-row">
                     <Col md="8" className="filter-block">
 
                     </Col>
-                    <Col md="4" className="search-user-block">
+                    <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
                                 {AddAccessibility && <button
@@ -252,7 +258,7 @@ class IndivisualPartListing extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={this.formToggle}>
-                                    <div className={'plus'}></div>ADD PART</button>}
+                                    <div className={'plus'}></div>Add Assembly Part</button>}
                             </div>
                         </div>
                     </Col>

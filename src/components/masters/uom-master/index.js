@@ -165,21 +165,24 @@ class UOMMaster extends Component {
     */
     statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
-            <>
-                <label htmlFor="normal-switch">
-                    {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
-                        checked={cell}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        id="normal-switch"
-                        height={24}
-                    />
-                </label>
-            </>
-        )
+          <>
+            <label htmlFor="normal-switch">
+              {/* <span>Switch with default style</span> */}
+              <Switch
+                onChange={() =>
+                  this.handleChange(cell, row, enumObject, rowIndex)
+                }
+                checked={cell}
+                background="#ff6600"
+                onColor="#4DC771"
+                offColor="#FC5774"
+                onHandleColor="#ffffff"
+                id="normal-switch"
+                height={24}
+              />
+            </label>
+          </>
+        );
     }
 
     handleChange = (cell, row, enumObject, rowIndex) => {
@@ -207,65 +210,102 @@ class UOMMaster extends Component {
     render() {
         const { isOpen, isEditFlag, uomId, AddAccessibility } = this.state;
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
         return (
-            < >
-                {/* {this.props.loading && <Loader />} */}
-                <Row>
-                    <Col md={12}>
-                        <h3>{`Unit of Measurement Master`}</h3>
-                    </Col> <hr />
-                    {AddAccessibility &&
-                        <Col md={12} className='text-right mb15'>
-                            <button
-                                type={'button'}
-                                className={'user-btn'}
-                                onClick={this.openModel}>
-                                <div className={'plus'}></div>{`ADD UOM`}</button>
-                        </Col>}
+          <>
+            <div className="container-fluid">
+              {/* {this.props.loading && <Loader />} */}
+              <Row>
+                <Col md={12}>
+                  <h1>{`Unit of Measurement Master`}</h1>
+                </Col>
+                <Col md={12}>
+                  <hr className="mt-0" />
+                </Col>
                 </Row>
-
-
-                <Row>
-                    <Col>
-                        <BootstrapTable
-                            data={this.state.dataList}
-                            striped={false}
-                            hover={false}
-                            bordered={false}
-                            options={options}
-                            search
-                            // exportCSV
-                            //ignoreSinglePage
-                            ref={'table'}
-                            trClassName={'userlisting-row'}
-                            tableHeaderClass='my-custom-class'
-                            pagination>
-                            <TableHeaderColumn dataField="Unit" dataAlign="center" dataSort={true} dataFormat={this.applySuperScriptFormatter}>Unit</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UnitType" dataSort={true} >Unit Type</TableHeaderColumn>
-                            <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Id" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-                        </BootstrapTable>
-                    </Col>
-                </Row>
-                {isOpen && (
-                    <AddUOM
-                        isOpen={isOpen}
-                        closeDrawer={this.closeDrawer}
-                        isEditFlag={isEditFlag}
-                        ID={uomId}
-                        anchor={'right'}
-                    />
+                <Row className="no-filter-row">
+                {AddAccessibility && (
+                  <>
+                  <Col md={6} className="text-right filter-block"></Col>
+                  <Col md={6} className="text-right search-user-block pr-0">
+                    <button
+                      type={"button"}
+                      className={"user-btn"}
+                      onClick={this.openModel}
+                    >
+                      <div className={"plus"}></div>
+                      {`ADD`}
+                    </button>
+                  </Col>
+                  </>
                 )}
-            </ >
+              </Row>
+
+              <Row>
+                <Col>
+                  <BootstrapTable
+                    data={this.state.dataList}
+                    striped={false}
+                    hover={false}
+                    bordered={false}
+                    options={options}
+                    search
+                    // exportCSV
+                    //ignoreSinglePage
+                    ref={"table"}
+                    trClassName={"userlisting-row"}
+                    tableHeaderClass="my-custom-class"
+                    pagination
+                  >
+                    <TableHeaderColumn
+                      dataField="Unit"
+                      dataAlign="left"
+                      dataSort={true}
+                      dataFormat={this.applySuperScriptFormatter}
+                    >
+                      Unit
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="UnitType" dataSort={true}>
+                      Unit Type
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="IsActive"
+                      dataFormat={this.statusButtonFormatter}
+                    >
+                      Status
+                    </TableHeaderColumn>
+                    <TableHeaderColumn
+                      dataField="Id"
+                      isKey={true}
+                      dataFormat={this.buttonFormatter}
+                    >
+                      Actions
+                    </TableHeaderColumn>
+                  </BootstrapTable>
+                </Col>
+              </Row>
+              {isOpen && (
+                <AddUOM
+                  isOpen={isOpen}
+                  closeDrawer={this.closeDrawer}
+                  isEditFlag={isEditFlag}
+                  ID={uomId}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }

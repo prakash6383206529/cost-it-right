@@ -102,59 +102,75 @@ class OverheadProfit extends Component {
         }
 
         return (
-            <>
-                {/* {this.props.loading && <Loader/>} */}
-                <Row>
-                    <Col sm="4">
-                        <h3>{`Overhead & Profit Master`}</h3>
-                    </Col>
-                </Row>
+          <>
+            <div className="container-fluid">
+              {/* {this.props.loading && <Loader/>} */}
+              <Row>
+                <Col sm="4">
+                  <h1>{`Overhead & Profit Master`}</h1>
+                </Col>
+              </Row>
 
-                <Row>
-                    <Col>
-                        <div>
-                            <Nav tabs className="subtabs">
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                        Manage Overhead
-                                </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                        Manage Profits
-                                </NavLink>
-                                </NavItem>
-                            </Nav>
+              <Row>
+                <Col>
+                  <div>
+                    <Nav tabs className="subtabs mt-0">
+                      <NavItem>
+                        <NavLink
+                          className={classnames({
+                            active: this.state.activeTab === "1",
+                          })}
+                          onClick={() => {
+                            this.toggle("1");
+                          }}
+                        >
+                          Manage Overhead
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({
+                            active: this.state.activeTab === "2",
+                          })}
+                          onClick={() => {
+                            this.toggle("2");
+                          }}
+                        >
+                          Manage Profits
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
 
-                            <TabContent activeTab={this.state.activeTab}>
+                    <TabContent activeTab={this.state.activeTab}>
+                      {this.state.activeTab == 1 && (
+                        <TabPane tabId="1">
+                          <OverheadListing
+                            formToggle={this.displayOverheadForm}
+                            getDetails={this.getOverHeadDetails}
+                            AddAccessibility={this.state.AddAccessibility}
+                            EditAccessibility={this.state.EditAccessibility}
+                            DeleteAccessibility={this.state.DeleteAccessibility}
+                          />
+                        </TabPane>
+                      )}
 
-                                {this.state.activeTab == 1 &&
-                                    <TabPane tabId="1">
-                                        <OverheadListing
-                                            formToggle={this.displayOverheadForm}
-                                            getDetails={this.getOverHeadDetails}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                        />
-                                    </TabPane>}
-
-                                {this.state.activeTab == 2 &&
-                                    <TabPane tabId="2">
-                                        <ProfitListing
-                                            formToggle={this.displayProfitForm}
-                                            getDetails={this.getProfitDetails}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                        />
-                                    </TabPane>}
-                            </TabContent>
-                        </div>
-                    </Col>
-                </Row>
-
-            </ >
+                      {this.state.activeTab == 2 && (
+                        <TabPane tabId="2">
+                          <ProfitListing
+                            formToggle={this.displayProfitForm}
+                            getDetails={this.getProfitDetails}
+                            AddAccessibility={this.state.AddAccessibility}
+                            EditAccessibility={this.state.EditAccessibility}
+                            DeleteAccessibility={this.state.DeleteAccessibility}
+                          />
+                        </TabPane>
+                      )}
+                    </TabContent>
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </>
         );
     }
 }

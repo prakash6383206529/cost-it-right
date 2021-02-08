@@ -441,7 +441,7 @@ class AddVendorDrawer extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="6 multiselect-section">
                                         <Field
                                             label="Vendor Type"
@@ -473,7 +473,7 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="6">
                                         <Field
                                             label={`Vendor Code`}
@@ -505,7 +505,7 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="12">
                                         <Row>
                                             <Col md={10}>
@@ -521,7 +521,7 @@ class AddVendorDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col md={2}>
+                                            <Col md={2} className="pr-0">
                                                 <Field
                                                     label="Ext"
                                                     name={"Extension"}
@@ -551,39 +551,44 @@ class AddVendorDrawer extends Component {
                                     </Col>
 
                                     <Col md="6">
-                                        <Field
-                                            name="CountryId"
-                                            type="text"
-                                            label="Country"
-                                            component={searchableSelect}
-                                            placeholder={'Select Country'}
-                                            options={this.renderListing('country')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.countryHandler}
-                                            valueDescription={this.state.country}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
+                                        <div className="form-group inputbox withBorder ">
+                                            <Field
+                                                name="CountryId"
+                                                type="text"
+                                                label="Country"
+                                                component={searchableSelect}
+                                                placeholder={'Select Country'}
+                                                options={this.renderListing('country')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.countryHandler}
+                                                valueDescription={this.state.country}
+                                                disabled={this.state.isEditFlag ? true : false}
+                                            />
+                                        </div>
                                     </Col>
                                     {(country.length === 0 || country.label === 'India') &&
                                         <Col md="6">
-                                            <Field
-                                                name="StateId"
-                                                type="text"
-                                                label="State"
-                                                component={searchableSelect}
-                                                placeholder={'Select State'}
-                                                options={this.renderListing('state')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.stateHandler}
-                                                valueDescription={this.state.state}
-                                                disabled={this.state.isEditFlag ? true : false}
-                                            />
+                                            <div className="form-group inputbox withBorder ">
+                                                <Field
+                                                    name="StateId"
+                                                    type="text"
+                                                    label="State"
+                                                    component={searchableSelect}
+                                                    placeholder={'Select State'}
+                                                    options={this.renderListing('state')}
+                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                    validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
+                                                    required={true}
+                                                    handleChangeDescription={this.stateHandler}
+                                                    valueDescription={this.state.state}
+                                                    disabled={this.state.isEditFlag ? true : false}
+                                                />
+                                            </div>
                                         </Col>}
                                     <Col md="6">
+                                        <div className="form-group inputbox withBorder ">
                                         <Field
                                             name="CityId"
                                             type="text"
@@ -598,9 +603,10 @@ class AddVendorDrawer extends Component {
                                             valueDescription={this.state.city}
                                             disabled={this.state.isEditFlag ? true : false}
                                         />
+                                        </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="6">
                                         <Field
                                             label="Address 1"
@@ -630,7 +636,7 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="6">
                                         <Field
                                             label="ZipCode"
@@ -646,7 +652,7 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     {this.checkVendorSelection() && checkVendorPlantConfigurable() &&
                                         <>
                                             <Col md="12">
@@ -675,25 +681,24 @@ class AddVendorDrawer extends Component {
                                             </Col>
                                         </>}
                                 </Row>
-
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
-                                        <button
-                                            type={'button'}
-                                            className="reset mr15 cancel-btn"
-                                            onClick={this.cancel} >
-                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                        </button>
-                                        <button
-                                            type="submit"
-                                            className="submit-button mr5 save-btn">
-                                            <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                            {isEditFlag ? 'Update' : 'Save'}
-                                        </button>
-                                    </div>
-                                </Row>
-
+                                <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
+                                <div className="col-sm-12 text-right px-3">
+                                    <button
+                                        type={'button'}
+                                        className="reset mr15 cancel-btn"
+                                        onClick={this.cancel} >
+                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="submit-button save-btn">
+                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                        {isEditFlag ? 'Update' : 'Save'}
+                                    </button>
+                                </div>
+                            </Row>
                             </form>
+                            
                         </div>
                     </Container>
                 </Drawer>

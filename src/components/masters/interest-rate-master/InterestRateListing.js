@@ -20,6 +20,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class InterestRateListing extends Component {
     constructor(props) {
@@ -152,7 +153,8 @@ class InterestRateListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log('CANCEL: clicked'),
+            component: () => <ConfirmComponent/>
         };
         return toastr.confirm(MESSAGES.INTEREST_DELETE_ALERT, toastrConfirmOptions);
     }
@@ -393,148 +395,242 @@ class InterestRateListing extends Component {
             )
         }
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
-            <>
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4"><h3>Interest Rate</h3></div>
-                    <hr />
-                    <Row className="pt-30">
-                        <Col md="9" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="vendorName"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'-Vendors-'}
-                                        isClearable={false}
-                                        options={this.renderListing('VendorList')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleVendorName}
-                                        valueDescription={this.state.vendorName}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="ICCApplicability"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'--ICC Applicability--'}
-                                        isClearable={false}
-                                        options={this.renderListing('ICC')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleICCApplicability}
-                                        valueDescription={this.state.ICCApplicability}
-                                        disabled={false}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="PaymentTermsApplicability"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'--Payment Applicability--'}
-                                        isClearable={false}
-                                        options={this.renderListing('PaymentTerms')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handlePaymentApplicability}
-                                        valueDescription={this.state.PaymentTermsApplicability}
-                                        disabled={false}
-                                    />
-                                </div>
+          <>
+            <div className="container-fluid">
+              {/* {this.props.loading && <Loader />} */}
+              <form
+                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                noValidate
+              >
+                <div class="col-sm-4 pl-0">
+                  <h1>Interest Rate Master</h1>
+                </div>
+                <hr className="mb-0" />
+                <Row className="pt-4 filter-row-large">
+                  {this.state.shown ? (
+                  <Col lg="10" md="12" className="filter-block">
+                    <div className="d-inline-flex justify-content-start align-items-top w100">
+                      <div className="flex-fills">
+                        <h5>{`Filter By:`}</h5>
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="vendorName"
+                          type="text"
+                          label=""
+                          component={searchableSelect}
+                          placeholder={"Vendors"}
+                          isClearable={false}
+                          options={this.renderListing("VendorList")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.handleVendorName}
+                          valueDescription={this.state.vendorName}
+                        />
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="ICCApplicability"
+                          type="text"
+                          label=""
+                          component={searchableSelect}
+                          placeholder={"ICC Applicability"}
+                          isClearable={false}
+                          options={this.renderListing("ICC")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={this.handleICCApplicability}
+                          valueDescription={this.state.ICCApplicability}
+                          disabled={false}
+                        />
+                      </div>
+                      <div className="flex-fill">
+                        <Field
+                          name="PaymentTermsApplicability"
+                          type="text"
+                          label=""
+                          component={searchableSelect}
+                          placeholder={"Payment Applicability"}
+                          isClearable={false}
+                          options={this.renderListing("PaymentTerms")}
+                          //onKeyUp={(e) => this.changeItemDesc(e)}
+                          //validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
+                          //required={true}
+                          handleChangeDescription={
+                            this.handlePaymentApplicability
+                          }
+                          valueDescription={
+                            this.state.PaymentTermsApplicability
+                          }
+                          disabled={false}
+                        />
+                      </div>
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col md="3" className="search-user-block">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {BulkUploadAccessibility && <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        onClick={this.bulkToggle}>
-                                        <div className={'upload'}></div>Bulk Upload</button>}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>}
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-
-                </form>
-                <BootstrapTable
-                    data={this.state.tableData}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    // exportCSV
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Isvendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{'ICC Applicability'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{'Annual ICC (%)'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{'Payment Term Applicability'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{'Repayment Period (Days)'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{'Payment Term Interest Rate (%) '}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
-                {isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'InterestRate'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'Interest Rate'}
-                    anchor={'right'}
-                />}
-            </ >
+                      <div className="flex-fill">
+                        <button
+                          type="button"
+                          //disabled={pristine || submitting}
+                          onClick={this.resetFilter}
+                          className="reset mr10"
+                        >
+                          {"Reset"}
+                        </button>
+                        <button
+                          type="button"
+                          //disabled={pristine || submitting}
+                          onClick={this.filterList}
+                          className="apply mr5"
+                        >
+                          {"Apply"}
+                        </button>
+                      </div>
+                    </div>
+                  </Col>):("")}
+                  <Col md="6" className="search-user-block mb-3">
+                    <div className="d-flex justify-content-end bd-highlight w100">
+                      <div>
+                      {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
+                        {BulkUploadAccessibility && (
+                          <button
+                            type="button"
+                            className={"user-btn mr5"}
+                            onClick={this.bulkToggle}
+                          >
+                            <div className={"upload"}></div>Bulk Upload
+                          </button>
+                        )}
+                        {AddAccessibility && (
+                          <button
+                            type="button"
+                            className={"user-btn"}
+                            onClick={this.formToggle}
+                          >
+                            <div className={"plus"}></div>ADD
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </form>
+              <BootstrapTable
+                data={this.state.tableData}
+                striped={false}
+                hover={false}
+                bordered={false}
+                options={options}
+                search
+                // exportCSV
+                //ignoreSinglePage
+                ref={"table"}
+                trClassName={"userlisting-row"}
+                tableHeaderClass="my-custom-header"
+                pagination
+              >
+                <TableHeaderColumn
+                  dataField="Isvendor"
+                  columnTitle={true}
+                  dataAlign="left"
+                  dataSort={true}
+                  dataFormat={this.costingHeadFormatter}
+                >
+                  {this.renderCostingHead()}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="VendorName"
+                  columnTitle={true}
+                  dataAlign="center"
+                  dataSort={true}
+                >
+                  {"Vendor Name"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="ICCApplicability"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"ICC Applicability"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="ICCPercent"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Annual ICC (%)"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="PaymentTermApplicability"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Payment Term Applicability"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="RepaymentPeriod"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Repayment Period (Days)"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="PaymentTermPercent"
+                  columnTitle={true}
+                  dataAlign="center"
+                >
+                  {"Payment Term Interest Rate (%) "}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  dataField="EffectiveDate"
+                  columnTitle={true}
+                  dataAlign="center"
+                  dataFormat={this.effectiveDateFormatter}
+                >
+                  {"Effective Date"}
+                </TableHeaderColumn>
+                <TableHeaderColumn
+                  className="action"
+                  dataField="VendorInterestRateId"
+                  export={false}
+                  isKey={true}
+                  dataFormat={this.buttonFormatter}
+                >
+                  Actions
+                </TableHeaderColumn>
+              </BootstrapTable>
+              {isBulkUpload && (
+                <BulkUpload
+                  isOpen={isBulkUpload}
+                  closeDrawer={this.closeBulkUploadDrawer}
+                  isEditFlag={false}
+                  fileName={"InterestRate"}
+                  isZBCVBCTemplate={true}
+                  messageLabel={"Interest Rate"}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number } from "../../../helper/validation";
+import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
@@ -250,7 +250,7 @@ class AddAssemblyPart extends Component {
         const { BOMViewerData, isEditFlag } = this.state;
 
         if (this.checkIsFormFilled() === false) {
-            toastr.warning('All fields are mandatory.')
+            toastr.warning("Fields with 'asterisk sign *' are mandatory.")
             return false;
         }
 
@@ -530,310 +530,381 @@ class AddAssemblyPart extends Component {
         const { handleSubmit, initialConfiguration } = this.props;
         const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
         return (
-            <>
+          <>
+            <div className="container-fluid">
+              <div className="login-container signup-form">
+                <Row>
+                  <Col md="12">
+                    <div className="shadow-lgg login-formg">
+                      <Row>
+                        <Col md="6">
+                          <div className="form-heading mb-0">
+                            <h1>
+                              {isEditFlag
+                                ? "Update Assembly Part"
+                                : "Add  Assembly Part"}
+                            </h1>
+                          </div>
+                        </Col>
+                      </Row>
+                      <form
+                        noValidate
+                        className="form"
+                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      >
+                        <div className="add-min-height">
+                          <Row>
+                            <Col md="12">
+                              <div className="left-border">
+                                {"Assembly Details:"}
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`BOM No.`}
+                                name={"BOMNumber"}
+                                type="text"
+                                placeholder={""}
+                                validate={[required,specialName,checkWhiteSpaces]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Assembly Part No.`}
+                                name={"AssemblyPartNumber"}
+                                type="text"
+                                placeholder={""}
+                                validate={[required,specialName,checkWhiteSpaces]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Assembly Name`}
+                                name={"AssemblyPartName"}
+                                type="text"
+                                placeholder={""}
+                                validate={[required,specialName,checkWhiteSpaces]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Description`}
+                                name={"Description"}
+                                type="text"
+                                placeholder={""}
+                                validate={[required,specialName,checkWhiteSpaces]}
+                                component={renderText}
+                                required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                          </Row>
 
-                <div className="login-container signup-form">
-                    <Row>
-                        <Col md="12">
-                            <div className="shadow-lgg login-formg">
-                                <Row>
-                                    <Col md="6">
-                                        <div className="form-heading mb-0">
-                                            <h2>{isEditFlag ? 'Update Assembly Part' : 'Add  Assembly Part'}</h2>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="12">
-                                            <div className="left-border">
-                                                {'Assembly Details:'}
-                                            </div>
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`BOM No.`}
-                                                name={"BOMNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Assembly Part No.`}
-                                                name={"AssemblyPartNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Assembly Name`}
-                                                name={"AssemblyPartName"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Description`}
-                                                name={"Description"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[required]}
-                                                component={renderText}
-                                                required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                            />
-                                        </Col>
+                          <Row>
+                            <Col md="3">
+                              <Field
+                                label={`ECN No.`}
+                                name={"ECNNumber"}
+                                type="text"
+                                placeholder={""}
+                                validate={[alphabetsOnly,checkWhiteSpaces]}
+                                component={renderText}
+                                //required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Revision No.`}
+                                name={"RevisionNumber"}
+                                type="text"
+                                placeholder={""}
+                                validate={[alphabetsOnly,checkWhiteSpaces]}
+                                component={renderText}
+                                //required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Drawing No.`}
+                                name={"DrawingNumber"}
+                                type="text"
+                                placeholder={""}
+                                validate={[alphabetsOnly,checkWhiteSpaces]}
+                                component={renderText}
+                                //required={true}
+                                className=""
+                                customClassName={"withBorder"}
+                              />
+                            </Col>
+                            {initialConfiguration &&
+                              initialConfiguration.IsGroupCodeDisplay && (
+                                <Col md="3">
+                                  <Field
+                                    label={`Group Code`}
+                                    name={"GroupCode"}
+                                    type="text"
+                                    placeholder={""}
+                                    validate={[checkWhiteSpaces]}
+                                    component={renderText}
+                                    //required={true}
+                                    className=""
+                                    customClassName={"withBorder"}
+                                  />
+                                </Col>
+                              )}
+                          </Row>
 
-                                    </Row>
-
-                                    <Row>
-                                        <Col md="3">
-                                            <Field
-                                                label={`ECN No.`}
-                                                name={"ECNNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[number]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Revision No.`}
-                                                name={"RevisionNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[number]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                label={`Drawing No.`}
-                                                name={"DrawingNumber"}
-                                                type="text"
-                                                placeholder={''}
-                                                validate={[number]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                            />
-                                        </Col>
-                                        {initialConfiguration && initialConfiguration.IsGroupCodeDisplay && <Col md="3">
-                                            <Field
-                                                label={`Group Code`}
-                                                name={"GroupCode"}
-                                                type="text"
-                                                placeholder={''}
-                                                //validate={[required]}
-                                                component={renderText}
-                                                //required={true}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                            />
-                                        </Col>}
-                                    </Row>
-
-                                    <Row>
-                                        <Col md='3'>
-                                            <Field
-                                                label="Plant"
-                                                name="Plant"
-                                                placeholder="--Select--"
-                                                selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
-                                                options={this.renderListing('plant')}
-                                                selectionChanged={this.handlePlant}
-                                                optionValue={option => option.Value}
-                                                optionLabel={option => option.Text}
-                                                component={renderMultiSelectField}
-                                                //mendatory={true}
-                                                className="multiselect-with-border"
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <div className="form-group">
-                                                <label>
-                                                    Effective Date
-                                                            {/* <span className="asterisk-required">*</span> */}
-                                                </label>
-                                                <div className="inputbox date-section">
-                                                    <DatePicker
-                                                        name="EffectiveDate"
-                                                        selected={this.state.effectiveDate}
-                                                        onChange={this.handleEffectiveDateChange}
-                                                        showMonthDropdown
-                                                        showYearDropdown
-                                                        dateFormat="dd/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        className="withBorder"
-                                                        autoComplete={'off'}
-                                                        disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={false}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </Col>
-                                        <Col md="3">
-                                            {/* {(!isEditFlag || initialConfiguration.IsBOMEditable) && <button
+                          <Row>
+                            <Col md="3">
+                              <Field
+                                label="Plant"
+                                name="Plant"
+                                placeholder="--Select--"
+                                selection={
+                                  this.state.selectedPlants == null ||
+                                  this.state.selectedPlants.length === 0
+                                    ? []
+                                    : this.state.selectedPlants
+                                }
+                                options={this.renderListing("plant")}
+                                selectionChanged={this.handlePlant}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                //mendatory={true}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <div className="form-group">
+                                <label>
+                                  Effective Date
+                                  {/* <span className="asterisk-required">*</span> */}
+                                </label>
+                                <div className="inputbox date-section">
+                                  <DatePicker
+                                    name="EffectiveDate"
+                                    selected={this.state.effectiveDate}
+                                    onChange={this.handleEffectiveDateChange}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="dd/MM/yyyy"
+                                    //maxDate={new Date()}
+                                    dropdownMode="select"
+                                    placeholderText="Select date"
+                                    className="withBorder"
+                                    autoComplete={"off"}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    disabled={false}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              {/* {(!isEditFlag || initialConfiguration.IsBOMEditable) && <button
                                                 type="button"
                                                 className={'user-btn pull-left mt30 mr5'}
                                                 onClick={this.childDrawerToggle}>
                                                 <div className={'plus'}></div>ADD Child</button>} */}
-                                            <button
-                                                type="button"
-                                                onClick={this.toggleBOMViewer}
-                                                className={'user-btn pull-left mt30'}>
-                                                <div className={'plus'}></div>BOM VIEWER</button>
-                                        </Col>
-                                    </Row>
+                              <button
+                                type="button"
+                                onClick={this.toggleBOMViewer}
+                                className={"user-btn pull-left mt30"}
+                              >
+                                <div className={"plus"}></div>BOM VIEWER
+                              </button>
+                            </Col>
+                          </Row>
 
-                                    <Row>
-                                        <Col md="12">
-                                            <div className="left-border">
-                                                {'Remark & Attachments:'}
-                                            </div>
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label={'Remarks'}
-                                                name={`Remark`}
-                                                placeholder="Type here..."
-                                                className=""
-                                                customClassName=" textAreaWithBorder"
-                                                validate={[maxLength100]}
-                                                //required={true}
-                                                component={renderTextAreaField}
-                                                maxLength="5000"
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <label>Upload Files (upload up to 3 files)</label>
-                                            {this.state.files && this.state.files.length >= 3 ? '' :
-                                                <Dropzone
-                                                    getUploadParams={this.getUploadParams}
-                                                    onChangeStatus={this.handleChangeStatus}
-                                                    PreviewComponent={this.Preview}
-                                                    //onSubmit={this.handleSubmit}
-                                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                                    initialFiles={this.state.initialFiles}
-                                                    maxFiles={3}
-                                                    maxSizeBytes={2000000}
-                                                    inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
-                                                    styles={{
-                                                        dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                                                        inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-                                                    }}
-                                                    classNames="draper-drop"
+                          <Row>
+                            <Col md="12">
+                              <div className="left-border">
+                                {"Remark & Attachments:"}
+                              </div>
+                            </Col>
+                            <Col md="6">
+                              <Field
+                                label={"Remarks"}
+                                name={`Remark`}
+                                placeholder="Type here..."
+                                className=""
+                                customClassName=" textAreaWithBorder"
+                                validate={[maxLength100,checkWhiteSpaces]}
+                                //required={true}
+                                component={renderTextAreaField}
+                                maxLength="5000"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <label>Upload Files (upload up to 3 files)</label>
+                              {this.state.files &&
+                              this.state.files.length >= 3 ? (
+                                <div class="alert alert-danger" role="alert">
+                                  Max file uploaded.
+                                </div>
+                              ) : (
+                                <Dropzone
+                                  getUploadParams={this.getUploadParams}
+                                  onChangeStatus={this.handleChangeStatus}
+                                  PreviewComponent={this.Preview}
+                                  //onSubmit={this.handleSubmit}
+                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                  initialFiles={this.state.initialFiles}
+                                  maxFiles={3}
+                                  maxSizeBytes={2000000}
+                                  inputContent={(files, extra) =>
+                                    extra.reject ? (
+                                      "Image, audio and video files only"
+                                    ) : (
+                                      <div className="text-center">
+                                        <i className="text-primary fa fa-cloud-upload"></i>
+                                        <span className="d-block">
+                                          Drag and Drop or{" "}
+                                          <span className="text-primary">
+                                            Browse
+                                          </span>
+                                          <br />
+                                          file to upload
+                                        </span>
+                                      </div>
+                                    )
+                                  }
+                                  styles={{
+                                    dropzoneReject: {
+                                      borderColor: "red",
+                                      backgroundColor: "#DAA",
+                                    },
+                                    inputLabel: (files, extra) =>
+                                      extra.reject ? { color: "red" } : {},
+                                  }}
+                                  classNames="draper-drop"
+                                />
+                              )}
+                            </Col>
+                            <Col md="3">
+                              <div className={"attachment-wrapper"}>
+                                {this.state.files &&
+                                  this.state.files.map((f) => {
+                                    const withOutTild = f.FileURL.replace(
+                                      "~",
 
-                                                />}
-                                        </Col>
-                                        <Col md="3">
-                                            <div className={'attachment-wrapper'}>
-                                                {
-                                                    this.state.files && this.state.files.map(f => {
-                                                        const withOutTild = f.FileURL.replace('~', '')
-                                                        const fileURL = `${FILE_URL}${withOutTild}`;
-                                                        return (
-                                                            <div className={'attachment images'}>
-                                                                <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
-                                                                {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                                      ""
+                                    );
+                                    const fileURL = `${FILE_URL}${withOutTild}`;
+                                    return (
+                                      <div className={"attachment images"}>
+                                        <a href={fileURL} target="_blank">
+                                          {f.OriginalFileName}
+                                        </a>
+                                        {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
-                                                                {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                        {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                                                <img alt={''} className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../assests/images/red-cross.png')}></img>
-                                                            </div>
-                                                        )
-                                                    })
-                                                }
-                                            </div>
-                                        </Col>
-                                    </Row>
+                                        <img
+                                          alt={""}
+                                          className="float-right"
+                                          onClick={() =>
+                                            this.deleteFile(
+                                              f.FileId,
+                                              f.FileName
+                                            )
+                                          }
+                                          src={require("../../../assests/images/red-cross.png")}
+                                        ></img>
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            </Col>
+                          </Row>
+                        </div>
 
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-right bluefooter-butn">
-                                            <button
-                                                type={'button'}
-                                                className="reset mr15 cancel-btn"
-                                                onClick={this.cancel} >
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="submit-button mr5 save-btn" >
-                                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                                {isEditFlag ? 'Update' : 'Save'}
-                                            </button>
-                                        </div>
-                                    </Row>
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                          <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                              type={"button"}
+                              className="reset mr15 cancel-btn"
+                              onClick={this.cancel}
+                            >
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/times.png")}
+                                  alt="cancel-icon.jpg"
+                                />
+                              </div>{" "}
+                              {"Cancel"}
+                            </button>
+                            <button
+                              type="submit"
+                              className="submit-button mr5 save-btn"
+                            >
+                              <div className={"check-icon"}>
+                                <img
+                                  src={require("../../../assests/images/check.png")}
+                                  alt="check-icon.jpg"
+                                />{" "}
+                              </div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          </div>
+                        </Row>
+                      </form>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
 
-                                </form>
-                            </div>
-                        </Col>
+              {isOpenChildDrawer && (
+                <AddChildDrawer
+                  isOpen={isOpenChildDrawer}
+                  closeDrawer={this.closeChildDrawer}
+                  isEditFlag={false}
+                  ID={""}
+                  anchor={"right"}
+                  setChildPartsData={this.setChildPartsData}
+                  BOMViewerData={this.state.BOMViewerData}
+                />
+              )}
 
-                    </Row>
-                </div>
-
-                {isOpenChildDrawer && <AddChildDrawer
-                    isOpen={isOpenChildDrawer}
-                    closeDrawer={this.closeChildDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                    setChildPartsData={this.setChildPartsData}
-                    BOMViewerData={this.state.BOMViewerData}
-                />}
-
-                {isOpenBOMViewerDrawer && <BOMViewer
-                    isOpen={isOpenBOMViewerDrawer}
-                    closeDrawer={this.closeBOMViewerDrawer}
-                    isEditFlag={this.state.isEditFlag}
-                    PartId={this.state.PartId}
-                    anchor={'right'}
-                    BOMViewerData={this.state.BOMViewerData}
-                    NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
-                    isFromVishualAd={false}
-                    avoidAPICall={this.state.avoidAPICall}
-                />}
-            </>
+              {isOpenBOMViewerDrawer && (
+                <BOMViewer
+                  isOpen={isOpenBOMViewerDrawer}
+                  closeDrawer={this.closeBOMViewerDrawer}
+                  isEditFlag={this.state.isEditFlag}
+                  PartId={this.state.PartId}
+                  anchor={"right"}
+                  BOMViewerData={this.state.BOMViewerData}
+                  NewAddedLevelOneChilds={this.state.NewAddedLevelOneChilds}
+                  isFromVishualAd={false}
+                  avoidAPICall={this.state.avoidAPICall}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }

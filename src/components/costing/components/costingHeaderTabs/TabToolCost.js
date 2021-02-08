@@ -153,16 +153,16 @@ function TabToolCost(props) {
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
-                    <h2>{''}</h2>
+                    <h2>{""}</h2>
                   </div>
                 </Col>
               </Row>
 
               <Row>
-                <Col md="1" >{'Applicability:'}</Col>
-                <Col md="3" className="switch mb15">
-                  <label className="switch-level">
-                    <div className={'left-title'}>{'Overall'}</div>
+                <Col md="1">{"Applicability:"}</Col>
+                <Col md="8" className="switch mb15">
+                  <label className="switch-level d-inline-flex w-auto">
+                    <div className={"left-title"}>{"Overall"}</div>
                     <span className="cr-sw-level">
                       <span className="cr-switch-icon">
                         <Switch
@@ -180,16 +180,18 @@ function TabToolCost(props) {
                           width={46}
                         />
                       </span>
-                      <div className={'right-title'}>{'Process Wise'}</div>
+                      <div className={"right-title"}>{"Process Wise"}</div>
                     </span>
                   </label>
                 </Col>
-                <Col md="7" >{''}</Col>
-                <Col md="1" >{'Net Tool Cost'}</Col>
+                <Col md="2">{"Net Tool Cost"}</Col>
               </Row>
 
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Row>
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
@@ -200,47 +202,51 @@ function TabToolCost(props) {
                         </tr>
                       </thead> */}
                       <tbody>
-                        {
-                          tabData && tabData.map((item, index) => {
+                        {tabData &&
+                          tabData.map((item, index) => {
                             return (
-                              < >
+                              <>
                                 <tr key={index} onClick={() => toggle(index)}>
-                                  <td><span class="cr-prt-nm cr-prt-link">{item.PartName}</span></td>
-                                  <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : 0}</td>
+                                  <td>
+                                    <span class="cr-prt-nm cr-prt-link">
+                                      {item.PartName}
+                                    </span>
+                                  </td>
+                                  <td>{checkForDecimalAndNull(item.NetToolCost, 2)}</td>
                                 </tr>
-                                {item.IsOpen &&
+                                {item.IsOpen && (
                                   <tr>
                                     <td colSpan={2}>
                                       <div>
                                         <Tool
                                           index={index}
-                                          IsApplicableProcessWise={IsApplicableProcessWise}
+                                          IsApplicableProcessWise={
+                                            IsApplicableProcessWise
+                                          }
                                           data={item}
                                           // headCostRMCCBOPData={props.headCostRMCCBOPData}
-                                          setOverAllApplicabilityCost={setOverAllApplicabilityCost}
+                                          setOverAllApplicabilityCost={
+                                            setOverAllApplicabilityCost
+                                          }
                                           setToolCost={setToolCost}
                                           saveCosting={saveCosting}
                                         />
                                       </div>
                                     </td>
                                   </tr>
-                                }
+                                )}
                               </>
-                            )
-                          })
-                        }
-
+                            );
+                          })}
                       </tbody>
                     </Table>
                   </Col>
                 </Row>
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };

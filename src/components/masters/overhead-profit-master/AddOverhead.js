@@ -554,283 +554,389 @@ class AddOverhead extends Component {
             isHideOverhead, isHideBOP, isHideRM, isHideCC } = this.state;
 
         return (
-            <>
-                <div>
-                    <div className="login-container signup-form">
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="shadow-lgg login-formg">
-                                    <div className="row">
-                                        <div className="col-md-6">
-                                            <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Overhead Details` : `Add Overhead Details`}</h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <form
-                                        noValidate
-                                        className="form"
-                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                    >
-                                        <Row>
-                                            <Col md="12">
-                                                <Label sm={2} className={'pl0 pr0'} check>
-                                                    <input
-                                                        type="radio"
-                                                        name="costingHead"
-                                                        checked={costingHead === 'zero' ? true : false}
-                                                        onClick={() => this.onPressVendor(false, 'zero')}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />{' '}
-                                                        Zero Based
-                                                    </Label>
-                                                <Label sm={2} className={'pl0 pr0'} check>
-                                                    <input
-                                                        type="radio"
-                                                        name="costingHead"
-                                                        checked={costingHead === 'vendor' ? true : false}
-                                                        onClick={() => this.onPressVendor(true, 'vendor')}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />{' '}
-                                                        Vendor Based
-                                                    </Label>
-                                                <Label sm={2} className={'pl0 pr0'} check>
-                                                    <input
-                                                        type="radio"
-                                                        name="costingHead"
-                                                        checked={costingHead === 'client' ? true : false}
-                                                        onClick={() => this.onPressVendor(true, 'client')}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />{' '}
-                                                        Client Based
-                                                    </Label>
-                                            </Col>
+          <>
+            <div className="container-fluid">
+              <div className="login-container signup-form">
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="shadow-lgg login-formg">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <h1>
+                            {isEditFlag
+                              ? `Update Overhead Details`
+                              : `Add Overhead Details`}
+                          </h1>
+                        </div>
+                      </div>
+                      <form
+                        noValidate
+                        className="form"
+                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      >
+                        <div className="add-min-height">
+                          <Row>
+                            <Col md="12">
+                              <Label sm={2} className={"pl0 pr0 pt-0"} check>
+                                <input
+                                  type="radio"
+                                  name="costingHead"
+                                  checked={
+                                    costingHead === "zero" ? true : false
+                                  }
+                                  onClick={() =>
+                                    this.onPressVendor(false, "zero")
+                                  }
+                                  disabled={isEditFlag ? true : false}
+                                />{" "}
+                                Zero Based
+                              </Label>
+                              <Label sm={2} className={"pl0 pr0 pt-0"} check>
+                                <input
+                                  type="radio"
+                                  name="costingHead"
+                                  checked={
+                                    costingHead === "vendor" ? true : false
+                                  }
+                                  onClick={() =>
+                                    this.onPressVendor(true, "vendor")
+                                  }
+                                  disabled={isEditFlag ? true : false}
+                                />{" "}
+                                Vendor Based
+                              </Label>
+                              <Label sm={2} className={"pl0 pr0 pt-0"} check>
+                                <input
+                                  type="radio"
+                                  name="costingHead"
+                                  checked={
+                                    costingHead === "client" ? true : false
+                                  }
+                                  onClick={() =>
+                                    this.onPressVendor(true, "client")
+                                  }
+                                  disabled={isEditFlag ? true : false}
+                                />{" "}
+                                Client Based
+                              </Label>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md="3">
+                              <Field
+                                name="ModelType"
+                                type="text"
+                                label="Model Type"
+                                component={searchableSelect}
+                                placeholder={"---Select---"}
+                                options={this.renderListing("ModelType")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.ModelType == null ||
+                                  this.state.ModelType.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={
+                                  this.handleModelTypeChange
+                                }
+                                valueDescription={this.state.ModelType}
+                                //disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            {this.state.IsVendor && costingHead === "vendor" && (
+                              <Col md="3">
+                                <Field
+                                  name="vendorName"
+                                  type="text"
+                                  label={"Vendor Name"}
+                                  component={searchableSelect}
+                                  placeholder={"---Select---"}
+                                  options={this.renderListing("VendorNameList")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.vendorName == null ||
+                                    this.state.vendorName.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleVendorName
+                                  }
+                                  valueDescription={this.state.vendorName}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>
+                            )}
+                            {this.state.IsVendor && costingHead === "client" && (
+                              <Col md="3">
+                                <Field
+                                  name="clientName"
+                                  type="text"
+                                  label={"Client Name"}
+                                  component={searchableSelect}
+                                  placeholder={"---Select---"}
+                                  options={this.renderListing("ClientList")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.client == null ||
+                                    this.state.client.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={this.handleClient}
+                                  valueDescription={this.state.client}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>
+                            )}
+                          </Row>
 
-                                        </Row>
-                                        <Row>
-                                            <Col md="3">
-                                                <Field
-                                                    name="ModelType"
-                                                    type="text"
-                                                    label="Model Type"
-                                                    component={searchableSelect}
-                                                    placeholder={'---Select---'}
-                                                    options={this.renderListing('ModelType')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.ModelType == null || this.state.ModelType.length === 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleModelTypeChange}
-                                                    valueDescription={this.state.ModelType}
-                                                //disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            {this.state.IsVendor && costingHead === 'vendor' &&
-                                                <Col md="3">
-                                                    <Field
-                                                        name="vendorName"
-                                                        type="text"
-                                                        label={'Vendor Name'}
-                                                        component={searchableSelect}
-                                                        placeholder={'---Select---'}
-                                                        options={this.renderListing('VendorNameList')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleVendorName}
-                                                        valueDescription={this.state.vendorName}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>}
-                                            {this.state.IsVendor && costingHead === 'client' &&
-                                                <Col md="3">
-                                                    <Field
-                                                        name="clientName"
-                                                        type="text"
-                                                        label={'Client Name'}
-                                                        component={searchableSelect}
-                                                        placeholder={'---Select---'}
-                                                        options={this.renderListing('ClientList')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        validate={(this.state.client == null || this.state.client.length === 0) ? [required] : []}
-                                                        required={true}
-                                                        handleChangeDescription={this.handleClient}
-                                                        valueDescription={this.state.client}
-                                                        disabled={isEditFlag ? true : false}
-                                                    />
-                                                </Col>}
+                          <Row>
+                            <Col md="3">
+                              <Field
+                                name="OverheadApplicability"
+                                type="text"
+                                label="Overhead Applicability"
+                                component={searchableSelect}
+                                placeholder={"---Select---"}
+                                options={this.renderListing(
+                                  "OverheadApplicability"
+                                )}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.overheadAppli == null ||
+                                  this.state.overheadAppli.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={
+                                  this.handleOverheadChange
+                                }
+                                valueDescription={this.state.overheadAppli}
+                                //disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            {!isHideOverhead && (
+                              <Col md="3">
+                                <Field
+                                  label={`Overhead (%)`}
+                                  name={"OverheadPercentage"}
+                                  type="text"
+                                  placeholder={
+                                    !isOverheadPercent ? "Enter" : ""
+                                  }
+                                  validate={
+                                    !isOverheadPercent ? [required, number] : []
+                                  }
+                                  component={renderText}
+                                  onBlur={this.handlePercent}
+                                  required={!isOverheadPercent ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isOverheadPercent ? true : false}
+                                />
+                              </Col>
+                            )}
+                            {!isHideRM && (
+                              <Col md="3">
+                                <Field
+                                  label={`Overhead on RM (%)`}
+                                  name={"OverheadRMPercentage"}
+                                  type="text"
+                                  placeholder={!isRM ? "Enter" : ""}
+                                  validate={!isRM ? [required, number] : []}
+                                  component={renderText}
+                                  //onChange={this.handleCalculation}
+                                  required={!isRM ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isRM ? true : false}
+                                />
+                              </Col>
+                            )}
+                            {!isHideCC && (
+                              <Col md="3">
+                                <Field
+                                  label={`Overhead on CC (Machining) (%)`}
+                                  name={"OverheadMachiningCCPercentage"}
+                                  type="text"
+                                  placeholder={!isCC ? "Enter" : ""}
+                                  validate={!isCC ? [required, number] : []}
+                                  component={renderText}
+                                  //onChange={this.handleCalculation}
+                                  required={!isCC ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isCC ? true : false}
+                                />
+                              </Col>
+                            )}
+                            {!isHideBOP && (
+                              <Col md="3">
+                                <Field
+                                  label={`Overhead on BOP (%)`}
+                                  name={"OverheadBOPPercentage"}
+                                  type="text"
+                                  placeholder={!isBOP ? "Enter" : ""}
+                                  validate={!isBOP ? [required, number] : []}
+                                  component={renderText}
+                                  //onChange={this.handleCalculation}
+                                  required={!isBOP ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isBOP ? true : false}
+                                />
+                              </Col>
+                            )}
+                          </Row>
 
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="3">
-                                                <Field
-                                                    name="OverheadApplicability"
-                                                    type="text"
-                                                    label="Overhead Applicability"
-                                                    component={searchableSelect}
-                                                    placeholder={'---Select---'}
-                                                    options={this.renderListing('OverheadApplicability')}
-                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                    validate={(this.state.overheadAppli == null || this.state.overheadAppli.length === 0) ? [required] : []}
-                                                    required={true}
-                                                    handleChangeDescription={this.handleOverheadChange}
-                                                    valueDescription={this.state.overheadAppli}
-                                                //disabled={isEditFlag ? true : false}
-                                                />
-                                            </Col>
-                                            {!isHideOverhead && <Col md="3">
-                                                <Field
-                                                    label={`Overhead (%)`}
-                                                    name={"OverheadPercentage"}
-                                                    type="text"
-                                                    placeholder={!isOverheadPercent ? 'Enter' : ''}
-                                                    validate={!isOverheadPercent ? [required, number] : []}
-                                                    component={renderText}
-                                                    onBlur={this.handlePercent}
-                                                    required={!isOverheadPercent ? true : false}
-                                                    className=""
-                                                    customClassName=" withBorder"
-                                                    disabled={isOverheadPercent ? true : false}
-                                                />
-                                            </Col>}
-                                            {!isHideRM && <Col md="3">
-                                                <Field
-                                                    label={`Overhead on RM (%)`}
-                                                    name={"OverheadRMPercentage"}
-                                                    type="text"
-                                                    placeholder={!isRM ? 'Enter' : ''}
-                                                    validate={!isRM ? [required, number] : []}
-                                                    component={renderText}
-                                                    //onChange={this.handleCalculation}
-                                                    required={!isRM ? true : false}
-                                                    className=""
-                                                    customClassName=" withBorder"
-                                                    disabled={isRM ? true : false}
-                                                />
-                                            </Col>}
-                                            {!isHideCC && <Col md="3">
-                                                <Field
-                                                    label={`Overhead on CC (Machining) (%)`}
-                                                    name={"OverheadMachiningCCPercentage"}
-                                                    type="text"
-                                                    placeholder={!isCC ? 'Enter' : ''}
-                                                    validate={!isCC ? [required, number] : []}
-                                                    component={renderText}
-                                                    //onChange={this.handleCalculation}
-                                                    required={!isCC ? true : false}
-                                                    className=""
-                                                    customClassName=" withBorder"
-                                                    disabled={isCC ? true : false}
-                                                />
-                                            </Col>}
-                                            {!isHideBOP && <Col md="3">
-                                                <Field
-                                                    label={`Overhead on BOP (%)`}
-                                                    name={"OverheadBOPPercentage"}
-                                                    type="text"
-                                                    placeholder={!isBOP ? 'Enter' : ''}
-                                                    validate={!isBOP ? [required, number] : []}
-                                                    component={renderText}
-                                                    //onChange={this.handleCalculation}
-                                                    required={!isBOP ? true : false}
-                                                    className=""
-                                                    customClassName=" withBorder"
-                                                    disabled={isBOP ? true : false}
-                                                />
-                                            </Col>}
-                                        </Row>
-
-                                        <Row>
-                                            <Col md="12">
-                                                <div className="left-border">
-                                                    {'Remark & Attachments'}
-                                                </div>
-                                            </Col>
-                                            <Col md="6">
-                                                <Field
-                                                    label={'Remarks'}
-                                                    name={`Remark`}
-                                                    placeholder="Type here..."
-                                                    value={this.state.remarks}
-                                                    className=""
-                                                    customClassName=" textAreaWithBorder"
-                                                    onChange={this.handleMessageChange}
-                                                    validate={[maxLength100]}
-                                                    //required={true}
-                                                    component={renderTextAreaField}
-                                                    maxLength="5000"
-                                                />
-                                            </Col>
-                                            <Col md="3">
-                                                <label>Upload Files (upload up to 3 files)</label>
-                                                {this.state.files && this.state.files.length >= 3 ? '' :
-                                                    <Dropzone
-                                                        getUploadParams={this.getUploadParams}
-                                                        onChangeStatus={this.handleChangeStatus}
-                                                        PreviewComponent={this.Preview}
-                                                        //onSubmit={this.handleSubmit}
-                                                        accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                                        initialFiles={this.state.initialFiles}
-                                                        maxFiles={3}
-                                                        maxSizeBytes={2000000}
-                                                        inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
-                                                        styles={{
-                                                            dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                                                            inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-                                                        }}
-                                                        classNames="draper-drop"
-
-                                                    />}
-                                            </Col>
-                                            <Col md="3">
-                                                <div className={'attachment-wrapper'}>
-                                                    {
-                                                        this.state.files && this.state.files.map(f => {
-                                                            const withOutTild = f.FileURL.replace('~', '')
-                                                            const fileURL = `${FILE_URL}${withOutTild}`;
-                                                            return (
-                                                                <div className={'attachment images'}>
-                                                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
-                                                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                          <Row>
+                            <Col md="12">
+                              <div className="left-border">
+                                {"Remark & Attachments"}
+                              </div>
+                            </Col>
+                            <Col md="6">
+                              <Field
+                                label={"Remarks"}
+                                name={`Remark`}
+                                placeholder="Type here..."
+                                value={this.state.remarks}
+                                className=""
+                                customClassName=" textAreaWithBorder"
+                                onChange={this.handleMessageChange}
+                                validate={[maxLength100]}
+                                //required={true}
+                                component={renderTextAreaField}
+                                maxLength="5000"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <label>Upload Files (upload up to 3 files)</label>
+                              {this.state.files &&
+                              this.state.files.length >= 3 ? (
+                                <div class="alert alert-danger" role="alert">
+                                  Max file uploaded.
+                                </div>
+                              ) : (
+                                <Dropzone
+                                  getUploadParams={this.getUploadParams}
+                                  onChangeStatus={this.handleChangeStatus}
+                                  PreviewComponent={this.Preview}
+                                  //onSubmit={this.handleSubmit}
+                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                  initialFiles={this.state.initialFiles}
+                                  maxFiles={3}
+                                  maxSizeBytes={2000000}
+                                  inputContent={(files, extra) =>
+                                    extra.reject ? (
+                                      "Image, audio and video files only"
+                                    ) : (
+                                      <div className="text-center">
+                                        <i className="text-primary fa fa-cloud-upload"></i>
+                                        <span className="d-block">
+                                          Drag and Drop or{" "}
+                                          <span className="text-primary">
+                                            Browse
+                                          </span>
+                                          <br />
+                                          file to upload
+                                        </span>
+                                      </div>
+                                    )
+                                  }
+                                  styles={{
+                                    dropzoneReject: {
+                                      borderColor: "red",
+                                      backgroundColor: "#DAA",
+                                    },
+                                    inputLabel: (files, extra) =>
+                                      extra.reject ? { color: "red" } : {},
+                                  }}
+                                  classNames="draper-drop"
+                                />
+                              )}
+                            </Col>
+                            <Col md="3">
+                              <div className={"attachment-wrapper"}>
+                                {this.state.files &&
+                                  this.state.files.map((f) => {
+                                    const withOutTild = f.FileURL.replace(
+                                      "~",
+                                      ""
+                                    );
+                                    const fileURL = `${FILE_URL}${withOutTild}`;
+                                    return (
+                                      <div className={"attachment images"}>
+                                        <a href={fileURL} target="_blank">
+                                          {f.OriginalFileName}
+                                        </a>
+                                        {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
-                                                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                        {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                                                    <img alt={''} className="float-right" onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../assests/images/red-cross.png')}></img>
-                                                                </div>
-                                                            )
-                                                        })
-                                                    }
-                                                </div>
-                                            </Col>
-                                        </Row>
-
-                                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-12 text-right bluefooter-butn">
-                                                <button
-                                                    type={'button'}
-                                                    className="reset mr15 cancel-btn"
-                                                    onClick={this.cancel} >
-                                                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="submit-button mr5 save-btn" >
-                                                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                                    {isEditFlag ? 'Update' : 'Save'}
-                                                </button>
-                                            </div>
-                                        </Row>
-                                    </form>
-                                </div>
-                            </div>
+                                        <img
+                                          alt={""}
+                                          className="float-right"
+                                          onClick={() =>
+                                            this.deleteFile(
+                                              f.FileId,
+                                              f.FileName
+                                            )
+                                          }
+                                          src={require("../../../assests/images/red-cross.png")}
+                                        ></img>
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            </Col>
+                          </Row>
                         </div>
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                          <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                              type={"button"}
+                              className="reset mr15 cancel-btn"
+                              onClick={this.cancel}
+                            >
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/times.png")}
+                                  alt="cancel-icon.jpg"
+                                />
+                              </div>{" "}
+                              {"Cancel"}
+                            </button>
+                            <button
+                              type="submit"
+                              className="submit-button mr5 save-btn"
+                            >
+                              <div className={"check-icon"}>
+                                <img
+                                  src={require("../../../assests/images/check.png")}
+                                  alt="check-icon.jpg"
+                                />{" "}
+                              </div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          </div>
+                        </Row>
+                      </form>
                     </div>
+                  </div>
                 </div>
-
-            </>
+              </div>
+            </div>
+          </>
         );
     }
 }

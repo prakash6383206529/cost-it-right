@@ -14,7 +14,7 @@ import { getUOMListByUnitType } from '../../../../actions/Common';
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-
+  const isEditFlag = props.isEditFlag
   const defaultValues = {
     //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
     OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
@@ -315,6 +315,7 @@ function Pipe(props) {
                   mandatory={true}
                   handleChange={handleUOMChange}
                   errors={errors.UOMDimension}
+                  disabled={!isEditFlag}
                 />
               </Col>
               <Col md="3">
@@ -339,7 +340,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.OuterDiameter}
-                  disabled={false}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="3">
@@ -364,7 +365,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.Thickness}
-                  disabled={false}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="3">
@@ -388,7 +389,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.InnerDiameter}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
             </Row>
@@ -416,7 +417,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.SheetLength}
-                  disabled={false}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="3">
@@ -441,7 +442,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.PartLength}
-                  disabled={false}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="3">
@@ -466,7 +467,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.NumberOfPartsPerSheet}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="3">
@@ -491,7 +492,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.ScrapLength}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
             </Row>
@@ -520,7 +521,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.WeightofSheet}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="3">
@@ -545,7 +546,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.WeightofPart}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="3">
@@ -570,7 +571,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.WeightofScrap}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
 
@@ -590,7 +591,7 @@ function Pipe(props) {
                     onChange={onSideToggle}
                     checked={isOneSide}
                     id="normal-switch"
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                     background="#4DC771"
                     onColor="#4DC771"
                     onHandleColor="#ffffff"
@@ -629,7 +630,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.NetSurfaceArea}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="4">
@@ -653,7 +654,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.GrossWeight}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
               <Col md="4">
@@ -677,7 +678,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.FinishWeight}
-                  disabled={true}
+                  disabled={isEditFlag ? false : true}
                 />
               </Col>
             </Row>
@@ -691,12 +692,16 @@ function Pipe(props) {
                   onClick={cancel} >
                   <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                 </button> */}
-                <button
+                {
+                  isEditFlag &&
+                  <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                   {'Save'}
                 </button>
+                }
+               
               </div>
             </Row>
 

@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class RMListing extends Component {
     constructor(props) {
@@ -68,7 +69,8 @@ class RMListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log('CANCEL: clicked'),
+            component: () => <ConfirmComponent/>
         };
         return toastr.confirm(`${MESSAGES.MATERIAL_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -149,52 +151,79 @@ class RMListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+			prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
         return (
-            <div>
-                {this.props.loading && <Loader />}
-                <Row className="pt-30 mb-30">
-                    <Col md={12} className="text-right ">
-                        {AddAccessibility && <button
-                            type={'button'}
-                            className={'user-btn'}
-                            onClick={this.openModel}>
-                            <div className={'plus'}></div>{`Add Material`}</button>}
-                    </Col>
-                </Row>
+          <div>
+            {this.props.loading && <Loader />}
+            <Row className="pt-4 mb-3 no-filter-row">
+              <Col md={6} className="text-right search-user-block pr-0">
+                {AddAccessibility && (
+                  <button
+                    type={"button"}
+                    className={"user-btn  "}
+                    onClick={this.openModel}
+                  >
+                    <div className={"plus"}></div>
+                    {`Add`}
+                  </button>
+                )}
+              </Col>
+            </Row>
 
-                <Row>
-                    <Col>
-                        <BootstrapTable
-                            data={this.props.rawMaterialTypeDataList}
-                            striped={false}
-                            bordered={false}
-                            hover={false}
-                            options={options}
-                            search
-                            // exportCSV
-                            //ignoreSinglePage
-                            ref={'table'}
-                            className={'RM-table'}
-                            pagination>
-                            {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="MaterialType" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Density" dataSort={true}>Density (g/cm3)</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialTypeId" dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-                        </BootstrapTable>
-                    </Col>
-                </Row>
-                {isOpen && <AddMaterialType
-                    isOpen={isOpen}
-                    closeDrawer={this.closeDrawer}
-                    isEditFlag={isEditFlag}
-                    ID={ID}
-                    anchor={'right'}
-                />}
-            </div>
+            <Row>
+              <Col>
+                <BootstrapTable
+                  data={this.props.rawMaterialTypeDataList}
+                  striped={false}
+                  bordered={false}
+                  hover={false}
+                  options={options}
+                  search
+                  // exportCSV
+                  //ignoreSinglePage
+                  ref={"table"}
+                  className={"RM-table"}
+                  pagination
+                >
+                  {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+                  <TableHeaderColumn
+                    dataField="MaterialType"
+                    dataAlign="left"
+                    dataSort={true}
+                  >
+                    Material
+                  </TableHeaderColumn>
+                  <TableHeaderColumn dataField="Density" dataSort={true}>
+                    Density (g/cm3)
+                  </TableHeaderColumn>
+                  <TableHeaderColumn
+                    dataField="MaterialTypeId"
+                    dataAlign="right"
+                    export={false}
+                    isKey={true}
+                    dataFormat={this.buttonFormatter}
+                  >
+                    Actions
+                  </TableHeaderColumn>
+                </BootstrapTable>
+              </Col>
+            </Row>
+            {isOpen && (
+              <AddMaterialType
+                isOpen={isOpen}
+                closeDrawer={this.closeDrawer}
+                isEditFlag={isEditFlag}
+                ID={ID}
+                anchor={"right"}
+              />
+            )}
+          </div>
         );
     }
 }

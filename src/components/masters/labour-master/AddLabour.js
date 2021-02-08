@@ -499,305 +499,368 @@ class AddLabour extends Component {
         const { handleSubmit, } = this.props;
         const { isEditFlag, isOpenMachineType, } = this.state;
         return (
-            <div>
-                {/* {isLoader && <Loader />} */}
-                <div className="login-container signup-form">
+          <div className="container-fluid">
+            {/* {isLoader && <Loader />} */}
+            <div className="login-container signup-form">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="shadow-lgg login-formg">
                     <div className="row">
-                        <div className="col-md-12">
-                            <div className="shadow-lgg login-formg">
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <div className="form-heading mb-0">
-                                            <h2>{this.state.isEditFlag ? 'Update Labour' : 'Add Labour'}</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                                <form
-                                    noValidate
-                                    className="form"
-                                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                >
-                                    <Row>
-                                        <Col md="4" className="switch mb15">
-                                            <label className="switch-level">
-                                                <div className={'left-title'}>Employed</div>
-                                                <Switch
-                                                    onChange={this.onPressEmployeeTerms}
-                                                    checked={this.state.IsEmployeContractual}
-                                                    id="normal-switch"
-                                                    disabled={isEditFlag ? true : false}
-                                                    background="#4DC771"
-                                                    onColor="#4DC771"
-                                                    onHandleColor="#ffffff"
-                                                    offColor="#4DC771"
-                                                    uncheckedIcon={false}
-                                                    checkedIcon={false}
-                                                    height={20}
-                                                    width={46}
-                                                />
-                                                <div className={'right-title'}>Contractual</div>
-                                            </label>
-                                        </Col>
-                                        <Col md="4" className="switch mb15">
-                                            <label className="switch-level">
-                                                <div className={'left-title'}>Zero Based</div>
-                                                <Switch
-                                                    onChange={this.onPressVendor}
-                                                    checked={this.state.IsVendor}
-                                                    id="normal-switch"
-                                                    disabled={true}
-                                                    background="#4DC771"
-                                                    onColor="#4DC771"
-                                                    onHandleColor="#ffffff"
-                                                    offColor="#A9A9A9"
-                                                    uncheckedIcon={false}
-                                                    checkedIcon={false}
-                                                    height={20}
-                                                    width={46}
-                                                />
-                                                <div className={'right-title'}>Vendor Based</div>
-                                            </label>
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col md="12" className="filter-block">
-                                            <div className=" flex-fills mb-2">
-                                                <h5>{'Vendor:'}</h5>
-                                            </div>
-                                        </Col>
-                                        {this.state.IsEmployeContractual &&
-                                            <Col md="3">
-                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                    <div className="fullinput-icon">
-                                                        <Field
-                                                            name="VendorName"
-                                                            type="text"
-                                                            label="Vendor Name"
-                                                            component={searchableSelect}
-                                                            placeholder={'--select--'}
-                                                            options={this.renderListing('VendorNameList')}
-                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                                            required={true}
-                                                            handleChangeDescription={this.handleVendorName}
-                                                            valueDescription={this.state.vendorName}
-                                                            disabled={isEditFlag ? true : false}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </Col>}
-                                        <Col md="3">
-                                            <Field
-                                                name="state"
-                                                type="text"
-                                                label="State"
-                                                component={searchableSelect}
-                                                placeholder={'--- Select ---'}
-                                                options={this.renderListing('state')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handleState}
-                                                valueDescription={this.state.StateName}
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                name="Plant"
-                                                type="text"
-                                                label="Plant"
-                                                component={searchableSelect}
-                                                placeholder={'--- Select ---'}
-                                                options={this.renderListing('plant')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
-                                                required={true}
-                                                handleChangeDescription={this.handlePlants}
-                                                valueDescription={this.state.selectedPlants}
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                        </Col>
-                                    </Row>
-
-                                    <Row>
-                                        <Col md="12" className="filter-block">
-                                            <div className=" flex-fills mb-2">
-                                                <h5>{'Rate Per Person:'}</h5>
-                                            </div>
-                                        </Col>
-
-                                        <Col md="3">
-                                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                <div className="fullinput-icon">
-                                                    <Field
-                                                        name="MachineType"
-                                                        type="text"
-                                                        label="Machine Type"
-                                                        component={searchableSelect}
-                                                        placeholder={'--select--'}
-                                                        options={this.renderListing('MachineTypeList')}
-                                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                        //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                                                        //required={true}
-                                                        handleChangeDescription={this.handleMachineType}
-                                                        valueDescription={this.state.machineType}
-                                                        disabled={false}
-                                                    />
-                                                </div>
-                                                {!isEditFlag && <div
-                                                    onClick={this.machineTypeToggler}
-                                                    className={'plus-icon-square mr15 right'}>
-                                                </div>}
-                                            </div>
-                                        </Col>
-                                        <Col md="3">
-                                            <Field
-                                                name="LabourTypeIds"
-                                                type="text"
-                                                label="Labour Type"
-                                                component={searchableSelect}
-                                                placeholder={'Select Labour'}
-                                                options={this.renderListing('labourList')}
-                                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                                                //required={true}
-                                                handleChangeDescription={this.labourHandler}
-                                                valueDescription={this.state.labourType}
-                                            />
-                                        </Col>
-                                        <Col md="2">
-                                            <Field
-                                                label={`Rate Per Person/Annum (INR)`}
-                                                name={"LabourRate"}
-                                                type="text"
-                                                placeholder={'Enter'}
-                                                validate={[number, decimalLength2]}
-                                                component={renderText}
-                                                //required={true}
-                                                disabled={false}
-                                                className=" "
-                                                customClassName="withBorder"
-                                            />
-                                        </Col>
-                                        <Col md="2">
-                                            <div className="form-group">
-                                                <label>
-                                                    Effective Date
-                                                    {/* <span className="asterisk-required">*</span> */}
-                                                </label>
-                                                <div className="inputbox date-section">
-                                                    <DatePicker
-                                                        name="EffectiveDate"
-                                                        selected={this.state.effectiveDate}
-                                                        onChange={this.handleEffectiveDateChange}
-                                                        showMonthDropdown
-                                                        showYearDropdown
-                                                        dateFormat="dd/MM/yyyy"
-                                                        //maxDate={new Date()}
-                                                        dropdownMode="select"
-                                                        placeholderText="Select date"
-                                                        className="withBorder"
-                                                        autoComplete={'off'}
-                                                        disabledKeyboardNavigation
-                                                        onChangeRaw={(e) => e.preventDefault()}
-                                                        disabled={false}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </Col>
-                                        <Col md="2">
-                                            <div>
-                                                {this.state.isEditIndex ?
-                                                    <>
-                                                        <button
-                                                            type="button"
-                                                            className={'btn btn-primary mt30 pull-left mr5'}
-                                                            onClick={this.updateGrid}
-                                                        >Update</button>
-
-                                                        <button
-                                                            type="button"
-                                                            className={'cancel-btn mt30 pull-left'}
-                                                            onClick={this.resetGridData}
-                                                        >Cancel</button>
-                                                    </>
-                                                    :
-                                                    <button
-                                                        type="button"
-                                                        className={'user-btn mt30 pull-left'}
-                                                        onClick={this.gridHandler}>
-                                                        <div className={'plus'}></div>ADD</button>}
-
-                                            </div>
-                                        </Col>
-                                        <Col md="12">
-                                            <Table className="table" size="sm" >
-                                                <thead>
-                                                    <tr>
-                                                        <th>{`Machine Type`}</th>
-                                                        <th>{`Labour Type`}</th>
-                                                        <th>{`Rate Per Person/Annum(INR)`}</th>
-                                                        <th>{`Effective Date`}</th>
-                                                        <th>{`Action`}</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody >
-                                                    {
-                                                        this.state.gridTable &&
-                                                        this.state.gridTable.map((item, index) => {
-                                                            return (
-                                                                <tr key={index}>
-                                                                    <td>{item.MachineType}</td>
-                                                                    <td>{item.LabourType}</td>
-                                                                    <td>{item.LabourRate}</td>
-                                                                    <td>{moment(item.EffectiveDate).format('DD/MM/YYYY')}</td>
-                                                                    <td>
-                                                                        <button className="Edit mr-2" type={'button'} onClick={() => this.editGridItemDetails(index)} />
-                                                                        <button className="Delete" type={'button'} onClick={() => this.deleteGridItem(index)} />
-                                                                    </td>
-                                                                </tr>
-                                                            )
-                                                        })
-                                                    }
-                                                    {this.state.gridTable.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                                                </tbody>
-                                            </Table>
-                                        </Col>
-
-                                    </Row>
-
-                                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                                        <div className="col-sm-12 text-right bluefooter-butn">
-                                            <button
-                                                type={'button'}
-                                                className="reset mr15 cancel-btn"
-                                                onClick={this.cancel} >
-                                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                className="submit-button mr5 save-btn" >
-                                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                                {isEditFlag ? 'Update' : 'Save'}
-                                            </button>
-                                        </div>
-                                    </Row>
-
-                                </form>
-                            </div>
+                      <div className="col-md-6">
+                        <div className="form-heading mb-0">
+                          <h1>
+                            {this.state.isEditFlag
+                              ? "Update Labour"
+                              : "Add Labour"}
+                          </h1>
                         </div>
+                      </div>
                     </div>
+                    <form
+                      noValidate
+                      className="form"
+                      onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    >
+                      <div className="add-min-height">
+                      <Row>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className={"left-title"}>Employed</div>
+                            <Switch
+                              onChange={this.onPressEmployeeTerms}
+                              checked={this.state.IsEmployeContractual}
+                              id="normal-switch"
+                              disabled={isEditFlag ? true : false}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={"right-title"}>Contractual</div>
+                          </label>
+                        </Col>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className={"left-title"}>Zero Based</div>
+                            <Switch
+                              onChange={this.onPressVendor}
+                              checked={this.state.IsVendor}
+                              id="normal-switch"
+                              disabled={true}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#A9A9A9"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={"right-title"}>Vendor Based</div>
+                          </label>
+                        </Col>
+                      </Row>
+
+                      <Row>
+                        <Col md="12" className="filter-block">
+                          <div className=" flex-fills mb-2 w-100 pl-0">
+                            <h5>{"Vendor:"}</h5>
+                          </div>
+                        </Col>
+                        {this.state.IsEmployeContractual && (
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="VendorName"
+                                  type="text"
+                                  label="Vendor Name"
+                                  component={searchableSelect}
+                                  placeholder={"--select--"}
+                                  options={this.renderListing("VendorNameList")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.vendorName == null ||
+                                    this.state.vendorName.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleVendorName
+                                  }
+                                  valueDescription={this.state.vendorName}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                        )}
+                        <Col md="3">
+                          <Field
+                            name="state"
+                            type="text"
+                            label="State"
+                            component={searchableSelect}
+                            placeholder={"--- Select ---"}
+                            options={this.renderListing("state")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.StateName == null ||
+                              this.state.StateName.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleState}
+                            valueDescription={this.state.StateName}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            name="Plant"
+                            type="text"
+                            label="Plant"
+                            component={searchableSelect}
+                            placeholder={"--- Select ---"}
+                            options={this.renderListing("plant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.selectedPlants == null ||
+                              this.state.selectedPlants.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handlePlants}
+                            valueDescription={this.state.selectedPlants}
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                      </Row>
+
+                      <Row>
+                        <Col md="12" className="filter-block">
+                          <div className=" flex-fills mb-2 w-100 pl-0">
+                            <h5>{"Rate Per Person:"}</h5>
+                          </div>
+                        </Col>
+
+                        <Col md="3" className="col">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <div className="fullinput-icon">
+                              <Field
+                                name="MachineType"
+                                type="text"
+                                label="Machine Type"
+                                component={searchableSelect}
+                                placeholder={"--select--"}
+                                options={this.renderListing("MachineTypeList")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
+                                //required={true}
+                                handleChangeDescription={this.handleMachineType}
+                                valueDescription={this.state.machineType}
+                                disabled={false}
+                              />
+                            </div>
+                            {!isEditFlag && (
+                              <div
+                                onClick={this.machineTypeToggler}
+                                className={"plus-icon-square right"}
+                              ></div>
+                            )}
+                          </div>
+                        </Col>
+                        <Col md="3" className="col">
+                          <Field
+                            name="LabourTypeIds"
+                            type="text"
+                            label="Labour Type"
+                            component={searchableSelect}
+                            placeholder={"Select Labour"}
+                            options={this.renderListing("labourList")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
+                            //required={true}
+                            handleChangeDescription={this.labourHandler}
+                            valueDescription={this.state.labourType}
+                          />
+                        </Col>
+                        <Col md="3" className="col">
+                          <Field
+                            label={`Rate Per Person/Annum (INR)`}
+                            name={"LabourRate"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[number, decimalLength2]}
+                            component={renderText}
+                            //required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+                        <Col md="3" className="col">
+                          <div className="form-group">
+                            <label>
+                              Effective Date
+                              {/* <span className="asterisk-required">*</span> */}
+                            </label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dateFormat="dd/MM/yyyy"
+                                //maxDate={new Date()}
+                                dropdownMode="select"
+                                placeholderText="Select date"
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={false}
+                              />
+                            </div>
+                          </div>
+                        </Col>
+                        <Col md="3" className="col">
+                          <div>
+                            {this.state.isEditIndex ? (
+                              <>
+                                <button
+                                  type="button"
+                                  className={
+                                    "btn btn-primary mb-4 pull-left mr5"
+                                  }
+                                  onClick={this.updateGrid}
+                                >
+                                  Update
+                                </button>
+
+                                <button
+                                  type="button"
+                                  className={"reset-btn mb-4 pull-left"}
+                                  onClick={this.resetGridData}
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                className={"user-btn mb-4 pull-left"}
+                                onClick={this.gridHandler}
+                              >
+                                <div className={"plus"}></div>ADD
+                              </button>
+                            )}
+                          </div>
+                        </Col>
+                        <Col md="12">
+                          <Table className="table border" size="sm">
+                            <thead>
+                              <tr>
+                                <th>{`Machine Type`}</th>
+                                <th>{`Labour Type`}</th>
+                                <th>{`Rate Per Person/Annum(INR)`}</th>
+                                <th>{`Effective Date`}</th>
+                                <th>{`Action`}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {this.state.gridTable &&
+                                this.state.gridTable.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <td>{item.MachineType}</td>
+                                      <td>{item.LabourType}</td>
+                                      <td>{item.LabourRate}</td>
+                                      <td>
+                                        {moment(item.EffectiveDate).format(
+                                          "DD/MM/YYYY"
+                                        )}
+                                      </td>
+                                      <td>
+                                        <button
+                                          className="Edit mr-2"
+                                          type={"button"}
+                                          onClick={() =>
+                                            this.editGridItemDetails(index)
+                                          }
+                                        />
+                                        <button
+                                          className="Delete"
+                                          type={"button"}
+                                          onClick={() =>
+                                            this.deleteGridItem(index)
+                                          }
+                                        />
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                            </tbody>
+                          </Table>
+                          {this.state.gridTable.length === 0 && (
+                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          )}
+                        </Col>
+                      </Row>
+                      </div>
+
+                      <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn">
+                          <button
+                            type={"button"}
+                            className="reset mr15 cancel-btn"
+                            onClick={this.cancel}
+                          >
+                            <div className={"cross-icon"}>
+                              <img
+                                src={require("../../../assests/images/times.png")}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>{" "}
+                            {"Cancel"}
+                          </button>
+                          <button
+                            type="submit"
+                            className="submit-button mr5 save-btn"
+                          >
+                            <div className={"check-icon"}>
+                              <img
+                                src={require("../../../assests/images/check.png")}
+                                alt="check-icon.jpg"
+                              />{" "}
+                            </div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                        </div>
+                      </Row>
+                    </form>
+                  </div>
                 </div>
-                {isOpenMachineType && <AddMachineTypeDrawer
-                    isOpen={isOpenMachineType}
-                    closeDrawer={this.closeMachineTypeDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
+              </div>
             </div>
+            {isOpenMachineType && (
+              <AddMachineTypeDrawer
+                isOpen={isOpenMachineType}
+                closeDrawer={this.closeMachineTypeDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )}
+          </div>
         );
     }
 }

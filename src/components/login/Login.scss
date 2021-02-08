@@ -231,6 +231,9 @@ label{margin-bottom: 0;}
 }
 }
 
+
+
+
 .right-sideimg{
 img
 {width: 100%;
@@ -251,6 +254,8 @@ img
   .small-screen {
     height: inherit;
   }
+
+  .drawer-wrapper.drawer-md {width: 100%;}
 }
 @media screen and (max-width: 575px) {
   .logo {

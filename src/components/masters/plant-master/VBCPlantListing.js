@@ -14,6 +14,7 @@ import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class VBCPlantListing extends Component {
     constructor(props) {
@@ -65,10 +66,11 @@ class VBCPlantListing extends Component {
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDeleteItem(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
+          onOk: () => {
+            this.confirmDeleteItem(Id);
+          },
+          onCancel: () => console.log("CANCEL: clicked"),
+          component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -339,137 +341,205 @@ class VBCPlantListing extends Component {
         const { handleSubmit, AddAccessibility } = this.props;
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
-            clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-            //exportCSVText: 'Download Excel',
-            //onExportToCSV: this.onExportToCSV,
-            //paginationShowsTotal: true,
-            paginationShowsTotal: this.renderPaginationShowsTotal,
-            paginationSize: 5,
+          clearSearch: true,
+          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+          //exportCSVText: 'Download Excel',
+          //onExportToCSV: this.onExportToCSV,
+          //paginationShowsTotal: true,
+          paginationShowsTotal: this.renderPaginationShowsTotal,
+          prePage: <span className="prev-page-pg"></span>, // Previous page button text
+          nextPage: <span className="next-page-pg"></span>, // Next page button text
+          firstPage: <span className="first-page-pg"></span>, // First page button text
+          lastPage: <span className="last-page-pg"></span>,
+          paginationSize: 5,
         };
 
         return (
-            <>
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="8" className="filter-block p-0">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="CountryId"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Country'}
-                                        options={this.selectType('country')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.countryHandler}
-                                        valueDescription={this.state.country}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="StateId"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'State'}
-                                        options={this.selectType('state')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.stateHandler}
-                                        valueDescription={this.state.state}
-                                    />
-                                </div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="CityId"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'City'}
-                                        options={this.selectType('city')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.cityHandler}
-                                        valueDescription={this.state.city}
-                                    />
-                                </div>
+          <>
+            {/* {this.props.loading && <Loader />} */}
+            <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+              <Row className="pt-4">
+                {this.state.shown ? (
+                <Col md="8" className="filter-block">
+                  <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="CountryId"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"Country"}
+                        options={this.selectType("country")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.country == null || this.state.country.length == 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={this.countryHandler}
+                        valueDescription={this.state.country}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="StateId"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"State"}
+                        options={this.selectType("state")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.state == null || this.state.state.length == 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={this.stateHandler}
+                        valueDescription={this.state.state}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="CityId"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"City"}
+                        options={this.selectType("city")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.city == null || this.state.city.length == 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={this.cityHandler}
+                        valueDescription={this.state.city}
+                      />
+                    </div>
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
+                    <div className="flex-fill">
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.resetFilter}
+                        className="reset mr10"
+                      >
+                        {"Reset"}
+                      </button>
 
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                        <Col md="4" className="search-user-block">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    {AddAccessibility &&
-                                        <button
-                                            type="button"
-                                            className={'user-btn'}
-                                            onClick={this.formToggle}>
-                                            <div className={'plus'}></div>ADD VBC PLANT</button>
-                                    }
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.filterList}
+                        className="apply mr5"
+                      >
+                        {"Apply"}
+                      </button>
+                    </div>
+                  </div>
+                </Col>
+                ) : ("")}
+                <Col md="6" className="search-user-block mb-3">
+                  <div className="d-flex justify-content-end bd-highlight w100">
+                    <div>
+                    {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
+                      {AddAccessibility && (
+                        <button
+                          type="button"
+                          className={"user-btn"}
+                          onClick={this.formToggle}
+                        >
+                          <div className={"plus"}></div>ADD
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </form>
+            <BootstrapTable
+              data={this.state.tableData}
+              striped={false}
+              hover={false}
+              bordered={false}
+              options={options}
+              search
+              // exportCSV
+              //ignoreSinglePage
+              ref={"table"}
+              trClassName={"userlisting-row"}
+              tableHeaderClass="my-custom-header"
+              pagination
+            >
+              <TableHeaderColumn
+                dataField="VendorName"
+                dataAlign="left"
+                dataSort={true}
+              >
+                Vendor Name
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="PlantName"
+                dataAlign="center"
+                dataSort={true}
+              >
+                Plant Name
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="PlantCode"
+                dataAlign="center"
+                dataSort={true}
+              >
+                Plant Code
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="CountryName"
+                dataAlign="center"
+                dataSort={true}
+              >
+                Country
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="StateName"
+                dataAlign="center"
+                dataSort={true}
+              >
+                State
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="CityName"
+                dataAlign="center"
+                dataSort={true}
+              >
+                City
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="IsActive"
+                export={false}
+                dataFormat={this.statusButtonFormatter}
+              >
+                Status
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                className="action"
+                dataField="PlantId"
+                export={false}
+                isKey={true}
+                dataFormat={this.buttonFormatter}
+              >
+                Actions
+              </TableHeaderColumn>
+            </BootstrapTable>
 
-                </form>
-                <BootstrapTable
-                    data={this.state.tableData}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    // exportCSV
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="VendorName" dataAlign="center" dataSort={true}>Vendor Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantName" dataAlign="center" dataSort={true}>Plant Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CountryName" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
-                    <TableHeaderColumn dataField="StateName" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CityName" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
-                    <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
-
-                {isOpenVendor && <AddVBCPlant
-                    isOpen={isOpenVendor}
-                    closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={isEditFlag}
-                    ID={this.state.ID}
-                    anchor={'right'}
-                />}
-            </ >
+            {isOpenVendor && (
+              <AddVBCPlant
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer}
+                isEditFlag={isEditFlag}
+                ID={this.state.ID}
+                anchor={"right"}
+              />
+            )}
+          </>
         );
     }
 }

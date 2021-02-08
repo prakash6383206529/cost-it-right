@@ -20,6 +20,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import AddSpecification from './AddSpecification';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class SpecificationListing extends Component {
     constructor(props) {
@@ -159,7 +160,8 @@ class SpecificationListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log('CANCEL: clicked'),
+            component : () => <ConfirmComponent/>
         };
         return toastr.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -300,6 +302,10 @@ class SpecificationListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+			prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -307,8 +313,9 @@ class SpecificationListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="8" className="filter-block">
+                    <Row className="pt-4">
+                        {this.state.shown ? ( 
+                            <Col md="8" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -317,7 +324,7 @@ class SpecificationListing extends Component {
                                         type="text"
                                         // label="Raw Material"
                                         component={searchableSelect}
-                                        placeholder={'-Raw Material-'}
+                                        placeholder={'Raw Material'}
                                         options={this.renderListing('material')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RawMaterial == null || this.state.RawMaterial.length === 0) ? [required] : []}
@@ -333,7 +340,7 @@ class SpecificationListing extends Component {
                                         type="text"
                                         // label="RM Grade"
                                         component={searchableSelect}
-                                        placeholder={'-RM Grade-'}
+                                        placeholder={'RM Grade'}
                                         options={this.renderListing('grade')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                         validate={(this.state.RMGrade == null || this.state.RMGrade.length === 0) ? [required] : []}
@@ -362,10 +369,19 @@ class SpecificationListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md={4} className="text-right">
+                        ) : (
+                        ""
+                        )} 
+                        <Col md={6} className="text-right mb-3 search-user-block">
+                        {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                             {BulkUploadAccessibility && <button
                                 type="button"
-                                className={'user-btn mr5'}
+                                className={'user-btn mr5 '}
                                 onClick={this.bulkToggle}>
                                 <div className={'upload'}></div>Bulk upload</button>}
                             {AddAccessibility && <button
@@ -392,7 +408,7 @@ class SpecificationListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>Raw Material</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RawMaterial" dataAlign="center" >Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMGrade" dataAlign="center" >Grade</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMSpec" dataAlign="center">Specification</TableHeaderColumn>

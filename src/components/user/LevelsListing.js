@@ -15,6 +15,7 @@ import LevelTechnologyListing from './LevelTechnologyListing';
 import Level from './Level';
 import { LEVELS } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
+import ConfirmComponent from '../../helper/ConfirmComponent';
 
 class LevelsListing extends Component {
 	constructor(props) {
@@ -144,7 +145,8 @@ class LevelsListing extends Component {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
 			},
-			onCancel: () => console.log('CANCEL: clicked')
+			onCancel: () => console.log('CANCEL: clicked'),
+			component: () => <ConfirmComponent/>
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
@@ -192,15 +194,26 @@ class LevelsListing extends Component {
 		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId,
 			AddAccessibility, EditAccessibility, DeleteAccessibility } = this.state;
 		const options = {
-			//clearSearch: true,
-			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-			afterSearch: this.afterSearch,
-			paginationShowsTotal: this.renderPaginationShowsTotal,
-		};
+      //clearSearch: true,
+      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      afterSearch: this.afterSearch,
+      paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
+      pagination: true,
+        sizePerPageList: [ {
+          text: '5', value: 5
+        }, {
+          text: '10', value: 10
+        }],
+        sizePerPage: 5,
+    };
 		return (
 			<>
 				{this.props.loading && <Loader />}
-				<Row className="pt-30">
+				<Row className="pt-4">
 					<Col md="6">
 						<Row>
 							<Col md="6">
@@ -212,7 +225,7 @@ class LevelsListing extends Component {
 									className={'user-btn'}
 									onClick={this.levelToggler}>
 									<div className={'plus'}></div>
-									{'Add Level'}</button>}
+									{'Add'}</button>}
 							</Col>
 							<Col className="mt-0 level-table">
 								<BootstrapTable
@@ -225,7 +238,7 @@ class LevelsListing extends Component {
 									ignoreSinglePage
 									ref={'table'}
 									trClassName={'userlisting-row'}
-									tableHeaderClass='my-custom-header'
+									tableHeaderClass={'my-custom-header'}
 									pagination>
 									<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
 									<TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>

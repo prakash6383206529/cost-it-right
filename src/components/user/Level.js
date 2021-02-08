@@ -303,7 +303,7 @@ class Level extends Component {
               <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 
                 <Row className="drawer-heading">
-                  <Col>
+                  <Col className="d-flex">
                     {
                       isShowForm ?
                         <div className={'header-wrapper left'}>
@@ -324,8 +324,8 @@ class Level extends Component {
                 <div className="drawer-body">
 
                   {this.props.isShowForm &&
-                    <div className="row">
-                      <div className="input-group  form-group col-md-12 input-withouticon" >
+                    <div className="row pr-0">
+                      <div className="col-md-12 input-withouticon" >
                         <Field
                           label="Level Name"
                           name={"LevelName"}
@@ -338,7 +338,7 @@ class Level extends Component {
                           customClassName={'withBorder'}
                         />
                       </div>
-                      <div className="input-group  form-group col-md-12 input-withouticon" >
+                      <div className="col-md-12 input-withouticon mb-0" >
                         <Field
                           label="Sequence"
                           name={"Sequence"}
@@ -353,7 +353,7 @@ class Level extends Component {
                       </div>
 
 
-                      <div className="text-right mt-15 col-md-12">
+                      <div className="text-right mt-0 col-md-12">
                         <button
                           //disabled={pristine || submitting}
                           onClick={this.cancel}
@@ -380,7 +380,7 @@ class Level extends Component {
 
 
                   {this.props.isShowMappingForm &&
-                    <div className="row">
+                    <div className="row pr-0">
                       <div className="input-group  form-group col-md-12 input-withouticon" >
                         <Field
                           name="TechnologyId"
@@ -396,7 +396,7 @@ class Level extends Component {
                           valueDescription={this.state.technology}
                         />
                       </div>
-                      <div className="input-group col-md-12  form-group input-withouticon" >
+                      <div className="input-group col-md-12  form-group input-withouticon mb-0" >
                         <Field
                           name="LevelId"
                           type="text"
@@ -411,7 +411,7 @@ class Level extends Component {
                           valueDescription={this.state.level}
                         />
                       </div>
-                      <div className="text-right mt-15 col-md-12">
+                      <div className="text-right mt-0 col-md-12">
                         {/* <input
                             //disabled={pristine || submitting}
                             onClick={this.cancel}

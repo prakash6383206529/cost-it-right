@@ -10,6 +10,7 @@ import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import ConfirmComponent from '../../helper/ConfirmComponent';
 
 class LevelTechnologyListing extends Component {
 	constructor(props) {
@@ -65,7 +66,8 @@ class LevelTechnologyListing extends Component {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
 			},
-			onCancel: () => console.log('CANCEL: clicked')
+			onCancel: () => console.log('CANCEL: clicked'),
+			component: () => <ConfirmComponent/>
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
@@ -112,6 +114,18 @@ class LevelTechnologyListing extends Component {
 			//clearSearch: true,
 			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
 			afterSearch: this.afterSearch,
+			paginationShowsTotal: this.renderPaginationShowsTotal,
+			prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
+			pagination: true,
+			sizePerPageList: [ {
+			text: '5', value: 5
+			}, {
+			text: '10', value: 10
+			}],
+			sizePerPage: 5,
 		};
 		return (
 			<>
@@ -126,7 +140,7 @@ class LevelTechnologyListing extends Component {
 							className={'user-btn'}
 							onClick={this.props.mappingToggler}>
 							<div className={'plus'}></div>
-							{'Add Mapping'}</button>}
+							{'Add'}</button>}
 					</Col>
 
 					<Col className="level-table">

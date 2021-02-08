@@ -16,6 +16,7 @@ import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
+import ConfirmComponent from "../../../helper/ConfirmComponent";
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -87,10 +88,11 @@ class BOPImportListing extends Component {
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
+          onOk: () => {
+            this.confirmDelete(Id);
+          },
+          onCancel: () => console.log("CANCEL: clicked"),
+          component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -326,6 +328,10 @@ class BOPImportListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -333,8 +339,9 @@ class BOPImportListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
-                        <Col md="10" className="filter-block">
+                    <Row className="pt-4 filter-row-large">
+                        {this.state.shown ? (
+                        <Col md="12" lg="9" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                 <div className="flex-fill">
@@ -343,7 +350,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Costing Head-'}
+                                        placeholder={'Costing Head'}
                                         isClearable={false}
                                         options={this.renderListing('costingHead')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -359,7 +366,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Category-'}
+                                        placeholder={'Category'}
                                         isClearable={false}
                                         options={this.renderListing('BOPCategory')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -375,7 +382,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Vendor-'}
+                                        placeholder={'Vendor'}
                                         isClearable={false}
                                         options={this.renderListing('vendor')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -391,7 +398,7 @@ class BOPImportListing extends Component {
                                         type="text"
                                         label=""
                                         component={searchableSelect}
-                                        placeholder={'-Plant-'}
+                                        placeholder={'Plant'}
                                         isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -416,16 +423,24 @@ class BOPImportListing extends Component {
                                         type="button"
                                         //disabled={pristine || submitting}
                                         onClick={this.filterList}
-                                        className="apply mr5"
+                                        className="apply"
                                     >
                                         {'Apply'}
                                     </button>
                                 </div>
                             </div>
                         </Col>
-                        <Col md="2" className="search-user-block">
+                        ) : ("")}
+                        
+                        <Col md="6" lg="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -456,7 +471,7 @@ class BOPImportListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Category'}</TableHeaderColumn>

@@ -138,158 +138,175 @@ class AddComponentForm extends Component {
     render() {
         const { handleSubmit, isEditFlag, } = this.props;
         return (
-            <>
+          <>
+            <form
+              noValidate
+              className="form"
+              onSubmit={handleSubmit(this.onSubmit.bind(this))}
+            >
+              <Row>
+                <Col md="6">
+                  <Field
+                    name="PartNumber"
+                    type="text"
+                    label={"Part No."}
+                    component={searchableSelect}
+                    placeholder={"--Select Part--"}
+                    options={this.renderListing("part")}
+                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                    validate={
+                      this.state.part == null || this.state.part.length === 0
+                        ? [required]
+                        : []
+                    }
+                    required={true}
+                    handleChangeDescription={this.handlePartChange}
+                    valueDescription={this.state.part}
+                  />
+                </Col>
+                <Col md="6">
+                  <Field
+                    label={`Part Name`}
+                    name={"PartName"}
+                    type="text"
+                    placeholder={""}
+                    //validate={[required]}
+                    component={renderText}
+                    //required={true}
+                    className=""
+                    customClassName={"withBorder"}
+                    disabled={true}
+                  />
+                </Col>
 
-                <form
-                    noValidate
-                    className="form"
-                    onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                >
-                    <Row>
-                        <Col md='6'>
-                            <Field
-                                name="PartNumber"
-                                type="text"
-                                label={'Part No.'}
-                                component={searchableSelect}
-                                placeholder={'--Select Part--'}
-                                options={this.renderListing('part')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.part == null || this.state.part.length === 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handlePartChange}
-                                valueDescription={this.state.part}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`Part Name`}
-                                name={"PartName"}
-                                type="text"
-                                placeholder={''}
-                                //validate={[required]}
-                                component={renderText}
-                                //required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
+                <Col md="6">
+                  <Field
+                    label={`Part Description`}
+                    name={"PartDescription"}
+                    type="text"
+                    placeholder={""}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    className=""
+                    customClassName={"withBorder"}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="6">
+                  <Field
+                    label={`ECN No.`}
+                    name={"ECNNumber"}
+                    type="text"
+                    placeholder={""}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    className=""
+                    customClassName={"withBorder"}
+                    disabled={true}
+                  />
+                </Col>
 
-                        <Col md="6">
-                            <Field
-                                label={`Part Description`}
-                                name={"PartDescription"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`ECN No.`}
-                                name={"ECNNumber"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
+                <Col md="6">
+                  <Field
+                    label={`Revision No.`}
+                    name={"RevisionNumber"}
+                    type="text"
+                    placeholder={""}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    className=""
+                    customClassName={"withBorder"}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="6">
+                  <Field
+                    label={`Drawing No.`}
+                    name={"DrawingNumber"}
+                    type="text"
+                    placeholder={""}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    className=""
+                    customClassName={"withBorder"}
+                    disabled={true}
+                  />
+                </Col>
 
-                        <Col md="6">
-                            <Field
-                                label={`Revision No.`}
-                                name={"RevisionNumber"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`Drawing No.`}
-                                name={"DrawingNumber"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
+                <Col md="6">
+                  <Field
+                    label={`Group Code`}
+                    name={"GroupCode"}
+                    type="text"
+                    placeholder={""}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    className=""
+                    customClassName={"withBorder"}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="6">
+                  <Field
+                    label={`Quantity`}
+                    name={"Quantity"}
+                    type="text"
+                    placeholder={""}
+                    validate={[number, required]}
+                    component={renderText}
+                    required={true}
+                    className=""
+                    customClassName={"withBorder"}
+                    disabled={false}
+                  />
+                </Col>
+              </Row>
 
-                        <Col md="6">
-                            <Field
-                                label={`Group Code`}
-                                name={"GroupCode"}
-                                type="text"
-                                placeholder={''}
-                                validate={[required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={true}
-                            />
-                        </Col>
-                        <Col md="6">
-                            <Field
-                                label={`Quantity`}
-                                name={"Quantity"}
-                                type="text"
-                                placeholder={''}
-                                validate={[number, required]}
-                                component={renderText}
-                                required={true}
-                                className=""
-                                customClassName={'withBorder'}
-                                disabled={false}
-                            />
-                        </Col>
-                    </Row>
-
-                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                        <div className="col-sm-12 text-right bluefooter-butn">
-                            <button
-                                type={'button'}
-                                className="reset mr15 cancel-btn"
-                                onClick={this.cancel} >
-                                <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                            </button>
-                            <button
-                                type={'submit'}
-                                className="submit-button mr5 save-btn"
-                                onClick={() => this.setState({ isAddMore: true })} >
-                                <div className={'plus'}></div>
-                                {'ADD MORE'}
-                            </button>
-                            <button
-                                type="submit"
-                                className="submit-button mr5 save-btn"
-                                onClick={() => this.setState({ isAddMore: false })} >
-                                <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                {isEditFlag ? 'Update' : 'Save'}
-                            </button>
-                        </div>
-                    </Row>
-                </form>
-            </>
+              <Row className="sf-btn-footer no-gutters justify-content-between">
+                <div className="col-sm-12 text-right d-flex align-items-center justify-content-end pr-3">
+                  <button
+                    type={"button"}
+                    className="reset mt-2 mr-2 cancel-btn"
+                    onClick={this.cancel}
+                  >
+                    <div className={"cross-icon"}>
+                      <img
+                        src={require("../../../assests/images/times.png")}
+                        alt="cancel-icon.jpg"
+                      />
+                    </div>{" "}
+                    {"Cancel"}
+                  </button>
+                  <button
+                    type={"submit"}
+                    className="submit-button mt-2 mr-2 save-btn"
+                    onClick={() => this.setState({ isAddMore: true })}
+                  >
+                    <div className={"plus"}></div>
+                    {"ADD MORE"}
+                  </button>
+                  <button
+                    type="submit"
+                    className="submit-button mt-2 save-btn"
+                    onClick={() => this.setState({ isAddMore: false })}
+                  >
+                    <div className={"check-icon"}>
+                      <img
+                        src={require("../../../assests/images/check.png")}
+                        alt="check-icon.jpg"
+                      />{" "}
+                    </div>
+                    {isEditFlag ? "Update" : "Save"}
+                  </button>
+                </div>
+              </Row>
+            </form>
+          </>
         );
     }
 }

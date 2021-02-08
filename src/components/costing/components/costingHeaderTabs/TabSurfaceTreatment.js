@@ -167,7 +167,7 @@ function TabSurfaceTreatment(props) {
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
-                    <h2>{''}</h2>
+                    <h2>{""}</h2>
                   </div>
                 </Col>
               </Row>
@@ -179,7 +179,7 @@ function TabSurfaceTreatment(props) {
                     onChange={onPressIncludeSurfaceTreatment}
                   >
                     Include Surface Treatment Cost in Overhead & Profit
-                      <input
+                    <input
                       type="checkbox"
                       checked={isIncludeSurfaceTreatment}
                       disabled={false}
@@ -193,74 +193,115 @@ function TabSurfaceTreatment(props) {
                 </Col>
               </Row>
 
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
-
+              <form
+                noValidate
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Row>
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '100px' }}>{`Surface Treatment Cost`}</th>
-                          <th style={{ width: '150px' }}>{`Transportation Cost`}</th>
-                          <th style={{ width: '150px' }}>{`Total Surface Treatment Cost`}</th>
+                          <th style={{ width: "100px" }}>{``}</th>
+                          <th
+                            style={{ width: "100px" }}
+                          >{`Surface Treatment Cost`}</th>
+                          <th
+                            style={{ width: "150px" }}
+                          >{`Transportation Cost`}</th>
+                          <th
+                            style={{ width: "150px" }}
+                          >{`Total Surface Treatment Cost`}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {
-                          tabData && tabData.map((item, index) => {
+                        {tabData &&
+                          tabData.map((item, index) => {
                             return (
-                              < >
+                              <>
                                 <tr key={index} onClick={() => toggle(index)}>
-                                  <td><span class="cr-prt-nm">{item.PartName}</span></td>
-                                  <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
-                                  <td>{item.TransportationCost !== null ? checkForDecimalAndNull(item.TransportationCost, 2) : 0}</td>
-                                  <td>{item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0}</td>
+                                  <td>
+                                    <span class="cr-prt-nm">
+                                      {item.PartName}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    {item.SurfaceTreatmentCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.SurfaceTreatmentCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.TransportationCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.TransportationCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
+                                  <td>
+                                    {item.NetSurfaceTreatmentCost !== null
+                                      ? checkForDecimalAndNull(
+                                          item.NetSurfaceTreatmentCost,
+                                          2
+                                        )
+                                      : 0}
+                                  </td>
                                 </tr>
-                                {item.IsOpen &&
+                                {item.IsOpen && (
                                   <tr>
                                     <td colSpan={4}>
                                       <div>
                                         <SurfaceTreatment
                                           index={index}
-                                          surfaceData={item.SurfaceTreatmentDetails}
-                                          transportationData={item.TransportationDetails}
+                                          surfaceData={
+                                            item.SurfaceTreatmentDetails
+                                          }
+                                          transportationData={
+                                            item.TransportationDetails
+                                          }
                                           setSurfaceCost={setSurfaceCost}
-                                          setTransportationCost={setTransportationCost}
+                                          setTransportationCost={
+                                            setTransportationCost
+                                          }
                                         />
                                       </div>
                                     </td>
                                   </tr>
-                                }
+                                )}
                               </>
-                            )
-                          })
-                        }
-
+                            );
+                          })}
                       </tbody>
                     </Table>
                   </Col>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25">
+                <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
                   <div className="col-sm-12 text-right bluefooter-butn">
-
                     <button
-                      type={'button'}
+                      type={"button"}
                       className="submit-button mr5 save-btn"
-                      onClick={saveCosting}>
-                      <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
+                      onClick={saveCosting}
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                      {"Save"}
                     </button>
                   </div>
                 </Row>
-
               </form>
             </div>
           </Col>
         </Row>
       </div>
-
     </>
   );
 };

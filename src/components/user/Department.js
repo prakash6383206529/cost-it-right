@@ -136,7 +136,7 @@ class Department extends Component {
 								</Row>
 
 								<div className="drawer-body">
-									<Row>
+									<Row className="pr-0">
 										<div className="input-group col-md-12 input-withouticon" >
 											<Field
 												label="Department Name"
@@ -152,7 +152,7 @@ class Department extends Component {
 										</div>
 
 										<div className="col-md-12">
-											<div className="text-right mt-30">
+											<div className="text-right mt-0">
 												{/* <input
 													//disabled={pristine || submitting}
 													onClick={this.cancel}

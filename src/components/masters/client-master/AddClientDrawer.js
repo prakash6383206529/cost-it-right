@@ -262,7 +262,7 @@ class AddClientDrawer extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="6">
                                         <Field
                                             label={`Company Name`}
@@ -300,7 +300,7 @@ class AddClientDrawer extends Component {
                                             required={true}
                                             maxLength={70}
                                             isDisabled={this.state.isEditFlag ? true : false}
-                                            customClassName={'withBorderEmail'}
+                                            customClassName={'withBorderEmail withBorder remove-double-border'}
                                         />
                                     </Col>
 
@@ -320,7 +320,7 @@ class AddClientDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col className="Ext phoneNumber" md="4">
+                                            <Col className="Ext phoneNumber pr-0" md="4">
                                                 <Field
                                                     label="Ex."
                                                     name={"Extension"}
@@ -338,7 +338,7 @@ class AddClientDrawer extends Component {
                                     </Col>
                                 </Row>
 
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md='6'>
                                         <Field
                                             name="MobileNumber"
@@ -369,7 +369,7 @@ class AddClientDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     {(country.length === 0 || country.label === 'India') &&
                                         <Col md='6'>
                                             <Field
@@ -417,8 +417,8 @@ class AddClientDrawer extends Component {
                                     </Col>
                                 </Row>
 
-                                <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12  text-right">
+                                <Row className="sf-btn-footer no-gutters justify-content-between mb-4">
+                                    <div className="col-md-12  text-right px-3">
                                         <div className="">
                                             <button
                                                 type={'button'}
@@ -428,7 +428,7 @@ class AddClientDrawer extends Component {
                                             </button>
                                             <button
                                                 type="submit"
-                                                className="submit-button mr5 save-btn" >
+                                                className="submit-button save-btn" >
                                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
                                                 </div> {this.props.isEditFlag ? 'Update' : 'Save'}
                                             </button>

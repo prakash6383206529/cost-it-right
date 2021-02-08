@@ -17,6 +17,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
+import ConfirmComponent from '../../../helper/ConfirmComponent';
 
 class ProcessListing extends Component {
     constructor(props) {
@@ -106,10 +107,11 @@ class ProcessListing extends Component {
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
-            onOk: () => {
-                this.confirmDelete(Id)
-            },
-            onCancel: () => console.log('CANCEL: clicked')
+          onOk: () => {
+            this.confirmDelete(Id);
+          },
+          onCancel: () => console.log("CANCEL: clicked"),
+          component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.PROCESS_DELETE_ALERT}`, toastrConfirmOptions);
     }
@@ -267,6 +269,10 @@ class ProcessListing extends Component {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
             paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -274,7 +280,8 @@ class ProcessListing extends Component {
             <div>
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-30">
+                    <Row className="pt-4">
+                        {this.state.shown ? (
                         <Col md="10" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
                                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
@@ -284,7 +291,7 @@ class ProcessListing extends Component {
                                         type="text"
                                         label={''}
                                         component={searchableSelect}
-                                        placeholder={'--Plant--'}
+                                        placeholder={'Plant'}
                                         isClearable={false}
                                         options={this.renderListing('plant')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -300,7 +307,7 @@ class ProcessListing extends Component {
                                         type="text"
                                         label=''
                                         component={searchableSelect}
-                                        placeholder={'-Machine-'}
+                                        placeholder={'Machine'}
                                         isClearable={false}
                                         options={this.renderListing('Machine')}
                                         //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -334,9 +341,17 @@ class ProcessListing extends Component {
                                 </div>
                             </div>
                         </Col>
-                        <Col md="2" className="search-user-block">
+                        )
+                        : ("")}
+                        <Col md="6" className="search-user-block mb-3">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
+                                {this.state.shown ? (
+                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                ) : (
+                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
+                                )}
                                     {AddAccessibility && <button
                                         type="button"
                                         className={'user-btn'}
@@ -361,7 +376,7 @@ class ProcessListing extends Component {
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Process Name'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessCode" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Code'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Machines" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine'}</TableHeaderColumn>

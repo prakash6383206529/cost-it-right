@@ -86,7 +86,7 @@ class AddBOPCategory extends Component {
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row className="pl-3">
                                     <Col md="12">
                                         <Field
                                             label={`BOP Category`}
@@ -102,8 +102,8 @@ class AddBOPCategory extends Component {
                                     </Col>
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
-                                    <div className="col-md-12">
-                                        <div className="text-center ">
+                                    <div className="col-md-12 pr-3">
+                                        <div className="text-right ">
                                             <input
                                                 //disabled={pristine || submitting}
                                                 onClick={this.cancel}
@@ -115,7 +115,7 @@ class AddBOPCategory extends Component {
                                                 //disabled={isSubmitted ? true : false}
                                                 type="submit"
                                                 value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
+                                                className="submit-button save-btn"
                                             />
                                         </div>
                                     </div>

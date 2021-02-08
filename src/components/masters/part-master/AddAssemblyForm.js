@@ -265,24 +265,24 @@ class AddAssemblyForm extends Component {
                         </Col>
                     </Row>
 
-                    <Row className="sf-btn-footer no-gutters justify-content-between">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                    <Row className="sf-btn-footer no-gutters justify-content-between mb-3">
+                        <div className="col-sm-12 text-right d-flex align-items-center justify-content-end pr-3">
                             <button
                                 type={'button'}
-                                className="reset mr15 cancel-btn"
+                                className="reset mt-2 mr-2 cancel-btn"
                                 onClick={this.cancel} >
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                             </button>
                             <button
                                 type={'submit'}
-                                className="submit-button mr5 save-btn"
+                                className="submit-button mt-2 mr-2 save-btn"
                                 onClick={() => this.setState({ isAddMore: true })} >
                                 <div className={'plus'}></div>
                                 {'ADD MORE'}
                             </button>
                             <button
                                 type="submit"
-                                className="submit-button mr5 save-btn"
+                                className="submit-button mt-2 save-btn"
                                 onClick={() => this.setState({ isAddMore: false })} >
                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                 {isEditFlag ? 'Update' : 'Save'}

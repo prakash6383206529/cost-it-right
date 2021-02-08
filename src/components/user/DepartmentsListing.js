@@ -164,18 +164,31 @@ class DepartmentsListing extends Component {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
+      paginationSize: 2,
     };
     return (
       <>
         {this.props.loading && <Loader />}
-        <Row className="pt-30 mb-30">
-          {AddAccessibility && <Col className="text-right">
-            <button
-              type={'button'}
-              className={'user-btn'}
-              onClick={this.openModel}>
-              <div className={'plus'}></div>{`ADD DEPARTMENT`}</button>
-          </Col>}
+        <Row className="pt-4 no-filter-row">
+          {AddAccessibility && (
+            <>
+            <Col md="6" className="filter-block"></Col>
+            <Col md="6" className="text-right search-user-block pr-0">
+              <button
+                type={"button"}
+                className={"user-btn "}
+                onClick={this.openModel}
+              >
+                <div className={"plus"}></div>
+                {`ADD`}
+              </button>
+            </Col>
+            </>
+          )}
         </Row>
 
         <Row>
@@ -188,12 +201,26 @@ class DepartmentsListing extends Component {
               options={options}
               search
               ignoreSinglePage
-              ref={'table'}
-              trClassName={'userlisting-row'}
-              tableHeaderClass='my-custom-header'
-              pagination>
-              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>Department</TableHeaderColumn>
-              <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+              ref={"table"}
+              trClassName={"userlisting-row"}
+              tableHeaderClass="my-custom-header"
+              pagination
+            >
+              <TableHeaderColumn
+                dataField="DepartmentName"
+                isKey={true}
+                dataAlign="left"
+                dataSort={true}
+              >
+                Department
+              </TableHeaderColumn>
+              <TableHeaderColumn
+                dataField="DepartmentId"
+                dataAlign="right"
+                dataFormat={this.buttonFormatter}
+              >
+                Actions
+              </TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>
@@ -203,11 +230,11 @@ class DepartmentsListing extends Component {
             closeDrawer={this.closeDrawer}
             isEditFlag={isEditFlag}
             DepartmentId={DepartmentId}
-            anchor={'right'}
+            anchor={"right"}
             className={"test-rahul"}
           />
         )}
-      </ >
+      </>
     );
   }
 }

@@ -885,676 +885,848 @@ class AddPower extends Component {
             checkPowerContribution, } = this.state;
 
         return (
-            <>
-                <div>
-                    <div className="login-container signup-form">
+          <>
+            <div className="container-fluid">
+              <div>
+                <div className="login-container signup-form">
+                  <div className="row">
+                    <div className="col-md-12">
+                      <div className="shadow-lgg login-formg">
                         <div className="row">
-                            <div className="col-md-12">
-                                <div className="shadow-lgg login-formg">
-                                    <div className="row">
-                                        <div className="col-md-6 mt-15">
-                                            <div className="form-heading">
-                                                <h2>{isEditFlag ? `Update Power` : `Add Power`}</h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <form
-                                        noValidate
-                                        className="form"
-                                        onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                                    >
-                                        <Row>
-                                            <Col md="4" className="switch mb15">
-                                                <label className="switch-level">
-                                                    <div className={'left-title'}>Zero Based</div>
-                                                    <Switch
-                                                        onChange={this.onPressVendor}
-                                                        checked={this.state.IsVendor}
-                                                        id="normal-switch"
-                                                        disabled={isEditFlag ? true : false}
-                                                        background="#4DC771"
-                                                        onColor="#4DC771"
-                                                        onHandleColor="#ffffff"
-                                                        offColor="#4DC771"
-                                                        uncheckedIcon={false}
-                                                        checkedIcon={false}
-                                                        height={20}
-                                                        width={46}
-                                                    />
-                                                    <div className={'right-title'}>Vendor Based</div>
-                                                </label>
-                                            </Col>
-                                        </Row>
-
-                                        <Row>
-                                            {this.state.IsVendor &&
-                                                <>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    name="VendorName"
-                                                                    type="text"
-                                                                    label="Vendor Name"
-                                                                    component={searchableSelect}
-                                                                    placeholder={'--select--'}
-                                                                    options={this.renderListing('VendorNameList')}
-                                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                    validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                                                    required={true}
-                                                                    handleChangeDescription={this.handleVendorName}
-                                                                    valueDescription={this.state.vendorName}
-                                                                    disabled={isEditFlag ? true : false}
-                                                                    className="fullinput-icon"
-                                                                />
-                                                            </div>
-                                                            {!isEditFlag && <div
-                                                                onClick={this.vendorToggler}
-                                                                className={'plus-icon-square right'}>
-                                                            </div>}
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <Field
-                                                            label="Vendor Plant"
-                                                            name="VendorPlant"
-                                                            placeholder="--- Plant ---"
-                                                            selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                                                            options={this.renderListing('VendorPlant')}
-                                                            selectionChanged={this.handleVendorPlant}
-                                                            optionValue={option => option.Value}
-                                                            optionLabel={option => option.Text}
-                                                            component={renderMultiSelectField}
-                                                            mendatory={true}
-                                                            className="multiselect-with-border"
-                                                            disabled={false}
-                                                        />
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Net Cost/Unit (INR)`}
-                                                                    name={"NetPowerCostPerUnit"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                </>}
-                                        </Row>
-
-                                        {!this.state.IsVendor &&
-                                            <>
-                                                <Row>
-                                                    <Col md="12" className="filter-block">
-                                                        <div className=" flex-fills mb-2">
-                                                            <h5>{'Power For:'}</h5>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    name="state"
-                                                                    type="text"
-                                                                    label="State"
-                                                                    component={searchableSelect}
-                                                                    placeholder={'--- Select ---'}
-                                                                    options={this.renderListing('state')}
-                                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                    validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
-                                                                    required={true}
-                                                                    handleChangeDescription={this.handleState}
-                                                                    valueDescription={this.state.StateName}
-                                                                    disabled={isEditFlag ? true : false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label="Plant"
-                                                                    name="Plant"
-                                                                    placeholder="--Select--"
-                                                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
-                                                                    options={this.renderListing('plant')}
-                                                                    selectionChanged={this.handlePlants}
-                                                                    optionValue={option => option.Value}
-                                                                    optionLabel={option => option.Text}
-                                                                    component={renderMultiSelectField}
-                                                                    mendatory={true}
-                                                                    className="multiselect-with-border"
-                                                                    disabled={isEditFlag ? true : false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-
-                                                </Row>
-
-                                                <Row>
-                                                    <Col md="12" className="filter-block">
-                                                        <div className=" flex-fills mb-2">
-                                                            <h5>{'State Electricity Board Power Charges:'}</h5>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Min Demand kW/Month`}
-                                                                    name={"MinDemandKWPerMonth"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={!isCostPerUnitConfigurable ? true : false}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Demand Charges/kW (INR)`}
-                                                                    name={"DemandChargesPerKW"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={!isCostPerUnitConfigurable ? true : false}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Avg. Unit Consumption/Month`}
-                                                                    name={"AvgUnitConsumptionPerMonth"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={!isCostPerUnitConfigurable ? true : false}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Unit Consumption/Annum`}
-                                                                    name={"UnitConsumptionPerAnnum"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={isEditFlag ? true : false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Max Demand Charges/kW (INR)`}
-                                                                    name={"MaxDemandChargesKW"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={!isCostPerUnitConfigurable ? true : false}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Cost/Unit`}
-                                                                    name={"SEBCostPerUnit"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={!isCostPerUnitConfigurable ? true : false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Meter Rent & Other Charges/Yr`}
-                                                                    name={"MeterRentAndOtherChargesPerAnnum"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Duty charges & FCA`}
-                                                                    name={"DutyChargesAndFCA"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Total Unit Charges`}
-                                                                    name={"TotalUnitCharges"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={true}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <div className="form-group">
-                                                                    <label>
-                                                                        Effective Date
-                                                                    {/* <span className="asterisk-required">*</span> */}
-                                                                    </label>
-                                                                    <div className="inputbox date-section">
-                                                                        <DatePicker
-                                                                            name="EffectiveDate"
-                                                                            selected={this.state.effectiveDate}
-                                                                            onChange={this.handleEffectiveDateChange}
-                                                                            showMonthDropdown
-                                                                            showYearDropdown
-                                                                            dateFormat="dd/MM/yyyy"
-                                                                            maxDate={new Date()}
-                                                                            dropdownMode="select"
-                                                                            placeholderText="Select date"
-                                                                            className="withBorder"
-                                                                            autoComplete={'off'}
-                                                                            disabledKeyboardNavigation
-                                                                            onChangeRaw={(e) => e.preventDefault()}
-                                                                            disabled={isEditFlag ? true : false}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Power Contribution %`}
-                                                                    name={"SEBPowerContributaion"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={this.state.isAddedSEB ? true : false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div>
-                                                            {this.state.isEditSEBIndex ?
-                                                                <>
-                                                                    <button
-                                                                        type="button"
-                                                                        className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
-                                                                        onClick={this.updateSEBGrid}
-                                                                        disabled={checkPowerContribution ? true : false}
-                                                                    >Update</button>
-                                                                    <button
-                                                                        type="button"
-                                                                        className={'cancel-btn mt30 pull-left'}
-                                                                        onClick={() => this.setState({ isEditSEBIndex: false })}
-                                                                    >Cancel</button>
-                                                                </>
-                                                                :
-                                                                <button
-                                                                    type="button"
-                                                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
-                                                                    disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
-                                                                    onClick={() => this.powerSEBTableHandler(false)}>
-                                                                    <div className={'plus'}></div>ADD</button>
-                                                            }
-
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-
-                                                <Row>
-                                                    <Col md="12" className="filter-block">
-                                                        <div className=" flex-fills mb-2">
-                                                            <h5>{'Self Generated Power Charges:'}</h5>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    name="Source"
-                                                                    type="text"
-                                                                    label="Source"
-                                                                    component={searchableSelect}
-                                                                    placeholder={'--- Select ---'}
-                                                                    options={this.renderListing('Source')}
-                                                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                    //validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
-                                                                    //required={true}
-                                                                    handleChangeDescription={this.handleSource}
-                                                                    valueDescription={this.state.source}
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Asset Cost (INR)`}
-                                                                    name={"AssetCost"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    //validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    //required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Annual Cost (INR)`}
-                                                                    name={"AnnualCost"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    //validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    //required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    {source && source.value === GENERATOR_DIESEL &&
-                                                        <>
-                                                            <Col md="3">
-                                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                                    <div className="fullinput-icon">
-                                                                        <Field
-                                                                            name="UOM"
-                                                                            type="text"
-                                                                            label="UOM"
-                                                                            component={searchableSelect}
-                                                                            placeholder={'--- Select ---'}
-                                                                            options={this.renderListing('UOM')}
-                                                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                                            //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                                                                            //required={true}
-                                                                            handleChangeDescription={this.handleUOM}
-                                                                            valueDescription={this.state.UOM}
-                                                                            disabled={false}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </Col>
-                                                            <Col md="3">
-                                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                                    <div className="fullinput-icon">
-                                                                        <Field
-                                                                            label={`Cost/UOM `}
-                                                                            name={"CostPerUnitOfMeasurement"}
-                                                                            type="text"
-                                                                            placeholder={'Enter'}
-                                                                            //validate={[required]}
-                                                                            component={renderNumberInputField}
-                                                                            //required={true}
-                                                                            className=""
-                                                                            customClassName=" withBorder"
-                                                                            disabled={false}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </Col>
-                                                            <Col md="3">
-                                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                                    <div className="fullinput-icon">
-                                                                        <Field
-                                                                            label={`Unit Generated/Unit Of fuel `}
-                                                                            name={"UnitGeneratedPerUnitOfFuel"}
-                                                                            type="text"
-                                                                            placeholder={'Enter'}
-                                                                            //validate={[required]}
-                                                                            component={renderNumberInputField}
-                                                                            //required={true}
-                                                                            className=""
-                                                                            customClassName=" withBorder"
-                                                                            disabled={false}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                            </Col>
-                                                        </>}
-
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Unit Generated/Annum`}
-                                                                    name={"UnitGeneratedPerAnnum"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    //validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    //required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Cost/Unit`}
-                                                                    name={"SelfGeneratedCostPerUnit"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    //validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    //required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={true}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                                            <div className="fullinput-icon">
-                                                                <Field
-                                                                    label={`Power contribution`}
-                                                                    name={"SelfPowerContribution"}
-                                                                    type="text"
-                                                                    placeholder={'Enter'}
-                                                                    //validate={[required]}
-                                                                    component={renderNumberInputField}
-                                                                    //required={true}
-                                                                    className=""
-                                                                    customClassName=" withBorder"
-                                                                    disabled={false}
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="3">
-                                                        <div>
-                                                            {this.state.isEditIndex ?
-                                                                <>
-                                                                    <button
-                                                                        type="button"
-                                                                        className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
-                                                                        onClick={this.updatePowerGrid}
-                                                                        disabled={checkPowerContribution ? true : false}
-                                                                    >Update</button>
-
-                                                                    <button
-                                                                        type="button"
-                                                                        className={'cancel-btn mt30 pull-left'}
-                                                                        onClick={this.resetPowerGridData}
-                                                                    >Cancel</button>
-                                                                </>
-                                                                :
-                                                                <button
-                                                                    type="button"
-                                                                    className={`${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
-                                                                    disabled={checkPowerContribution ? true : false}
-                                                                    onClick={() => this.powerTableHandler(true)}>
-                                                                    <div className={'plus'}></div>ADD</button>}
-
-                                                        </div>
-                                                    </Col>
-                                                    <Col md="12">
-                                                        <Table className="table" size="sm" >
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>{`Source`}</th>
-                                                                    <th>{`Cost/Unit (INR)`}</th>
-                                                                    <th>{`Contribution(%)`}</th>
-                                                                    <th>{`Action`}</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody >
-                                                                {
-                                                                    this.state.powerGrid &&
-                                                                    this.state.powerGrid.map((item, index) => {
-                                                                        return (
-                                                                            <tr key={index}>
-                                                                                <td>{item.SourcePowerType}</td>
-                                                                                <td>{item.CostPerUnit}</td>
-                                                                                <td>{item.PowerContributionPercentage}</td>
-                                                                                <td>
-                                                                                    <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
-                                                                                    <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                                                                </td>
-                                                                            </tr>
-                                                                        )
-                                                                    })
-                                                                }
-                                                            </tbody>
-                                                            {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                                                        </Table>
-                                                    </Col>
-                                                </Row>
-                                            </>
-                                        }
-
-                                        <Row className="sf-btn-footer no-gutters justify-content-between">
-                                            <div className="col-sm-12 text-right bluefooter-butn">
-                                                <button
-                                                    type={'button'}
-                                                    className="reset mr15 cancel-btn"
-                                                    onClick={this.cancel} >
-                                                    <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                                </button>
-                                                <button
-                                                    type="submit"
-                                                    className="submit-button mr5 save-btn" >
-                                                    <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                                    {isEditFlag ? 'Update' : 'Save'}
-                                                </button>
-                                            </div>
-                                        </Row>
-
-                                    </form>
-                                </div>
-                            </div>
+                          <div className="col-md-6">
+                            <h1>{isEditFlag ? `Update Power` : `Add Power`}</h1>
+                          </div>
                         </div>
+                        <form
+                          noValidate
+                          className="form"
+                          onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                        >
+                          <div className="add-min-height">
+                          <Row>
+                            <Col md="4" className="switch mb15">
+                              <label className="switch-level">
+                                <div className={"left-title"}>Zero Based</div>
+                                <Switch
+                                  onChange={this.onPressVendor}
+                                  checked={this.state.IsVendor}
+                                  id="normal-switch"
+                                  disabled={isEditFlag ? true : false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
+                                />
+                                <div className={"right-title"}>
+                                  Vendor Based
+                                </div>
+                              </label>
+                            </Col>
+                          </Row>
+
+                          <Row>
+                            {this.state.IsVendor && (
+                              <>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        name="VendorName"
+                                        type="text"
+                                        label="Vendor Name"
+                                        component={searchableSelect}
+                                        placeholder={"--select--"}
+                                        options={this.renderListing(
+                                          "VendorNameList"
+                                        )}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={
+                                          this.state.vendorName == null ||
+                                          this.state.vendorName.length === 0
+                                            ? [required]
+                                            : []
+                                        }
+                                        required={true}
+                                        handleChangeDescription={
+                                          this.handleVendorName
+                                        }
+                                        valueDescription={this.state.vendorName}
+                                        disabled={isEditFlag ? true : false}
+                                        className="fullinput-icon"
+                                      />
+                                    </div>
+                                    {!isEditFlag && (
+                                      <div
+                                        onClick={this.vendorToggler}
+                                        className={"plus-icon-square right"}
+                                      ></div>
+                                    )}
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <Field
+                                    label="Vendor Plant"
+                                    name="VendorPlant"
+                                    placeholder="--- Plant ---"
+                                    selection={
+                                      this.state.selectedVendorPlants == null ||
+                                      this.state.selectedVendorPlants.length ===
+                                        0
+                                        ? []
+                                        : this.state.selectedVendorPlants
+                                    }
+                                    options={this.renderListing("VendorPlant")}
+                                    selectionChanged={this.handleVendorPlant}
+                                    optionValue={(option) => option.Value}
+                                    optionLabel={(option) => option.Text}
+                                    component={renderMultiSelectField}
+                                    mendatory={true}
+                                    className="multiselect-with-border"
+                                    disabled={false}
+                                  />
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Net Cost/Unit (INR)`}
+                                        name={"NetPowerCostPerUnit"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={[required]}
+                                        component={renderNumberInputField}
+                                        required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                              </>
+                            )}
+                          </Row>
+
+                          {!this.state.IsVendor && (
+                            <>
+                              <Row>
+                                <Col md="12" className="filter-block">
+                                  <div className=" flex-fills mb-2 pl-0">
+                                    <h5>{"Power For:"}</h5>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        name="state"
+                                        type="text"
+                                        label="State"
+                                        component={searchableSelect}
+                                        placeholder={"--- Select ---"}
+                                        options={this.renderListing("state")}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        validate={
+                                          this.state.StateName == null ||
+                                          this.state.StateName.length === 0
+                                            ? [required]
+                                            : []
+                                        }
+                                        required={true}
+                                        handleChangeDescription={
+                                          this.handleState
+                                        }
+                                        valueDescription={this.state.StateName}
+                                        disabled={isEditFlag ? true : false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label="Plant"
+                                        name="Plant"
+                                        placeholder="--Select--"
+                                        selection={
+                                          this.state.selectedPlants == null ||
+                                          this.state.selectedPlants.length === 0
+                                            ? []
+                                            : this.state.selectedPlants
+                                        }
+                                        options={this.renderListing("plant")}
+                                        selectionChanged={this.handlePlants}
+                                        optionValue={(option) => option.Value}
+                                        optionLabel={(option) => option.Text}
+                                        component={renderMultiSelectField}
+                                        mendatory={true}
+                                        className="multiselect-with-border"
+                                        disabled={isEditFlag ? true : false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                              </Row>
+
+                              <Row>
+                                <Col md="12" className="filter-block">
+                                  <div className=" flex-fills mb-2 pl-0">
+                                    <h5>
+                                      {"State Electricity Board Power Charges:"}
+                                    </h5>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Min Demand kW/Month`}
+                                        name={"MinDemandKWPerMonth"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={
+                                          isCostPerUnitConfigurable
+                                            ? []
+                                            : [required]
+                                        }
+                                        component={renderNumberInputField}
+                                        required={
+                                          !isCostPerUnitConfigurable
+                                            ? true
+                                            : false
+                                        }
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Demand Charges/kW (INR)`}
+                                        name={"DemandChargesPerKW"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={
+                                          isCostPerUnitConfigurable
+                                            ? []
+                                            : [required]
+                                        }
+                                        component={renderNumberInputField}
+                                        required={
+                                          !isCostPerUnitConfigurable
+                                            ? true
+                                            : false
+                                        }
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Avg. Unit Consumption/Month`}
+                                        name={"AvgUnitConsumptionPerMonth"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={
+                                          isCostPerUnitConfigurable
+                                            ? []
+                                            : [required]
+                                        }
+                                        component={renderNumberInputField}
+                                        required={
+                                          !isCostPerUnitConfigurable
+                                            ? true
+                                            : false
+                                        }
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Unit Consumption/Annum`}
+                                        name={"UnitConsumptionPerAnnum"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={[required]}
+                                        component={renderNumberInputField}
+                                        required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={isEditFlag ? true : false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Max Demand Charges/kW (INR)`}
+                                        name={"MaxDemandChargesKW"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={
+                                          isCostPerUnitConfigurable
+                                            ? []
+                                            : [required]
+                                        }
+                                        component={renderNumberInputField}
+                                        required={
+                                          !isCostPerUnitConfigurable
+                                            ? true
+                                            : false
+                                        }
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Cost/Unit`}
+                                        name={"SEBCostPerUnit"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={[required]}
+                                        component={renderNumberInputField}
+                                        required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={
+                                          !isCostPerUnitConfigurable
+                                            ? true
+                                            : false
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Meter Rent & Other Charges/Yr`}
+                                        name={
+                                          "MeterRentAndOtherChargesPerAnnum"
+                                        }
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={[required]}
+                                        component={renderNumberInputField}
+                                        required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Duty charges & FCA`}
+                                        name={"DutyChargesAndFCA"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={[required]}
+                                        component={renderNumberInputField}
+                                        required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Total Unit Charges`}
+                                        name={"TotalUnitCharges"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={[required]}
+                                        component={renderNumberInputField}
+                                        required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={true}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <div className="form-group">
+                                        <label>
+                                          Effective Date
+                                          {/* <span className="asterisk-required">*</span> */}
+                                        </label>
+                                        <div className="inputbox date-section">
+                                          <DatePicker
+                                            name="EffectiveDate"
+                                            selected={this.state.effectiveDate}
+                                            onChange={
+                                              this.handleEffectiveDateChange
+                                            }
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dateFormat="dd/MM/yyyy"
+                                            maxDate={new Date()}
+                                            dropdownMode="select"
+                                            placeholderText="Select date"
+                                            className="withBorder"
+                                            autoComplete={"off"}
+                                            disabledKeyboardNavigation
+                                            onChangeRaw={(e) =>
+                                              e.preventDefault()
+                                            }
+                                            disabled={isEditFlag ? true : false}
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Power Contribution %`}
+                                        name={"SEBPowerContributaion"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        validate={[required]}
+                                        component={renderNumberInputField}
+                                        required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={
+                                          this.state.isAddedSEB ? true : false
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div>
+                                    {this.state.isEditSEBIndex ? (
+                                      <>
+                                        <button
+                                          type="button"
+                                          className={`btn ${
+                                            checkPowerContribution
+                                              ? "btn-secondary"
+                                              : "btn-primary"
+                                          } mt30 pull-left mr5`}
+                                          onClick={this.updateSEBGrid}
+                                          disabled={
+                                            checkPowerContribution
+                                              ? true
+                                              : false
+                                          }
+                                        >
+                                          Update
+                                        </button>
+                                        <button
+                                          type="button"
+                                          className={"reset-btn mt30 pull-left"}
+                                          onClick={() =>
+                                            this.setState({
+                                              isEditSEBIndex: false,
+                                            })
+                                          }
+                                        >
+                                          Cancel
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className={`${
+                                          checkPowerContribution ||
+                                          this.state.isAddedSEB
+                                            ? "btn-secondary"
+                                            : "btn-primary"
+                                        } mt30 pull-left`}
+                                        disabled={
+                                          checkPowerContribution ||
+                                          this.state.isAddedSEB
+                                            ? true
+                                            : false
+                                        }
+                                        onClick={() =>
+                                          this.powerSEBTableHandler(false)
+                                        }
+                                      >
+                                        <div className={"plus"}></div>ADD
+                                      </button>
+                                    )}
+                                  </div>
+                                </Col>
+                              </Row>
+
+                              <Row>
+                                <Col md="12" className="filter-block">
+                                  <div className=" flex-fills mb-2 pl-0">
+                                    <h5>{"Self Generated Power Charges:"}</h5>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        name="Source"
+                                        type="text"
+                                        label="Source"
+                                        component={searchableSelect}
+                                        placeholder={"--- Select ---"}
+                                        options={this.renderListing("Source")}
+                                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                                        //validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
+                                        //required={true}
+                                        handleChangeDescription={
+                                          this.handleSource
+                                        }
+                                        valueDescription={this.state.source}
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Asset Cost (INR)`}
+                                        name={"AssetCost"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        //validate={[required]}
+                                        component={renderNumberInputField}
+                                        //required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Annual Cost (INR)`}
+                                        name={"AnnualCost"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        //validate={[required]}
+                                        component={renderNumberInputField}
+                                        //required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                {source && source.value === GENERATOR_DIESEL && (
+                                  <>
+                                    <Col md="3">
+                                      <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                        <div className="fullinput-icon">
+                                          <Field
+                                            name="UOM"
+                                            type="text"
+                                            label="UOM"
+                                            component={searchableSelect}
+                                            placeholder={"--- Select ---"}
+                                            options={this.renderListing("UOM")}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                                            //required={true}
+                                            handleChangeDescription={
+                                              this.handleUOM
+                                            }
+                                            valueDescription={this.state.UOM}
+                                            disabled={false}
+                                          />
+                                        </div>
+                                      </div>
+                                    </Col>
+                                    <Col md="3">
+                                      <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                        <div className="fullinput-icon">
+                                          <Field
+                                            label={`Cost/UOM `}
+                                            name={"CostPerUnitOfMeasurement"}
+                                            type="text"
+                                            placeholder={"Enter"}
+                                            //validate={[required]}
+                                            component={renderNumberInputField}
+                                            //required={true}
+                                            className=""
+                                            customClassName=" withBorder"
+                                            disabled={false}
+                                          />
+                                        </div>
+                                      </div>
+                                    </Col>
+                                    <Col md="3">
+                                      <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                        <div className="fullinput-icon">
+                                          <Field
+                                            label={`Unit Generated/Unit Of fuel `}
+                                            name={"UnitGeneratedPerUnitOfFuel"}
+                                            type="text"
+                                            placeholder={"Enter"}
+                                            //validate={[required]}
+                                            component={renderNumberInputField}
+                                            //required={true}
+                                            className=""
+                                            customClassName=" withBorder"
+                                            disabled={false}
+                                          />
+                                        </div>
+                                      </div>
+                                    </Col>
+                                  </>
+                                )}
+
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Unit Generated/Annum`}
+                                        name={"UnitGeneratedPerAnnum"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        //validate={[required]}
+                                        component={renderNumberInputField}
+                                        //required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Cost/Unit`}
+                                        name={"SelfGeneratedCostPerUnit"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        //validate={[required]}
+                                        component={renderNumberInputField}
+                                        //required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={true}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                    <div className="fullinput-icon">
+                                      <Field
+                                        label={`Power contribution`}
+                                        name={"SelfPowerContribution"}
+                                        type="text"
+                                        placeholder={"Enter"}
+                                        //validate={[required]}
+                                        component={renderNumberInputField}
+                                        //required={true}
+                                        className=""
+                                        customClassName=" withBorder"
+                                        disabled={false}
+                                      />
+                                    </div>
+                                  </div>
+                                </Col>
+                                <Col md="3">
+                                  <div>
+                                    {this.state.isEditIndex ? (
+                                      <>
+                                        <button
+                                          type="button"
+                                          className={`btn ${
+                                            checkPowerContribution
+                                              ? "btn-secondary"
+                                              : "btn-primary"
+                                          } mt30 pull-left mr5`}
+                                          onClick={this.updatePowerGrid}
+                                          disabled={
+                                            checkPowerContribution
+                                              ? true
+                                              : false
+                                          }
+                                        >
+                                          Update
+                                        </button>
+
+                                        <button
+                                          type="button"
+                                          className={"reset-btn mt30 pull-left"}
+                                          onClick={this.resetPowerGridData}
+                                        >
+                                          Cancel
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        className={`${
+                                          checkPowerContribution
+                                            ? "btn-secondary"
+                                            : "btn-primary"
+                                        } mt30 pull-left`}
+                                        disabled={
+                                          checkPowerContribution ? true : false
+                                        }
+                                        onClick={() =>
+                                          this.powerTableHandler(true)
+                                        }
+                                      >
+                                        <div className={"plus"}></div>ADD
+                                      </button>
+                                    )}
+                                  </div>
+                                </Col>
+                                <Col md="12">
+                                  <Table className="table border" size="sm">
+                                    <thead>
+                                      <tr>
+                                        <th>{`Source`}</th>
+                                        <th>{`Cost/Unit (INR)`}</th>
+                                        <th>{`Contribution(%)`}</th>
+                                        <th>{`Action`}</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {this.state.powerGrid &&
+                                        this.state.powerGrid.map(
+                                          (item, index) => {
+                                            return (
+                                              <tr key={index}>
+                                                <td>{item.SourcePowerType}</td>
+                                                <td>{item.CostPerUnit}</td>
+                                                <td>
+                                                  {
+                                                    item.PowerContributionPercentage
+                                                  }
+                                                </td>
+                                                <td>
+                                                  <button
+                                                    className="Edit mr-2"
+                                                    type={"button"}
+                                                    onClick={() =>
+                                                      this.editItemDetails(
+                                                        index,
+                                                        item.SourcePowerType
+                                                      )
+                                                    }
+                                                  />
+                                                  <button
+                                                    className="Delete"
+                                                    type={"button"}
+                                                    onClick={() =>
+                                                      this.deleteItem(index)
+                                                    }
+                                                  />
+                                                </td>
+                                              </tr>
+                                            );
+                                          }
+                                        )}
+                                    </tbody>
+                                  </Table>
+                                  {this.state.powerGrid.length === 0 && (
+                                    <NoContentFound
+                                      title={CONSTANT.EMPTY_DATA}
+                                    />
+                                  )}
+                                </Col>
+                              </Row>
+                            </>
+                          )}
+                        </div>
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                          <div className="col-sm-12 text-right bluefooter-butn">
+                            <button
+                              type={"button"}
+                              className="reset mr15 cancel-btn"
+                              onClick={this.cancel}
+                            >
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/times.png")}
+                                  alt="cancel-icon.jpg"
+                                />
+                              </div>{" "}
+                              {"Cancel"}
+                            </button>
+                            <button
+                              type="submit"
+                              className="submit-button mr5 save-btn"
+                            >
+                              <div className={"check-icon"}>
+                                <img
+                                  src={require("../../../assests/images/check.png")}
+                                  alt="check-icon.jpg"
+                                />{" "}
+                              </div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          </div>
+                        </Row>
+                      
+                      </form>
+                      </div>
                     </div>
+                  </div>
                 </div>
-                {isOpenVendor && <AddVendorDrawer
-                    isOpen={isOpenVendor}
-                    closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={false}
-                    ID={''}
-                    anchor={'right'}
-                />}
-            </>
+              </div>
+              {isOpenVendor && (
+                <AddVendorDrawer
+                  isOpen={isOpenVendor}
+                  closeDrawer={this.closeVendorDrawer}
+                  isEditFlag={false}
+                  ID={""}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </>
         );
     }
 }
