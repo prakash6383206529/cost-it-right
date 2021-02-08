@@ -16,6 +16,7 @@ function OperationCost(props) {
   });
 
   const [gridData, setGridData] = useState(props.data)
+  const [OldGridData, setOldGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
@@ -28,9 +29,9 @@ function OperationCost(props) {
       PartNumber: props.item.PartNumber,
     }
     if (props.IsAssemblyCalculation) {
-      props.setAssemblyOperationCost(gridData, Params)
+      props.setAssemblyOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     } else {
-      props.setOperationCost(gridData, Params)
+      props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     }
   }, [gridData]);
 
@@ -69,7 +70,6 @@ function OperationCost(props) {
           IsChecked: el.IsChecked,
         }
       })
-      console.log('gridData: ', GridArray);
       let tempArr = [...GridArray, ...rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)

@@ -234,7 +234,6 @@ function CostingDetailStepTwo(props) {
 
   }
 
-
   /**
    * @method setHeaderPackageFreightTab
    * @description SET COSTS FOR TOP HEADER FROM PACKAGE AND FREIGHT
