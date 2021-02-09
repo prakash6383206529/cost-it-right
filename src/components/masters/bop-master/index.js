@@ -150,6 +150,7 @@ class BOPMaster extends Component {
                     Manage BOP (Domestic)
                       </NavLink>
                 </NavItem>
+
                 <NavItem>
                   <NavLink
                     className={classnames({
@@ -162,6 +163,13 @@ class BOPMaster extends Component {
                     Manage BOP (Import)
                       </NavLink>
                 </NavItem>
+
+                <NavItem>
+                  <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                    Manage SOB
+                                </NavLink>
+                </NavItem>
+
               </Nav>
 
               <TabContent activeTab={this.state.activeTab}>
@@ -190,6 +198,19 @@ class BOPMaster extends Component {
                     />
                   </TabPane>
                 )}
+
+                {this.state.activeTab == 3 &&
+                  <TabPane tabId="3">
+                    <SOBListing
+                      displayForm={this.displayImportForm}
+                      getDetails={this.getImportDetails}
+                      AddAccessibility={this.state.AddAccessibility}
+                      EditAccessibility={this.state.EditAccessibility}
+                      DeleteAccessibility={this.state.DeleteAccessibility}
+                      BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                    />
+                  </TabPane>}
+
               </TabContent>
             </Col>
           </Row>

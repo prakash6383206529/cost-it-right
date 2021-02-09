@@ -146,6 +146,20 @@ class TaxListing extends Component {
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
+  /**
+* @method buttonFormatter
+* @description Renders buttons
+*/
+  buttonFormatter = (cell, row, enumObject, rowIndex) => {
+    const { EditAccessibility, DeleteAccessibility } = this.state;
+    return (
+      <>
+        {EditAccessibility && <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cell)} />}
+        {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} />}
+      </>
+    )
+  }
+
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
