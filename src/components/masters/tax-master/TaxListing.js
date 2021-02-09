@@ -182,6 +182,7 @@ class TaxListing extends Component {
     return (
       < >
         {/* {this.props.loading && <Loader />} */}
+        <div className="container-fluid">
         <Row>
           <Col md={12}>
             <h1>{`Tax Details Master`}</h1>
@@ -245,6 +246,7 @@ class TaxListing extends Component {
             anchor={'right'}
           />
         )}
+        </div>
       </ >
     );
   }

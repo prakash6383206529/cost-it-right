@@ -423,10 +423,16 @@ class VendorListing extends Component {
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     noValidate
                     className="mr15"
-                >
-                    <h1>Vendor Master</h1>
-                    <hr />
-                    <Row className="pt-1 px-15">
+                >   
+                    <Row>
+                        <Col md="12">
+                        <h1>Vendor Master</h1>
+                        </Col>
+                        <Col md="12">
+                        <hr className="m-0" />
+                        </Col>
+                    </Row>
+                    <Row className="pt-4 px-15 blue-before">
                         {this.state.shown ? (
                             <Col md="12" lg="8" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">

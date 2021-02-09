@@ -250,13 +250,16 @@ class ReasonListing extends Component {
 
     return (
       <>
+      <div className="container-fluid">
         {/* {this.props.loading && <Loader />} */}
-        <Col md="12" className="search-user-block">
-          <div class="col-sm-4">
-            <h3>Reason</h3>
-          </div>
-          <hr />
-          <div className="d-flex justify-content-end bd-highlight w100 mb15">
+        <Row>
+          <Col md={12}><h1>Reason</h1></Col>
+          <Col md={12}><hr className="mt-0" /></Col>
+        </Row>
+        <Row className="no-filter-row">
+        <Col md={6} className="text-right filter-block"></Col>
+        <Col md="6" className="text-right search-user-block pr-0">
+          <div className="d-flex justify-content-end bd-highlight w100">
             <div>
               {AddAccessibility && (
                 <button
@@ -270,6 +273,7 @@ class ReasonListing extends Component {
             </div>
           </div>
         </Col>
+        </Row>
         <BootstrapTable
           data={this.props.reasonDataList}
           striped={false}
@@ -295,6 +299,7 @@ class ReasonListing extends Component {
           <TableHeaderColumn
             dataField="IsActive"
             export={false}
+            dataAlign="center"
             dataFormat={this.statusButtonFormatter}
           >
             Status
@@ -304,12 +309,14 @@ class ReasonListing extends Component {
             dataField="ReasonId"
             export={false}
             searchable={false}
+            dataAlign="center"
             isKey={true}
             dataFormat={this.buttonFormatter}
           >
             Actions
           </TableHeaderColumn>
         </BootstrapTable>
+        </div>
         {isOpenDrawer && (
           <AddReason
             isOpen={isOpenDrawer}

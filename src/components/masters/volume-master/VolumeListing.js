@@ -558,12 +558,14 @@ class VolumeListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
+        <div className="container-fluid">
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <div class="col-sm-4">
-            <h3>Volume Master</h3>
-          </div>
-          <hr />
-          <Row className="pt-30">
+          <Row>
+            <Col md="12"><h1>Volume Master</h1></Col>
+            <Col md="12"><hr className="m-0" /></Col>
+          </Row>
+          <Row className="pt-4 blue-before">
+          {this.state.shown ? (
             <Col md="8" className="filter-block">
               <div className="d-inline-flex justify-content-start align-items-top w100">
                 <div className="flex-fills">
@@ -675,10 +677,17 @@ class VolumeListing extends Component {
                   </button>
                 </div>
               </div>
-            </Col>
-            <Col md="4" className="search-user-block">
+            </Col> ) : ("") }
+
+            <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight">
                 <div>
+                {this.state.shown ? (
+                  <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                ) : (
+                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                  )}
                   {BulkUploadAccessibility && (
                     <button
                       type="button"
@@ -831,6 +840,7 @@ class VolumeListing extends Component {
             anchor={'right'}
           />
         )}
+        </div>
       </>
     )
   }

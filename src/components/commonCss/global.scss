@@ -177,7 +177,6 @@ a:hover {
 .btn-primary-add,
 .user-btn {
   &:hover,
-  &:focus,
   &:not(.disabled):active:focus {
     background-color: #1d59af;
   }

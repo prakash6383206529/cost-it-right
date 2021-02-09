@@ -390,7 +390,7 @@ class PowerListing extends Component {
           </Row>
           <Row>
             {this.state.shown ? (
-              <Col md="8" className="filter-block ">
+              <Col md="8" className="filter-block mt-4">
                 <div className="d-inline-flex justify-content-start align-items-top w100">
                   <div className="flex-fills">
                     <h5>{`Filter By:`}</h5>

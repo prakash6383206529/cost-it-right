@@ -535,13 +535,18 @@ class LabourListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
+        <div className="container-fluid">
         <form
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           noValidate
         >
-          <h1>Labour Master</h1>
-          <hr />
-          <Row className="pt-1 filter-row-large">
+          <Row>
+            <Col md="12">
+              <h1>Labour Master</h1>
+            </Col>
+            <Col md="12"><hr className="m-0" /></Col>
+          </Row>
+          <Row className="pt-4 filter-row-large blue-before">
             {this.state.shown ? (
               <Col md="12" className="filter-block col-lg-9">
                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -660,7 +665,7 @@ class LabourListing extends Component {
               <div className="d-flex justify-content-end bd-highlight w100">
                 <div>
                   {this.state.shown ? (
-                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                    <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => this.setState({ shown: !this.state.shown })}>
                       <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                   ) : (
                       <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
@@ -785,6 +790,7 @@ class LabourListing extends Component {
             anchor={'right'}
           />
         )}
+        </div>
       </>
     )
   }

@@ -242,8 +242,9 @@ class ClientListing extends Component {
         };
 
         return (
-            <>
+            <>  
                 {/* {this.props.loading && <Loader />} */}
+                <div className="container-fluid">
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <h1>Client Master</h1>
                     <hr />
@@ -265,6 +266,7 @@ class ClientListing extends Component {
                     </Row>
 
                 </form>
+                
                 <BootstrapTable
                     data={this.state.tableData}
                     striped={false}
@@ -294,6 +296,7 @@ class ClientListing extends Component {
                     ID={this.state.ID}
                     anchor={'right'}
                 />}
+                </div>
             </ >
         );
     }

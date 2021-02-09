@@ -13,7 +13,6 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
-import { toastr } from "react-redux-toastr";
 
 class Login extends Component {
   constructor(props) {
@@ -54,8 +53,6 @@ class Login extends Component {
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
-      } else {
-        toastr.error('Entered email id or password is incorrect. Try again')
       }
     });
   }
@@ -84,8 +81,8 @@ class Login extends Component {
                   <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
                   </a>
                 </div>
-                <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.</h3>
-                <p>Welcome Back, Please login to your account</p>
+                <h3 className="text-center">Welcome Back,<br/> Please login to your account</h3>
+                {/* <p>Welcome Back, Please login to your account</p> */}
                 <form
                   noValidate
                   className="form"
@@ -99,7 +96,7 @@ class Login extends Component {
                         component={renderEmailInputField}
                         isDisabled={false}
                         placeholder={"Email"}
-                        validate={[required, email, minLength5, maxLength70]}
+                        validate={[required, email,maxLength70]}
                         required={true}
                         maxLength={71}
                       />
@@ -109,10 +106,10 @@ class Login extends Component {
                         name={"UserName"}
                         type="text"
                         placeholder={'User Name'}
-                        validate={[required, minLength5, maxLength70]}
+                        validate={[required,maxLength70]}
                         component={renderText}
                         required={true}
-                        maxLength={71}
+                        maxLength={26}
                         customClassName={'withBorder'}
                       />
                     }
