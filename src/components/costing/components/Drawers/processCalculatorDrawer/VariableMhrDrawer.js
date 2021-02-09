@@ -20,6 +20,7 @@ import { saveProcessCostCalculationData } from '../../../actions/ProcessCost'
 import { toastr } from 'react-redux-toastr'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
+
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
   console.log(calculatorData, 'Process')
@@ -148,6 +149,8 @@ function VariableMhrDrawer(props) {
               calculatorData={calculatorData}
             />
           )
+        default:
+          break;
       }
     } else if (technology === 'Sheet Metal') {
       switch (process) {
@@ -166,6 +169,8 @@ function VariableMhrDrawer(props) {
           return (
             <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
           )
+        default:
+          break;
       }
     }
   }
@@ -217,7 +222,7 @@ function VariableMhrDrawer(props) {
                 </span>
               </Col>
               <div className="w-100">
-                {getProcessComponent(calculatorData.ProcessName)}
+                {getProcessComponent('Facing')}
               </div>
             </Row>
           </div>

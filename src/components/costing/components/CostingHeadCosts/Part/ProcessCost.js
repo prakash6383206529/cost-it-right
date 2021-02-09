@@ -72,11 +72,12 @@ function ProcessCost(props) {
   const [tabData, setTabData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
-  const fieldValues = useWatch({
-    control,
-    name: ['ProcessGridFields'],
-    //defaultValue: 'default' // default value before the render
-  })
+
+  // const fieldValues = useWatch({
+  //   control,
+  //   name: ['ProcessGridFields'],
+  //   //defaultValue: 'default' // default value before the render
+  // })
 
   // This is for temporary
   // useEffect(() => {
@@ -97,7 +98,7 @@ function ProcessCost(props) {
     let netCost
     let tempArray
     console.log(tempData, "Quan");
-    if (value === '0.00' && tempData.Quantity != '0.00') {
+    if (value === '0.00' && tempData.Quantity !== '0.00') {
       console.log("Coming in if?");
       tempData = {
         ...tempData,

@@ -323,7 +323,7 @@ function LossStandardTable(props) {
                       </Fragment>
                     )
                   })}
-                {tableData.length === 0 && (
+                {tableData && tableData.length === 0 && (
                   <tr>
                     <td colspan="4">
                       <NoContentFound title={CONSTANT.EMPTY_DATA} />

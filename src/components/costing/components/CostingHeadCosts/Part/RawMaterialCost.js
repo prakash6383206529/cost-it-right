@@ -25,20 +25,7 @@ function RawMaterialCost(props) {
   const [inputDiameter, setInputDiameter] = useState('')
   const [gridLength, setGridLength] = useState(0)
   const [gridData, setGridData] = useState(props.data)
-  // const [gridData, setGridData] = useState([
-  //   {
-  //     RMName: 'Mould',
-  //     RMRate: 1,
-  //     MaterialType: 'Type1',
-  //     Density: 25,
-  //     UOM: 'Hours',
-  //     ScrapRate: 2,
-  //     FinishWeight: '',
-  //     GrossWeight: '',
-  //     NetLandedCost: '',
-  //     RawMaterialId: 1,
-  //   },
-  // ])
+
   const dispatch = useDispatch()
   console.log(gridData, "GRID");
   useEffect(() => {
@@ -55,6 +42,7 @@ function RawMaterialCost(props) {
         return setGridLength(0)
     }
   }, [])
+
   const costData = useContext(costingInfoContext)
 
   useEffect(() => {
@@ -110,20 +98,21 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
     dispatch(getRawMaterialCalculationByTechnology(technology, 'default', res => {
-      console.log(res);
-      const data = res.data.Data
-      tempData = {
-        ...tempData,
-        WeightCalculatorRequest: data,
-      }
+      if (res && res.data && res.data.Data) {
+        const data = res.data.Data
+        tempData = {
+          ...tempData,
+          WeightCalculatorRequest: data,
+        }
 
-      tempArr = Object.assign([...gridData], { [editIndex]: tempData })
-      console.log(tempArr, "temp");
-      setTimeout(() => {
-        setGridData(tempArr)
-        // setValue(`${rmGridFields}[${editIndex}]GrossWeight`, GrossWeight)
-        // setValue(`${rmGridFields}[${editIndex}]FinishWeight`, FinishWeight)
-      }, 100)
+        tempArr = Object.assign([...gridData], { [editIndex]: tempData })
+        console.log(tempArr, "temp");
+        setTimeout(() => {
+          setGridData(tempArr)
+          // setValue(`${rmGridFields}[${editIndex}]GrossWeight`, GrossWeight)
+          // setValue(`${rmGridFields}[${editIndex}]FinishWeight`, FinishWeight)
+        }, 100)
+      }
     }))
 
     setWeightDrawerOpen(true)
