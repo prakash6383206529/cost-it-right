@@ -18,7 +18,7 @@ function RawMaterialCost(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
-  const technology = props.technology ? props.technology : 'Plastic'
+  const technology = props.technology ? props.technology : 'Sheet Metal'
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
