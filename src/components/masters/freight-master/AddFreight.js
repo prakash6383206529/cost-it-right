@@ -791,7 +791,7 @@ class AddFreight extends Component {
                           <Field
                             name="RateCriteria"
                             type="text"
-                            label="Rate Criteria"
+                            label="Criteria"
                             component={searchableSelect}
                             placeholder={"--Select--"}
                             options={this.renderListing(
@@ -884,7 +884,7 @@ class AddFreight extends Component {
                             <thead>
                               <tr>
                                 <th>{`Capacity`}</th>
-                                <th>{`Rate Criteria`}</th>
+                                <th>{`Criteria`}</th>
                                 <th>{`Rate`}</th>
                                 <th>{`Effective Date`}</th>
                                 <th>{`Action`}</th>

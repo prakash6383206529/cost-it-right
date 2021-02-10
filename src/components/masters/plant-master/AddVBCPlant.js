@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, } from "../../../helper/validation";
+import { required, number, maxLength6, maxLength30, checkWhiteSpaces, } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
@@ -336,7 +336,7 @@ class AddVBCPlant extends Component {
                           name={"PlantName"}
                           type="text"
                           placeholder={""}
-                          validate={[required]}
+                          validate={[required,maxLength30,checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           className=""
