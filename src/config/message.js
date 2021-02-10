@@ -330,5 +330,5 @@ export const MESSAGES = {
   TAX_ADD_SUCCESS: 'Tax Details added successfully',
   TAX_UPDATE_SUCCESS: 'Tax Details has been updated successfully',
   TAX_DELETE_ALERT: 'Are you sure you want to delete this Tax Details?',
-  DELETE_TAX_SUCCESS: 'Tax Details Rate has been deleted successfully',
+  DELETE_TAX_SUCCESS: 'Tax Details has been deleted successfully',
 }

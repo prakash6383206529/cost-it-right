@@ -119,14 +119,14 @@ function AddAssemblyOperation(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-        <Container>
+      <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+        <div className="container-fluid">
           <div className={'drawer-wrapper drawer-1500px'}>
 
-            <Row className="drawer-heading">
+            <Row className="drawer-heading sticky-top-0">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Operation'}</h3>
+                  <h3>{'Add Operation'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -135,65 +135,61 @@ function AddAssemblyOperation(props) {
               </Col>
             </Row>
 
-            <Row>
+            <Row className="mb-3">
               <Col>
-                <tr>
-                  <td colSpan={8} className="cr-innerwrap-td">
-                    <div className="user-page p-0">
-                      <div className="cr-process-costwrap">
-                        <Row className="cr-innertool-cost">
+                  <div className="user-page p-0">
+                    <div className="cr-process-costwrap">
+                      <Row className="cr-innertool-cost">
 
-                          <Col md="3" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</Col>
-                          <Col md="3" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
-                          <Col md="3" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
+                        <Col md="3" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</Col>
+                        <Col md="3" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
+                        <Col md="3" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
 
-                          <Col md="3" className="switch cr-costlabel">
-                            <label className="switch-level">
-                              <div className={'left-title'}>{''}</div>
-                              <Switch
-                                onChange={onToolToggle}
-                                checked={IsOpenTool}
-                                id="normal-switch"
-                                disabled={false}
-                                background="#4DC771"
-                                onColor="#4DC771"
-                                onHandleColor="#ffffff"
-                                offColor="#4DC771"
-                                uncheckedIcon={false}
-                                checkedIcon={false}
-                                height={20}
-                                width={46}
-                              />
-                              <div className={'right-title'}>Show Tool Cost</div>
-                            </label>
-                          </Col>
-                        </Row>
+                        <Col md="3" className="switch cr-costlabel">
+                          <label className="switch-level">
+                            <div className={'left-title'}>{''}</div>
+                            <Switch
+                              onChange={onToolToggle}
+                              checked={IsOpenTool}
+                              id="normal-switch"
+                              disabled={false}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={'right-title'}>Show Tool Cost</div>
+                          </label>
+                        </Col>
+                      </Row>
 
-                        <hr />
-                        <OperationCost
-                          data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}
-                          setAssemblyOperationCost={props.setAssemblyOperationCost}
-                          item={props.item}
-                          IsAssemblyCalculation={true}
-                        />
+                      <hr />
+                      <OperationCost
+                        data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}
+                        setAssemblyOperationCost={props.setAssemblyOperationCost}
+                        item={props.item}
+                        IsAssemblyCalculation={true}
+                      />
 
-                        <hr />
-                        {IsOpenTool && <ToolCost
-                          data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingToolCostResponse : []}
-                          setAssemblyToolCost={props.setAssemblyToolCost}
-                          item={props.item}
-                          IsAssemblyCalculation={true}
-                        />}
+                      <hr />
+                      {IsOpenTool && <ToolCost
+                        data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingToolCostResponse : []}
+                        setAssemblyToolCost={props.setAssemblyToolCost}
+                        item={props.item}
+                        IsAssemblyCalculation={true}
+                      />}
 
-                      </div>
                     </div>
-                  </td>
-                </tr>
+                  </div>
               </Col>
             </Row>
 
             <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-left bluefooter-butn">
+              <div className="col-sm-12 text-right">
                 <button
                   type={'button'}
                   className="submit-button mr5 save-btn"
@@ -212,7 +208,7 @@ function AddAssemblyOperation(props) {
             </Row>
 
           </div>
-        </Container>
+        </div>
       </Drawer>
     </div>
   );

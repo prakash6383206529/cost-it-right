@@ -112,7 +112,8 @@ class VBCPlantListing extends Component {
             onOk: () => {
                 this.confirmDeactivateItem(data, cell)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => console.log('CANCEL: clicked'),
+            component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
     }
