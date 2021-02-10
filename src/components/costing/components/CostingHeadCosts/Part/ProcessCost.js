@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useWatch } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import Switch from "react-switch";
 import OperationCost from './OperationCost';
@@ -38,6 +39,7 @@ function ProcessCost(props) {
   const [calculatorData, setCalculatorData] = useState({})
 
   const costData = useContext(costingInfoContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({
   //   control,
@@ -182,15 +184,14 @@ function ProcessCost(props) {
    * @description SELECTED IDS
    */
   const selectedIds = (tempArr) => {
-    tempArr &&
-      tempArr.map((el) => {
-        if (Ids.includes(el.MachineRateId) === false) {
-          let selectedIds = Ids
-          selectedIds.push(el.MachineRateId)
-          setIds(selectedIds)
-        }
-        return null
-      })
+    tempArr && tempArr.map((el) => {
+      if (Ids.includes(el.MachineRateId) === false) {
+        let selectedIds = Ids
+        selectedIds.push(el.MachineRateId)
+        setIds(selectedIds)
+      }
+      return null
+    })
   }
 
   const deleteItem = (index) => {
@@ -396,12 +397,17 @@ function ProcessCost(props) {
       ...tabData,
       //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
       IsShowToolCost: true,
-      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, 2),
+      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NumberOfDecimalForTransaction),
       CostingToolsCostResponse: toolGrid,
     }
 
     setTabData(tempArr)
-    props.setToolCost(tempArr, props.index)
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setToolCost(tempArr, Params)
   }
 
   const ProcessGridFields = 'ProcessGridFields'
