@@ -14,10 +14,12 @@ import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology } from '../../../actions/CostWorking'
 
 function RawMaterialCost(props) {
+
   const { register, handleSubmit, control, setValue, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
+
   const technology = props.technology ? props.technology : 'Sheet Metal'
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
@@ -27,7 +29,7 @@ function RawMaterialCost(props) {
   const [gridData, setGridData] = useState(props.data)
 
   const dispatch = useDispatch()
-  console.log(gridData, "GRID");
+
   useEffect(() => {
     switch (technology) {
       case 'Sheet Metal':
@@ -123,7 +125,6 @@ function RawMaterialCost(props) {
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
   const closeWeightDrawer = (e = '', weightData = {}) => {
-    console.log(weightData, "Weight Data");
     setInputDiameter(weightData.Diameter)
     setWeight(weightData)
     setWeightDrawerOpen(false)
@@ -308,14 +309,8 @@ function RawMaterialCost(props) {
                                     e.preventDefault()
                                     handleGrossWeightChange(e, index)
                                   }}
-                                  errors={
-                                    errors &&
-                                      errors.rmGridFields &&
-                                      errors.rmGridFields[index] !== undefined
-                                      ? errors.rmGridFields[index].GrossWeight
-                                      : ''
-                                  }
-                                  disabled={true}
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                  disabled={false}
                                 />
                               }
                             </td>
@@ -342,13 +337,7 @@ function RawMaterialCost(props) {
                                     e.preventDefault()
                                     handleFinishWeightChange(e, index)
                                   }}
-                                  errors={
-                                    errors &&
-                                      errors.rmGridFields &&
-                                      errors.rmGridFields[index] !== undefined
-                                      ? errors.rmGridFields[index].FinishWeight
-                                      : ''
-                                  }
+                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
                                   disabled={false}
                                 />
                               }

@@ -591,7 +591,7 @@ class UserRegistration extends Component {
 
     updatedData.IsRemoveCosting = RemoveCostingFlag;
     this.props.updateUserAPI(updatedData, (res) => {
-      if (res.data.Result) {
+      if (res && res.data && res.data.Result) {
         toastr.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
       }
       this.cancel();

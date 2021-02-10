@@ -24,8 +24,6 @@ function CostingHeaderTabs(props) {
     }
   }
 
-  const dispatch = useDispatch();
-
   /**
   * @method render
   * @description Renders the component

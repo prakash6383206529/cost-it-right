@@ -19,17 +19,15 @@ import Rubber from './Rubber'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, isEditFlag } = props
-  console.log(rmRowData, ' 1 page')
-  const technology = props.technology ? props.technology : 'Plastic'
+
+  const technology = props.technology ? props.technology : 'Plastic';
+
   /**
    * @method toggleDrawer
    * @description TOGGLE DRAWER
    */
   const toggleDrawer = (event, weightData = {}) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
     props.closeDrawer('', weightData)
@@ -105,18 +103,11 @@ function OpenWeightCalculator(props) {
               </Col>
             </Row>
             <Row>
-              <Col md="2">{`RM Name: ${rmRowData.RMName !== undefined ? rmRowData.RMName : ''
-                }`}</Col>
-              <Col md="2">{`Material: ${rmRowData.MaterialType !== undefined
-                ? rmRowData.MaterialType
-                : ''
-                }`}</Col>
-              <Col md="2">{`Density(g/cm2): ${rmRowData.Density !== undefined ? rmRowData.Density : ''
-                }`}</Col>
-              <Col md="2">{`RM Rate: ${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''
-                }`}</Col>
-              <Col md="2">{`Scrap Rate: ${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''
-                }`}</Col>
+              <Col md="2">{`RM Name: ${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</Col>
+              <Col md="2">{`Material: ${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</Col>
+              <Col md="2">{`Density(g/cm2): ${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</Col>
+              <Col md="2">{`RM Rate: ${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</Col>
+              <Col md="2">{`Scrap Rate: ${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</Col>
             </Row>
             {openConditionalDrawer()}
           </div>

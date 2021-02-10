@@ -335,7 +335,7 @@ class AddIndivisualPart extends Component {
                                   name={"BOMNumber"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[required, specialName, checkWhiteSpaces]}
+                                  validate={[required, alphaNumeric, checkWhiteSpaces]}
                                   component={renderText}
                                   required={true}
                                   className=""

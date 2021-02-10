@@ -1,11 +1,11 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getRMCCTabData, saveCostingRMCCTab, } from '../../../actions/Costing';
+import { getRMCCTabData, } from '../../../actions/Costing';
 
-import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
+import { checkForDecimalAndNull, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 
 function AssemblyPart(props) {
@@ -144,7 +144,7 @@ function AssemblyPart(props) {
         closeDrawer={closeDrawer}
         isEditFlag={false}
         ID={''}
-        anchor={'right'}
+        anchor={'bottom'}
         item={item}
         setAssemblyOperationCost={props.setAssemblyOperationCost}
         setAssemblyToolCost={props.setAssemblyToolCost}
