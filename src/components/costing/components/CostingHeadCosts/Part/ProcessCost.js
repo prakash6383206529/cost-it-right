@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useWatch } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import Switch from "react-switch";
 import OperationCost from './OperationCost';
@@ -38,6 +39,7 @@ function ProcessCost(props) {
   const [calculatorData, setCalculatorData] = useState({})
 
   const costData = useContext(costingInfoContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({
   //   control,
@@ -64,7 +66,7 @@ function ProcessCost(props) {
     let time
     let netCost
     let tempArray
-    let tempArr = [];
+    let tempArr2 = [];
 
     if (value === '0.00' && tempData.Quantity !== '0.00') {
       tempData = {
@@ -94,7 +96,7 @@ function ProcessCost(props) {
       return accummlator + checkForNull(el.ProcessCost)
     }, 0)
 
-    tempArr = {
+    tempArr2 = {
       ...tabData,
       NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
       ProcessCostTotal: ProcessCostTotal,
@@ -102,7 +104,7 @@ function ProcessCost(props) {
     }
 
     setTimeout(() => {
-      setTabData(tempArr)
+      setTabData(tempArr2)
       setGridData(tempArray)
       setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, time)
       setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, netCost)
@@ -139,26 +141,39 @@ function ProcessCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+    let tempArr2 = [];
     if (Object.keys(rowData).length > 0) {
-      let rowArray =
-        rowData &&
-        rowData.map((el) => {
-          return {
-            ProcessId: el.ProcessId,
-            ProcessDetailId: '',
-            MachineId: el.MachineId,
-            MachineRateId: el.MachineRateId,
-            MachineRate: el.MachineRate,
-            ProcessName: el.ProcessName,
-            ProcessDescription: el.Description,
-            MachineName: el.MachineName,
-            UOM: el.UnitOfMeasurement,
-            ProcessCost: '',
-          }
-        })
+      let rowArray = rowData && rowData.map((el) => {
+        return {
+          ProcessId: el.ProcessId,
+          ProcessDetailId: '',
+          MachineId: el.MachineId,
+          MachineRateId: el.MachineRateId,
+          MachineRate: el.MachineRate,
+          ProcessName: el.ProcessName,
+          ProcessDescription: el.Description,
+          MachineName: el.MachineName,
+          UOM: el.UnitOfMeasurement,
+          ProcessCost: '',
+        }
+      })
 
       let tempArr = [...gridData, ...rowArray]
+
+      let ProcessCostTotal = 0
+      ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+
+      tempArr2 = {
+        ...tabData,
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
+        ProcessCostTotal: ProcessCostTotal,
+        CostingProcessCostResponse: tempArr,
+      }
+
       setGridData(tempArr)
+      setTabData(tempArr2)
       selectedIds(tempArr)
     }
     setDrawerOpen(false)
@@ -169,25 +184,37 @@ function ProcessCost(props) {
    * @description SELECTED IDS
    */
   const selectedIds = (tempArr) => {
-    tempArr &&
-      tempArr.map((el) => {
-        if (Ids.includes(el.MachineRateId) === false) {
-          let selectedIds = Ids
-          selectedIds.push(el.MachineRateId)
-          setIds(selectedIds)
-        }
-        return null
-      })
+    tempArr && tempArr.map((el) => {
+      if (Ids.includes(el.MachineRateId) === false) {
+        let selectedIds = Ids
+        selectedIds.push(el.MachineRateId)
+        setIds(selectedIds)
+      }
+      return null
+    })
   }
 
   const deleteItem = (index) => {
-    let tempArr =
-      gridData &&
-      gridData.filter((el, i) => {
-        if (i === index) return false
-        return true
-      })
+    let tempArr2 = [];
+    let tempArr = gridData && gridData.filter((el, i) => {
+      if (i === index) return false
+      return true
+    })
+
+    let ProcessCostTotal = 0
+    ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.ProcessCost)
+    }, 0)
+
+    tempArr2 = {
+      ...tabData,
+      NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
+      ProcessCostTotal: ProcessCostTotal,
+      CostingProcessCostResponse: tempArr,
+    }
+
     selectedIds(tempArr)
+    setTabData(tempArr2)
     setGridData(tempArr)
   }
 
@@ -370,12 +397,17 @@ function ProcessCost(props) {
       ...tabData,
       //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
       IsShowToolCost: true,
-      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, 2),
+      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NumberOfDecimalForTransaction),
       CostingToolsCostResponse: toolGrid,
     }
 
     setTabData(tempArr)
-    props.setToolCost(tempArr, props.index)
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setToolCost(tempArr, Params)
   }
 
   const ProcessGridFields = 'ProcessGridFields'
