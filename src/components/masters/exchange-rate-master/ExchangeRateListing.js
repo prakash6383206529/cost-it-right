@@ -288,9 +288,11 @@ class ExchangeRateListing extends Component {
             <div className="container-fluid">
                 {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <div class="col-sm-4 pl-0"><h1>Exchange Rate Master</h1></div>
-                    <hr className="mb-0" />
-                    <Row className="pt-4">
+                    <Row>
+                        <Col md="12"><h1>Exchange Rate Master</h1></Col>
+                        <Col md="12"><hr className="m-0" /></Col>
+                    </Row>
+                    <Row className="pt-4 blue-before">
                         {this.state.shown ? (
                         <Col md="7" className="filter-block">
                             <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -337,7 +339,7 @@ class ExchangeRateListing extends Component {
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
                                 {this.state.shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown})}>
+                                    <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown})}>
                                         <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                 ) : (
                                     <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>

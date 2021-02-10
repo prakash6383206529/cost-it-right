@@ -1202,12 +1202,32 @@ label for[normal-switch]{
         right: 15px;
         bottom: 10px;
         content: "";
-        background-color: #F8FCFF;
+        // background-color: #F8FCFF;
+        background-color: #d7e4ef;
         z-index: 0;
       }
       &:empty{
         background-color: #fff;
         &:before{display: none;}
+      }
+    }
+  }
+  .blue-before{
+    .filter-block {
+      position: initial;
+      height: 32px!important;
+      margin-bottom: 25px;
+      background-color: #F8FCFF;
+      &:before{
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        right: 15px;
+        bottom: 10px;
+        content: "";
+        // background-color: #F8FCFF;
+        background-color: #d7e4ef;
+        z-index: 0;
       }
     }
   }
@@ -2335,6 +2355,9 @@ table{
     filter: brightness(100);
   }
 }
+.topminus88.filter-btn-top{
+  top: -88px;
+}
 
 .react-switch-bg{
   div{
@@ -2361,16 +2384,7 @@ table{
 
 @media(max-width:1367px){
   .filter-row-large{
-     .col-md-12{-ms-flex: 0 0 100%;flex: 0 0 100%;max-width: 100%;}
-  }
-  .content-page {
-    .filter-row-large{
-      .filter-block{
-        .flex-fill:last-child{
-          text-align: right;
-        }
-      }
-    }
+     .col-md-12{-ms-flex: 0 0 calc(100% - 100px);flex: 0 0 calc(100% - 100px);max-width: calc(100% - 100px);}
   }
   .process {
     .card {

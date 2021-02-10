@@ -56,7 +56,8 @@ class Login extends Component {
         }, 1000)
       } else {
         toastr.error('Entered email id or password is incorrect. Try again')
-      }
+
+      } 
     });
   }
 
@@ -84,8 +85,8 @@ class Login extends Component {
                   <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
                   </a>
                 </div>
-                <h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do.</h3>
-                <p>Welcome Back, Please login to your account</p>
+                <h3 className="text-center">Welcome Back,<br/> Please login to your account</h3>
+                {/* <p>Welcome Back, Please login to your account</p> */}
                 <form
                   noValidate
                   className="form"
@@ -99,7 +100,7 @@ class Login extends Component {
                         component={renderEmailInputField}
                         isDisabled={false}
                         placeholder={"Email"}
-                        validate={[required, email, minLength5, maxLength70]}
+                        validate={[required, email,maxLength70]}
                         required={true}
                         maxLength={71}
                       />
@@ -109,10 +110,10 @@ class Login extends Component {
                         name={"UserName"}
                         type="text"
                         placeholder={'User Name'}
-                        validate={[required, minLength5, maxLength70]}
+                        validate={[required,maxLength70]}
                         component={renderText}
                         required={true}
-                        maxLength={71}
+                        maxLength={26}
                         customClassName={'withBorder'}
                       />
                     }
@@ -123,7 +124,7 @@ class Login extends Component {
                       // label="Password"
                       placeholder="Password"
                       component={renderPasswordInputField}
-                      validate={[required, minLength5, maxLength25]}
+                      validate={[required, maxLength25]}
                       required={true}
                       maxLength={26}
                     />

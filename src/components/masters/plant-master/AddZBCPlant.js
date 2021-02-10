@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, } from "../../../helper/validation";
+import { required, number, maxLength6, maxLength30, checkWhiteSpaces, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
@@ -296,7 +296,7 @@ class AddZBCPlant extends Component {
                           name={"PlantName"}
                           type="text"
                           placeholder={""}
-                          validate={[required]}
+                          validate={[required,maxLength30,checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           className=""
@@ -445,9 +445,6 @@ class AddZBCPlant extends Component {
                           valueDescription={this.state.city}
                         />
                       </Col>
-                    </Row>
-
-                    <Row className="pl-3">
                       <Col md="6">
                         <Field
                           label="ZipCode"

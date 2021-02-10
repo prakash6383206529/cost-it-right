@@ -412,15 +412,20 @@ class InterestRateListing extends Component {
     return (
       <>
         {/* {this.props.loading && <Loader />} */}
+        <div className="container-fluid">
         <form
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           noValidate
         >
-          <div class="col-sm-4 pl-0">
-            <h1>Interest Rate Master</h1>
-          </div>
-          <hr className="mb-0" />
-          <Row className="pt-4 filter-row-large">
+          <Row>
+            <Col md="12">
+              <h1>Interest Rate Master</h1>
+            </Col>
+            <Col md="12">
+              <hr className="m-0" />
+            </Col>            
+          </Row>
+          <Row className="pt-4 filter-row-large blue-before">
             {this.state.shown ? (
               <Col lg="10" md="12" className="filter-block">
                 <div className="d-inline-flex justify-content-start align-items-top w100">
@@ -566,6 +571,7 @@ class InterestRateListing extends Component {
           messageLabel={'Interest Rate'}
           anchor={'right'}
         />}
+        </div>
       </ >
     );
   }

@@ -209,7 +209,8 @@ class SOBListing extends Component {
       <div>
         {this.props.loading && <Loader />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <Row className="pt-30">
+          <Row className="pt-4 ">
+          {this.state.shown ? (
             <Col md="10" className="filter-block">
               <div className="d-inline-flex justify-content-start align-items-top w100">
                 <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
@@ -250,10 +251,16 @@ class SOBListing extends Component {
                   </button>
                 </div>
               </div>
-            </Col>
-            <Col md="2" className="search-user-block">
-              <div className="d-flex justify-content-end bd-highlight w100">
+            </Col>) : ("") }
 
+            <Col md="6" className="search-user-block mb-3">
+              <div className="d-flex justify-content-end bd-highlight w100">
+              {this.state.shown ? (
+                  <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
+                      <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+              ) : (
+                      <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                  )}
               </div>
             </Col>
           </Row>

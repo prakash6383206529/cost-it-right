@@ -422,14 +422,6 @@ class UsersListing extends Component {
 		return (
       <>
         {" "}
-        <button
-          style={{ float: "right", marginTop: "-40px" }}
-          type="button"
-          className="user-btn"
-          onClick={() => this.setState({ shown: !this.state.shown })}
-        >
-          {this.state.shown ? "Hide Filter" : "Show Filter"}
-        </button>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
@@ -495,6 +487,12 @@ class UsersListing extends Component {
               {AddAccessibility && (
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
+				  {this.state.shown ? (
+						<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+							<img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+					) : (
+							<button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+						)}
                     <button
                       type="button"
                       className={"user-btn"}

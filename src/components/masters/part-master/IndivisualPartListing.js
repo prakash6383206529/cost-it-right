@@ -258,7 +258,7 @@ class IndivisualPartListing extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={this.formToggle}>
-                                    <div className={'plus'}></div>Add Assembly Part</button>}
+                                    <div className={'plus'}></div>Add Component Part</button>}
                             </div>
                         </div>
                     </Col>
