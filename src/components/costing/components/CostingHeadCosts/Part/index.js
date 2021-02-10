@@ -4,7 +4,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
-import { getRMCCTabData, saveCostingRMCCTab, saveComponentCostingRMCCTab } from '../../../actions/Costing';
+import { getRMCCTabData, saveComponentCostingRMCCTab } from '../../../actions/Costing';
 import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
 

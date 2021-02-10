@@ -3,10 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
   checkForDecimalAndNull,
@@ -27,70 +24,19 @@ function Pipe(props) {
 
   const defaultValues = {
     //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
-    OuterDiameter:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.OuterDiameter !== undefined
-        ? WeightCalculatorRequest.OuterDiameter
-        : '',
-    Thickness:
-      WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined
-        ? WeightCalculatorRequest.Thickness
-        : '',
-    InnerDiameter:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.InnerDiameter !== undefined
-        ? WeightCalculatorRequest.InnerDiameter
-        : '',
-    SheetLength:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.SheetLength !== undefined
-        ? WeightCalculatorRequest.SheetLength
-        : '',
-    PartLength:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.PartLength !== undefined
-        ? WeightCalculatorRequest.PartLength
-        : '',
-    NumberOfPartsPerSheet:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.NumberOfPartsPerSheet !== undefined
-        ? WeightCalculatorRequest.NumberOfPartsPerSheet
-        : '',
-    ScrapLength:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.ScrapLength !== undefined
-        ? WeightCalculatorRequest.ScrapLength
-        : '',
-    WeightofSheet:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.WeightofSheet !== undefined
-        ? WeightCalculatorRequest.WeightofSheet
-        : '',
-    WeightofPart:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.WeightofPart !== undefined
-        ? WeightCalculatorRequest.WeightofPart
-        : '',
-    WeightofScrap:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.WeightofScrap !== undefined
-        ? WeightCalculatorRequest.WeightofScrap
-        : '',
-    NetSurfaceArea:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.NetSurfaceArea !== undefined
-        ? WeightCalculatorRequest.NetSurfaceArea
-        : '',
-    GrossWeight:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.GrossWeight !== undefined
-        ? WeightCalculatorRequest.GrossWeight
-        : '',
-    FinishWeight:
-      WeightCalculatorRequest &&
-        WeightCalculatorRequest.FinishWeight !== undefined
-        ? WeightCalculatorRequest.FinishWeight
-        : '',
+    OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
+    Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? WeightCalculatorRequest.Thickness : '',
+    InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== undefined ? WeightCalculatorRequest.InnerDiameter : '',
+    SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.SheetLength !== undefined ? WeightCalculatorRequest.SheetLength : '',
+    PartLength: WeightCalculatorRequest && WeightCalculatorRequest.PartLength !== undefined ? WeightCalculatorRequest.PartLength : '',
+    NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== undefined ? WeightCalculatorRequest.NumberOfPartsPerSheet : '',
+    ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest.ScrapLength !== undefined ? WeightCalculatorRequest.ScrapLength : '',
+    WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest.WeightofSheet !== undefined ? WeightCalculatorRequest.WeightofSheet : '',
+    WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest.WeightofPart !== undefined ? WeightCalculatorRequest.WeightofPart : '',
+    WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest.WeightofScrap !== undefined ? WeightCalculatorRequest.WeightofScrap : '',
+    NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== undefined ? WeightCalculatorRequest.NetSurfaceArea : '',
+    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
+    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
   }
 
   const {
@@ -159,9 +105,7 @@ function Pipe(props) {
    * @description CALCULATE INNER DIAMETER
    */
   const calculateInnerDiameter = () => {
-    const ID =
-      checkForNull(fieldValues.OuterDiameter) -
-      2 * checkForNull(fieldValues.Thickness)
+    const ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(fieldValues.Thickness);
     setValue('InnerDiameter', ID)
   }
 
@@ -173,9 +117,7 @@ function Pipe(props) {
     if (fieldValues.SheetLength === '') {
       setValue('NumberOfPartsPerSheet', 1)
     } else {
-      const NumberParts = checkForNull(
-        fieldValues.SheetLength / fieldValues.PartLength,
-      )
+      const NumberParts = checkForNull(fieldValues.SheetLength / fieldValues.PartLength)
       setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
     }
   }
@@ -185,9 +127,7 @@ function Pipe(props) {
    * @description CALCULATE LENGTH OF SCRAP
    */
   const calculateLengthofScrap = () => {
-    const scrapLength = checkForNull(
-      fieldValues.SheetLength % fieldValues.PartLength,
-    )
+    const scrapLength = checkForNull(fieldValues.SheetLength % fieldValues.PartLength)
     setValue('ScrapLength', parseInt(scrapLength))
   }
 
@@ -409,10 +349,7 @@ function Pipe(props) {
               </Col>
               <Col md="3">
                 <TextFieldHookForm
-                  label={`Outer Diameter${Object.keys(UOMDimension).length > 0
-                    ? '(' + UOMDimension.label + ')'
-                    : ''
-                    }`}
+                  label={`Outer Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
                   name={'OuterDiameter'}
                   Controller={Controller}
                   control={control}
@@ -432,15 +369,12 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.OuterDiameter}
-                  disabled={isEditFlag ? false : true}
+                  disabled={false}
                 />
               </Col>
               <Col md="3">
                 <TextFieldHookForm
-                  label={`Thickness${Object.keys(UOMDimension).length > 0
-                    ? '(' + UOMDimension.label + ')'
-                    : ''
-                    }`}
+                  label={`Thickness${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
                   name={'Thickness'}
                   Controller={Controller}
                   control={control}
@@ -460,15 +394,12 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.Thickness}
-                  disabled={isEditFlag ? false : true}
+                  disabled={false}
                 />
               </Col>
               <Col md="3">
                 <TextFieldHookForm
-                  label={`Inner Diameter${Object.keys(UOMDimension).length > 0
-                    ? '(' + UOMDimension.label + ')'
-                    : ''
-                    }`}
+                  label={`Inner Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
                   name={'InnerDiameter'}
                   Controller={Controller}
                   control={control}
@@ -487,7 +418,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.InnerDiameter}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
             </Row>
@@ -495,10 +426,7 @@ function Pipe(props) {
             <Row>
               <Col md="3">
                 <TextFieldHookForm
-                  label={`Length of Sheet${Object.keys(UOMDimension).length > 0
-                    ? '(' + UOMDimension.label + ')'
-                    : ''
-                    }`}
+                  label={`Length of Sheet${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
                   name={'SheetLength'}
                   Controller={Controller}
                   control={control}
@@ -518,15 +446,12 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.SheetLength}
-                  disabled={isEditFlag ? false : true}
+                  disabled={false}
                 />
               </Col>
               <Col md="3">
                 <TextFieldHookForm
-                  label={`Length of Part${Object.keys(UOMDimension).length > 0
-                    ? '(' + UOMDimension.label + ')'
-                    : ''
-                    }`}
+                  label={`Length of Part${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
                   name={'PartLength'}
                   Controller={Controller}
                   control={control}
@@ -546,7 +471,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.PartLength}
-                  disabled={isEditFlag ? false : true}
+                  disabled={false}
                 />
               </Col>
               <Col md="3">
@@ -571,15 +496,12 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.NumberOfPartsPerSheet}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
               <Col md="3">
                 <TextFieldHookForm
-                  label={`Length of Scrap${Object.keys(UOMDimension).length > 0
-                    ? '(' + UOMDimension.label + ')'
-                    : ''
-                    }`}
+                  label={`Length of Scrap${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
                   name={'ScrapLength'}
                   Controller={Controller}
                   control={control}
@@ -599,7 +521,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.ScrapLength}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
             </Row>
@@ -627,7 +549,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.WeightofSheet}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
               <Col md="3">
@@ -652,7 +574,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.WeightofPart}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
               <Col md="3">
@@ -677,7 +599,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.WeightofScrap}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
             </Row>
@@ -699,7 +621,7 @@ function Pipe(props) {
                     onChange={onSideToggle}
                     checked={isOneSide}
                     id="normal-switch"
-                    disabled={isEditFlag ? false : true}
+                    disabled={false}
                     background="#4DC771"
                     onColor="#4DC771"
                     onHandleColor="#ffffff"
@@ -738,7 +660,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.NetSurfaceArea}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
               <Col md="4">
@@ -762,7 +684,7 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.GrossWeight}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
               <Col md="4">
@@ -786,29 +708,25 @@ function Pipe(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.FinishWeight}
-                  disabled={isEditFlag ? false : true}
+                  disabled={true}
                 />
               </Col>
             </Row>
 
             <Row className="sf-btn-footer no-gutters justify-content-between mt25">
               <div className="col-sm-12 text-right bluefooter-butn">
-                {/* <button
+                <button
                   type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button> */}
-                {
-                  isEditFlag &&
-                  <button
-                    type={'submit'}
-                    className="submit-button mr5 save-btn">
-                    <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                    {'Save'}
-                  </button>
-                }
-
+                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                </button>
+                <button
+                  type={'submit'}
+                  className="submit-button mr5 save-btn">
+                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  {'Save'}
+                </button>
               </div>
             </Row>
           </form>

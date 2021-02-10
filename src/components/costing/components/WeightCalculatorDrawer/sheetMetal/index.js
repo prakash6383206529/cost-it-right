@@ -20,7 +20,7 @@ import SectionC from './SectionC'
 import SectionZ from './SectionZ'
 
 function WeightCalculator(props) {
-  console.log(props, 'Second page')
+
   const { rmRowData } = props
   const [activeTab, setActiveTab] = useState('1')
 
@@ -45,7 +45,7 @@ function WeightCalculator(props) {
     ) {
       return
     }
-    props.closeDrawer('', weightData)
+    props.toggleDrawer('', weightData)
   }
 
   const dispatch = useDispatch()
@@ -55,38 +55,7 @@ function WeightCalculator(props) {
    * @description Renders the component
    */
   return (
-    // <div>
-    //   <Drawer
-    //     anchor={props.anchor}
-    //     open={props.isOpen}
-    //     onClose={(e) => toggleDrawer(e)}
-    //   >
-    //     <Container>
-    //       <div className={'drawer-wrapper drawer-1500px'}>
-    //         <Row className="drawer-heading">
-    //           <Col>
-    //             <div className={'header-wrapper left'}>
-    //               <h3>{'Weight Calculator'}</h3>
-    //             </div>
-    //             <div
-    //               onClick={(e) => toggleDrawer(e)}
-    //               className={'close-button right'}
-    //             ></div>
-    //           </Col>
-    //         </Row>
     <Fragment>
-      {/* <Row>
-        <Col md="2">{`RM Name: ${
-          rmRowData.RMName !== undefined ? rmRowData.RMName : ''
-        }`}</Col>
-        <Col md="2">{`Material: ${
-          rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''
-        }`}</Col>
-        <Col md="2">{`Density(g/cm2) ${
-          rmRowData.Density !== undefined ? rmRowData.Density : ''
-        }`}</Col>
-      </Row> */}
-
       <Row>
         <Col>
           <Nav tabs className="subtabs">
@@ -186,10 +155,6 @@ function WeightCalculator(props) {
         </Col>
       </Row>
     </Fragment>
-    //       </div>
-    //     </Container>
-    //   </Drawer>
-    // </div>
   )
 }
 

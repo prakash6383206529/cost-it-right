@@ -107,7 +107,7 @@ export const alphabetsOnlyForName = value =>
         ? 'Please enter a valid name.' : undefined;
 
 export const specialName = value =>
-    value && /[^A-Za-z'\s.,@_-]+$/i.test(value)
+    value && /[^A-Za-z 0-9]/i.test(value)
         ? 'Please enter a valid name.' : undefined;
 
 export const validatePassword = value => {
@@ -142,7 +142,6 @@ export const normalizePhone = value => {
     if (!value) {
         return value
     }
-
     return value.replace(/[^\d]/g, '')
 }
 

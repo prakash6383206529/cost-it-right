@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces } from "../../../helper/validation";
+import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
@@ -606,7 +606,7 @@ class AddAssemblyPart extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={""}
-                            validate={[required, specialName, checkWhiteSpaces]}
+                            validate={[required, checkWhiteSpaces]}
                             component={renderText}
                             required={true}
                             className=""
@@ -622,7 +622,7 @@ class AddAssemblyPart extends Component {
                             name={"ECNNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[alphabetsOnly, checkWhiteSpaces]}
+                            validate={[alphaNumeric, checkWhiteSpaces]}
                             component={renderText}
                             //required={true}
                             className=""
@@ -635,7 +635,7 @@ class AddAssemblyPart extends Component {
                             name={"RevisionNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[alphabetsOnly, checkWhiteSpaces]}
+                            validate={[alphaNumeric, checkWhiteSpaces]}
                             component={renderText}
                             //required={true}
                             className=""
@@ -648,7 +648,7 @@ class AddAssemblyPart extends Component {
                             name={"DrawingNumber"}
                             type="text"
                             placeholder={""}
-                            validate={[alphabetsOnly, checkWhiteSpaces]}
+                            validate={[alphaNumeric, checkWhiteSpaces]}
                             component={renderText}
                             //required={true}
                             className=""
@@ -679,12 +679,7 @@ class AddAssemblyPart extends Component {
                             label="Plant"
                             name="Plant"
                             placeholder="--Select--"
-                            selection={
-                              this.state.selectedPlants == null ||
-                                this.state.selectedPlants.length === 0
-                                ? []
-                                : this.state.selectedPlants
-                            }
+                            selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
                             selectionChanged={this.handlePlant}
                             optionValue={(option) => option.Value}

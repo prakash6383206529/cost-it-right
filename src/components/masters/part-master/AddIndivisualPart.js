@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, number, maxLength100, specialName, alphabetsOnly, checkWhiteSpaces } from "../../../helper/validation";
+import { required, number, maxLength100, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, renderMultiSelectField, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
@@ -335,7 +335,7 @@ class AddIndivisualPart extends Component {
                                   name={"BOMNumber"}
                                   type="text"
                                   placeholder={""}
-                                  validate={[required, specialName, checkWhiteSpaces]}
+                                  validate={[required, alphaNumeric, checkWhiteSpaces]}
                                   component={renderText}
                                   required={true}
                                   className=""
@@ -366,7 +366,7 @@ class AddIndivisualPart extends Component {
                               name={"ECNNumber"}
                               type="text"
                               placeholder={""}
-                              validate={[alphabetsOnly, checkWhiteSpaces]}
+                              validate={[alphaNumeric, checkWhiteSpaces]}
                               component={renderText}
                               //required={true}
                               className=""
@@ -379,7 +379,7 @@ class AddIndivisualPart extends Component {
                               name={"RevisionNumber"}
                               type="text"
                               placeholder={""}
-                              validate={[alphabetsOnly, checkWhiteSpaces]}
+                              validate={[alphaNumeric, checkWhiteSpaces]}
                               component={renderText}
                               //required={true}
                               className=""
@@ -392,7 +392,7 @@ class AddIndivisualPart extends Component {
                               name={"DrawingNumber"}
                               type="text"
                               placeholder={""}
-                              validate={[alphabetsOnly, checkWhiteSpaces]}
+                              validate={[alphaNumeric, checkWhiteSpaces]}
                               component={renderText}
                               //required={true}
                               className=""
