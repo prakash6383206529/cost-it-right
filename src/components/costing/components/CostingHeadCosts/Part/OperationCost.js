@@ -233,7 +233,7 @@ function OperationCost(props) {
                                   }}
                                   defaultValue={item.Quantity}
                                   className=""
-                                  customClassName={'withBorder'}
+                                  customClassName={'withBorder hide-label-inside mb-0'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
@@ -264,7 +264,7 @@ function OperationCost(props) {
                                     }}
                                     defaultValue={item.LabourQuantity}
                                     className=""
-                                    customClassName={'withBorder'}
+                                    customClassName={'withBorder hide-label-inside mb-0'}
                                     handleChange={(e) => {
                                       e.preventDefault()
                                       handleLabourQuantityChange(e, index)

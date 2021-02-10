@@ -1200,10 +1200,9 @@ label for[normal-switch]{
         top: 10px;
         left: 15px;
         right: 15px;
-        bottom: 10px;
+        bottom: 11px;
         content: "";
-        // background-color: #F8FCFF;
-        background-color: #d7e4ef;
+        background-color: #F8FCFF;
         z-index: 0;
       }
       &:empty{
@@ -1589,6 +1588,17 @@ $roboto: "Roboto", sans-serif;
 		max-height: 100vh;
 	}
 }
+.MuiDrawer-root.MuiDrawer-modal.bottom-drawer{
+  .drawer-1500px{
+    max-width: 100%;
+  }
+	.MuiDrawer-paper {
+		max-height: 65vh;
+    top: auto;
+    padding-bottom: 15px;
+	}
+}
+
 body {
 	.icon-small-primary {
 		width: 25px;

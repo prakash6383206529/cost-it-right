@@ -80,9 +80,11 @@ function AddOperation(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-    paginationShowsTotal: renderPaginationShowsTotal(),
-    paginationSize: 5,
+    prePage: <span className="prev-page-pg"></span>, // Previous page button text
+    nextPage: <span className="next-page-pg"></span>, // Next page button text
+    firstPage: <span className="first-page-pg"></span>, // First page button text
+    lastPage: <span className="last-page-pg"></span>,
+    paginationSize: 2,
   };
 
   const onRowSelect = (row, isSelected, e) => {
@@ -153,10 +155,10 @@ function AddOperation(props) {
         <Container>
           <div className={'drawer-wrapper drawer-1500px'}>
 
-            <Row className="drawer-heading">
+            <Row className="drawer-heading mb-4">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Operation'}</h3>
+                  <h3>{'Add Operation'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -166,7 +168,7 @@ function AddOperation(props) {
             </Row>
 
 
-            <Row>
+            <Row className="mb-3 mx-0">
               <Col>
                 <BootstrapTable
                   data={tableData}
@@ -194,8 +196,8 @@ function AddOperation(props) {
               </Col>
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-left bluefooter-butn">
+            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+              <div className="col-sm-12 text-right">
                 <button
                   type={'button'}
                   className="submit-button mr5 save-btn"

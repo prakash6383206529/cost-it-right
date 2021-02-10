@@ -199,15 +199,15 @@ function ManageSOBDrawer(props) {
 
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
 
-              <Row>
+              <Row className="pl-3">
                 <Col md="12">
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
                       <tr>
                         <th style={{ width: '100px' }}>{`Vendor Name`}</th>
-                        <th style={{ width: '150px' }}>{`Net Landed Cost/Unit`}</th>
-                        <th style={{ width: '150px' }}>{`SOB%`}</th>
-                        <th >{`Weighted Cost`}</th>
+                        <th style={{ width: '165px' }}>{`Net Landed Cost/Unit`}</th>
+                        <th style={{ width: '155px' }}>{`SOB%`}</th>
+                        <th style={{ width: '150px' }} >{`Weighted Cost`}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -273,8 +273,8 @@ function ManageSOBDrawer(props) {
 
               </Row>
 
-              <Row className="sf-btn-footer no-gutters justify-content-between mt25">
-                <div className="col-sm-12 text-right bluefooter-butn">
+              <Row className="sf-btn-footer no-gutters justify-content-between mt25 mx-0">
+                <div className="col-sm-12 text-right">
 
                   <button
                     type={'button'}
