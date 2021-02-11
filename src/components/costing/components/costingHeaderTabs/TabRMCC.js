@@ -18,7 +18,6 @@ function TabRMCC(props) {
   const [netOperationCost, setNetOperationCost] = useState('')
   const [netToolsCost, setNetToolsCost] = useState(0)
   const [tabData, setTabData] = useState([])
-  console.log(tabData, 'Tab data')
   const [costingData, setCostingData] = useState({})
 
   const dispatch = useDispatch()
@@ -45,7 +44,7 @@ function TabRMCC(props) {
       NetRawMaterialsCost: TopHeaderValues !== null && TopHeaderValues.TotalRawMaterialsCost !== null ? TopHeaderValues.TotalRawMaterialsCost : 0,
       NetBoughtOutPartCost: TopHeaderValues !== null && TopHeaderValues.TotalBoughtOutPartCost !== null ? TopHeaderValues.TotalBoughtOutPartCost : 0,
       NetConversionCost: TopHeaderValues !== null && TopHeaderValues.TotalConversionCost !== null ? TopHeaderValues.TotalConversionCost : 0,
-      NetToolsCost: 100,
+      NetToolsCost: TopHeaderValues !== null && TopHeaderValues.ToolsCostTotal !== null ? TopHeaderValues.ToolsCostTotal : 0,
       NetTotalRMBOPCC: TopHeaderValues !== null && TopHeaderValues.TotalCalculatedRMBOPCCCost !== null ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
     }
     props.setHeaderCost(topHeaderData)
@@ -94,6 +93,22 @@ function TabRMCC(props) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
         return accummlator + checkForNull(el.CostingPartDetails.TotalConversionCost !== null ? el.CostingPartDetails.TotalConversionCost : 0);
+      }
+    }, 0)
+    return NetCost;
+  }
+
+  /**
+  * @method getToolTotalCostForAssembly
+  * @description GET TOOL TOTAL COST FOR ASSEMBLY
+  */
+  const getToolTotalCostForAssembly = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+        return accummlator + checkForNull(GridTotalCost);
+      } else {
+        return accummlator + checkForNull(el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost !== null && el.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== null ? el.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0);
       }
     }, 0)
     return NetCost;
@@ -206,11 +221,9 @@ function TabRMCC(props) {
    */
   const netRMCost = (item) => {
     let NetRMCost = 0
-    NetRMCost =
-      item &&
-      item.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.NetLandedCost)
-      }, 0)
+    NetRMCost = item && item.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.NetLandedCost)
+    }, 0)
     return NetRMCost
   }
 
@@ -261,11 +274,9 @@ function TabRMCC(props) {
    */
   const netBOPCost = (item) => {
     let NetCost = 0
-    NetCost =
-      item &&
-      item.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.NetBoughtOutPartCost)
-      }, 0)
+    NetCost = item && item.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.NetBoughtOutPartCost)
+    }, 0)
     return NetCost
   }
 
@@ -378,13 +389,14 @@ function TabRMCC(props) {
 
           i.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(toolGrid.NetConversionCost), params);
           i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(toolGrid.NetConversionCost), params);
+          //i.CostingPartDetails.ToolsCostTotal = getToolTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(toolGrid.ToolsCostTotal), params);
           setToolCostInDataList(toolGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
           let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(toolGrid.NetConversionCost)
 
-          let data = toolGrid && toolGrid.CostingOperationCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
+          let data = toolGrid && toolGrid.CostingToolsCostResponse && toolGrid.CostingToolsCostResponse.map(el => {
             return el;
           })
 

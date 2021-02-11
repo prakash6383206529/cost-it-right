@@ -144,7 +144,7 @@ function AssemblyPart(props) {
         closeDrawer={closeDrawer}
         isEditFlag={false}
         ID={''}
-        anchor={'bottom'}
+        anchor={'right'}
         item={item}
         setAssemblyOperationCost={props.setAssemblyOperationCost}
         setAssemblyToolCost={props.setAssemblyToolCost}
