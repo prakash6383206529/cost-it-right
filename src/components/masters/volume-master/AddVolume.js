@@ -748,10 +748,10 @@ class AddVolume extends Component {
                               Month
                               </TableHeaderColumn>
                             <TableHeaderColumn dataField="BudgetedQuantity">
-                              Budgeted Qty
+                              Budgeted Quantity
                               </TableHeaderColumn>
                             <TableHeaderColumn dataField="ApprovedQuantity">
-                              Actual Qty
+                              Actual Quantity
                               </TableHeaderColumn>
                             <TableHeaderColumn
                               dataField="VolumeApprovedDetailId"

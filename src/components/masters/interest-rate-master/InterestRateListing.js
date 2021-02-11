@@ -471,7 +471,7 @@ class InterestRateListing extends Component {
                       type="text"
                       label=""
                       component={searchableSelect}
-                      placeholder={"Payment Applicability"}
+                      placeholder={"Payment Term Applicability"}
                       isClearable={false}
                       options={this.renderListing("PaymentTerms")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}

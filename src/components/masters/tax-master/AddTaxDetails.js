@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number } from "../../../helper/validation";
+import { required, number, checkWhiteSpaces } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
@@ -245,7 +245,7 @@ class AddTaxDetails extends Component {
                         name={"Rate"}
                         type="text"
                         placeholder={"Enter"}
-                        validate={[required, number]}
+                        validate={[required, number,checkWhiteSpaces]}
                         component={renderText}
                         required={true}
                         customClassName={"withBorder"}

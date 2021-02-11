@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, } from "../../../helper/validation";
+import { required, number, checkWhiteSpaces, } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import { toastr } from 'react-redux-toastr';
@@ -233,7 +233,7 @@ class AddExchangeRate extends Component {
                             name={"CurrencyExchangeRate"}
                             type="text"
                             placeholder={"Enter"}
-                            validate={[required, number]}
+                            validate={[required, number, checkWhiteSpaces]}
                             component={renderText}
                             required={true}
                             disabled={false}
@@ -247,7 +247,7 @@ class AddExchangeRate extends Component {
                             name={"BankRate"}
                             type="text"
                             placeholder={"Enter"}
-                            validate={[required, number]}
+                            validate={[required, number,checkWhiteSpaces]}
                             component={renderText}
                             required={true}
                             disabled={false}
@@ -261,7 +261,7 @@ class AddExchangeRate extends Component {
                             name={"BankCommissionPercentage"}
                             type="text"
                             placeholder={"Enter"}
-                            validate={[required, number]}
+                            validate={[required, number,checkWhiteSpaces]}
                             component={renderText}
                             required={true}
                             disabled={false}
@@ -278,7 +278,7 @@ class AddExchangeRate extends Component {
                             name={"CustomRate"}
                             type="text"
                             placeholder={"Enter"}
-                            validate={[required, number]}
+                            validate={[required, number,checkWhiteSpaces]}
                             component={renderText}
                             required={true}
                             disabled={false}

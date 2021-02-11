@@ -1224,8 +1224,8 @@ label for[normal-switch]{
         right: 15px;
         bottom: 10px;
         content: "";
-        // background-color: #F8FCFF;
-        background-color: #d7e4ef;
+        background-color: #F8FCFF;
+        // background-color: #d7e4ef;
         z-index: 0;
       }
     }
@@ -2377,6 +2377,15 @@ table{
   }
 }
 
+.disabled-button {
+  background: #f2f2f2 !important;
+  border: 1px solid #dee3f3 !important;
+  color: #bfc3c7 !important;
+  pointer-events: none !important;
+  .plus{
+    filter: brightness(0.8) !important;
+  }
+}
 
 // ============issues fixing end=============
 
