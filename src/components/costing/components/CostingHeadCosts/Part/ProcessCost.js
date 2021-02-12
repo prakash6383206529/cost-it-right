@@ -35,6 +35,7 @@ function ProcessCost(props) {
   const [Ids, setIds] = useState([])
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
+  const [tabToolData, setTabToolData] = useState(props.data)
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
 
@@ -47,10 +48,14 @@ function ProcessCost(props) {
   //   //defaultValue: 'default' // default value before the render
   // })
 
-  // This is for temporary
-  // useEffect(() => {
-  //   props.setProcessCost(tabData, props.index)
-  // }, [tabData])
+  useEffect(() => {
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    props.setProcessCost(tabData, Params)
+  }, [tabData]);
 
   const toggleWeightCalculator = (id) => {
     setCalciIndex(id)
@@ -110,15 +115,6 @@ function ProcessCost(props) {
       setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, netCost)
     }, 100)
   }
-
-  useEffect(() => {
-    const Params = {
-      index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
-    }
-    props.setProcessCost(tabData, Params)
-  }, [tabData]);
 
   /**
    * @method onToolToggle
@@ -244,14 +240,9 @@ function ProcessCost(props) {
     let tempData = gridData[index]
 
     if (!isNaN(event.target.value)) {
-      const Cavity =
-        tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0
-      const Efficiency =
-        tempData.Efficiency !== undefined
-          ? checkForNull(tempData.Efficiency)
-          : 0
-      const Quantity =
-        (((event.target.value / 3600) * 100) / Efficiency) * Cavity
+      const Cavity = tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0
+      const Efficiency = tempData.Efficiency !== undefined ? checkForNull(tempData.Efficiency) : 0;
+      const Quantity = (((event.target.value / 3600) * 100) / Efficiency) * Cavity;
       const ProcessCost = tempData.MHR / parseInt(Quantity)
 
       tempData = {
@@ -272,10 +263,8 @@ function ProcessCost(props) {
     let tempData = gridData[index]
 
     if (!isNaN(event.target.value)) {
-      const Cavity =
-        tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0
-      const Quantity =
-        (((tempData.CycleTime / 3600) * 100) / event.target.value) * Cavity
+      const Cavity = tempData.Cavity !== undefined ? checkForNull(tempData.Cavity) : 0;
+      const Quantity = (((tempData.CycleTime / 3600) * 100) / event.target.value) * Cavity;
       const ProcessCost = tempData.MHR / parseInt(Quantity)
 
       tempData = {
@@ -400,8 +389,8 @@ function ProcessCost(props) {
       ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NumberOfDecimalForTransaction),
       CostingToolsCostResponse: toolGrid,
     }
-
-    setTabData(tempArr)
+    console.log('tempArr', tempArr)
+    // setTabData(tempArr)
     const Params = {
       index: props.index,
       BOMLevel: props.item.BOMLevel,
