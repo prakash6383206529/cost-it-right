@@ -840,7 +840,7 @@ function TabRMCC(props) {
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button
                       type={'button'}
-                      className="submit-button mr5 save-btn"
+                      className="submit-button mr-3 save-btn"
                       onClick={saveCosting}
                     >
                       <div className={'check-icon'}>

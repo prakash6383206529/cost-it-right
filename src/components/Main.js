@@ -126,9 +126,9 @@ class Main extends Component {
 
     const fullSizeClass =
       location.pathname === COSTING_PATH ||
-      location.pathname === APPROVAL_LISTING_PATH ||
-      location.pathname === APPROVAL_SUMMARY_PATH
-        ? 'full_size_content'
+        location.pathname === APPROVAL_LISTING_PATH ||
+        location.pathname === APPROVAL_SUMMARY_PATH
+        ? 'w-100'
         : ''
 
     return (

@@ -2393,8 +2393,52 @@ table{
     filter: brightness(0.8) !important;
   }
 }
-
 // ============issues fixing end=============
+
+// ========tooltip css=============
+.tooltip-n {
+  position: relative;
+  display: inline-block;
+  .tooltiptext {
+    visibility: hidden;
+    min-width: 60px;
+    background-color: #D0D8E5;
+    color: #3D4465;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -30px;
+    font-size: 13px;
+    &:after {
+      position: absolute;
+      display: block;
+      content: "";
+      border-color: transparent;
+      border-style: solid;
+      left: 0;
+      right: 0;
+      width: 8px;
+      margin: auto;
+      bottom: -6px;
+      border-top-color:#D0D8E5;
+    }
+  }
+  .tooltip-icon{
+    cursor: pointer;
+  }
+  &:hover{
+    .tooltiptext {
+      visibility: visible;
+    }
+  }
+}
+
+// ========tooltip css=============
 
 @media(max-width:1600px){
   .input-range {
@@ -2513,30 +2557,3 @@ table{
 
 }// 1366
 // responsive media query end
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -60px;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
