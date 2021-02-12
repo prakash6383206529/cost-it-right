@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { getBOPData, } from '../../../actions/Costing';
 import { useDispatch, useSelector } from 'react-redux';
+import { checkForDecimalAndNull } from '../../../../../helper';
 
 function BoughtOutPart(props) {
   const { children, item } = props;
@@ -10,6 +11,7 @@ function BoughtOutPart(props) {
   const [IsOpen, setIsOpen] = useState(false);
 
   const costData = useContext(costingInfoContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -48,10 +50,10 @@ function BoughtOutPart(props) {
         </td>
         <td>{item && item.PartType}</td>
         <td>{''}</td>
-        <td>{0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{''}</td>
         <td>{''}</td>
-        <td>{0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{''}</td>
       </tr>
     </ >

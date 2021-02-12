@@ -5,7 +5,7 @@ import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
 import { getRMCCTabData, } from '../../../actions/Costing';
 
-import { checkForDecimalAndNull, } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 
 function AssemblyPart(props) {
@@ -117,8 +117,16 @@ function AssemblyPart(props) {
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
           <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-          <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-          <td>{1}</td>
+          <td>
+            {item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}
+            {
+              item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ?
+                <div class="tooltip">Hover over me
+                <span class="tooltiptext">{item.CostingPartDetails.TotalOperationCostPerAssembly}</span>
+                </div> : ''
+            }
+          </td>
+          <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
           <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         </div>
         <td>

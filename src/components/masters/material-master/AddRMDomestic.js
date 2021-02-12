@@ -317,109 +317,52 @@ class AddRMDomestic extends Component {
           const Data = res.data.Data
 
           this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-          this.props.getRMGradeSelectListByRawMaterial(
-            Data.RawMaterial,
-            (res) => { },
-          )
+          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
           this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const {
-              gradeSelectList,
-              rmSpecification,
-              cityList,
-              categoryList,
-              rawMaterialNameSelectList,
-              UOMSelectList,
-              vendorListByVendorType,
-            } = this.props
+            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList,
+              UOMSelectList, vendorListByVendorType, } = this.props
 
-            const materialNameObj =
-              rawMaterialNameSelectList &&
-              rawMaterialNameSelectList.find(
-                (item) => item.Value === Data.RawMaterial,
-              )
-            const gradeObj =
-              gradeSelectList &&
-              gradeSelectList.find((item) => item.Value === Data.RMGrade)
-            const specObj =
-              rmSpecification &&
-              rmSpecification.find((item) => item.Value === Data.RMSpec)
-            const categoryObj =
-              categoryList &&
-              categoryList.find((item) => item.Value === Data.Category)
+            const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial)
+            const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
+            const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
+            const categoryObj = categoryList && categoryList.find((item) => item.Value === Data.Category)
 
             let plantArray = []
-            Data &&
-              Data.Plant.map((item) => {
-                plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-                return plantArray
-              })
+            Data && Data.Plant.map((item) => {
+              plantArray.push({ Text: item.PlantName, Value: item.PlantId })
+              return plantArray
+            })
 
-            const vendorObj =
-              vendorListByVendorType &&
-              vendorListByVendorType.find((item) => item.Value === Data.Vendor)
+            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Value === Data.Vendor)
 
             let vendorPlantArray = []
-            Data &&
-              Data.VendorPlant.map((item) => {
-                vendorPlantArray.push({
-                  Text: item.PlantName,
-                  Value: item.PlantId,
-                })
-                return vendorPlantArray
-              })
+            Data && Data.VendorPlant.map((item) => {
+              vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId, })
+              return vendorPlantArray
+            })
 
-            const sourceLocationObj =
-              cityList &&
-              cityList.find((item) => item.Value === Data.SourceLocation)
-            const UOMObj =
-              UOMSelectList &&
-              UOMSelectList.find((item) => item.Value === Data.UOM)
+            const sourceLocationObj = cityList && cityList.find((item) => item.Value === Data.SourceLocation)
+            const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
 
             this.setState({
               isEditFlag: true,
               isLoader: false,
               isShowForm: true,
               IsVendor: Data.IsVendor,
-              RawMaterial: {
-                label: materialNameObj.Text,
-                value: materialNameObj.Value,
-              },
-              RMGrade:
-                gradeObj !== undefined
-                  ? { label: gradeObj.Text, value: gradeObj.Value }
-                  : [],
-              RMSpec:
-                specObj !== undefined
-                  ? { label: specObj.Text, value: specObj.Value }
-                  : [],
-              Category:
-                categoryObj !== undefined
-                  ? { label: categoryObj.Text, value: categoryObj.Value }
-                  : [],
+              RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
+              RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+              RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+              Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantArray,
-              vendorName:
-                vendorObj !== undefined
-                  ? { label: vendorObj.Text, value: vendorObj.Value }
-                  : [],
+              vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               HasDifferentSource: Data.HasDifferentSource,
-              sourceLocation:
-                sourceLocationObj !== undefined
-                  ? {
-                    label: sourceLocationObj.Text,
-                    value: sourceLocationObj.Value,
-                  }
-                  : [],
-              UOM:
-                UOMObj !== undefined
-                  ? { label: UOMObj.Text, value: UOMObj.Value }
-                  : [],
-              effectiveDate: Data.EffectiveDate
-                ? new Date(Data.EffectiveDate)
-                : new Date(),
+              sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
+              UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+              effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
               remarks: Data.Remark,
               files: Data.FileList,
             })
@@ -568,103 +511,103 @@ class AddRMDomestic extends Component {
       vendorListByVendorType,
     } = this.props
     const temp = []
+
     if (label === 'material') {
-      rawMaterialNameSelectList &&
-        rawMaterialNameSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'grade') {
-      gradeSelectList &&
-        gradeSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      gradeSelectList && gradeSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'specification') {
-      rmSpecification &&
-        rmSpecification.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      rmSpecification && rmSpecification.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'category') {
-      categoryList &&
-        categoryList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      categoryList && categoryList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'plant') {
-      plantList &&
-        plantList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ Text: item.Text, Value: item.Value })
-          return null
-        })
+      plantList && plantList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ Text: item.Text, Value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'VendorNameList') {
-      vendorListByVendorType &&
-        vendorListByVendorType.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      vendorListByVendorType && vendorListByVendorType.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'VendorPlant') {
-      filterPlantList &&
-        filterPlantList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ Text: item.Text, Value: item.Value })
-          return null
-        })
+      filterPlantList && filterPlantList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ Text: item.Text, Value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'VendorLocation') {
-      filterCityListBySupplier &&
-        filterCityListBySupplier.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      filterCityListBySupplier && filterCityListBySupplier.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'SourceLocation') {
-      cityList &&
-        cityList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      cityList && cityList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'uom') {
-      UOMSelectList &&
-        UOMSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      UOMSelectList && UOMSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return temp
     }
+
     if (label === 'city') {
-      filterCityListBySupplier &&
-        filterCityListBySupplier.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ Text: item.Text, Value: item.Value })
-          return null
-        })
+      filterCityListBySupplier && filterCityListBySupplier.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ Text: item.Text, Value: item.Value })
+        return null
+      })
       return temp
     }
   }
