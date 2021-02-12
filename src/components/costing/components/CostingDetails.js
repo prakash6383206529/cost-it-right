@@ -26,6 +26,7 @@ import {
   updateZBCSOBDetail,
   updateVBCSOBDetail,
   storePartNumber,
+  getZBCCostingByCostingId,
 } from '../actions/Costing'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import CopyCosting from './Drawers/CopyCosting'
@@ -787,6 +788,8 @@ function CostingDetails() {
       setValue("ShareOfBusiness", Data.Price)
       setEffectiveDate(moment(Data.EffectiveDate)._d)
     }))
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
+
   }
 
   //console.log('errors >>>', errors);
@@ -1019,26 +1022,9 @@ function CostingDetails() {
                           >
                             <thead>
                               <tr>
-                                <th
-                                  style={{}}
-                                >{`Plant Code`}</th>
-                                <th style={{}}>
-                                  {`SOB`}
-                                  <button
-                                    className="edit-details-btn mr-2 ml5"
-                                    type={"button"}
-                                    onClick={() =>
-                                      setEnableSOBField(!isSOBEnabled)
-                                    }
-                                  />
-                                </th>
-                                <th
-                                  style={{}}
-                                >{`Costing Version`}</th>
-                                <th
-                                  className="text-center"
-                                  style={{}}
-                                >{`Status`}</th>
+                                <th style={{}}>{`Plant Code`}</th>
+                                <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
+                                <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
                                 <th style={{ minWidth: "200px" }}>{`Actions`}</th>
                               </tr>
                             </thead>
@@ -1065,24 +1051,14 @@ function CostingDetails() {
                                               message: "Invalid Number.",
                                             },
                                           }}
-                                          defaultValue={
-                                            item.ShareOfBusinessPercent
-                                          }
+                                          defaultValue={item.ShareOfBusinessPercent}
                                           className=""
                                           customClassName={"withBorder"}
                                           handleChange={(e) => {
                                             e.preventDefault();
                                             handleZBCSOBChange(e, index);
                                           }}
-                                          errors={
-                                            errors &&
-                                              errors.zbcPlantGridFields &&
-                                              errors.zbcPlantGridFields[index] !==
-                                              undefined
-                                              ? errors.zbcPlantGridFields[index]
-                                                .ShareOfBusinessPercent
-                                              : ""
-                                          }
+                                          errors={errors && errors.zbcPlantGridFields && errors.zbcPlantGridFields[index] !== undefined ? errors.zbcPlantGridFields[index].ShareOfBusinessPercent : ""}
                                           disabled={isSOBEnabled ? true : false}
                                         />
                                       </td>
@@ -1095,19 +1071,11 @@ function CostingDetails() {
                                           control={control}
                                           rules={{ required: false }}
                                           register={register}
-                                          defaultValue={
-                                            item.SelectedCostingVersion
-                                          }
-                                          options={renderCostingOption(
-                                            item.CostingOptions
-                                          )}
+                                          defaultValue={item.SelectedCostingVersion}
+                                          options={renderCostingOption(item.CostingOptions)}
                                           mandatory={false}
                                           handleChange={(newValue) =>
-                                            handleCostingChange(
-                                              newValue,
-                                              ZBC,
-                                              index
-                                            )
+                                            handleCostingChange(newValue, ZBC, index)
                                           }
                                           errors={`${zbcPlantGridFields}[${index}]CostingVersion`}
                                         />
@@ -1118,42 +1086,10 @@ function CostingDetails() {
                                         </div>
                                       </td>
                                       <td style={{ width: "200px" }}>
-                                        <button
-                                          className="Add-file mr-2 my-1"
-                                          type={"button"}
-                                          title={"Add Costing"}
-                                          onClick={() => addDetails(index, ZBC)}
-                                        />
-                                        {!item.IsNewCosting && (
-                                          <button
-                                            className="View mr-2 my-1"
-                                            type={"button"}
-                                            title={"View Costing"}
-                                            onClick={() =>
-                                              viewDetails(index, ZBC)
-                                            }
-                                          />
-                                        )}
-                                        {!item.IsNewCosting && (
-                                          <button
-                                            className="Edit mr-2 my-1"
-                                            type={"button"}
-                                            title={"Edit Costing"}
-                                            onClick={() =>
-                                              editCosting(index, ZBC)
-                                            }
-                                          />
-                                        )}
-                                        {!item.IsNewCosting && (
-                                          <button
-                                            className="Copy All my-1"
-                                            type={"button"}
-                                            title={"Copy Costing"}
-                                            onClick={() =>
-                                              copyCosting(index, ZBC)
-                                            }
-                                          />
-                                        )}
+                                        <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />
+                                        {!item.IsNewCosting && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
+                                        {!item.IsNewCosting && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
+                                        {!item.IsNewCosting && (<button className="Copy All my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
                                       </td>
                                     </tr>
                                   );
@@ -1180,16 +1116,15 @@ function CostingDetails() {
                         </Col>
                         <Col md="7" className={"mb15 mt15"}></Col>
                         <Col md="2" className={"mb15 mt15"}>
-                          {vbcVendorGrid.length <
-                            initialConfiguration.NumberOfVendorsForCostDetails ? (
-                              <button
-                                type="button"
-                                className={"user-btn"}
-                                onClick={vendorDrawerToggle}
-                              >
-                                <div className={"plus"}></div>ADD VENDOR
-                              </button>
-                            ) : (
+                          {vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                            <button
+                              type="button"
+                              className={"user-btn"}
+                              onClick={vendorDrawerToggle}
+                            >
+                              <div className={"plus"}></div>ADD VENDOR
+                            </button>
+                          ) : (
                               ""
                             )}
                         </Col>
@@ -1203,13 +1138,8 @@ function CostingDetails() {
                               <tr>
                                 <th style={{}}>{`Vendor`}</th>
                                 <th style={{}}>{`SOB`}</th>
-                                <th
-                                  style={{}}
-                                >{`Costing Version`}</th>
-                                <th
-                                  className="text-center"
-                                  style={{}}
-                                >{`Status`}</th>
+                                <th style={{}}>{`Costing Version`}</th>
+                                <th className="text-center" style={{}}>{`Status`}</th>
                                 <th style={{}}>{`Actions`}</th>
                               </tr>
                             </thead>
@@ -1235,24 +1165,14 @@ function CostingDetails() {
                                               message: "Invalid Number.",
                                             },
                                           }}
-                                          defaultValue={
-                                            item.ShareOfBusinessPercent
-                                          }
+                                          defaultValue={item.ShareOfBusinessPercent}
                                           className=""
                                           customClassName={"withBorder"}
                                           handleChange={(e) => {
                                             e.preventDefault();
                                             handleVBCSOBChange(e, index);
                                           }}
-                                          errors={
-                                            errors &&
-                                              errors.vbcGridFields &&
-                                              errors.vbcGridFields[index] !==
-                                              undefined
-                                              ? errors.vbcGridFields[index]
-                                                .ShareOfBusinessPercent
-                                              : ""
-                                          }
+                                          errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ""}
                                           disabled={isSOBEnabled ? true : false}
                                         />
                                       </td>
@@ -1265,20 +1185,10 @@ function CostingDetails() {
                                           control={control}
                                           rules={{ required: false }}
                                           register={register}
-                                          defaultValue={
-                                            item.SelectedCostingVersion
-                                          }
-                                          options={renderCostingOption(
-                                            item.CostingOptions
-                                          )}
+                                          defaultValue={item.SelectedCostingVersion}
+                                          options={renderCostingOption(item.CostingOptions)}
                                           mandatory={false}
-                                          handleChange={(newValue) =>
-                                            handleCostingChange(
-                                              newValue,
-                                              VBC,
-                                              index
-                                            )
-                                          }
+                                          handleChange={(newValue) => handleCostingChange(newValue, VBC, index)}
                                           errors={`${vbcGridFields}[${index}]CostingVersion`}
                                         />
                                       </td>
@@ -1288,43 +1198,11 @@ function CostingDetails() {
                                         </div>
                                       </td>
                                       <td>
-                                        <button
-                                          className="Add-file mr-2 my-1"
-                                          type={"button"}
-                                          title={"Add Costing"}
-                                          onClick={() => addDetails(index, VBC)}
-                                        />
+                                        <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
                                         {/* <button className="Copy All mr-2" type={'button'} title={'Edit Costing'} onClick={()=>{copyCosting(index,VBC)}} /> */}
-                                        {!item.IsNewCosting && (
-                                          <button
-                                            className="View mr-2 my-1"
-                                            type={"button"}
-                                            title={"View Costing"}
-                                            onClick={() =>
-                                              viewDetails(index, VBC)
-                                            }
-                                          />
-                                        )}
-                                        {!item.IsNewCosting && (
-                                          <button
-                                            className="Edit mr-2 my-1"
-                                            type={"button"}
-                                            title={"Edit Costing"}
-                                            onClick={() =>
-                                              editCosting(index, VBC)
-                                            }
-                                          />
-                                        )}
-                                        {!item.IsNewCosting && (
-                                          <button
-                                            className="Copy All my-1"
-                                            title={"Copy Costing"}
-                                            type={"button"}
-                                            onClick={() =>
-                                              copyCosting(index, VBC)
-                                            }
-                                          />
-                                        )}
+                                        {!item.IsNewCosting && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
+                                        {!item.IsNewCosting && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
+                                        {!item.IsNewCosting && (<button className="Copy All my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                       </td>
                                     </tr>
                                   );
@@ -1346,11 +1224,7 @@ function CostingDetails() {
                     {!IsOpenVendorSOBDetails && (
                       <Row className="justify-content-between">
                         <div className="col-sm-12 text-right">
-                          <button
-                            type={"button"}
-                            className="reset mr15 cancel-btn"
-                            onClick={cancel}
-                          >
+                          <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel}                          >
                             <div className={"cross-icon"}>
                               <img
                                 src={require("../../../assests/images/times.png")}
@@ -1359,11 +1233,7 @@ function CostingDetails() {
                             </div>{" "}
                             {"Clear"}
                           </button>
-                          <button
-                            type="button"
-                            className="submit-button save-btn"
-                            onClick={nextToggle}
-                          >
+                          <button type="button" className="submit-button save-btn" onClick={nextToggle}                          >
                             {"Next"}
                             <div className={"check-icon ml-1"}>
                               <img
