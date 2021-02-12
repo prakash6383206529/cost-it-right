@@ -98,6 +98,12 @@ export const postiveNumber = value =>
     value && !/^\+?(0|[1-9]\d*)$/.test(value)
         ? 'This field is invalid.' : undefined;
 
+export const positiveAndDecimalNumber = value =>
+    value && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)
+        ? 'This field is invalid.' : undefined;
+
+
+
 export const alphabetsOnly = value =>
     value && /[^a-zA-Z ]/i.test(value)
         ? 'Only alphabets are allowed.' : undefined;

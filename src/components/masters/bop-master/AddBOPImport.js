@@ -58,6 +58,8 @@ class AddBOPImport extends Component {
 
       effectiveDate: '',
       files: [],
+
+      netLandedcost: ''
     }
   }
 
@@ -168,7 +170,7 @@ class AddBOPImport extends Component {
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._d,
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
             })
           }, 200)
@@ -349,7 +351,10 @@ class AddBOPImport extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
-    this.props.change('NetLandedCost', NetLandedCost !== 0 ? checkForDecimalAndNull(NetLandedCost, initialConfiguration.NumberOfDecimalForTransaction) : 0)
+    this.setState({
+      netLandedcost: NetLandedCost
+    })
+    this.props.change('NetLandedCost', NetLandedCost !== 0 ? checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrices) : 0)
   }
 
   /**
@@ -484,7 +489,7 @@ class AddBOPImport extends Component {
         Source: values.Source,
         SourceLocation: values.sourceLocation,
         BasicRate: values.BasicRate,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
         Plant: plantArray,
@@ -516,7 +521,7 @@ class AddBOPImport extends Component {
         EffectiveDate: effectiveDate,
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
@@ -524,7 +529,7 @@ class AddBOPImport extends Component {
         VendorPlant: vendorPlantArray,
         Attachements: files
       }
-
+      console.log(formData, "Form");
       this.props.createBOPImport(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.BOP_ADD_SUCCESS);

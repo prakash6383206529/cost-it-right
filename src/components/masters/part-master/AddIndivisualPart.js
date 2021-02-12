@@ -66,7 +66,7 @@ class AddIndivisualPart extends Component {
               isEditFlag: true,
               isLoader: false,
               selectedPlants: plantArray,
-              effectiveDate: moment(Data.EffectiveDate)._d,
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
             })
           }, 500)

@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, checkForDecimalAndNull, postiveNumber } from "../../../helper/validation";
+import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber } from "../../../helper/validation";
 import {
-  renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
+  renderText, renderNumberInputField, searchableSelect, renderTextAreaField, renderYearPicker, focusOnError
 } from "../../layout/FormInputs";
 import {
   getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList,
@@ -46,6 +46,7 @@ class AddMoreDetails extends Component {
       MachineId: '',
       isEditFlag: false,
       IsPurchased: false,
+      isViewFlag: false,
 
       selectedTechnology: [],
       selectedPlants: [],
@@ -83,6 +84,10 @@ class AddMoreDetails extends Component {
 
       remarks: '',
       files: [],
+
+      manufactureYear: new Date(),
+
+      machineFullValue: {}
     }
   }
 
@@ -209,7 +214,7 @@ class AddMoreDetails extends Component {
                 MachineRate: el.MachineRate,
               }
             })
-
+            console.log(moment(Data.DateOfPurchase), "MOMENT");
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -219,7 +224,7 @@ class AddMoreDetails extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
-              DateOfPurchase: moment(Data.DateOfPurchase)._d,
+              DateOfPurchase: moment(Data.DateOfPurchase)._isValid === true ? moment(Data.DateOfPurchase)._d : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
               IsAnnualConsumableFixed: Data.IsConsumableFixed,
               IsInsuranceFixed: Data.IsInsuranceFixed,
@@ -328,19 +333,26 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handlePlants = (newValue, actionMeta) => {
-    const { IsUsesSolarPower } = this.state;
+    const { IsUsesSolarPower, machineFullValue } = this.state;
+    const { initialConfiguration } = this.props
     if (newValue && newValue !== '') {
       this.setState({ selectedPlants: newValue, })
       this.props.getPowerCostUnit(newValue.value, res => {
         let Data = res.data.DynamicData;
         if (res && res.data && res.data.Message !== '') {
-          console.log("Coming in Else", IsUsesSolarPower);
           toastr.warning(res.data.Message)
+          machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+          })
           this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
         } else {
-          console.log("Coming in Else", IsUsesSolarPower);
           //  if(IsUsesSolarPower)
-          this.props.change('PowerCostPerUnit', IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit)
+          machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+          this.setState({
+            machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+          })
+          this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
         }
       })
     } else {
@@ -391,9 +403,10 @@ class AddMoreDetails extends Component {
   }
 
   closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
+    const { initialConfiguration } = this.props
     this.setState({ isOpenAvailability: false }, () => {
       if (calculatedEfficiency !== Infinity && calculatedEfficiency !== 'NaN') {
-        this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, 2))
+        this.props.change('EfficiencyPercentage', checkForDecimalAndNull(calculatedEfficiency, initialConfiguration.NoOfDecimalForInputOutput))
       }
     })
 
@@ -408,6 +421,8 @@ class AddMoreDetails extends Component {
   }
 
   handleFuelType = (newValue, actionMeta) => {
+    const { machineFullValue } = this.state;
+    const { initialConfiguration } = this.props
     if (newValue && newValue !== '') {
       this.setState({ fuelType: newValue }, () => {
         const { fuelType, selectedPlants } = this.state;
@@ -419,9 +434,17 @@ class AddMoreDetails extends Component {
             let Data = res.data.DynamicData;
             if (res && res.data && res.data.Message !== '') {
               toastr.warning(res.data.Message)
-              this.props.change('FuelCostPerUnit', Data.FuelRatePerUnit)
+              machineFullValue.FuelCostPerUnit = Data.FuelRatePerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit }
+              })
+              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.FuelRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
             } else {
-              this.props.change('FuelCostPerUnit', Data.FuelRatePerUnit)
+              machineFullValue.FuelCostPerUnit = Data.FuelRatePerUnit
+              this.setState({
+                machineFullValue: { ...machineFullValue, FuelCostPerUnit: machineFullValue.FuelCostPerUnit }
+              })
+              this.props.change('FuelCostPerUnit', checkForDecimalAndNull(Data.FuelRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
             }
           })
 
@@ -538,16 +561,26 @@ class AddMoreDetails extends Component {
    */
   onPressUsesSolarPower = () => {
     this.setState({ IsUsesSolarPower: !this.state.IsUsesSolarPower, }, () => {
-      const { IsUsesSolarPower, selectedPlants } = this.state;
+      const { IsUsesSolarPower, selectedPlants, machineFullValue } = this.state;
+      const { initialConfiguration } = this.props
       // if (IsUsesSolarPower) {
       if (selectedPlants) {
         this.props.getPowerCostUnit(selectedPlants.value, res => {
           let Data = res.data.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             toastr.warning(res.data.Message)
-            this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
+            // this.setState
+            machineFullValue.PowerCostPerUnit = Data.SolarPowerRatePerUnit
+            this.setState({
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+            })
+            this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
           } else {
-            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit)
+            machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
+            this.setState({
+              machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
+            })
+            this.props.change('PowerCostPerUnit', IsUsesSolarPower ? checkForDecimalAndNull(Data.SolarPowerRatePerUnit, this.props.initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(Data.NetPowerCostPerUnit, this.props.initialConfiguration.NoOfDecimalForPrice))
           }
         })
       } else {
@@ -573,9 +606,9 @@ class AddMoreDetails extends Component {
           let Data = res.data.DynamicData;
           if (res && res.data && res.data.Message !== '') {
             toastr.warning(res.data.Message)
-            this.props.change('LabourCostPerAnnum', Data.LabourCost)
+            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
           } else {
-            this.props.change('LabourCostPerAnnum', Data.LabourCost)
+            this.props.change('LabourCostPerAnnum', checkForDecimalAndNull(Data.LabourCost, this.props.initialConfiguration.NoOfDecimalForPrice))
           }
         })
       });
@@ -603,11 +636,17 @@ class AddMoreDetails extends Component {
   * @description called
   */
   totalCost = () => {
-    const { fieldsObj } = this.props
+    const { fieldsObj, initialConfiguration } = this.props
+    const { machineFullValue } = this.state
     const MachineCost = fieldsObj && fieldsObj.MachineCost !== undefined ? checkForNull(fieldsObj.MachineCost) : 0;
     const AccessoriesCost = fieldsObj && fieldsObj.AccessoriesCost !== undefined ? checkForNull(fieldsObj.AccessoriesCost) : 0;
     const InstallationCharges = fieldsObj && fieldsObj.InstallationCharges !== undefined ? checkForNull(fieldsObj.InstallationCharges) : 0;
-    this.props.change('TotalCost', MachineCost + AccessoriesCost + InstallationCharges)
+    const totalCost = MachineCost + AccessoriesCost + InstallationCharges
+    machineFullValue.totalCost = totalCost
+    this.setState({
+      machineFullValue: { ...machineFullValue, totalCost: machineFullValue.totalCost }
+    })
+    this.props.change('TotalCost', checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -615,14 +654,31 @@ class AddMoreDetails extends Component {
   * @description called
   */
   calculateLoanInterest = () => {
-    const { fieldsObj } = this.props
-
+    const { fieldsObj, initialConfiguration } = this.props
+    const { machineFullValue } = this.state
+    const totalCost = machineFullValue.totalCost
     const LoanPercentage = fieldsObj && fieldsObj.LoanPercentage !== undefined ? checkForNull(fieldsObj.LoanPercentage) : 0;
     const EquityPercentage = fieldsObj && fieldsObj.EquityPercentage !== undefined ? checkForNull(fieldsObj.EquityPercentage) : 0;
     const RateOfInterestPercentage = fieldsObj && fieldsObj.RateOfInterestPercentage !== undefined ? checkForNull(fieldsObj.RateOfInterestPercentage) : 0;
-    this.props.change('LoanValue', calculatePercentage(LoanPercentage) * checkForNull(fieldsObj.TotalCost))
-    this.props.change('EquityValue', calculatePercentage(EquityPercentage) * checkForNull(fieldsObj.TotalCost))
-    this.props.change('RateOfInterestValue', trimTwoDecimalPlace((calculatePercentage(LoanPercentage) + checkForNull(fieldsObj.TotalCost)) * calculatePercentage(RateOfInterestPercentage)))
+
+    // FOR CALCULATION AND SENDING TO BACKEND
+    machineFullValue.LoanValue = calculatePercentage(LoanPercentage) * checkForNull(totalCost)
+    machineFullValue.EquityValue = calculatePercentage(EquityPercentage) * checkForNull(totalCost)
+    machineFullValue.RateOfInterestValue = (calculatePercentage(LoanPercentage) * checkForNull(totalCost)) * calculatePercentage(RateOfInterestPercentage)
+
+    this.setState({
+      machineFullValue: {
+        ...machineFullValue,
+        LoanValue: machineFullValue.LoanValue,
+        EquityValue: machineFullValue.EquityValue,
+        RateOfInterestValue: machineFullValue.RateOfInterestValue
+      }
+    })
+
+    //THIS IS TO SHOW ON FORM (VIEW PURPOSE)
+    this.props.change('LoanValue', checkForDecimalAndNull(calculatePercentage(LoanPercentage) * checkForNull(totalCost), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('EquityValue', checkForDecimalAndNull(calculatePercentage(EquityPercentage) * checkForNull(totalCost), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('RateOfInterestValue', checkForDecimalAndNull((calculatePercentage(LoanPercentage) * checkForNull(totalCost)) * calculatePercentage(RateOfInterestPercentage), initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -650,10 +706,11 @@ class AddMoreDetails extends Component {
   * @description called
   */
   calculateDepreciation = () => {
-    const { fieldsObj } = this.props;
-    const { depreciationType } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props;
+    const { depreciationType, machineFullValue } = this.state;
 
-    const TotalCost = fieldsObj && fieldsObj.TotalCost !== undefined ? checkForNull(fieldsObj.TotalCost) : 0;
+    // const TotalCost = fieldsObj && fieldsObj.TotalCost !== undefined ? checkForNull(fieldsObj.TotalCost) : 0;
+    const TotalCost = machineFullValue.totalCost !== undefined ? checkForNull(machineFullValue.totalCost) : 0
     const DepreciationRatePercentage = fieldsObj && fieldsObj.DepreciationRatePercentage !== undefined ? checkForNull(fieldsObj.DepreciationRatePercentage) : 0;
     const LifeOfAssetPerYear = fieldsObj && fieldsObj.LifeOfAssetPerYear !== undefined ? checkForNull(fieldsObj.LifeOfAssetPerYear) : 0;
     const CastOfScrap = fieldsObj && fieldsObj.CastOfScrap !== undefined ? checkForNull(fieldsObj.CastOfScrap) : 0;
@@ -661,14 +718,17 @@ class AddMoreDetails extends Component {
     let depreciationAmount = 0;
     if (depreciationType.value === SLM) {
       //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear Or (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
-      //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear;
-      depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage) //TODO
+      depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear;
+      // depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage) //TODO
     }
 
     if (depreciationType.value === WDM) {
       depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
     }
-    this.props.change('DepreciationAmount', Math.round(depreciationAmount))
+    //this.props.change('DepreciationAmount', Math.round(depreciationAmount))
+    machineFullValue.depreciationAmount = depreciationAmount
+    this.setState({ machineFullValue: { ...machineFullValue, depreciationAmount: machineFullValue.depreciationAmount } })
+    this.props.change('DepreciationAmount', checkForDecimalAndNull(depreciationAmount, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -676,8 +736,8 @@ class AddMoreDetails extends Component {
   * @description called
   */
   calculateVariableCosts = () => {
-    const { fieldsObj } = this.props
-    const { IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props
+    const { IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, machineFullValue } = this.state;
 
     const MachineCost = fieldsObj && fieldsObj.MachineCost !== undefined ? checkForNull(fieldsObj.MachineCost) : 0;
     const AccessoriesCost = fieldsObj && fieldsObj.AccessoriesCost !== undefined ? checkForNull(fieldsObj.AccessoriesCost) : 0;
@@ -687,19 +747,30 @@ class AddMoreDetails extends Component {
 
     if (IsAnnualMaintenanceFixed) {
       const MaintananceCost = (MachineCost + AccessoriesCost) * calculatePercentage(AnnualMaintancePercentage)
-      this.props.change('AnnualMaintanceAmount', trimTwoDecimalPlace(MaintananceCost))
+      machineFullValue.MaintananceCost = MaintananceCost
+      this.setState({
+        machineFullValue: { ...machineFullValue, MaintananceCost: machineFullValue.MaintananceCost }
+      })
+      this.props.change('AnnualMaintanceAmount', checkForDecimalAndNull(MaintananceCost, initialConfiguration.NoOfDecimalForPrice))
     }
 
     if (IsAnnualConsumableFixed) {
       const ConsumableCost = (MachineCost + AccessoriesCost) * calculatePercentage(AnnualConsumablePercentage)
-      this.props.change('AnnualConsumableAmount', trimTwoDecimalPlace(ConsumableCost))
+      machineFullValue.ConsumableCost = ConsumableCost
+      this.setState({
+        machineFullValue: { ...machineFullValue, ConsumableCost: machineFullValue.ConsumableCost }
+      })
+      this.props.change('AnnualConsumableAmount', checkForDecimalAndNull(ConsumableCost, initialConfiguration.NoOfDecimalForPrice))
     }
 
     if (IsInsuranceFixed) {
       const InsuranceCost = (MachineCost + AccessoriesCost) * calculatePercentage(AnnualInsurancePercentage)
-      this.props.change('AnnualInsuranceAmount', trimTwoDecimalPlace(InsuranceCost))
+      machineFullValue.InsuranceCost = InsuranceCost
+      this.setState({
+        machineFullValue: { ...machineFullValue, InsuranceCost: machineFullValue.InsuranceCost }
+      })
+      this.props.change('AnnualInsuranceAmount', checkForDecimalAndNull(InsuranceCost, initialConfiguration.NoOfDecimalForPrice))
     }
-
 
   }
 
@@ -708,23 +779,42 @@ class AddMoreDetails extends Component {
   * @description totalMachineCost per annum calculation
   */
   totalMachineCost = () => {
-    const { fieldsObj } = this.props;
+    const { fieldsObj, initialConfiguration } = this.props;
+    const { IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, machineFullValue } = this.state;
 
     const BuildingCostPerSquareFeet = fieldsObj && fieldsObj.BuildingCostPerSquareFeet !== undefined ? checkForNull(fieldsObj.BuildingCostPerSquareFeet) : 0;
     const MachineFloorAreaPerSquareFeet = fieldsObj && fieldsObj.MachineFloorAreaPerSquareFeet !== undefined ? checkForNull(fieldsObj.MachineFloorAreaPerSquareFeet) : 0;
 
-    const DepreciationAmount = fieldsObj && fieldsObj.DepreciationAmount !== undefined ? checkForNull(fieldsObj.DepreciationAmount) : 0;
-    const AnnualMaintanceAmount = fieldsObj && fieldsObj.AnnualMaintanceAmount !== undefined ? checkForNull(fieldsObj.AnnualMaintanceAmount) : 0;
-    const AnnualConsumableAmount = fieldsObj && fieldsObj.AnnualConsumableAmount !== undefined ? checkForNull(fieldsObj.AnnualConsumableAmount) : 0;
-    const AnnualInsuranceAmount = fieldsObj && fieldsObj.AnnualInsuranceAmount !== undefined ? checkForNull(fieldsObj.AnnualInsuranceAmount) : 0;
+    // const DepreciationAmount = fieldsObj && fieldsObj.DepreciationAmount !== undefined ? checkForNull(fieldsObj.DepreciationAmount) : 0; //state
+    const DepreciationAmount = machineFullValue.DepreciationAmount !== undefined ? checkForNull(machineFullValue.DepreciationAmount) : 0;
+    const AnnualMaintanceAmount = IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : fieldsObj && fieldsObj.AnnualMaintanceAmount !== undefined ? checkForNull(fieldsObj.AnnualMaintanceAmount) : 0; //state
+    const AnnualConsumableAmount = IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : fieldsObj && fieldsObj.AnnualConsumableAmount !== undefined ? checkForNull(fieldsObj.AnnualConsumableAmount) : 0; //state
+    const AnnualInsuranceAmount = IsInsuranceFixed ? machineFullValue.InsuranceCost : fieldsObj && fieldsObj.AnnualInsuranceAmount !== undefined ? checkForNull(fieldsObj.AnnualInsuranceAmount) : 0; //state
+
+    console.log(AnnualMaintanceAmount, "ANNUAL", AnnualConsumableAmount, "Annual", AnnualInsuranceAmount);
 
     // yearely cost add and annual spelling
     const OtherYearlyCost = fieldsObj && fieldsObj.OtherYearlyCost !== undefined ? checkForNull(fieldsObj.OtherYearlyCost) : 0;
     const annualAreaCost = BuildingCostPerSquareFeet * MachineFloorAreaPerSquareFeet;
-    const TotalMachineCostPerAnnum = DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost;
 
-    this.props.change('AnnualAreaCost', trimTwoDecimalPlace(annualAreaCost))
-    this.props.change('TotalMachineCostPerAnnum', trimTwoDecimalPlace(TotalMachineCostPerAnnum))
+    console.log(annualAreaCost, "AREA COST");
+
+    machineFullValue.annualAreaCost = annualAreaCost;
+    const TotalMachineCostPerAnnum = DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost;
+    machineFullValue.TotalMachineCostPerAnnum = TotalMachineCostPerAnnum
+
+    console.log(TotalMachineCostPerAnnum, "TOTAL MACHINE");
+
+    this.setState({
+      machineFullValue: {
+        ...machineFullValue,
+        annualAreaCost: machineFullValue.annualAreaCost,
+        TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum
+      }
+    })
+
+    this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -732,15 +822,15 @@ class AddMoreDetails extends Component {
   * @description powerCost calculation
   */
   powerCost = () => {
-    console.log("Power");
-    const { fieldsObj } = this.props;
-    const { IsUsesFuel, IsUsesSolarPower } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props;
+    const { IsUsesFuel, IsUsesSolarPower, machineFullValue } = this.state;
 
     if (IsUsesFuel) {
       console.log("Come in if part");
-      const FuelCostPerUnit = fieldsObj && fieldsObj.FuelCostPerUnit !== undefined ? checkForNull(fieldsObj.FuelCostPerUnit) : 0;
+      const FuelCostPerUnit = fieldsObj && fieldsObj.FuelCostPerUnit !== undefined ? checkForNull(fieldsObj.FuelCostPerUnit) : 0; //May be need to do
       const ConsumptionPerYear = fieldsObj && fieldsObj.ConsumptionPerYear !== undefined ? checkForNull(fieldsObj.ConsumptionPerYear) : 0;
-
+      machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
+      this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
       this.props.change('TotalFuelCostPerYear', trimTwoDecimalPlace(FuelCostPerUnit * ConsumptionPerYear))
     } else {
 
@@ -750,13 +840,15 @@ class AddMoreDetails extends Component {
       this.props.change('ConsumptionPerYear', 0)
       this.props.change('TotalFuelCostPerYear', 0)
 
-      const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+      const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0; //state
       const UtilizationFactorPercentage = fieldsObj && fieldsObj.UtilizationFactorPercentage !== undefined ? checkForNull(fieldsObj.UtilizationFactorPercentage) : 0;
       const PowerRatingPerKW = fieldsObj && fieldsObj.PowerRatingPerKW !== undefined ? checkForNull(fieldsObj.PowerRatingPerKW) : 0;
-      const PowerCostPerUnit = fieldsObj && fieldsObj.PowerCostPerUnit !== undefined ? checkForNull(fieldsObj.PowerCostPerUnit) : 0;
+      const PowerCostPerUnit = fieldsObj && fieldsObj.PowerCostPerUnit !== undefined ? checkForNull(fieldsObj.PowerCostPerUnit) : 0; // may be state
 
       const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage)
-      this.props.change('TotalPowerCostPerYear', totalPowerCostPrYer)
+      machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
+      this.setState({ machineFullValue: { ...machineFullValue, totalPowerCostPrYer: machineFullValue.totalPowerCostPrYer } })
+      this.props.change('TotalPowerCostPerYear', checkForDecimalAndNull(totalPowerCostPrYer, initialConfiguration.NoOfDecimalForPrice))
       // }
     }
   }
@@ -778,13 +870,13 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handleProcessCalculation = () => {
-    const { fieldsObj } = this.props
+    const { fieldsObj, initialConfiguration } = this.props
     const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? checkForNull(fieldsObj.OutputPerHours) : 0;
     const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
     const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
 
-    this.props.change('OutputPerYear', OutputPerHours * NumberOfWorkingHoursPerYear)
-    this.props.change('MachineRate', trimTwoDecimalPlace(TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear)))
+    this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
+    this.props.change('MachineRate', checkForDecimalAndNull(TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear), initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -950,9 +1042,12 @@ class AddMoreDetails extends Component {
       return false;
     }
 
+    // this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
+    // this.props.change('MachineRate', checkForDecimalAndNull(TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear),initialConfiguration.NoOfDecimalForPrice))
     const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
     const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
     const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
+
 
     const tempArray = [];
 
@@ -1178,7 +1273,10 @@ class AddMoreDetails extends Component {
     this.setState({
       remarks: '',
     })
-    this.props.hideMoreDetailsForm()
+    const data = {}
+    // For cancel of mpre detail form to reset form in addMachine form
+    data.cancelFlag = true
+    this.props.hideMoreDetailsForm(data)
     //this.props.getRawMaterialDetailsAPI('', false, res => { })
   }
 
@@ -1191,6 +1289,12 @@ class AddMoreDetails extends Component {
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid } = this.state;
+
+    if (this.state.processGrid.length === 0) {
+      toastr.warning('Please add atleast one process')
+      return false
+    }
+
     const { data, editDetails } = this.props;
 
     const userDetail = userDetails()
@@ -1275,23 +1379,27 @@ class AddMoreDetails extends Component {
     if (editDetails.isIncompleteMachine) {
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-      // let MachineData = { ...requestData, MachineId: editDetails.Id }
-      // this.props.updateMachineDetails(MachineData, (res) => {
-      //     if (res.data.Result) {
-      //         toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
-      //         this.cancel();
-      //     }
-      // })
+      let MachineData = { ...requestData, MachineId: editDetails.Id }
+      this.props.updateMachineDetails(MachineData, (res) => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
+          MachineData.isViewFlag = true
+          this.props.hideMoreDetailsForm(MachineData)
+          // this.cancel();
+        }
+      })
 
     } else if (isEditFlag) {
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND EDIT MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-      // this.props.updateMachineDetails(requestData, (res) => {
-      //     if (res.data.Result) {
-      //         toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-      //         this.cancel();
-      //     }
-      // })
+      this.props.updateMachineDetails(requestData, (res) => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+          requestData.isViewFlag = true
+          this.props.hideMoreDetailsForm(requestData)
+          // this.cancel();
+        }
+      })
 
     } else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
@@ -1368,6 +1476,7 @@ class AddMoreDetails extends Component {
       }
       this.props.createMachineDetails(formData, (res) => {
         if (res.data.Result) {
+          formData.isViewFlag = true
           this.props.hideMoreDetailsForm(formData)
           toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
           // this.cancel()
@@ -1377,13 +1486,31 @@ class AddMoreDetails extends Component {
 
   }
 
+  handleYearChange = (year) => {
+    console.log(year, "Year");
+    this.setState({
+      manufactureYear: year
+    })
+    // console.log(e.target.value, "Value");
+    // const value = e.target.value
+    // if (value && (/^[0-9 ]*$/i).test(value)) {
+    //   //errors.YearOfManufacturing.message = 'Invalid year.'
+    //   setTimeout(() => {
+    //     setYearMsg('Invalid year.')
+    //   }, 500);
+
+    //   return false
+    // }
+    // console.log(errors.YearOfManufacturing.message, "Message");
+  }
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, loading, initialConfiguration } = this.props;
-    const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, } = this.state;
+    const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear } = this.state;
 
     return (
       <>
@@ -1520,18 +1647,74 @@ class AddMoreDetails extends Component {
                         />
                       </Col>
                       <Col md="3">
-                        <Field
+                        <div className="form-group">
+                          <label>
+                            Year Of Manufacturing
+                                                    {/* <span className="asterisk-required">*</span> */}
+                          </label>
+                          <div className="inputbox date-section">
+                            <DatePicker
+                              // label={`Year Of Manufacturing`}
+                              name="YearOfManufacturing"
+                              selected={this.state.manufactureYear}
+                              onChange={this.handleYearChange}
+                              showMonthDropdown
+                              showYearDropdown
+                              showYearPicker
+                              dateFormat="yyyy"
+                              //maxDate={new Date()}
+                              //dropdownMode="select"
+                              placeholderText="Enter"
+                              className="withBorder"
+                              autoComplete={'off'}
+                              disabledKeyboardNavigation
+                              //onChangeRaw={(e) => e.preventDefault()}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </div>
+                        </div>
+                        {/* <Field
                           label={`Year Of Manufacturing`}
                           name={"YearOfManufacturing"}
-                          type="text"
+                          //type="text"
+                          showYearPicker
+                          selected={this.state.manufactureYear}
+                          dropdownMode="select"
+                          onSelect={this.handleYearChange}
                           placeholder={'Enter'}
-                          validate={[number]}
-                          component={renderText}
+                          // dateFormat={'yyyy'}
+                          // validate={[number]}
+                          component={renderYearPicker}
+                          autoComplete={'off'}
+                          disabledKeyboardNavigation
+                          onChangeRaw={(e) => e.preventDefault()}
                           //required={true}
                           disabled={isEditFlag ? true : false}
                           className=" "
                           customClassName="withBorder"
-                        />
+                        /> */}
+
+                        {/* <RenderYearPicker
+                          label={"Year Of Manufacturing"}
+                          name="YearOfManufacturing"
+                          selected={this.state.manufactureYear}
+                          handleChange={this.handleYearChange}
+                          // showMonthDropdown
+                          // showYearDropdown
+                          showYearPicker
+                          dateFormat="yyyy"
+                          mandatory={false}
+                          rules={{
+                            required: false,
+                          }}
+                          //maxDate={new Date()}
+                          dropdownMode="select"
+                          placeholder={'Enter'}
+                          className="withBorder"
+                          autoComplete={'off'}
+                          disabledKeyboardNavigation
+                          disabled={isEditFlag ? true : false}
+                        /> */}
                       </Col>
                       <Col md="3">
                         <Field
@@ -1826,20 +2009,25 @@ class AddMoreDetails extends Component {
                           disabled={false}
                         />
                       </Col>
-                      <Col md="3">
-                        <Field
-                          label={`Depreciation Rate (%)`}
-                          name={"DepreciationRatePercentage"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={this.state.depreciationType.value === WDM ? [required] : []}
-                          component={renderNumberInputField}
-                          required={this.state.depreciationType.value === WDM ? true : false}
-                          disabled={false}
-                          className=" "
-                          customClassName="withBorder"
-                        />
-                      </Col>
+                      {
+                        this.state.depreciationType &&
+                        this.state.depreciationType.value !== SLM &&
+                        <Col md="3">
+                          <Field
+                            label={`Depreciation Rate (%)`}
+                            name={"DepreciationRatePercentage"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={this.state.depreciationType.value === WDM ? [required] : []}
+                            component={renderNumberInputField}
+                            required={this.state.depreciationType.value === WDM ? true : false}
+                            disabled={false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+                      }
+
                       {this.state.depreciationType && this.state.depreciationType.value === SLM &&
                         <Col md="3">
                           <Field
@@ -1902,7 +2090,7 @@ class AddMoreDetails extends Component {
                           type="text"
                           placeholder={'Enter'}
                           // validate={[required]}
-                          component={renderNumberInputField}
+                          component={renderText}
                           // required={true}
                           disabled={true}
                           className=" "
@@ -1959,7 +2147,7 @@ class AddMoreDetails extends Component {
                           name={"AnnualMaintanceAmount"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
+                          validate={[positiveAndDecimalNumber]}
                           component={renderText}
                           //required={true}
                           disabled={this.state.IsAnnualMaintenanceFixed ? true : false}
@@ -2009,7 +2197,7 @@ class AddMoreDetails extends Component {
                           name={"AnnualConsumableAmount"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number, postiveNumber]}
+                          validate={[positiveAndDecimalNumber]}
                           component={renderText}
                           //required={true}
                           disabled={this.state.IsAnnualConsumableFixed ? true : false}
@@ -2060,7 +2248,7 @@ class AddMoreDetails extends Component {
                           name={"AnnualInsuranceAmount"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number, postiveNumber]}
+                          validate={[positiveAndDecimalNumber]}
                           component={renderText}
                           //required={true}
                           disabled={this.state.IsInsuranceFixed ? true : false}
@@ -2528,7 +2716,7 @@ class AddMoreDetails extends Component {
                           label={`Machine Rate/Hr (INR)`}
                           name={"MachineRate"}
                           type="text"
-                          placeholder={'Enter'}
+                          placeholder={''}
                           //validate={[required]}
                           component={renderNumberInputField}
                           onChange={this.handleMachineRate}
@@ -2586,7 +2774,7 @@ class AddMoreDetails extends Component {
                                     <td>{item.UnitOfMeasurement}</td>
                                     <td>{item.OutputPerHours}</td>
                                     <td>{item.OutputPerYear}</td>
-                                    <td>{item.MachineRate}</td>
+                                    <td>{checkForDecimalAndNull(item.MachineRate)}</td>
                                     <td>
                                       <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
                                       <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -2830,5 +3018,8 @@ export default connect(mapStateToProps, {
   fileDeleteMachine,
 })(reduxForm({
   form: 'AddMoreDetails',
+  onSubmitFail: errors => {
+    focusOnError(errors);
+  },
   enableReinitialize: true,
 })(AddMoreDetails));

@@ -986,6 +986,7 @@ export function getRMDomesticDataList(data, callback) {
             type: GET_RM_DOMESTIC_LIST,
             payload: [],
         })
+        dispatch({ type: API_REQUEST });
         const queryParams = `material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {

@@ -1,6 +1,7 @@
 import React from "react";
 import Select from "react-select";
 import "./formInputs.css";
+import DatePicker from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
   console.log('input: ', input);
@@ -29,6 +30,8 @@ export const TextFieldHooks = (input) => {
     </>
   )
 }
+
+
 
 export const TextFieldHookForm = (field) => {
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
@@ -160,6 +163,86 @@ export const TextAreaHookForm = (field) => {
   )
 }
 
+// /*
+// @method: YearPickerHookForm
+// @desc: Render yearPicker input
+// */
+// export const YearPickerHookForm = (field) => {
+//   const {
+//     label,
+//     input,
+//     Controller,
+//     dateFormat,
+//     control,
+//     register,
+//     name,
+//     defaultValue,
+//     mandatory,
+//     errors,
+//     rules,
+//     placeholder,
+//     handleChange,
+//   } = field
+//   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+//   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''
+//     }`
+//   const InputClassName = `form-control ${field.className ? field.className : ''
+//     }`
+//   const isDisabled = field.disabled === true ? true : false
+//   return (
+//     <React.Fragment>
+//       <div className={className}>
+//         <label>
+//           {label}
+//           {mandatory && mandatory === true ? (
+//             <span className="asterisk-required">*</span>
+//           ) : (
+//               ''
+//             )}{' '}
+//         </label>
+//         <Controller
+//           name={name}
+//           control={control}
+//           rules={rules}
+//           ref={register}
+//           defaultValue={defaultValue}
+//           render={({ onChange, onBlur, value, name }) => {
+//             return (
+//               <DatePicker
+//                 {...field}
+//                 name={name}
+//                 value={value}
+//                 dateFormat={dateFormat}
+//                 placeholderText={placeholder}
+//                 //maxDate={new Date()}
+//                 //minDate={new Date()}
+//                 showMonthDropdown
+//                 showYearPicker
+//                 showYearDropdown
+//                 readonly="readonly"
+//                 onBlur={() => null}
+//                 // selected={input.value ? new Date(input.value) : null}
+//                 className={field.className}
+//                 onChange={(e) => {
+//                   onChange(e)
+//                   handleChange(e)
+//                 }}
+//                 autoComplete={field.autoComplete}
+//                 disabledKeyboardNavigation
+//                 disabled={isDisabled}
+//               />
+//             )
+//           }}
+//         />
+//         {errors && (errors.message || errors.type) ? (
+//           <div className="text-help">{errors.message || errors.type}</div>
+//         ) : (
+//             ''
+//           )}
+//       </div>
+//     </React.Fragment>
+//   )
+// }
 
 /**
 * @method:RadioHookForm
@@ -168,56 +251,58 @@ export const TextAreaHookForm = (field) => {
 // import Typography from "../typography";
 // import "./radioButtons.less";
 export const RadioHookForm = ({
-    dataArray = [],
-    label = "label",
-    optionsValue = "optionsValue",
-    labelElement = '',
-    className,
-    selectedValue = "",
-    register,
-    name,
-    onChange = null,
-    // disable = false
+  dataArray = [],
+  label = "label",
+  optionsValue = "optionsValue",
+  labelElement = '',
+  className,
+  selectedValue = "",
+  register,
+  name,
+  onChange = null,
+  // disable = false
 }) => {
-    const onChangeSelect = (val) => {
-        onChange && onChange(val);
-    };
-    const flexContainer = {
-   };
-    return (
-        <div className={`te-radio-button ${className}`}>
-          <div>
-               {dataArray && dataArray.length !== 0 && (
-                 <ul style={flexContainer} className={"radio-button-list d-flex"}>
-                    {dataArray.map((data, index) => {
-                      return (
-                            <li className="p-3" key={index}>
-                               <label className="radio-button-wrapper">
-                                    <input
-                                        name={name}
-                                        type="radio"
-                                        value={data[optionsValue]}
-                                        ref={register}
-                                        onChange={e =>
-                                            onChangeSelect(
-                                                e.target.value
-                                            )
-                                        }
-                                    />
-                                    {" "}
-                                    {data[label]}
-                                    {/* {data[labelElement] && data[labelElement]} */}
-                                    <span className="radio-label"></span>
-                                </label>
-                            </li>)
-                      })
-                    }
-                 </ul>
-                )}
-            </div>
-        </div>
-    );
+  const onChangeSelect = (val) => {
+    onChange && onChange(val);
+  };
+  const flexContainer = {
+  };
+  return (
+    <div className={`te-radio-button ${className}`}>
+      <div>
+        {dataArray && dataArray.length !== 0 && (
+          <ul style={flexContainer} className={"radio-button-list d-flex"}>
+            {dataArray.map((data, index) => {
+              return (
+                <li className="p-3" key={index}>
+                  <label className="radio-button-wrapper">
+                    <input
+                      name={name}
+                      type="radio"
+                      value={data[optionsValue]}
+                      ref={register}
+                      onChange={e =>
+                        onChangeSelect(
+                          e.target.value
+                        )
+                      }
+                    />
+                    {" "}
+                    {data[label]}
+                    {/* {data[labelElement] && data[labelElement]} */}
+                    <span className="radio-label"></span>
+                  </label>
+                </li>)
+            })
+            }
+          </ul>
+        )}
+      </div>
+    </div>
+  );
 };
+
+
 
 
 

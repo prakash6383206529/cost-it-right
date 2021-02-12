@@ -59,7 +59,9 @@ class AddPower extends Component {
       isAddedSEB: false,
       isEditSEBIndex: false,
 
-      netContributionValue: 0
+      netContributionValue: 0,
+
+      power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', }
     }
   }
 
@@ -90,11 +92,18 @@ class AddPower extends Component {
    * @description TO CALCULATE MIN MONTHLY CHARGE
   */
   minMonthlyChargeCalculation = () => {
-    const { fieldsObj } = this.props;
+    const { fieldsObj, initialConfiguration } = this.props;
+    const { power } = this.state
     const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth !== undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0
     const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW !== undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
     const minMonthlyCharge = MinDemandKWPerMonth * DemandChargesPerKW
-    this.props.change('MinMonthlyCharge', minMonthlyCharge)
+    power.minMonthlyCharge = minMonthlyCharge
+    this.setState({
+      power: {
+        ...power, minMonthlyCharge: power.minMonthlyCharge
+      }
+    })
+    this.props.change('MinMonthlyCharge', checkForDecimalAndNull(minMonthlyCharge, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -102,9 +111,9 @@ class AddPower extends Component {
    * @description USED TO CALCULATE SEB POWER CALCULATION
    */
   SEBPowerCalculation = () => {
-    const { isCostPerUnitConfigurable, } = this.state;
-    const { fieldsObj } = this.props;
-
+    const { isCostPerUnitConfigurable, power, } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props;
+    console.log(initialConfiguration, "Config");
     const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth !== undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0;
     const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW !== undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
     const AvgUnitConsumptionPerMonth = fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) : 0;
@@ -114,27 +123,45 @@ class AddPower extends Component {
     const DutyChargesAndFCA = fieldsObj && fieldsObj.DutyChargesAndFCA !== undefined ? checkForNull(fieldsObj.DutyChargesAndFCA) : 0;
 
     if (fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth !== undefined) {
-      this.props.change('UnitConsumptionPerAnnum', checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) * 12)
+      const AvgUnitConsumptionPerMonth = fieldsObj.AvgUnitConsumptionPerMonth * 12
+      power.AvgUnitConsumptionPerMonth = AvgUnitConsumptionPerMonth
+      this.setState({
+        power: { ...power, AvgUnitConsumptionPerMonth: power.AvgUnitConsumptionPerMonth }
+      })
+      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration.NoOfDecimalForInputOutput))
     }
 
     //Formula for SEB COST PER UNIT calculation
     if (!isCostPerUnitConfigurable) {
       if (AvgUnitConsumptionPerMonth <= MinDemandKWPerMonth) {
         const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
-        this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+        power.SEBCostPerUnit = SEBCostPerUnit
+        this.setState({
+          power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
+        })
+        this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       } else {
         const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth;
-        this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+
+        power.SEBCostPerUnit = SEBCostPerUnit
+        this.setState({
+          power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
+        })
+        this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       }
 
     }
 
     //Formula for TOTAL UNIT CHARGES calculation
-    const UnitConsumptionPerAnnum = fieldsObj && fieldsObj.UnitConsumptionPerAnnum !== undefined ? checkForNull(fieldsObj.UnitConsumptionPerAnnum) : 0;
-    const SEBCostPerUnit = fieldsObj && fieldsObj.SEBCostPerUnit !== undefined ? checkForNull(fieldsObj.SEBCostPerUnit) : 0;
+    const UnitConsumptionPerAnnum = power.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(power.AvgUnitConsumptionPerMonth) : 0;
+    const SEBCostPerUnit = power.SEBCostPerUnit !== undefined ? checkForNull(power.SEBCostPerUnit) : 0;
 
     const TotalUnitCharges = ((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum
-    this.props.change('TotalUnitCharges', trimTwoDecimalPlace(TotalUnitCharges))
+    power.TotalUnitCharges = TotalUnitCharges
+    this.setState({
+      power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
+    })
+    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -142,8 +169,8 @@ class AddPower extends Component {
    * @description USED TO CALCULATE SELF GENERATED POWER CALCULATION
    */
   selfPowerCalculation = () => {
-    const { source, } = this.state;
-    const { fieldsObj } = this.props;
+    const { source, power, } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props;
 
     //CALCULATION OF SELF GENERATOR COST PER UNIT
     if (source && source.value === GENERATOR_DIESEL) {
@@ -153,7 +180,11 @@ class AddPower extends Component {
         return 0
       }
       const SelfGeneratedCostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
-      this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
+      power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
+      this.setState({
+        power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
+      })
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
     } else {
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
@@ -161,7 +192,11 @@ class AddPower extends Component {
         return 0
       }
       const SelfGeneratedCostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
-      this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
+      power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
+      this.setState({
+        power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
+      })
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
     }
 
   }
@@ -171,7 +206,7 @@ class AddPower extends Component {
    * @description USED TO CALCULATE TOTAL POWER CONTRIBUTION SHOULD NOT BE GREATER THAN 100%
    */
   powerContributionCalculation = () => {
-    const { powerGrid, isEditIndex, isEditSEBIndex, powerGridEditIndex } = this.state;
+    const { powerGrid, isEditIndex, isEditSEBIndex, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
 
     //POWER CONTIRBUTION FIELDS
@@ -421,6 +456,12 @@ class AddPower extends Component {
     if (newValue && newValue !== '') {
       this.setState({ UOM: newValue, }, () => {
         const { StateName, UOM } = this.state;
+
+        if (StateName.length === 0) {
+          toastr.warning("Please select state first.")
+          return false
+        }
+
         let data = { StateID: StateName.value, UOMID: UOM.value }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res.data.DynamicData;
@@ -432,16 +473,25 @@ class AddPower extends Component {
     }
   };
 
+  resetpowerKeyValue = () => {
+    this.setState({
+      power: { minMonthlyCharge: 0, AvgUnitConsumptionPerMonth: 0, SEBCostPerUnit: 0, TotalUnitCharges: 0, SelfGeneratedCostPerUnit: 0, }
+    })
+  }
+
   /**
   * @method powerSEBTableHandler
   * @description USED TO SET SEB
   */
   powerSEBTableHandler = (isSelfGenerator) => {
-    const { powerGrid, } = this.state;
+    const { powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
-    const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
-    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+    // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
+    // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+
+    const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
+    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
 
     if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined) {
       toastr.warning('Fields should not be empty.')
@@ -476,6 +526,7 @@ class AddPower extends Component {
       netContributionValue: NetPowerCostPerUnit,
       isAddedSEB: true,
     });
+    this.resetpowerKeyValue()
   }
 
   /**
@@ -483,11 +534,14 @@ class AddPower extends Component {
   * @description Used to handle updateProcessGrid
   */
   updateSEBGrid = () => {
-    const { powerGrid, powerGridEditIndex } = this.state;
+    const { powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
 
-    const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
-    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+    // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
+    // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+    const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
+    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
+
 
     let tempArray = [];
 
@@ -498,6 +552,7 @@ class AddPower extends Component {
     const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
     }, 0)
+
     this.setState({
       powerGrid: tempArray,
       netContributionValue: NetPowerCostPerUnit,
@@ -505,13 +560,15 @@ class AddPower extends Component {
       isEditSEBIndex: false,
       isAddedSEB: true,
     }, () => {
+
       //this.props.change('SEBCostPerUnit', 0)
       //this.props.change('SEBPowerContributaion', 0)
     });
+    this.resetpowerKeyValue()
   };
 
   powerTableHandler = (isSelfGenerator) => {
-    const { source, UOM, powerGrid, } = this.state;
+    const { source, UOM, powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
     if (source.length === 0) {
@@ -524,7 +581,7 @@ class AddPower extends Component {
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
     const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
     const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+    const CostPerUnitOfMeasurement = power.CostPerUnitOfMeasurement !== undefined ? power.CostPerUnitOfMeasurement : 0;
     const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
     const tempArray = [];
@@ -537,6 +594,8 @@ class AddPower extends Component {
       UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
       CostPerUnit: SelfGeneratedCostPerUnit,
       PowerContributionPercentage: SelfPowerContribution,
+
+      //DIESEL
       UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
       UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
       CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
@@ -562,8 +621,9 @@ class AddPower extends Component {
       this.props.change('SelfPowerContribution', 0)
       this.props.change('CostPerUnitOfMeasurement', 0)
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
-    });
 
+    });
+    this.resetpowerKeyValue()
   }
 
   /**
@@ -571,7 +631,7 @@ class AddPower extends Component {
 * @description Used to handle updateProcessGrid
 */
   updatePowerGrid = () => {
-    const { source, UOM, powerGrid, powerGridEditIndex } = this.state;
+    const { source, UOM, powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
 
     const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
@@ -579,7 +639,7 @@ class AddPower extends Component {
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
     const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
     const SelfPowerContribution = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+    const CostPerUnitOfMeasurement = power.CostPerUnitOfMeasurement !== undefined ? power.CostPerUnitOfMeasurement : 0;
     const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
     let tempArray = [];
@@ -604,6 +664,7 @@ class AddPower extends Component {
     const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
     }, 0)
+
     this.setState({
       powerGrid: tempArray,
       source: [],
@@ -619,7 +680,9 @@ class AddPower extends Component {
       this.props.change('SelfPowerContribution', 0)
       this.props.change('CostPerUnitOfMeasurement', 0)
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+
     });
+    this.resetpowerKeyValue()
   };
 
   /**
@@ -690,8 +753,32 @@ class AddPower extends Component {
   * @description used to Reset form
   */
   deleteItem = (index) => {
-    const { powerGrid } = this.state;
+    const { powerGrid, netContributionValue } = this.state;
+    const tempObj = powerGrid[index]
+    console.log(tempObj, "Temporary Object");
+    if (tempObj.SourcePowerType === 'SEB') {
+      this.setState({
+        isEditFlagForStateElectricity: false,
+        isAddedSEB: false
+      },
+        () => {
+          this.props.change('MinDemandKWPerMonth', 0)
+          this.props.change('DemandChargesPerKW', 0)
+          this.props.change('AvgUnitConsumptionPerMonth', 0)
+          this.props.change('UnitConsumptionPerAnnum', 0)
+          this.props.change('MaxDemandChargesKW', 0)
+          this.props.change('SEBCostPerUnit', 0)
+          this.props.change('MeterRentAndOtherChargesPerAnnum', 0)
+          this.props.change('DutyChargesAndFCA', 0)
+          this.props.change('TotalUnitCharges', 0)
+          this.props.change('SEBPowerContributaion', 0)
 
+        }
+      )
+
+    }
+    const tempNetContributionValue = (tempObj.CostPerUnit * tempObj.PowerContributionPercentage / 100)
+    const finalNetContribution = netContributionValue - tempNetContributionValue
     let tempData = powerGrid.filter((item, i) => {
       if (i === index) {
         return false;
@@ -699,7 +786,8 @@ class AddPower extends Component {
       return true;
     });
 
-    this.setState({ powerGrid: tempData })
+    this.setState({ powerGrid: tempData, netContributionValue: finalNetContribution })
+    this.resetpowerKeyValue()
   }
 
   /**
@@ -853,12 +941,12 @@ class AddPower extends Component {
               MinDemandKWPerMonth: values.MinDemandKWPerMonth,
               DemandChargesPerKW: values.DemandChargesPerKW,
               AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
-              UnitConsumptionPerAnnum: values.UnitConsumptionPerAnnum,
+              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth, // look into this
               MaxDemandChargesKW: values.MaxDemandChargesKW,
-              CostPerUnit: values.SEBCostPerUnit,
+              CostPerUnit: this.state.power.SEBCostPerUnit,
               MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
               DutyChargesAndFCA: values.DutyChargesAndFCA,
-              TotalUnitCharges: values.TotalUnitCharges,
+              TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
               EffectiveDate: effectiveDate,
@@ -906,12 +994,12 @@ class AddPower extends Component {
               MinDemandKWPerMonth: values.MinDemandKWPerMonth,
               DemandChargesPerKW: values.DemandChargesPerKW,
               AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
-              UnitConsumptionPerAnnum: values.UnitConsumptionPerAnnum,
+              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth,
               MaxDemandChargesKW: values.MaxDemandChargesKW,
-              CostPerUnit: values.SEBCostPerUnit,
+              CostPerUnit: this.state.power.SEBCostPerUnit,
               MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
               DutyChargesAndFCA: values.DutyChargesAndFCA,
-              TotalUnitCharges: values.TotalUnitCharges,
+              TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
               EffectiveDate: effectiveDate,
@@ -936,7 +1024,7 @@ class AddPower extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue } = this.state;
 
@@ -1581,10 +1669,10 @@ class AddPower extends Component {
                                     return (
                                       <tr key={index}>
                                         <td>{item.SourcePowerType}</td>
-                                        <td>{item.CostPerUnit ? item.CostPerUnit : 0}</td>
+                                        <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                                         <td>{item.PowerContributionPercentage}</td>
                                         {/* Ask which value to use for trim */}
-                                        <th>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), 2)}</th>
+                                        <th>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForInputOutput)}</th>
                                         <td>
                                           <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                           <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -1602,7 +1690,7 @@ class AddPower extends Component {
                                   <td></td>
                                   <td></td>
                                   <td className="text-right"><label>{`Net Contribution Value:`}</label> </td>
-                                  <td><label> {checkForDecimalAndNull(netContributionValue, 2)}</label></td>
+                                  <td><label> {checkForDecimalAndNull(netContributionValue, initialConfiguration.NoOfDecimalForInputOutput)}</label></td>
                                   <td></td>
                                 </tr>
                                 {/* </div>
@@ -1665,7 +1753,7 @@ class AddPower extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, fuel, supplier } = state;
+  const { comman, fuel, supplier, auth } = state;
   const fieldsObj = selector(state, 'MinDemandKWPerMonth', 'DemandChargesPerKW', 'AvgUnitConsumptionPerMonth',
     'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
     'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
@@ -1675,6 +1763,8 @@ function mapStateToProps(state) {
   const { powerTypeSelectList, UOMSelectList, filterPlantList, } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { fuelComboSelectList, plantSelectList, powerData } = fuel;
+  const { initialConfiguration } = auth;
+  // console.log(init);
   let initialValues = {};
   if (powerData && powerData.SEBChargesDetails && powerData.SEBChargesDetails.length > 0) {
     initialValues = {
@@ -1694,7 +1784,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj,
+    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration
   }
 }
 

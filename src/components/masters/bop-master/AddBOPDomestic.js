@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, checkForNull, maxLength100, number, checkForDecimalAndNull } from "../../../helper/validation";
 import {
   renderText, searchableSelect,
-  renderMultiSelectField, renderTextAreaField
+  renderMultiSelectField, renderTextAreaField, focusOnError
 } from "../../layout/FormInputs";
 import {
   fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType,
@@ -60,6 +60,8 @@ class AddBOPDomestic extends Component {
 
       effectiveDate: '',
       files: [],
+
+      NetLandedCost: ''
     }
   }
 
@@ -349,7 +351,10 @@ class AddBOPDomestic extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces))
-    this.props.change('NetLandedCost', NetLandedCost !== 0 ? checkForDecimalAndNull(NetLandedCost, initialConfiguration.NumberOfDecimalForTransaction) : 0)
+    this.setState({
+      NetLandedCost: NetLandedCost
+    })
+    this.props.change('NetLandedCost', NetLandedCost !== 0 ? checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0)
   }
 
   /**
@@ -483,7 +488,7 @@ class AddBOPDomestic extends Component {
         Source: values.Source,
         SourceLocation: sourceLocation.value,
         BasicRate: values.BasicRate,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
         Part: partArray,
@@ -515,7 +520,7 @@ class AddBOPDomestic extends Component {
         EffectiveDate: effectiveDate,
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
@@ -1130,5 +1135,8 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
 })(reduxForm({
   form: 'AddBOPDomestic',
+  onSubmitFail: (errors) => {
+    focusOnError(errors)
+  },
   enableReinitialize: true,
 })(AddBOPDomestic));
