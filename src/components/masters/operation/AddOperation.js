@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength100, getVendorCode } from "../../../helper/validation";
+import { required, number, maxLength100, getVendorCode, checkWhiteSpaces } from "../../../helper/validation";
 import {
   renderText, renderMultiSelectField, searchableSelect, renderTextAreaField
 } from "../../layout/FormInputs";
@@ -660,7 +660,7 @@ class AddOperation extends Component {
                               <div
                                 onClick={this.vendorToggler}
                                 className={
-                                  "plus-icon-square mt-2 mr15 right"
+                                  "plus-icon-square mt-2 right"
                                 }
                               ></div>
                             )}
@@ -720,7 +720,7 @@ class AddOperation extends Component {
                           name={"Rate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, number]}
+                          validate={[required, number, checkWhiteSpaces]}
                           component={renderText}
                           //onChange={this.handleBasicRate}
                           required={true}
@@ -735,7 +735,7 @@ class AddOperation extends Component {
                           name={"LabourRatePerUOM"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[number]}
+                          validate={[number, checkWhiteSpaces]}
                           component={renderText}
                           //onChange={this.handleBasicRate}
                           //required={true}

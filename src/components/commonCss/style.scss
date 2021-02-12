@@ -2070,7 +2070,7 @@ input:disabled{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: calc(100vh - 101px);
+  height: calc(100vh - 107px);
 }
 .btn-danger{
   background-color: #FC5774 !important;
@@ -2154,6 +2154,13 @@ input[type="number"].form-control {
 .bom-viewer-main{
   .MuiDrawer-paper{
     width: calc(100% - 230px);
+    padding-bottom: 0px !important;
+    .flowspace{
+      max-width: 100%;
+    }
+    .sf-btn-footer{
+      margin-bottom: -20px;
+    }
   }
 }
 .react-bs-table-search-form {

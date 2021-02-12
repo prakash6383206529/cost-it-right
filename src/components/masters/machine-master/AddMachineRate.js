@@ -835,7 +835,7 @@ class AddMachineRate extends Component {
     return (
       <>
         {/* {(loading || isLoader) && <Loader />} */}
-        <div>
+        <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">
@@ -1044,7 +1044,7 @@ class AddMachineRate extends Component {
                                   type="button"
                                   className={'user-btn'}
                                   onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
-                                  <div className={'edit_pencil_icon'}></div>EDIT MORE DETAILS</button>
+                                  <div className={'edit_pencil_icon d-inline-block mr5'}></div>EDIT MORE DETAILS</button>
                                 :
                                 AddAccessibility &&
                                 <button
@@ -1056,7 +1056,7 @@ class AddMachineRate extends Component {
 
                           </div>
                         </Col>}
-                      <hr />
+                      <Col md="12"><hr /></Col>
                     </Row>
 
                     <Row>
@@ -1131,10 +1131,10 @@ class AddMachineRate extends Component {
                               >Update</button>
 
                               <button
-                                type="button"
-                                className={'cancel-btn mt30 pull-left'}
-                                onClick={this.resetProcessGridData}
-                              >Cancel</button>
+                                type={'button'}
+                                className="reset mt30 "
+                                onClick={this.resetProcessGridData}>{'Cancel'}
+                              </button>
                             </>
                             :
                             !this.state.IsDetailedEntry &&
@@ -1187,21 +1187,17 @@ class AddMachineRate extends Component {
                                 )
                               })
                             }
-                            {this.state.processGrid.length === 0 &&
-                              <tr>
-                                <td>
-                                  <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                                </td>
-                              </tr>
-                            }
                           </tbody>
                         </Table>
+                        {this.state.processGrid.length === 0 &&
+                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        }
                       </Col>
                     </Row>
 
                     <Row>
-                      <Col md="12" className="filter-block">
-                        <div className=" flex-fills mb-2">
+                      <Col md="12" >
+                        <div className="header-title">
                           <h5>{'Remarks & Attachments'}</h5>
                         </div>
                       </Col>

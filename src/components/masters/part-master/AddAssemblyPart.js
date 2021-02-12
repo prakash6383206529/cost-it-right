@@ -513,7 +513,7 @@ class AddAssemblyPart extends Component {
 
       this.props.createAssemblyPart(formData, (res) => {
         if (res.data.Result === true) {
-          toastr.success(MESSAGES.BOM_ADD_SUCCESS);
+          toastr.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
           this.cancel()
         }
       });

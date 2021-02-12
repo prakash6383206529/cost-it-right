@@ -549,6 +549,7 @@ class ProcessListing extends Component {
               </TableHeaderColumn>
               <TableHeaderColumn
                 width={100}
+                dataAlign="center"
                 searchable={false}
                 dataField="ProcessId"
                 export={false}

@@ -1388,7 +1388,7 @@ class AddMoreDetails extends Component {
     return (
       <>
         {(loading || isLoader) && <Loader />}
-        <div>
+        <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">
@@ -2387,7 +2387,7 @@ class AddMoreDetails extends Component {
 
                             <button
                               type="button"
-                              className={'cancel-btn mt30 pull-left'}
+                              className={'reset-btn mt30 pull-left'}
                               onClick={this.resetLabourGridData}
                             >Cancel</button>
                           </>
@@ -2550,7 +2550,7 @@ class AddMoreDetails extends Component {
 
                               <button
                                 type="button"
-                                className={'cancel-btn mt30 pull-left'}
+                                className={'reset-btn mt30 pull-left'}
                                 onClick={this.resetProcessGridData}
                               >Cancel</button>
                             </>

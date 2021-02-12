@@ -191,7 +191,7 @@ a:hover {
 }
 .reset {
   height: 32px;
-  border: 2px solid $colorPrimary;
+  border: 1px solid #8a91ac;
   border-radius: 4px;
   opacity: 1;
   padding-left: 21px;
@@ -199,7 +199,7 @@ a:hover {
   font-size: $font-14;
   text-transform: uppercase;
   font-weight: $font-medium;
-  color: $colorPrimary;
+  color: #8a91ac;
   background: transparent;
 }
 
@@ -290,6 +290,7 @@ a:hover {
   height: 12px;
   background: transparent url('../../assests/images/WhitePencil-Icon.svg') 0% 0%
     no-repeat padding-box;
+    background-size: contain;
 }
 .plus {
   width: 12px;
@@ -2027,13 +2028,13 @@ ul.bread-list.d-inline-flex {
   justify-content: center;
 }
 
+.flowconnection{
+  stroke-width: 2px;
+  stroke: #256BD1;
+}
 .flowpoint {
   margin-top: 10px;
   border: 2px solid #256BD1 !important;
-  .flowconnection{
-    stroke-width: 2px;
-    stroke: #256BD1;
-  }
   .flowpoint-header {
     border-bottom: 1px solid #256bd1;
     position: relative;
