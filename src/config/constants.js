@@ -1299,7 +1299,6 @@ export const COSTING_PATH = '/costing'
 export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 
-
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',
   costingName: '',
