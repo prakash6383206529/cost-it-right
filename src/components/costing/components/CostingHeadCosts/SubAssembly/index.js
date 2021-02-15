@@ -121,8 +121,8 @@ function AssemblyPart(props) {
             {item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}
             {
               item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ?
-                <div class="tooltip">Hover over me
-                <span class="tooltiptext">{item.CostingPartDetails.TotalOperationCostPerAssembly}</span>
+                <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
+                  <span class="tooltiptext">{item.CostingPartDetails.TotalOperationCostPerAssembly}</span>
                 </div> : ''
             }
           </td>

@@ -10,6 +10,7 @@ export const MESSAGES = {
 
   //PART MASTERS
   PART_ADD_SUCCESS: 'Part added successfully',
+  ASSEMBLY_PART_ADD_SUCCESS: 'Assembly part added successfully',
   PART_DELETE_SUCCESS: 'Part has been deleted',
   UPDATE_PART_SUCESS: 'Part updated successfully',
   MESSAGE_SENT_EXCEPT_USER: 'Message has been sent except the user',
@@ -24,9 +25,9 @@ export const MESSAGES = {
   UPDATE_BOM_SUCCESS: 'Assembly Part updated successfully',
 
   //UOM
-  UOM_ADD_SUCCESS: 'Unit Of measurement added successfully',
-  UPDATE_UOM_SUCESS: 'Unit Of measurement updated successfully',
-  DELETE_UOM_SUCCESS: 'Unit Of measurement deleted successfully',
+  UOM_ADD_SUCCESS: 'Unit of measurement added successfully',
+  UPDATE_UOM_SUCESS: 'Unit of measurement updated successfully',
+  DELETE_UOM_SUCCESS: 'Unit of measurement deleted successfully',
   UOM_ACTIVE_SUCCESSFULLY: 'UOM has been activated successfully',
   UOM_INACTIVE_SUCCESSFULLY: 'UOM has been de-activated successfully',
 

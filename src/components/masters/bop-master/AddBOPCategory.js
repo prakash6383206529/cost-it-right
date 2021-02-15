@@ -104,19 +104,33 @@ class AddBOPCategory extends Component {
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12 pr-3">
                                         <div className="text-right ">
-                                            <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
+                                            <button
+                                                type={"button"}
                                                 className="reset mr15 cancel-btn"
-                                            />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
+                                                onClick={this.cancel}
+                                            >
+                                                <div className={"cross-icon"}>
+                                                    {" "}
+                                                    <img
+                                                        alt={""}
+                                                        src={require("../../../assests/images/times.png")}
+                                                    ></img>
+                                                </div>{" "}
+                                                {"Cancel"}
+                                            </button>
+
+                                            <button
                                                 type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
                                                 className="submit-button save-btn"
-                                            />
+                                            >
+                                                <div className={"check-icon"}>
+                                                    <img
+                                                        alt={""}
+                                                        src={require("../../../assests/images/check.png")}
+                                                    ></img>
+                                                </div>{" "}
+                                                {isEditFlag ? "Update" : "Save"}
+                                            </button>
                                         </div>
                                     </div>
                                 </Row>

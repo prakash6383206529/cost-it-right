@@ -343,7 +343,7 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
-              <Row className="sticky-top-0">
+              <Row className="sticky-top-0 mb-3">
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
                     <tbody>
@@ -354,7 +354,7 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Date Time:</span><span className="dark-blue pl-1"> {moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</span></p></div></td>
                     </tbody>
                   </Table>
-                  <Table className="table cr-brdr-main" size="sm">
+                  <Table className="table cr-brdr-main mb-0" size="sm">
                     <thead>
                       <tr>
                         <th style={{ width: '100px' }}>{``}</th>
