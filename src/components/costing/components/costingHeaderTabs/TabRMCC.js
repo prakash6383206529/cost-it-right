@@ -224,7 +224,7 @@ function TabRMCC(props) {
         if (i.IsAssemblyPart === true) {
 
           i.CostingPartDetails.TotalRawMaterialsCost = getRMTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(netRMCost(rmGrid)), params);
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'RM', checkForNull(netRMCost(rmGrid)), params) * (i.Quantity !== undefined ? i.Quantity : 1);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'RM', checkForNull(netRMCost(rmGrid)), params);
           setRMCostInDataList(rmGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -232,7 +232,7 @@ function TabRMCC(props) {
           let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(i.CostingPartDetails.TotalConversionCost)
 
           i.CostingPartDetails.CostingRawMaterialsCost = rmGrid;
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost * i.Quantity;;
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
           i.CostingPartDetails.TotalRawMaterialsCost = netRMCost(rmGrid);
 
         } else {
@@ -275,7 +275,7 @@ function TabRMCC(props) {
         if (i.IsAssemblyPart === true) {
 
           i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(netBOPCost(bopGrid)), params);
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'BOP', checkForNull(netBOPCost(bopGrid)), params) * (i.Quantity !== undefined ? i.Quantity : 1);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'BOP', checkForNull(netBOPCost(bopGrid)), params);
           setBOPCostInDataList(bopGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -283,7 +283,7 @@ function TabRMCC(props) {
           let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(i.CostingPartDetails.TotalConversionCost);
 
           i.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost * i.Quantity;;
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
           i.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(bopGrid);
 
         } else {
@@ -328,7 +328,7 @@ function TabRMCC(props) {
 
           i.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
           i.CostingPartDetails.TotalProcessCost = getProcessTotalCost(i.CostingChildPartDetails, checkForNull(conversionGrid.ProcessCostTotal), params);
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(conversionGrid.NetConversionCost), params) * (i.Quantity !== undefined ? i.Quantity : 1);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(conversionGrid.NetConversionCost), params);
           setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -342,7 +342,7 @@ function TabRMCC(props) {
           })
 
           i.CostingPartDetails.CostingConversionCost = { ...conversionGrid, CostingProcessCostResponse: data };
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost * i.Quantity;
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
           i.CostingPartDetails.TotalConversionCost = conversionGrid.NetConversionCost !== null ? conversionGrid.NetConversionCost : 0;
 
         } else {
@@ -375,7 +375,7 @@ function TabRMCC(props) {
 
           i.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(operationGrid.NetConversionCost), params);
           i.CostingPartDetails.TotalOperationCost = getOperationTotalCost(i.CostingChildPartDetails, checkForNull(operationGrid.OperationCostTotal), params);
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(operationGrid.NetConversionCost), params) * (i.Quantity !== undefined ? i.Quantity : 1);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(operationGrid.NetConversionCost), params);
           setOperationCostInDataList(operationGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -520,7 +520,7 @@ function TabRMCC(props) {
             GetToolCostTotal(CostingPartDetails.CostingToolCostResponse);
 
           i.CostingPartDetails.TotalCalculatedRMBOPCCCost = (getTotalCostForAssembly(CostingChildPartDetails) +
-            checkForNull(CostingPartDetails.TotalOperationCostPerAssembly)) * (i.Quantity !== undefined ? i.Quantity : 1);
+            checkForNull(CostingPartDetails.TotalOperationCostPerAssembly));
 
           i.IsAssemblyPart = true;
           i.IsOpen = !i.IsOpen;
@@ -579,13 +579,13 @@ function TabRMCC(props) {
 
           i.CostingPartDetails.TotalCalculatedRMBOPCCCost = (checkForNull(i.TotalOperationCostPerAssembly) +
             checkForNull(i.TotalToolCostPerAssembly) +
-            getTotalCostForAssembly(i.CostingChildPartDetails)) * (i.Quantity !== undefined ? i.Quantity : 1);
+            getTotalCostForAssembly(i.CostingChildPartDetails));
 
           formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
 
-          i.CostingPartDetails = { ...Data, Quantity: i.Quantity };
+          i.CostingPartDetails = Data;
           i.IsOpen = !i.IsOpen;
 
         } else {
@@ -626,14 +626,19 @@ function TabRMCC(props) {
 
           i.CostingPartDetails.CostingOperationCostResponse = OperationGrid;
 
-          i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
-            (IsGridChanged ? GetOperationCostTotal(OperationGrid) : 0) +
-            checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly)
-          //- (IsGridChanged ? checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) : 0);
+          // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
+          //   (IsGridChanged ? GetOperationCostTotal(OperationGrid) : 0) +
+          //   checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly)
+          // //- (IsGridChanged ? checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) : 0);
+
+          i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalProcessCost) +
+            checkForNull(i.CostingPartDetails.TotalOperationCost) +
+            GetOperationCostTotal(OperationGrid) +
+            checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
 
           i.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(OperationGrid);
 
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost * (i.Quantity !== undefined ? i.Quantity : 1);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
 
           setAssemblyOperationCostInDataList(OperationGrid, params, i.CostingChildPartDetails)
 
@@ -679,7 +684,7 @@ function TabRMCC(props) {
           let GrandTotalCost = GetToolCostTotal(ToolGrid) + checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly);
 
           i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost * (i.Quantity !== undefined ? i.Quantity : 1);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
           i.CostingPartDetails.TotalToolCostPerAssembly = GetToolCostTotal(ToolGrid);
           i.CostingPartDetails.IsShowToolCost = true;
 
@@ -777,9 +782,7 @@ function TabRMCC(props) {
                           <th style={{ width: '100px' }}>{`Type`}</th>
                           <th style={{ width: '150px' }}>{`RM Cost`}</th>
                           <th style={{ width: '150px' }}>{`BOP Cost`}</th>
-                          <th
-                            style={{ width: '200px' }}
-                          >{`Conversion Cost`}</th>
+                          <th style={{ width: '200px' }}>{`Conversion Cost`}</th>
                           <th style={{ width: '200px' }}>{`Quantity`}</th>
                           <th style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
                           <th style={{ width: '100px' }}>{``}</th>

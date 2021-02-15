@@ -277,24 +277,43 @@ export function updateVBCSOBDetail(requestData, callback) {
  */
 export function getZBCCostingByCostingId(CostingId, callback) {
   return (dispatch) => {
-    const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_COSTING_DATA_BY_COSTINGID,
-          payload: response.data.Data,
-        })
-        dispatch({
-          type: SET_COSTING_DATALIST_BY_COSTINGID,
-          payload: response.data.DataList,
-        })
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      callback(error);
-      apiErrors(error);
-    });
+    if (CostingId !== '') {
+      dispatch({
+        type: GET_COSTING_DATA_BY_COSTINGID,
+        payload: {},
+      })
+      dispatch({
+        type: SET_COSTING_DATALIST_BY_COSTINGID,
+        payload: [],
+      })
+      const request = axios.get(`${API.getZBCCostingByCostingId}/${CostingId}`, headers);
+      request.then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_COSTING_DATA_BY_COSTINGID,
+            payload: response.data.Data,
+          })
+          dispatch({
+            type: SET_COSTING_DATALIST_BY_COSTINGID,
+            payload: response.data.DataList,
+          })
+          callback(response);
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE });
+        callback(error);
+        apiErrors(error);
+      });
+    } else {
+      dispatch({
+        type: GET_COSTING_DATA_BY_COSTINGID,
+        payload: {},
+      })
+      dispatch({
+        type: SET_COSTING_DATALIST_BY_COSTINGID,
+        payload: [],
+      })
+    }
   };
 }
 

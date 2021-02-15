@@ -24,6 +24,7 @@ function CostingDetailStepTwo(props) {
 
   const costingData = useSelector(state => state.costing.costingData)
   const CostingDataList = useSelector(state => state.costing.CostingDataList)
+  console.log('CostingDataList: ', CostingDataList);
   const NetPOPrice = useSelector(state => state.costing.NetPOPrice)
   const RMCCBOPCost = useSelector(state => state.costing.RMCCBOPCost)
   const SurfaceCostData = useSelector(state => state.costing.SurfaceCostData)
@@ -189,7 +190,7 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList(tempArr, () => { }))
+      //dispatch(setCostingDataList(tempArr, () => { }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setSurfaceCostData(data, () => { }))
 
@@ -227,7 +228,7 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList(tempArr, () => { }))
+      //dispatch(setCostingDataList(tempArr, () => { }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setOverheadProfitCostData(data, () => { }))
 
@@ -264,7 +265,7 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList(tempArr, () => { }))
+      //dispatch(setCostingDataList(tempArr, () => { }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
     }, 500)
@@ -309,7 +310,7 @@ function CostingDetailStepTwo(props) {
         }
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-        dispatch(setCostingDataList(tempArr, () => { }))
+        //dispatch(setCostingDataList(tempArr, () => { }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
       }, 500)
@@ -370,26 +371,28 @@ function CostingDetailStepTwo(props) {
                       </tr>
                     </thead>
                     <tbody>
-                      {
-                        CostingDataList &&
-                        CostingDataList.map((item, index) => {
-                          return (
-                            <tr key={index} className="cr-bg-tbl">
-                              <td><span className="cr-prt-nm">{item.PartNumber}</span></td>
-                              <td><span className="dark-blue">{netRMCostPerAssembly(item)}</span></td>
-                              <td><span className="dark-blue">{netBOPCostPerAssembly(item)}</span></td>
-                              <td><span className="dark-blue">{netConversionCostPerAssembly(item)}</span></td>
-                              <td><span className="dark-blue">{netRMCCcost(item)}</span></td>
-                              <td><span className="dark-blue">{netSurfaceTreatmentCost(item)}</span></td>
-                              <td><span className="dark-blue">{netOverheadProfitCost(item)}</span></td>
-                              <td><span className="dark-blue">{netPackagingFreightCost(item)}</span></td>
-                              <td><span className="dark-blue">{netToolCost(item)}</span></td>
-                              <td><span className="dark-blue">{netDiscountOtherCost(item)}</span></td>
-                              <td><span className="dark-blue">{netTotalCost(item)}</span></td>
-                            </tr>
-                          )
-                        }
-                        )}
+                      <tr className="cr-bg-tbl">
+                        {
+                          CostingDataList &&
+                          CostingDataList.map((item, index) => {
+                            return (
+                              <>
+                                <td><span className="cr-prt-nm">{item.PartNumber}</span></td>
+                                <td><span className="dark-blue">{netRMCostPerAssembly(item)}</span></td>
+                                <td><span className="dark-blue">{netBOPCostPerAssembly(item)}</span></td>
+                                <td><span className="dark-blue">{netConversionCostPerAssembly(item)}</span></td>
+                                <td><span className="dark-blue">{netRMCCcost(item)}</span></td>
+                                <td><span className="dark-blue">{netSurfaceTreatmentCost(item)}</span></td>
+                                <td><span className="dark-blue">{netOverheadProfitCost(item)}</span></td>
+                                <td><span className="dark-blue">{netPackagingFreightCost(item)}</span></td>
+                                <td><span className="dark-blue">{netToolCost(item)}</span></td>
+                                <td><span className="dark-blue">{netDiscountOtherCost(item)}</span></td>
+                                <td><span className="dark-blue">{netTotalCost(item)}</span></td>
+                              </>
+                            )
+                          }
+                          )}
+                      </tr>
                     </tbody>
                   </Table>
                 </Col>
