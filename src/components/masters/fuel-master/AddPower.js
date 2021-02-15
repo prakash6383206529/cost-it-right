@@ -942,13 +942,13 @@ class AddPower extends Component {
 
     return (
       <>
-        <div>
+        <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">
                 <div className="shadow-lgg login-formg">
                   <div className="row">
-                    <div className="col-md-6 mt-15">
+                    <div className="col-md-6">
                       <div className="form-heading">
                         <h2>{isEditFlag ? `Update Power` : `Add Power`}</h2>
                       </div>
@@ -1050,7 +1050,7 @@ class AddPower extends Component {
                       <>
                         <Row>
                           <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2">
+                            <div className=" mb-2">
                               <h5>{'Power For:'}</h5>
                             </div>
                           </Col>
@@ -1099,7 +1099,7 @@ class AddPower extends Component {
 
                         <Row>
                           <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2">
+                            <div className="mb-2">
                               <h5>{'State Electricity Board Power Charges:'}</h5>
                             </div>
                           </Col>
@@ -1362,7 +1362,7 @@ class AddPower extends Component {
 
                         <Row>
                           <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2">
+                            <div className=" mb-2">
                               <h5>{'Self Generated Power Charges:'}</h5>
                             </div>
                           </Col>
@@ -1608,8 +1608,13 @@ class AddPower extends Component {
                                 {/* </div>
                                                                 </div> */}
                               </tfoot>
-
-                              {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                              <tbody>
+                                <tr>
+                                  <td colSpan="5">
+                                    {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                                  </td>
+                                </tr>
+                              </tbody>
                             </Table>
                             {/* <div className="bluefooter-butn border row">
                                                             <div className="col-md-12 text-right">
