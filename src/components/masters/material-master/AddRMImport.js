@@ -821,7 +821,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   label="Raw Material"
                                   component={searchableSelect}
-                                  placeholder={"-Raw Material-"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("material")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -854,7 +854,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   label="RM Grade"
                                   component={searchableSelect}
-                                  placeholder={"-RM Grade-"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("grade")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -896,7 +896,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   label="RM Spec"
                                   component={searchableSelect}
-                                  placeholder={"-RM Spec-"}
+                                  placeholder={"Select"}
                                   options={this.renderListing(
                                     "specification"
                                   )}
@@ -931,7 +931,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   label="Category"
                                   component={searchableSelect}
-                                  placeholder={"-Category-"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("category")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -957,7 +957,7 @@ class AddRMImport extends Component {
                               <Field
                                 label="Plant"
                                 name="SourceSupplierPlantId"
-                                placeholder="-Select-"
+                                placeholder={"Select"}
                                 selection={
                                   this.state.selectedPlants == null ||
                                     this.state.selectedPlants.length === 0
@@ -997,7 +997,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   label="Vendor Name"
                                   component={searchableSelect}
-                                  placeholder={"-Vendor-"}
+                                  placeholder={"Select"}
                                   options={this.renderListing(
                                     "VendorNameList"
                                   )}
@@ -1030,7 +1030,7 @@ class AddRMImport extends Component {
                                 <Field
                                   label="Vendor Plant"
                                   name="DestinationSupplierPlantId"
-                                  placeholder="--Select--"
+                                  placeholder={"Select"}
                                   selection={
                                     this.state.selectedVendorPlants ==
                                       null ||
@@ -1103,7 +1103,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   label="Source Location"
                                   component={searchableSelect}
-                                  placeholder={"-Location-"}
+                                  placeholder={"Select"}
                                   options={this.renderListing(
                                     "SourceLocation"
                                   )}
@@ -1133,7 +1133,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   label="UOM"
                                   component={searchableSelect}
-                                  placeholder={"-UOM-"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -1160,7 +1160,7 @@ class AddRMImport extends Component {
                               type="text"
                               label="Currency"
                               component={searchableSelect}
-                              placeholder={"-Currency-"}
+                              placeholder={"Select"}
                               options={this.renderListing("currency")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={

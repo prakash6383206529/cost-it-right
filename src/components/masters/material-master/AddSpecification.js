@@ -345,7 +345,7 @@ class AddSpecification extends Component {
                           type="text"
                           label="Raw Material"
                           component={searchableSelect}
-                          placeholder={"Select Raw Material"}
+                          placeholder={"Select"}
                           options={this.renderListing("RawMaterialName")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -390,7 +390,7 @@ class AddSpecification extends Component {
                           type="text"
                           label="Material"
                           component={searchableSelect}
-                          placeholder={"Select Material"}
+                          placeholder={"Select"}
                           options={this.renderListing("material")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -436,7 +436,7 @@ class AddSpecification extends Component {
                             type="text"
                             label="RM Grade"
                             component={searchableSelect}
-                            placeholder={"Select RM Grade"}
+                            placeholder={"Select"}
                             options={this.renderListing("RMGrade")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={

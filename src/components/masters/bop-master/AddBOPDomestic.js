@@ -626,7 +626,7 @@ class AddBOPDomestic extends Component {
                                   type="text"
                                   label="BOP Category"
                                   component={searchableSelect}
-                                  placeholder={"BOP Category"}
+                                  placeholder={"Select"}
                                   options={this.renderListing(
                                     "BOPCategory"
                                   )}
@@ -657,7 +657,7 @@ class AddBOPDomestic extends Component {
                             <Field
                               label="Part/ Assembly No."
                               name="PartAssemblyNo"
-                              placeholder="--Select--"
+                              placeholder={"Select"}
                               selection={
                                 this.state.selectedPartAssembly == null ||
                                   this.state.selectedPartAssembly.length === 0
@@ -696,7 +696,7 @@ class AddBOPDomestic extends Component {
                               <Field
                                 label="Plant"
                                 name="Plant"
-                                placeholder="--Select--"
+                                placeholder={"Select"}
                                 selection={
                                   this.state.selectedPlants == null ||
                                     this.state.selectedPlants.length === 0
@@ -728,7 +728,7 @@ class AddBOPDomestic extends Component {
                                   type="text"
                                   label="Vendor Name"
                                   component={searchableSelect}
-                                  placeholder={"Vendor"}
+                                  placeholder={"Select"}
                                   options={this.renderListing(
                                     "VendorNameList"
                                   )}
@@ -758,7 +758,7 @@ class AddBOPDomestic extends Component {
                               <Field
                                 label="Vendor Plant"
                                 name="VendorPlant"
-                                placeholder="--- Plant ---"
+                                placeholder={"Select"}
                                 selection={
                                   this.state.selectedVendorPlants == null ||
                                     this.state.selectedVendorPlants.length ===
@@ -803,7 +803,7 @@ class AddBOPDomestic extends Component {
                                 type="text"
                                 label="Source Location"
                                 component={searchableSelect}
-                                placeholder={"--- Plant ---"}
+                                placeholder={"Select"}
                                 options={this.renderListing(
                                   "SourceLocation"
                                 )}

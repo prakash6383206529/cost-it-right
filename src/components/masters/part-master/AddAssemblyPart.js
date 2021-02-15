@@ -678,7 +678,7 @@ class AddAssemblyPart extends Component {
                           <Field
                             label="Plant"
                             name="Plant"
-                            placeholder="--Select--"
+                            placeholder={"Select"}
                             selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
                             selectionChanged={this.handlePlant}
