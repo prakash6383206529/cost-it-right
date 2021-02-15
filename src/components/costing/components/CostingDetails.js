@@ -459,6 +459,7 @@ function CostingDetails() {
     //  return true;
   }
 
+
   /**
    * @method isCostingVersionSelected
    * @description HANDLE COSTING VERSION SELECTED
