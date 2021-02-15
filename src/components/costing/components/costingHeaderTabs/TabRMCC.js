@@ -514,6 +514,8 @@ function TabRMCC(props) {
           i.CostingPartDetails = Children.CostingPartDetails;
           i.CostingPartDetails.TotalRawMaterialsCost = getRMTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.CostingRawMaterialsCost, params);
           i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.CostingBoughtOutPartCost, params);
+          i.CostingPartDetails.TotalProcessCost = 0;
+          i.CostingPartDetails.TotalOperationCost = 0;
 
           i.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(CostingChildPartDetails, checkForNull(CostingPartDetails.CostingConversionCost && CostingPartDetails.CostingConversionCost.NetConversionCost !== null ? CostingPartDetails.CostingConversionCost.NetConversionCost : 0), params) +
             GetOperationCostTotal(CostingPartDetails.CostingOperationCostResponse) +
@@ -626,15 +628,15 @@ function TabRMCC(props) {
 
           i.CostingPartDetails.CostingOperationCostResponse = OperationGrid;
 
-          // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
-          //   (IsGridChanged ? GetOperationCostTotal(OperationGrid) : 0) +
-          //   checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly)
-          // //- (IsGridChanged ? checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) : 0);
+          i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
+            (IsGridChanged ? GetOperationCostTotal(OperationGrid) : 0) +
+            checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly)
+          //- (IsGridChanged ? checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) : 0);
 
-          i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalProcessCost) +
-            checkForNull(i.CostingPartDetails.TotalOperationCost) +
-            GetOperationCostTotal(OperationGrid) +
-            checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
+          // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalProcessCost) +
+          //   checkForNull(i.CostingPartDetails.TotalOperationCost) +
+          //   GetOperationCostTotal(OperationGrid) +
+          //   checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
 
           i.CostingPartDetails.TotalOperationCostPerAssembly = GetOperationCostTotal(OperationGrid);
 
