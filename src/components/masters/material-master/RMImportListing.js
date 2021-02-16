@@ -582,18 +582,18 @@ class RMImportListing extends Component {
               ref={'table'}
               pagination>
               {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-              <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="center" >{this.renderRawMaterial()}</TableHeaderColumn>
-              <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="center" >{this.renderRMGrade()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" searchable={false} dataField="Category" >Category</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" searchable={false} dataField="BasicRate" >{this.renderBasicRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" searchable={false} dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+              <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
+              <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="Category" >Category</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate" >{this.renderBasicRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
               <TableHeaderColumn width={100} dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>

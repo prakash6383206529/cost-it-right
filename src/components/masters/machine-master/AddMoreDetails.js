@@ -1784,7 +1784,7 @@ class AddMoreDetails extends Component {
                           </div>
                           <div
                             onClick={this.efficiencyCalculationToggler}
-                            className={'calculate-icon mr5 right'}>
+                            className={'calculate-icon mt-0 mb-1 right'}>
                           </div>
                         </div>
                       </Col>
@@ -2400,7 +2400,7 @@ class AddMoreDetails extends Component {
                               <div className={'plus'}></div>ADD</button>
                             <button
                               type="button"
-                              className={'btn secondary-btn mt30 pull-left'}
+                              className={'btn reset mt30 pull-left'}
                               onClick={this.resetLabourGridData}
                             >Reset</button>
                           </>}
@@ -2604,7 +2604,7 @@ class AddMoreDetails extends Component {
 
                     <Row>
                       <Col md="12" className="filter-block">
-                        <div className=" flex-fills mb-2">
+                        <div className="mb-2">
                           <h5>{'Remarks & Attachment'}</h5>
                         </div>
                       </Col>

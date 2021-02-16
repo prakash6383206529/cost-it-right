@@ -589,15 +589,15 @@ class MachineRateListing extends Component {
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>
-                            <TableHeaderColumn dataField="IsVendor" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Technologies" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Technology'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.plantsFormatter} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineNumber" searchable={true} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Number'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineTypeName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Type'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Tonnage'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Process Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Machine Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Technologies" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Technology'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.plantsFormatter} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineNumber" searchable={true} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Machine Number'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineTypeName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Machine Type'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Machine Tonnage'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Process Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Machine Rate'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

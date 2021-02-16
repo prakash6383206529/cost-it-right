@@ -201,6 +201,8 @@ a:hover {
   font-weight: $font-medium;
   color: #8a91ac;
   background: transparent;
+  display: inline-flex;
+  align-items: center;
 }
 
 .reset {

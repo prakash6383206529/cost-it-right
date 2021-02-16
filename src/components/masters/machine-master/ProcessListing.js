@@ -407,6 +407,10 @@ class ProcessListing extends Component {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
       paginationSize: 5,
     }
 
@@ -515,7 +519,7 @@ class ProcessListing extends Component {
                 dataField="ProcessName"
                 width={100}
                 columnTitle={true}
-                dataAlign="center"
+                dataAlign="left"
                 dataSort={true}
               >
                 {'Process Name'}
@@ -524,7 +528,7 @@ class ProcessListing extends Component {
                 dataField="ProcessCode"
                 width={100}
                 columnTitle={true}
-                dataAlign="center"
+                dataAlign="left"
                 dataSort={true}
               >
                 {'Process Code'}
@@ -533,7 +537,7 @@ class ProcessListing extends Component {
                 dataField="Plants"
                 width={100}
                 columnTitle={true}
-                dataAlign="center"
+                dataAlign="left"
                 dataSort={true}
               >
                 {'Plant'}
@@ -542,14 +546,14 @@ class ProcessListing extends Component {
                 dataField="Machines"
                 width={100}
                 columnTitle={true}
-                dataAlign="center"
+                dataAlign="left"
                 dataSort={true}
               >
                 {'Machine'}
               </TableHeaderColumn>
               <TableHeaderColumn
                 width={100}
-                dataAlign="center"
+                dataAlign="left"
                 searchable={false}
                 dataField="ProcessId"
                 export={false}
