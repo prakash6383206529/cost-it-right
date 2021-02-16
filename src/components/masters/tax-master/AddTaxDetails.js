@@ -15,305 +15,305 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 
 class AddTaxDetails extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            country: [],
-            effectiveDate: '',
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      country: [],
+      effectiveDate: '',
     }
+  }
 
-    UNSAFE_componentWillMount() {
-        this.props.fetchCountryDataAPI(() => { })
-    }
+  UNSAFE_componentWillMount() {
+    this.props.fetchCountryDataAPI(() => { })
+  }
 
-    /**
-    * @method componentDidMount
-    * @description called after render the component
-    */
-    componentDidMount() {
-        const { ID, isEditFlag } = this.props;
+  /**
+  * @method componentDidMount
+  * @description called after render the component
+  */
+  componentDidMount() {
+    const { ID, isEditFlag } = this.props;
 
-        if (isEditFlag) {
-            this.props.getTaxDetailsData(ID, res => {
-                const { countryList } = this.props;
-
-                if (res && res.data && res.data.Data) {
-                    let Data = res.data.Data;
-
-                    let countryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
-
-                    setTimeout(() => {
-                        this.setState({
-                            country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
-                            effectiveDate: moment(Data.EffectiveDate)._d
-                        })
-                    }, 500)
-
-                }
-            })
-        } else {
-            this.props.getTaxDetailsData('', res => { })
-        }
-    }
-
-    /**
-    * @method toggleModel
-    * @description Used to cancel modal
-    */
-    toggleModel = () => {
-        this.props.onCancel();
-    }
-
-    toggleDrawer = (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-        this.props.closeDrawer('')
-    };
-
-    /**
-   * @method renderListing
-   * @description Used show listing
-   */
-    renderListing = (label) => {
+    if (isEditFlag) {
+      this.props.getTaxDetailsData(ID, res => {
         const { countryList } = this.props;
-        const temp = [];
 
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
+        if (res && res.data && res.data.Data) {
+          let Data = res.data.Data;
+
+          let countryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
+
+          setTimeout(() => {
+            this.setState({
+              country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
+              effectiveDate: moment(Data.EffectiveDate)._d
+            })
+          }, 500)
+
         }
+      })
+    } else {
+      this.props.getTaxDetailsData('', res => { })
+    }
+  }
 
+  /**
+  * @method toggleModel
+  * @description Used to cancel modal
+  */
+  toggleModel = () => {
+    this.props.onCancel();
+  }
+
+  toggleDrawer = (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    this.props.closeDrawer('')
+  };
+
+  /**
+ * @method renderListing
+ * @description Used show listing
+ */
+  renderListing = (label) => {
+    const { countryList } = this.props;
+    const temp = [];
+
+    if (label === 'country') {
+      countryList && countryList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
     }
 
-    /**
-    * @method countryHandler
-    * @description Used to handle country
-    */
-    countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ country: newValue });
-        } else {
-            this.setState({ country: [], })
-        }
-    };
+  }
 
-    /**
-    * @method handleChange
-    * @description Handle Effective Date
-    */
-    handleEffectiveDateChange = (date) => {
-        this.setState({ effectiveDate: date, });
-    };
-
-    /**
-   * @method cancel
-   * @description used to Reset form
-   */
-    cancel = () => {
-        const { reset } = this.props;
-        reset();
-        this.setState({
-            country: [],
-        })
-        this.toggleDrawer('')
+  /**
+  * @method countryHandler
+  * @description Used to handle country
+  */
+  countryHandler = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ country: newValue });
+    } else {
+      this.setState({ country: [], })
     }
+  };
 
-    /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-    onSubmit = (values) => {
-        const { country, effectiveDate } = this.state;
+  /**
+  * @method handleChange
+  * @description Handle Effective Date
+  */
+  handleEffectiveDateChange = (date) => {
+    this.setState({ effectiveDate: date, });
+  };
 
-        /** Update detail of TAX  */
-        if (this.props.isEditFlag) {
-            const { ID } = this.props;
+  /**
+ * @method cancel
+ * @description used to Reset form
+ */
+  cancel = () => {
+    const { reset } = this.props;
+    reset();
+    this.setState({
+      country: [],
+    })
+    this.toggleDrawer('')
+  }
 
-            let formData = {
-                TaxDetailId: ID,
-                Country: country.label,
-                IsActive: true,
-                TaxName: values.TaxName,
-                CountryId: country.value,
-                Rate: values.Rate,
-                EffectiveDate: effectiveDate,
-                LoggedInUserId: loggedInUserId(),
-            }
+  /**
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
+  onSubmit = (values) => {
+    const { country, effectiveDate } = this.state;
 
-            this.props.updateTaxDetails(formData, (res) => {
-                if (res.data.Result) {
-                    toastr.success(MESSAGES.TAX_UPDATE_SUCCESS);
-                    this.cancel();
-                }
-            });
+    /** Update detail of TAX  */
+    if (this.props.isEditFlag) {
+      const { ID } = this.props;
 
-        } else {
-            /** Add detail for TAX  */
-            let reqData = {
-                TaxName: values.TaxName,
-                CountryId: country.value,
-                Rate: values.Rate,
-                EffectiveDate: effectiveDate,
-                LoggedInUserId: loggedInUserId(),
-            }
-            this.props.createTaxDetails(reqData, (res) => {
-                if (res.data.Result === true) {
-                    toastr.success(MESSAGES.TAX_ADD_SUCCESS);
-                    this.cancel();
-                }
-            });
+      let formData = {
+        TaxDetailId: ID,
+        Country: country.label,
+        IsActive: true,
+        TaxName: values.TaxName,
+        CountryId: country.value,
+        Rate: values.Rate,
+        EffectiveDate: effectiveDate,
+        LoggedInUserId: loggedInUserId(),
+      }
+
+      this.props.updateTaxDetails(formData, (res) => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.TAX_UPDATE_SUCCESS);
+          this.cancel();
         }
+      });
+
+    } else {
+      /** Add detail for TAX  */
+      let reqData = {
+        TaxName: values.TaxName,
+        CountryId: country.value,
+        Rate: values.Rate,
+        EffectiveDate: effectiveDate,
+        LoggedInUserId: loggedInUserId(),
+      }
+      this.props.createTaxDetails(reqData, (res) => {
+        if (res.data.Result === true) {
+          toastr.success(MESSAGES.TAX_ADD_SUCCESS);
+          this.cancel();
+        }
+      });
     }
+  }
 
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { handleSubmit, isEditFlag, } = this.props;
-        return (
-          <Drawer
-            anchor={this.props.anchor}
-            open={this.props.isOpen}
-            onClose={(e) => this.toggleDrawer(e)}
-          >
-            <Container>
-              <div className={"drawer-wrapper"}>
-                <form
-                  noValidate
-                  className="form"
-                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                >
-                  <Row className="drawer-heading">
-                    <Col>
-                      <div className={"header-wrapper left"}>
-                        <h3>
-                          {isEditFlag
-                            ? "UPDATE TAX DETAILS"
-                            : "ADD TAX DETAILS"}
-                        </h3>
-                      </div>
-                      <div
-                        onClick={(e) => this.toggleDrawer(e)}
-                        className={"close-button right"}
-                      ></div>
-                    </Col>
-                  </Row>
-
-                  <Row className="pl-3">
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <Field
-                        label="Tax Name"
-                        name={"TaxName"}
-                        type="text"
-                        placeholder={"Enter"}
-                        validate={[required]}
-                        component={renderText}
-                        required={true}
-                        customClassName={"withBorder"}
-                      />
-                    </div>
-                    <div className="col-md-12 form-group">
-                      <Field
-                        name="CountryId"
-                        type="text"
-                        label="Country"
-                        component={searchableSelect}
-                        placeholder={"--Select Country--"}
-                        options={this.renderListing("country")}
-                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                        validate={
-                          this.state.country == null ||
-                          this.state.country.length === 0
-                            ? [required]
-                            : []
-                        }
-                        required={true}
-                        handleChangeDescription={this.countryHandler}
-                        valueDescription={this.state.country}
-                      />
-                    </div>
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <Field
-                        label="Rate (%)"
-                        name={"Rate"}
-                        type="text"
-                        placeholder={"Enter"}
-                        validate={[required, number,checkWhiteSpaces]}
-                        component={renderText}
-                        required={true}
-                        customClassName={"withBorder"}
-                      />
-                    </div>
-                    <div className="input-group form-group col-md-12 input-withouticon mb-4">
-                      <div className="form-group">
-                        <label>
-                          Effective Date
-                          {/* <span className="asterisk-required">*</span> */}
-                        </label>
-                        <div className="inputbox date-section">
-                          <DatePicker
-                            name="EffectiveDate"
-                            selected={this.state.effectiveDate}
-                            onChange={this.handleEffectiveDateChange}
-                            showMonthDropdown
-                            showYearDropdown
-                            dateFormat="dd/MM/yyyy"
-                            //maxDate={new Date()}
-                            dropdownMode="select"
-                            placeholderText="Select date"
-                            className="withBorder"
-                            autoComplete={"off"}
-                            disabledKeyboardNavigation
-                            onChangeRaw={(e) => e.preventDefault()}
-                            disabled={false}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </Row>
-                
-                <Row className="sf-btn-footer no-gutters justify-content-between">
-                  <div className="col-sm-12 text-right px-3">
-                    <button
-                      type={"button"}
-                      className="reset mr15 cancel-btn"
-                      onClick={this.cancel}
-                    >
-                      <div className={"cross-icon"}>
-                        <img
-                          src={require("../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
-                      {"Cancel"}
-                    </button>
-                    <button
-                      type="submit"
-                      className="submit-button mr-3 save-btn"
-                    >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
-                      {isEditFlag ? "Update" : "Save"}
-                    </button>
+  /**
+  * @method render
+  * @description Renders the component
+  */
+  render() {
+    const { handleSubmit, isEditFlag, } = this.props;
+    return (
+      <Drawer
+        anchor={this.props.anchor}
+        open={this.props.isOpen}
+        onClose={(e) => this.toggleDrawer(e)}
+      >
+        <Container>
+          <div className={"drawer-wrapper"}>
+            <form
+              noValidate
+              className="form"
+              onSubmit={handleSubmit(this.onSubmit.bind(this))}
+            >
+              <Row className="drawer-heading">
+                <Col>
+                  <div className={"header-wrapper left"}>
+                    <h3>
+                      {isEditFlag
+                        ? "UPDATE TAX DETAILS"
+                        : "ADD TAX DETAILS"}
+                    </h3>
                   </div>
-                </Row>
-                </form>
-              </div>
-            </Container>
-          </Drawer>
-        );
-    }
+                  <div
+                    onClick={(e) => this.toggleDrawer(e)}
+                    className={"close-button right"}
+                  ></div>
+                </Col>
+              </Row>
+
+              <Row className="pl-3">
+                <div className="input-group form-group col-md-12 input-withouticon">
+                  <Field
+                    label="Tax Name"
+                    name={"TaxName"}
+                    type="text"
+                    placeholder={"Enter"}
+                    validate={[required]}
+                    component={renderText}
+                    required={true}
+                    customClassName={"withBorder"}
+                  />
+                </div>
+                <div className="col-md-12 form-group">
+                  <Field
+                    name="CountryId"
+                    type="text"
+                    label="Country"
+                    component={searchableSelect}
+                    placeholder={"--Select Country--"}
+                    options={this.renderListing("country")}
+                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                    validate={
+                      this.state.country == null ||
+                        this.state.country.length === 0
+                        ? [required]
+                        : []
+                    }
+                    required={true}
+                    handleChangeDescription={this.countryHandler}
+                    valueDescription={this.state.country}
+                  />
+                </div>
+                <div className="input-group form-group col-md-12 input-withouticon">
+                  <Field
+                    label="Rate (%)"
+                    name={"Rate"}
+                    type="text"
+                    placeholder={"Enter"}
+                    validate={[required, number, checkWhiteSpaces]}
+                    component={renderText}
+                    required={true}
+                    customClassName={"withBorder"}
+                  />
+                </div>
+                <div className="input-group form-group col-md-12 input-withouticon mb-4">
+                  <div className="form-group">
+                    <label>
+                      Effective Date
+                          {/* <span className="asterisk-required">*</span> */}
+                    </label>
+                    <div className="inputbox date-section">
+                      <DatePicker
+                        name="EffectiveDate"
+                        selected={this.state.effectiveDate}
+                        onChange={this.handleEffectiveDateChange}
+                        showMonthDropdown
+                        showYearDropdown
+                        dateFormat="dd/MM/yyyy"
+                        //maxDate={new Date()}
+                        dropdownMode="select"
+                        placeholderText="Select date"
+                        className="withBorder"
+                        autoComplete={"off"}
+                        disabledKeyboardNavigation
+                        onChangeRaw={(e) => e.preventDefault()}
+                        disabled={false}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Row>
+
+              <Row className="sf-btn-footer no-gutters justify-content-between">
+                <div className="col-sm-12 text-right px-3">
+                  <button
+                    type={"button"}
+                    className="reset mr15 cancel-btn"
+                    onClick={this.cancel}
+                  >
+                    <div className={"cross-icon"}>
+                      <img
+                        src={require("../../../assests/images/times.png")}
+                        alt="cancel-icon.jpg"
+                      />
+                    </div>{" "}
+                    {"Cancel"}
+                  </button>
+                  <button
+                    type="submit"
+                    className="submit-button save-btn"
+                  >
+                    <div className={"check-icon"}>
+                      <img
+                        src={require("../../../assests/images/check.png")}
+                        alt="check-icon.jpg"
+                      />{" "}
+                    </div>
+                    {isEditFlag ? "Update" : "Save"}
+                  </button>
+                </div>
+              </Row>
+            </form>
+          </div>
+        </Container>
+      </Drawer>
+    );
+  }
 }
 
 /**
@@ -322,18 +322,18 @@ class AddTaxDetails extends Component {
 * @param {*} state
 */
 function mapStateToProps({ tax, comman }) {
-    const { taxDetailsData } = tax;
-    const { countryList, } = comman;
+  const { taxDetailsData } = tax;
+  const { countryList, } = comman;
 
-    let initialValues = {};
-    if (taxDetailsData && taxDetailsData !== undefined) {
-        initialValues = {
-            TaxName: taxDetailsData.TaxName,
-            Rate: taxDetailsData.Rate,
-        }
+  let initialValues = {};
+  if (taxDetailsData && taxDetailsData !== undefined) {
+    initialValues = {
+      TaxName: taxDetailsData.TaxName,
+      Rate: taxDetailsData.Rate,
     }
+  }
 
-    return { taxDetailsData, countryList, initialValues, };
+  return { taxDetailsData, countryList, initialValues, };
 }
 
 /**
@@ -343,11 +343,11 @@ function mapStateToProps({ tax, comman }) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    createTaxDetails,
-    getTaxDetailsData,
-    updateTaxDetails,
-    fetchCountryDataAPI,
+  createTaxDetails,
+  getTaxDetailsData,
+  updateTaxDetails,
+  fetchCountryDataAPI,
 })(reduxForm({
-    form: 'AddTaxDetails',
-    enableReinitialize: true,
+  form: 'AddTaxDetails',
+  enableReinitialize: true,
 })(AddTaxDetails));

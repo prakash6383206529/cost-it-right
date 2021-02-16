@@ -202,6 +202,10 @@ class SOBListing extends Component {
       clearSearch: true,
       noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
       paginationSize: 5,
     };
 
@@ -210,56 +214,56 @@ class SOBListing extends Component {
         {this.props.loading && <Loader />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
-          {this.state.shown ? (
-            <Col md="10" className="filter-block">
-              <div className="d-inline-flex justify-content-start align-items-top w100">
-                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                <div className="flex-fill">
-                  <Field
-                    name="BOPPartNumber"
-                    type="text"
-                    label=""
-                    component={searchableSelect}
-                    placeholder={'-BOP Part No.-'}
-                    isClearable={false}
-                    options={this.renderListing('SOBVendors')}
-                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                    validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
-                    required={true}
-                    handleChangeDescription={this.handleHeadChange}
-                    valueDescription={this.state.costingHead}
-                  />
-                </div>
+            {this.state.shown ? (
+              <Col md="8" className="filter-block">
+                <div className="d-inline-flex justify-content-start align-items-top w100">
+                  <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                  <div className="flex-fill">
+                    <Field
+                      name="BOPPartNumber"
+                      type="text"
+                      label=""
+                      component={searchableSelect}
+                      placeholder={'-BOP Part No.-'}
+                      isClearable={false}
+                      options={this.renderListing('SOBVendors')}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
+                      required={true}
+                      handleChangeDescription={this.handleHeadChange}
+                      valueDescription={this.state.costingHead}
+                    />
+                  </div>
 
-                <div className="flex-fill">
-                  <button
-                    type="button"
-                    //disabled={pristine || submitting}
-                    onClick={this.resetFilter}
-                    className="reset mr10"
-                  >
-                    {'Reset'}
-                  </button>
+                  <div className="flex-fill">
+                    <button
+                      type="button"
+                      //disabled={pristine || submitting}
+                      onClick={this.resetFilter}
+                      className="reset mr10"
+                    >
+                      {'Reset'}
+                    </button>
 
-                  <button
-                    type="button"
-                    //disabled={pristine || submitting}
-                    onClick={this.filterList}
-                    className="apply mr5"
-                  >
-                    {'Apply'}
-                  </button>
+                    <button
+                      type="button"
+                      //disabled={pristine || submitting}
+                      onClick={this.filterList}
+                      className="apply mr5"
+                    >
+                      {'Apply'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </Col>) : ("") }
+              </Col>) : ("")}
 
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
-              {this.state.shown ? (
+                {this.state.shown ? (
                   <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
-                      <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-              ) : (
-                      <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                ) : (
+                    <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
                   )}
               </div>
             </Col>
@@ -277,15 +281,15 @@ class SOBListing extends Component {
               search
               ref={'table'}
               pagination>
-              <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="center" >{'Specification'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="NoOfVendors" columnTitle={true} dataAlign="center" dataSort={true} >{'No Of Vendors'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="center" dataSort={true} >{'Net Landed Cost'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="center"  >{'Total SOB%'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="UOM" columnTitle={true} dataAlign="center"  >{'UOM'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="center"  >{'Weighted Net Landed Cost(INR)'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="NoOfVendors" columnTitle={true} dataAlign="left" dataSort={true} >{'No Of Vendors'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataSort={true} >{'Net Landed Cost'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{'Weighted Net Landed Cost(INR)'}</TableHeaderColumn>
               <TableHeaderColumn width={100} dataField="BoughtOutPartNumber" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>

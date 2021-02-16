@@ -423,13 +423,13 @@ class VendorListing extends Component {
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     noValidate
                     className="mr15"
-                >   
+                >
                     <Row>
                         <Col md="12">
-                        <h1>Vendor Master</h1>
+                            <h1>Vendor Master</h1>
                         </Col>
                         <Col md="12">
-                        <hr className="m-0" />
+                            <hr className="m-0" />
                         </Col>
                     </Row>
                     <Row className="pt-4 px-15 blue-before">
@@ -559,35 +559,35 @@ class VendorListing extends Component {
               </TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="VendorName"
-                        dataAlign="center"
+                        dataAlign="left"
                         dataSort={true}
                     >
                         Vendor Name
               </TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="VendorCode"
-                        dataAlign="center"
+                        dataAlign="left"
                         dataSort={true}
                     >
                         Vendor Code
               </TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="Country"
-                        dataAlign="center"
+                        dataAlign="left"
                         dataSort={true}
                     >
                         Country
               </TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="State"
-                        dataAlign="center"
+                        dataAlign="left"
                         dataSort={true}
                     >
                         State
               </TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="City"
-                        dataAlign="center"
+                        dataAlign="left"
                         dataSort={true}
                     >
                         City

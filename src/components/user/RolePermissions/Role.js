@@ -226,35 +226,37 @@ class Role extends Component {
 									<h2>{isEditFlag ? 'Update Role' : 'Add Role'}</h2>
 								</div>
 								<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-									<div className="row form-group role-form">
-										<div className="col-md-6 ">
-											<div className="row">
-												<div className="col-md-3">
-													<div class="header-title  Personal-Details"><h5>Role Name:</h5></div>
+									<div className="add-min-height">
+										<div className="row form-group role-form">
+											<div className="col-md-6 ">
+												<div className="row">
+													<div className="col-md-3">
+														<div class="header-title  Personal-Details"><h5>Role Name:</h5></div>
+													</div>
+													<Field
+														name={"RoleName"}
+														type="text"
+														placeholder={'Enter'}
+														validate={[required, alphabetsOnlyForName, checkWhiteSpaces]}
+														component={renderText}
+														required={true}
+														maxLength={26}
+														customClassName={'withBorder col-md-5'}
+													/>
 												</div>
-												<Field
-													name={"RoleName"}
-													type="text"
-													placeholder={'Enter'}
-													validate={[required, alphabetsOnlyForName, checkWhiteSpaces]}
-													component={renderText}
-													required={true}
-													maxLength={26}
-													customClassName={'withBorder col-md-5'}
-												/>
 											</div>
 										</div>
-									</div>
 
-									<div className="row form-group grant-user-grid">
-										<div className="col-md-12">
-											<PermissionsTabIndex
-												onRef={ref => (this.child = ref)}
-												isEditFlag={this.state.isEditFlag}
-												setInitialModuleData={this.setInitialModuleData}
-												moduleData={this.moduleDataHandler}
-												isNewRole={this.state.isNewRole}
-											/>
+										<div className="row form-group grant-user-grid">
+											<div className="col-md-12">
+												<PermissionsTabIndex
+													onRef={ref => (this.child = ref)}
+													isEditFlag={this.state.isEditFlag}
+													setInitialModuleData={this.setInitialModuleData}
+													moduleData={this.moduleDataHandler}
+													isNewRole={this.state.isNewRole}
+												/>
+											</div>
 										</div>
 									</div>
 									<div class="role-footer">

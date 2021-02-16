@@ -240,8 +240,8 @@ class UsersListing extends Component {
 			component: () => <ConfirmComponent />,
 		};
 		return toastr.confirm(
-		`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`,
-		toastrConfirmOptions
+			`${cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`,
+			toastrConfirmOptions
 		);
 	}
 
@@ -416,186 +416,186 @@ class UsersListing extends Component {
 			firstPage: <span className="first-page-pg"></span>, // First page button text
 			lastPage: <span className="last-page-pg"></span>,
 			paginationSize: 2,
-			
+
 		};
 
 		return (
-      <>
-        {" "}
-        {/* {this.props.loading && <Loader />} */}
-        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <Row className="pt-4">
-            {this.state.shown ? (
-              <Col md="8" className="filter-block">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                  <div className="flex-fills">
-                    <h5>{`Filter By:`}</h5>
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="DepartmentId"
-                      type="text"
-                      component={searchableSelect}
-                      placeholder={"Department"}
-                      options={this.searchableSelectType("department")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={this.departmentHandler}
-                      valueDescription={this.state.department}
-                    />
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="RoleId"
-                      type="text"
-                      component={searchableSelect}
-                      placeholder={"Role"}
-                      options={this.searchableSelectType("role")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={this.roleHandler}
-                      valueDescription={this.state.role}
-                    />
-                  </div>
-                  <div className="flex-fill">
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.resetFilter}
-                      className="reset mr10"
-                    >
-                      {"Reset"}
-                    </button>
+			<>
+				{" "}
+				{/* {this.props.loading && <Loader />} */}
+				<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+					<Row className="pt-4">
+						{this.state.shown ? (
+							<Col md="8" className="filter-block">
+								<div className="d-inline-flex justify-content-start align-items-top w100">
+									<div className="flex-fills">
+										<h5>{`Filter By:`}</h5>
+									</div>
+									<div className="flex-fill">
+										<Field
+											name="DepartmentId"
+											type="text"
+											component={searchableSelect}
+											placeholder={"Department"}
+											options={this.searchableSelectType("department")}
+											//onKeyUp={(e) => this.changeItemDesc(e)}
+											//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
+											//required={true}
+											handleChangeDescription={this.departmentHandler}
+											valueDescription={this.state.department}
+										/>
+									</div>
+									<div className="flex-fill">
+										<Field
+											name="RoleId"
+											type="text"
+											component={searchableSelect}
+											placeholder={"Role"}
+											options={this.searchableSelectType("role")}
+											//onKeyUp={(e) => this.changeItemDesc(e)}
+											//validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
+											//required={true}
+											handleChangeDescription={this.roleHandler}
+											valueDescription={this.state.role}
+										/>
+									</div>
+									<div className="flex-fill">
+										<button
+											type="button"
+											//disabled={pristine || submitting}
+											onClick={this.resetFilter}
+											className="reset mr10"
+										>
+											{"Reset"}
+										</button>
 
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.filterList}
-                      className="apply mr5"
-                    >
-                      {"Apply"}
+										<button
+											type="button"
+											//disabled={pristine || submitting}
+											onClick={this.filterList}
+											className="apply mr5"
+										>
+											{"Apply"}
+										</button>
+									</div>
+								</div>
+							</Col>
+						) : (
+								""
+							)}
+						<Col md="6" className="search-user-block mb-3">
+							{AddAccessibility && (
+								<div className="d-flex justify-content-end bd-highlight w100">
+									<div>
+										{this.state.shown ? (
+											<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+												<img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+										) : (
+												<button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+											)}
+										<button
+											type="button"
+											className={"user-btn"}
+											onClick={this.formToggle}
+										>
+											<div className={"plus"}></div>ADD
                     </button>
-                  </div>
-                </div>
-              </Col>
-            ) : (
-              ""
-            )}
-            <Col md="6" className="search-user-block mb-3">
-              {AddAccessibility && (
-                <div className="d-flex justify-content-end bd-highlight w100">
-                  <div>
-				  {this.state.shown ? (
-						<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-							<img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-					) : (
-							<button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-						)}
-                    <button
-                      type="button"
-                      className={"user-btn"}
-                      onClick={this.formToggle}
-                    >
-                      <div className={"plus"}></div>ADD
-                    </button>
-                  </div>
-                </div>
-              )}
-            </Col>
-          </Row>
-        </form>
-        <BootstrapTable
-          data={this.state.userData}
-          striped={false}
-          bordered={false}
-          hover={false}
-          options={options}
-          search
-          // exportCSV
-          ignoreSinglePage
-          ref={"table"}
-          trClassName={"userlisting-row"}
-          tableHeaderClass="my-custom-header"
-          pagination
-        >
-          {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-          <TableHeaderColumn
-            dataField="FullName"
-            csvHeader="Full-Name"
-            dataFormat={this.linkableFormatter}
-            dataAlign="left"
-            dataSort={true}
-          >
-            Name
+									</div>
+								</div>
+							)}
+						</Col>
+					</Row>
+				</form>
+				<BootstrapTable
+					data={this.state.userData}
+					striped={false}
+					bordered={false}
+					hover={false}
+					options={options}
+					search
+					// exportCSV
+					ignoreSinglePage
+					ref={"table"}
+					trClassName={"userlisting-row"}
+					tableHeaderClass="my-custom-header"
+					pagination
+				>
+					{/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+					<TableHeaderColumn
+						dataField="FullName"
+						csvHeader="Full-Name"
+						dataFormat={this.linkableFormatter}
+						dataAlign="left"
+						dataSort={true}
+					>
+						Name
           </TableHeaderColumn>
-          {!initialConfiguration.IsLoginEmailConfigure ? (
-            <TableHeaderColumn
-              dataField="UserName"
-              width={"150"}
-              dataSort={true}
-            >
-              User name
-            </TableHeaderColumn>
-          ) : null}
-          <TableHeaderColumn
-            dataField="EmailAddress"
-            columnTitle
-            width={"200"}
-            dataSort={true}
-          >
-            Email Id
+					{!initialConfiguration.IsLoginEmailConfigure ? (
+						<TableHeaderColumn
+							dataField="UserName"
+							width={"150"}
+							dataSort={true}
+						>
+							User name
+						</TableHeaderColumn>
+					) : null}
+					<TableHeaderColumn
+						dataField="EmailAddress"
+						columnTitle
+						width={"200"}
+						dataSort={true}
+					>
+						Email Id
           </TableHeaderColumn>
-          <TableHeaderColumn dataField="Mobile" width={"140"} dataSort={false}>
-            Mobile No.
+					<TableHeaderColumn dataField="Mobile" width={"140"} dataSort={false}>
+						Mobile No.
           </TableHeaderColumn>
-          <TableHeaderColumn dataField="PhoneNumber" dataSort={false}>
-            Phone No.
+					<TableHeaderColumn dataField="PhoneNumber" dataSort={false}>
+						Phone No.
           </TableHeaderColumn>
 
-          <TableHeaderColumn dataField="DepartmentName" dataSort={true}>
-            Department
+					<TableHeaderColumn dataField="DepartmentName" dataSort={true}>
+						Department
           </TableHeaderColumn>
-          {/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
+					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType}
                                 filter={{ type: 'SelectFilter', options: departmentType }}>Department</TableHeaderColumn> */}
-          {/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}
-          <TableHeaderColumn dataField="RoleName" dataSort={true}>
-            Role
+					{/* <TableHeaderColumn dataField='DepartmentId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={departmentType} dataSort={true} >Department</TableHeaderColumn> */}
+					<TableHeaderColumn dataField="RoleName" dataSort={true}>
+						Role
           </TableHeaderColumn>
-          {/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
+					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType}
                                 filter={{ type: 'SelectFilter', options: roleType }}>Role</TableHeaderColumn> */}
-          {/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn> */}
-          <TableHeaderColumn
-            dataField="IsActive"
-            export={false}
-            dataFormat={this.statusButtonFormatter}
-          >
-            Status
+					{/* <TableHeaderColumn dataField='RoleId' export={false} filterFormatted dataFormat={enumFormatter} formatExtraData={roleType} dataSort={true}>Role</TableHeaderColumn> */}
+					<TableHeaderColumn
+						dataField="IsActive"
+						export={false}
+						dataFormat={this.statusButtonFormatter}
+					>
+						Status
           </TableHeaderColumn>
-          <TableHeaderColumn
-            className="action text-right"
-            dataField="UserId"
-            export={false}
-            isKey={true}
-            dataFormat={this.buttonFormatter}
-          >
-            Actions
+					<TableHeaderColumn
+						className="action text-right"
+						dataField="UserId"
+						export={false}
+						isKey={true}
+						dataFormat={this.buttonFormatter}
+					>
+						Actions
           </TableHeaderColumn>
-        </BootstrapTable>
-        {this.state.isOpen && (
-          <ViewUserDetails
-            UserId={this.state.UserId}
-            isOpen={this.state.isOpen}
-            editItemDetails={this.editItemDetails}
-            closeUserDetails={this.closeUserDetails}
-            EditAccessibility={EditAccessibility}
-            anchor={"right"}
-            IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
-          />
-        )}
-      </>
-    );
+				</BootstrapTable>
+				{this.state.isOpen && (
+					<ViewUserDetails
+						UserId={this.state.UserId}
+						isOpen={this.state.isOpen}
+						editItemDetails={this.editItemDetails}
+						closeUserDetails={this.closeUserDetails}
+						EditAccessibility={EditAccessibility}
+						anchor={"right"}
+						IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
+					/>
+				)}
+			</>
+		);
 	}
 }
 

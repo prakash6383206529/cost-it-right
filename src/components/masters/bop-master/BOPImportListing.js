@@ -471,18 +471,18 @@ class BOPImportListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="center" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="PartAssemblyNumber" columnTitle={true} dataAlign="center" searchable={false} >{'Part Assembly No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="center" searchable={false} >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" columnTitle={true} dataAlign="center" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="center" searchable={false}  >{'No. of Pcs'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="center" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="center"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="PartAssemblyNumber" columnTitle={true} dataAlign="left" searchable={false} >{'Part Assembly No.'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{'No. of Pcs'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="left"  >{'Net Landed Cost'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BoughtOutPartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
