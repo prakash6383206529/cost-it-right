@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, maxLength6, maxLength30, checkWhiteSpaces, } from "../../../helper/validation";
+import { required, number, maxLength6, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
+
 import { loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
@@ -232,8 +233,8 @@ class AddVBCPlant extends Component {
         PlantName: values.PlantName,
         PlantCode: values.PlantCode,
         IsVendor: true,
-        AddressLine1: values.AddressLine1,
-        AddressLine2: values.AddressLine2,
+        AddressLine1: values.AddressLine1.trim(),
+        AddressLine2: values.AddressLine2.trim(),
         ZipCode: values.ZipCode,
         PhoneNumber: values.PhoneNumber,
         Extension: values.Extension,
@@ -252,8 +253,8 @@ class AddVBCPlant extends Component {
         PlantName: values.PlantName,
         PlantCode: values.PlantCode,
         IsVendor: true,
-        AddressLine1: values.AddressLine1,
-        AddressLine2: values.AddressLine2,
+        AddressLine1: values.AddressLine1.trim(),
+        AddressLine2: values.AddressLine2.trim(),
         ZipCode: values.ZipCode,
         PhoneNumber: values.PhoneNumber,
         Extension: values.Extension,
@@ -336,7 +337,7 @@ class AddVBCPlant extends Component {
                       name={"PlantName"}
                       type="text"
                       placeholder={""}
-                      validate={[required, maxLength30, checkWhiteSpaces]}
+                      validate={[required, alphaNumeric, maxLength80, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=""
@@ -351,7 +352,7 @@ class AddVBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={""}
-                      //validate={[required]}
+                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength15]}
                       component={renderText}
                       //required={true}
                       className=""
@@ -367,7 +368,7 @@ class AddVBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[required, number]}
+                          validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           maxLength={12}
@@ -377,11 +378,11 @@ class AddVBCPlant extends Component {
                       </Col>
                       <Col className="Ext phoneNumber pr-0" md="4">
                         <Field
-                          label="Ext"
+                          label="Ext."
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[required]}
+                          validate={[required, postiveNumber, maxLength3, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           maxLength={3}
@@ -399,7 +400,7 @@ class AddVBCPlant extends Component {
                       name={"AddressLine1"}
                       type="text"
                       placeholder={""}
-                      validate={[required]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       required={true}
                       maxLength={26}
@@ -413,7 +414,7 @@ class AddVBCPlant extends Component {
                       name={"AddressLine2"}
                       type="text"
                       placeholder={""}
-                      validate={[required]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
                       required={true}
                       maxLength={26}

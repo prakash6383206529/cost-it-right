@@ -249,13 +249,24 @@ export function deleteCEDotherOperationAPI(Id, callback) {
  */
 export function getOperationsDataList(filterData, callback) {
     return (dispatch) => {
+        let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, { headers })
+
             .then((response) => {
+                console.log(response, "Resp");
+                if (response.status === 204 && response.data === '') {
+                    payload = []
+                } else if (response.status === 412) {
+                    payload = []
+                }
+                else {
+                    payload = response.data.DataList
+                }
                 dispatch({
                     type: GET_OPERATION_DATA_LIST,
-                    payload: response.data.DataList
+                    payload: payload
                 })
                 callback(response);
             }).catch((error) => {

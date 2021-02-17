@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, decimalLength2, number } from "../../../helper/validation";
+import { required, decimalLength2, number, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10 } from "../../../helper/validation";
 import {
   renderNumberInputField, searchableSelect, focusOnError, renderText,
 } from "../../layout/FormInputs";
@@ -408,7 +408,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, } = this.state;
+    const { isOpenFuelDrawer, isEditFlag, initialConfiguration } = this.state;
 
     return (
       <>
@@ -525,7 +525,7 @@ class AddFuel extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[number, decimalLength2]}
+                              validate={[positiveAndDecimalNumber, maxLength10]}
                               component={renderText}
                               required={true}
                               className=""
@@ -592,7 +592,7 @@ class AddFuel extends Component {
                                     return (
                                       <tr key={index}>
                                         <td>{item.StateLabel}</td>
-                                        <td>{item.Rate}</td>
+                                        <td>{checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                         {/* <td>{item.effectiveDate}</td> */}
                                         <td>
                                           {moment(item.effectiveDate).format(
@@ -684,15 +684,15 @@ class AddFuel extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { fuel } = state;
+  const { fuel, auth } = state;
   const fieldsObj = selector(state, 'Rate');
 
   const { fuelComboSelectList } = fuel;
-
+  const { initialConfiguration } = auth;
   let initialValues = {};
 
   return {
-    initialValues, fieldsObj, fuelComboSelectList,
+    initialValues, fieldsObj, fuelComboSelectList, initialConfiguration
   }
 
 }

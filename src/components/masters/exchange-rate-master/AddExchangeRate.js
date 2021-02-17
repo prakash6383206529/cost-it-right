@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, checkWhiteSpaces, } from "../../../helper/validation";
+import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import { toastr } from 'react-redux-toastr';
@@ -33,6 +33,16 @@ class AddExchangeRate extends Component {
   componentDidMount() {
     this.props.getCurrencySelectList(() => { })
     this.getDetail()
+  }
+
+
+  componentDidUpdate(prevProps) {
+    if (this.props.filedObj !== prevProps.filedObj) {
+      const { BankCommissionPercentage } = this.props.filedObj
+      if (BankCommissionPercentage) {
+        checkPercentageValue(BankCommissionPercentage, "Bank commission percentage should not be more than 100") ? this.props.change('BankCommissionPercentage', BankCommissionPercentage) : this.props.change('BankCommissionPercentage', 0)
+      }
+    }
   }
 
   /**
@@ -233,7 +243,7 @@ class AddExchangeRate extends Component {
                           name={"CurrencyExchangeRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, number, checkWhiteSpaces]}
+                          validate={[required, positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           required={true}
                           disabled={false}
@@ -247,7 +257,7 @@ class AddExchangeRate extends Component {
                           name={"BankRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, number, checkWhiteSpaces]}
+                          validate={[required, positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           required={true}
                           disabled={false}
@@ -261,9 +271,10 @@ class AddExchangeRate extends Component {
                           name={"BankCommissionPercentage"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, number, checkWhiteSpaces]}
+                          validate={[required, positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           required={true}
+                          max={100}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"
@@ -278,7 +289,7 @@ class AddExchangeRate extends Component {
                           name={"CustomRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, number, checkWhiteSpaces]}
+                          validate={[required, positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           required={true}
                           disabled={false}
@@ -360,7 +371,7 @@ class AddExchangeRate extends Component {
 */
 function mapStateToProps(state) {
   const { exchangeRate, } = state;
-  const filedObj = selector(state, 'OperationCode');
+  const filedObj = selector(state, 'OperationCode', 'BankCommissionPercentage');
   const { exchangeRateData, currencySelectList } = exchangeRate;
 
   let initialValues = {};

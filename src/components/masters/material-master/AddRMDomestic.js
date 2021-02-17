@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength100, getVendorCode, decimalLength2, maxLength2 } from "../../../helper/validation";
+import { required, number, maxLength100, getVendorCode, decimalLength2, maxLength2, positiveAndDecimalNumber, checkWhiteSpaces, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512 } from "../../../helper/validation";
 import {
   renderText,
   renderNumberInputField,
@@ -12,6 +12,7 @@ import {
   focusOnError,
 } from '../../layout/FormInputs'
 import {
+  getTechnologySelectList,
   getRawMaterialCategory,
   fetchGradeDataAPI,
   fetchSpecificationDataAPI,
@@ -69,6 +70,7 @@ class AddRMDomestic extends Component {
       RMGrade: [],
       RMSpec: [],
       Category: [],
+      Technology: [],
       selectedPlants: [],
 
       vendorName: [],
@@ -123,6 +125,8 @@ class AddRMDomestic extends Component {
     this.props.getRawMaterialCategory((res) => { })
     this.props.fetchSupplierCityDataAPI((res) => { })
     this.props.getVendorListByVendorType(false, () => { })
+    this.props.getTechnologySelectList(() => { })
+
   }
 
   /**
@@ -181,6 +185,14 @@ class AddRMDomestic extends Component {
    */
   handleCategoryChange = (newValue, actionMeta) => {
     this.setState({ Category: newValue })
+  }
+
+  /**
+   * @method handleTechnologyChange
+   * @description Use to handle technology change
+  */
+  handleTechnologyChange = (newValue) => {
+    this.setState({ Technology: newValue })
   }
 
   /**
@@ -322,14 +334,33 @@ class AddRMDomestic extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList,
-              UOMSelectList, vendorListByVendorType, } = this.props
+            const {
+              gradeSelectList,
+              rmSpecification,
+              cityList,
+              categoryList,
+              rawMaterialNameSelectList,
+              UOMSelectList,
+              vendorListByVendorType,
+              technologySelectList
+            } = this.props
 
-            const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial)
-            const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
-            const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
-            const categoryObj = categoryList && categoryList.find((item) => item.Value === Data.Category)
+            const materialNameObj =
+              rawMaterialNameSelectList &&
+              rawMaterialNameSelectList.find(
+                (item) => item.Value === Data.RawMaterial,
+              )
+            const gradeObj =
+              gradeSelectList &&
+              gradeSelectList.find((item) => item.Value === Data.RMGrade)
+            const specObj =
+              rmSpecification &&
+              rmSpecification.find((item) => item.Value === Data.RMSpec)
+            const categoryObj =
+              categoryList &&
+              categoryList.find((item) => item.Value === Data.Category)
 
+            // const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology)
             let plantArray = []
             Data && Data.Plant.map((item) => {
               plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -357,7 +388,11 @@ class AddRMDomestic extends Component {
               RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantArray,
-              vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              // Technology:technologyObj !==  undefined ? {label: technologyObj.Text, value: technologyObj.Value}:[],
+              vendorName:
+                vendorObj !== undefined
+                  ? { label: vendorObj.Text, value: vendorObj.Value }
+                  : [],
               selectedVendorPlants: vendorPlantArray,
               HasDifferentSource: Data.HasDifferentSource,
               sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
@@ -509,6 +544,7 @@ class AddRMDomestic extends Component {
       rawMaterialNameSelectList,
       UOMSelectList,
       vendorListByVendorType,
+      technologySelectList
     } = this.props
     const temp = []
 
@@ -547,7 +583,15 @@ class AddRMDomestic extends Component {
       })
       return temp
     }
-
+    if (label === 'technology') {
+      technologySelectList &&
+        technologySelectList.map((item) => {
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
     if (label === 'plant') {
       plantList && plantList.map((item) => {
         if (item.Value === '0') return false
@@ -756,6 +800,7 @@ class AddRMDomestic extends Component {
       RMGrade,
       RMSpec,
       Category,
+      Technology,
       selectedPlants,
       vendorName,
       VendorCode,
@@ -825,6 +870,7 @@ class AddRMDomestic extends Component {
         RMGrade: RMGrade.value,
         RMSpec: RMSpec.value,
         Category: Category.value,
+        // Technology: Technology.value,NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
         Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
@@ -1065,20 +1111,36 @@ class AddRMDomestic extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
+
                         </Row>
-                        {!this.state.IsVendor && (
-                          <Row>
+                        <Row>
+                          <Col md="3">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={
+                                this.handleTechnologyChange
+                              }
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          {!this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Plant"
                                 name="SourceSupplierPlantId"
                                 placeholder={"Select"}
                                 selection={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? []
-                                    : this.state.selectedPlants
-                                }
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
                                 selectionChanged={
                                   this.handleSourceSupplierPlant
@@ -1095,8 +1157,9 @@ class AddRMDomestic extends Component {
                                 }
                               />
                             </Col>
-                          </Row>
-                        )}
+
+                          )}
+                        </Row>
 
                         <Row>
                           <Col md="12" className="filter-block">
@@ -1196,7 +1259,7 @@ class AddRMDomestic extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  //validate={[required]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
                                   component={renderText}
                                   //required={true}
                                   disabled={false}
@@ -1266,14 +1329,14 @@ class AddRMDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, maxLength2]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, maxLength15]}
+                              component={renderText}
                               onChange={this.handleBasicRate}
                               required={true}
                               disabled={false}
                               className=" "
                               customClassName=" withBorder"
-                              maxLength={2}
+                              maxLength={'15'}
                             />
                           </Col>
                           <Col md="3">
@@ -1282,12 +1345,12 @@ class AddRMDomestic extends Component {
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, maxLength2]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber, maxLength15]}
+                              component={renderText}
                               required={true}
                               className=""
                               customClassName=" withBorder"
-                              maxLength="10"
+                              maxLength="15"
                             />
                           </Col>
                           <Col md="3">
@@ -1347,10 +1410,10 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
-                              validate={[maxLength100]}
+                              validate={[maxLength512]}
                               //required={true}
                               component={renderTextAreaField}
-                              maxLength="5000"
+                              maxLength="512"
                               rows="6"
                             />
                           </Col>
@@ -1567,6 +1630,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material } = state
+  console.log(comman, "COm");
   const fieldsObj = selector(state, 'BasicRate')
 
   const {
@@ -1583,6 +1647,7 @@ function mapStateToProps(state) {
     filterPlantListByCity,
     filterPlantListByCityAndSupplier,
     UOMSelectList,
+    technologySelectList
   } = comman
 
   const {
@@ -1625,6 +1690,7 @@ function mapStateToProps(state) {
     filterPlantList,
     UOMSelectList,
     vendorListByVendorType,
+    technologySelectList
   }
 }
 
@@ -1637,6 +1703,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   createRMDomestic,
   getRawMaterialCategory,
+  getTechnologySelectList,
   fetchSupplierCityDataAPI,
   fetchGradeDataAPI,
   fetchPlantDataAPI,
@@ -1656,6 +1723,7 @@ export default connect(mapStateToProps, {
   fileUploadRMDomestic,
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
+
 })(
   reduxForm({
     form: 'AddRMDomestic',

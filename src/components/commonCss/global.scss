@@ -169,6 +169,16 @@ a:hover {
   position: $positio-relative;
 }
 
+.disabled-button {
+  background: #f2f2f2 !important;
+  border: 1px solid #dee3f3 !important;
+  color: #bfc3c7 !important;
+  pointer-events: none !important;
+  .plus{
+  filter: brightness(0.8) !important;
+  }
+ }
+
 .btn-primary,
 .apply,
 .save-btn,

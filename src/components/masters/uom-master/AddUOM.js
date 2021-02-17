@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength25, minLength3 } from "../../../helper/validation";
+import { required, maxLength25, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
   createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
@@ -113,7 +113,7 @@ class AddUOM extends Component {
       this.setState({ isSubmitted: true });
       let formData = {
         Id: ID,
-        Unit: values.Unit,
+        Unit: values.Unit.trim(),
         UnitTypeId: unitTypes.value,
         IsActive: true,
         ModifiedBy: loggedInUserId(),
@@ -186,7 +186,7 @@ class AddUOM extends Component {
                     name={"Unit"}
                     type="text"
                     placeholder={""}
-                    validate={[required, minLength3, maxLength25]}
+                    validate={[required, acceptAllExceptSingleSpecialCharacter, minLength3, maxLength80]}
                     component={renderText}
                     required={true}
                     maxLength={26}

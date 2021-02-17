@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number, decimalLength2, maxLength2 } from "../../../helper/validation";
+import { required, maxLength100, getVendorCode, number, decimalLength2, maxLength2, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512 } from "../../../helper/validation";
 import {
   renderText, renderNumberInputField, searchableSelect,
   renderMultiSelectField, renderTextAreaField
@@ -10,7 +10,7 @@ import {
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
-  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI,
+  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getTechnologySelectList
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
@@ -45,6 +45,7 @@ class AddRMImport extends Component {
       RMGrade: [],
       RMSpec: [],
       Category: [],
+      Technology: [],
       selectedPlants: [],
 
       vendorName: [],
@@ -101,6 +102,7 @@ class AddRMImport extends Component {
     this.props.getRawMaterialCategory(res => { });
     this.props.fetchSupplierCityDataAPI(res => { });
     this.props.getVendorListByVendorType(false, () => { })
+    this.props.getTechnologySelectList(() => { })
   }
 
   /**
@@ -156,6 +158,14 @@ class AddRMImport extends Component {
   */
   handleCategoryChange = (newValue, actionMeta) => {
     this.setState({ Category: newValue })
+  }
+
+  /**
+   * @method handleTechnologyChange
+   * @description Use to handle technology change
+  */
+  handleTechnologyChange = (newValue) => {
+    this.setState({ Technology: newValue })
   }
 
   /**
@@ -307,6 +317,7 @@ class AddRMImport extends Component {
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find(item => item.Value === Data.Category)
+            // const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
 
             let plantArray = [];
@@ -336,6 +347,7 @@ class AddRMImport extends Component {
               RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
               RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+              // Technology:technologyObj !==  undefined ? {label: technologyObj.Text, value: technologyObj.Value}:[], NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
               selectedPlants: plantArray,
               vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
@@ -446,7 +458,7 @@ class AddRMImport extends Component {
   renderListing = (label) => {
     const { gradeSelectList, rmSpecification, plantList, filterPlantList,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, vendorListByVendorType } = this.props;
+      UOMSelectList, currencySelectList, vendorListByVendorType, technologySelectList } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -479,6 +491,15 @@ class AddRMImport extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'technology') {
+      technologySelectList &&
+        technologySelectList.map((item) => {
+          if (item.Value === '0') return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
     }
     if (label === 'plant') {
       plantList && plantList.map(item => {
@@ -677,7 +698,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology } = this.state;
 
     let plantArray = [];
     selectedPlants && selectedPlants.map((item) => {
@@ -724,6 +745,7 @@ class AddRMImport extends Component {
         RMGrade: RMGrade.value,
         RMSpec: RMSpec.value,
         Category: Category.value,
+        // Technology: Technology.value, NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
         Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
@@ -951,8 +973,28 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                         </Row>
-                        {!this.state.IsVendor && (
-                          <Row>
+
+                        <Row>
+                          <Col md="3">
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="TechnologyId"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={
+                                this.handleTechnologyChange
+                              }
+                              valueDescription={this.state.Technology}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                          {!this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Plant"
@@ -980,8 +1022,9 @@ class AddRMImport extends Component {
                                 }
                               />
                             </Col>
-                          </Row>
-                        )}
+                          )}
+                        </Row>
+
 
                         <Row>
                           <Col md="12" className="filter-block">
@@ -1089,10 +1132,11 @@ class AddRMImport extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  //validate={[required]}
+                                  validate={acceptAllExceptSingleSpecialCharacter}
                                   component={renderText}
                                   //required={true}
                                   disabled={false}
+                                  maxLength="70"
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -1181,11 +1225,12 @@ class AddRMImport extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, maxLength2]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber]}
+                              component={renderText}
                               onChange={this.handleBasicRate}
                               required={true}
                               disabled={false}
+                              maxLength="15"
                               className=" "
                               customClassName=" withBorder"
                             />
@@ -1196,10 +1241,11 @@ class AddRMImport extends Component {
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, maxLength2]}
-                              component={renderNumberInputField}
+                              validate={[required, positiveAndDecimalNumber]}
+                              component={renderText}
                               required={true}
                               className=""
+                              maxLength="15"
                               customClassName=" withBorder"
                             />
                           </Col>
@@ -1260,10 +1306,10 @@ class AddRMImport extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
-                              validate={[maxLength100]}
+                              validate={[maxLength512]}
                               //required={true}
                               component={renderTextAreaField}
-                              maxLength="5000"
+                              maxLength="512"
                               rows="10"
                             />
                           </Col>
@@ -1473,7 +1519,7 @@ function mapStateToProps(state) {
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
     categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
-    currencySelectList, } = comman;
+    currencySelectList, technologySelectList } = comman;
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
     gradeSelectList, vendorListByVendorType } = material;
@@ -1494,7 +1540,7 @@ function mapStateToProps(state) {
     plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList,
+    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList
   }
 
 }
@@ -1526,6 +1572,7 @@ export default connect(mapStateToProps, {
   fileUploadRMDomestic,
   getCurrencySelectList,
   fetchPlantDataAPI,
+  getTechnologySelectList
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

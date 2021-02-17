@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, trimTwoDecimalPlace, getVendorCode, checkForDecimalAndNull } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, } from "../../layout/FormInputs";
+import { required, checkForNull, trimTwoDecimalPlace, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, postiveNumber, maxLength20, checkPercentageValue } from "../../../helper/validation";
+import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderText, } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
@@ -59,7 +59,9 @@ class AddPower extends Component {
       isAddedSEB: false,
       isEditSEBIndex: false,
 
-      netContributionValue: 0
+      netContributionValue: 0,
+
+      power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', }
     }
   }
 
@@ -79,10 +81,19 @@ class AddPower extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      const { SelfPowerContribution, SEBPowerContributaion } = this.props.fieldsObj
+
+      if (SelfPowerContribution) {
+        checkPercentageValue(SelfPowerContribution, "Power contribution percentage should not be more than 100") ? this.props.change('SelfPowerContribution', SelfPowerContribution) : this.props.change('SelfPowerContribution', 0)
+      }
+      if (SEBPowerContributaion) {
+        checkPercentageValue(SEBPowerContributaion, "Power contribution percentage should not be more than 100") ? this.props.change('SEBPowerContributaion', SEBPowerContributaion) : this.props.change('SEBPowerContributaion', 0)
+      }
       this.SEBPowerCalculation()
       this.selfPowerCalculation()
       this.powerContributionCalculation()
       this.minMonthlyChargeCalculation()
+
     }
   }
   /**
@@ -90,11 +101,18 @@ class AddPower extends Component {
    * @description TO CALCULATE MIN MONTHLY CHARGE
   */
   minMonthlyChargeCalculation = () => {
-    const { fieldsObj } = this.props;
+    const { fieldsObj, initialConfiguration } = this.props;
+    const { power } = this.state
     const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth !== undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0
     const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW !== undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
     const minMonthlyCharge = MinDemandKWPerMonth * DemandChargesPerKW
-    this.props.change('MinMonthlyCharge', minMonthlyCharge)
+    power.minMonthlyCharge = minMonthlyCharge
+    this.setState({
+      power: {
+        ...power, minMonthlyCharge: power.minMonthlyCharge
+      }
+    })
+    this.props.change('MinMonthlyCharge', checkForDecimalAndNull(minMonthlyCharge, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -102,9 +120,9 @@ class AddPower extends Component {
    * @description USED TO CALCULATE SEB POWER CALCULATION
    */
   SEBPowerCalculation = () => {
-    const { isCostPerUnitConfigurable, } = this.state;
-    const { fieldsObj } = this.props;
-
+    const { isCostPerUnitConfigurable, power, } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props;
+    console.log(initialConfiguration, "Config");
     const MinDemandKWPerMonth = fieldsObj && fieldsObj.MinDemandKWPerMonth !== undefined ? checkForNull(fieldsObj.MinDemandKWPerMonth) : 0;
     const DemandChargesPerKW = fieldsObj && fieldsObj.DemandChargesPerKW !== undefined ? checkForNull(fieldsObj.DemandChargesPerKW) : 0;
     const AvgUnitConsumptionPerMonth = fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) : 0;
@@ -114,27 +132,45 @@ class AddPower extends Component {
     const DutyChargesAndFCA = fieldsObj && fieldsObj.DutyChargesAndFCA !== undefined ? checkForNull(fieldsObj.DutyChargesAndFCA) : 0;
 
     if (fieldsObj && fieldsObj.AvgUnitConsumptionPerMonth !== undefined) {
-      this.props.change('UnitConsumptionPerAnnum', checkForNull(fieldsObj.AvgUnitConsumptionPerMonth) * 12)
+      const AvgUnitConsumptionPerMonth = fieldsObj.AvgUnitConsumptionPerMonth * 12
+      power.AvgUnitConsumptionPerMonth = AvgUnitConsumptionPerMonth
+      this.setState({
+        power: { ...power, AvgUnitConsumptionPerMonth: power.AvgUnitConsumptionPerMonth }
+      })
+      this.props.change('UnitConsumptionPerAnnum', checkForDecimalAndNull(AvgUnitConsumptionPerMonth, initialConfiguration.NoOfDecimalForInputOutput))
     }
 
     //Formula for SEB COST PER UNIT calculation
     if (!isCostPerUnitConfigurable) {
       if (AvgUnitConsumptionPerMonth <= MinDemandKWPerMonth) {
         const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
-        this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+        power.SEBCostPerUnit = SEBCostPerUnit
+        this.setState({
+          power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
+        })
+        this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       } else {
         const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth;
-        this.props.change('SEBCostPerUnit', trimTwoDecimalPlace(SEBCostPerUnit))
+
+        power.SEBCostPerUnit = SEBCostPerUnit
+        this.setState({
+          power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
+        })
+        this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       }
 
     }
 
     //Formula for TOTAL UNIT CHARGES calculation
-    const UnitConsumptionPerAnnum = fieldsObj && fieldsObj.UnitConsumptionPerAnnum !== undefined ? checkForNull(fieldsObj.UnitConsumptionPerAnnum) : 0;
-    const SEBCostPerUnit = fieldsObj && fieldsObj.SEBCostPerUnit !== undefined ? checkForNull(fieldsObj.SEBCostPerUnit) : 0;
+    const UnitConsumptionPerAnnum = power.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(power.AvgUnitConsumptionPerMonth) : 0;
+    const SEBCostPerUnit = power.SEBCostPerUnit !== undefined ? checkForNull(power.SEBCostPerUnit) : 0;
 
     const TotalUnitCharges = ((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum
-    this.props.change('TotalUnitCharges', trimTwoDecimalPlace(TotalUnitCharges))
+    power.TotalUnitCharges = TotalUnitCharges
+    this.setState({
+      power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
+    })
+    this.props.change('TotalUnitCharges', checkForDecimalAndNull(TotalUnitCharges, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -142,8 +178,8 @@ class AddPower extends Component {
    * @description USED TO CALCULATE SELF GENERATED POWER CALCULATION
    */
   selfPowerCalculation = () => {
-    const { source, } = this.state;
-    const { fieldsObj } = this.props;
+    const { source, power, } = this.state;
+    const { fieldsObj, initialConfiguration } = this.props;
 
     //CALCULATION OF SELF GENERATOR COST PER UNIT
     if (source && source.value === GENERATOR_DIESEL) {
@@ -153,7 +189,11 @@ class AddPower extends Component {
         return 0
       }
       const SelfGeneratedCostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
-      this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
+      power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
+      this.setState({
+        power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
+      })
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
     } else {
       const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? checkForNull(fieldsObj.AnnualCost) : 0;
       const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? checkForNull(fieldsObj.UnitGeneratedPerAnnum) : 0;
@@ -161,7 +201,11 @@ class AddPower extends Component {
         return 0
       }
       const SelfGeneratedCostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
-      this.props.change('SelfGeneratedCostPerUnit', trimTwoDecimalPlace(SelfGeneratedCostPerUnit))
+      power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
+      this.setState({
+        power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
+      })
+      this.props.change('SelfGeneratedCostPerUnit', checkForDecimalAndNull(SelfGeneratedCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
     }
 
   }
@@ -171,7 +215,7 @@ class AddPower extends Component {
    * @description USED TO CALCULATE TOTAL POWER CONTRIBUTION SHOULD NOT BE GREATER THAN 100%
    */
   powerContributionCalculation = () => {
-    const { powerGrid, isEditIndex, isEditSEBIndex, powerGridEditIndex } = this.state;
+    const { powerGrid, isEditIndex, isEditSEBIndex, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
 
     //POWER CONTIRBUTION FIELDS
@@ -421,6 +465,12 @@ class AddPower extends Component {
     if (newValue && newValue !== '') {
       this.setState({ UOM: newValue, }, () => {
         const { StateName, UOM } = this.state;
+
+        if (StateName.length === 0) {
+          toastr.warning("Please select state first.")
+          return false
+        }
+
         let data = { StateID: StateName.value, UOMID: UOM.value }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res.data.DynamicData;
@@ -432,16 +482,25 @@ class AddPower extends Component {
     }
   };
 
+  resetpowerKeyValue = () => {
+    this.setState({
+      power: { minMonthlyCharge: 0, AvgUnitConsumptionPerMonth: 0, SEBCostPerUnit: 0, TotalUnitCharges: 0, SelfGeneratedCostPerUnit: 0, }
+    })
+  }
+
   /**
   * @method powerSEBTableHandler
   * @description USED TO SET SEB
   */
   powerSEBTableHandler = (isSelfGenerator) => {
-    const { powerGrid, } = this.state;
+    const { powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
-    const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
-    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+    // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
+    // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+
+    const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
+    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
 
     if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined) {
       toastr.warning('Fields should not be empty.')
@@ -476,6 +535,7 @@ class AddPower extends Component {
       netContributionValue: NetPowerCostPerUnit,
       isAddedSEB: true,
     });
+    this.resetpowerKeyValue()
   }
 
   /**
@@ -483,11 +543,14 @@ class AddPower extends Component {
   * @description Used to handle updateProcessGrid
   */
   updateSEBGrid = () => {
-    const { powerGrid, powerGridEditIndex } = this.state;
+    const { powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
 
-    const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
-    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+    // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
+    // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
+    const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
+    const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
+
 
     let tempArray = [];
 
@@ -498,6 +561,7 @@ class AddPower extends Component {
     const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
     }, 0)
+
     this.setState({
       powerGrid: tempArray,
       netContributionValue: NetPowerCostPerUnit,
@@ -505,13 +569,15 @@ class AddPower extends Component {
       isEditSEBIndex: false,
       isAddedSEB: true,
     }, () => {
+
       //this.props.change('SEBCostPerUnit', 0)
       //this.props.change('SEBPowerContributaion', 0)
     });
+    this.resetpowerKeyValue()
   };
 
   powerTableHandler = (isSelfGenerator) => {
-    const { source, UOM, powerGrid, } = this.state;
+    const { source, UOM, powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
     if (source.length === 0) {
@@ -524,7 +590,7 @@ class AddPower extends Component {
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
     const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj.SelfGeneratedCostPerUnit !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
     const SelfPowerContribution = fieldsObj && fieldsObj.SelfPowerContribution !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj.CostPerUnitOfMeasurement !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+    const CostPerUnitOfMeasurement = power.CostPerUnitOfMeasurement !== undefined ? power.CostPerUnitOfMeasurement : 0;
     const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj.UnitGeneratedPerUnitOfFuel !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
     const tempArray = [];
@@ -537,6 +603,8 @@ class AddPower extends Component {
       UnitGeneratedPerAnnum: UnitGeneratedPerAnnum,
       CostPerUnit: SelfGeneratedCostPerUnit,
       PowerContributionPercentage: SelfPowerContribution,
+
+      //DIESEL
       UnitOfMeasurementId: source && source.value === GENERATOR_DIESEL ? UOM.value : '',
       UnitOfMeasurementName: source && source.value === GENERATOR_DIESEL ? UOM.label : '',
       CostPerUnitOfMeasurement: source && source.value === GENERATOR_DIESEL ? CostPerUnitOfMeasurement : 0,
@@ -562,8 +630,9 @@ class AddPower extends Component {
       this.props.change('SelfPowerContribution', 0)
       this.props.change('CostPerUnitOfMeasurement', 0)
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
-    });
 
+    });
+    this.resetpowerKeyValue()
   }
 
   /**
@@ -571,7 +640,7 @@ class AddPower extends Component {
 * @description Used to handle updateProcessGrid
 */
   updatePowerGrid = () => {
-    const { source, UOM, powerGrid, powerGridEditIndex } = this.state;
+    const { source, UOM, powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
 
     const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
@@ -579,7 +648,7 @@ class AddPower extends Component {
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
     const SelfGeneratedCostPerUnit = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfGeneratedCostPerUnit : 0;
     const SelfPowerContribution = fieldsObj && fieldsObj !== undefined ? fieldsObj.SelfPowerContribution : 0;
-    const CostPerUnitOfMeasurement = fieldsObj && fieldsObj !== undefined ? fieldsObj.CostPerUnitOfMeasurement : 0;
+    const CostPerUnitOfMeasurement = power.CostPerUnitOfMeasurement !== undefined ? power.CostPerUnitOfMeasurement : 0;
     const UnitGeneratedPerUnitOfFuel = fieldsObj && fieldsObj !== undefined ? fieldsObj.UnitGeneratedPerUnitOfFuel : 0;
 
     let tempArray = [];
@@ -604,6 +673,7 @@ class AddPower extends Component {
     const NetPowerCostPerUnit = tempArray && tempArray.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
     }, 0)
+
     this.setState({
       powerGrid: tempArray,
       source: [],
@@ -619,7 +689,9 @@ class AddPower extends Component {
       this.props.change('SelfPowerContribution', 0)
       this.props.change('CostPerUnitOfMeasurement', 0)
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
+
     });
+    this.resetpowerKeyValue()
   };
 
   /**
@@ -690,8 +762,32 @@ class AddPower extends Component {
   * @description used to Reset form
   */
   deleteItem = (index) => {
-    const { powerGrid } = this.state;
+    const { powerGrid, netContributionValue } = this.state;
+    const tempObj = powerGrid[index]
+    console.log(tempObj, "Temporary Object");
+    if (tempObj.SourcePowerType === 'SEB') {
+      this.setState({
+        isEditFlagForStateElectricity: false,
+        isAddedSEB: false
+      },
+        () => {
+          this.props.change('MinDemandKWPerMonth', 0)
+          this.props.change('DemandChargesPerKW', 0)
+          this.props.change('AvgUnitConsumptionPerMonth', 0)
+          this.props.change('UnitConsumptionPerAnnum', 0)
+          this.props.change('MaxDemandChargesKW', 0)
+          this.props.change('SEBCostPerUnit', 0)
+          this.props.change('MeterRentAndOtherChargesPerAnnum', 0)
+          this.props.change('DutyChargesAndFCA', 0)
+          this.props.change('TotalUnitCharges', 0)
+          this.props.change('SEBPowerContributaion', 0)
 
+        }
+      )
+
+    }
+    const tempNetContributionValue = (tempObj.CostPerUnit * tempObj.PowerContributionPercentage / 100)
+    const finalNetContribution = netContributionValue - tempNetContributionValue
     let tempData = powerGrid.filter((item, i) => {
       if (i === index) {
         return false;
@@ -699,7 +795,8 @@ class AddPower extends Component {
       return true;
     });
 
-    this.setState({ powerGrid: tempData })
+    this.setState({ powerGrid: tempData, netContributionValue: finalNetContribution })
+    this.resetpowerKeyValue()
   }
 
   /**
@@ -853,12 +950,12 @@ class AddPower extends Component {
               MinDemandKWPerMonth: values.MinDemandKWPerMonth,
               DemandChargesPerKW: values.DemandChargesPerKW,
               AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
-              UnitConsumptionPerAnnum: values.UnitConsumptionPerAnnum,
+              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth, // look into this
               MaxDemandChargesKW: values.MaxDemandChargesKW,
-              CostPerUnit: values.SEBCostPerUnit,
+              CostPerUnit: this.state.power.SEBCostPerUnit,
               MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
               DutyChargesAndFCA: values.DutyChargesAndFCA,
-              TotalUnitCharges: values.TotalUnitCharges,
+              TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
               EffectiveDate: effectiveDate,
@@ -906,12 +1003,12 @@ class AddPower extends Component {
               MinDemandKWPerMonth: values.MinDemandKWPerMonth,
               DemandChargesPerKW: values.DemandChargesPerKW,
               AvgUnitConsumptionPerMonth: values.AvgUnitConsumptionPerMonth,
-              UnitConsumptionPerAnnum: values.UnitConsumptionPerAnnum,
+              UnitConsumptionPerAnnum: this.state.power.AvgUnitConsumptionPerMonth,
               MaxDemandChargesKW: values.MaxDemandChargesKW,
-              CostPerUnit: values.SEBCostPerUnit,
+              CostPerUnit: this.state.power.SEBCostPerUnit,
               MeterRentAndOtherChargesPerAnnum: values.MeterRentAndOtherChargesPerAnnum,
               DutyChargesAndFCA: values.DutyChargesAndFCA,
-              TotalUnitCharges: values.TotalUnitCharges,
+              TotalUnitCharges: this.state.power.TotalUnitCharges,
               PowerContributaionPersentage: values.SEBPowerContributaion,
               OtherCharges: 0,
               EffectiveDate: effectiveDate,
@@ -936,19 +1033,19 @@ class AddPower extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue } = this.state;
 
     return (
       <>
-        <div className="container-fluid">
+        <div>
           <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">
                 <div className="shadow-lgg login-formg">
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-6 mt-15">
                       <div className="form-heading">
                         <h2>{isEditFlag ? `Update Power` : `Add Power`}</h2>
                       </div>
@@ -958,665 +1055,660 @@ class AddPower extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                  ><div className="add-min-height">
-                      <Row>
-                        <Col md="4" className="switch mb15">
-                          <label className="switch-level">
-                            <div className={'left-title'}>Zero Based</div>
-                            <Switch
-                              onChange={this.onPressVendor}
-                              checked={this.state.IsVendor}
-                              id="normal-switch"
-                              disabled={isEditFlag ? true : false}
-                              background="#4DC771"
-                              onColor="#4DC771"
-                              onHandleColor="#ffffff"
-                              offColor="#4DC771"
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              height={20}
-                              width={46}
-                            />
-                            <div className={'right-title'}>Vendor Based</div>
-                          </label>
-                        </Col>
-                      </Row>
+                  >
+                    <Row>
+                      <Col md="4" className="switch mb15">
+                        <label className="switch-level">
+                          <div className={'left-title'}>Zero Based</div>
+                          <Switch
+                            onChange={this.onPressVendor}
+                            checked={this.state.IsVendor}
+                            id="normal-switch"
+                            disabled={isEditFlag ? true : false}
+                            background="#4DC771"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#4DC771"
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            height={20}
+                            width={46}
+                          />
+                          <div className={'right-title'}>Vendor Based</div>
+                        </label>
+                      </Col>
+                    </Row>
 
-                      <Row>
-                        {this.state.IsVendor &&
-                          <>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="VendorName"
-                                    type="text"
-                                    label="Vendor Name"
-                                    component={searchableSelect}
-                                    placeholder={'--select--'}
-                                    options={this.renderListing('VendorNameList')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                                    required={true}
-                                    handleChangeDescription={this.handleVendorName}
-                                    valueDescription={this.state.vendorName}
-                                    disabled={isEditFlag ? true : false}
-                                    className="fullinput-icon"
-                                  />
-                                </div>
-                                {!isEditFlag && <div
-                                  onClick={this.vendorToggler}
-                                  className={'plus-icon-square right'}>
-                                </div>}
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label="Vendor Plant"
-                                name="VendorPlant"
-                                placeholder="--- Plant ---"
-                                selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                                options={this.renderListing('VendorPlant')}
-                                selectionChanged={this.handleVendorPlant}
-                                optionValue={option => option.Value}
-                                optionLabel={option => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                disabled={false}
-                              />
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Net Cost/Unit (INR)`}
-                                    name={"NetPowerCostPerUnit"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required]}
-                                    component={renderNumberInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                          </>}
-                      </Row>
-
-                      {!this.state.IsVendor &&
+                    <Row>
+                      {this.state.IsVendor &&
                         <>
-                          <Row>
-                            <Col md="12" className="filter-block">
-                              <div className=" mb-2">
-                                <h5>{'Power For:'}</h5>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="VendorName"
+                                  type="text"
+                                  label="Vendor Name"
+                                  component={searchableSelect}
+                                  placeholder={'--select--'}
+                                  options={this.renderListing('VendorNameList')}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={this.handleVendorName}
+                                  valueDescription={this.state.vendorName}
+                                  disabled={isEditFlag ? true : false}
+                                  className="fullinput-icon"
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="state"
-                                    type="text"
-                                    label="State"
-                                    component={searchableSelect}
-                                    placeholder={'--- Select ---'}
-                                    options={this.renderListing('state')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
-                                    required={true}
-                                    handleChangeDescription={this.handleState}
-                                    valueDescription={this.state.StateName}
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
+                              {!isEditFlag && <div
+                                onClick={this.vendorToggler}
+                                className={'plus-icon-square right'}>
+                              </div>}
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <Field
+                              label="Vendor Plant"
+                              name="VendorPlant"
+                              placeholder="--- Plant ---"
+                              selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
+                              options={this.renderListing('VendorPlant')}
+                              selectionChanged={this.handleVendorPlant}
+                              optionValue={option => option.Value}
+                              optionLabel={option => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                              disabled={false}
+                            />
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Net Cost/Unit (INR)`}
+                                  name={"NetPowerCostPerUnit"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required]}
+                                  component={renderNumberInputField}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label="Plant"
-                                    name="Plant"
-                                    placeholder="--Select--"
-                                    selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
-                                    options={this.renderListing('plant')}
-                                    selectionChanged={this.handlePlants}
-                                    optionValue={option => option.Value}
-                                    optionLabel={option => option.Text}
-                                    component={renderMultiSelectField}
-                                    mendatory={true}
-                                    className="multiselect-with-border"
-                                    disabled={isEditFlag ? true : false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
+                            </div>
+                          </Col>
+                        </>}
+                    </Row>
 
-                          </Row>
+                    {!this.state.IsVendor &&
+                      <>
+                        <Row>
+                          <Col md="12" className="filter-block">
+                            <div className=" flex-fills mb-2">
+                              <h5>{'Power For:'}</h5>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="state"
+                                  type="text"
+                                  label="State"
+                                  component={searchableSelect}
+                                  placeholder={'--- Select ---'}
+                                  options={this.renderListing('state')}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={(this.state.StateName == null || this.state.StateName.length === 0) ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={this.handleState}
+                                  valueDescription={this.state.StateName}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label="Plant"
+                                  name="Plant"
+                                  placeholder="--Select--"
+                                  selection={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [] : this.state.selectedPlants}
+                                  options={this.renderListing('plant')}
+                                  selectionChanged={this.handlePlants}
+                                  optionValue={option => option.Value}
+                                  optionLabel={option => option.Text}
+                                  component={renderMultiSelectField}
+                                  mendatory={true}
+                                  className="multiselect-with-border"
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
 
-                          <Row>
-                            <Col md="12" className="filter-block">
-                              <div className="mb-2">
-                                <h5>{'State Electricity Board Power Charges:'}</h5>
+                        </Row>
+
+                        <Row>
+                          <Col md="12" className="filter-block">
+                            <div className=" flex-fills mb-2">
+                              <h5>{'State Electricity Board Power Charges:'}</h5>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Min Demand kW/Month`}
+                                  name={"MinDemandKWPerMonth"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  required={!isCostPerUnitConfigurable ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Min Demand kW/Month`}
-                                    name={"MinDemandKWPerMonth"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                    component={renderNumberInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Demand Charges/kW (INR)`}
+                                  name={"DemandChargesPerKW"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderNumberInputField}
+                                  required={!isCostPerUnitConfigurable ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Demand Charges/kW (INR)`}
-                                    name={"DemandChargesPerKW"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                    component={renderNumberInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Min Monthly Charge`}
+                                  name={"MinMonthlyCharge"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={isCostPerUnitConfigurable ? [] : [required]}
+                                  component={renderNumberInputField}
+                                  required={!isCostPerUnitConfigurable ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={true}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Min Monthly Charge`}
-                                    name={"MinMonthlyCharge"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                    component={renderNumberInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={true}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Avg. Unit Consumption/Month`}
+                                  name={"AvgUnitConsumptionPerMonth"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderNumberInputField}
+                                  required={!isCostPerUnitConfigurable ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Avg. Unit Consumption/Month`}
-                                    name={"AvgUnitConsumptionPerMonth"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                    component={renderNumberInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Unit Consumption/Annum`}
+                                  name={"UnitConsumptionPerAnnum"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required]}
+                                  component={renderNumberInputField}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={true}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Unit Consumption/Annum`}
-                                    name={"UnitConsumptionPerAnnum"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required]}
-                                    component={renderNumberInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={true}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Max Demand Charges/kW (INR)`}
+                                  name={"MaxDemandChargesKW"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderNumberInputField}
+                                  required={!isCostPerUnitConfigurable ? true : false}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Max Demand Charges/kW (INR)`}
-                                    name={"MaxDemandChargesKW"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required]}
-                                    component={renderNumberInputField}
-                                    required={!isCostPerUnitConfigurable ? true : false}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Cost/Unit`}
+                                  name={"SEBCostPerUnit"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required]}
+                                  component={renderNumberInputField}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={!isCostPerUnitConfigurable ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Cost/Unit`}
-                                    name={"SEBCostPerUnit"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required]}
-                                    component={renderNumberInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={!isCostPerUnitConfigurable ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Meter Rent & Other Charges/Yr`}
+                                  name={"MeterRentAndOtherChargesPerAnnum"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Meter Rent & Other Charges/Yr`}
-                                    name={"MeterRentAndOtherChargesPerAnnum"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required]}
-                                    component={renderNumberInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Duty charges & FCA`}
+                                  name={"DutyChargesAndFCA"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderNumberInputField}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Duty charges & FCA`}
-                                    name={"DutyChargesAndFCA"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required]}
-                                    component={renderNumberInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Total Charge/Unit`}
+                                  name={"TotalUnitCharges"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderNumberInputField}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={true}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Total Charge/Unit`}
-                                    name={"TotalUnitCharges"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required]}
-                                    component={renderNumberInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={true}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <div className="form-group">
-                                    <label>
-                                      Effective Date
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <div className="form-group">
+                                  <label>
+                                    Effective Date
                                                                     {/* <span className="asterisk-required">*</span> */}
-                                    </label>
-                                    <div className="inputbox date-section">
-                                      <DatePicker
-                                        name="EffectiveDate"
-                                        selected={this.state.effectiveDate}
-                                        onChange={this.handleEffectiveDateChange}
-                                        showMonthDropdown
-                                        showYearDropdown
-                                        dateFormat="dd/MM/yyyy"
-                                        maxDate={new Date()}
-                                        dropdownMode="select"
-                                        placeholderText="Select date"
-                                        className="withBorder"
-                                        autoComplete={'off'}
-                                        disabledKeyboardNavigation
-                                        onChangeRaw={(e) => e.preventDefault()}
-                                        disabled={isEditFlag ? true : false}
-                                      />
-                                    </div>
+                                  </label>
+                                  <div className="inputbox date-section">
+                                    <DatePicker
+                                      name="EffectiveDate"
+                                      selected={this.state.effectiveDate}
+                                      onChange={this.handleEffectiveDateChange}
+                                      showMonthDropdown
+                                      showYearDropdown
+                                      dateFormat="dd/MM/yyyy"
+                                      maxDate={new Date()}
+                                      dropdownMode="select"
+                                      placeholderText="Select date"
+                                      className="withBorder"
+                                      autoComplete={'off'}
+                                      disabledKeyboardNavigation
+                                      onChangeRaw={(e) => e.preventDefault()}
+                                      disabled={isEditFlag ? true : false}
+                                    />
                                   </div>
                                 </div>
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Power Contribution %`}
-                                    name={"SEBPowerContributaion"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required]}
-                                    component={renderNumberInputField}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Power Contribution %`}
+                                  name={"SEBPowerContributaion"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div>
-                                {this.state.isEditSEBIndex ?
-                                  <>
-                                    <button
-                                      type="button"
-                                      className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
-                                      onClick={this.updateSEBGrid}
-                                      disabled={checkPowerContribution ? true : false}
-                                    >Update</button>
-                                    <button
-                                      type="button"
-                                      className={'cancel-btn mt30 pull-left'}
-                                      onClick={() => this.setState({ isEditSEBIndex: false })}
-                                    >Cancel</button>
-                                  </>
-                                  :
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div>
+                              {this.state.isEditSEBIndex ?
+                                <>
                                   <button
                                     type="button"
-                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mb-4 pull-left`}
-                                    disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
-                                    onClick={() => this.powerSEBTableHandler(false)}>
-                                    <div className={'plus'}></div>ADD</button>
-                                }
-
-                              </div>
-                            </Col>
-                          </Row>
-
-                          <Row>
-                            <Col md="12" className="filter-block">
-                              <div className=" mb-2">
-                                <h5>{'Self Generated Power Charges:'}</h5>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    name="Source"
-                                    type="text"
-                                    label="Source"
-                                    component={searchableSelect}
-                                    placeholder={'--- Select ---'}
-                                    options={this.renderListing('Source')}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    //validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
-                                    //required={true}
-                                    handleChangeDescription={this.handleSource}
-                                    valueDescription={this.state.source}
-                                    disabled={false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Asset Cost (INR)`}
-                                    name={"AssetCost"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    //validate={[required]}
-                                    component={renderNumberInputField}
-                                    //required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Annual Cost (INR)`}
-                                    name={"AnnualCost"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    //validate={[required]}
-                                    component={renderNumberInputField}
-                                    //required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                            {source && source.value === GENERATOR_DIESEL &&
-                              <>
-                                <Col md="3">
-                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                    <div className="fullinput-icon">
-                                      <Field
-                                        name="UOM"
-                                        type="text"
-                                        label="UOM"
-                                        component={searchableSelect}
-                                        placeholder={'--- Select ---'}
-                                        options={this.renderListing('UOM')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                                        //required={true}
-                                        handleChangeDescription={this.handleUOM}
-                                        valueDescription={this.state.UOM}
-                                        disabled={false}
-                                      />
-                                    </div>
-                                  </div>
-                                </Col>
-                                <Col md="3">
-                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                    <div className="fullinput-icon">
-                                      <Field
-                                        label={`Cost/UOM `}
-                                        name={"CostPerUnitOfMeasurement"}
-                                        type="text"
-                                        placeholder={'Enter'}
-                                        //validate={[required]}
-                                        component={renderNumberInputField}
-                                        //required={true}
-                                        className=""
-                                        customClassName=" withBorder"
-                                        disabled={false}
-                                      />
-                                    </div>
-                                  </div>
-                                </Col>
-                                <Col md="3">
-                                  <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                    <div className="fullinput-icon">
-                                      <Field
-                                        label={`Unit Generated/Unit Of fuel `}
-                                        name={"UnitGeneratedPerUnitOfFuel"}
-                                        type="text"
-                                        placeholder={'Enter'}
-                                        //validate={[required]}
-                                        component={renderNumberInputField}
-                                        //required={true}
-                                        className=""
-                                        customClassName=" withBorder"
-                                        disabled={false}
-                                      />
-                                    </div>
-                                  </div>
-                                </Col>
-                              </>}
-
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Unit Generated/Annum`}
-                                    name={"UnitGeneratedPerAnnum"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    //validate={[required]}
-                                    component={renderNumberInputField}
-                                    //required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Cost/Unit`}
-                                    name={"SelfGeneratedCostPerUnit"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    //validate={[required]}
-                                    component={renderNumberInputField}
-                                    //required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={true}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Power contribution`}
-                                    name={"SelfPowerContribution"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    //validate={[required]}
-                                    component={renderNumberInputField}
-                                    //required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={false}
-                                  />
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="3">
-                              <div>
-                                {this.state.isEditIndex ?
-                                  <>
-                                    <button
-                                      type="button"
-                                      className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
-                                      onClick={this.updatePowerGrid}
-                                      disabled={checkPowerContribution ? true : false}
-                                    >Update</button>
-
-                                    <button
-                                      type="button"
-                                      className={'cancel-btn mt30 pull-left'}
-                                      onClick={this.resetPowerGridData}
-                                    >Cancel</button>
-                                  </>
-                                  :
-                                  <button
-                                    type="button"
-                                    className={`${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
+                                    className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
+                                    onClick={this.updateSEBGrid}
                                     disabled={checkPowerContribution ? true : false}
-                                    onClick={() => this.powerTableHandler(true)}>
-                                    <div className={'plus'}></div>ADD</button>}
+                                  >Update</button>
+                                  <button
+                                    type="button"
+                                    className={'cancel-btn mt30 pull-left'}
+                                    onClick={() => this.setState({ isEditSEBIndex: false })}
+                                  >Cancel</button>
+                                </>
+                                :
+                                <button
+                                  type="button"
+                                  className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mb-4 pull-left`}
+                                  disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
+                                  onClick={() => this.powerSEBTableHandler(false)}>
+                                  <div className={'plus'}></div>ADD</button>
+                              }
 
+                            </div>
+                          </Col>
+                        </Row>
+
+                        <Row>
+                          <Col md="12" className="filter-block">
+                            <div className=" flex-fills mb-2">
+                              <h5>{'Self Generated Power Charges:'}</h5>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="Source"
+                                  type="text"
+                                  label="Source"
+                                  component={searchableSelect}
+                                  placeholder={'--- Select ---'}
+                                  options={this.renderListing('Source')}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  //validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
+                                  //required={true}
+                                  handleChangeDescription={this.handleSource}
+                                  valueDescription={this.state.source}
+                                  disabled={false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="12">
-                              <Table className="table" size="sm" >
-                                <thead>
-                                  <tr>
-                                    <th>{`Source`}</th>
-                                    <th>{`Cost/Unit (INR)`}</th>
-                                    <th>{`Contribution(%)`}</th>
-                                    <th>{`Contribution Value`}</th>
-                                    <th>{`Action`}</th>
-                                  </tr>
-                                </thead>
-                                <tbody >
-                                  {
-                                    this.state.powerGrid &&
-                                    this.state.powerGrid.map((item, index) => {
-                                      return (
-                                        <tr key={index}>
-                                          <td>{item.SourcePowerType}</td>
-                                          <td>{item.CostPerUnit ? item.CostPerUnit : 0}</td>
-                                          <td>{item.PowerContributionPercentage}</td>
-                                          {/* Ask which value to use for trim */}
-                                          <th>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), 2)}</th>
-                                          <td>
-                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
-                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                          </td>
-                                        </tr>
-                                      )
-                                    })
-                                  }
-                                </tbody>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Asset Cost (INR)`}
+                                  name={"AssetCost"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  //required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Annual Cost (INR)`}
+                                  name={"AnnualCost"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  //required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                          {source && source.value === GENERATOR_DIESEL &&
+                            <>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      name="UOM"
+                                      type="text"
+                                      label="UOM"
+                                      component={searchableSelect}
+                                      placeholder={'--- Select ---'}
+                                      options={this.renderListing('UOM')}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                                      //required={true}
+                                      handleChangeDescription={this.handleUOM}
+                                      valueDescription={this.state.UOM}
+                                      disabled={false}
+                                    />
+                                  </div>
+                                </div>
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      label={`Cost/UOM `}
+                                      name={"CostPerUnitOfMeasurement"}
+                                      type="text"
+                                      placeholder={'Enter'}
+                                      //validate={[required]}
+                                      component={renderNumberInputField}
+                                      //required={true}
+                                      className=""
+                                      customClassName=" withBorder"
+                                      disabled={false}
+                                    />
+                                  </div>
+                                </div>
+                              </Col>
+                              <Col md="3">
+                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                  <div className="fullinput-icon">
+                                    <Field
+                                      label={`Unit Generated/Unit Of fuel `}
+                                      name={"UnitGeneratedPerUnitOfFuel"}
+                                      type="text"
+                                      placeholder={'Enter'}
+                                      validate={[positiveAndDecimalNumber, maxLength10]}
+                                      component={renderText}
+                                      //required={true}
+                                      className=""
+                                      customClassName=" withBorder"
+                                      disabled={false}
+                                    />
+                                  </div>
+                                </div>
+                              </Col>
+                            </>}
 
-                                <tfoot>
-                                  {/* <div className="bluefooter-butn border row">
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Unit Generated/Annum`}
+                                  name={"UnitGeneratedPerAnnum"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength20]}
+                                  component={renderText}
+                                  //required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Cost/Unit`}
+                                  name={"SelfGeneratedCostPerUnit"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  //validate={[required]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={true}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  label={`Power contribution`}
+                                  name={"SelfPowerContribution"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  //required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={false}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col md="3">
+                            <div>
+                              {this.state.isEditIndex ?
+                                <>
+                                  <button
+                                    type="button"
+                                    className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
+                                    onClick={this.updatePowerGrid}
+                                    disabled={checkPowerContribution ? true : false}
+                                  >Update</button>
+
+                                  <button
+                                    type="button"
+                                    className={'cancel-btn mt30 pull-left'}
+                                    onClick={this.resetPowerGridData}
+                                  >Cancel</button>
+                                </>
+                                :
+                                <button
+                                  type="button"
+                                  className={`${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left`}
+                                  disabled={checkPowerContribution ? true : false}
+                                  onClick={() => this.powerTableHandler(true)}>
+                                  <div className={'plus'}></div>ADD</button>}
+
+                            </div>
+                          </Col>
+                          <Col md="12">
+                            <Table className="table" size="sm" >
+                              <thead>
+                                <tr>
+                                  <th>{`Source`}</th>
+                                  <th>{`Cost/Unit (INR)`}</th>
+                                  <th>{`Contribution(%)`}</th>
+                                  <th>{`Contribution Value`}</th>
+                                  <th>{`Action`}</th>
+                                </tr>
+                              </thead>
+                              <tbody >
+                                {
+                                  this.state.powerGrid &&
+                                  this.state.powerGrid.map((item, index) => {
+                                    return (
+                                      <tr key={index}>
+                                        <td>{item.SourcePowerType}</td>
+                                        <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                                        <td>{item.PowerContributionPercentage}</td>
+                                        {/* Ask which value to use for trim */}
+                                        <th>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForInputOutput)}</th>
+                                        <td>
+                                          <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
+                                          <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                        </td>
+                                      </tr>
+                                    )
+                                  })
+                                }
+                              </tbody>
+
+                              <tfoot>
+                                {/* <div className="bluefooter-butn border row">
                                                                     <div className="col-md-12 text-right"> */}
-                                  <tr className="bluefooter-butn">
-                                    <td></td>
-                                    <td></td>
-                                    <td className="text-right"><label>{`Net Contribution Value:`}</label> </td>
-                                    <td><label> {checkForDecimalAndNull(netContributionValue, 2)}</label></td>
-                                    <td></td>
-                                  </tr>
-                                  {/* </div>
+                                <tr className="bluefooter-butn">
+                                  <td></td>
+                                  <td></td>
+                                  <td className="text-right"><label>{`Net Contribution Value:`}</label> </td>
+                                  <td><label> {checkForDecimalAndNull(netContributionValue, initialConfiguration.NoOfDecimalForInputOutput)}</label></td>
+                                  <td></td>
+                                </tr>
+                                {/* </div>
                                                                 </div> */}
-                                </tfoot>
-                                <tbody>
-                                  <tr>
-                                    <td colSpan="5">
-                                      {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </Table>
-                              {/* <div className="bluefooter-butn border row">
+                              </tfoot>
+
+                              {this.state.powerGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </Table>
+                            {/* <div className="bluefooter-butn border row">
                                                             <div className="col-md-12 text-right">
                                                                 <span className="col-md-12">
                                                                     {`Net Loss Weight:`}
@@ -1624,11 +1716,11 @@ class AddPower extends Component {
                                                                 </span>
                                                             </div>
                                                         </div> */}
-                            </Col>
-                          </Row>
-                        </>
-                      }
-                    </div>
+                          </Col>
+                        </Row>
+                      </>
+                    }
+
                     <Row className="sf-btn-footer no-gutters justify-content-between">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button
@@ -1670,7 +1762,7 @@ class AddPower extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, fuel, supplier } = state;
+  const { comman, fuel, supplier, auth } = state;
   const fieldsObj = selector(state, 'MinDemandKWPerMonth', 'DemandChargesPerKW', 'AvgUnitConsumptionPerMonth',
     'UnitConsumptionPerAnnum', 'MaxDemandChargesKW', 'SEBCostPerUnit', 'MeterRentAndOtherChargesPerAnnum',
     'DutyChargesAndFCA', 'TotalUnitCharges', 'SEBPowerContributaion', 'AssetCost', 'AnnualCost',
@@ -1680,6 +1772,8 @@ function mapStateToProps(state) {
   const { powerTypeSelectList, UOMSelectList, filterPlantList, } = comman;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { fuelComboSelectList, plantSelectList, powerData } = fuel;
+  const { initialConfiguration } = auth;
+  // console.log(init);
   let initialValues = {};
   if (powerData && powerData.SEBChargesDetails && powerData.SEBChargesDetails.length > 0) {
     initialValues = {
@@ -1699,7 +1793,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, powerTypeSelectList, UOMSelectList, filterPlantList,
-    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj,
+    fuelComboSelectList, plantSelectList, powerData, initialValues, fieldsObj, initialConfiguration
   }
 }
 

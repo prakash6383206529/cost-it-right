@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { toastr } from 'react-redux-toastr';
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -16,6 +17,8 @@ export const minLength7 = minLength(7);
 export const minLength10 = minLength(10);
 
 export const maxLength2 = maxLength(2);
+export const maxLength3 = maxLength(3);
+export const maxLength5 = maxLength(5);
 export const maxLength6 = maxLength(6);
 export const maxLength7 = maxLength(7);
 export const maxLength10 = maxLength(10);
@@ -37,7 +40,9 @@ export const maxLength500 = maxLength(500);
 export const maxLength300 = maxLength(300);
 export const maxLength1000 = maxLength(1000);
 export const maxLength5000 = maxLength(5000);
-
+export const maxLength512 = maxLength(512);
+export const maxLength80 = maxLength(80);
+//export const maxLengthN = maxLength(n)
 
 export const checkFacebooklink = value =>
     value && !/^(http|https):\/\/www.facebook.com\/.*/i.test(value) ? 'Please enter valid url' : undefined;
@@ -86,17 +91,33 @@ export const selectRequired = value =>
 ((typeof value !== 'undefined' && value !== null && value !== "")
     ? undefined : 'This field is required.');
 
-export const checkWhiteSpaces = value =>
-    value && !value.replace(/\s/g, '').length
+export const checkWhiteSpaces = value => {
+    console.log(value, "Value");
+    return value && !value.replace(/\s/g, '').length
         ? 'This field is invalid.' : undefined;
-
+}
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0)
-        ? 'This field is invalid.' : undefined;
+        ? 'Please enter number only.' : undefined;
 
 export const postiveNumber = value =>
     value && !/^\+?(0|[1-9]\d*)$/.test(value)
         ? 'This field is invalid.' : undefined;
+
+export const positiveAndDecimalNumber = value =>
+    value && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)
+        ? 'This field is invalid.' : undefined;
+
+//ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER BUT NOT ONLY SPECIAL CHARACTER
+export const acceptAllExceptSingleSpecialCharacter = value => {
+    let pattern = /[0-9a-zA-Z](?= @.#%\_!\^&\*\(\)-+\=\?<>,|)/;
+    return value && !pattern.test(value)
+        ? 'Invalid field' : undefined;
+}
+// For alphanumeric
+export const excludeOnlySpecialCharacter = value =>
+    value && /^(?=.*[@#$%^&+=]).*$/.test(value)
+        ? 'This field do not accept  special character' : undefined;
 
 export const alphabetsOnly = value =>
     value && /[^a-zA-Z ]/i.test(value)
@@ -149,6 +170,11 @@ export const decimalNumber13 = value =>
     value && !/^[0-9]\d{0,12}(\.\d{1,2})?%?$/i.test(value)
         ? 'Invalid number'
         : undefined;
+
+//     export const decimalNumber10 = value =>
+// value && !/^[0-9]\d{0,12}(\.\d{1,10})?%?$/i.test(value)
+//     ? 'Invalid number'
+//     : undefined;
 
 export const decimalLength = max => value =>
     value && !/^[0-9]\d{0,12}(\.\d{1,2})?%?$/i.test(value)
@@ -275,3 +301,13 @@ export const isGuid = (value) => {
 export const getJsDateFromExcel = excelDate => {
     return moment((excelDate - (25567 + 2)) * 86400 * 1000).format('DD-MM-YYYY');
 };
+
+//CHECK WHETHER PERCENTAGE VALUE IS MORE THAN 100 
+export const checkPercentageValue = (value, msg = "Percentage value should not be greater than 100") => {
+    if (Number(value) > 100) {
+        toastr.warning(msg)
+        return false
+    }
+    return true
+}
+

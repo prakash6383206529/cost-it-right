@@ -72,9 +72,8 @@ export function renderLoginPasswordInputField(field) {
     meta: { touched, error },
     label,
   } = field;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-  }`;
+  const InputClassName = `form-control ${field.className ? field.className : ""
+    }`;
   return (
     <div className="input-form-group">
       <label>{label}</label>
@@ -102,9 +101,8 @@ export function renderLoginPasswordInputField(field) {
 */
 export function renderCheckboxInputField(field) {
   const { input, ...others } = field;
-  const InputClassName = `d-flex align-items-center ${
-    field.className ? field.className : ""
-  }`;
+  const InputClassName = `d-flex align-items-center ${field.className ? field.className : ""
+    }`;
   return (
     <div className={InputClassName}>
       <input
@@ -163,12 +161,10 @@ export function renderPasswordInputField(field) {
     meta: { touched, error, active },
   } = field;
   const inputbox = `inputbox input-group ${active ? "active" : ""}`;
-  const className = `form-group ${
-    field.customClassName ? field.customClassName : ""
-  } ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-  }`;
+  const className = `form-group ${field.customClassName ? field.customClassName : ""
+    } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""
+    }`;
   const placeholder = field.placeholder ? field.placeholder : "";
   const isPwdVisible = field.isShowHide === true ? "text" : "password";
   const eyeIcon = field.isShowHide === true ? "fa-eye" : "fa-eye-slash";
@@ -179,8 +175,8 @@ export function renderPasswordInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </label>
       <div className={inputbox}>
         <input
@@ -193,9 +189,8 @@ export function renderPasswordInputField(field) {
         />
         {field.isEyeIcon === true && (
           <div
-            className={`input-group-prepend ${
-              field.isShowHide === true ? "hide" : "show"
-            }`}
+            className={`input-group-prepend ${field.isShowHide === true ? "hide" : "show"
+              }`}
           >
             <span
               onClick={field.showHide}
@@ -237,9 +232,8 @@ export function renderMultiSelectField(field) {
   //const inputbox = `inputbox ${active ? "active" : ""}`;
   const inputbox = ` ${active ? "active" : ""}`;
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `basic-multi-select ${
-    field.className ? field.className : ""
-  }`;
+  const InputClassName = `basic-multi-select ${field.className ? field.className : ""
+    }`;
   const optionValue = field.optionValue;
   const optionLabel = field.optionLabel;
   const placeholder = field.placeholder ? field.placeholder : "";
@@ -250,8 +244,8 @@ export function renderMultiSelectField(field) {
         {field.mendatory && field.mendatory === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </label>
       <div className={inputbox} onClick={field.onTouched}>
         <Select
@@ -270,9 +264,9 @@ export function renderMultiSelectField(field) {
       </div>
       <div className="text-help">
         {touched &&
-        field.mendatory &&
-        field.selection &&
-        field.selection.length === 0
+          field.mendatory &&
+          field.selection &&
+          field.selection.length === 0
           ? "This field is required."
           : ""}
         {/* <div className="text-help">{field.isEmpty ? 'This field is required.' : ""}</div> */}
@@ -294,12 +288,10 @@ export function renderEmailInputField(field) {
   } = field;
   const disabled = isDisabled === true ? true : false;
   const inputbox = `inputbox input-group ${active ? "active" : ""}`;
-  const className = `form-group ${
-    field.customClassName ? field.customClassName : ""
-  } ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${
-    disabled ? "disabled-control " : " "
-  } ${field.className ? field.className : ""}`;
+  const className = `form-group ${field.customClassName ? field.customClassName : ""
+    } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${disabled ? "disabled-control " : " "
+    } ${field.className ? field.className : ""}`;
   return (
     <div className={className}>
       <label>
@@ -308,8 +300,8 @@ export function renderEmailInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </label>
       <div className={disabled ? `${inputbox} disabledEmail ` : inputbox}>
         <input
@@ -349,9 +341,8 @@ export function renderTextInputField(field) {
   const className = `form-group ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-  }`;
+  const InputClassName = `form-control ${field.className ? field.className : ""
+    }`;
   return (
     <div className={`${className} ${inputStyle}`}>
       <label>
@@ -360,8 +351,8 @@ export function renderTextInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </label>
       <div className={inputbox}>
         <input
@@ -394,12 +385,10 @@ export function renderSelectField(field) {
     meta: { touched, error, active },
   } = field;
   const inputbox = ` ${active ? "active" : ""}`;
-  const className = `form-group inputbox ${
-    touched && error ? "has-danger" : ""
-  }`;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-  }`;
+  const className = `form-group inputbox ${touched && error ? "has-danger" : ""
+    }`;
+  const InputClassName = `form-control ${field.className ? field.className : ""
+    }`;
   let optionKey = field.optionValue;
   let optionText = field.optionLabel;
   const disabledSelect = disabled ? true : false;
@@ -410,8 +399,8 @@ export function renderSelectField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </label>
       <div className={inputbox}>
         <select
@@ -445,12 +434,10 @@ export function renderNumberInputField(field) {
     meta: { touched, error },
     ...others
   } = field;
-  const customClassName = `${
-    field.customClassName ? field.customClassName : ""
-  }`;
-  const InputClassName = `form-control ${
-    field.customClassName ? field.customClassName : ""
-  } ${field.className ? field.className : ""}`;
+  const customClassName = `${field.customClassName ? field.customClassName : ""
+    }`;
+  const InputClassName = `form-control ${field.customClassName ? field.customClassName : ""
+    } ${field.className ? field.className : ""}`;
   const disabledLabel = disabled ? true : false;
   return (
     <div className={`form-group inputbox ${customClassName}`}>
@@ -459,8 +446,8 @@ export function renderNumberInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </label>
       <div className="input-group">
         <input
@@ -504,8 +491,8 @@ export function renderTextAreaField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </label>
       <div className="inputbox ">
         <textarea
@@ -568,12 +555,11 @@ export function renderText(field) {
     meta: { touched, error },
     ...others
   } = field;
-  const className = `form-group inputbox ${
-    field.customClassName ? field.customClassName : ""
-  } ${touched && error ? "has-danger" : ""}`;
-  const InputClassName = `form-control ${
-    field.className ? field.className : ""
-  }`;
+
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""
+    } ${touched && error ? "has-danger" : ""}`;
+  const InputClassName = `form-control ${field.className ? field.className : ""
+    }`;
   return (
     <div className={className}>
       <label>
@@ -582,8 +568,8 @@ export function renderText(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}{" "}
+            ""
+          )}{" "}
       </label>
       <input
         maxLength={field.maxLength}
@@ -624,8 +610,8 @@ export function renderDatePicker(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}{" "}
+            ""
+          )}{" "}
       </label>
       <DatePicker
         {...input}
@@ -666,8 +652,8 @@ export function renderDatePickerOneDayAgo(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-          ""
-        )}{" "}
+            ""
+          )}{" "}
       </label>
       <DatePicker
         {...input}
@@ -712,8 +698,8 @@ export const searchableSelect = ({
           {required === true ? (
             <span className="asterisk-required">*</span>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </label>
       )}
       <Select
@@ -776,13 +762,13 @@ export const RFReactSelect = ({
           multi
             ? multiChangeHandler(onChange, valueKey)
             : singleChangeHandler(
-                onChange,
-                onChangeHsn,
-                onMaterialChange,
-                rowIndex,
-                valueKey,
-                selType
-              )
+              onChange,
+              onChangeHsn,
+              onMaterialChange,
+              rowIndex,
+              valueKey,
+              selType
+            )
         }
         onBlur={() => onBlur(value)}
         onFocus={onFocus}
@@ -860,4 +846,51 @@ function transformValue(value, options, multi, key) {
   });
 
   return multi ? filteredOptions : filteredOptions[0];
+}
+
+/**
+ * @method renderYearPicker
+ * @description Render year picker calander
+*/
+
+export function renderYearPicker(field) {
+  const {
+    input,
+    placeholder,
+    defaultValue,
+    meta: { touched, error },
+  } = field;
+  return (
+    <div className={"react-picker-box"}>
+      <label>
+        {field.label}
+        {field.required && field.required === true ? (
+          <span className="asterisk-required">*</span>
+        ) : (
+            ""
+          )}{" "}
+      </label>
+      <DatePicker
+        {...input}
+        dateFormat="yyyy"
+        placeholderText={placeholder}
+        //maxDate={new Date()}
+        //minDate={new Date()}
+        showMonthDropdown
+        showYearDropdown
+        showYearPicker
+        readonly="readonly"
+        onBlur={() => null}
+        selected={input.value ? new Date(input.value) : null}
+        className={field.className}
+        onSelect={
+          field.changeHandler ? (date) => field.changeHandler(date) : null
+        }
+        autoComplete={field.autoComplete}
+        disabledKeyboardNavigation
+        onChangeRaw={(e) => e.preventDefault()}
+      />
+      {touched ? <div className="text-help mb-2">{error}</div> : ""}
+    </div>
+  );
 }

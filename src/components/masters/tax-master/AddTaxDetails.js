@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, checkWhiteSpaces } from "../../../helper/validation";
+import { required, number, acceptAllExceptSingleSpecialCharacter, checkForDecimalAndNull, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, checkPercentageValue } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
@@ -13,6 +13,7 @@ import Drawer from '@material-ui/core/Drawer';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
+const selector = formValueSelector('AddTaxDetails')
 
 class AddTaxDetails extends Component {
   constructor(props) {
@@ -57,6 +58,15 @@ class AddTaxDetails extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      // const { Rate } = this.props.fieldsObj
+      if (this.props.fieldsObj) {
+        checkPercentageValue(this.props.fieldsObj, "Rate percentage should not be more than 100") ? this.props.change('Rate', this.props.fieldsObj) : this.props.change('Rate', 0)
+      }
+    }
+  }
+
   /**
   * @method toggleModel
   * @description Used to cancel modal
@@ -88,8 +98,9 @@ class AddTaxDetails extends Component {
       });
       return temp;
     }
+  };
 
-  }
+
 
   /**
   * @method countryHandler
@@ -213,7 +224,7 @@ class AddTaxDetails extends Component {
                     name={"TaxName"}
                     type="text"
                     placeholder={"Enter"}
-                    validate={[required]}
+                    validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                     component={renderText}
                     required={true}
                     customClassName={"withBorder"}
@@ -245,7 +256,8 @@ class AddTaxDetails extends Component {
                     name={"Rate"}
                     type="text"
                     placeholder={"Enter"}
-                    validate={[required, number, checkWhiteSpaces]}
+                    validate={[required, positiveAndDecimalNumber]}
+                    max='100'
                     component={renderText}
                     required={true}
                     customClassName={"withBorder"}
@@ -296,7 +308,7 @@ class AddTaxDetails extends Component {
                   </button>
                   <button
                     type="submit"
-                    className="submit-button save-btn"
+                    className="submit-button mr-3 save-btn"
                   >
                     <div className={"check-icon"}>
                       <img
@@ -316,15 +328,18 @@ class AddTaxDetails extends Component {
   }
 }
 
+
+
 /**
 * @method mapStateToProps
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ tax, comman }) {
+function mapStateToProps(state) {
+  const { tax, comman } = state
   const { taxDetailsData } = tax;
   const { countryList, } = comman;
-
+  const fieldsObj = selector(state, 'Rate')
   let initialValues = {};
   if (taxDetailsData && taxDetailsData !== undefined) {
     initialValues = {
@@ -333,7 +348,7 @@ function mapStateToProps({ tax, comman }) {
     }
   }
 
-  return { taxDetailsData, countryList, initialValues, };
+  return { taxDetailsData, countryList, initialValues, fieldsObj };
 }
 
 /**

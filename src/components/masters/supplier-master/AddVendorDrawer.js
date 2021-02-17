@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70 } from "../../../helper/validation";
+import { required, number, upper, email, minLength7, maxLength70, alphaNumeric, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, minLength10, maxLength6, checkWhiteSpaces } from "../../../helper/validation";
 import {
     renderText, renderEmailInputField, renderMultiSelectField,
     searchableSelect
@@ -368,8 +368,8 @@ class AddVendorDrawer extends Component {
                 VendorCode: values.VendorCode,
                 Email: values.Email,
                 AddressId: supplierData.AddressId,
-                AddressLine1: values.AddressLine1,
-                AddressLine2: values.AddressLine2,
+                AddressLine1: values.AddressLine1.trim(),
+                AddressLine2: values.AddressLine2.trim(),
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
                 MobileNumber: values.MobileNumber,
@@ -396,8 +396,8 @@ class AddVendorDrawer extends Component {
                 VendorTypes: vendorArray,
                 VendorPlants: vendorPlantArray,
                 UserId: loggedInUserId(),
-                AddressLine1: values.AddressLine1,
-                AddressLine2: values.AddressLine2,
+                AddressLine1: values.AddressLine1.trim(),
+                AddressLine2: values.AddressLine2.trim(),
                 ZipCode: values.ZipCode,
                 PhoneNumber: values.PhoneNumber,
                 Extension: values.Extension,
@@ -464,7 +464,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            validate={[required, alphaNumeric, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -480,7 +480,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength15, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             normalize={upper}
@@ -514,7 +514,7 @@ class AddVendorDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[number]}
+                                                    validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
                                                     maxLength={12}
@@ -527,10 +527,10 @@ class AddVendorDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={'Ext'}
-                                                    validate={[number]}
+                                                    validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
                                                     component={renderText}
                                                     //required={true}
-                                                    maxLength={5}
+                                                    // maxLength={5}
                                                     customClassName={'withBorder'}
                                                 /></Col>
                                         </Row>
@@ -543,7 +543,7 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[required, number, minLength7]}
+                                            validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
                                             required={true}
                                             maxLength={12}
                                             customClassName={'withBorder'}
@@ -589,20 +589,20 @@ class AddVendorDrawer extends Component {
                                         </Col>}
                                     <Col md="6">
                                         <div className="form-group inputbox withBorder ">
-                                        <Field
-                                            name="CityId"
-                                            type="text"
-                                            label="City"
-                                            component={searchableSelect}
-                                            placeholder={'Select city'}
-                                            options={this.renderListing('city')}
-                                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
-                                            required={true}
-                                            handleChangeDescription={this.cityHandler}
-                                            valueDescription={this.state.city}
-                                            disabled={this.state.isEditFlag ? true : false}
-                                        />
+                                            <Field
+                                                name="CityId"
+                                                type="text"
+                                                label="City"
+                                                component={searchableSelect}
+                                                placeholder={'Select city'}
+                                                options={this.renderListing('city')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.cityHandler}
+                                                valueDescription={this.state.city}
+                                                disabled={this.state.isEditFlag ? true : false}
+                                            />
                                         </div>
                                     </Col>
                                 </Row>
@@ -613,7 +613,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             required={true}
                                             maxLength={26}
@@ -627,7 +627,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine2"}
                                             type="text"
                                             placeholder={''}
-                                            //validate={[required]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //required={true}
                                             maxLength={26}
@@ -643,7 +643,7 @@ class AddVendorDrawer extends Component {
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, number]}
+                                            validate={[required, postiveNumber, maxLength6]}
                                             component={renderText}
                                             required={true}
                                             maxLength={26}
@@ -682,23 +682,23 @@ class AddVendorDrawer extends Component {
                                         </>}
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
-                                <div className="col-sm-12 text-right px-3">
-                                    <button
-                                        type={'button'}
-                                        className="reset mr15 cancel-btn"
-                                        onClick={this.cancel} >
-                                        <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="submit-button save-btn">
-                                        <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                                        {isEditFlag ? 'Update' : 'Save'}
-                                    </button>
-                                </div>
-                            </Row>
+                                    <div className="col-sm-12 text-right px-3">
+                                        <button
+                                            type={'button'}
+                                            className="reset mr15 cancel-btn"
+                                            onClick={this.cancel} >
+                                            <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="submit-button save-btn">
+                                            <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                                            {isEditFlag ? 'Update' : 'Save'}
+                                        </button>
+                                    </div>
+                                </Row>
                             </form>
-                            
+
                         </div>
                     </Container>
                 </Drawer>

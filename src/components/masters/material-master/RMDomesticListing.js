@@ -430,11 +430,12 @@ class RMDomesticListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading } = this.props;
         const { isBulkUpload, } = this.state;
+        console.log(this.props.rmDataList, "RM DATA LIST");
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: (this.props.rmDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -638,8 +639,9 @@ class RMDomesticListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, }) {
-    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList } = material;
-    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList }
+    const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading } = material;
+    console.log(loading, "Loading");
+    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading }
 }
 
 /**

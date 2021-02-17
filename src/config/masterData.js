@@ -67,6 +67,7 @@ export const RMDomesticZBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
+    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
     { label: "Material", value: "Material" },
     { label: "Plant", value: "Plant" },
     { label: "VendorName", value: "VendorName" },
@@ -89,6 +90,7 @@ export const RMDomesticZBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
+        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
         "Material": "Material Name",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
@@ -114,6 +116,7 @@ export const RMDomesticVBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
+    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
     { label: "Material", value: "Material" },
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" },
@@ -135,6 +138,7 @@ export const RMDomesticVBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
+        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
         "Material": "Material Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
@@ -159,6 +163,7 @@ export const RMImportZBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
+    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
     { label: "Material", value: "Material" },
     { label: "Plant", value: "Plant" },
     { label: "VendorName", value: "VendorName" },
@@ -183,6 +188,7 @@ export const RMImportZBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
+        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
         "Material": "Material Name",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
@@ -209,6 +215,7 @@ export const RMImportVBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
+    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
     { label: "Material", value: "Material" },
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" },
@@ -231,6 +238,7 @@ export const RMImportVBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
+        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
         "Material": "Material Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
