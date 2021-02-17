@@ -177,75 +177,79 @@ class TaxListing extends Component {
       //onExportToCSV: this.onExportToCSV,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
       paginationSize: 5,
     };
     return (
       < >
         {/* {this.props.loading && <Loader />} */}
         <div className="container-fluid">
-        <Row>
-          <Col md={12}>
-            <h1>{`Tax Details Master`}</h1>
-          </Col>
-          <Col md={12}>
-            <hr className="mt-0" />
-          </Col>
-        </Row>
+          <Row>
+            <Col md={12}>
+              <h1>{`Tax Details Master`}</h1>
+            </Col>
+            <Col md={12}>
+              <hr className="mt-0" />
+            </Col>
+          </Row>
 
-        <Row className="no-filter-row">
-          {AddAccessibility && (
-            <>
-              <Col md={6} className="filter-block"></Col>
-              <Col md={6} className="text-right search-user-block pr-0">
-                <div className="d-flex justify-content-end bd-highlight w100">
-                  <button
-                    type={"button"}
-                    className={"user-btn"}
-                    onClick={this.openModel}
-                  >
-                    <div className={"plus"}></div>
-                    {`ADD`}
-                  </button>
-                </div>
-              </Col>
-            </>
+          <Row className="no-filter-row">
+            {AddAccessibility && (
+              <>
+                <Col md={6} className="filter-block"></Col>
+                <Col md={6} className="text-right search-user-block pr-0">
+                  <div className="d-flex justify-content-end bd-highlight w100">
+                    <button
+                      type={"button"}
+                      className={"user-btn"}
+                      onClick={this.openModel}
+                    >
+                      <div className={"plus"}></div>
+                      {`ADD`}
+                    </button>
+                  </div>
+                </Col>
+              </>
+            )}
+          </Row>
+
+
+          <Row>
+            <Col>
+              <BootstrapTable
+                data={this.props.taxDataList}
+                striped={false}
+                hover={false}
+                bordered={false}
+                options={options}
+                search
+                // exportCSV
+                //ignoreSinglePage
+                ref={'table'}
+                trClassName={'userlisting-row'}
+                tableHeaderClass='my-custom-class'
+                pagination>
+                <TableHeaderColumn dataField="TaxName" dataAlign="" dataSort={true}>Tax Name</TableHeaderColumn>
+                <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
+                <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
+                <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                <TableHeaderColumn width={100} searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+
+              </BootstrapTable>
+            </Col>
+          </Row>
+          {isOpen && (
+            <AddTaxDetails
+              isOpen={isOpen}
+              closeDrawer={this.closeDrawer}
+              isEditFlag={isEditFlag}
+              ID={this.state.ID}
+              anchor={'right'}
+            />
           )}
-        </Row>
-
-
-        <Row>
-          <Col>
-            <BootstrapTable
-              data={this.props.taxDataList}
-              striped={false}
-              hover={false}
-              bordered={false}
-              options={options}
-              search
-              // exportCSV
-              //ignoreSinglePage
-              ref={'table'}
-              trClassName={'userlisting-row'}
-              tableHeaderClass='my-custom-class'
-              pagination>
-              <TableHeaderColumn dataField="TaxName" dataAlign="center" dataSort={true}>Tax Name</TableHeaderColumn>
-              <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
-              <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
-              <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-              <TableHeaderColumn searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
-            </BootstrapTable>
-          </Col>
-        </Row>
-        {isOpen && (
-          <AddTaxDetails
-            isOpen={isOpen}
-            closeDrawer={this.closeDrawer}
-            isEditFlag={isEditFlag}
-            ID={this.state.ID}
-            anchor={'right'}
-          />
-        )}
         </div>
       </ >
     );
