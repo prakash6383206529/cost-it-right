@@ -79,11 +79,11 @@ class IndivisualPartListing extends Component {
     */
     deleteItem = (Id) => {
         const toastrConfirmOptions = {
-          onOk: () => {
-            this.confirmDeleteItem(Id);
-          },
-          onCancel: () => console.log("CANCEL: clicked"),
-          component: () => <ConfirmComponent />,
+            onOk: () => {
+                this.confirmDeleteItem(Id);
+            },
+            onCancel: () => console.log("CANCEL: clicked"),
+            component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
     }
@@ -232,9 +232,9 @@ class IndivisualPartListing extends Component {
             //paginationShowsTotal: true,
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
             paginationSize: 5,
         };
 
@@ -258,7 +258,7 @@ class IndivisualPartListing extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={this.formToggle}>
-                                    <div className={'plus'}></div>Add Assembly Part</button>}
+                                    <div className={'plus'}></div>Add  Part</button>}
                             </div>
                         </div>
                     </Col>

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100, number, postiveNumber, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, checkForNull, maxLength100, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512 } from "../../../helper/validation";
 import {
   renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
   renderMultiSelectField, focusOnError
@@ -1010,7 +1010,7 @@ class AddMachineRate extends Component {
                           name={"MachineName"}
                           type="text"
                           placeholder={'Enter'}
-                          // validate={[required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           // required={true}
                           disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
@@ -1048,7 +1048,7 @@ class AddMachineRate extends Component {
                           name={"TonnageCapacity"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, number, postiveNumber]}
+                          validate={[required, checkWhiteSpaces, postiveNumber, maxLength10]}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
@@ -1062,7 +1062,7 @@ class AddMachineRate extends Component {
                           name={"Description"}
                           type="text"
                           placeholder={'Enter'}
-                          // validate={[required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           // required={true}
                           disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
@@ -1150,8 +1150,8 @@ class AddMachineRate extends Component {
                           name={"MachineRate"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number, postiveNumber]}
-                          component={renderNumberInputField}
+                          validate={[number, positiveAndDecimalNumber, maxLength10]}
+                          component={renderText}
                           onChange={this.handleMachineRate}
                           //required={true}
                           disabled={false}
@@ -1254,10 +1254,10 @@ class AddMachineRate extends Component {
                           className=""
                           customClassName=" textAreaWithBorder"
                           onChange={this.handleMessageChange}
-                          validate={[maxLength100]}
+                          validate={[maxLength512]}
                           //required={true}
                           component={renderTextAreaField}
-                          maxLength="5000"
+                          maxLength="512"
                           rows="6"
                           disabled={this.state.isViewFlag ? true : false}
                         />

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, checkForNull, maxLength100, number, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, checkForNull, maxLength100, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric, maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces } from "../../../helper/validation";
 import {
   renderText, searchableSelect,
   renderMultiSelectField, renderTextAreaField, focusOnError
@@ -172,7 +172,7 @@ class AddBOPDomestic extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._d,
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
             })
           }, 200)
@@ -601,11 +601,12 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
                               className=" "
+                              maxLength="20"
                               customClassName=" withBorder"
                             />
                           </Col>
@@ -615,7 +616,7 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required]}
+                              validate={[required, alphaNumeric, checkWhiteSpaces, maxLength80]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -688,7 +689,7 @@ class AddBOPDomestic extends Component {
                               name={"Specification"}
                               type="text"
                               placeholder={"Enter"}
-                              //validate={[required]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}
@@ -794,7 +795,7 @@ class AddBOPDomestic extends Component {
                                 name={"Source"}
                                 type="text"
                                 placeholder={"Enter"}
-                                validate={[required]}
+                                validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                 component={renderText}
                                 required={true}
                                 disabled={false}
@@ -839,7 +840,7 @@ class AddBOPDomestic extends Component {
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, number]}
+                              validate={[required, postiveNumber, maxLength10]}
                               component={renderText}
                               required={true}
                               className=""
@@ -853,7 +854,7 @@ class AddBOPDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, number]}
+                              validate={[required, positiveAndDecimalNumber, maxLength10]}
                               component={renderText}
                               required={true}
                               disabled={false}
@@ -916,7 +917,7 @@ class AddBOPDomestic extends Component {
                               placeholder="Type here..."
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength100]}
+                              validate={[maxLength512]}
                               //required={true}
                               component={renderTextAreaField}
                               maxLength="5000"

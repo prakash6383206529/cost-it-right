@@ -555,6 +555,7 @@ export function renderText(field) {
     meta: { touched, error },
     ...others
   } = field;
+
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""
     } ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""

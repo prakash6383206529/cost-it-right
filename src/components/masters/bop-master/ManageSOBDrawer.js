@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import HeaderTitle from '../../common/HeaderTitle';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -14,7 +14,7 @@ import Drawer from '@material-ui/core/Drawer';
 function ManageSOBDrawer(props) {
 
   const { ID, isEditFlag } = props;
-
+  const GridFields = 'GridFields';
   const defaultValues = {
     //OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
   }
@@ -79,15 +79,18 @@ function ManageSOBDrawer(props) {
     let tempData = GridData[index];
 
     if (!isNaN(event.target.value)) {
-
       tempData = {
         ...tempData,
-        ShareOfBusinessPercentage: parseInt(event.target.value),
+        ShareOfBusinessPercentage: checkPercentageValue(event.target.value) ? parseInt(event.target.value) : 0,
         //isSOBChanged: checkIsSOBChanged(event, index),
         WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(parseInt(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
       setGridData(tempArray)
+      //if (!checkPercentageValue(event.target.value)) {
+      setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
+      // return false
+      // }
 
     } else {
       warningMessageHandle('VALID_NUMBER_WARNING')
@@ -173,7 +176,7 @@ function ManageSOBDrawer(props) {
     }))
   }
 
-  const GridFields = 'GridFields';
+
 
   /**
   * @method render
@@ -188,7 +191,7 @@ function ManageSOBDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <HeaderTitle title={'Manage SOB'} customClass={'underLine-title'} />
+                  <HeaderTitle title={'Add SOB %'} customClass={'underLine-title'} />
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -224,7 +227,9 @@ function ManageSOBDrawer(props) {
                                   name={`${GridFields}[${index}]ShareOfBusinessPercentage`}
                                   Controller={Controller}
                                   control={control}
-                                  register={register}
+                                  register={register({
+                                    max: '100'
+                                  })}
                                   mandatory={false}
                                   rules={{
                                     //required: true,
@@ -234,6 +239,7 @@ function ManageSOBDrawer(props) {
                                       message: 'Invalid Number.'
                                     },
                                   }}
+
                                   defaultValue={item.ShareOfBusinessPercentage}
                                   className=""
                                   customClassName={'withBorder'}

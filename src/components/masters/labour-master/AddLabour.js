@@ -7,6 +7,9 @@ import {
   number,
   decimalLength2,
   checkForNull,
+  positiveAndDecimalNumber,
+  maxLength10,
+  checkForDecimalAndNull,
 } from '../../../helper/validation'
 import { renderText, searchableSelect } from '../../layout/FormInputs'
 import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
@@ -39,7 +42,7 @@ class AddLabour extends Component {
       isEditFlag: false,
       LabourDetailId: '',
 
-      IsEmployeContractual: false,
+      IsEmployeContractual: true,
       IsVendor: false,
 
       vendorName: [],
@@ -120,7 +123,7 @@ class AddLabour extends Component {
                   MachineType: item.MachineType,
                   LabourTypeId: item.LabourTypeId,
                   LabourType: item.LabourType,
-                  EffectiveDate: moment(item.EffectiveDate)._d,
+                  EffectiveDate: moment(item.EffectiveDate)._isValid ? moment(item.EffectiveDate)._d : '',
                   LabourRate: item.LabourRate,
                 }
               })
@@ -260,6 +263,7 @@ class AddLabour extends Component {
     if (newValue && newValue !== '') {
       this.setState({ StateName: newValue }, () => {
         const { StateName } = this.state
+        this.setState({ selectedPlants: [] })
         this.props.getPlantListByState(StateName.value, () => { })
       })
     } else {
@@ -595,7 +599,7 @@ class AddLabour extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenMachineType, } = this.state;
     return (
       <div className="container-fluid">
@@ -642,7 +646,7 @@ class AddLabour extends Component {
                           <div className={"right-title"}>Contractual</div>
                         </label>
                       </Col>
-                      <Col md="4" className="switch mb15">
+                      {/* <Col md="4" className="switch mb15">
                         <label className="switch-level">
                           <div className={"left-title"}>Zero Based</div>
                           <Switch
@@ -661,7 +665,7 @@ class AddLabour extends Component {
                           />
                           <div className={"right-title"}>Vendor Based</div>
                         </label>
-                      </Col>
+                      </Col> */}
                     </Row>
 
                     <Row>
@@ -762,7 +766,7 @@ class AddLabour extends Component {
                               options={this.renderListing("MachineTypeList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
-                              //required={true}
+                              required={true}
                               handleChangeDescription={this.handleMachineType}
                               valueDescription={this.state.machineType}
                               disabled={false}
@@ -786,7 +790,7 @@ class AddLabour extends Component {
                           options={this.renderListing("labourList")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                          //required={true}
+                          required={true}
                           handleChangeDescription={this.labourHandler}
                           valueDescription={this.state.labourType}
                         />
@@ -797,9 +801,9 @@ class AddLabour extends Component {
                           name={"LabourRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[number, decimalLength2]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          //required={true}
+                          required={true}
                           disabled={false}
                           className=" "
                           customClassName="withBorder"
@@ -882,7 +886,7 @@ class AddLabour extends Component {
                                   <tr key={index}>
                                     <td>{item.MachineType}</td>
                                     <td>{item.LabourType}</td>
-                                    <td>{item.LabourRate}</td>
+                                    <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                     <td>
                                       {moment(item.EffectiveDate).format(
                                         "DD/MM/YYYY"
@@ -971,7 +975,7 @@ class AddLabour extends Component {
  */
 function mapStateToProps(state) {
   const fieldsObj = selector(state, 'LabourRate')
-  const { supplier, machine, fuel, labour } = state
+  const { supplier, machine, fuel, labour, auth } = state
   const {
     VendorLabourTypeSelectList,
     labourTypeByMachineTypeSelectList,
@@ -979,6 +983,7 @@ function mapStateToProps(state) {
   const { vendorWithVendorCodeSelectList } = supplier
   const { machineTypeSelectList } = machine
   const { fuelComboSelectList, plantSelectList } = fuel
+  const { initialConfiguration } = auth;
   let initialValues = {}
 
   return {
@@ -990,6 +995,7 @@ function mapStateToProps(state) {
     VendorLabourTypeSelectList,
     fieldsObj,
     initialValues,
+    initialConfiguration
   }
 }
 

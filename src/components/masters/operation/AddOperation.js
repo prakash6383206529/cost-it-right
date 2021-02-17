@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength100, getVendorCode } from "../../../helper/validation";
+import { required, number, maxLength100, getVendorCode, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512 } from "../../../helper/validation";
 import {
   renderText, renderMultiSelectField, searchableSelect, renderTextAreaField
 } from "../../layout/FormInputs";
@@ -565,7 +565,7 @@ class AddOperation extends Component {
                           name={"OperationName"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required]}
+                          validate={[alphaNumeric, maxLength80, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
@@ -579,7 +579,7 @@ class AddOperation extends Component {
                           name={"OperationCode"}
                           type="text"
                           placeholder={"Enter"}
-                          //validate={[required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, maxLength10, checkWhiteSpaces]}
                           component={renderText}
                           //required={true}
                           onBlur={this.checkUniqCode}
@@ -594,7 +594,7 @@ class AddOperation extends Component {
                           name={"Description"}
                           type="text"
                           placeholder={"Enter"}
-                          //validate={[required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}
@@ -720,7 +720,7 @@ class AddOperation extends Component {
                           name={"Rate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, number]}
+                          validate={[required, positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           //onChange={this.handleBasicRate}
                           required={true}
@@ -735,7 +735,7 @@ class AddOperation extends Component {
                           name={"LabourRatePerUOM"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[number]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           //onChange={this.handleBasicRate}
                           //required={true}
@@ -799,10 +799,10 @@ class AddOperation extends Component {
                           className=""
                           customClassName=" textAreaWithBorder"
                           onChange={this.handleMessageChange}
-                          validate={[maxLength100]}
+                          validate={[maxLength512]}
                           //required={true}
                           component={renderTextAreaField}
-                          maxLength="5000"
+                          maxLength="512"
                         />
                       </Col>
                       <Col md="3">

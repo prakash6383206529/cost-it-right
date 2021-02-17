@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, checkForNull, maxLength100, number, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, checkForNull, maxLength100, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength } from "../../../helper/validation";
 import {
   renderText, searchableSelect, renderMultiSelectField, renderTextAreaField
 } from "../../layout/FormInputs";
@@ -602,7 +602,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -616,7 +616,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required]}
+                              validate={[required, alphaNumeric, maxLength(80)]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -687,7 +687,7 @@ class AddBOPImport extends Component {
                               name={"Specification"}
                               type="text"
                               placeholder={"Enter"}
-                              //validate={[required]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}
@@ -795,7 +795,7 @@ class AddBOPImport extends Component {
                                 name={"Source"}
                                 type="text"
                                 placeholder={"Enter"}
-                                validate={[required]}
+                                validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                 component={renderText}
                                 required={true}
                                 disabled={false}
@@ -861,7 +861,7 @@ class AddBOPImport extends Component {
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, number]}
+                              validate={[required, postiveNumber, maxLength10]}
                               component={renderText}
                               required={true}
                               className=""
@@ -874,7 +874,7 @@ class AddBOPImport extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, number]}
+                              validate={[required, positiveAndDecimalNumber, maxLength10]}
                               component={renderText}
                               required={true}
                               disabled={false}
@@ -940,7 +940,7 @@ class AddBOPImport extends Component {
                               placeholder="Type here..."
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength100]}
+                              validate={[maxLength512]}
                               //required={true}
                               component={renderTextAreaField}
                               maxLength="5000"

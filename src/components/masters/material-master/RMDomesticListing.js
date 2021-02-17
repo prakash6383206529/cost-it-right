@@ -432,9 +432,10 @@ class RMDomesticListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading } = this.props;
         const { isBulkUpload, } = this.state;
+        console.log(this.props.rmDataList, "RM DATA LIST");
         const options = {
             clearSearch: true,
-            noDataText: (this.props.rmDataList ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.rmDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text

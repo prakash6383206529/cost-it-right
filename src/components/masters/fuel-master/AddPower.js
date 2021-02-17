@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, trimTwoDecimalPlace, getVendorCode, checkForDecimalAndNull } from "../../../helper/validation";
-import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, } from "../../layout/FormInputs";
+import { required, checkForNull, trimTwoDecimalPlace, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, postiveNumber, maxLength20, checkPercentageValue } from "../../../helper/validation";
+import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderText, } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
@@ -81,10 +81,19 @@ class AddPower extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      const { SelfPowerContribution, SEBPowerContributaion } = this.props.fieldsObj
+
+      if (SelfPowerContribution) {
+        checkPercentageValue(SelfPowerContribution, "Power contribution percentage should not be more than 100") ? this.props.change('SelfPowerContribution', SelfPowerContribution) : this.props.change('SelfPowerContribution', 0)
+      }
+      if (SEBPowerContributaion) {
+        checkPercentageValue(SEBPowerContributaion, "Power contribution percentage should not be more than 100") ? this.props.change('SEBPowerContributaion', SEBPowerContributaion) : this.props.change('SEBPowerContributaion', 0)
+      }
       this.SEBPowerCalculation()
       this.selfPowerCalculation()
       this.powerContributionCalculation()
       this.minMonthlyChargeCalculation()
+
     }
   }
   /**
@@ -1199,8 +1208,8 @@ class AddPower extends Component {
                                   name={"MinDemandKWPerMonth"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={isCostPerUnitConfigurable ? [] : [required]}
-                                  component={renderNumberInputField}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
                                   required={!isCostPerUnitConfigurable ? true : false}
                                   className=""
                                   customClassName=" withBorder"
@@ -1217,7 +1226,7 @@ class AddPower extends Component {
                                   name={"DemandChargesPerKW"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={isCostPerUnitConfigurable ? [] : [required]}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
                                   component={renderNumberInputField}
                                   required={!isCostPerUnitConfigurable ? true : false}
                                   className=""
@@ -1253,7 +1262,7 @@ class AddPower extends Component {
                                   name={"AvgUnitConsumptionPerMonth"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={isCostPerUnitConfigurable ? [] : [required]}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
                                   component={renderNumberInputField}
                                   required={!isCostPerUnitConfigurable ? true : false}
                                   className=""
@@ -1289,7 +1298,7 @@ class AddPower extends Component {
                                   name={"MaxDemandChargesKW"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={isCostPerUnitConfigurable ? [] : [required]}
+                                  validate={isCostPerUnitConfigurable ? [] : [required, positiveAndDecimalNumber, maxLength10]}
                                   component={renderNumberInputField}
                                   required={!isCostPerUnitConfigurable ? true : false}
                                   className=""
@@ -1325,8 +1334,8 @@ class AddPower extends Component {
                                   name={"MeterRentAndOtherChargesPerAnnum"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[required]}
-                                  component={renderNumberInputField}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
@@ -1343,7 +1352,7 @@ class AddPower extends Component {
                                   name={"DutyChargesAndFCA"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[required]}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
                                   component={renderNumberInputField}
                                   required={true}
                                   className=""
@@ -1361,7 +1370,7 @@ class AddPower extends Component {
                                   name={"TotalUnitCharges"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[required]}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
                                   component={renderNumberInputField}
                                   required={true}
                                   className=""
@@ -1409,8 +1418,8 @@ class AddPower extends Component {
                                   name={"SEBPowerContributaion"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[required]}
-                                  component={renderNumberInputField}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
                                   required={true}
                                   className=""
                                   customClassName=" withBorder"
@@ -1482,8 +1491,8 @@ class AddPower extends Component {
                                   name={"AssetCost"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  //validate={[required]}
-                                  component={renderNumberInputField}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
                                   //required={true}
                                   className=""
                                   customClassName=" withBorder"
@@ -1500,8 +1509,8 @@ class AddPower extends Component {
                                   name={"AnnualCost"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  //validate={[required]}
-                                  component={renderNumberInputField}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
                                   //required={true}
                                   className=""
                                   customClassName=" withBorder"
@@ -1558,8 +1567,8 @@ class AddPower extends Component {
                                       name={"UnitGeneratedPerUnitOfFuel"}
                                       type="text"
                                       placeholder={'Enter'}
-                                      //validate={[required]}
-                                      component={renderNumberInputField}
+                                      validate={[positiveAndDecimalNumber, maxLength10]}
+                                      component={renderText}
                                       //required={true}
                                       className=""
                                       customClassName=" withBorder"
@@ -1578,8 +1587,8 @@ class AddPower extends Component {
                                   name={"UnitGeneratedPerAnnum"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  //validate={[required]}
-                                  component={renderNumberInputField}
+                                  validate={[positiveAndDecimalNumber, maxLength20]}
+                                  component={renderText}
                                   //required={true}
                                   className=""
                                   customClassName=" withBorder"
@@ -1614,8 +1623,8 @@ class AddPower extends Component {
                                   name={"SelfPowerContribution"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  //validate={[required]}
-                                  component={renderNumberInputField}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
                                   //required={true}
                                   className=""
                                   customClassName=" withBorder"

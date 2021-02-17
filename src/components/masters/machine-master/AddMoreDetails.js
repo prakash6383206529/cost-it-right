@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber } from "../../../helper/validation";
+import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, maxLength512, checkPercentageValue } from "../../../helper/validation";
 import {
   renderText, renderNumberInputField, searchableSelect, renderTextAreaField, renderYearPicker, focusOnError
 } from "../../layout/FormInputs";
@@ -116,6 +116,8 @@ class AddMoreDetails extends Component {
     this.props.getFuelComboData(() => { })
     this.getDetails()
   }
+
+
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.props.data) {
@@ -345,7 +347,7 @@ class AddMoreDetails extends Component {
           this.setState({
             machineFullValue: { ...machineFullValue, PowerCostPerUnit: machineFullValue.PowerCostPerUnit }
           })
-          this.props.change('PowerCostPerUnit', Data.SolarPowerRatePerUnit)
+          this.props.change('PowerCostPerUnit', checkForDecimalAndNull(Data.SolarPowerRatePerUnit, initialConfiguration.NoOfDecimalForPrice))
         } else {
           //  if(IsUsesSolarPower)
           machineFullValue.PowerCostPerUnit = IsUsesSolarPower ? Data.SolarPowerRatePerUnit : Data.NetPowerCostPerUnit
@@ -618,6 +620,7 @@ class AddMoreDetails extends Component {
   };
 
   componentDidUpdate(prevProps) {
+    const { LoanPercentage, EquityPercentage, RateOfInterestPercentage, DepreciationRatePercentage, EfficiencyPercentage, AnnualMaintancePercentage, AnnualConsumablePercentage, AnnualInsurancePercentage, UtilizationFactorPercentage } = this.props.fieldsObj
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       this.totalCost()
       this.calculateLoanInterest()
@@ -628,6 +631,34 @@ class AddMoreDetails extends Component {
       this.powerCost()
       this.handleLabourCalculation()
       this.handleProcessCalculation()
+      if (LoanPercentage) {
+        checkPercentageValue(LoanPercentage, "Loan percentage should not be more than 100") ? this.props.change('LoanPercentage', LoanPercentage) : this.props.change('LoanPercentage', 0)
+      }
+      if (EquityPercentage) {
+        console.log("Equity");
+        checkPercentageValue(EquityPercentage, "Equity percentage should not be more than 100") ? this.props.change('EquityPercentage', EquityPercentage) : this.props.change('EquityPercentage', 0)
+      }
+      if (RateOfInterestPercentage) {
+        checkPercentageValue(RateOfInterestPercentage, "Rate of Intrest percentage should not be more than 100") ? this.props.change('RateOfInterestPercentage', RateOfInterestPercentage) : this.props.change('RateOfInterestPercentage', 0)
+      }
+      if (DepreciationRatePercentage) {
+        checkPercentageValue(DepreciationRatePercentage, "Depriciation percentage should not be more than 100") ? this.props.change('DepreciationRatePercentage', DepreciationRatePercentage) : this.props.change('DepreciationRatePercentage', 0)
+      }
+      if (EfficiencyPercentage) {
+        checkPercentageValue(EfficiencyPercentage, "Avaliablity percentage should not be more than 100") ? this.props.change('EfficiencyPercentage', EfficiencyPercentage) : this.props.change('EfficiencyPercentage', 0)
+      }
+      if (AnnualMaintancePercentage) {
+        checkPercentageValue(AnnualMaintancePercentage, "Annual Maintainance percentage should not be more than 100") ? this.props.change('AnnualMaintancePercentage', AnnualMaintancePercentage) : this.props.change('AnnualMaintancePercentage', 0)
+      }
+      if (AnnualConsumablePercentage) {
+        checkPercentageValue(AnnualConsumablePercentage, "Consumable percentage should not be more than 100") ? this.props.change('AnnualConsumablePercentage', AnnualConsumablePercentage) : this.props.change('AnnualConsumablePercentage', 0)
+      }
+      if (AnnualInsurancePercentage) {
+        checkPercentageValue(AnnualInsurancePercentage, "Insurance percentage should not be more than 100") ? this.props.change('AnnualInsurancePercentage', AnnualInsurancePercentage) : this.props.change('AnnualInsurancePercentage', 0)
+      }
+      if (UtilizationFactorPercentage) {
+        checkPercentageValue(UtilizationFactorPercentage, "Utilization percentage should not be more than 100") ? this.props.change('UtilizationFactorPercentage', UtilizationFactorPercentage) : this.props.change('UtilizationFactorPercentage', 0)
+      }
     }
   }
 
@@ -827,11 +858,11 @@ class AddMoreDetails extends Component {
 
     if (IsUsesFuel) {
       console.log("Come in if part");
-      const FuelCostPerUnit = fieldsObj && fieldsObj.FuelCostPerUnit !== undefined ? checkForNull(fieldsObj.FuelCostPerUnit) : 0; //May be need to do
+      const FuelCostPerUnit = machineFullValue.FuelCostPerUnit !== undefined ? checkForNull(machineFullValue.FuelCostPerUnit) : 0;
       const ConsumptionPerYear = fieldsObj && fieldsObj.ConsumptionPerYear !== undefined ? checkForNull(fieldsObj.ConsumptionPerYear) : 0;
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
       this.setState({ machineFullValue: { ...machineFullValue, TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear } })
-      this.props.change('TotalFuelCostPerYear', trimTwoDecimalPlace(FuelCostPerUnit * ConsumptionPerYear))
+      this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
       console.log("Come in else part");
@@ -843,7 +874,7 @@ class AddMoreDetails extends Component {
       const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0; //state
       const UtilizationFactorPercentage = fieldsObj && fieldsObj.UtilizationFactorPercentage !== undefined ? checkForNull(fieldsObj.UtilizationFactorPercentage) : 0;
       const PowerRatingPerKW = fieldsObj && fieldsObj.PowerRatingPerKW !== undefined ? checkForNull(fieldsObj.PowerRatingPerKW) : 0;
-      const PowerCostPerUnit = fieldsObj && fieldsObj.PowerCostPerUnit !== undefined ? checkForNull(fieldsObj.PowerCostPerUnit) : 0; // may be state
+      const PowerCostPerUnit = machineFullValue.PowerCostPerUnit !== undefined ? checkForNull(machineFullValue.PowerCostPerUnit) : 0; // may be state
 
       const totalPowerCostPrYer = PowerRatingPerKW * NumberOfWorkingHoursPerYear * calculatePercentage(UtilizationFactorPercentage)
       machineFullValue.totalPowerCostPrYer = totalPowerCostPrYer
@@ -1042,11 +1073,12 @@ class AddMoreDetails extends Component {
       return false;
     }
 
-    // this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
-    // this.props.change('MachineRate', checkForDecimalAndNull(TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear),initialConfiguration.NoOfDecimalForPrice))
     const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
-    const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
-    const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
+    const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+    const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+
+    const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
+    const MachineRate = TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear);
 
 
     const tempArray = [];
@@ -1093,9 +1125,17 @@ class AddMoreDetails extends Component {
       return false;
     }
 
+    // const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
+    // const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
+    // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
+
     const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
-    const OutputPerYear = fieldsObj && fieldsObj.OutputPerYear !== undefined ? fieldsObj.OutputPerYear : 0;
-    const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? fieldsObj.MachineRate : 0;
+    const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+    const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+
+    const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
+    const MachineRate = TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear);
+
     let tempArray = [];
 
     let tempData = processGrid[processGridEditIndex];
@@ -1288,7 +1328,7 @@ class AddMoreDetails extends Component {
     console.log(values, "Values of form");
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid } = this.state;
+      labourGrid, processGrid, machineFullValue } = this.state;
 
     if (this.state.processGrid.length === 0) {
       toastr.warning('Please add atleast one process')
@@ -1310,7 +1350,7 @@ class AddMoreDetails extends Component {
       MachineCost: values.MachineCost,
       AccessoriesCost: values.AccessoriesCost,
       InstallationCharges: values.InstallationCharges,
-      TotalCost: values.TotalCost,
+      TotalCost: machineFullValue.totalCost,
       MachineIdRef: "",
       OwnershipIsPurchased: this.state.IsPurchased,
       DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
@@ -1319,45 +1359,45 @@ class AddMoreDetails extends Component {
       LifeOfAssetPerYear: values.LifeOfAssetPerYear,
       CastOfScrap: values.CastOfScrap,
       DateOfPurchase: DateOfPurchase,
-      DepreciationAmount: values.DepreciationAmount,
+      DepreciationAmount: machineFullValue.depreciationAmount,
       WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
       WorkingHoursPerShift: values.WorkingHoursPerShift,
       NumberOfWorkingDaysPerYear: values.NumberOfWorkingDaysPerYear,
       EfficiencyPercentage: values.EfficiencyPercentage,
       NumberOfWorkingHoursPerYear: values.NumberOfWorkingHoursPerYear,
       LoanPercentage: values.LoanPercentage,
-      LoanValue: values.LoanValue,
+      LoanValue: machineFullValue.LoanValue,
       EquityPercentage: values.EquityPercentage,
-      EquityValue: values.EquityValue,
+      EquityValue: machineFullValue.EquityValue,
       RateOfInterestPercentage: values.RateOfInterestPercentage,
-      RateOfInterestValue: values.RateOfInterestValue,
+      RateOfInterestValue: machineFullValue.RateOfInterestValue,
       IsMaintanceFixed: IsAnnualMaintenanceFixed,
       AnnualMaintancePercentage: values.AnnualMaintancePercentage,
-      AnnualMaintanceAmount: values.AnnualMaintanceAmount,
+      AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
       IsConsumableFixed: IsAnnualConsumableFixed,
       AnnualConsumablePercentage: values.AnnualConsumablePercentage,
-      AnnualConsumableAmount: values.AnnualConsumableAmount,
+      AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
       IsInsuranceFixed: IsInsuranceFixed,
       AnnualInsurancePercentage: values.AnnualInsurancePercentage,
-      AnnualInsuranceAmount: values.AnnualInsuranceAmount,
+      AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
       BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
       MachineFloorAreaPerSquareFeet: values.MachineFloorAreaPerSquareFeet,
-      AnnualAreaCost: values.AnnualAreaCost,
+      AnnualAreaCost: machineFullValue.annualAreaCost,
       OtherYearlyCost: values.OtherYearlyCost,
-      TotalMachineCostPerAnnum: values.TotalMachineCostPerAnnum,
+      TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
       IsUsesFuel: IsUsesFuel,
       PowerId: '',
       UtilizationFactorPercentage: values.UtilizationFactorPercentage,
-      PowerCostPerUnit: values.PowerCostPerUnit,
+      PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
       PowerRatingPerKW: values.PowerRatingPerKW,
-      TotalPowerCostPerYear: values.TotalPowerCostPerYear,
+      TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
       IsUsesSolarPower: IsUsesSolar,
       FuleId: fuelType ? fuelType.value : '',
-      FuelCostPerUnit: values.FuelCostPerUnit,
+      FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
       ConsumptionPerYear: values.ConsumptionPerYear,
-      TotalFuelCostPerYear: values.TotalFuelCostPerYear,
+      TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear,
       MachineLabourRates: labourGrid,
-      TotalLabourCostPerYear: values.TotalLabourCostPerYear,
+      TotalLabourCostPerYear: values.TotalLabourCostPerYear, // Need to look for this
       IsVendor: false,
       IsDetailedEntry: true,
       VendorId: userDetail.ZBCSupplierInfo.VendorId,
@@ -1409,7 +1449,7 @@ class AddMoreDetails extends Component {
         MachineCost: values.MachineCost,
         AccessoriesCost: values.AccessoriesCost,
         InstallationCharges: values.InstallationCharges,
-        TotalCost: values.TotalCost,
+        TotalCost: machineFullValue.totalCost,
         MachineIdRef: '',
         OwnershipIsPurchased: this.state.IsPurchased,
         DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
@@ -1418,45 +1458,45 @@ class AddMoreDetails extends Component {
         LifeOfAssetPerYear: values.LifeOfAssetPerYear,
         CastOfScrap: values.CastOfScrap,
         DateOfPurchase: DateOfPurchase,
-        DepreciationAmount: values.DepreciationAmount,
+        DepreciationAmount: machineFullValue.depreciationAmount,
         WorkingShift: this.state.shiftType ? this.state.shiftType.value : '',
         WorkingHoursPerShift: values.WorkingHoursPerShift,
         NumberOfWorkingDaysPerYear: values.NumberOfWorkingDaysPerYear,
         EfficiencyPercentage: values.EfficiencyPercentage,
-        NumberOfWorkingHoursPerYear: values.NumberOfWorkingHoursPerYear,
+        NumberOfWorkingHoursPerYear: values.NumberOfWorkingHoursPerYear, // Round off for number
         LoanPercentage: values.LoanPercentage,
-        LoanValue: values.LoanValue,
+        LoanValue: machineFullValue.LoanValue,
         EquityPercentage: values.EquityPercentage,
-        EquityValue: values.EquityValue,
+        EquityValue: machineFullValue.EquityValue,
         RateOfInterestPercentage: values.RateOfInterestPercentage,
-        RateOfInterestValue: values.RateOfInterestValue,
+        RateOfInterestValue: machineFullValue.RateOfInterestValue,
         IsMaintanceFixed: IsAnnualMaintenanceFixed,
         AnnualMaintancePercentage: values.AnnualMaintancePercentage,
-        AnnualMaintanceAmount: values.AnnualMaintanceAmount,
+        AnnualMaintanceAmount: IsAnnualMaintenanceFixed ? machineFullValue.MaintananceCost : values.AnnualMaintanceAmount,
         IsConsumableFixed: IsAnnualConsumableFixed,
         AnnualConsumablePercentage: values.AnnualConsumablePercentage,
-        AnnualConsumableAmount: values.AnnualConsumableAmount,
+        AnnualConsumableAmount: IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : values.AnnualConsumableAmount,
         IsInsuranceFixed: IsInsuranceFixed,
         AnnualInsurancePercentage: values.AnnualInsurancePercentage,
-        AnnualInsuranceAmount: values.AnnualInsuranceAmount,
+        AnnualInsuranceAmount: IsInsuranceFixed ? machineFullValue.InsuranceCost : values.AnnualInsuranceAmount,
         BuildingCostPerSquareFeet: values.BuildingCostPerSquareFeet,
         MachineFloorAreaPerSquareFeet: values.MachineFloorAreaPerSquareFeet,
-        AnnualAreaCost: values.AnnualAreaCost,
+        AnnualAreaCost: machineFullValue.annualAreaCost,
         OtherYearlyCost: values.OtherYearlyCost,
-        TotalMachineCostPerAnnum: values.TotalMachineCostPerAnnum,
+        TotalMachineCostPerAnnum: machineFullValue.TotalMachineCostPerAnnum,
         IsUsesFuel: IsUsesFuel,
         PowerId: '',
         UtilizationFactorPercentage: values.UtilizationFactorPercentage,
-        PowerCostPerUnit: values.PowerCostPerUnit,
+        PowerCostPerUnit: machineFullValue.PowerCostPerUnit,
         PowerRatingPerKW: values.PowerRatingPerKW,
-        TotalPowerCostPerYear: values.TotalPowerCostPerYear,
+        TotalPowerCostPerYear: machineFullValue.totalPowerCostPrYer,
         IsUsesSolarPower: IsUsesSolar,
         FuleId: fuelType ? fuelType.value : '',
-        FuelCostPerUnit: values.FuelCostPerUnit,
+        FuelCostPerUnit: machineFullValue.FuelCostPerUnit,
         ConsumptionPerYear: values.ConsumptionPerYear,
-        TotalFuelCostPerYear: values.TotalFuelCostPerYear,
+        TotalFuelCostPerYear: machineFullValue.TotalFuelCostPerYear,
         MachineLabourRates: labourGrid,
-        TotalLabourCostPerYear: values.TotalLabourCostPerYear,
+        TotalLabourCostPerYear: values.TotalLabourCostPerYear, //need to ask from where it come
         IsVendor: false,
         IsDetailedEntry: true,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
@@ -1474,6 +1514,7 @@ class AddMoreDetails extends Component {
         VendorPlant: [],
         Attachements: files
       }
+      console.log(formData, "FORM DATA");
       this.props.createMachineDetails(formData, (res) => {
         if (res.data.Result) {
           formData.isViewFlag = true
@@ -1597,7 +1638,7 @@ class AddMoreDetails extends Component {
                           name={"MachineName"}
                           type="text"
                           placeholder={'Enter'}
-                          //validate={[required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}
@@ -1638,7 +1679,7 @@ class AddMoreDetails extends Component {
                           name={"Manufacture"}
                           type="text"
                           placeholder={'Enter'}
-                          //validate={[required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}
@@ -1722,7 +1763,7 @@ class AddMoreDetails extends Component {
                           name={"TonnageCapacity"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, number, postiveNumber]}
+                          validate={[required, checkWhiteSpaces, postiveNumber, maxLength10]}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
@@ -1739,7 +1780,7 @@ class AddMoreDetails extends Component {
                           name={"MachineCost"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, number]}
+                          validate={[required, postiveNumber, maxLength20]}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
@@ -1753,7 +1794,7 @@ class AddMoreDetails extends Component {
                           name={"AccessoriesCost"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
+                          validate={[postiveNumber, maxLength20]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}
@@ -1767,7 +1808,7 @@ class AddMoreDetails extends Component {
                           name={"InstallationCharges"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
+                          validate={[postiveNumber, maxLength20]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}
@@ -1797,7 +1838,7 @@ class AddMoreDetails extends Component {
                           name={"Description"}
                           type="text"
                           placeholder={'Enter'}
-                          // validate={[required]}
+                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                           component={renderText}
                           // required={true}
                           disabled={isEditFlag ? true : false}
@@ -1819,8 +1860,8 @@ class AddMoreDetails extends Component {
                           name={"LoanPercentage"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          component={renderText}
                           //required={true}
                           disabled={false}
                           className=" "
@@ -1847,8 +1888,8 @@ class AddMoreDetails extends Component {
                           name={"EquityPercentage"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          component={renderText}
                           //required={true}
                           disabled={false}
                           className=" "
@@ -1875,8 +1916,8 @@ class AddMoreDetails extends Component {
                           name={"RateOfInterestPercentage"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          component={renderText}
                           //required={true}
                           disabled={false}
                           className=" "
@@ -1927,7 +1968,7 @@ class AddMoreDetails extends Component {
                           name={"WorkingHoursPerShift"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, number]}
+                          validate={[required, positiveAndDecimalNumber, maxLength3]}
                           component={renderText}
                           required={true}
                           disabled={false}
@@ -1941,7 +1982,7 @@ class AddMoreDetails extends Component {
                           name={"NumberOfWorkingDaysPerYear"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, number]}
+                          validate={[required, positiveAndDecimalNumber, maxLength3]}
                           component={renderText}
                           required={true}
                           disabled={false}
@@ -1957,7 +1998,7 @@ class AddMoreDetails extends Component {
                               name={"EfficiencyPercentage"}
                               type="text"
                               placeholder={'Enter'}
-                              validate={[required, number]}
+                              validate={[required, positiveAndDecimalNumber, maxLength10]}
                               component={renderText}
                               required={true}
                               disabled={false}
@@ -2018,8 +2059,8 @@ class AddMoreDetails extends Component {
                             name={"DepreciationRatePercentage"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={this.state.depreciationType.value === WDM ? [required] : []}
-                            component={renderNumberInputField}
+                            validate={this.state.depreciationType.value === WDM ? [required, positiveAndDecimalNumber, maxLength10] : []}
+                            component={renderText}
                             required={this.state.depreciationType.value === WDM ? true : false}
                             disabled={false}
                             className=" "
@@ -2035,7 +2076,7 @@ class AddMoreDetails extends Component {
                             name={"LifeOfAssetPerYear"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, number]}
+                            validate={[required, positiveAndDecimalNumber]}
                             component={renderNumberInputField}
                             required={true}
                             disabled={false}
@@ -2049,7 +2090,7 @@ class AddMoreDetails extends Component {
                           name={"CastOfScrap"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           //required={true}
                           disabled={false}
@@ -2133,7 +2174,7 @@ class AddMoreDetails extends Component {
                             name={"AnnualMaintancePercentage"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[number]}
+                            validate={[positiveAndDecimalNumber, maxLength10]}
                             component={renderText}
                             //required={true}
                             disabled={false}
@@ -2147,7 +2188,7 @@ class AddMoreDetails extends Component {
                           name={"AnnualMaintanceAmount"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[positiveAndDecimalNumber]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           //required={true}
                           disabled={this.state.IsAnnualMaintenanceFixed ? true : false}
@@ -2183,7 +2224,7 @@ class AddMoreDetails extends Component {
                             name={"AnnualConsumablePercentage"}
                             type="text"
                             placeholder={'Enter'}
-                            //validate={[required]}
+                            validate={[positiveAndDecimalNumber, maxLength10]}
                             component={renderNumberInputField}
                             //required={true}
                             disabled={false}
@@ -2197,7 +2238,7 @@ class AddMoreDetails extends Component {
                           name={"AnnualConsumableAmount"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[positiveAndDecimalNumber]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           //required={true}
                           disabled={this.state.IsAnnualConsumableFixed ? true : false}
@@ -2234,7 +2275,7 @@ class AddMoreDetails extends Component {
                             name={"AnnualInsurancePercentage"}
                             type="text"
                             placeholder={'Enter'}
-                            //validate={[required]}
+                            validate={[positiveAndDecimalNumber, maxLength10]}
                             component={renderNumberInputField}
                             //required={true}
                             disabled={false}
@@ -2248,7 +2289,7 @@ class AddMoreDetails extends Component {
                           name={"AnnualInsuranceAmount"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[positiveAndDecimalNumber]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           //required={true}
                           disabled={this.state.IsInsuranceFixed ? true : false}
@@ -2304,7 +2345,7 @@ class AddMoreDetails extends Component {
                           name={"OtherYearlyCost"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number, postiveNumber]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
                           //required={true}
                           disabled={false}
@@ -2393,8 +2434,8 @@ class AddMoreDetails extends Component {
                               name={"ConsumptionPerYear"}
                               type="text"
                               placeholder={'Enter'}
-                              //validate={[required]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10]}
+                              component={renderText}
                               //required={true}
                               disabled={false}
                               className=" "
@@ -2425,8 +2466,8 @@ class AddMoreDetails extends Component {
                               name={"UtilizationFactorPercentage"}
                               type="text"
                               placeholder={'Enter'}
-                              //validate={[required]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10]}
+                              component={renderText}
                               //required={true}
                               disabled={false}
                               className=" "
@@ -2439,8 +2480,8 @@ class AddMoreDetails extends Component {
                               name={"PowerRatingPerKW"}
                               type="text"
                               placeholder={'Enter'}
-                              //validate={[required]}
-                              component={renderNumberInputField}
+                              validate={[positiveAndDecimalNumber, maxLength10]}
+                              component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}
                               className=" "
@@ -2541,7 +2582,7 @@ class AddMoreDetails extends Component {
                           name={"NumberOfLabour"}
                           type="text"
                           placeholder={'Enter'}
-                          //validate={[required]}
+                          validate={[maxLength10]}
                           component={renderNumberInputField}
                           //onChange={this.handleLabourCalculation}
                           //required={true}
@@ -2689,8 +2730,8 @@ class AddMoreDetails extends Component {
                           name={"OutputPerHours"}
                           type="text"
                           placeholder={'Enter'}
-                          //validate={[required]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          component={renderText}
                           //required={true}
                           disabled={false}
                           className=" "
@@ -2717,8 +2758,8 @@ class AddMoreDetails extends Component {
                           name={"MachineRate"}
                           type="text"
                           placeholder={''}
-                          //validate={[required]}
-                          component={renderNumberInputField}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          component={renderText}
                           onChange={this.handleMachineRate}
                           //required={true}
                           disabled={true}
@@ -2773,8 +2814,8 @@ class AddMoreDetails extends Component {
                                     <td>{item.processName}</td>
                                     <td>{item.UnitOfMeasurement}</td>
                                     <td>{item.OutputPerHours}</td>
-                                    <td>{item.OutputPerYear}</td>
-                                    <td>{checkForDecimalAndNull(item.MachineRate)}</td>
+                                    <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                                    <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                     <td>
                                       <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
                                       <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -2805,10 +2846,10 @@ class AddMoreDetails extends Component {
                           className=""
                           customClassName=" textAreaWithBorder"
                           onChange={this.handleMessageChange}
-                          validate={[maxLength100]}
+                          validate={[maxLength512]}
                           // required={true}
                           component={renderTextAreaField}
-                          maxLength="100"
+                          maxLength="512"
                           rows="6"
                         />
                       </Col>

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number } from "../../../helper/validation";
+import { required, maxLength100, getVendorCode, number, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
@@ -225,6 +225,21 @@ class AddProfit extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
+
+      if (this.props.filedObj.ProfitPercentage) {
+        checkPercentageValue(this.props.filedObj.ProfitPercentage, "Profit percentage should not be more than 100") ? this.props.change('ProfitPercentage', this.props.filedObj.ProfitPercentage) : this.props.change('ProfitPercentage', 0)
+      }
+      if (this.props.filedObj.ProfitRMPercentage) {
+        checkPercentageValue(this.props.filedObj.ProfitRMPercentage, "Profit RM percentage should not be more than 100") ? this.props.change('ProfitRMPercentage', this.props.filedObj.ProfitRMPercentage) : this.props.change('ProfitRMPercentage', 0)
+      }
+      if (this.props.filedObj.ProfitMachiningCCPercentage) {
+        checkPercentageValue(this.props.filedObj.ProfitMachiningCCPercentage, "Profit CC percentage should not be more than 100") ? this.props.change('ProfitMachiningCCPercentage', this.props.filedObj.ProfitMachiningCCPercentage) : this.props.change('ProfitMachiningCCPercentage', 0)
+      }
+      if (this.props.filedObj.ProfitBOPPercentage) {
+        checkPercentageValue(this.props.filedObj.ProfitBOPPercentage, "Profit BOP percentage should not be more than 100") ? this.props.change('ProfitBOPPercentage', this.props.filedObj.ProfitBOPPercentage) : this.props.change('ProfitBOPPercentage', 0)
+      }
+
+
       const ProfitPercentage = filedObj && filedObj.ProfitPercentage !== undefined && filedObj.ProfitPercentage !== '' ? true : false;
       const ProfitRMPercentage = filedObj && filedObj.ProfitRMPercentage !== undefined && filedObj.ProfitRMPercentage !== '' ? true : false;
       const ProfitMachiningCCPercentage = filedObj && filedObj.ProfitMachiningCCPercentage !== undefined && filedObj.ProfitMachiningCCPercentage !== '' ? true : false;
@@ -735,13 +750,14 @@ class AddProfit extends Component {
                                 !isOverheadPercent ? "Enter" : ""
                               }
                               validate={
-                                !isOverheadPercent ? [required, number] : []
+                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15] : []
                               }
                               component={renderText}
                               onBlur={this.handlePercent}
                               required={!isOverheadPercent ? true : false}
                               className=""
                               customClassName=" withBorder"
+                              max={100}
                               disabled={isOverheadPercent ? true : false}
                             />
                           </Col>
@@ -753,7 +769,7 @@ class AddProfit extends Component {
                               name={"ProfitRMPercentage"}
                               type="text"
                               placeholder={!isRM ? "Enter" : ""}
-                              validate={!isRM ? [required, number] : []}
+                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isRM ? true : false}
@@ -770,7 +786,7 @@ class AddProfit extends Component {
                               name={"ProfitMachiningCCPercentage"}
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
-                              validate={!isCC ? [required, number] : []}
+                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
@@ -787,7 +803,7 @@ class AddProfit extends Component {
                               name={"ProfitBOPPercentage"}
                               type="text"
                               placeholder={!isBOP ? "Enter" : ""}
-                              validate={!isBOP ? [required, number] : []}
+                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
@@ -814,10 +830,10 @@ class AddProfit extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
-                            validate={[maxLength100]}
+                            validate={[maxLength512]}
                             //required={true}
                             component={renderTextAreaField}
-                            maxLength="5000"
+                            maxLength="512"
                           />
                         </Col>
                         <Col md="3">

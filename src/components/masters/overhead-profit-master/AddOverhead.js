@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number } from "../../../helper/validation";
+import { required, maxLength100, getVendorCode, number, positiveAndDecimalNumber, maxLength15, checkPercentageValue } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
@@ -225,12 +225,30 @@ class AddOverhead extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.filedObj !== this.props.filedObj) {
       const { filedObj } = this.props;
+
+      if (this.props.filedObj.OverheadPercentage) {
+        checkPercentageValue(this.props.filedObj.OverheadPercentage, "Overhead percentage should not be more than 100") ? this.props.change('OverheadPercentage', this.props.filedObj.OverheadPercentage) : this.props.change('OverheadPercentage', 0)
+      }
+      if (this.props.filedObj.OverheadRMPercentage) {
+        checkPercentageValue(this.props.filedObj.OverheadRMPercentage, "Overhead RM percentage should not be more than 100") ? this.props.change('OverheadRMPercentage', this.props.filedObj.OverheadRMPercentage) : this.props.change('OverheadRMPercentage', 0)
+      }
+      if (this.props.filedObj.OverheadMachiningCCPercentage) {
+        checkPercentageValue(this.props.filedObj.OverheadMachiningCCPercentage, "Overhead CC percentage should not be more than 100") ? this.props.change('OverheadMachiningCCPercentage', this.props.filedObj.OverheadMachiningCCPercentage) : this.props.change('OverheadMachiningCCPercentage', 0)
+      }
+      if (this.props.filedObj.OverheadBOPPercentage) {
+        checkPercentageValue(this.props.filedObj.OverheadBOPPercentage, "Overhead BOP percentage should not be more than 100") ? this.props.change('OverheadBOPPercentage', this.props.filedObj.OverheadBOPPercentage) : this.props.change('OverheadBOPPercentage', 0)
+      }
+
+
       const OverheadPercentage = filedObj && filedObj.OverheadPercentage !== undefined && filedObj.OverheadPercentage !== '' ? true : false;
       const OverheadRMPercentage = filedObj && filedObj.OverheadRMPercentage !== undefined && filedObj.OverheadRMPercentage !== '' ? true : false;
       const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' ? true : false;
       const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' ? true : false;
 
       console.log('OverheadPercentage: ', OverheadPercentage);
+
+
+
       if (OverheadPercentage) {
         this.setState({ isRM: true, isCC: true, isBOP: true, })
       } else if (OverheadRMPercentage || OverheadMachiningCCPercentage || OverheadBOPPercentage) {
@@ -238,6 +256,8 @@ class AddOverhead extends Component {
       } else {
         this.checkOverheadFields()
       }
+
+
 
     }
   }
@@ -268,10 +288,10 @@ class AddOverhead extends Component {
   };
 
   handlePercent = (e) => {
-    if (e.target.value > 100) {
-      toastr.warning('Overhead Percent can not be greater than 100.')
-      $('input[name="OverheadPercentage"]').focus()
-    }
+    // if (e.target.value > 100) {
+    //   toastr.warning('Overhead Percent can not be greater than 100.')
+    //   $('input[name="OverheadPercentage"]').focus()
+    // }
   }
 
   resetFields = () => {
@@ -731,13 +751,15 @@ class AddOverhead extends Component {
                                 !isOverheadPercent ? "Enter" : ""
                               }
                               validate={
-                                !isOverheadPercent ? [required, number] : []
+                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15] : []
                               }
                               component={renderText}
                               onBlur={this.handlePercent}
                               required={!isOverheadPercent ? true : false}
                               className=""
                               customClassName=" withBorder"
+                              maxLength={15}
+                              // max={100}
                               disabled={isOverheadPercent ? true : false}
                             />
                           </Col>
@@ -749,7 +771,7 @@ class AddOverhead extends Component {
                               name={"OverheadRMPercentage"}
                               type="text"
                               placeholder={!isRM ? "Enter" : ""}
-                              validate={!isRM ? [required, number] : []}
+                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isRM ? true : false}
@@ -766,7 +788,7 @@ class AddOverhead extends Component {
                               name={"OverheadMachiningCCPercentage"}
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
-                              validate={!isCC ? [required, number] : []}
+                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
@@ -783,7 +805,7 @@ class AddOverhead extends Component {
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={!isBOP ? "Enter" : ""}
-                              validate={!isBOP ? [required, number] : []}
+                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}
@@ -810,10 +832,10 @@ class AddOverhead extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
-                            validate={[maxLength100]}
+                            //validate={[maxLength100]}
                             //required={true}
                             component={renderTextAreaField}
-                            maxLength="5000"
+                            maxLength="512"
                           />
                         </Col>
                         <Col md="3">

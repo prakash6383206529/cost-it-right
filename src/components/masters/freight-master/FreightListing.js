@@ -481,7 +481,7 @@ class FreightListing extends Component {
               <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
               <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="center" dataSort={true} >{'Source City'}</TableHeaderColumn>
               <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="center"  >{'Destination City'}</TableHeaderColumn>
-              <TableHeaderColumn searchable={false} width={100} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+              <TableHeaderColumn searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>

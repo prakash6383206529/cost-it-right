@@ -1200,6 +1200,7 @@ export function getCurrencySelectList(callback) {
 * @description Used to get select list of Vendor's
 */
 export function getTechnologySelectList(callback) {
+  console.log("Coming?");
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getTechnologySelectList}`, headers);

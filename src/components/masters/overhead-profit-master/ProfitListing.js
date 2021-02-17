@@ -149,7 +149,7 @@ class ProfitListing extends Component {
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         let headText = '';
-        if (!cell && row.VendorName !== '-') {
+        if (!row.IsVendor && row.VendorName === '-' && row.ClientName === "-") {
             headText = 'Zero Based';
         } else if (cell && row.VendorName !== '-') {
             headText = 'Vendor Based';

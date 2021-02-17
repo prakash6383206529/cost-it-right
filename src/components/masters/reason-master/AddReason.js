@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { checkWhiteSpaces, required } from "../../../helper/validation";
+import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, required } from "../../../helper/validation";
 import { renderText, focusOnError } from "../../layout/FormInputs";
 import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
 import { toastr } from 'react-redux-toastr';
@@ -157,7 +157,7 @@ class AddReason extends Component {
                     name={"Reason"}
                     type="text"
                     placeholder={""}
-                    validate={[required, checkWhiteSpaces]}
+                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter]}
                     component={renderText}
                     required={true}
                     className=" "
