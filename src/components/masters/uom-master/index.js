@@ -286,6 +286,7 @@ class UOMMaster extends Component {
                   Status
                     </TableHeaderColumn>
                 <TableHeaderColumn
+                  width={100}
                   dataField="Id"
                   isKey={true}
                   dataFormat={this.buttonFormatter}

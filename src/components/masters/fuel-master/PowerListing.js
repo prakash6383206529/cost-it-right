@@ -544,10 +544,10 @@ class PowerListing extends Component {
                 ref={'table'}
                 pagination>
                 {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                <TableHeaderColumn dataField="StateName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="PlantName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataAlign="center" width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
+                <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="left" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} dataAlign="left" width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
               </BootstrapTable>}
 
             {/* VENDOR POWER LISTING */}
@@ -564,10 +564,10 @@ class PowerListing extends Component {
                 ref={'table'}
                 pagination>
                 {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="VendorPlantName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataAlign="center" width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+                <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
               </BootstrapTable>}
 
           </Col>

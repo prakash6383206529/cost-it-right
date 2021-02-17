@@ -536,15 +536,15 @@ class ProfitListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="VendorName" width={150} columnTitle={true} dataAlign="center" >{this.renderVendor()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="ClientName" width={150} columnTitle={true} dataAlign="center" >{this.renderClient()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="center" >{this.renderModelType()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProfitApplicabilityType" width={100} columnTitle={true} dataAlign="center" >{this.renderOverheadAppli()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="ProfitPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadAppliPercent()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="ProfitMachiningCCPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="ProfitRMPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="ProfitBOPPercentage" width={100} columnTitle={true} dataAlign="center" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="VendorName" width={150} columnTitle={true} dataAlign="left" >{this.renderVendor()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="ClientName" width={150} columnTitle={true} dataAlign="left" >{this.renderClient()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="left" >{this.renderModelType()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProfitApplicabilityType" width={100} columnTitle={true} dataAlign="left" >{this.renderOverheadAppli()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="ProfitPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadAppliPercent()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="ProfitMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="ProfitRMPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="ProfitBOPPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
                             {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} searchable={false} dataField="ProfitId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>

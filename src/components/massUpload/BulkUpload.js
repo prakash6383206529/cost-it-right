@@ -443,7 +443,7 @@ class BulkUpload extends Component {
 
                             </Row>
                             <Row className=" justify-content-between">
-                                <div className="col-sm-12  bluefooter-butn1 text-right">
+                                <div className="col-sm-12  text-right">
                                     <button
                                         type={'button'}
                                         className="reset mr15 cancel-btn"
@@ -452,7 +452,7 @@ class BulkUpload extends Component {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="submit-button mr5 save-btn" >
+                                        className="submit-button save-btn" >
                                         <div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img>
                                         </div> {isEditFlag ? 'Update' : 'Save'}
                                     </button>

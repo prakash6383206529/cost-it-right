@@ -731,7 +731,7 @@ class AddVolume extends Component {
 
                       <Row>
                         <Col md="12">
-                          <div className="left-border">{"Quantity:"}</div>
+                          <div className="left-border mb-0">{"Quantity:"}</div>
                         </Col>
                         <Col md="12">
                           <BootstrapTable
@@ -747,25 +747,25 @@ class AddVolume extends Component {
                             >
                               Month
                               </TableHeaderColumn>
-                            <TableHeaderColumn dataField="BudgetedQuantity">
+                            <TableHeaderColumn dataField="BudgetedQuantity" dataAlign='center'>
                               Budgeted Quantity
                               </TableHeaderColumn>
-                            <TableHeaderColumn dataField="ApprovedQuantity">
+                            <TableHeaderColumn dataField="ApprovedQuantity" dataAlign='center'>
                               Actual Quantity
                               </TableHeaderColumn>
-                            <TableHeaderColumn
+                            <TableHeaderColumn dataAlign='center'
                               dataField="VolumeApprovedDetailId"
                               hidden
                             >
                               Volume Approv Id
                               </TableHeaderColumn>
-                            <TableHeaderColumn
+                            <TableHeaderColumn dataAlign='center'
                               dataField="VolumeBudgetedDetailId"
                               hidden
                             >
                               Vol Budget Id
                               </TableHeaderColumn>
-                            <TableHeaderColumn
+                            <TableHeaderColumn width={100}
                               className="action"
                               dataField="VolumeApprovedDetailId"
                               isKey={true}

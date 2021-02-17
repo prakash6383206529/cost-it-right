@@ -123,7 +123,7 @@ class ExchangeRateListing extends Component {
                 this.confirmDeleteItem(Id)
             },
             onCancel: () => console.log('CANCEL: clicked'),
-            component: () => <ConfirmComponent/>
+            component: () => <ConfirmComponent />
         };
         return toastr.confirm(MESSAGES.EXCHANGE_DELETE_ALERT, toastrConfirmOptions);
     }
@@ -270,114 +270,114 @@ class ExchangeRateListing extends Component {
             )
         }
         const options = {
-          clearSearch: true,
-          noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-          //exportCSVText: 'Download Excel',
-          //onExportToCSV: this.onExportToCSV,
-          //paginationShowsTotal: true,
-          paginationShowsTotal: this.renderPaginationShowsTotal,
-          prePage: <span className="prev-page-pg"></span>, // Previous page button text
-          nextPage: <span className="next-page-pg"></span>, // Next page button text
-          firstPage: <span className="first-page-pg"></span>, // First page button text
-          lastPage: <span className="last-page-pg"></span>,
-          paginationSize: 5,
+            clearSearch: true,
+            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            //exportCSVText: 'Download Excel',
+            //onExportToCSV: this.onExportToCSV,
+            //paginationShowsTotal: true,
+            paginationShowsTotal: this.renderPaginationShowsTotal,
+            prePage: <span className="prev-page-pg"></span>, // Previous page button text
+            nextPage: <span className="next-page-pg"></span>, // Next page button text
+            firstPage: <span className="first-page-pg"></span>, // First page button text
+            lastPage: <span className="last-page-pg"></span>,
+            paginationSize: 5,
         };
 
         return (
             <>
-            <div className="container-fluid">
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row>
-                        <Col md="12"><h1>Exchange Rate Master</h1></Col>
-                        <Col md="12"><hr className="m-0" /></Col>
-                    </Row>
-                    <Row className="pt-4 blue-before">
-                        {this.state.shown ? (
-                        <Col md="7" className="filter-block">
-                            <div className="d-inline-flex justify-content-start align-items-top w100">
-                                <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
-                                <div className="flex-fill">
-                                    <Field
-                                        name="Currency"
-                                        type="text"
-                                        label=""
-                                        component={searchableSelect}
-                                        placeholder={'Select Currency'}
-                                        isClearable={false}
-                                        options={this.renderListing('currency')}
-                                        //onKeyUp={(e) => this.changeItemDesc(e)}
-                                        validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
-                                        required={true}
-                                        handleChangeDescription={this.handleCurrency}
-                                        valueDescription={this.state.currency}
-                                        disabled={false}
-                                    />
-                                </div>
+                <div className="container-fluid">
+                    {/* {this.props.loading && <Loader />} */}
+                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                        <Row>
+                            <Col md="12"><h1>Exchange Rate Master</h1></Col>
+                            <Col md="12"><hr className="m-0" /></Col>
+                        </Row>
+                        <Row className="pt-4 blue-before">
+                            {this.state.shown ? (
+                                <Col md="7" className="filter-block">
+                                    <div className="d-inline-flex justify-content-start align-items-top w100">
+                                        <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
+                                        <div className="flex-fill">
+                                            <Field
+                                                name="Currency"
+                                                type="text"
+                                                label=""
+                                                component={searchableSelect}
+                                                placeholder={'Select Currency'}
+                                                isClearable={false}
+                                                options={this.renderListing('currency')}
+                                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                                validate={(this.state.currency == null || this.state.currency.length === 0) ? [required] : []}
+                                                required={true}
+                                                handleChangeDescription={this.handleCurrency}
+                                                valueDescription={this.state.currency}
+                                                disabled={false}
+                                            />
+                                        </div>
 
-                                <div className="flex-fill">
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.resetFilter}
-                                        className="reset mr10"
-                                    >
-                                        {'Reset'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        //disabled={pristine || submitting}
-                                        onClick={this.filterList}
-                                        className="apply mr5"
-                                    >
-                                        {'Apply'}
-                                    </button>
+                                        <div className="flex-fill">
+                                            <button
+                                                type="button"
+                                                //disabled={pristine || submitting}
+                                                onClick={this.resetFilter}
+                                                className="reset mr10"
+                                            >
+                                                {'Reset'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                //disabled={pristine || submitting}
+                                                onClick={this.filterList}
+                                                className="apply mr5"
+                                            >
+                                                {'Apply'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Col>) : ("")}
+                            <Col md="6" className="search-user-block mb-3">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
+                                        {this.state.shown ? (
+                                            <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                        ) : (
+                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                            )}
+                                        {AddAccessibility && <button
+                                            type="button"
+                                            className={'user-btn'}
+                                            onClick={this.formToggle}>
+                                            <div className={'plus'}></div>ADD</button>}
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>) : ("")}
-                        <Col md="6" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                {this.state.shown ? (
-                                    <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown})}>
-                                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                ) : (
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown})}>Show Filter</button>
-                                )}
-                                    {AddAccessibility && <button
-                                        type="button"
-                                        className={'user-btn'}
-                                        onClick={this.formToggle}>
-                                        <div className={'plus'}></div>ADD</button>}
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
+                            </Col>
+                        </Row>
 
-                </form>
-                <BootstrapTable
-                    data={this.props.exchangeRateDataList}
-                    striped={false}
-                    hover={false}
-                    bordered={false}
-                    options={options}
-                    search
-                    // exportCSV
-                    //ignoreSinglePage
-                    ref={'table'}
-                    trClassName={'userlisting-row'}
-                    tableHeaderClass='my-custom-header'
-                    pagination>
-                    <TableHeaderColumn dataField="Currency" columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CurrencyExchangeRate" width={150} columnTitle={true} dataAlign="center" >{'Exchange Rate(INR)'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BankRate" columnTitle={true} dataAlign="center" >{'Bank Rate(INR)'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BankCommissionPercentage" columnTitle={true} dataAlign="center" >{'Bank Commission %'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="center" >{'Custom Rate(INR)'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} className="action" dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-                </BootstrapTable>
-            </div>
+                    </form>
+                    <BootstrapTable
+                        data={this.props.exchangeRateDataList}
+                        striped={false}
+                        hover={false}
+                        bordered={false}
+                        options={options}
+                        search
+                        // exportCSV
+                        //ignoreSinglePage
+                        ref={'table'}
+                        trClassName={'userlisting-row'}
+                        tableHeaderClass='my-custom-header'
+                        pagination>
+                        <TableHeaderColumn dataField="Currency" columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={150} columnTitle={true} dataAlign="center" >{'Exchange Rate(INR)'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankRate" columnTitle={true} dataAlign="center" >{'Bank Rate(INR)'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankCommissionPercentage" columnTitle={true} dataAlign="center" >{'Bank Commission %'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="center" >{'Custom Rate(INR)'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
+                        <TableHeaderColumn searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    </BootstrapTable>
+                </div>
             </ >
         );
     }

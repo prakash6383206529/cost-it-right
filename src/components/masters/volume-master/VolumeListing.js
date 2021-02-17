@@ -559,287 +559,288 @@ class VolumeListing extends Component {
       <>
         {/* {this.props.loading && <Loader />} */}
         <div className="container-fluid">
-        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <Row>
-            <Col md="12"><h1>Volume Master</h1></Col>
-            <Col md="12"><hr className="m-0" /></Col>
-          </Row>
-          <Row className="pt-4 blue-before">
-          {this.state.shown ? (
-            <Col md="8" className="filter-block">
-              <div className="d-inline-flex justify-content-start align-items-top w100">
-                <div className="flex-fills">
-                  <h5>{`Filter By:`}</h5>
-                </div>
+          <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+            <Row>
+              <Col md="12"><h1>Volume Master</h1></Col>
+              <Col md="12"><hr className="m-0" /></Col>
+            </Row>
+            <Row className="pt-4 blue-before">
+              {this.state.shown ? (
+                <Col md="8" className="filter-block">
+                  <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
+                    </div>
 
-                <div className="flex-fill">
-                  <Field
-                    name="year"
-                    type="text"
-                    label=""
-                    component={searchableSelect}
-                    placeholder={'-Year-'}
-                    isClearable={false}
-                    options={this.renderListing('year')}
-                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                    validate={
-                      this.state.year == null || this.state.year.length === 0
-                        ? [required]
-                        : []
-                    }
-                    required={true}
-                    handleChangeDescription={this.handleYear}
-                    valueDescription={this.state.year}
-                  //disabled={isEditFlag ? true : false}
-                  />
-                </div>
-                <div className="flex-fill">
-                  <Field
-                    name="month"
-                    type="text"
-                    label=""
-                    component={searchableSelect}
-                    placeholder={'-Month-'}
-                    isClearable={false}
-                    options={this.renderListing('month')}
-                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                    validate={
-                      this.state.month == null || this.state.month.length === 0
-                        ? [required]
-                        : []
-                    }
-                    required={true}
-                    handleChangeDescription={this.handleMonth}
-                    valueDescription={this.state.month}
-                  //disabled={isEditFlag ? true : false}
-                  />
-                </div>
-                <div className="flex-fill">
-                  <Field
-                    name="vendorName"
-                    type="text"
-                    label=""
-                    component={searchableSelect}
-                    placeholder={'-Vendors-'}
-                    isClearable={false}
-                    options={this.renderListing('VendorList')}
-                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                    validate={
-                      this.state.vendorName == null ||
-                        this.state.vendorName.length === 0
-                        ? [required]
-                        : []
-                    }
-                    required={true}
-                    handleChangeDescription={this.handleVendorName}
-                    valueDescription={this.state.vendorName}
-                    disabled={isEditFlag ? true : false}
-                  />
-                </div>
-                <div className="flex-fill">
-                  <Field
-                    name="plant"
-                    type="text"
-                    label=""
-                    component={searchableSelect}
-                    placeholder={'-Plant-'}
-                    isClearable={false}
-                    options={this.renderListing('plant')}
-                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                    validate={
-                      this.state.plant == null || this.state.plant.length === 0
-                        ? [required]
-                        : []
-                    }
-                    required={true}
-                    handleChangeDescription={this.handlePlant}
-                    valueDescription={this.state.plant}
-                    disabled={isEditFlag ? true : false}
-                  />
-                </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="year"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={'-Year-'}
+                        isClearable={false}
+                        options={this.renderListing('year')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.year == null || this.state.year.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleYear}
+                        valueDescription={this.state.year}
+                      //disabled={isEditFlag ? true : false}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="month"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={'-Month-'}
+                        isClearable={false}
+                        options={this.renderListing('month')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.month == null || this.state.month.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleMonth}
+                        valueDescription={this.state.month}
+                      //disabled={isEditFlag ? true : false}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="vendorName"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={'-Vendors-'}
+                        isClearable={false}
+                        options={this.renderListing('VendorList')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.vendorName == null ||
+                            this.state.vendorName.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleVendorName}
+                        valueDescription={this.state.vendorName}
+                        disabled={isEditFlag ? true : false}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="plant"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={'-Plant-'}
+                        isClearable={false}
+                        options={this.renderListing('plant')}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.plant == null || this.state.plant.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handlePlant}
+                        valueDescription={this.state.plant}
+                        disabled={isEditFlag ? true : false}
+                      />
+                    </div>
 
-                <div className="flex-fill">
-                  <button
-                    type="button"
-                    //disabled={pristine || submitting}
-                    onClick={this.resetFilter}
-                    className="reset mr10"
-                  >
-                    {'Reset'}
-                  </button>
-                  <button
-                    type="button"
-                    //disabled={pristine || submitting}
-                    onClick={this.filterList}
-                    className="apply mr5"
-                  >
-                    {'Apply'}
-                  </button>
-                </div>
-              </div>
-            </Col> ) : ("") }
+                    <div className="flex-fill">
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.resetFilter}
+                        className="reset mr10"
+                      >
+                        {'Reset'}
+                      </button>
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.filterList}
+                        className="apply mr5"
+                      >
+                        {'Apply'}
+                      </button>
+                    </div>
+                  </div>
+                </Col>) : ("")}
 
-            <Col md="6" className="search-user-block mb-3">
-              <div className="d-flex justify-content-end bd-highlight">
-                <div>
-                {this.state.shown ? (
-                  <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                ) : (
-                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                  )}
-                  {BulkUploadAccessibility && (
-                    <button
-                      type="button"
-                      className={'user-btn mr5'}
-                      onClick={this.actualBulkToggle}
-                    >
-                      <div className={'upload'}></div>Actual Upload
-                    </button>
-                  )}
-                  {BulkUploadAccessibility && (
-                    <button
-                      type="button"
-                      className={'user-btn mr5'}
-                      onClick={this.budgetedBulkToggle}
-                    >
-                      <div className={'upload'}></div>Budgeted Upload
-                    </button>
-                  )}
-                  {AddAccessibility && (
-                    <button
-                      type="button"
-                      className={'user-btn'}
-                      onClick={this.formToggle}
-                    >
-                      <div className={'plus'}></div>ADD
-                    </button>
-                  )}
+              <Col md="6" className="search-user-block mb-3">
+                <div className="d-flex justify-content-end bd-highlight">
+                  <div>
+                    {this.state.shown ? (
+                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                    ) : (
+                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                      )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={'user-btn mr5'}
+                        onClick={this.actualBulkToggle}
+                      >
+                        <div className={'upload'}></div>Actual Upload
+                      </button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={'user-btn mr5'}
+                        onClick={this.budgetedBulkToggle}
+                      >
+                        <div className={'upload'}></div>Budgeted Upload
+                      </button>
+                    )}
+                    {AddAccessibility && (
+                      <button
+                        type="button"
+                        className={'user-btn'}
+                        onClick={this.formToggle}
+                      >
+                        <div className={'plus'}></div>ADD
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Col>
-          </Row>
-        </form>
-        <BootstrapTable
-          data={this.props.volumeDataList}
-          striped={false}
-          hover={false}
-          bordered={false}
-          options={options}
-          search
-          // exportCSV
-          //ignoreSinglePage
-          ref={'table'}
-          trClassName={'userlisting-row'}
-          tableHeaderClass="my-custom-header"
-          pagination
-        >
-          <TableHeaderColumn
-            dataField="IsVendor"
-            columnTitle={true}
-            dataAlign="center"
-            dataSort={true}
-            searchable={false}
-            dataFormat={this.costingHeadFormatter}
+              </Col>
+            </Row>
+          </form>
+          <BootstrapTable
+            data={this.props.volumeDataList}
+            striped={false}
+            hover={false}
+            bordered={false}
+            options={options}
+            search
+            // exportCSV
+            //ignoreSinglePage
+            ref={'table'}
+            trClassName={'userlisting-row'}
+            tableHeaderClass="my-custom-header"
+            pagination
           >
-            {this.renderCostingHead()}
+            <TableHeaderColumn
+              dataField="IsVendor"
+              columnTitle={true}
+              dataAlign="left"
+              dataSort={true}
+              searchable={false}
+              dataFormat={this.costingHeadFormatter}
+            >
+              {this.renderCostingHead()}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              dataField="Year"
+              width={100}
+              columnTitle={true}
+              dataAlign="left"
+              searchable={false}
+              dataSort={true}
+            >
+              {'Year'}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              dataField="Month"
+              width={100}
+              columnTitle={true}
+              dataAlign="left"
+              searchable={false}
+              dataSort={true}
+            >
+              {'Month'}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              dataField="VendorName"
+              columnTitle={true}
+              searchable={false}
+              dataAlign="left"
+              dataSort={true}
+            >
+              {'Vendor Name'}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              dataField="PartNumber"
+              columnTitle={true}
+              dataAlign="left"
+              dataSort={true}
+            >
+              {'Part No.'}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              dataField="PartName"
+              columnTitle={true}
+              dataAlign="left"
+              dataSort={true}
+            >
+              {'Part Name'}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              dataField="BudgetedQuantity"
+              searchable={false}
+              columnTitle={true}
+              dataAlign="left"
+              dataSort={true}
+            >
+              {'Budgeted Quantity'}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              dataField="ApprovedQuantity"
+              columnTitle={true}
+              searchable={false}
+              dataAlign="left"
+              dataSort={true}
+            >
+              {'Actual Quantity '}
+            </TableHeaderColumn>
+            <TableHeaderColumn
+              width={100}
+              className="action"
+              dataField="VolumeId"
+              searchable={false}
+              export={false}
+              isKey={true}
+              dataFormat={this.buttonFormatter}
+            >
+              Actions
           </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="Year"
-            width={100}
-            columnTitle={true}
-            dataAlign="center"
-            searchable={false}
-            dataSort={true}
-          >
-            {'Year'}
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="Month"
-            width={100}
-            columnTitle={true}
-            dataAlign="center"
-            searchable={false}
-            dataSort={true}
-          >
-            {'Month'}
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="VendorName"
-            columnTitle={true}
-            searchable={false}
-            dataAlign="center"
-            dataSort={true}
-          >
-            {'Vendor Name'}
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="PartNumber"
-            columnTitle={true}
-            dataAlign="center"
-            dataSort={true}
-          >
-            {'Part No.'}
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="PartName"
-            columnTitle={true}
-            dataAlign="center"
-            dataSort={true}
-          >
-            {'Part Name'}
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="BudgetedQuantity"
-            searchable={false}
-            columnTitle={true}
-            dataAlign="center"
-            dataSort={true}
-          >
-            {'Budgeted Quantity'}
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="ApprovedQuantity"
-            columnTitle={true}
-            searchable={false}
-            dataAlign="center"
-            dataSort={true}
-          >
-            {'Actual Quantity '}
-          </TableHeaderColumn>
-          <TableHeaderColumn
-            className="action"
-            dataField="VolumeId"
-            searchable={false}
-            export={false}
-            isKey={true}
-            dataFormat={this.buttonFormatter}
-          >
-            Actions
-          </TableHeaderColumn>
-        </BootstrapTable>
-        {isActualBulkUpload && (
-          <BulkUpload
-            isOpen={isActualBulkUpload}
-            closeDrawer={this.closeActualBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'ActualVolume'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Volume Actual'}
-            anchor={'right'}
-          />
-        )}
-        {isBudgetedBulkUpload && (
-          <BulkUpload
-            isOpen={isBudgetedBulkUpload}
-            closeDrawer={this.closeBudgetedBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'BudgetedVolume'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Volume Budgeted'}
-            anchor={'right'}
-          />
-        )}
+          </BootstrapTable>
+          {isActualBulkUpload && (
+            <BulkUpload
+              isOpen={isActualBulkUpload}
+              closeDrawer={this.closeActualBulkUploadDrawer}
+              isEditFlag={false}
+              fileName={'ActualVolume'}
+              isZBCVBCTemplate={true}
+              messageLabel={'Volume Actual'}
+              anchor={'right'}
+            />
+          )}
+          {isBudgetedBulkUpload && (
+            <BulkUpload
+              isOpen={isBudgetedBulkUpload}
+              closeDrawer={this.closeBudgetedBulkUploadDrawer}
+              isEditFlag={false}
+              fileName={'BudgetedVolume'}
+              isZBCVBCTemplate={true}
+              messageLabel={'Volume Budgeted'}
+              anchor={'right'}
+            />
+          )}
         </div>
       </>
     )

@@ -1337,20 +1337,20 @@ class AddPower extends Component {
                                   <>
                                     <button
                                       type="button"
-                                      className={`btn ${checkPowerContribution ? 'btn-secondary' : 'btn-primary'} mt30 pull-left mr5`}
+                                      className={`btn ${checkPowerContribution ? 'btn-secondary disabled-button' : 'btn-primary'} mb-4 pull-left mr5`}
                                       onClick={this.updateSEBGrid}
                                       disabled={checkPowerContribution ? true : false}
                                     >Update</button>
                                     <button
                                       type="button"
-                                      className={'cancel-btn mt30 pull-left'}
+                                      className={'reset-btn mb-4 pull-left'}
                                       onClick={() => this.setState({ isEditSEBIndex: false })}
                                     >Cancel</button>
                                   </>
                                   :
                                   <button
                                     type="button"
-                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mb-4 pull-left`}
+                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary disabled-button' : 'btn-primary'} mb-4 pull-left`}
                                     disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
                                     onClick={() => this.powerSEBTableHandler(false)}>
                                     <div className={'plus'}></div>ADD</button>
@@ -1549,7 +1549,7 @@ class AddPower extends Component {
 
                                     <button
                                       type="button"
-                                      className={'cancel-btn mt30 pull-left'}
+                                      className={'reset-btn mt30 pull-left'}
                                       onClick={this.resetPowerGridData}
                                     >Cancel</button>
                                   </>

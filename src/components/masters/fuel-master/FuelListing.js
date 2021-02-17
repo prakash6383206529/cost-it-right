@@ -148,7 +148,7 @@ class FuelListing extends Component {
     }
 
     renderEffectiveDate = () => {
-        return <>Effective <br />Date</>
+        return <>Effective Date</>
     }
 
     /**
@@ -371,12 +371,12 @@ class FuelListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="FuelName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Fuel'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UnitOfMeasurementName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'UOM'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="StateName" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="FuelName" columnTitle={true} dataAlign="left" dataSort={true} >{'Fuel'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UnitOfMeasurementName" columnTitle={true} dataAlign="center" dataSort={true} >{'UOM'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
+                            <TableHeaderColumn width={180} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
+                            <TableHeaderColumn width={180} columnTitle={true} dataAlign="center" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} width={100} dataAlign="center" dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

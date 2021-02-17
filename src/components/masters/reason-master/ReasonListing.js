@@ -245,81 +245,81 @@ class ReasonListing extends Component {
       //onExportToCSV: this.onExportToCSV,
       //paginationShowsTotal: true,
       paginationShowsTotal: this.renderPaginationShowsTotal,
-			prePage: <span className="prev-page-pg"></span>, // Previous page button text
-			nextPage: <span className="next-page-pg"></span>, // Next page button text
-			firstPage: <span className="first-page-pg"></span>, // First page button text
-			lastPage: <span className="last-page-pg"></span>,
-			paginationSize: 2,
+      prePage: <span className="prev-page-pg"></span>, // Previous page button text
+      nextPage: <span className="next-page-pg"></span>, // Next page button text
+      firstPage: <span className="first-page-pg"></span>, // First page button text
+      lastPage: <span className="last-page-pg"></span>,
+      paginationSize: 2,
     }
 
     return (
       <>
-      <div className="container-fluid">
-        {/* {this.props.loading && <Loader />} */}
-        <Row>
-          <Col md={12}><h1>Reason</h1></Col>
-          <Col md={12}><hr className="mt-0" /></Col>
-        </Row>
-        <Row className="no-filter-row">
-        <Col md={6} className="text-right filter-block"></Col>
-        <Col md="6" className="text-right search-user-block pr-0">
-          <div className="d-flex justify-content-end bd-highlight w100">
-            <div>
-              {AddAccessibility && (
-                <button
-                  type="button"
-                  className={'user-btn'}
-                  onClick={this.formToggle}
-                >
-                  <div className={'plus'}></div>ADD REASON
-                </button>
-              )}
-            </div>
-          </div>
-        </Col>
-        </Row>
-        <BootstrapTable
-          data={this.props.reasonDataList}
-          striped={false}
-          hover={false}
-          bordered={false}
-          options={options}
-          search
-          // exportCSV
-          //ignoreSinglePage
-          ref={'table'}
-          trClassName={'userlisting-row'}
-          tableHeaderClass="my-custom-header"
-          pagination
-        >
-          {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-          <TableHeaderColumn
-            dataField="Reason"
-            dataAlign="center"
-            dataSort={true}
+        <div className="container-fluid">
+          {/* {this.props.loading && <Loader />} */}
+          <Row>
+            <Col md={12}><h1>Reason</h1></Col>
+            <Col md={12}><hr className="mt-0" /></Col>
+          </Row>
+          <Row className="no-filter-row">
+            <Col md={6} className="text-right filter-block"></Col>
+            <Col md="6" className="text-right search-user-block pr-0">
+              <div className="d-flex justify-content-end bd-highlight w100">
+                <div>
+                  {AddAccessibility && (
+                    <button
+                      type="button"
+                      className={'user-btn'}
+                      onClick={this.formToggle}
+                    >
+                      <div className={'plus'}></div>ADD REASON
+                    </button>
+                  )}
+                </div>
+              </div>
+            </Col>
+          </Row>
+          <BootstrapTable
+            data={this.props.reasonDataList}
+            striped={false}
+            hover={false}
+            bordered={false}
+            options={options}
+            search
+            // exportCSV
+            //ignoreSinglePage
+            ref={'table'}
+            trClassName={'userlisting-row'}
+            tableHeaderClass="my-custom-header"
+            pagination
           >
-            Reason
+            {/* <TableHeaderColumn dataField="Sr. No." width={'70'} csvHeader='Full-Name' dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
+            <TableHeaderColumn
+              dataField="Reason"
+              dataAlign="left"
+              dataSort={true}
+            >
+              Reason
           </TableHeaderColumn>
-          <TableHeaderColumn
-            dataField="IsActive"
-            export={false}
-            dataAlign="center"
-            dataFormat={this.statusButtonFormatter}
-          >
-            Status
+            <TableHeaderColumn
+              dataField="IsActive"
+              export={false}
+              dataAlign="center"
+              dataFormat={this.statusButtonFormatter}
+            >
+              Status
           </TableHeaderColumn>
-          <TableHeaderColumn
-            className="action"
-            dataField="ReasonId"
-            export={false}
-            searchable={false}
-            dataAlign="center"
-            isKey={true}
-            dataFormat={this.buttonFormatter}
-          >
-            Actions
+            <TableHeaderColumn
+              className="action"
+              dataField="ReasonId"
+              export={false}
+              searchable={false}
+              dataAlign="right"
+              isKey={true}
+              dataFormat={this.buttonFormatter}
+            >
+              Actions
           </TableHeaderColumn>
-        </BootstrapTable>
+          </BootstrapTable>
         </div>
         {isOpenDrawer && (
           <AddReason
