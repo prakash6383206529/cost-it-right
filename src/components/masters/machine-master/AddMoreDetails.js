@@ -36,6 +36,7 @@ import { calculatePercentage } from '../../../helper';
 import EfficiencyDrawer from './EfficiencyDrawer';
 import moment from 'moment';
 import { Loader } from '../../common/Loader';
+import { AcceptableMachineUOM } from '../../../config/masterData'
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -322,6 +323,8 @@ class AddMoreDetails extends Component {
     }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableMachineUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;

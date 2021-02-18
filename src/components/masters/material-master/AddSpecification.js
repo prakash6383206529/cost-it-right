@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { alphaNumeric, alphabetsOnlyForName, number, required } from "../../../helper/validation";
+import { alphaNumeric, alphabetsOnlyForName, number, required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
@@ -487,7 +487,7 @@ class AddSpecification extends Component {
                         name={"Specification"}
                         type="text"
                         placeholder={"Enter"}
-                        validate={[required, alphabetsOnlyForName]}
+                        validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
                         component={renderText}
                         required={true}
                         className=" "

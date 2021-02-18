@@ -446,7 +446,7 @@ class RMDomesticListing extends Component {
 
         return (
             <div>
-                {this.props.loading && <Loader />}
+                {/* {this.props.loading && <Loader />} */}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="filter-row-large pt-4">
                         {this.state.shown ? (
@@ -605,6 +605,8 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="Category" searchable={false} >Category</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
+
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorLocation" searchable={false} >{this.renderVendorLocation()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>

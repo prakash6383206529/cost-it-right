@@ -1031,7 +1031,7 @@ export function getUOMSelectList(callback) {
       if (response.data.Result) {
         dispatch({
           type: GET_UOM_SELECTLIST_SUCCESS,
-          payload: response.data.SelectList,
+          payload: response.data.Data,
         });
         callback(response);
       }

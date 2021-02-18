@@ -11,6 +11,7 @@ import {
   renderTextAreaField,
   focusOnError,
 } from '../../layout/FormInputs'
+import { AcceptableRMUOM } from '../../../config/masterData'
 import {
   getTechnologySelectList,
   getRawMaterialCategory,
@@ -360,7 +361,7 @@ class AddRMDomestic extends Component {
               categoryList &&
               categoryList.find((item) => item.Value === Data.Category)
 
-            // const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology)
+            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId)
             let plantArray = []
             Data && Data.Plant.map((item) => {
               plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -388,7 +389,7 @@ class AddRMDomestic extends Component {
               RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantArray,
-              // Technology:technologyObj !==  undefined ? {label: technologyObj.Text, value: technologyObj.Value}:[],
+              Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
               vendorName:
                 vendorObj !== undefined
                   ? { label: vendorObj.Text, value: vendorObj.Value }
@@ -586,6 +587,7 @@ class AddRMDomestic extends Component {
     if (label === 'technology') {
       technologySelectList &&
         technologySelectList.map((item) => {
+
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -639,6 +641,8 @@ class AddRMDomestic extends Component {
 
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
+        const accept = AcceptableRMUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -870,7 +874,7 @@ class AddRMDomestic extends Component {
         RMGrade: RMGrade.value,
         RMSpec: RMSpec.value,
         Category: Category.value,
-        // Technology: Technology.value,NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+        TechnologyId: Technology.value,
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
         Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
@@ -1145,6 +1149,13 @@ class AddRMDomestic extends Component {
                                 selectionChanged={
                                   this.handleSourceSupplierPlant
                                 }
+                                validate={
+                                  this.state.selectedPlants == null ||
+                                    this.state.selectedPlants.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
@@ -1215,6 +1226,13 @@ class AddRMDomestic extends Component {
                                   }
                                   options={this.renderListing("VendorPlant")}
                                   selectionChanged={this.handleVendorPlant}
+                                  validate={
+                                    this.state.selectedVendorPlants == null ||
+                                      this.state.selectedVendorPlants.length === 0
+                                      ? [required]
+                                      : []
+                                  }
+                                  required={true}
                                   optionValue={(option) => option.Value}
                                   optionLabel={(option) => option.Text}
                                   component={renderMultiSelectField}

@@ -25,6 +25,7 @@ import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
+import { AcceptableOperationUOM } from '../../../config/masterData'
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -132,6 +133,8 @@ class AddOperation extends Component {
     }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableOperationUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;

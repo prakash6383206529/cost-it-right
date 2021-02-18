@@ -381,7 +381,7 @@ class AddLabour extends Component {
         gridTable: tempArray,
         machineType: [],
         labourType: [],
-        effectiveDate: new Date(),
+        effectiveDate: '',
       },
       () => this.props.change('LabourRate', 0),
     )
@@ -439,6 +439,7 @@ class AddLabour extends Component {
         gridTable: tempArray,
         machineType: [],
         labourType: [],
+        effectiveDate: '',
         gridEditIndex: '',
         isEditIndex: false,
       },
@@ -507,6 +508,10 @@ class AddLabour extends Component {
       if (i === index) return false
       return true
     })
+
+    if (tempData.length === 0) {
+      this.setState({ isDisable: false, selectedPlants: [], vendorName: [], StateName: [] })
+    }
 
     this.setState({ gridTable: tempData })
   }
@@ -600,7 +605,7 @@ class AddLabour extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenMachineType, } = this.state;
+    const { isEditFlag, isOpenMachineType, isDisable } = this.state;
     return (
       <div className="container-fluid">
         {/* {isLoader && <Loader />} */}
@@ -697,7 +702,7 @@ class AddLabour extends Component {
                                   this.handleVendorName
                                 }
                                 valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : false}
+                                disabled={isEditFlag ? true : isDisable ? true : false}
                               />
                             </div>
                           </div>
@@ -721,7 +726,7 @@ class AddLabour extends Component {
                           required={true}
                           handleChangeDescription={this.handleState}
                           valueDescription={this.state.StateName}
-                          disabled={isEditFlag ? true : false}
+                          disabled={isEditFlag ? true : isDisable ? true : false}
                         />
                       </Col>
                       <Col md="3">
@@ -742,7 +747,7 @@ class AddLabour extends Component {
                           required={true}
                           handleChangeDescription={this.handlePlants}
                           valueDescription={this.state.selectedPlants}
-                          disabled={isEditFlag ? true : false}
+                          disabled={isEditFlag ? true : isDisable ? true : false}
                         />
                       </Col>
                     </Row>

@@ -1230,3 +1230,10 @@ export const costingHeadObj = [
     { label: 'Zero Based', value: 'ZBC' },
     { label: 'Vendor Based', value: 'VBC' },
 ]
+
+export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume']
+export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume']
+export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
+export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
+export const AcceptableFuelUOM = ['Mass', 'Volume']
+export const AcceptablePowerUOM = ['Power']

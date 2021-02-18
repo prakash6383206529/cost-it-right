@@ -30,6 +30,7 @@ import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { reactLocalStorage } from "reactjs-localstorage";
 import { ThemeProvider } from 'react-bootstrap';
+import { AcceptableMachineUOM } from '../../../config/masterData'
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -324,6 +325,8 @@ class AddMachineRate extends Component {
     }
     if (label === 'UOM') {
       UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableMachineUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;

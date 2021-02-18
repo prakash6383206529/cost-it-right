@@ -200,7 +200,7 @@ class SOBListing extends Component {
     const { isOpen, isEditFlag } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: (this.props.bopDomesticList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -273,7 +273,7 @@ class SOBListing extends Component {
         <Row>
           <Col>
             <BootstrapTable
-              data={this.state.tableData}
+              data={this.props.bopSobList}
               striped={false}
               hover={false}
               bordered={false}
@@ -312,9 +312,9 @@ class SOBListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ boughtOutparts, comman }) {
-  const { bopCategorySelectList, vendorAllSelectList, BOPVendorDataList } = boughtOutparts;
+  const { bopCategorySelectList, vendorAllSelectList, BOPVendorDataList, bopSobList } = boughtOutparts;
   const { plantSelectList, } = comman;
-  return { bopCategorySelectList, plantSelectList, vendorAllSelectList, BOPVendorDataList }
+  return { bopCategorySelectList, plantSelectList, vendorAllSelectList, BOPVendorDataList, bopSobList }
 }
 
 /**

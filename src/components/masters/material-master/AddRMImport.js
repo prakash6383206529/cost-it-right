@@ -30,6 +30,7 @@ import Dropzone from 'react-dropzone-uploader';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
+import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 const selector = formValueSelector('AddRMImport');
 
@@ -542,12 +543,14 @@ class AddRMImport extends Component {
       return temp;
     }
     if (label === 'uom') {
-      UOMSelectList && UOMSelectList.map(item => {
-        if (item.Value === '0') return false;
+      UOMSelectList && UOMSelectList.map((item) => {
+        const accept = AcceptableRMUOM.includes(item.Type)
+        if (accept === false) return false
+        if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
-        return null;
-      });
-      return temp;
+        return null
+      })
+      return temp
     }
     if (label === 'currency') {
       currencySelectList && currencySelectList.map(item => {
@@ -1010,10 +1013,17 @@ class AddRMImport extends Component {
                                 selectionChanged={
                                   this.handleSourceSupplierPlant
                                 }
+                                validate={
+                                  this.state.selectedPlants == null ||
+                                    this.state.selectedPlants.length === 0
+                                    ? [required]
+                                    : []
+                                }
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
                                 mendatory={true}
+                                required={true}
                                 className="multiselect-with-border"
                                 disabled={
                                   this.state.IsVendor || isEditFlag
@@ -1085,6 +1095,12 @@ class AddRMImport extends Component {
                                   options={this.renderListing(
                                     "VendorPlant"
                                   )}
+                                  validate={
+                                    this.state.selectedVendorPlants == null ||
+                                      this.state.selectedVendorPlants.length === 0
+                                      ? [required]
+                                      : []
+                                  }
                                   selectionChanged={this.handleVendorPlant}
                                   optionValue={(option) => option.Value}
                                   optionLabel={(option) => option.Text}

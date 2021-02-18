@@ -30,6 +30,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
+import { AcceptableRMUOM } from '../../../config/masterData'
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -153,7 +154,7 @@ class AddBOPDomestic extends Component {
           //this.props.getCityBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList } = this.props;
+            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, UOMSelectList } = this.props;
 
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.CategoryId)
             let plantArray = Data && Data.Plant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
@@ -161,6 +162,7 @@ class AddBOPDomestic extends Component {
             let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
+            let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
 
             this.setState({
               isEditFlag: true,
@@ -174,6 +176,7 @@ class AddBOPDomestic extends Component {
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
+              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
             })
           }, 200)
         }
@@ -241,6 +244,8 @@ class AddBOPDomestic extends Component {
     }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableRMUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -469,7 +474,7 @@ class AddBOPDomestic extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -494,6 +499,7 @@ class AddBOPDomestic extends Component {
         Part: partArray,
         Plant: plantArray,
         Attachements: updatedFiles,
+        UnitOfMeasurementId: UOM.value,
       }
 
       this.props.updateBOPDomestic(requestData, (res) => {
@@ -513,6 +519,7 @@ class AddBOPDomestic extends Component {
         CategoryId: BOPCategory.value,
         Part: partArray,
         Specification: values.Specification,
+        UnitOfMeasurementId: UOM.value,
         Vendor: vendorName.value,
         VendorLocation: '',
         Source: values.Source,
@@ -695,6 +702,31 @@ class AddBOPDomestic extends Component {
                               disabled={isEditFlag ? true : false}
                               className=" "
                               customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="3">
+                            <Field
+                              name="UOM"
+                              type="text"
+                              label="UOM"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing(
+                                "uom"
+                              )}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.UOM == null ||
+                                  this.state.UOM.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={
+                                this.handleUOM
+                              }
+                              valueDescription={this.state.UOM}
+                              disabled={isEditFlag ? true : false}
                             />
                           </Col>
                           {!this.state.IsVendor && (
