@@ -33,6 +33,7 @@ import {
   SET_COSTING_APPROVAL_DATA,
   GET_COSTING_BY_VENDOR_VENDOR_PLANT,
   GET_COSTING_STATUS,
+  SET_ITEM_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -305,6 +306,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         costingStatusSelectList: action.payload,
+      }
+    case SET_ITEM_DATA:
+      return {
+        ...state,
+        loading: false,
+        itemDataObject: action.payload,
       }
     default:
       return state

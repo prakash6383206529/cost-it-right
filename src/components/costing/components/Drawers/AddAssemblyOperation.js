@@ -79,6 +79,8 @@ function AddAssemblyOperation(props) {
       "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
       "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
       "NetConversionCost": item.CostingPartDetails.TotalConversionCost,
+      "TotalProcessCost": item.CostingPartDetails.TotalProcessCost,
+      "TotalOperationCost": item.CostingPartDetails.TotalOperationCost,
       "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
       "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
       "LoggedInUserId": loggedInUserId(),
@@ -94,10 +96,12 @@ function AddAssemblyOperation(props) {
         "PartName": item.PartName,
         "PartTypeId": item.PartTypeId,
         "Type": item.PartType,
+
         "TotalRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
         "TotalBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
         "TotalConversionCost": item.CostingPartDetails.TotalConversionCost,
         "TotalCalculatedRMBOPCCCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+
         "Quantity": item.CostingPartDetails.Quantity,
         "IsOpen": true,
         "IsShowToolCost": item.CostingPartDetails.IsShowToolCost === null ? true : true,

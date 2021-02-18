@@ -35,6 +35,7 @@ import {
   SET_COSTING_APPROVAL_DATA,
   GET_COSTING_BY_VENDOR_VENDOR_PLANT,
   GET_COSTING_STATUS,
+  SET_ITEM_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1738,3 +1739,17 @@ export function getCostingStatusSelectList(callback) {
       })
   }
 }
+
+/**
+ * @method setItemData
+ * @description SET RMCC TAB DATA  
+ */
+export function setItemData(item, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_ITEM_DATA,
+      payload: item,
+    });
+    callback();
+  }
+};

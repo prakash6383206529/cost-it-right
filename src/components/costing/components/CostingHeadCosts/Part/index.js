@@ -5,7 +5,7 @@ import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 import { getRMCCTabData, saveComponentCostingRMCCTab } from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
 
 function PartCompoment(props) {
@@ -22,21 +22,21 @@ function PartCompoment(props) {
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
     setCount(Count + 1)
-    if (Object.keys(costData).length > 0) {
-      const data = {
-        CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
-        PartId: item.PartId,
-        //PlantId: costData.PlantId,
-      }
-      setTimeout(() => {
+    setTimeout(() => {
+      if (Object.keys(costData).length > 0) {
+        const data = {
+          CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
+          PartId: item.PartId,
+          //PlantId: costData.PlantId,
+        }
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0].CostingPartDetails;
             props.setPartDetails(BOMLevel, PartNumber, Data)
           }
         }))
-      }, 500)
-    }
+      }
+    }, 500)
   }
 
   useEffect(() => {

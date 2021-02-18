@@ -238,6 +238,10 @@ function ManageSOBDrawer(props) {
                                       value: /^[0-9]\d*(\.\d+)?$/i,
                                       message: 'Invalid Number.'
                                     },
+                                    max: {
+                                      value: 100,
+                                      message: "Should not be greater then 100"
+                                    }
                                   }}
 
                                   defaultValue={item.ShareOfBusinessPercentage}

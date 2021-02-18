@@ -453,9 +453,7 @@ function CostingDetails() {
         return accummlator + checkForNull(el.ShareOfBusinessPercent)
       }, 0)
 
-    return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100
-      ? false
-      : true
+    return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
     //  return true;
   }
 
@@ -816,11 +814,7 @@ function CostingDetails() {
                   </div>
                 </Col>
               </Row>
-              <form
-                noValidate
-                className="form"
-                onSubmit={handleSubmit(onSubmit)}
-              >
+              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 {stepOne && (
                   <>
                     <Row>
@@ -1051,6 +1045,10 @@ function CostingDetails() {
                                               value: /^[0-9]\d*(\.\d+)?$/i,
                                               message: "Invalid Number.",
                                             },
+                                            max: {
+                                              value: 100,
+                                              message: "Should not be greater then 100"
+                                            }
                                           }}
                                           defaultValue={item.ShareOfBusinessPercent}
                                           className=""
@@ -1165,6 +1163,10 @@ function CostingDetails() {
                                               value: /^[0-9]\d*(\.\d+)?$/i,
                                               message: "Invalid Number.",
                                             },
+                                            max: {
+                                              value: 100,
+                                              message: "Should not be greater then 100"
+                                            }
                                           }}
                                           defaultValue={item.ShareOfBusinessPercent}
                                           className=""

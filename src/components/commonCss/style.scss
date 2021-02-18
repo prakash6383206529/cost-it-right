@@ -2401,7 +2401,7 @@ table{
   display: inline-block;
   .tooltiptext {
     visibility: hidden;
-    min-width: 60px;
+    min-width: 300px;
     background-color: #D0D8E5;
     color: #3D4465;
     text-align: center;
@@ -2412,8 +2412,8 @@ table{
     z-index: 1;
     bottom: 100%;
     left: 50%;
-    margin-left: -30px;
-    font-size: 13px;
+    margin-left: -4px;
+    font-size: 14px;
     &:after {
       position: absolute;
       display: block;

@@ -22,7 +22,7 @@ function SurfaceTreatmentCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    props.setSurfaceCost(gridData, props.index)
+    //props.setSurfaceCost(gridData, props.index)
   }, [gridData]);
 
   /**
@@ -278,7 +278,7 @@ function SurfaceTreatmentCost(props) {
                       )
                     })
                   }
-                  {gridData.length === 0 &&
+                  {gridData && gridData.length === 0 &&
                     <tr>
                       <td colSpan={7}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />

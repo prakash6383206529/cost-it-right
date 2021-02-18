@@ -39,7 +39,7 @@ function TransportationCost(props) {
       TransportationCost: getValues('TransportationCost'),
     }
 
-    props.setTransportationCost(tempObj, props.index)
+    //props.setTransportationCost(tempObj, props.index)
   }, [uom, Rate, Quantity]);
 
   useEffect(() => {

@@ -1230,3 +1230,215 @@ export const costingHeadObj = [
     { label: 'Zero Based', value: 'ZBC' },
     { label: 'Vendor Based', value: 'VBC' },
 ]
+
+export const SurfaceTreatmentAssemblySaveJSON = [
+    {
+        "CostingId": "1b9c72b6-c7fe-48fb-ace7-52b5fb001042",
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "PartId": "bc3989f4-8c60-4442-8bd9-3a91a8e05d47",
+        "PartNumber": "PISTON",
+        "BOMLevel": "L0",
+        "CostingPartDetails": {
+            "CostingDetailId": "32867950-5a1e-4aec-93d9-c5fc19255e57",
+            "IsAssemblyPart": true,
+            //"Type": "Assembly",
+            "NetSurfaceTreatmentCost": 500,
+            "NetSurfaceTreatmentCostAssembly": 500,
+            "NetTransportationCostAssembly": 500,
+            "SurfaceTreatmentCost": 0,
+            "TransportationCost": 10,
+            "SurfaceTreatmentDetails": [
+                {
+                    "SurfaceTreatmentDetailsId": "de0d548f-f2b1-4e8c-82c1-dc792398554e",
+                    "OperationId": 123,
+                    "OperationName": 'Test1',
+                    "SurfaceArea": 100,
+                    "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                    "UOM": 'UOM Label',
+                    "RatePerUOM": 20,
+                    "IsLabourRateExist": true,
+                    "LabourRate": 300,
+                    "LabourQuantity": 2,
+                    "SurfaceTreatmentCost": 500
+                }
+            ],
+            "TransportationDetails": {
+                "TransportationDetailId": "e391f71d-b199-416e-8b53-54f3cdfbe8b9",
+                "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                "UOM": "Cubic metre",
+                "Rate": 10,
+                "Quantity": 1,
+                "TransportationCost": 10
+            }
+        },
+    }
+]
+
+export const SurfaceTreatmentAssemblyGetJSON = [
+    {
+        "CostingId": "1b9c72b6-c7fe-48fb-ace7-52b5fb001042",
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "PartId": "bc3989f4-8c60-4442-8bd9-3a91a8e05d47",
+        "PartNumber": "PISTON",
+        "BOMLevel": "L0",
+        "IsAssemblyPart": true,
+        "IsOpen": false,
+        "PartType": "Assembly",
+        "CostingPartDetails": {
+            "CostingDetailId": "32867950-5a1e-4aec-93d9-c5fc19255e57",
+            "IsAssemblyPart": true,
+            //"Type": "Assembly",
+            "NetSurfaceTreatmentCost": 500,
+            "NetSurfaceTreatmentCostAssembly": 500,
+            "NetTransportationCostAssembly": 500,
+            "SurfaceTreatmentCost": 0,
+            "TransportationCost": 10,
+            "SurfaceTreatmentDetails": [
+                {
+                    "SurfaceTreatmentDetailsId": "de0d548f-f2b1-4e8c-82c1-dc792398554e",
+                    "OperationId": 123,
+                    "OperationName": 'Test1',
+                    "SurfaceArea": 100,
+                    "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                    "UOM": 'UOMID',
+                    "RatePerUOM": 20,
+                    "IsLabourRateExist": true,
+                    "LabourRate": 300,
+                    "LabourQuantity": 2,
+                    "SurfaceTreatmentCost": 500
+                }
+            ],
+            "TransportationDetails": {
+                "TransportationDetailId": "e391f71d-b199-416e-8b53-54f3cdfbe8b9",
+                "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                "UOM": "Cubic metre",
+                "Rate": 10,
+                "Quantity": 1,
+                "TransportationCost": 10
+            }
+        },
+        "CostingChildPartDetails": [
+            {
+                "JsonStage": "_apart",
+                "CostingId": "1b9c72b6-c7fe-48fb-ace7-52b5fb001042",
+                "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+                "PartId": "bc3989f4-8c60-4442-8bd9-3a91a8e05d47",
+                "PartNumber": "PISTON",
+                "BOMLevel": "L1",
+                "IsAssemblyPart": false,
+                "IsOpen": false,
+                "PartType": "Part",
+                "CostingPartDetails": {
+                    "JsonStage": "_innerPartDetail",
+                    "NetSurfaceTreatmentCost": 10,
+                    "SurfaceTreatmentCost": 0,
+                    "TransportationCost": 10,
+                    "SurfaceTreatmentDetails": [
+                        {
+                            "SurfaceTreatmentDetailsId": "de0d548f-f2b1-4e8c-82c1-dc792398554e",
+                            "OperationId": null,
+                            "OperationName": null,
+                            "SurfaceArea": null,
+                            "UOM": null,
+                            "RatePerUOM": null,
+                            "IsLabourRateExist": null,
+                            "LabourRate": null,
+                            "LabourQuantity": null,
+                            "SurfaceTreatmentCost": null
+                        }
+                    ],
+                    "TransportationDetails": {
+                        "TransportationDetailId": "e391f71d-b199-416e-8b53-54f3cdfbe8b9",
+                        "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                        "UOM": "Cubic metre",
+                        "Rate": 10,
+                        "Quantity": 1,
+                        "TransportationCost": 10
+                    }
+                },
+            },
+        ],
+    }
+]
+
+export const SurfaceTreatmentPartSaveJSON = [
+    {
+        "CostingId": "1b9c72b6-c7fe-48fb-ace7-52b5fb001042",
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "PartId": "bc3989f4-8c60-4442-8bd9-3a91a8e05d47",
+        "PartNumber": "PISTON",
+        "BOMLevel": "L0",
+        "CostingPartDetails": {
+            "CostingDetailId": "32867950-5a1e-4aec-93d9-c5fc19255e57",
+            "NetSurfaceTreatmentCost": 500,
+            "SurfaceTreatmentCost": 0,
+            "TransportationCost": 10,
+            "SurfaceTreatmentDetails": [
+                {
+                    "SurfaceTreatmentDetailsId": "de0d548f-f2b1-4e8c-82c1-dc792398554e",
+                    "OperationId": 123,
+                    "OperationName": 'Test1',
+                    "SurfaceArea": 100,
+                    "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                    "UOM": 'UOMID',
+                    "RatePerUOM": 20,
+                    "IsLabourRateExist": true,
+                    "LabourRate": 300,
+                    "LabourQuantity": 2,
+                    "SurfaceTreatmentCost": 500
+                }
+            ],
+            "TransportationDetails": {
+                "TransportationDetailId": "e391f71d-b199-416e-8b53-54f3cdfbe8b9",
+                "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                "UOM": "Cubic metre",
+                "Rate": 10,
+                "Quantity": 1,
+                "TransportationCost": 10
+            }
+        },
+    }
+]
+
+export const SurfaceTreatmentPartGetJSON = [
+    {
+        "CostingId": "1b9c72b6-c7fe-48fb-ace7-52b5fb001042",
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "PartId": "bc3989f4-8c60-4442-8bd9-3a91a8e05d47",
+        "PartNumber": "PISTON",
+        "BOMLevel": "L0",
+        "IsOpen": true,
+        "IsAssemblyPart": true,
+        "PartType": "Part",
+        "CostingPartDetails": {
+            "CostingDetailId": "32867950-5a1e-4aec-93d9-c5fc19255e57",
+            "NetSurfaceTreatmentCost": 500,
+            "SurfaceTreatmentCost": 0,
+            "TransportationCost": 10,
+            "SurfaceTreatmentDetails": [
+                {
+                    "SurfaceTreatmentDetailsId": "de0d548f-f2b1-4e8c-82c1-dc792398554e",
+                    "OperationId": 123,
+                    "OperationName": 'Test1',
+                    "SurfaceArea": 100,
+                    "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                    "UOM": 'UOMID',
+                    "RatePerUOM": 20,
+                    "IsLabourRateExist": true,
+                    "LabourRate": 300,
+                    "LabourQuantity": 2,
+                    "SurfaceTreatmentCost": 500
+                }
+            ],
+            "TransportationDetails": {
+                "TransportationDetailId": "e391f71d-b199-416e-8b53-54f3cdfbe8b9",
+                "UOMId": "fe849b46-4d46-4806-9eb0-564edb6baa40",
+                "UOM": "Cubic metre",
+                "Rate": 10,
+                "Quantity": 1,
+                "TransportationCost": 10
+            }
+        },
+    }
+]
+

@@ -6,13 +6,16 @@ import { getSurfaceTreatmentTabData, saveCostingSurfaceTreatmentTab } from '../.
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import SurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent';
+import { SurfaceTreatmentAssemblyGetJSON } from '../../../../config/masterData';
+import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
+import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 
 function TabSurfaceTreatment(props) {
 
   const { netPOPrice } = props;
 
   const { handleSubmit, } = useForm();
-  const [tabData, setTabData] = useState([]);
+  const [tabData, setTabData] = useState(SurfaceTreatmentAssemblyGetJSON);
   const [costingData, setCostingData] = useState({});
   const [surfaceTotal, setSurfaceTotal] = useState('');
   const [transportationTotal, setTransportationTotal] = useState('');
@@ -29,14 +32,14 @@ function TabSurfaceTreatment(props) {
         PartId: costData.PartId,
         //PlantId: costData.PlantId,
       }
-      dispatch(getSurfaceTreatmentTabData(data, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setCostingData(Data)
-          setIsIncludeSurfaceTreatment(Data && Data.IsIncludeSurfaceTreatmentWithOverheadAndProfit)
-          setTabData(Data.CostingPartDetails)
-        }
-      }))
+      // dispatch(getSurfaceTreatmentTabData(data, (res) => {
+      //   if (res && res.data && res.data.Result) {
+      //     let Data = res.data.Data;
+      //     setCostingData(Data)
+      //     setIsIncludeSurfaceTreatment(Data && Data.IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+      //     setTabData(Data.CostingPartDetails)
+      //   }
+      // }))
     }
   }, [costData]);
 
@@ -53,6 +56,91 @@ function TabSurfaceTreatment(props) {
     let tempObj = { ...tempData, IsOpen: !tempData.IsOpen }
     let tempArr = Object.assign([...tabData], { [index]: tempObj })
     setTabData(tempArr)
+  }
+
+
+  /**
+  * @method setPartDetails
+  * @description SET PART DETAILS
+  */
+  const setPartDetails = (BOMLevel, PartNumber, Data = {}) => {
+    let arr = formatData(BOMLevel, PartNumber, Data, tabData)
+    //dispatch(setRMCCData(arr, () => { }))
+    setTabData(arr)
+  }
+
+  /**
+  * @method formatData
+  * @description FORMATE DATA FOR SET PART DETAILS
+  */
+  const formatData = (BOMLevel, PartNumber, Data, tabData) => {
+    let tempArr = [];
+    try {
+      tempArr = tabData && tabData.map(i => {
+        const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
+        if (i.IsAssemblyPart === true) {
+
+          formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails)
+
+        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+
+          //i.CostingPartDetails = Data;
+          i.IsOpen = !i.IsOpen;
+
+        } else {
+          i.IsOpen = false;
+          formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails)
+        }
+        return i;
+
+      });
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+  }
+
+
+  /**
+  * @method toggleAssembly
+  * @description SET PART DETAILS
+  */
+  const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
+    let arr = setAssembly(BOMLevel, PartNumber, Children, tabData)
+    //dispatch(setRMCCData(arr, () => { }))
+    setTabData(arr)
+  }
+
+  /**
+  * @method formatData
+  * @description SET PART DETAILS
+  */
+  const setAssembly = (BOMLevel, PartNumber, Children, tabData) => {
+    console.log('BOMLevel, PartNumber, Children, tabData', BOMLevel, PartNumber, Children, tabData)
+    let tempArr = [];
+    try {
+
+      tempArr = tabData && tabData.map(i => {
+
+        const { CostingChildPartDetails, CostingPartDetails } = Children;
+        const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
+
+        if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+
+          i.IsAssemblyPart = true;
+          i.IsOpen = !i.IsOpen;
+
+        } else {
+          setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+
   }
 
   /**
@@ -143,9 +231,9 @@ function TabSurfaceTreatment(props) {
       CostingPartDetails: tabData,
     }
 
-    dispatch(saveCostingSurfaceTreatmentTab(data, res => {
-      console.log('saveCostingSurfaceTreatmentTab: ', res);
-    }))
+    // dispatch(saveCostingSurfaceTreatmentTab(data, res => {
+    //   console.log('saveCostingSurfaceTreatmentTab: ', res);
+    // }))
 
   }
 
@@ -204,83 +292,82 @@ function TabSurfaceTreatment(props) {
                       <thead>
                         <tr>
                           <th style={{ width: "100px" }}>{``}</th>
-                          <th
-                            style={{ width: "100px" }}
-                          >{`Surface Treatment Cost`}</th>
-                          <th
-                            style={{ width: "150px" }}
-                          >{`Transportation Cost`}</th>
-                          <th
-                            style={{ width: "150px" }}
-                          >{`Total Surface Treatment Cost`}</th>
+                          <th style={{ width: '100px' }}>{`Type`}</th>
+                          <th style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
+                          <th style={{ width: "150px" }}>{`Transportation Cost`}</th>
+                          <th style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
+                          <th style={{ width: "100px" }}>{``}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {tabData &&
-                          tabData.map((item, index) => {
-                            return (
-                              <>
-                                <tr key={index} onClick={() => toggle(index)}>
-                                  <td>
-                                    <span class="cr-prt-nm">
-                                      {item.PartName}
-                                    </span>
-                                  </td>
-                                  <td>
-                                    {item.SurfaceTreatmentCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.SurfaceTreatmentCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
-                                  <td>
-                                    {item.TransportationCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.TransportationCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
-                                  <td>
-                                    {item.NetSurfaceTreatmentCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.NetSurfaceTreatmentCost,
-                                          2
-                                        )
-                                      : 0}
+
+                        {
+                          tabData && tabData.map((item, index) => {
+                            if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
+
+                              return (
+                                < >
+                                  <PartSurfaceTreatment
+                                    index={index}
+                                    item={item}
+                                    setPartDetails={setPartDetails}
+                                  />
+                                </>
+                              )
+
+                            } else {
+                              return (
+                                < >
+                                  <AssemblySurfaceTreatment
+                                    index={index}
+                                    item={item}
+                                    children={item.CostingChildPartDetails}
+                                    toggleAssembly={toggleAssembly}
+                                    setPartDetails={setPartDetails}
+                                  />
+                                </>
+                              )
+                            }
+                          })
+                        }
+
+                        {/* {tabData && tabData.map((item, index) => {
+                          return (
+                            <>
+                              <tr key={index} onClick={() => toggle(index)}>
+                                <td>
+                                  <span class="cr-prt-nm">
+                                    {item.PartName}
+                                  </span>
+                                </td>
+                                <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
+                                <td>{item.TransportationCost !== null ? checkForDecimalAndNull(item.TransportationCost, 2) : 0}</td>
+                                <td>{item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0}</td>
+                              </tr>
+                              {item.IsOpen && (
+                                <tr>
+                                  <td colSpan={4}>
+                                    <div>
+                                      <SurfaceTreatment
+                                        index={index}
+                                        surfaceData={item.SurfaceTreatmentDetails}
+                                        transportationData={item.TransportationDetails}
+                                        setSurfaceCost={setSurfaceCost}
+                                        setTransportationCost={setTransportationCost}
+                                      />
+                                    </div>
                                   </td>
                                 </tr>
-                                {item.IsOpen && (
-                                  <tr>
-                                    <td colSpan={4}>
-                                      <div>
-                                        <SurfaceTreatment
-                                          index={index}
-                                          surfaceData={
-                                            item.SurfaceTreatmentDetails
-                                          }
-                                          transportationData={
-                                            item.TransportationDetails
-                                          }
-                                          setSurfaceCost={setSurfaceCost}
-                                          setTransportationCost={
-                                            setTransportationCost
-                                          }
-                                        />
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )}
-                              </>
-                            );
-                          })}
+                              )}
+                            </>
+                          );
+                        })} */}
                       </tbody>
                     </Table>
                   </Col>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
+                {/* <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button
                       type={"button"}
@@ -296,7 +383,7 @@ function TabSurfaceTreatment(props) {
                       {"Save"}
                     </button>
                   </div>
-                </Row>
+                </Row> */}
               </form>
             </div>
           </Col>
