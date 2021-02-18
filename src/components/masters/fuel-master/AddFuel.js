@@ -407,8 +407,8 @@ class AddFuel extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, initialConfiguration } = this.state;
+    const { handleSubmit, initialConfiguration } = this.props;
+    const { isOpenFuelDrawer, isEditFlag } = this.state;
 
     return (
       <>
@@ -686,14 +686,12 @@ class AddFuel extends Component {
 function mapStateToProps(state) {
   const { fuel, auth } = state;
   const fieldsObj = selector(state, 'Rate');
+  let initialValues = {};
 
   const { fuelComboSelectList } = fuel;
   const { initialConfiguration } = auth;
-  let initialValues = {};
 
-  return {
-    initialValues, fieldsObj, fuelComboSelectList, initialConfiguration
-  }
+  return { initialValues, fieldsObj, fuelComboSelectList, initialConfiguration }
 
 }
 
