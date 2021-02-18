@@ -27,6 +27,7 @@ import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 
@@ -435,7 +436,7 @@ class RMDomesticListing extends Component {
         console.log(this.props.rmDataList, "RM DATA LIST");
         const options = {
             clearSearch: true,
-            noDataText: (this.props.rmDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.rmDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -446,8 +447,8 @@ class RMDomesticListing extends Component {
 
         return (
             <div>
-                {this.props.loading && <Loader />}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+                { this.props.loading && <Loader />}
+                < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
                     <Row className="filter-row-large pt-4">
                         {this.state.shown ? (
                             <Col md="12" lg="9" className="filter-block ">
@@ -584,7 +585,7 @@ class RMDomesticListing extends Component {
                             </div>
                         </Col>
                     </Row>
-                </form>
+                </form >
                 <Row>
                     <Col>
                         <BootstrapTable
@@ -616,19 +617,21 @@ class RMDomesticListing extends Component {
                         </BootstrapTable>
                     </Col>
                 </Row>
-                {isBulkUpload && (
-                    <BulkUpload
-                        isOpen={isBulkUpload}
-                        closeDrawer={this.closeBulkUploadDrawer}
-                        isEditFlag={false}
-                        densityAlert={this.densityAlert}
-                        fileName={"RMDomestic"}
-                        isZBCVBCTemplate={true}
-                        messageLabel={"RM Domestic"}
-                        anchor={"right"}
-                    />
-                )}
-            </div>
+                {
+                    isBulkUpload && (
+                        <BulkUpload
+                            isOpen={isBulkUpload}
+                            closeDrawer={this.closeBulkUploadDrawer}
+                            isEditFlag={false}
+                            densityAlert={this.densityAlert}
+                            fileName={"RMDomestic"}
+                            isZBCVBCTemplate={true}
+                            messageLabel={"RM Domestic"}
+                            anchor={"right"}
+                        />
+                    )
+                }
+            </div >
         );
     }
 }
