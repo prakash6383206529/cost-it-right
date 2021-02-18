@@ -1296,6 +1296,7 @@ export const ASSEMBLY = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 
+
 export const COSTING_PATH = '/costing'
 export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
