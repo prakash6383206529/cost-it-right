@@ -1142,34 +1142,40 @@ export const VBCInterestRateTempData = [
 export const BOMUpload = [
     { label: "BOMNo", value: "BOMNo" },
     { label: "AssemblyPartNo", value: "AssemblyPartNo" },
-    { label: "PartNo", value: "PartNo" },
     { label: "AssemblyPartName", value: "AssemblyPartName" },
+    { label: "PartNo", value: "PartNo" },
+    { label: "PartName", value: "PartName" },
     { label: "Description", value: "Description" },
     { label: "PartType", value: "PartType" },
     { label: "GroupCode", value: "GroupCode" },
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
-    { label: "AssemblyMark", value: "AssemblyMark" },
-    { label: "Level", value: "Level" },
+    { label: "IsAssembly", value: "IsAssembly" },
+    { label: "BOMLevel", value: "BOMLevel" },
     { label: "Quantity", value: "Quantity" },
+    { label: "Remark", value: "Remark" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const BOMUploadTempData = [
     {
         "BOMNo": "123",
         "AssemblyPartNo": "Part1",
-        "PartNo": "Part No",
         "AssemblyPartName": "Part Name1",
+        "PartNo": "Part No",
+        "PartName": "Part Name",
         "Description": "Description Text",
         "PartType": "Part Type",
         "GroupCode": "GC1",
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
-        "AssemblyMark": "Assembly Mark",
-        "Level": 0,
+        "IsAssembly": "True Or False",
+        "BOMLevel": 0,
         "Quantity": 0,
+        "Remark": 'Remark',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
 

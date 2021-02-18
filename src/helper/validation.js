@@ -92,10 +92,9 @@ export const selectRequired = value =>
     ? undefined : 'This field is required.');
 
 export const checkWhiteSpaces = value => {
-    console.log(value, "Value");
-    return value && !value.replace(/\s/g, '').length
-        ? 'This field is invalid.' : undefined;
+    return value && !value.toString().replace(/\s/g, '').length ? 'This field is invalid.' : undefined;
 }
+
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0)
         ? 'Please enter number only.' : undefined;
@@ -287,10 +286,9 @@ export const checkForDecimalAndNull = (floatValue, Number) => {
     return checkForNull(trimDecimalPlace(floatValue, Number))
 }
 
-export const Numeric = value =>
-    value && /[^0-9]/i.test(value)
-        ? 'Please enter valid number'
-        : undefined;
+export const Numeric = value => {
+    return value && /[^0-9]/i.test(value) ? 'Please enter valid number' : undefined;
+}
 
 export const isGuid = (value) => {
     var regex = /[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}/i;
