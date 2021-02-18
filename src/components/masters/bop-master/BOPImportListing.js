@@ -326,7 +326,7 @@ class BOPImportListing extends Component {
         const { isBulkUpload } = this.state;
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: (this.props.bopImportList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -476,6 +476,8 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="PartAssemblyNumber" columnTitle={true} dataAlign="left" searchable={false} >{'Part Assembly No.'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
+
                             <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>

@@ -35,7 +35,9 @@ import {
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
     config,
-    GET_RM_DOMESTIC_LIST
+    GET_RM_DOMESTIC_LIST,
+    GET_RM_IMPORT_LIST,
+    GET_MANAGE_SPECIFICATION
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -381,8 +383,8 @@ export function getRMSpecificationDataList(data, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_RM_DOMESTIC_LIST,
-                    payload: response.data.DataList
+                    type: GET_MANAGE_SPECIFICATION,
+                    payload: response.status === 204 ? [] : response.data.DataList
                 })
                 callback(response);
             }
@@ -1112,8 +1114,8 @@ export function getRMImportDataList(data, callback) {
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
-                    type: GET_RM_DOMESTIC_LIST,
-                    payload: response.data.DataList
+                    type: GET_RM_IMPORT_LIST,
+                    payload: response.status === 204 ? [] : response.data.DataList
                 })
                 callback(response);
             }

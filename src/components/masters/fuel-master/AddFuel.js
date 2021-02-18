@@ -18,6 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import AddFuelNameDrawer from './AddFuelNameDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import moment from 'moment';
+import { AcceptableFuelUOM } from '../../../config/masterData'
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -312,6 +313,8 @@ class AddFuel extends Component {
     }
     if (label === 'uom') {
       fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
+        // const accept = AcceptableFuelUOM.includes(item.Type)
+        // if (accept === false) return false
         if (item.Value === '0') return false;
         if (item.Text === 'Kilogram' || item.Text === 'Liter') {
           temp.push({ label: item.Text, value: item.Value })

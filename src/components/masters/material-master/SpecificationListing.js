@@ -300,7 +300,7 @@ class SpecificationListing extends Component {
 
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: (this.props.rmSpecificationList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             paginationShowsTotal: this.renderPaginationShowsTotal,
             prePage: <span className="prev-page-pg"></span>, // Previous page button text
             nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -397,7 +397,7 @@ class SpecificationListing extends Component {
                     <Col>
                         {/* <hr /> */}
                         <BootstrapTable
-                            data={this.props.rmDataList}
+                            data={this.props.rmSpecificationList}
                             striped={false}
                             bordered={false}
                             hover={false}
@@ -447,8 +447,8 @@ class SpecificationListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material }) {
-    const { rmSpecificationDetail, filterRMSelectList, rmDataList } = material;
-    return { rmSpecificationDetail, filterRMSelectList, rmDataList }
+    const { rmSpecificationDetail, filterRMSelectList, rmSpecificationList } = material;
+    return { rmSpecificationDetail, filterRMSelectList, rmSpecificationList }
 }
 
 export default connect(mapStateToProps, {

@@ -29,6 +29,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
+import { AcceptableRMUOM } from '../../../config/masterData'
 const selector = formValueSelector('AddBOPImport');
 
 class AddBOPImport extends Component {
@@ -149,7 +150,7 @@ class AddBOPImport extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, currencySelectList, } = this.props;
+            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, currencySelectList, UOMSelectList } = this.props;
 
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.CategoryId)
             let plantArray = Data && Data.Plant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
@@ -158,6 +159,7 @@ class AddBOPImport extends Component {
             let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
+            let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
 
             this.setState({
               isEditFlag: true,
@@ -172,6 +174,7 @@ class AddBOPImport extends Component {
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
+              UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
             })
           }, 200)
         }
@@ -241,6 +244,8 @@ class AddBOPImport extends Component {
     }
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableRMUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -283,6 +288,18 @@ class AddBOPImport extends Component {
   handlePlant = (e) => {
     this.setState({ selectedPlants: e })
   }
+
+  /**
+ * @method handleUOM
+ * @description called
+ */
+  handleUOM = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ UOM: newValue, })
+    } else {
+      this.setState({ UOM: [] })
+    }
+  };
 
   /**
   * @method handleVendorName
@@ -354,7 +371,7 @@ class AddBOPImport extends Component {
     this.setState({
       netLandedcost: NetLandedCost
     })
-    this.props.change('NetLandedCost', NetLandedCost !== 0 ? checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrices) : 0)
+    this.props.change('NetLandedCost', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -468,7 +485,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -494,6 +511,8 @@ class AddBOPImport extends Component {
         LoggedInUserId: loggedInUserId(),
         Plant: plantArray,
         Attachements: updatedFiles,
+        UnitOfMeasurementId: UOM.value,
+
       }
 
       this.props.updateBOPImport(requestData, (res) => {
@@ -527,7 +546,8 @@ class AddBOPImport extends Component {
         LoggedInUserId: loggedInUserId(),
         Plant: plantArray,
         VendorPlant: vendorPlantArray,
-        Attachements: files
+        Attachements: files,
+        UnitOfMeasurementId: UOM.value,
       }
       console.log(formData, "Form");
       this.props.createBOPImport(formData, (res) => {
@@ -693,6 +713,31 @@ class AddBOPImport extends Component {
                               disabled={isEditFlag ? true : false}
                               className=" "
                               customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="3">
+                            <Field
+                              name="UOM"
+                              type="text"
+                              label="UOM"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing(
+                                "uom"
+                              )}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.UOM == null ||
+                                  this.state.UOM.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={
+                                this.handleUOM
+                              }
+                              valueDescription={this.state.UOM}
+                              disabled={isEditFlag ? true : false}
                             />
                           </Col>
                           {!this.state.IsVendor && (

@@ -34,6 +34,9 @@ import {
     GET_GRADE_FILTER_BY_VENDOR_SELECTLIST,
     GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
     GET_RM_DOMESTIC_LIST,
+    GET_RM_IMPORT_LIST,
+    GET_MANAGE_SPECIFICATION,
+    GET_MANAGE_MATERIAL
 } from '../../../config/constants';
 
 const initialState = {
@@ -288,6 +291,27 @@ export default function materialReducer(state = initialState, action) {
                 error: true,
                 rmDataList: action.payload
             }
+        case GET_RM_IMPORT_LIST:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rmImportDataList: action.payload
+            }
+        case GET_MANAGE_SPECIFICATION:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rmSpecificationList: action.payload
+            }
+        // case GET_MANAGE_MATERIAL:
+        //     return {
+        //         ...state,
+        //         loading: false,
+        //         error: true,
+        //         rmMaterialList: action.payload
+        //     }
         default:
             return state;
     }

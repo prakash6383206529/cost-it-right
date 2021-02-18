@@ -14,6 +14,7 @@ import {
     GET_BOP_DOMESTIC_DATA_LIST,
     GET_BOP_IMPORT_DATA_LIST,
     config,
+    GET_SOB_LISTING,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -61,14 +62,19 @@ export function createBOPImport(data, callback) {
  */
 export function getBOPDomesticDataList(data, callback) {
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
+        // dispatch({ type: API_REQUEST});
+        dispatch({
+            type: GET_BOP_DOMESTIC_DATA_LIST,
+            payload: undefined
+        })
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+
                 dispatch({
                     type: GET_BOP_DOMESTIC_DATA_LIST,
-                    payload: response.data.DataList
+                    payload: response.status === 204 ? [] : response.data.DataList
                 })
                 callback(response);
             }
@@ -93,7 +99,7 @@ export function getBOPImportDataList(data, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_BOP_IMPORT_DATA_LIST,
-                    payload: response.data.DataList
+                    payload: response.status === 204 ? [] : response.data.DataList
                 })
                 callback(response);
             }
@@ -473,6 +479,10 @@ export function getManageBOPSOBDataList(data, callback) {
         const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: GET_SOB_LISTING,
+                    payload: response.status === 204 ? [] : response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {

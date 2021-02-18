@@ -423,7 +423,7 @@ class RMImportListing extends Component {
     const { isBulkUpload, } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: (this.props.rmImportDataList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -571,7 +571,7 @@ class RMImportListing extends Component {
         <Row>
           <Col>
             <BootstrapTable
-              data={this.props.rmDataList}
+              data={this.props.rmImportDataList}
               striped={false}
               bordered={false}
               hover={false}
@@ -587,6 +587,7 @@ class RMImportListing extends Component {
               <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="Category" >Category</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
@@ -619,9 +620,9 @@ class RMImportListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, comman, }) {
-  const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmDataList } = material;
+  const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList } = material;
   const { supplierSelectList, } = comman;
-  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmDataList }
+  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList }
 }
 
 /**

@@ -29,6 +29,7 @@ function ManageSOBDrawer(props) {
   const [GridData, setGridData] = useState([]);
   const [GridDataOldArray, setGridDataOldArray] = useState([]);
   const [WeightedCost, setWeightedCost] = useState(0);
+  const [isDisable, setIsDisable] = useState(false)
 
   const fieldValues = useWatch({
     control,
@@ -41,6 +42,10 @@ function ManageSOBDrawer(props) {
     dispatch(getManageBOPSOBById(ID, (res) => {
       if (res && res.data && res.data.Result) {
         let Data = res.data.Data;
+        console.log(Data, "DATA FOR SOB");
+        if (Data.BoughtOutPartVendorList.length === 1) {
+          setIsDisable(true)
+        }
         setData(Data)
         setGridData(Data.BoughtOutPartVendorList)
         setGridDataOldArray(Data.BoughtOutPartVendorList)
@@ -86,6 +91,8 @@ function ManageSOBDrawer(props) {
         WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(parseInt(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
+
+
       setGridData(tempArray)
       //if (!checkPercentageValue(event.target.value)) {
       setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
@@ -161,6 +168,18 @@ function ManageSOBDrawer(props) {
     */
   const onSubmit = (values) => {
     console.log('values >>>', values);
+    // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
+
+    const sum = GridData.reduce((accummlator, el, currentIndex) => {
+      console.log(currentIndex, "INDEX", el.ShareOfBusinessPercentage);
+      return accummlator + checkForNull(el.ShareOfBusinessPercentage)
+    }, 0)
+    console.log(sum, "SUM");
+    if (sum > 100) {
+      toastr.warning('Total SOB should be less than 100')
+      return false
+    }
+
     let data = {
       "BoughtOutPartNumber": ID,
       "LoggedInUserId": loggedInUserId(),
@@ -252,7 +271,7 @@ function ManageSOBDrawer(props) {
                                     handleSOBChange(e, index)
                                   }}
                                   errors={errors && errors.GridFields && errors.GridFields[index] !== undefined ? errors.GridFields[index].ShareOfBusinessPercentage : ''}
-                                  disabled={false}
+                                  disabled={isDisable ? true : false}
                                 />
                               </td>
                               <td>{item.WeightedCost}</td>
