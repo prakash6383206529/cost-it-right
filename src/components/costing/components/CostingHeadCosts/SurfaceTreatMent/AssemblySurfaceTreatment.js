@@ -1,14 +1,14 @@
 import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import BoughtOutPart from '../BOP';
-import PartCompoment from '../Part';
 import { getRMCCTabData, } from '../../../actions/Costing';
 
-import { checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
+import { checkForDecimalAndNull, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
+import PartSurfaceTreatment from './PartSurfaceTreatment';
+import SurfaceTreatment from '.';
 
-function AssemblyPart(props) {
+function AssemblySurfaceTreatment(props) {
   const { children, item, index } = props;
 
   const [IsOpen, setIsOpen] = useState(false);
@@ -22,22 +22,7 @@ function AssemblyPart(props) {
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
     setCount(Count + 1)
-    if (Object.keys(costData).length > 0) {
-      const data = {
-        CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
-        PartId: item.PartId,
-        //PlantId: costData.PlantId,
-      }
-      dispatch(getRMCCTabData(data, false, (res) => {
-        if (res && res.data && res.data.Result) {
-          //let Data = res.data.DataList[0].CostingChildPartDetails;
-          let Data = res.data.DataList[0];
-          props.toggleAssembly(BOMLevel, PartNumber, Data)
-        }
-      }))
-    } else {
-      props.toggleAssembly(BOMLevel, PartNumber)
-    }
+    props.toggleAssembly(BOMLevel, PartNumber)
   }
 
   /**
@@ -58,46 +43,21 @@ function AssemblyPart(props) {
 
   const nestedPartComponent = children && children.map(el => {
     if (el.PartType === 'Part') {
-      return <PartCompoment
+      return <PartSurfaceTreatment
         index={index}
         item={el}
-        rmData={el.CostingPartDetails.CostingRawMaterialsCost}
-        bopData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingBoughtOutPartCost}
-        ccData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost}
         setPartDetails={props.setPartDetails}
-        setRMCost={props.setRMCost}
-        setBOPCost={props.setBOPCost}
-        setProcessCost={props.setProcessCost}
-        setOperationCost={props.setOperationCost}
-        setToolCost={props.setToolCost}
       />
     }
   })
 
   const nestedAssembly = children && children.map(el => {
     if (el.PartType !== 'Sub Assembly') return false;
-    return <AssemblyPart
+    return <AssemblySurfaceTreatment
       index={index}
       item={el}
       children={el.CostingChildPartDetails}
-      setPartDetails={props.setPartDetails}
       toggleAssembly={props.toggleAssembly}
-      setRMCost={props.setRMCost}
-      setBOPCost={props.setBOPCost}
-      setProcessCost={props.setProcessCost}
-      setOperationCost={props.setOperationCost}
-      setToolCost={props.setToolCost}
-      setAssemblyOperationCost={props.setAssemblyOperationCost}
-      setAssemblyToolCost={props.setAssemblyToolCost}
-    />
-  })
-
-  const nestedBOP = children && children.map(el => {
-    if (el.PartType !== 'BOP') return false;
-    return <BoughtOutPart
-      index={index}
-      item={el}
-      children={el.CostingChildPartDetails}
     />
   })
 
@@ -115,12 +75,14 @@ function AssemblyPart(props) {
             </span>
           </td>
           <td>{item && item.PartType}</td>
-          <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-          <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-          <td>
+          <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, 2) : 0}</td>
+          <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, 2) : 0}</td>
+          <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, 2) : 0}</td>
+
+          {/* <td>
             {item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}
             {
-              item.CostingPartDetails && (item.CostingPartDetails.TotalOperationCostPerAssembly !== null) ?
+              item.CostingPartDetails && item.CostingPartDetails.CostingOperationCostResponse ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
                     {`Assembly's Conversion Cost:- ${item.CostingPartDetails.TotalOperationCostPerAssembly}`}
@@ -129,41 +91,35 @@ function AssemblyPart(props) {
                   </span>
                 </div> : ''
             }
-          </td>
-          {/* <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td> */}
-          <td>{1}</td>
-          <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+          </td> */}
         </div>
         <td>
           <button
             type="button"
             className={'user-btn'}
             onClick={DrawerToggle}>
-            <div className={'plus'}></div>Add Operation</button>
+            <div className={'plus'}></div>Add Surface Treatment</button>
         </td>
       </tr>
 
       {/* {IsOpen && nestedPartComponent} */}
       {item.IsOpen && nestedPartComponent}
 
-      {/* {IsOpen && nestedBOP} */}
-      {item.IsOpen && nestedBOP}
-
       {/* {IsOpen && nestedAssembly} */}
       {item.IsOpen && nestedAssembly}
 
-      {IsDrawerOpen && <AddAssemblyOperation
+      {IsDrawerOpen && <SurfaceTreatment
         isOpen={IsDrawerOpen}
         closeDrawer={closeDrawer}
         isEditFlag={false}
         ID={''}
         anchor={'right'}
         item={item}
-        setAssemblyOperationCost={props.setAssemblyOperationCost}
-        setAssemblyToolCost={props.setAssemblyToolCost}
+        surfaceData={item.SurfaceTreatmentDetails}
+        transportationData={item.TransportationDetails}
       />}
     </ >
   );
 }
 
-export default AssemblyPart;
+export default AssemblySurfaceTreatment;

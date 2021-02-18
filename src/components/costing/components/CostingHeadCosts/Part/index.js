@@ -5,7 +5,7 @@ import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 import { getRMCCTabData, saveComponentCostingRMCCTab } from '../../../actions/Costing';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
 
 function PartCompoment(props) {

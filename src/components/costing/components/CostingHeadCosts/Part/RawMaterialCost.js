@@ -95,24 +95,17 @@ function RawMaterialCost(props) {
    * @description TOGGLE WEIGHT CALCULATOR DRAWER
    */
   const toggleWeightCalculator = (index) => {
-    console.log(index, "INDEX");
     setEditIndex(index)
     let tempArr = []
     let tempData = gridData[index]
     dispatch(getRawMaterialCalculationByTechnology(technology, 'default', res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
-        tempData = {
-          ...tempData,
-          WeightCalculatorRequest: data,
-        }
+        tempData = { ...tempData, WeightCalculatorRequest: data, }
 
         tempArr = Object.assign([...gridData], { [editIndex]: tempData })
-        console.log(tempArr, "temp");
         setTimeout(() => {
           setGridData(tempArr)
-          // setValue(`${rmGridFields}[${editIndex}]GrossWeight`, GrossWeight)
-          // setValue(`${rmGridFields}[${editIndex}]FinishWeight`, FinishWeight)
         }, 100)
       }
     }))
@@ -140,20 +133,12 @@ function RawMaterialCost(props) {
 
     if (!isNaN(event.target.value)) {
       const GrossWeight = checkForNull(event.target.value)
-      const FinishWeight =
-        tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
+      const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
       if (!GrossWeight || !FinishWeight) {
         return ''
       }
-      const NetLandedCost =
-        GrossWeight * tempData.RMRate -
-        (GrossWeight - FinishWeight) * tempData.ScrapRate
-      tempData = {
-        ...tempData,
-        GrossWeight: GrossWeight,
-        NetLandedCost: NetLandedCost,
-        WeightCalculatorRequest: {},
-      }
+      const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
+      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
@@ -172,13 +157,32 @@ function RawMaterialCost(props) {
     if (!isNaN(event.target.value)) {
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
+
+      //if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
       tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
+      //} else {
+      // const NetLandedCost = 0;
+      // tempData = { ...tempData, FinishWeight: '', NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
+      // tempArr = Object.assign([...gridData], { [index]: tempData })
+      // setGridData(tempArr)
+      // setValue(`${rmGridFields}[${index}]FinishWeight`, '')
+      //   toastr.warning('Finish weight should not be greater then gross weight.')
+      // }
+
     } else {
       toastr.warning('Please enter valid weight.')
     }
+  }
+
+  /**
+   * @method IsFinishWeightValid
+   * @description CHECK IS FINISH WEIGHT LESS THEN GROSS WEIGHT
+   */
+  const IsFinishWeightValid = (GrossWeight, FinishWeight) => {
+    return GrossWeight >= FinishWeight ? true : false;
   }
 
   /**
@@ -192,20 +196,11 @@ function RawMaterialCost(props) {
     if (Object.keys(weightData).length > 0) {
       const FinishWeight = weightData.FinishWeight
       const GrossWeight = weightData.GrossWeight
-      const NetLandedCost =
-        GrossWeight * tempData.RMRate -
-        (GrossWeight - FinishWeight) * tempData.ScrapRate
+      const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
 
-      tempData = {
-        ...tempData,
-        FinishWeight: FinishWeight,
-        GrossWeight: GrossWeight,
-        NetLandedCost: NetLandedCost,
-        WeightCalculatorRequest: weightData,
-      }
+      tempData = { ...tempData, FinishWeight: FinishWeight, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: weightData, }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
-      console.log(tempArr, "temp");
       setTimeout(() => {
         setGridData(tempArr)
         setValue(`${rmGridFields}[${editIndex}]GrossWeight`, GrossWeight)
@@ -226,7 +221,7 @@ function RawMaterialCost(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
-    console.log('values >>>', values)
+
   }
 
   /**

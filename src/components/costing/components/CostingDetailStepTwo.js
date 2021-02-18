@@ -24,7 +24,6 @@ function CostingDetailStepTwo(props) {
 
   const costingData = useSelector(state => state.costing.costingData)
   const CostingDataList = useSelector(state => state.costing.CostingDataList)
-  console.log('CostingDataList: ', CostingDataList);
   const NetPOPrice = useSelector(state => state.costing.NetPOPrice)
   const RMCCBOPCost = useSelector(state => state.costing.RMCCBOPCost)
   const SurfaceCostData = useSelector(state => state.costing.SurfaceCostData)

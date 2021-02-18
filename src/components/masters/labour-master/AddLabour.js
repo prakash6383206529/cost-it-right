@@ -332,13 +332,7 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const {
-      machineType,
-      labourType,
-      gridTable,
-      effectiveDate,
-      isDisable,
-    } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, isDisable, } = this.state
     const { fieldsObj } = this.props
 
     if (machineType.length === 0 || labourType.length === 0) {
@@ -346,19 +340,22 @@ class AddLabour extends Component {
       return false
     }
 
+    if (isNaN(Number(fieldsObj))) {
+      toastr.warning('Please enter valid value.')
+      return false;
+    }
+
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = gridTable.findIndex(
-      (el) =>
-        el.MachineTypeId === machineType.value &&
-        el.LabourTypeId === labourType.value,
+    const isExist = gridTable.findIndex((el) =>
+      el.MachineTypeId === machineType.value &&
+      el.LabourTypeId === labourType.value,
     )
     if (isExist !== -1) {
       toastr.warning('Already added, Please check the values.')
       return false
     }
 
-    const LabourRate =
-      fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
+    const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
     const tempArray = []
 
     tempArray.push(...gridTable, {
@@ -371,14 +368,13 @@ class AddLabour extends Component {
       LabourRate: LabourRate,
     })
 
-    this.setState(
-      {
-        isDisable: true,
-        gridTable: tempArray,
-        machineType: [],
-        labourType: [],
-        effectiveDate: new Date(),
-      },
+    this.setState({
+      isDisable: true,
+      gridTable: tempArray,
+      machineType: [],
+      labourType: [],
+      effectiveDate: new Date(),
+    },
       () => this.props.change('LabourRate', 0),
     )
   }
@@ -835,8 +831,7 @@ class AddLabour extends Component {
                         <div>
                           {this.state.isEditIndex ? (
                             <>
-                              <button
-                                type="button"
+                              <button type="button"
                                 className={
                                   "btn btn-primary mb-4 pull-left mr5"
                                 }
