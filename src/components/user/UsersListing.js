@@ -219,7 +219,7 @@ class UsersListing extends Component {
 		const { EditAccessibility } = this.state;
 		if (cell === loggedInUserId()) return null;
 		return (
-			<div className="text-right">
+			<div className="">
 				{EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, false)} />}
 				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
@@ -574,7 +574,8 @@ class UsersListing extends Component {
 						Status
           </TableHeaderColumn>
 					<TableHeaderColumn
-						className="action text-right"
+						width={100}
+						className="action"
 						dataField="UserId"
 						export={false}
 						isKey={true}

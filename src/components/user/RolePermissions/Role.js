@@ -216,10 +216,10 @@ class Role extends Component {
 		const { isLoader, isSubmitted, isEditFlag } = this.state;
 
 		return (
-			<div>
+			<div className="container-fluid">
 				{isLoader && <Loader />}
 				<div className="login-container signup-form ">
-					<div className="row mb-30">
+					<div className="row">
 						<div className="col-md-12">
 							<div className="shadow-lgg login-formg ">
 								<div className="form-headingg">
@@ -227,7 +227,7 @@ class Role extends Component {
 								</div>
 								<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 									<div className="add-min-height">
-										<div className="row form-group role-form">
+										<div className="row form-group role-form mb-0">
 											<div className="col-md-6 ">
 												<div className="row">
 													<div className="col-md-3">
@@ -241,7 +241,7 @@ class Role extends Component {
 														component={renderText}
 														required={true}
 														maxLength={26}
-														customClassName={'withBorder col-md-5'}
+														customClassName={'withBorder col-md-5 mb-0'}
 													/>
 												</div>
 											</div>
@@ -259,8 +259,9 @@ class Role extends Component {
 											</div>
 										</div>
 									</div>
-									<div class="role-footer">
-										<div className="text-right btn-blue-block">
+
+									<div className="row sf-btn-footer no-gutters justify-content-between bottom-footer">
+										<div className="col-sm-12 text-right bluefooter-butn">
 											<button
 												//disabled={pristine || submitting}
 												onClick={this.cancel}

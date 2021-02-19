@@ -1,8 +1,18 @@
+:not(.login-container.signup-form) {
+    .react-bs-table-container{
+        .react-bs-table{
+            .react-bs-container-body{
+                min-height: calc(100vh - 485px);
+            }
+        }
+    }
+  }
+
 .loader_container{
     position: absolute;
     left: 15px;
     right: 15px;
-    top: 0px;
+    top: 20%;
     bottom: 0px;
     width: auto;
     align-items: center;
@@ -15,6 +25,7 @@
     .img_loader{
         max-width: 300px;
         object-fit: contain;
+        max-height: calc(100% - 2em);
     }
 
     .loaderinner{
@@ -25,6 +36,9 @@
         vertical-align: top;
         transition: 0.3s color, 0.3s border, 0.3s transform, 0.3s opacity;
         color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
     [class*=loader-] {
         display: inline-block;
