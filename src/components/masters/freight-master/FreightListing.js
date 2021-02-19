@@ -476,11 +476,11 @@ class FreightListing extends Component {
               ref={'table'}
               pagination>
               {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-              <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-              <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="center" dataSort={true} >{'Mode'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="center" dataSort={true} >{'Source City'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="center"  >{'Destination City'}</TableHeaderColumn>
+              <TableHeaderColumn searchable={false} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+              <TableHeaderColumn searchable={false} dataField="Mode" columnTitle={true} dataAlign="left" dataSort={true} >{'Mode'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="SourceCity" columnTitle={true} dataAlign="left" dataSort={true} >{'Source City'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="DestinationCity" columnTitle={true} dataAlign="left"  >{'Destination City'}</TableHeaderColumn>
               <TableHeaderColumn searchable={false} width={'100'} dataField="FreightId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>

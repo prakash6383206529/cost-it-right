@@ -506,9 +506,9 @@ class AddVendorDrawer extends Component {
                                     </Col>
                                 </Row>
                                 <Row className="pl-3">
-                                    <Col md="12">
+                                    <Col md="6">
                                         <Row>
-                                            <Col md={10}>
+                                            <Col md={8}>
                                                 <Field
                                                     label="Phone Number"
                                                     name={"PhoneNumber"}
@@ -521,7 +521,7 @@ class AddVendorDrawer extends Component {
                                                     customClassName={'withBorder'}
                                                 />
                                             </Col>
-                                            <Col md={2} className="pr-0">
+                                            <Col md={4} className="pr-0">
                                                 <Field
                                                     label="Ext"
                                                     name={"Extension"}

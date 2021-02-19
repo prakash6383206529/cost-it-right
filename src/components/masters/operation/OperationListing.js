@@ -32,6 +32,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { Loader } from '../../common/Loader';
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 class OperationListing extends Component {
@@ -462,7 +463,7 @@ class OperationListing extends Component {
         }
         const options = {
             clearSearch: true,
-            noDataText: (this.props.operationList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.operationList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
