@@ -892,421 +892,436 @@ class AddMachineRate extends Component {
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                   >
-                    <Row>
-                      <Col md="4" className="switch mb15">
-                        <label className="switch-level">
-                          <div className={'left-title'}>Zero Based</div>
-                          <Switch
-                            onChange={this.onPressVendor}
-                            checked={this.state.IsVendor}
-                            id="normal-switch"
-                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#4DC771"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={'right-title'}>Vendor Based</div>
-                        </label>
-                      </Col>
-                    </Row>
+                    <div class="add-min-height">
+                      <Row>
+                        <Col md="4" className="switch mb15">
+                          <label className="switch-level">
+                            <div className={'left-title'}>Zero Based</div>
+                            <Switch
+                              onChange={this.onPressVendor}
+                              checked={this.state.IsVendor}
+                              id="normal-switch"
+                              disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#4DC771"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                            <div className={'right-title'}>Vendor Based</div>
+                          </label>
+                        </Col>
+                      </Row>
 
-                    <Row>
-                      <Col md="12">
-                        <HeaderTitle
-                          title={'Machine:'}
-                          customClass={'Personal-Details'} />
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          label="Technology"
-                          name="technology"
-                          placeholder="--Select--"
-                          selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
-                          options={this.renderListing('technology')}
-                          selectionChanged={this.handleTechnology}
-                          optionValue={option => option.Value}
-                          optionLabel={option => option.Text}
-                          component={renderMultiSelectField}
-                          mendatory={true}
-                          className="multiselect-with-border"
-                          disabled={this.state.isViewFlag ? true : false}
-                        //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                        />
-                      </Col>
-                      {this.state.IsVendor &&
+                      <Row>
+                        <Col md="12">
+                          <HeaderTitle
+                            title={'Machine:'}
+                            customClass={'Personal-Details'} />
+                        </Col>
                         <Col md="3">
                           <Field
-                            name="VendorName"
-                            type="text"
-                            label="Vendor Name"
-                            component={searchableSelect}
-                            placeholder={'--select--'}
-                            options={this.renderListing('VendorNameList')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                            required={true}
-                            handleChangeDescription={this.handleVendorName}
-                            valueDescription={this.state.vendorName}
-                            disabled={isEditFlag ? true : false}
-                          />
-                        </Col>}
-                      {this.state.IsVendor &&
-                        <Col md="3">
-                          <Field
-                            label="Vendor Plant"
-                            name="VendorPlant"
-                            placeholder="--- Plant ---"
-                            selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
-                            options={this.renderListing('VendorPlant')}
-                            selectionChanged={this.handleVendorPlant}
+                            label="Technology"
+                            name="technology"
+                            placeholder="Select"
+                            selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
+                            options={this.renderListing('technology')}
+                            selectionChanged={this.handleTechnology}
                             optionValue={option => option.Value}
                             optionLabel={option => option.Text}
                             component={renderMultiSelectField}
                             mendatory={true}
                             className="multiselect-with-border"
-                            disabled={isEditFlag ? true : false}
+                            disabled={this.state.isViewFlag ? true : false}
+                          //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                           />
-                        </Col>}
-                      {!this.state.IsVendor &&
+                        </Col>
+                        {this.state.IsVendor &&
+                          <Col md="3">
+                            <Field
+                              name="VendorName"
+                              type="text"
+                              label="Vendor Name"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('VendorNameList')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleVendorName}
+                              valueDescription={this.state.vendorName}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>}
+                        {this.state.IsVendor &&
+                          <Col md="3">
+                            <Field
+                              label="Vendor Plant"
+                              name="VendorPlant"
+                              placeholder="--- Plant ---"
+                              selection={(this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0) ? [] : this.state.selectedVendorPlants}
+                              options={this.renderListing('VendorPlant')}
+                              selectionChanged={this.handleVendorPlant}
+                              optionValue={option => option.Value}
+                              optionLabel={option => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>}
+                        {!this.state.IsVendor &&
+                          <Col md="3">
+                            <Field
+                              name="Plant"
+                              type="text"
+                              label="Plant"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('plant')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handlePlants}
+                              valueDescription={this.state.selectedPlants}
+                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                            />
+                          </Col>}
                         <Col md="3">
                           <Field
-                            name="Plant"
+                            label={`Machine No.`}
+                            name={"MachineNumber"}
                             type="text"
-                            label="Plant"
-                            component={searchableSelect}
-                            placeholder={'--- Select ---'}
-                            options={this.renderListing('plant')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                            placeholder={'Enter'}
+                            validate={[required]}
+                            component={renderText}
                             required={true}
-                            handleChangeDescription={this.handlePlants}
-                            valueDescription={this.state.selectedPlants}
-                            disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                            onBlur={this.checkUniqNumber}
+                            disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : this.state.isViewFlag ? true : false}
+                            className=" "
+                            customClassName="withBorder"
                           />
-                        </Col>}
-                      <Col md="3">
-                        <Field
-                          label={`Machine No.`}
-                          name={"MachineNumber"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required]}
-                          component={renderText}
-                          required={true}
-                          onBlur={this.checkUniqNumber}
-                          disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : this.state.isViewFlag ? true : false}
-                          className=" "
-                          customClassName="withBorder"
-                        />
-                      </Col>
-                    </Row>
+                        </Col>
+                      </Row>
 
-                    <Row>
-                      <Col md="3">
-                        <Field
-                          label={`Machine Name`}
-                          name={"MachineName"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-                          component={renderText}
-                          // required={true}
-                          disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
-                          className=" "
-                          customClassName="withBorder"
-                        />
-                      </Col>
-                      <Col md="3">
-                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                          <div className="fullinput-icon">
-                            <Field
-                              name="MachineType"
-                              type="text"
-                              label="Machine Type"
-                              component={searchableSelect}
-                              placeholder={'--select--'}
-                              options={this.renderListing('MachineTypeList')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleMachineType}
-                              valueDescription={this.state.machineType}
-                              disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
-                            />
+                      <Row>
+                        <Col md="3">
+                          <Field
+                            label={`Machine Name`}
+                            name={"MachineName"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            component={renderText}
+                            // required={true}
+                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <div className="fullinput-icon">
+                              <Field
+                                name="MachineType"
+                                type="text"
+                                label="Machine Type"
+                                component={searchableSelect}
+                                placeholder={'Select'}
+                                options={this.renderListing('MachineTypeList')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleMachineType}
+                                valueDescription={this.state.machineType}
+                                disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                              />
+                            </div>
+                            {!isEditFlag && <div
+                              onClick={this.machineTypeToggler}
+                              className={'plus-icon-square mr5 right'}>
+                            </div>}
                           </div>
-                          {!isEditFlag && <div
-                            onClick={this.machineTypeToggler}
-                            className={'plus-icon-square mr5 right'}>
-                          </div>}
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          label={`Machine Capacity / Tonnage`}
-                          name={"TonnageCapacity"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[required, checkWhiteSpaces, postiveNumber, maxLength10]}
-                          component={renderText}
-                          required={true}
-                          disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
-                          className=" "
-                          customClassName="withBorder"
-                        />
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          label={`Description`}
-                          name={"Description"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-                          component={renderText}
-                          // required={true}
-                          disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
-                          className=" "
-                          customClassName="withBorder"
-                        />
-                      </Col>
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Machine Capacity / Tonnage`}
+                            name={"TonnageCapacity"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[required, checkWhiteSpaces, postiveNumber, maxLength10]}
+                            component={renderText}
+                            required={true}
+                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Description`}
+                            name={"Description"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            component={renderText}
+                            // required={true}
+                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
 
-                      {!this.state.IsVendor &&
+                        {!this.state.IsVendor &&
+                          <Col md="12">
+                            <div>
+                              {
+                                this.state.IsDetailedEntry ?
+
+                                  EditAccessibility &&
+                                  <button
+                                    type="button"
+                                    className={'user-btn'}
+                                    onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
+                                    <div className={'edit_pencil_icon d-inline-block mr5'}></div>EDIT MORE DETAILS</button>
+                                  :
+                                  AddAccessibility &&
+                                  <button
+                                    type="button"
+                                    className={this.state.isViewFlag ? 'disabled-button' : 'user-btn'}
+                                    disabled={this.state.isViewFlag ? true : false}
+                                    onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', false)}>
+                                    <div className={'plus'}></div>ADD MORE DETAILS</button>
+                              }
+
+                            </div>
+                          </Col>}
+                        <Col md="12"><hr /></Col>
+                      </Row>
+
+                      <Row>
                         <Col md="12">
+                          <HeaderTitle
+                            title={'Process:'}
+                            customClass={'Personal-Details'} />
+                        </Col>
+                        <Col md="3">
+                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <div className="fullinput-icon">
+                              <Field
+                                name="ProcessName"
+                                type="text"
+                                label="Process Name"
+                                component={searchableSelect}
+                                placeholder={'Select'}
+                                options={this.renderListing('ProcessNameList')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
+                                //required={true}
+                                handleChangeDescription={this.handleProcessName}
+                                valueDescription={this.state.processName}
+                                disabled={false}
+                              />
+                            </div>
+                            {!isEditFlag && <div
+                              onClick={this.processToggler}
+                              className={'plus-icon-square mr5 right'}>
+                            </div>}
+                          </div>
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            name="UOM"
+                            type="text"
+                            label="UOM"
+                            component={searchableSelect}
+                            placeholder={'Select'}
+                            options={this.renderListing('UOM')}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                            //required={true}
+                            handleChangeDescription={this.handleUOM}
+                            valueDescription={this.state.UOM}
+                            disabled={false}
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Machine Rate (INR)`}
+                            name={"MachineRate"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[number, positiveAndDecimalNumber, maxLength10]}
+                            component={renderText}
+                            onChange={this.handleMachineRate}
+                            //required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName=" withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
                           <div>
-                            {
-                              this.state.IsDetailedEntry ?
+                            {this.state.isEditIndex ?
+                              <>
+                                <button
+                                  type="button"
+                                  className={'btn btn-primary mt30 pull-left mr5'}
+                                  onClick={this.updateProcessGrid}
+                                >Update</button>
 
-                                EditAccessibility &&
+                                <button
+                                  type={'button'}
+                                  className="reset mt30 "
+                                  onClick={this.resetProcessGridData}>{'Cancel'}
+                                </button>
+                              </>
+                              :
+                              !this.state.IsDetailedEntry &&
+                              <>
                                 <button
                                   type="button"
-                                  className={'user-btn'}
-                                  onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
-                                  <div className={'edit_pencil_icon d-inline-block mr5'}></div>EDIT MORE DETAILS</button>
-                                :
-                                AddAccessibility &&
-                                <button
-                                  type="button"
-                                  className={this.state.isViewFlag ? 'disabled-button' : 'user-btn'}
+                                  className={`${isViewFlag ? 'disabled-button' : 'user-btn'} mt30 pull-left mr5`}
                                   disabled={this.state.isViewFlag ? true : false}
-                                  onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', false)}>
-                                  <div className={'plus'}></div>ADD MORE DETAILS</button>
+                                  onClick={this.processTableHandler}>
+                                  <div className={'plus'}></div>ADD</button>
+                                <button
+                                  type="button"
+                                  disabled={this.state.isViewFlag ? true : false}
+                                  className={`${isViewFlag ? 'disabled-button' : 'reset-btn'}  mt30 pull-left`}
+                                  onClick={this.resetProcessGridData}
+                                >Reset</button>
+                              </>
                             }
 
-                          </div>
-                        </Col>}
-                      <Col md="12"><hr /></Col>
-                    </Row>
 
-                    <Row>
-                      <Col md="12">
-                        <HeaderTitle
-                          title={'Process:'}
-                          customClass={'Personal-Details'} />
-                      </Col>
-                      <Col md="3">
-                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                          <div className="fullinput-icon">
-                            <Field
-                              name="ProcessName"
-                              type="text"
-                              label="Process Name"
-                              component={searchableSelect}
-                              placeholder={'--select--'}
-                              options={this.renderListing('ProcessNameList')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
-                              //required={true}
-                              handleChangeDescription={this.handleProcessName}
-                              valueDescription={this.state.processName}
-                              disabled={false}
-                            />
-                          </div>
-                          {!isEditFlag && <div
-                            onClick={this.processToggler}
-                            className={'plus-icon-square mr5 right'}>
-                          </div>}
-                        </div>
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          name="UOM"
-                          type="text"
-                          label="UOM"
-                          component={searchableSelect}
-                          placeholder={'--select--'}
-                          options={this.renderListing('UOM')}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                          //required={true}
-                          handleChangeDescription={this.handleUOM}
-                          valueDescription={this.state.UOM}
-                          disabled={false}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <Field
-                          label={`Machine Rate (INR)`}
-                          name={"MachineRate"}
-                          type="text"
-                          placeholder={'Enter'}
-                          validate={[number, positiveAndDecimalNumber, maxLength10]}
-                          component={renderText}
-                          onChange={this.handleMachineRate}
-                          //required={true}
-                          disabled={false}
-                          className=" "
-                          customClassName=" withBorder"
-                        />
-                      </Col>
-                      <Col md="3">
-                        <div>
-                          {this.state.isEditIndex ?
-                            <>
-                              <button
-                                type="button"
-                                className={'btn btn-primary mt30 pull-left mr5'}
-                                onClick={this.updateProcessGrid}
-                              >Update</button>
 
-                              <button
-                                type={'button'}
-                                className="reset mt30 "
-                                onClick={this.resetProcessGridData}>{'Cancel'}
-                              </button>
-                            </>
-                            :
-                            !this.state.IsDetailedEntry &&
-                            <>
-                              <button
-                                type="button"
-                                className={`${isViewFlag ? 'disabled-button' : 'user-btn'} mt30 pull-left mr5`}
-                                disabled={this.state.isViewFlag ? true : false}
-                                onClick={this.processTableHandler}>
-                                <div className={'plus'}></div>ADD</button>
-                              <button
-                                type="button"
-                                disabled={this.state.isViewFlag ? true : false}
-                                className={`${isViewFlag ? 'disabled-button' : 'reset-btn'}  mt30 pull-left`}
-                                onClick={this.resetProcessGridData}
-                              >Reset</button>
-                            </>
+                          </div>
+                        </Col>
+                        <Col md="12">
+                          <Table className="table" size="sm" >
+                            <thead>
+                              <tr>
+                                <th>{`Process Name`}</th>
+                                <th>{`UOM`}</th>
+                                <th>{`Machine Rate (INR)`}</th>
+                                <th>{`Action`}</th>
+                              </tr>
+                            </thead>
+                            <tbody >
+                              {
+                                this.state.processGrid &&
+                                this.state.processGrid.map((item, index) => {
+                                  return (
+                                    <tr key={index}>
+                                      <td>{item.processName}</td>
+                                      <td>{item.UnitOfMeasurement}</td>
+                                      <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                      <td>
+                                        {!this.state.IsDetailedEntry &&
+                                          <>
+                                            <button className="Edit mr-2" type={'button'} disabled={isViewFlag} onClick={() => this.editItemDetails(index)} />
+                                            <button className="Delete" type={'button'} disabled={isViewFlag} onClick={() => this.deleteItem(index)} />
+                                          </>}
+                                      </td>
+                                    </tr>
+                                  )
+                                })
+                              }
+                            </tbody>
+                          </Table>
+                          {this.state.processGrid.length === 0 &&
+                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
                           }
+                        </Col>
+                      </Row>
 
-
-
-                        </div>
-                      </Col>
-                      <Col md="12">
-                        <Table className="table" size="sm" >
-                          <thead>
-                            <tr>
-                              <th>{`Process Name`}</th>
-                              <th>{`UOM`}</th>
-                              <th>{`Machine Rate (INR)`}</th>
-                              <th>{`Action`}</th>
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {
-                              this.state.processGrid &&
-                              this.state.processGrid.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.processName}</td>
-                                    <td>{item.UnitOfMeasurement}</td>
-                                    <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                    <td>
-                                      {!this.state.IsDetailedEntry &&
-                                        <>
-                                          <button className="Edit mr-2" type={'button'} disabled={isViewFlag} onClick={() => this.editItemDetails(index)} />
-                                          <button className="Delete" type={'button'} disabled={isViewFlag} onClick={() => this.deleteItem(index)} />
-                                        </>}
-                                    </td>
-                                  </tr>
-                                )
-                              })
-                            }
-                          </tbody>
-                        </Table>
-                        {this.state.processGrid.length === 0 &&
-                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                        }
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col md="12" >
-                        <div className="header-title">
-                          <h5>{'Remarks & Attachments'}</h5>
-                        </div>
-                      </Col>
-                      <Col md="6">
-                        <Field
-                          label={'Remarks'}
-                          name={`Remark`}
-                          placeholder="Type here..."
-                          value={this.state.remarks}
-                          className=""
-                          customClassName=" textAreaWithBorder"
-                          onChange={this.handleMessageChange}
-                          validate={[maxLength512]}
-                          //required={true}
-                          component={renderTextAreaField}
-                          maxLength="512"
-                          rows="6"
-                          disabled={this.state.isViewFlag ? true : false}
-                        />
-                      </Col>
-                      <Col md="3">
-                        <label>Upload Files (upload up to 3 files)</label>
-                        {this.state.files.length >= 3 ? '' :
-                          <Dropzone
-                            getUploadParams={this.getUploadParams}
-                            onChangeStatus={this.handleChangeStatus}
-                            PreviewComponent={this.Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                            initialFiles={this.state.initialFiles}
-                            maxFiles={3}
-                            maxSizeBytes={2000000}
+                      <Row>
+                        <Col md="12" >
+                          <div className="header-title">
+                            <h5>{'Remarks & Attachments'}</h5>
+                          </div>
+                        </Col>
+                        <Col md="6">
+                          <Field
+                            label={'Remarks'}
+                            name={`Remark`}
+                            placeholder="Type here..."
+                            value={this.state.remarks}
+                            className=""
+                            customClassName=" textAreaWithBorder"
+                            onChange={this.handleMessageChange}
+                            validate={[maxLength512]}
+                            //required={true}
+                            component={renderTextAreaField}
+                            maxLength="512"
+                            rows="6"
                             disabled={this.state.isViewFlag ? true : false}
-                            inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
-                            styles={{
-                              dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
-                              inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
-                            }}
-                            classNames="draper-drop"
-                          />}
-                      </Col>
-                      <Col md="3">
-                        <div className={'attachment-wrapper'}>
-                          {
-                            this.state.files && this.state.files.map(f => {
-                              const withOutTild = f.FileURL.replace('~', '')
-                              const fileURL = `${FILE_URL}${withOutTild}`;
-                              return (
-                                <div className={'attachment images'}>
-                                  <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
-                                  {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                          />
+                        </Col>
+                        <Col md="3">
+                          <label>Upload Files (upload up to 3 files)</label>
+                          {this.state.files.length >= 3 ? (
+                            <div class="alert alert-danger" role="alert">
+                              Max file uploaded.
+                            </div>
+                          ) :
+                            <Dropzone
+                              getUploadParams={this.getUploadParams}
+                              onChangeStatus={this.handleChangeStatus}
+                              PreviewComponent={this.Preview}
+                              //onSubmit={this.handleSubmit}
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                              initialFiles={this.state.initialFiles}
+                              maxFiles={3}
+                              maxSizeBytes={2000000}
+                              disabled={this.state.isViewFlag ? true : false}
+                              inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
+                                <i className="text-primary fa fa-cloud-upload"></i>
+                                <span className="d-block">
+                                  Drag and Drop or{" "}
+                                  <span className="text-primary">
+                                    Browse
+                          </span>
+                                  <br />
+                          file to upload
+                        </span>
+                              </div>))}
+                              styles={{
+                                dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+                                inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+                              }}
+                              classNames="draper-drop"
+                            />}
+                        </Col>
+                        <Col md="3">
+                          <div className={'attachment-wrapper'}>
+                            {
+                              this.state.files && this.state.files.map(f => {
+                                const withOutTild = f.FileURL.replace('~', '')
+                                const fileURL = `${FILE_URL}${withOutTild}`;
+                                return (
+                                  <div className={'attachment images'}>
+                                    <a href={fileURL} target="_blank">{f.OriginalFileName}</a>
+                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
-                                  {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                                  <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../assests/images/red-cross.png')}></img>
-                                </div>
-                              )
-                            })
-                          }
-                        </div>
-                      </Col>
-                    </Row>
-
+                                    <img className="float-right" alt={''} onClick={() => this.deleteFile(f.FileId, f.FileName)} src={require('../../../assests/images/red-cross.png')}></img>
+                                  </div>
+                                )
+                              })
+                            }
+                          </div>
+                        </Col>
+                      </Row>
+                    </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         {

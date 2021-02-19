@@ -387,7 +387,7 @@ class AddZBCPlant extends Component {
                       type="text"
                       label="Country"
                       component={searchableSelect}
-                      placeholder={"Select Country"}
+                      placeholder={"Select"}
                       options={this.selectType("country")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
@@ -410,7 +410,7 @@ class AddZBCPlant extends Component {
                         type="text"
                         label="State"
                         component={searchableSelect}
-                        placeholder={"Select State"}
+                        placeholder={"Select"}
                         options={this.selectType("state")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         validate={
@@ -431,7 +431,7 @@ class AddZBCPlant extends Component {
                       type="text"
                       label="City"
                       component={searchableSelect}
-                      placeholder={"Select City"}
+                      placeholder={"Select"}
                       options={this.selectType("city")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={

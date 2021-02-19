@@ -590,7 +590,7 @@ class AddFreight extends Component {
                                   type="text"
                                   label="Mode"
                                   component={searchableSelect}
-                                  placeholder={"--Mode--"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("FREIGHT_MODE")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -618,7 +618,7 @@ class AddFreight extends Component {
                                     type="text"
                                     label="Vendor Name"
                                     component={searchableSelect}
-                                    placeholder={"Vendor"}
+                                    placeholder={"Select"}
                                     options={this.renderListing("VendorNameList")}
                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                     validate={
@@ -650,7 +650,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Source City"
                               component={searchableSelect}
-                              placeholder={"--Source City--"}
+                              placeholder={"Select"}
                               options={this.renderListing("SourceLocation")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -671,7 +671,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Destination City"
                               component={searchableSelect}
-                              placeholder={"--Destination City--"}
+                              placeholder={"Select"}
                               options={this.renderListing("DestinationLocation")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -774,7 +774,7 @@ class AddFreight extends Component {
                                   type="text"
                                   label="Capacity"
                                   component={searchableSelect}
-                                  placeholder={"--Select--"}
+                                  placeholder={"Select"}
                                   options={this.renderListing(
                                     "FULL_TRUCK_CAPACITY"
                                   )}
@@ -794,7 +794,7 @@ class AddFreight extends Component {
                               type="text"
                               label="Rate Criteria"
                               component={searchableSelect}
-                              placeholder={"--Select--"}
+                              placeholder={"Select"}
                               options={this.renderListing(
                                 "FREIGHT_RATE_CRITERIA"
                               )}

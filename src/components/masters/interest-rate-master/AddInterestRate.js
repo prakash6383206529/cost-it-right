@@ -335,7 +335,7 @@ class AddInterestRate extends Component {
                                 type="text"
                                 label="Vendor Name"
                                 component={searchableSelect}
-                                placeholder={"--select--"}
+                                placeholder={"Select"}
                                 options={this.renderListing("VendorNameList")}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={
@@ -367,7 +367,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="ICC Applicability"
                           component={searchableSelect}
-                          placeholder={"--select--"}
+                          placeholder={"Select"}
                           options={this.renderListing("ICC")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -411,7 +411,7 @@ class AddInterestRate extends Component {
                           type="text"
                           label="Payment Terms Applicability"
                           component={searchableSelect}
-                          placeholder={"--select--"}
+                          placeholder={"Select"}
                           options={this.renderListing("PaymentTerms")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={

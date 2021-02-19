@@ -236,7 +236,7 @@ class AddTaxDetails extends Component {
                     type="text"
                     label="Country"
                     component={searchableSelect}
-                    placeholder={"--Select Country--"}
+                    placeholder={"Select"}
                     options={this.renderListing("country")}
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     validate={

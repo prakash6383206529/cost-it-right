@@ -545,7 +545,7 @@ class AddOperation extends Component {
                         <Field
                           label="Technology"
                           name="technology"
-                          placeholder="--Select--"
+                          placeholder="Select"
                           selection={
                             this.state.selectedTechnology == null ||
                               this.state.selectedTechnology.length === 0
@@ -613,7 +613,7 @@ class AddOperation extends Component {
                           <Field
                             label="Plant"
                             name="Plant"
-                            placeholder="--Select--"
+                            placeholder="Select"
                             selection={
                               this.state.selectedPlants == null ||
                                 this.state.selectedPlants.length === 0
@@ -640,7 +640,7 @@ class AddOperation extends Component {
                                 type="text"
                                 label="Vendor Name"
                                 component={searchableSelect}
-                                placeholder={"--select--"}
+                                placeholder={"Select"}
                                 options={this.renderListing(
                                   "VendorNameList"
                                 )}
@@ -675,7 +675,7 @@ class AddOperation extends Component {
                           <Field
                             label="Vendor Plant"
                             name="VendorPlant"
-                            placeholder="--- Plant ---"
+                            placeholder="Select"
                             selection={
                               this.state.selectedVendorPlants == null ||
                                 this.state.selectedVendorPlants.length === 0
@@ -702,7 +702,7 @@ class AddOperation extends Component {
                           type="text"
                           label="UOM"
                           component={searchableSelect}
-                          placeholder={"--- Select ---"}
+                          placeholder={"Select"}
                           options={this.renderListing("UOM")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -810,8 +810,12 @@ class AddOperation extends Component {
                       </Col>
                       <Col md="3">
                         <label>Upload Files (upload up to 3 files)</label>
-                        {this.state.files && this.state.files.length >= 3 ? '' :
-                          <Dropzone
+                        {this.state.files.length >= 3 ? (
+                          <div class="alert alert-danger" role="alert">
+                            Max file uploaded.
+                          </div>
+                        ) :
+                          < Dropzone
                             getUploadParams={this.getUploadParams}
                             onChangeStatus={this.handleChangeStatus}
                             PreviewComponent={this.Preview}
@@ -820,7 +824,17 @@ class AddOperation extends Component {
                             initialFiles={this.state.initialFiles}
                             maxFiles={3}
                             maxSizeBytes={2000000}
-                            inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : 'Drag Files')}
+                            inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
+                              <i className="text-primary fa fa-cloud-upload"></i>
+                              <span className="d-block">
+                                Drag and Drop or{" "}
+                                <span className="text-primary">
+                                  Browse
+                          </span>
+                                <br />
+                          file to upload
+                        </span>
+                            </div>))}
                             styles={{
                               dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
                               inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),

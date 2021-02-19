@@ -685,7 +685,7 @@ class AddLabour extends Component {
                                 type="text"
                                 label="Vendor Name"
                                 component={searchableSelect}
-                                placeholder={"--select--"}
+                                placeholder={"Select"}
                                 options={this.renderListing("VendorNameList")}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={
@@ -711,7 +711,7 @@ class AddLabour extends Component {
                           type="text"
                           label="State"
                           component={searchableSelect}
-                          placeholder={"--- Select ---"}
+                          placeholder={"Select"}
                           options={this.renderListing("state")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -732,7 +732,7 @@ class AddLabour extends Component {
                           type="text"
                           label="Plant"
                           component={searchableSelect}
-                          placeholder={"--- Select ---"}
+                          placeholder={"Select"}
                           options={this.renderListing("plant")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
@@ -764,7 +764,7 @@ class AddLabour extends Component {
                               type="text"
                               label="Machine Type"
                               component={searchableSelect}
-                              placeholder={"--select--"}
+                              placeholder={"Select"}
                               options={this.renderListing("MachineTypeList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               //validate={(this.state.machineType == null || this.state.machineType.length == 0) ? [required] : []}
@@ -788,7 +788,7 @@ class AddLabour extends Component {
                           type="text"
                           label="Labour Type"
                           component={searchableSelect}
-                          placeholder={"Select Labour"}
+                          placeholder={"Select"}
                           options={this.renderListing("labourList")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}

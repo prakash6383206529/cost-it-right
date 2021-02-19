@@ -632,7 +632,7 @@ class AddVolume extends Component {
                               type="text"
                               label="Plant"
                               component={searchableSelect}
-                              placeholder={"--select--"}
+                              placeholder={"Select"}
                               options={this.renderListing("plant")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -657,7 +657,7 @@ class AddVolume extends Component {
                                   type="text"
                                   label="Vendor Name"
                                   component={searchableSelect}
-                                  placeholder={"--select--"}
+                                  placeholder={"Select"}
                                   options={this.renderListing(
                                     "VendorNameList"
                                   )}
@@ -691,7 +691,7 @@ class AddVolume extends Component {
                             type="text"
                             label="Part No."
                             component={searchableSelect}
-                            placeholder={"--select--"}
+                            placeholder={"Select"}
                             options={this.renderListing("PartList")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
@@ -712,7 +712,7 @@ class AddVolume extends Component {
                             type="text"
                             label="Year"
                             component={searchableSelect}
-                            placeholder={"--select--"}
+                            placeholder={"Select"}
                             options={this.renderListing("yearList")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={

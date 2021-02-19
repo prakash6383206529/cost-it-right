@@ -199,7 +199,7 @@ class AddUOM extends Component {
                     type="text"
                     label="Unit Type"
                     component={searchableSelect}
-                    placeholder={"Select Unit Type"}
+                    placeholder={"Select"}
                     options={this.searchableSelectType("UnitType")}
                     //onKeyUp={(e) => this.changeItemDesc(e)}
                     validate={

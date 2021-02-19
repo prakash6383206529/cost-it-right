@@ -1003,7 +1003,7 @@ class UserRegistration extends Component {
                           type="text"
                           label="Role"
                           component={searchableSelect}
-                          placeholder={'Select role'}
+                          placeholder={'Select'}
                           options={this.searchableSelectType('role')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={(this.state.role == null || this.state.role.length === 0) ? [required] : []}
@@ -1018,7 +1018,7 @@ class UserRegistration extends Component {
                           type="text"
                           label="Department"
                           component={searchableSelect}
-                          placeholder={'Select department'}
+                          placeholder={'Select'}
                           options={this.searchableSelectType('department')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}
@@ -1101,6 +1101,7 @@ class UserRegistration extends Component {
                           label="Technology"
                           component={searchableSelect}
                           options={this.searchableSelectType('technology')}
+                          placeholder={'Select'}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           //validate={(this.state.technology == null || this.state.technology.length == 0) ? [required] : []}
                           //required={true}
@@ -1120,6 +1121,7 @@ class UserRegistration extends Component {
                           //required={true}
                           handleChangeDescription={this.levelHandler}
                           valueDescription={this.state.level}
+                          placeholder={'Select'}
                         />
                       </div>
                       <div className="col-md-3 mt25 d-flex">

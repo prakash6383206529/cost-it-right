@@ -222,7 +222,7 @@ class AddExchangeRate extends Component {
                           type="text"
                           label="Currency"
                           component={searchableSelect}
-                          placeholder={"--Select Currency--"}
+                          placeholder={"Select"}
                           options={this.renderListing("currency")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={

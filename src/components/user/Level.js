@@ -395,6 +395,7 @@ class Level extends Component {
                           options={this.searchableSelectType('technology')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={(this.state.technology == null || this.state.technology.length === 0) ? [required] : []}
+                          placeholder={"Select"}
                           required={true}
                           handleChangeDescription={this.technologyHandler}
                           valueDescription={this.state.technology}
@@ -411,6 +412,7 @@ class Level extends Component {
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={(this.state.level == null || this.state.level.length === 0) ? [required] : []}
                           required={true}
+                          placeholder={"Select"}
                           handleChangeDescription={this.levelHandler}
                           valueDescription={this.state.level}
                         />

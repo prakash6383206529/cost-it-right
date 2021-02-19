@@ -154,7 +154,7 @@ function AddToComparisonDrawer(props) {
     } else if (value === 'VBC') {
       setCostingDropdown([])
       setValue('costings', '')
-      dispatch(getVendorWithVendorCodeSelectList(() => {}))
+      dispatch(getVendorWithVendorCodeSelectList(() => { }))
     } else if (value === 'CBC') {
       setCostingDropdown([])
       dispatch(
@@ -257,30 +257,30 @@ function AddToComparisonDrawer(props) {
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadCCTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadCCTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                    .OverheadCCTotalCost,
+                )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadBOPTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadBOPTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                    .OverheadBOPTotalCost,
+                )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadRMTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadRMTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                    .OverheadRMTotalCost,
+                )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
                 .OverheadFixedTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                      .OverheadFixedTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+                    .OverheadFixedTotalCost,
+                )
                 : 0),
           }
           obj.profitOn = {
@@ -291,30 +291,30 @@ function AddToComparisonDrawer(props) {
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitCCTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitCCTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                    .ProfitCCTotalCost,
+                )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitBOPTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitBOPTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                    .ProfitBOPTotalCost,
+                )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitRMTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitRMTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                    .ProfitRMTotalCost,
+                )
                 : 0) +
               (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
                 .ProfitFixedTotalCost
                 ? parseInt(
-                    dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                      .ProfitFixedTotalCost,
-                  )
+                  dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+                    .ProfitFixedTotalCost,
+                )
                 : 0),
           }
           obj.rejectionOn = {
@@ -348,7 +348,7 @@ function AddToComparisonDrawer(props) {
           obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails[0]
             .OverAllApplicability.ToolMaintenanceCost
             ? dataFromAPI.CostingPartDetails[0].OverAllApplicability
-                .ToolMaintenanceCost
+              .ToolMaintenanceCost
             : '-'
           obj.toolPrice = dataFromAPI.CostingPartDetails[0].OverAllApplicability
             .ToolCost
@@ -368,12 +368,12 @@ function AddToComparisonDrawer(props) {
             discountPercentValue: dataFromAPI.CostingPartDetails[0]
               .OtherCostDetails.HundiOrDiscountPercentage
               ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                  .HundiOrDiscountPercentage
+                .HundiOrDiscountPercentage
               : '-',
             discountValue: dataFromAPI.CostingPartDetails[0].OtherCostDetails
               .HundiOrDiscountValue
               ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                  .HundiOrDiscountValue
+                .HundiOrDiscountValue
               : '-',
           }
           obj.anyOtherCost = dataFromAPI.CostingPartDetails[0].OtherCostDetails
@@ -386,7 +386,7 @@ function AddToComparisonDrawer(props) {
           obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails[0]
             .OtherCostDetails.NetPOPriceOtherCurrency
             ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-                .NetPOPriceOtherCurrency
+              .NetPOPriceOtherCurrency
             : '-'
           obj.currency = {
             currencyTitle:
@@ -564,7 +564,7 @@ function AddToComparisonDrawer(props) {
                     <SearchableSelectHookForm
                       label={"Plant"}
                       name={"plant"}
-                      placeholder={"-Select-"}
+                      placeholder={"Select"}
                       Controller={Controller}
                       control={control}
                       rules={{ required: true }}
@@ -583,7 +583,7 @@ function AddToComparisonDrawer(props) {
                       <SearchableSelectHookForm
                         label={"Vendor"}
                         name={"vendor"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -600,7 +600,7 @@ function AddToComparisonDrawer(props) {
                         <SearchableSelectHookForm
                           label={"Vendor Plant"}
                           name={"vendorPlant"}
-                          placeholder={"-Select-"}
+                          placeholder={"Select"}
                           Controller={Controller}
                           control={control}
                           rules={{ required: true }}
@@ -621,7 +621,7 @@ function AddToComparisonDrawer(props) {
                       <SearchableSelectHookForm
                         label={"Client Name"}
                         name={"clientName"}
-                        placeholder={"-Select-"}
+                        placeholder={"Select"}
                         Controller={Controller}
                         control={control}
                         rules={{ required: true }}
@@ -629,7 +629,7 @@ function AddToComparisonDrawer(props) {
                         //defaultValue={plant.length !== 0 ? plant : ''}
                         options={clientDropdown}
                         mandatory={true}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         errors={errors.clientName}
                       />
                     </Col>
@@ -639,7 +639,7 @@ function AddToComparisonDrawer(props) {
                   <SearchableSelectHookForm
                     label={"Costing Version"}
                     name={"costings"}
-                    placeholder={"-Select-"}
+                    placeholder={"Select"}
                     Controller={Controller}
                     control={control}
                     rules={{ required: true }}
@@ -649,48 +649,48 @@ function AddToComparisonDrawer(props) {
                     }
                     options={costingDropdown}
                     mandatory={true}
-                    handleChange={() => {}}
+                    handleChange={() => { }}
                     errors={errors.costings}
                   />
                 </Col>
               </Row>
-            
-            <Row className="justify-content-between my-3">
-              <div className="col-sm-12 text-right">
-                <button
-                  type={"button"}
-                  className="reset mr15 cancel-btn"
-                  onClick={toggleDrawer}
-                >
-                  <div className={"cross-icon"}>
-                    <img
-                      src={require("../../../assests/images/times.png")}
-                      alt="cancel-icon.jpg"
-                    />
-                  </div>{" "}
-                  {"Cancel"}
-                </button>
 
-                <button
-                  type="submit"
-                  className="submit-button save-btn"
-                  // onClick={addHandler}
-                >
-                  {isEditFlag ? (
-                    <div className={"check-icon"}>
-                      {" "}
+              <Row className="justify-content-between my-3">
+                <div className="col-sm-12 text-right">
+                  <button
+                    type={"button"}
+                    className="reset mr15 cancel-btn"
+                    onClick={toggleDrawer}
+                  >
+                    <div className={"cross-icon"}>
                       <img
-                        src={require("../../../assests/images/check.png")}
-                        alt="check-icon.jpg"
-                      />{" "}
-                    </div>
-                  ) : (
-                    <div class="plus"></div>
-                  )}{" "}
-                  {isEditFlag ? "Edit" : "Add"}
-                </button>
-              </div>
-            </Row>
+                        src={require("../../../assests/images/times.png")}
+                        alt="cancel-icon.jpg"
+                      />
+                    </div>{" "}
+                    {"Cancel"}
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="submit-button save-btn"
+                  // onClick={addHandler}
+                  >
+                    {isEditFlag ? (
+                      <div className={"check-icon"}>
+                        {" "}
+                        <img
+                          src={require("../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                    ) : (
+                        <div class="plus"></div>
+                      )}{" "}
+                    {isEditFlag ? "Edit" : "Add"}
+                  </button>
+                </div>
+              </Row>
             </form>
           </div>
         </Container>

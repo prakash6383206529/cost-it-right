@@ -711,11 +711,15 @@ label.btn.btn-link.align-middle.checkbox-label {
 }
 
 .MuiDrawer-root.MuiDrawer-modal {
-  top: 0px !important;
+  top: 0 !important;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 .MuiDrawer-root.MuiDrawer-modal .MuiBackdrop-root, .MuiDrawer-root.MuiDrawer-modal .MuiDrawer-paper {
-  top: 0px;
+  top: 0;
+  padding-bottom: 50px;
+  overflow-x: hidden;
 }
 
 .cr-other-logo {
@@ -723,3 +727,4 @@ label.btn.btn-link.align-middle.checkbox-label {
   padding-left: 16px;
   margin-left: 16px;
 }
+/*# sourceMappingURL=NavBar.css.map */

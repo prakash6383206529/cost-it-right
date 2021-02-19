@@ -1239,9 +1239,48 @@ input::-webkit-input-placeholder {
   padding-left: 0;
 }
 
-.content-page .filter-block {
+.content-page .tab-pane .filter-block {
+  position: initial;
   height: 32px !important;
-  margin-bottom: 12px;
+  margin-bottom: 25px;
+  background-color: #F8FCFF;
+}
+
+.content-page .tab-pane .filter-block:before {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  right: 15px;
+  bottom: 11px;
+  content: "";
+  background-color: #F8FCFF;
+  z-index: 0;
+}
+
+.content-page .tab-pane .filter-block:empty {
+  background-color: #fff;
+}
+
+.content-page .tab-pane .filter-block:empty:before {
+  display: none;
+}
+
+.content-page .blue-before .filter-block {
+  position: initial;
+  height: 32px !important;
+  margin-bottom: 25px;
+  background-color: #F8FCFF;
+}
+
+.content-page .blue-before .filter-block:before {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  right: 15px;
+  bottom: 10px;
+  content: "";
+  background-color: #F8FCFF;
+  z-index: 0;
 }
 
 .form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm input {
@@ -1544,6 +1583,28 @@ button.user-btn.pull-right {
   }
 }
 
+.cr-prt-nm1.cr-prt-link1 .Open {
+  position: absolute;
+  right: -20px;
+  top: 3px;
+  height: 15px;
+  width: 15px;
+  background: transparent url("../../assests/images/down-sorting-arrow.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+
+.cr-prt-nm1.cr-prt-link1 .Close {
+  position: absolute;
+  right: -20px;
+  top: 3px;
+  height: 15px;
+  width: 15px;
+  background: transparent url("../../assests/images/up-sorting-arrow.png") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+}
+
 .date-section .react-datepicker-wrapper .react-datepicker__input-container input {
   min-height: 40px;
 }
@@ -1684,6 +1745,16 @@ button.user-btn.pull-right {
 
 .MuiDrawer-root.MuiDrawer-modal .MuiDrawer-paper {
   max-height: 100vh;
+}
+
+.MuiDrawer-root.MuiDrawer-modal.bottom-drawer .drawer-1500px {
+  max-width: 100%;
+}
+
+.MuiDrawer-root.MuiDrawer-modal.bottom-drawer .MuiDrawer-paper {
+  max-height: 65vh;
+  top: auto;
+  padding-bottom: 15px;
 }
 
 body .icon-small-primary {
@@ -1891,6 +1962,7 @@ html body .cancel-btn {
 
 .content-page .filter-block .flex-fill {
   padding-right: 10px;
+  z-index: 9;
 }
 
 .content-page .filter-block .flex-fills {
@@ -1991,16 +2063,16 @@ html body .cancel-btn {
   background: transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAK8AAACvABQqw0mAAAACV0RVh0U29mdHdhcmUATWFjcm9tZWRpYSBGaXJld29ya3MgTVggMjAwNId2rM8AAADxSURBVHicY2BAB6H/mZUzL+xVSj+viiHHwMDAiMJLO8OqwsJ6gpGRwej/P4ZHfxj/+T+YZngBuwaoYgaG/0b/YRL/GTE0MaGb/O8/wy6G/wwM//8zHmRg/C/E8p9po0LWeQOEBhTF/xf8//e/h4GBgeE/A+MJhv9MFeiamJRZ2dbAFN+dZpCI7N470/WmwjQxMzAtlku/qsXy6+/PajYGtvt3ZxgUYAuVO9P1pipnXPrzj+n/90czta+xPJ5heoWBgQGrYhi4O0NvJqqnSQAka2DBFGH+yfCfgYH5/1+shmEI3hfVPfKX4a/hB0a2JmwaAFZTZQVmByh5AAAAAElFTkSuQmCC) 0 0 !important;
 }
 
-.css-b8ldur-Input {
+.css-b8ldur-Input, .css-1g6gooi {
   margin: 0 !important;
   width: 100% !important;
 }
 
-.css-b8ldur-Input > div {
+.css-b8ldur-Input > div, .css-1g6gooi > div {
   width: 100% !important;
 }
 
-.css-b8ldur-Input > div > input {
+.css-b8ldur-Input > div > input, .css-1g6gooi > div > input {
   width: 100% !important;
 }
 
@@ -2164,7 +2236,7 @@ input:disabled {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  height: calc(100vh - 101px);
+  height: calc(100vh - 107px);
 }
 
 .btn-danger {
@@ -2189,7 +2261,7 @@ input:disabled {
 }
 
 .add-min-height {
-  min-height: calc(100vh - 325px);
+  min-height: calc(100vh - 322px);
 }
 
 .remove-double-border .inputbox.input-group {
@@ -2245,6 +2317,15 @@ input[type="number"].form-control {
 
 .bom-viewer-main .MuiDrawer-paper {
   width: calc(100% - 230px);
+  padding-bottom: 0px !important;
+}
+
+.bom-viewer-main .MuiDrawer-paper .flowspace {
+  max-width: 100%;
+}
+
+.bom-viewer-main .MuiDrawer-paper .sf-btn-footer {
+  margin-bottom: -20px;
 }
 
 .react-bs-table-search-form .btn-secondary:hover {
@@ -2297,6 +2378,7 @@ table thead th {
 
 .costing-details-page .nodate-section h5 {
   font-size: 0.9rem;
+  color: #cdcfd1;
 }
 
 .table th.sort-column {
@@ -2427,7 +2509,23 @@ table thead th {
   margin-right: 5px;
 }
 
-.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn {
+.react-bs-table-container .react-bs-table-search-form {
+  max-width: 245px;
+}
+
+.react-bs-table-container .react-bs-table-search-form input.form-control {
+  padding: 6px 30px 6px 10px !important;
+}
+
+.react-bs-table-container .react-bs-table-search-form input.form-control:hover, .react-bs-table-container .react-bs-table-search-form input.form-control:focus, .react-bs-table-container .react-bs-table-search-form input.form-control:active, .react-bs-table-container .react-bs-table-search-form input.form-control:visited {
+  border: 1px solid #256bd1;
+}
+
+.react-bs-table-container .react-bs-table-search-form .input-group-btn {
+  opacity: 0;
+}
+
+.react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn {
   margin-left: -30px;
   padding: 5px;
   background-color: transparent !important;
@@ -2444,13 +2542,7 @@ table thead th {
           justify-content: center;
 }
 
-.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:hover, .react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:active, .react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:focus, .react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:visited {
-  background-color: transparent;
-  -webkit-box-shadow: none;
-          box-shadow: none;
-}
-
-.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn:before {
+.react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:before {
   content: "";
   background: transparent url("../../assests/images/cross.svg") 0% 0% no-repeat padding-box;
   width: 18px;
@@ -2461,8 +2553,116 @@ table thead th {
   vertical-align: middle;
 }
 
-.react-bs-table-container .react-bs-table-search-form .react-bs-table-search-clear-btn span {
+.react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:hover, .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:active, .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:focus, .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:visited {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:hover:before, .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:active:before, .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:focus:before, .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:visited:before {
+  -webkit-filter: invert(56%) sepia(86%) saturate(6810%) hue-rotate(198deg) brightness(84%) contrast(90%);
+          filter: invert(56%) sepia(86%) saturate(6810%) hue-rotate(198deg) brightness(84%) contrast(90%);
+}
+
+.react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn span {
   display: none;
+}
+
+.react-bs-table-container .react-bs-table-search-form input:not(:placeholder-shown) + .input-group-btn {
+  opacity: 1;
+}
+
+.css-1pahdxg-control {
+  border: 1px solid #256bd1;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.filter-btn-top {
+  position: absolute !important;
+  z-index: 9;
+  top: -56px;
+  right: 20px;
+  width: 32px;
+  padding: 5px !important;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.filter-btn-top img {
+  -webkit-filter: brightness(100);
+          filter: brightness(100);
+}
+
+.topminus88.filter-btn-top {
+  top: -88px;
+}
+
+.react-switch-bg div svg {
+  display: none;
+}
+
+.disabled-button {
+  background: #f2f2f2 !important;
+  border: 1px solid #dee3f3 !important;
+  color: #bfc3c7 !important;
+  pointer-events: none !important;
+}
+
+.disabled-button .plus {
+  -webkit-filter: brightness(0.8) !important;
+          filter: brightness(0.8) !important;
+}
+
+.tooltip-n {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-n .tooltiptext {
+  visibility: hidden;
+  min-width: 300px;
+  background-color: #D0D8E5;
+  color: #3D4465;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -4px;
+  font-size: 14px;
+}
+
+.tooltip-n .tooltiptext:after {
+  position: absolute;
+  display: block;
+  content: "";
+  border-color: transparent;
+  border-style: solid;
+  left: 0;
+  right: 0;
+  width: 8px;
+  margin: auto;
+  bottom: -6px;
+  border-top-color: #D0D8E5;
+}
+
+.tooltip-n .tooltip-icon {
+  cursor: pointer;
+}
+
+.tooltip-n:hover .tooltiptext {
+  visibility: visible;
 }
 
 @media (max-width: 1600px) {
@@ -2474,13 +2674,10 @@ table thead th {
 
 @media (max-width: 1367px) {
   .filter-row-large .col-md-12 {
-    -ms-flex: 0 0 100%;
+    -ms-flex: 0 0 calc(100% - 100px);
     -webkit-box-flex: 0;
-            flex: 0 0 100%;
-    max-width: 100%;
-  }
-  .content-page .filter-row-large .filter-block .flex-fill:last-child {
-    text-align: right;
+            flex: 0 0 calc(100% - 100px);
+    max-width: calc(100% - 100px);
   }
   .process .card .card-block p br {
     display: none;
@@ -2602,3 +2799,4 @@ table thead th {
     padding: 0 15px 15px;
   }
 }
+/*# sourceMappingURL=style.css.map */

@@ -359,7 +359,7 @@ class AddClientDrawer extends Component {
                                             type="text"
                                             label="Country"
                                             component={searchableSelect}
-                                            placeholder={'Select Country'}
+                                            placeholder={'Select'}
                                             options={this.renderListing('country')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                             validate={(this.state.country == null || this.state.country.length === 0) ? [required] : []}
@@ -377,7 +377,7 @@ class AddClientDrawer extends Component {
                                                 type="text"
                                                 label="State"
                                                 component={searchableSelect}
-                                                placeholder={'Select State'}
+                                                placeholder={'Select'}
                                                 options={this.renderListing('state')}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                                 validate={(this.state.state == null || this.state.state.length === 0) ? [required] : []}
@@ -392,7 +392,7 @@ class AddClientDrawer extends Component {
                                             type="text"
                                             label="City"
                                             component={searchableSelect}
-                                            placeholder={'Select City'}
+                                            placeholder={'Select'}
                                             options={this.renderListing('city')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                             validate={(this.state.city == null || this.state.city.length === 0) ? [required] : []}

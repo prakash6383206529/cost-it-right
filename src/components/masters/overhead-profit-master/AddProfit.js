@@ -648,7 +648,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Model Type"
                             component={searchableSelect}
-                            placeholder={"---Select---"}
+                            placeholder={"Select"}
                             options={this.renderListing("ModelType")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
@@ -672,7 +672,7 @@ class AddProfit extends Component {
                               type="text"
                               label={"Vendor Name"}
                               component={searchableSelect}
-                              placeholder={"---Select---"}
+                              placeholder={"Select"}
                               options={this.renderListing("VendorNameList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -697,7 +697,7 @@ class AddProfit extends Component {
                               type="text"
                               label={"Client Name"}
                               component={searchableSelect}
-                              placeholder={"---Select---"}
+                              placeholder={"Select"}
                               options={this.renderListing("ClientList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
@@ -721,7 +721,7 @@ class AddProfit extends Component {
                             type="text"
                             label="Profit Applicability"
                             component={searchableSelect}
-                            placeholder={"---Select---"}
+                            placeholder={"Select"}
                             options={this.renderListing(
                               "ProfitApplicability"
                             )}

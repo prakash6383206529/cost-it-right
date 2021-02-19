@@ -1065,7 +1065,7 @@ function CostingDetails() {
                                         <SearchableSelectHookForm
                                           label={""}
                                           name={`${zbcPlantGridFields}[${index}]CostingVersion`}
-                                          placeholder={"-Select-"}
+                                          placeholder={"Select"}
                                           Controller={Controller}
                                           control={control}
                                           rules={{ required: false }}
@@ -1183,7 +1183,7 @@ function CostingDetails() {
                                         <SearchableSelectHookForm
                                           label={""}
                                           name={`${vbcGridFields}[${index}]CostingVersion`}
-                                          placeholder={"-Select-"}
+                                          placeholder={"Select"}
                                           Controller={Controller}
                                           control={control}
                                           rules={{ required: false }}

@@ -446,7 +446,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="Fuel Name"
                                   component={searchableSelect}
-                                  placeholder={"--- Select Fuel ---"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("fuel")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -477,7 +477,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="UOM"
                                   component={searchableSelect}
-                                  placeholder={"--- Select ---"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
@@ -510,7 +510,7 @@ class AddFuel extends Component {
                                   type="text"
                                   label="State"
                                   component={searchableSelect}
-                                  placeholder={"--- Select ---"}
+                                  placeholder={"Select"}
                                   options={this.renderListing("state")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   //validate={(this.state.StateName == null || this.state.StateName.length == 0) ? [required] : []}

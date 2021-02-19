@@ -161,7 +161,7 @@ class AddMachineTypeDrawer extends Component {
                     <Field
                       label="Labour Type"
                       name="LabourTypeIds"
-                      placeholder="--Select--"
+                      placeholder="Select"
                       selection={
                         this.state.labourType == null ||
                           this.state.labourType.length === 0

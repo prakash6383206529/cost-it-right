@@ -264,7 +264,7 @@ class AddProcessDrawer extends Component {
                     <Field
                       label="Plant"
                       name="Plant"
-                      placeholder="--Select--"
+                      placeholder="Select"
                       selection={
                         this.state.selectedPlants == null ||
                           this.state.selectedPlants.length === 0
@@ -287,7 +287,7 @@ class AddProcessDrawer extends Component {
                       <Field
                         label="Machine"
                         name="Machine"
-                        placeholder="--Select--"
+                        placeholder="Select"
                         selection={
                           this.state.selectedMachine == null ||
                             this.state.selectedMachine.length === 0
