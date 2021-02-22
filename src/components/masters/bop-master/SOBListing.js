@@ -119,6 +119,30 @@ class SOBListing extends Component {
     return cell ? 'Vendor Based' : 'Zero Based';
   }
 
+  renderweightnet = () => {
+    return <>Weighted Net <br />Landed Cost(INR)</>
+  }
+
+  rendernetlandedCost = () => {
+    return <>Net <br />Landed Cost</>
+  }
+
+  renderbopNo = () => {
+    return <> BOP <br /> Part No. </>
+  }
+
+  renderbopName = () => {
+    return <> BOP <br /> Part Name </>
+  }
+
+  renderbopCategory = () => {
+    return <> BOP <br /> Category </>
+  }
+
+  renderNoOfVendor = () => {
+    return <>No Of <br />Vendors </>
+  }
+
   /**
   * @method renderListing
   * @description Used to show type of listing
@@ -281,15 +305,15 @@ class SOBListing extends Component {
               search
               ref={'table'}
               pagination>
-              <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="NoOfVendors" columnTitle={true} dataAlign="left" dataSort={true} >{'No Of Vendors'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataSort={true} >{'Net Landed Cost'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn>
-              <TableHeaderColumn dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{'Weighted Net Landed Cost(INR)'}</TableHeaderColumn>
+              <TableHeaderColumn width={100} dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopNo()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopName()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
+              <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
+              <TableHeaderColumn width={100} dataField="NoOfVendors" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderNoOfVendor()}</TableHeaderColumn>
+              <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn>
+              <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn>
+              <TableHeaderColumn width={150} dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{this.renderweightnet()}</TableHeaderColumn>
               <TableHeaderColumn width={100} dataField="BoughtOutPartNumber" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>

@@ -679,7 +679,7 @@ class VolumeListing extends Component {
                   </div>
                 </Col>) : ("")}
 
-              <Col md="6" className="search-user-block mb-3">
+              <Col md="7" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight">
                   <div>
                     {this.state.shown ? (
@@ -741,6 +741,7 @@ class VolumeListing extends Component {
               dataSort={true}
               searchable={false}
               dataFormat={this.costingHeadFormatter}
+              width={100}
             >
               {this.renderCostingHead()}
             </TableHeaderColumn>
@@ -751,6 +752,7 @@ class VolumeListing extends Component {
               dataAlign="left"
               searchable={false}
               dataSort={true}
+              width={100}
             >
               {'Year'}
             </TableHeaderColumn>
@@ -761,6 +763,7 @@ class VolumeListing extends Component {
               dataAlign="left"
               searchable={false}
               dataSort={true}
+              width={100}
             >
               {'Month'}
             </TableHeaderColumn>
@@ -770,6 +773,7 @@ class VolumeListing extends Component {
               searchable={false}
               dataAlign="left"
               dataSort={true}
+              width={120}
             >
               {'Vendor Name'}
             </TableHeaderColumn>
@@ -778,6 +782,7 @@ class VolumeListing extends Component {
               columnTitle={true}
               dataAlign="left"
               dataSort={true}
+              width={110}
             >
               {'Part No.'}
             </TableHeaderColumn>
@@ -786,6 +791,7 @@ class VolumeListing extends Component {
               columnTitle={true}
               dataAlign="left"
               dataSort={true}
+              width={110}
             >
               {'Part Name'}
             </TableHeaderColumn>
@@ -795,6 +801,7 @@ class VolumeListing extends Component {
               columnTitle={true}
               dataAlign="left"
               dataSort={true}
+              width={150}
             >
               {'Budgeted Quantity'}
             </TableHeaderColumn>
@@ -804,11 +811,12 @@ class VolumeListing extends Component {
               searchable={false}
               dataAlign="left"
               dataSort={true}
+              width={120}
             >
               {'Actual Quantity '}
             </TableHeaderColumn>
             <TableHeaderColumn
-              width={100}
+              width={120}
               className="action"
               dataField="VolumeId"
               searchable={false}

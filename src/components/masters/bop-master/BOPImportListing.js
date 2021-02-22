@@ -211,6 +211,10 @@ class BOPImportListing extends Component {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
+    renderEffectiveDate = () => {
+        return <> Effective <br /> Date </>
+    }
+
     /**
     * @method indexFormatter
     * @description Renders serial number
@@ -234,6 +238,24 @@ class BOPImportListing extends Component {
 
     renderCostingHead = () => {
         return <>Costing <br />Head </>
+    }
+
+    renderbopNo = () => {
+        return <> BOP <br /> Part No. </>
+    }
+
+    renderbopName = () => {
+        return <> BOP <br /> Part Name </>
+    }
+
+    renderbopCategory = () => {
+        return <> BOP <br /> Category </>
+    }
+    renderpartAssemblyNumber = () => {
+        return <> Part Assembly <br />Number </>
+    }
+    renderNetLandedCost = () => {
+        return <> Net <br />Landed Cost </>
     }
 
 
@@ -471,20 +493,20 @@ class BOPImportListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="PartAssemblyNumber" columnTitle={true} dataAlign="left" searchable={false} >{'Part Assembly No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopNo()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopName()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
+                            <TableHeaderColumn width={120} dataField="PartAssemblyNumber" columnTitle={true} dataAlign="left" searchable={false} >{this.renderpartAssemblyNumber()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
 
-                            <TableHeaderColumn dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{'No. of Pcs'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="left"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="Specification" columnTitle={true} dataAlign="left" searchable={false} >{'Specification'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{'No. of Pcs'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="left"  >{this.renderNetLandedCost()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataSort={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BoughtOutPartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

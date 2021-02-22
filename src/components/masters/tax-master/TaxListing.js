@@ -146,6 +146,10 @@ class TaxListing extends Component {
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
+  renderEffectiveDate = () => {
+    return <> Effective Date </>
+  }
+
   /**
 * @method buttonFormatter
 * @description Renders buttons
@@ -235,7 +239,7 @@ class TaxListing extends Component {
                 <TableHeaderColumn dataField="TaxName" dataAlign="" dataSort={true}>Tax Name</TableHeaderColumn>
                 <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
                 <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
-                <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="" dataFormat={this.effectiveDateFormatter} dataSort={true} >{this.renderEffectiveDate()}</TableHeaderColumn>
                 <TableHeaderColumn width={100} searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
               </BootstrapTable>

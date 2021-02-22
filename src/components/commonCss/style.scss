@@ -2437,44 +2437,9 @@ table{
     }
   }
 }
-
 // ========tooltip css=============
 
-@media(max-width:1600px){
-  .input-range {
-    .input-range__track--background{
-        &:before {
-          width: 60px;
-          top: -39px;
-        }// before
-      }// input-range__track--background
-    }// input-range
-}// 1600px media query end
-
-
-@media(max-width:1367px){
-  .filter-row-large{
-     .col-md-12{-ms-flex: 0 0 calc(100% - 100px);flex: 0 0 calc(100% - 100px);max-width: calc(100% - 100px);}
-  }
-  .process {
-    .card {
-      .card-block {
-        p {
-          br{
-            display: none;
-          }
-        }
-      }
-    }
-  }
-}
-
-@media(max-width:768px){
-  .workflow-row {
-    .col-lg-3 {padding: 0;flex-grow: 0;flex-shrink: 0;flex-basis: calc(50% - 30px);max-width: calc(50% - 30px);position: relative;margin-bottom: 20px;} 
-  }
-  .workflow-row .col-lg-3:nth-child(2) .card-border:after{display:none;}
-}
+// ========error page =============
 .error-page{
   .blue-box{
       padding: 30px;
@@ -2514,9 +2479,43 @@ table{
     label{height: 152px;}
   }
 }
+// ========error page =============
+.notification-dropdown{
+  width: 20rem;
+  left: -6rem;
+  box-shadow: 0 6px 10px 3px rgba(43,75,123,0.2);
+  .top-row{
+    p{
+      max-width: calc(100% - 60px);
+    }
+    .preview-item{
+      .preview-thumbnail{
+        width: 43px;
+        height: 43px;
+        object-fit: contain;
+      }
+    }
+  }
+  .notification-items-cons{
+    max-height: 290px;
+    overflow-y: auto;
+  }
+}
+
 
 
 // responsive media query start
+@media(max-width:1600px){
+  .input-range {
+    .input-range__track--background{
+        &:before {
+          width: 60px;
+          top: -39px;
+        }// before
+      }// input-range__track--background
+    }// input-range
+}// 1600px media query end
+
 @media(max-width:1366px){
   .costing-table-next{
     thead{
@@ -2554,6 +2553,15 @@ table{
   .blue-box{
     padding: 0 15px 15px;
   }
+}// 1280
 
-}// 1366
+@media(max-width:768px){
+  .workflow-row {
+    .col-lg-3 {padding: 0;flex-grow: 0;flex-shrink: 0;flex-basis: calc(50% - 30px);max-width: calc(50% - 30px);position: relative;margin-bottom: 20px;} 
+  }
+  .workflow-row .col-lg-3:nth-child(2) .card-border:after{display:none;}
+}
+
+
+
 // responsive media query end

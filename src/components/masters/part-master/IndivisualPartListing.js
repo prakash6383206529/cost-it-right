@@ -194,6 +194,9 @@ class IndivisualPartListing extends Component {
     effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
+    renderEffectiveDate = () => {
+        return <> Effective <br /> Date </>
+    }
 
     onExportToCSV = (row) => {
         return this.state.userData; // must return the data which you want to be exported
@@ -284,7 +287,7 @@ class IndivisualPartListing extends Component {
                     <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >Effective Date</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn className="action" searchable={false} dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>

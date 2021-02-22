@@ -404,6 +404,14 @@ class LabourListing extends Component {
     return cell != null ? moment(cell).format('DD/MM/YYYY') : ''
   }
 
+  renderEffectiveDate = () => {
+    return <> Effective Date </>
+  }
+
+  renderEmploymentTerm = () => {
+    return <> Employment <br />Terms </>
+  }
+
   onExportToCSV = (row) => {
     // ...
     return this.state.userData // must return the data which you want to be exported
@@ -718,13 +726,15 @@ class LabourListing extends Component {
               dataAlign="left"
               dataSort={true}
               dataFormat={this.costingHeadFormatter}
+              width={110}
             >
-              {'Employment Terms '}
+              {this.renderEmploymentTerm()}
             </TableHeaderColumn>
             <TableHeaderColumn
               dataField="Vendor"
               columnTitle={true}
               dataAlign="left"
+              width={120}
               dataFormat={this.dashFormatter}
             >
               {'Vendor Name'}
@@ -733,6 +743,7 @@ class LabourListing extends Component {
               dataField="Plant"
               columnTitle={true}
               dataAlign="left"
+              width={100}
             >
               {'Plant'}
             </TableHeaderColumn>
@@ -740,6 +751,7 @@ class LabourListing extends Component {
               dataField="State"
               columnTitle={true}
               dataAlign="left"
+              width={100}
             >
               {'State'}
             </TableHeaderColumn>
@@ -747,6 +759,7 @@ class LabourListing extends Component {
               dataField="MachineType"
               columnTitle={true}
               dataAlign="left"
+              width={120}
             >
               {'Machine Type'}
             </TableHeaderColumn>
@@ -754,12 +767,14 @@ class LabourListing extends Component {
               dataField="LabourType"
               columnTitle={true}
               dataAlign="left"
+              width={120}
             >
               {'Labour Type'}
             </TableHeaderColumn>
             <TableHeaderColumn
               dataField="LabourRate"
               columnTitle={true}
+              width={200}
               dataAlign="left"
             >
               {'Rate Per Person/Annum'}
@@ -768,9 +783,11 @@ class LabourListing extends Component {
               dataField="EffectiveDate"
               columnTitle={true}
               dataAlign="left"
+              dataSort={true}
+              width={120}
               dataFormat={this.effectiveDateFormatter}
             >
-              {'Effective Date'}
+              {this.renderEffectiveDate()}
             </TableHeaderColumn>
             <TableHeaderColumn
               className="action"
@@ -778,6 +795,7 @@ class LabourListing extends Component {
               dataField="LabourId"
               export={false}
               isKey={true}
+              width={100}
               dataFormat={this.buttonFormatter}
             >
               Actions

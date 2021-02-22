@@ -246,6 +246,28 @@ class BOPDomesticListing extends Component {
         return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
+    renderEffectiveDate = () => {
+        return <> Effective <br /> Date </>
+    }
+
+    renderbopNo = () => {
+        return <> BOP <br /> Part No. </>
+    }
+
+    renderbopName = () => {
+        return <> BOP <br /> Part Name </>
+    }
+
+    renderbopCategory = () => {
+        return <> BOP <br /> Category </>
+    }
+    renderpartAssemblyNumber = () => {
+        return <> Part Assembly <br />Number </>
+    }
+    renderNetLandedCost = () => {
+        return <> Net <br />Landed Cost </>
+    }
+
     /**
     * @method renderListing
     * @description Used to show type of listing
@@ -484,19 +506,19 @@ class BOPDomesticListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="IsVendor" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Part Name'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{'BOP Category'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{'Part Assembly No.'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{'No. of Pcs'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="IsVendor" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BoughtOutPartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopNo()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BoughtOutPartName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopName()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
+                            <TableHeaderColumn width={120} dataField="PartAssemblyNumber" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderpartAssemblyNumber()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="UOM" searchable={false} columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="Specification" searchable={false} columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{'No. of Pcs'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{'Basic Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn width={110} dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left"  >{this.renderNetLandedCost()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} searchable={false} dataSort={true} columnTitle={true} dataAlign="left" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

@@ -154,7 +154,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <Link
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/",
@@ -168,7 +168,7 @@ class SideBar extends Component {
             >
               <img
                 className=""
-                src={require("../../assests/images/homeicon.svg")}
+                src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/home-active.svg")) : (require("../../assests/images/homeicon.svg"))}`}
                 alt={module + " icon"}
               />
               <span>{module}</span>
@@ -193,7 +193,7 @@ class SideBar extends Component {
           return (
             <>
               <Link
-                className="nav-link"
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: "/raw-material-master",
@@ -207,7 +207,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={require("../../assests/images/list.svg")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/masters-active.svg") : require("../../assests/images/list.svg")}
                   alt={module + " icon"}
                 />
                 <span>Masters</span>
@@ -234,7 +234,7 @@ class SideBar extends Component {
             <>
               <Link
                 key={i}
-                className="nav-link additional-masters"
+                className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: "/reason-master",
@@ -247,7 +247,7 @@ class SideBar extends Component {
               >
                 <img
                   className=""
-                  src={require("../../assests/images/list-add.png")}
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/aa-master-active.svg")) : (require("../../assests/images/list-add.png"))}
                   alt={module + " icon"}
                 />
                 <span>Additional Masters</span>
@@ -267,13 +267,12 @@ class SideBar extends Component {
   renderReportAnalytics = (module) => {
     const { menusData } = this.props;
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/report-analytics",
@@ -286,7 +285,7 @@ class SideBar extends Component {
             >
               <img
                 className=""
-                src={require("../../assests/images/chart.svg")}
+                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/report-active.svg") : require("../../assests/images/chart.svg")}
                 alt={module + " icon"}
               />
               <span>Report</span>
@@ -303,15 +302,15 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { menusData } = this.props
+    const { menusData, location } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <Link
               key={i}
-              className="nav-link"
+              isActive={location && location.pathname === '/costing' ? true : false}
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/costing",
@@ -324,7 +323,7 @@ class SideBar extends Component {
             >
               <img
                 className=""
-                src={require("../../assests/images/html.svg")}
+                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
                 alt={module + " icon"}
               />
               <span>Costing</span>
@@ -343,13 +342,12 @@ class SideBar extends Component {
   renderSimulation = (module) => {
     const { menusData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/simulation",
@@ -362,7 +360,7 @@ class SideBar extends Component {
             >
               <img
                 className=""
-                src={require("../../assests/images/imac.svg")}
+                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/simulation-active.svg") : require("../../assests/images/imac.svg")}
                 alt={module + " icon"}
               />
               <span>Simulation</span>
@@ -387,7 +385,7 @@ class SideBar extends Component {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/users",
@@ -400,7 +398,7 @@ class SideBar extends Component {
             >
               <img
                 className=""
-                src={require("../../assests/images/men.svg")}
+                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/user-active.svg") : require("../../assests/images/men.svg")}
                 alt={module + " icon"}
               />
               <span>{el.ModuleName}</span>
@@ -425,7 +423,7 @@ class SideBar extends Component {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/audit",
@@ -438,7 +436,7 @@ class SideBar extends Component {
             >
               <img
                 className=""
-                src={require("../../assests/images/Audit.svg")}
+                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/audit-active.svg") : require("../../assests/images/Audit.svg")}
                 alt={module + " icon"}
               />
               <span>{el.ModuleName}</span>
@@ -473,20 +471,14 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a
-                href="javaScript:Void(0);"
-                className="navbar-brand mr-auto mr-lg-0"
-              >
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0"              >
                 <img
                   src={require("../../assests/images/logo.png")}
                   alt="Cost It Right"
                   height="30"
                 />
               </a>
-              <a
-                href="javaScript:Void(0);"
-                className="navbar-brand mr-auto mr-lg-0 cr-other-logo"
-              >
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo"              >
                 <img
                   src={require("../../assests/images/logo.png")}
                   alt="Cost It Right"
@@ -516,38 +508,80 @@ class SideBar extends Component {
                             aria-expanded="false"
                           >
                             <i className="fa fa-bell" aria-hidden="true"></i>
-                            <span className="count">2</span>
+                            <span className="count">3</span>
                           </a>
                           <div
-                            className="dropdown-menu preview-list"
+                            className="dropdown-menu preview-list notification-dropdown"
                             aria-labelledby="dropdownMenuLink"
                           >
-                            <a className="dropdown-item py-3">
-                              <p className="mb-0 font-weight-medium float-left">
-                                You have 7 unread mails{" "}
+                            <a className="dropdown-item pb-2  mb-2 border-bottom d-flex justify-content-between align-items-center top-row">
+                              <p className="mb-0 font-weight-medium">
+                                You have 3 unread mails{" "}
                               </p>
                               <span className="badge badge-pill badge-primary float-right">
                                 View all
                               </span>
                             </a>
-                            <a className="dropdown-item preview-item">
-                              <div className="preview-thumbnail">
-                                <img
-                                  src="../../assests/images/user-pic.png"
-                                  alt={""}
-                                  className="img-sm profile-pic"
-                                />{" "}
-                              </div>
-                              <div className="preview-item-content flex-grow py-2">
-                                <p className="preview-subject ellipsis font-weight-medium text-dark">
-                                  Marian Garner{" "}
-                                </p>
-                                <p className="font-weight-light small-text">
-                                  {" "}
-                                  The meeting is cancelled{" "}
-                                </p>
-                              </div>
-                            </a>
+                            <div className="notification-items-cons">
+
+                              <a className="dropdown-item preview-item d-flex py-2 align-items-start">
+                                <div className="preview-thumbnail d-inline-block">
+                                  <img
+                                    src={require("../../assests/images/user-pic.png")}
+                                    alt={""}
+                                    className="img-sm profile-pic"
+                                  />{" "}
+                                </div>
+                                <div className="preview-item-content flex-grow">
+                                  <p className="preview-subject ellipsis font-weight-medium text-dark mb-2">
+                                    Marian Garner{" "}
+                                  </p>
+                                  <p className="font-weight-light small-text">
+                                    {" "}
+                                    The meeting is cancelled{" "}
+                                  </p>
+                                </div>
+                              </a>
+
+                              <a className="dropdown-item preview-item d-flex py-2 align-items-start">
+                                <div className="preview-thumbnail d-inline-block">
+                                  <img
+                                    src={require("../../assests/images/user-pic.png")}
+                                    alt={""}
+                                    className="img-sm profile-pic"
+                                  />{" "}
+                                </div>
+                                <div className="preview-item-content flex-grow">
+                                  <p className="preview-subject ellipsis font-weight-medium text-dark mb-2">
+                                    Marian Garner{" "}
+                                  </p>
+                                  <p className="font-weight-light small-text">
+                                    {" "}
+                                    The meeting is cancelled{" "}
+                                  </p>
+                                </div>
+                              </a>
+
+                              <a className="dropdown-item preview-item d-flex py-2 align-items-start">
+                                <div className="preview-thumbnail d-inline-block">
+                                  <img
+                                    src={require("../../assests/images/user-pic.png")}
+                                    alt={""}
+                                    className="img-sm profile-pic"
+                                  />{" "}
+                                </div>
+                                <div className="preview-item-content flex-grow">
+                                  <p className="preview-subject ellipsis font-weight-medium text-dark mb-2">
+                                    Marian Garner{" "}
+                                  </p>
+                                  <p className="font-weight-light small-text">
+                                    {" "}
+                                    The meeting is cancelled{" "}
+                                  </p>
+                                </div>
+                              </a>
+
+                            </div>
                           </div>
                         </div>
                       </li>
@@ -605,11 +639,7 @@ class SideBar extends Component {
                   </li>
                   {isLoggedIn ? (
                     <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a
-                        className="nav-link"
-                        href="javascript:void(0)"
-                        onClick={this.logout}
-                      >
+                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
                         <img
                           className=""
                           src={require("../../assests/images/logout.svg")}
