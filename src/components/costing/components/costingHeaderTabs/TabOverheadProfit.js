@@ -231,10 +231,7 @@ function TabOverheadProfit(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
-
-
-  }
+  const onSubmit = (values) => { }
 
   return (
     <>
@@ -309,43 +306,11 @@ function TabOverheadProfit(props) {
                                       {item.PartName}
                                     </span>
                                   </td>
-                                  <td>
-                                    {item.OverheadNetCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.OverheadNetCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
-                                  <td>
-                                    {item.ProfitNetCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.ProfitNetCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
-                                  <td>
-                                    {item.RejectionNetCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.RejectionNetCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
-                                  <td>
-                                    {item.ICCCost !== null
-                                      ? checkForDecimalAndNull(item.ICCCost, 2)
-                                      : 0}
-                                  </td>
-                                  <td>
-                                    {item.PaymentTermCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.PaymentTermCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
+                                  <td>{item.OverheadNetCost !== null ? checkForDecimalAndNull(item.OverheadNetCost, 2) : 0}</td>
+                                  <td>{item.ProfitNetCost !== null ? checkForDecimalAndNull(item.ProfitNetCost, 2) : 0}</td>
+                                  <td>{item.RejectionNetCost !== null ? checkForDecimalAndNull(item.RejectionNetCost, 2) : 0}</td>
+                                  <td>{item.ICCCost !== null ? checkForDecimalAndNull(item.ICCCost, 2) : 0}</td>
+                                  <td>{item.PaymentTermCost !== null ? checkForDecimalAndNull(item.PaymentTermCost, 2) : 0}</td>
                                 </tr>
                                 {item.IsOpen && (
                                   <tr>
@@ -354,20 +319,14 @@ function TabOverheadProfit(props) {
                                         <OverheadProfit
                                           index={index}
                                           tabData={item}
-                                          headCostRMCCBOPData={
-                                            props.headCostRMCCBOPData
-                                          }
+                                          headCostRMCCBOPData={props.headCostRMCCBOPData}
                                           OverheadCost={OverheadCost}
                                           ProfitCost={ProfitCost}
                                           setOverheadDetail={setOverheadDetail}
                                           setProfitDetail={setProfitDetail}
-                                          setRejectionDetail={
-                                            setRejectionDetail
-                                          }
+                                          setRejectionDetail={setRejectionDetail}
                                           setICCDetail={setICCDetail}
-                                          setPaymentTermsDetail={
-                                            setPaymentTermsDetail
-                                          }
+                                          setPaymentTermsDetail={setPaymentTermsDetail}
                                           saveCosting={saveCosting}
                                         />
                                       </div>

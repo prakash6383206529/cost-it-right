@@ -22,7 +22,12 @@ function AssemblySurfaceTreatment(props) {
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
     setCount(Count + 1)
-    props.toggleAssembly(BOMLevel, PartNumber)
+    const Params = {
+      index: props.index,
+      BOMLevel: BOMLevel,
+      PartNumber: PartNumber,
+    }
+    props.toggleAssembly(Params)
   }
 
   /**
@@ -47,6 +52,8 @@ function AssemblySurfaceTreatment(props) {
         index={index}
         item={el}
         setPartDetails={props.setPartDetails}
+        setSurfaceCost={props.setSurfaceCost}
+        setTransportationCost={props.setTransportationCost}
       />
     }
   })
@@ -58,6 +65,8 @@ function AssemblySurfaceTreatment(props) {
       item={el}
       children={el.CostingChildPartDetails}
       toggleAssembly={props.toggleAssembly}
+      setSurfaceCost={props.setSurfaceCost}
+      setTransportationCost={props.setTransportationCost}
     />
   })
 
@@ -115,8 +124,13 @@ function AssemblySurfaceTreatment(props) {
         ID={''}
         anchor={'right'}
         item={item}
-        surfaceData={item.SurfaceTreatmentDetails}
-        transportationData={item.TransportationDetails}
+        surfaceData={item.CostingPartDetails.SurfaceTreatmentDetails}
+        transportationData={item.CostingPartDetails.TransportationDetails}
+        //setSurfaceCost={props.setSurfaceCost}
+        //setTransportationCost={props.setTransportationCost}
+        setAssemblySurfaceCost={props.setAssemblySurfaceCost}
+        setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+        IsAssemblyCalculation={true}
       />}
     </ >
   );

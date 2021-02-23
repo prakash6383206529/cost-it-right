@@ -237,7 +237,7 @@ function RawMaterialCost(props) {
               <div className="left-border">{'Raw Material Cost:'}</div>
             </Col>
             <Col col={'2'}>
-              {gridData.length <= gridLength && (
+              {gridData && gridData.length <= gridLength && (
                 <button
                   type="button"
                   className={'user-btn'}

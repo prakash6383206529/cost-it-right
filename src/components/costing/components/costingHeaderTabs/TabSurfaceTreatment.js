@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import { getSurfaceTreatmentTabData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
@@ -9,6 +9,7 @@ import SurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent';
 import { SurfaceTreatmentAssemblyGetJSON } from '../../../../config/masterData';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
+import { LEVEL0 } from '../../../../helper/AllConastant';
 
 function TabSurfaceTreatment(props) {
 
@@ -23,6 +24,9 @@ function TabSurfaceTreatment(props) {
 
   const dispatch = useDispatch()
 
+  const SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
+  //setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+
   const costData = useContext(costingInfoContext);
 
   useEffect(() => {
@@ -32,14 +36,7 @@ function TabSurfaceTreatment(props) {
         PartId: costData.PartId,
         //PlantId: costData.PlantId,
       }
-      // dispatch(getSurfaceTreatmentTabData(data, (res) => {
-      //   if (res && res.data && res.data.Result) {
-      //     let Data = res.data.Data;
-      //     setCostingData(Data)
-      //     setIsIncludeSurfaceTreatment(Data && Data.IsIncludeSurfaceTreatmentWithOverheadAndProfit)
-      //     setTabData(Data.CostingPartDetails)
-      //   }
-      // }))
+      dispatch(getSurfaceTreatmentTabData(data, true, (res) => { }))
     }
   }, [costData]);
 
@@ -51,20 +48,76 @@ function TabSurfaceTreatment(props) {
     props.setHeaderCost(topHeaderData)
   }, [tabData]);
 
-  const toggle = (index) => {
-    let tempData = tabData[index];
-    let tempObj = { ...tempData, IsOpen: !tempData.IsOpen }
-    let tempArr = Object.assign([...tabData], { [index]: tempObj })
-    setTabData(tempArr)
+  /**
+  * @method getTotalSurfaceCostForAssembly
+  * @description GET TOTAL SURFACE COST FOR ASSEMBLY
+  */
+  const getTotalSurfaceCostForAssembly = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+        return accummlator + checkForNull(GridTotalCost);
+      } else {
+        return accummlator + checkForNull(el.CostingPartDetails.NetSurfaceTreatmentCostAssembly !== null ? el.CostingPartDetails.NetSurfaceTreatmentCostAssembly : 0);
+      }
+    }, 0)
+    return NetCost;
   }
 
+  /**
+  * @method getTotalTransportationCostForAssembly
+  * @description GET TOTAL TRANSPORTATION COST FOR ASSEMBLY
+  */
+  const getTotalTransportationCostForAssembly = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+        return accummlator + checkForNull(GridTotalCost);
+      } else {
+        return accummlator + checkForNull(el.CostingPartDetails.NetTransportationCostAssembly !== null ? el.CostingPartDetails.NetTransportationCostAssembly : 0);
+      }
+    }, 0)
+    return NetCost;
+  }
+
+  /**
+  * @method getTotalSurfaceCost
+  * @description GET TOTAL SURFACE COST
+  */
+  const getTotalSurfaceCost = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+        return accummlator + checkForNull(GridTotalCost);
+      } else {
+        return accummlator + checkForNull(el.CostingPartDetails.SurfaceTreatmentCost !== null ? el.CostingPartDetails.SurfaceTreatmentCost : 0);
+      }
+    }, 0)
+    return NetCost;
+  }
+
+  /**
+  * @method getTotalTransportationCost
+  * @description GET TOTAL TRANSPORTATION COST
+  */
+  const getTotalTransportationCost = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+        return accummlator + checkForNull(GridTotalCost);
+      } else {
+        return accummlator + checkForNull(el.CostingPartDetails.TransportationCost !== null ? el.CostingPartDetails.TransportationCost : 0);
+      }
+    }, 0)
+    return NetCost;
+  }
 
   /**
   * @method setPartDetails
   * @description SET PART DETAILS
   */
-  const setPartDetails = (BOMLevel, PartNumber, Data = {}) => {
-    let arr = formatData(BOMLevel, PartNumber, Data, tabData)
+  const setPartDetails = (Params, Data = {}) => {
+    let arr = formatData(Params, Data, tabData)
     //dispatch(setRMCCData(arr, () => { }))
     setTabData(arr)
   }
@@ -73,23 +126,42 @@ function TabSurfaceTreatment(props) {
   * @method formatData
   * @description FORMATE DATA FOR SET PART DETAILS
   */
-  const formatData = (BOMLevel, PartNumber, Data, tabData) => {
+  const formatData = (Params, Data, tabData) => {
     let tempArr = [];
     try {
       tempArr = tabData && tabData.map(i => {
-        const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
+
+        const { CostingChildPartDetails, CostingPartDetails } = i;
+
         if (i.IsAssemblyPart === true) {
 
-          formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails)
+          // let NetSurfaceTreatmentCost = getTotalSurfaceCostForAssembly(CostingChildPartDetails, Data.NetSurfaceTreatmentCostAssembly, Params) +
+          //   getTotalTransportationCostForAssembly(CostingChildPartDetails, Data.NetTransportationCostAssembly, Params) +
+          //   getTotalSurfaceCost(CostingChildPartDetails, Data.SurfaceTreatmentCost, Params) +
+          //   getTotalTransportationCost(CostingChildPartDetails, Data.TransportationCost, Params);
 
-        } else if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+          // i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
+          // i.CostingPartDetails.NetSurfaceTreatmentCostAssembly = getTotalSurfaceCostForAssembly(CostingChildPartDetails, Data.NetSurfaceTreatmentCostAssembly, Params);
+          // i.CostingPartDetails.NetTransportationCostAssembly = getTotalTransportationCostForAssembly(CostingChildPartDetails, Data.NetTransportationCostAssembly, Params);
+          // i.CostingPartDetails.SurfaceTreatmentCost = getTotalSurfaceCost(CostingChildPartDetails, Data.SurfaceTreatmentCost, Params);
+          // i.CostingPartDetails.TransportationCost = getTotalTransportationCost(CostingChildPartDetails, Data.TransportationCost, Params);
 
-          //i.CostingPartDetails = Data;
+          formatData(Params, Data, i.CostingChildPartDetails)
+
+        } else if (i.PartNumber === Params.PartNumber && i.BOMLevel === Params.BOMLevel) {
+
+          // let NetSurfaceTreatmentCost = checkForNull(surfaceCost(Data.SurfaceTreatmentDetails)) + checkForNull(Data.TransportationCost);
+
+          // i.CostingPartDetails = Data;
+          // i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
+          // i.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(Data.SurfaceTreatmentDetails);
+          // i.CostingPartDetails.SurfaceTreatmentDetails = Data.SurfaceTreatmentDetails;
+
           i.IsOpen = !i.IsOpen;
 
         } else {
           i.IsOpen = false;
-          formatData(BOMLevel, PartNumber, Data, i.CostingChildPartDetails)
+          formatData(Params, Data, i.CostingChildPartDetails)
         }
         return i;
 
@@ -100,38 +172,49 @@ function TabSurfaceTreatment(props) {
     return tempArr;
   }
 
-
   /**
   * @method toggleAssembly
-  * @description SET PART DETAILS
+  * @description SET ASSEMBLY DETAILS
   */
-  const toggleAssembly = (BOMLevel, PartNumber, Children = {}) => {
-    let arr = setAssembly(BOMLevel, PartNumber, Children, tabData)
+  const toggleAssembly = (params, Children = {}) => {
+    let arr = setAssembly(params, Children, tabData)
     //dispatch(setRMCCData(arr, () => { }))
     setTabData(arr)
   }
 
   /**
-  * @method formatData
-  * @description SET PART DETAILS
+  * @method setAssembly
+  * @description SET ASSEMBLY DETAILS
   */
-  const setAssembly = (BOMLevel, PartNumber, Children, tabData) => {
-    console.log('BOMLevel, PartNumber, Children, tabData', BOMLevel, PartNumber, Children, tabData)
+  const setAssembly = (params, Children, tabData) => {
     let tempArr = [];
     try {
 
       tempArr = tabData && tabData.map(i => {
 
         const { CostingChildPartDetails, CostingPartDetails } = Children;
-        const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
 
-        if (i.PartNumber === PartNumber && i.BOMLevel === BOMLevel) {
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          // i.CostingChildPartDetails = params.BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, params.BOMLevel) : i.CostingChildPartDetails;
+          // i.CostingPartDetails = Children.CostingPartDetails;
+
+          // let NetSurfaceTreatmentCost = getTotalSurfaceCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.NetSurfaceTreatmentCostAssembly, params) +
+          //   getTotalTransportationCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.NetTransportationCostAssembly, params) +
+          //   getTotalSurfaceCost(CostingChildPartDetails, Children.CostingPartDetails.SurfaceTreatmentCost, params) +
+          //   getTotalTransportationCost(CostingChildPartDetails, Children.CostingPartDetails.TransportationCost, params);
+
+          // i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
+          // i.CostingPartDetails.NetSurfaceTreatmentCostAssembly = getTotalSurfaceCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.NetSurfaceTreatmentCostAssembly, params);
+          // i.CostingPartDetails.NetTransportationCostAssembly = getTotalTransportationCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.NetTransportationCostAssembly, params);
+          // i.CostingPartDetails.SurfaceTreatmentCost = getTotalSurfaceCost(CostingChildPartDetails, Children.CostingPartDetails.SurfaceTreatmentCost, params);
+          // i.CostingPartDetails.TransportationCost = getTotalTransportationCost(CostingChildPartDetails, Children.CostingPartDetails.TransportationCost, params);
 
           i.IsAssemblyPart = true;
           i.IsOpen = !i.IsOpen;
 
         } else {
-          setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
+          setAssembly(params, Children, i.CostingChildPartDetails)
         }
         return i;
       });
@@ -144,27 +227,70 @@ function TabSurfaceTreatment(props) {
   }
 
   /**
+* @method ChangeBOMLeveL
+* @description INCREASE BOM LEVEL BY 1 
+*/
+  const ChangeBOMLeveL = (item, level) => {
+    let tempArr = [];
+    const ChangedLevel = parseInt(level.substr(1, level.length - 1)) + 1;
+    tempArr = item && item.map(i => {
+      i.BOMLevel = "L" + ChangedLevel;
+      return i;
+    });
+    return tempArr;
+  }
+
+  /**
   * @method setSurfaceCost
   * @description SET SURFACE TREATMENT COST
   */
-  const setSurfaceCost = (surfaceGrid, index) => {
-    let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(tempObj.TransportationCost)
+  const setSurfaceCost = (surfaceGrid, params) => {
+    let arr = dispatchSurfaceCost(surfaceGrid, params, tabData)
+    //dispatch(setRMCCData(arr, () => { }))
+    setTabData(arr)
+  }
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          SurfaceTreatmentCost: surfaceCost(surfaceGrid),
-          SurfaceTreatmentDetails: surfaceGrid
-        })
-    })
+  /**
+  * @method dispatchSurfaceCost
+  * @description DISPATCHED SURFACE COST
+  */
+  const dispatchSurfaceCost = (surfaceGrid, params, tabData) => {
+    let tempArr = [];
+    try {
 
-    setTimeout(() => {
-      setSurfaceTotal(surfaceCost(surfaceGrid))
-      setTabData(tempArr)
-    }, 200)
+      tempArr = tabData && tabData.map(i => {
+
+        if (i.IsAssemblyPart === true) {
+
+          let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i.CostingPartDetails.TransportationCost);
+
+          i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
+          i.CostingPartDetails.NetSurfaceTreatmentCostAssembly = 699;
+          i.CostingPartDetails.NetTransportationCostAssembly = 555;
+          i.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
+          i.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+
+          dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
+
+        } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i.CostingPartDetails.TransportationCost);
+
+          i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
+          i.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
+          i.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+          //i.IsOpen = !i.IsOpen;
+
+        } else {
+          dispatchSurfaceCost(surfaceGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
 
   }
 
@@ -185,24 +311,109 @@ function TabSurfaceTreatment(props) {
   * @method setTransportationCost
   * @description SET TRANSPORTATION COST
   */
-  const setTransportationCost = (transportationObj, index) => {
-    let tempObj = tabData[index];
-    let NetSurfaceTreatmentCost = checkForNull(tempObj.SurfaceTreatmentCost) + checkForNull(transportationObj.TransportationCost)
-    setTransportationTotal(checkForNull(transportationObj.TransportationCost))
+  const setTransportationCost = (transportationObj, params) => {
+    let arr = dispatchTransportationCost(transportationObj, params, tabData)
+    //dispatch(setRMCCData(arr, () => { }))
+    setTabData(arr)
+  }
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          //GrandTotalCost: tempObj.GrandTotalCost + NetSurfaceTreatmentCost,
-          NetSurfaceTreatmentCost: NetSurfaceTreatmentCost,
-          TransportationCost: transportationObj.TransportationCost,
-          TransportationDetails: transportationObj,
-        })
-    })
+  /**
+  * @method dispatchTransportationCost
+  * @description DISPATCHED TRANSPORTATION COST
+  */
+  const dispatchTransportationCost = (transportationObj, params, tabData) => {
+    let tempArr = [];
+    try {
 
-    setTimeout(() => {
-      setTabData(tempArr)
-    }, 200)
+      tempArr = tabData && tabData.map(i => {
+
+        if (i.IsAssemblyPart === true) {
+
+          dispatchTransportationCost(transportationObj, params, i.CostingChildPartDetails)
+
+        } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let NetSurfaceTreatmentCost = checkForNull(surfaceCost(i.CostingPartDetails.SurfaceTreatmentDetails)) + checkForNull(transportationObj.TransportationCost);
+
+          i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
+          i.CostingPartDetails.TransportationCost = checkForNull(transportationObj.TransportationCost);
+          //i.IsOpen = !i.IsOpen;
+
+        } else {
+          dispatchTransportationCost(transportationObj, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+
+  }
+
+  /**
+  * @method setAssemblySurfaceCost
+  * @description SET ASSEMBLY SURFACE COST
+  */
+  const setAssemblySurfaceCost = (OperationGrid, params, IsGridChanged) => {
+    let arr = dispatchAssemblySurfaceCost(OperationGrid, params, tabData, IsGridChanged)
+    //dispatch(setRMCCData(arr, () => { }))
+    setTabData(arr)
+  }
+
+  const dispatchAssemblySurfaceCost = (OperationGrid, params, arr, IsGridChanged) => {
+    let tempArr = [];
+    try {
+      tempArr = arr && arr.map(i => {
+
+        if (i.IsAssemblyPart === true && i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+
+
+          dispatchAssemblySurfaceCost(OperationGrid, params, i.CostingChildPartDetails, IsGridChanged)
+
+        } else {
+          dispatchAssemblySurfaceCost(OperationGrid, params, i.CostingChildPartDetails, IsGridChanged)
+        }
+        return i;
+      });
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+  }
+
+  /**
+  * @method setAssemblyTransportationCost
+  * @description SET ASSEMBLY TRANSPORTATION COST
+  */
+  const setAssemblyTransportationCost = (TransportationObj, params) => {
+    let arr = dispatchAssemblyTransportationCost(TransportationObj, params, tabData)
+    //dispatch(setRMCCData(arr, () => { }))
+    setTabData(arr)
+  }
+
+  const dispatchAssemblyTransportationCost = (TransportationObj, params, arr) => {
+    let tempArr = [];
+    try {
+      tempArr = arr && arr.map(i => {
+
+        if (i.IsAssemblyPart === true && i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+
+
+          dispatchAssemblyTransportationCost(TransportationObj, params, i.CostingChildPartDetails)
+
+        } else {
+          dispatchAssemblyTransportationCost(TransportationObj, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
   }
 
   /**
@@ -303,7 +514,7 @@ function TabSurfaceTreatment(props) {
 
                         {
                           tabData && tabData.map((item, index) => {
-                            if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
+                            if (item && item.PartType === 'Component') {
 
                               return (
                                 < >
@@ -311,6 +522,8 @@ function TabSurfaceTreatment(props) {
                                     index={index}
                                     item={item}
                                     setPartDetails={setPartDetails}
+                                    setSurfaceCost={setSurfaceCost}
+                                    setTransportationCost={setTransportationCost}
                                   />
                                 </>
                               )
@@ -324,6 +537,10 @@ function TabSurfaceTreatment(props) {
                                     children={item.CostingChildPartDetails}
                                     toggleAssembly={toggleAssembly}
                                     setPartDetails={setPartDetails}
+                                    setSurfaceCost={setSurfaceCost}
+                                    setTransportationCost={setTransportationCost}
+                                    setAssemblySurfaceCost={setAssemblySurfaceCost}
+                                    setAssemblyTransportationCost={setAssemblyTransportationCost}
                                   />
                                 </>
                               )
@@ -331,37 +548,6 @@ function TabSurfaceTreatment(props) {
                           })
                         }
 
-                        {/* {tabData && tabData.map((item, index) => {
-                          return (
-                            <>
-                              <tr key={index} onClick={() => toggle(index)}>
-                                <td>
-                                  <span class="cr-prt-nm">
-                                    {item.PartName}
-                                  </span>
-                                </td>
-                                <td>{item.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
-                                <td>{item.TransportationCost !== null ? checkForDecimalAndNull(item.TransportationCost, 2) : 0}</td>
-                                <td>{item.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.NetSurfaceTreatmentCost, 2) : 0}</td>
-                              </tr>
-                              {item.IsOpen && (
-                                <tr>
-                                  <td colSpan={4}>
-                                    <div>
-                                      <SurfaceTreatment
-                                        index={index}
-                                        surfaceData={item.SurfaceTreatmentDetails}
-                                        transportationData={item.TransportationDetails}
-                                        setSurfaceCost={setSurfaceCost}
-                                        setTransportationCost={setTransportationCost}
-                                      />
-                                    </div>
-                                  </td>
-                                </tr>
-                              )}
-                            </>
-                          );
-                        })} */}
                       </tbody>
                     </Table>
                   </Col>

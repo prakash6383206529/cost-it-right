@@ -37,7 +37,55 @@ function SurfaceTreatment(props) {
   * @description SAVE DATA ASSEMBLY
   */
   const saveData = () => {
-    props.closeDrawer('')
+
+    if (props.IsAssemblyCalculation) {
+
+      let requestData = {
+        "CostingId": item.CostingId,
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "PartId": item.PartId,
+        "PartNumber": item.PartNumber,
+        "BOMLevel": item.BOMLevel,
+        "CostingPartDetails": {
+          "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+          "IsAssemblyPart": true,
+          //"Type": "Assembly",
+          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "NetSurfaceTreatmentCostAssembly": item.CostingPartDetails.NetSurfaceTreatmentCostAssembly,
+          "NetTransportationCostAssembly": item.CostingPartDetails.NetTransportationCostAssembly,
+          "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
+          "TransportationCost": item.CostingPartDetails.TransportationCost,
+          "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
+          "TransportationDetails": item.CostingPartDetails.TransportationDetails,
+        },
+      }
+      // dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
+      //   console.log('Success', res)
+      props.closeDrawer('')
+      // }))
+
+    } else {
+
+      let requestData = {
+        "CostingId": item.CostingId,
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "PartId": item.PartId,
+        "PartNumber": item.PartNumber,
+        "BOMLevel": item.BOMLevel,
+        "CostingPartDetails": {
+          "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+          "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+          "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
+          "TransportationCost": item.CostingPartDetails.TransportationCost,
+          "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
+          "TransportationDetails": item.CostingPartDetails.TransportationDetails,
+        },
+      }
+      // dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
+      //   console.log('Success', res)
+      props.closeDrawer('')
+      // }))
+    }
   }
 
   /**
@@ -67,9 +115,9 @@ function SurfaceTreatment(props) {
                 <div className="user-page p-0">
                   <div className="cr-process-costwrap">
                     <Row className="cr-innertool-cost">
-                      <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</Col>
-                      <Col md="4" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
-                      <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
+                      <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? item.CostingPartDetails.SurfaceTreatmentCost : 0}`}</Col>
+                      <Col md="4" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? item.CostingPartDetails.TransportationCost : 0}`}</Col>
+                      <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? item.CostingPartDetails.NetSurfaceTreatmentCost : 0}`}</Col>
                     </Row>
 
                     <hr />
@@ -78,14 +126,20 @@ function SurfaceTreatment(props) {
                         <SurfaceTreatmentCost
                           index={props.index}
                           data={surfaceData}
-                        //setSurfaceCost={props.setSurfaceCost}
+                          item={props.item}
+                          setSurfaceCost={props.setSurfaceCost}
+                          IsAssemblyCalculation={props.IsAssemblyCalculation}
+                          setAssemblySurfaceCost={props.setAssemblySurfaceCost}
                         />
                         <hr />
 
                         <TransportationCost
                           index={props.index}
                           data={transportationData}
-                        //setTransportationCost={props.setTransportationCost}
+                          item={props.item}
+                          setTransportationCost={props.setTransportationCost}
+                          IsAssemblyCalculation={props.IsAssemblyCalculation}
+                          setAssemblyTransportationCost={props.setAssemblyTransportationCost}
                         />
                       </div>
                     </div >

@@ -16,13 +16,25 @@ function SurfaceTreatmentCost(props) {
   });
 
   const [gridData, setGridData] = useState(props.data)
+  const [OldGridData, setOldGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    //props.setSurfaceCost(gridData, props.index)
+    setTimeout(() => {
+      const Params = {
+        index: props.index,
+        BOMLevel: props.item.BOMLevel,
+        PartNumber: props.item.PartNumber,
+      }
+      if (props.IsAssemblyCalculation) {
+        //props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      } else {
+        props.setSurfaceCost(gridData, Params)
+      }
+    }, 100)
   }, [gridData]);
 
   /**
@@ -203,8 +215,8 @@ function SurfaceTreatmentCost(props) {
                                   rules={{
                                     //required: true,
                                     pattern: {
-                                      value: /^[0-9]*$/i,
-                                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                                      //value: /^[0-9]*$/i,
+                                      value: /^[0-9]\d*(\.\d+)?$/i,
                                       message: 'Invalid Number.'
                                     },
                                   }}

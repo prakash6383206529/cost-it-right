@@ -36,6 +36,7 @@ import {
   GET_COSTING_BY_VENDOR_VENDOR_PLANT,
   GET_COSTING_STATUS,
   SET_ITEM_DATA,
+  SET_SURFACE_TAB_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -748,13 +749,22 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  * @method getSurfaceTreatmentTabData
  * @description GET SURFACE TREATMENT DATA IN COSTING DETAIL
  */
-export function getSurfaceTreatmentTabData(data, callback) {
+export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
-        callback(response);
+        if (IsUseReducer && response.data.Result) {
+          let TabData = response.data.DataList;
+          dispatch({
+            type: SET_SURFACE_TAB_DATA,
+            payload: TabData,
+          });
+          //callback(response);
+        } else {
+          callback(response);
+        }
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });

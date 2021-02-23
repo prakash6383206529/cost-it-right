@@ -154,7 +154,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <Link
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/",
@@ -193,7 +193,7 @@ class SideBar extends Component {
           return (
             <>
               <Link
-                className="nav-link"
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: "/raw-material-master",
@@ -234,7 +234,7 @@ class SideBar extends Component {
             <>
               <Link
                 key={i}
-                className="nav-link additional-masters"
+                className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
                   pathname: "/reason-master",
@@ -267,13 +267,12 @@ class SideBar extends Component {
   renderReportAnalytics = (module) => {
     const { menusData } = this.props;
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/report-analytics",
@@ -303,15 +302,15 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { menusData } = this.props
+    const { menusData, location } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <Link
               key={i}
-              className="nav-link"
+              isActive={location && location.pathname === '/costing' ? true : false}
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/costing",
@@ -343,13 +342,12 @@ class SideBar extends Component {
   renderSimulation = (module) => {
     const { menusData } = this.props
     return (
-      menusData &&
-      menusData.map((el, i) => {
+      menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/simulation",
@@ -387,7 +385,7 @@ class SideBar extends Component {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/users",
@@ -425,7 +423,7 @@ class SideBar extends Component {
           return (
             <Link
               key={i}
-              className="nav-link"
+              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
                 pathname: "/audit",
@@ -473,20 +471,14 @@ class SideBar extends Component {
           </div>
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
-              <a
-                href="javaScript:Void(0);"
-                className="navbar-brand mr-auto mr-lg-0"
-              >
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0"              >
                 <img
                   src={require("../../assests/images/logo.png")}
                   alt="Cost It Right"
                   height="30"
                 />
               </a>
-              <a
-                href="javaScript:Void(0);"
-                className="navbar-brand mr-auto mr-lg-0 cr-other-logo"
-              >
+              <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo"              >
                 <img
                   src={require("../../assests/images/logo.png")}
                   alt="Cost It Right"
@@ -605,11 +597,7 @@ class SideBar extends Component {
                   </li>
                   {isLoggedIn ? (
                     <li className="nav-item d-xl-inline-block cr-logout-btn">
-                      <a
-                        className="nav-link"
-                        href="javascript:void(0)"
-                        onClick={this.logout}
-                      >
+                      <a className="nav-link" href="javascript:void(0)" onClick={this.logout}                      >
                         <img
                           className=""
                           src={require("../../assests/images/logout.svg")}
