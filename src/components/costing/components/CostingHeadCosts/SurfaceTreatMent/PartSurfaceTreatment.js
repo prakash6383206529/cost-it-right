@@ -13,7 +13,12 @@ function PartSurfaceTreatment(props) {
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
     setCount(Count + 1)
-    props.setPartDetails(BOMLevel, PartNumber)
+    const Params = {
+      index: props.index,
+      BOMLevel: BOMLevel,
+      PartNumber: PartNumber,
+    }
+    props.setPartDetails(Params)
     // setTimeout(() => {
     //   if (Object.keys(costData).length > 0) {
     //     const data = {
@@ -24,7 +29,7 @@ function PartSurfaceTreatment(props) {
     //     // dispatch(getRMCCTabData(data, false, (res) => {
     //     //   if (res && res.data && res.data.Result) {
     //     //     let Data = res.data.DataList[0].CostingPartDetails;
-    //     //     props.setPartDetails(BOMLevel, PartNumber, Data)
+    //     //     props.setPartDetails(Params, Data)
     //     //   }
     //     // }))
     //   }
@@ -65,7 +70,7 @@ function PartSurfaceTreatment(props) {
               {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
             </span>
           </td>
-          <td>{item && item.CostingPartDetails.PartType}</td>
+          <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, 2) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, 2) : 0}</td>
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, 2) : 0}</td>
@@ -86,8 +91,11 @@ function PartSurfaceTreatment(props) {
         ID={''}
         anchor={'right'}
         item={item}
-      //surfaceData={item.SurfaceTreatmentDetails}
-      //transportationData={item.TransportationDetails}
+        surfaceData={item.CostingPartDetails.SurfaceTreatmentDetails}
+        transportationData={item.CostingPartDetails.TransportationDetails}
+        setSurfaceCost={props.setSurfaceCost}
+        setTransportationCost={props.setTransportationCost}
+        IsAssemblyCalculation={false}
       />}
 
     </ >

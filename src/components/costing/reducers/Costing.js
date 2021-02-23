@@ -34,6 +34,7 @@ import {
   GET_COSTING_BY_VENDOR_VENDOR_PLANT,
   GET_COSTING_STATUS,
   SET_ITEM_DATA,
+  SET_SURFACE_TAB_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -313,6 +314,12 @@ export default function costingReducer(state = initialState, action) {
         loading: false,
         itemDataObject: action.payload,
       }
+    case SET_SURFACE_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        SurfaceTabData: action.payload
+      };
     default:
       return state
   }

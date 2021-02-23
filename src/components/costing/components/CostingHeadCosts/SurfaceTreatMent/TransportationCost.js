@@ -38,8 +38,16 @@ function TransportationCost(props) {
       Quantity: Quantity,
       TransportationCost: getValues('TransportationCost'),
     }
-
-    //props.setTransportationCost(tempObj, props.index)
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    if (props.IsAssemblyCalculation) {
+      //props.setAssemblyTransportationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    } else {
+      props.setTransportationCost(tempObj, Params)
+    }
   }, [uom, Rate, Quantity]);
 
   useEffect(() => {
@@ -158,8 +166,8 @@ function TransportationCost(props) {
                 rules={{
                   //required: true,
                   pattern: {
-                    value: /^[0-9]*$/i,
-                    //value: /^[0-9]\d*(\.\d+)?$/i,
+                    //value: /^[0-9]*$/i,
+                    value: /^[0-9]\d*(\.\d+)?$/i,
                     message: 'Invalid Number.'
                   },
                 }}
@@ -230,10 +238,6 @@ function TransportationCost(props) {
               />
 
             </Col>
-            {/* <label>
-                {'Cost'}
-              </label>
-              {NetCost} */}
           </Row>
 
         </div>

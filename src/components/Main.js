@@ -78,7 +78,6 @@ class Main extends Component {
    * @description Handle the page not found when the url entered is incorrect.
    */
   handlePageNotFound = () => {
-    console.log('component callled')
     this.setState({
       visibelPageNotFound: true,
     })
@@ -89,7 +88,6 @@ class Main extends Component {
    * @description Handle the page not found when the url entered is incorrect.
    */
   hidePageNotFound = () => {
-    console.log('component callled')
     this.setState({
       visibelPageNotFound: false,
     })
@@ -124,12 +122,7 @@ class Main extends Component {
       isLogin = false
     }
 
-    const fullSizeClass =
-      location.pathname === COSTING_PATH ||
-        location.pathname === APPROVAL_LISTING_PATH ||
-        location.pathname === APPROVAL_SUMMARY_PATH
-        ? 'w-100'
-        : ''
+    const fullSizeClass = location.pathname === COSTING_PATH || location.pathname === APPROVAL_LISTING_PATH || location.pathname === APPROVAL_SUMMARY_PATH ? 'w-100' : ''
 
     return (
       <Suspense fallback={<Loader />}>
@@ -156,9 +149,7 @@ class Main extends Component {
                       </div>
                     </div>
                   </div>
-                  {isLogin && !this.state.visibelPageNotFound && (
-                    <Breadcrumb {...this.props} />
-                  )}
+                  {isLogin && !this.state.visibelPageNotFound && (<Breadcrumb {...this.props} />)}
                 </div>
               </div>
             </div>
@@ -177,11 +168,9 @@ class Main extends Component {
               <div className={isLogin ? `content-page ${fullSizeClass}` : ''}>
                 <div className={isLogin ? 'middleContainer' : ''}>
                   <Switch>
-                    <Route
-                      exact
-                      path="/"
-                      component={AuthMiddleware(Dashboard, DASHBOARD)}
-                    />
+
+                    <Route exact path="/" component={AuthMiddleware(Dashboard, DASHBOARD)} />
+
                     <Route
                       path="/login"
                       render={(props) => (
@@ -193,128 +182,53 @@ class Main extends Component {
                       )}
                     />
 
-                    <Route
-                      path="/users"
-                      component={AuthMiddleware(User, USER)}
-                    />
+                    <Route path="/users" component={AuthMiddleware(User, USER)} />
 
-                    <Route
-                      path="/dashboard"
-                      component={AuthMiddleware(Dashboard, DASHBOARD)}
-                    />
+                    <Route path="/dashboard" component={AuthMiddleware(Dashboard, DASHBOARD)} />
 
-                    <Route
-                      path="/part-master"
-                      component={AuthMiddleware(PartMaster, PART)}
-                    />
+                    <Route path="/part-master" component={AuthMiddleware(PartMaster, PART)} />
 
-                    <Route
-                      path="/UOM-Master"
-                      component={AuthMiddleware(UOMMaster, UOM)}
-                    />
+                    <Route path="/UOM-Master" component={AuthMiddleware(UOMMaster, UOM)} />
 
-                    <Route
-                      path="/raw-material-master"
-                      component={AuthMiddleware(
-                        RowMaterialMaster,
-                        RAW_MATERIAL,
-                      )}
-                    />
+                    <Route path="/raw-material-master" component={AuthMiddleware(RowMaterialMaster, RAW_MATERIAL,)} />
 
-                    <Route
-                      path="/plant-master"
-                      component={AuthMiddleware(PlantMaster, PLANT)}
-                    />
+                    <Route path="/plant-master" component={AuthMiddleware(PlantMaster, PLANT)} />
 
-                    <Route
-                      path="/vendor-master"
-                      component={AuthMiddleware(SupplierMaster, VENDOR)}
-                    />
+                    <Route path="/vendor-master" component={AuthMiddleware(SupplierMaster, VENDOR)} />
 
-                    <Route
-                      path="/bop-master"
-                      component={AuthMiddleware(BOPMaster, BOP)}
-                    />
+                    <Route path="/bop-master" component={AuthMiddleware(BOPMaster, BOP)} />
 
-                    <Route
-                      path="/fuel-master"
-                      component={AuthMiddleware(FuelMaster, FUEL_AND_POWER)}
-                    />
+                    <Route path="/fuel-master" component={AuthMiddleware(FuelMaster, FUEL_AND_POWER)} />
 
-                    <Route
-                      path="/machine-master"
-                      component={AuthMiddleware(MachineMaster, MACHINE)}
-                    />
+                    <Route path="/machine-master" component={AuthMiddleware(MachineMaster, MACHINE)} />
 
-                    <Route
-                      path="/operation-master"
-                      component={AuthMiddleware(OperationListing, OPERATION)}
-                    />
+                    <Route path="/operation-master" component={AuthMiddleware(OperationListing, OPERATION)} />
 
-                    <Route
-                      path="/freight-master"
-                      component={AuthMiddleware(FreightMaster, FREIGHT)}
-                    />
+                    <Route path="/freight-master" component={AuthMiddleware(FreightMaster, FREIGHT)} />
 
-                    <Route
-                      path="/labour-master"
-                      component={AuthMiddleware(LabourListing, LABOUR)}
-                    />
+                    <Route path="/labour-master" component={AuthMiddleware(LabourListing, LABOUR)} />
 
-                    <Route
-                      path="/overhead-profits-master"
-                      component={AuthMiddleware(
-                        OverheadProfit,
-                        OVERHEAD_AND_PROFIT,
-                      )}
-                    />
+                    <Route path="/overhead-profits-master" component={AuthMiddleware(OverheadProfit, OVERHEAD_AND_PROFIT,)} />
 
-                    <Route
-                      path="/interest-rate-master"
-                      component={AuthMiddleware(InterestRate, INTEREST_RATE)}
-                    />
+                    <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
 
                     {/* <Route path="/costing" component={AuthMiddleware(Costing, SHEET_METAL)} /> */}
                     <Route path="/costing" component={CostingRoutes} />
 
                     {/*Temporary  */}
-                    <Route
-                      path="/approval-summary"
-                      component={ApprovalSummary}
-                    />
+                    <Route path="/approval-summary" component={ApprovalSummary} />
 
-                    <Route
-                      path="/approval-listing"
-                      component={ApprovalListing}
-                    />
+                    <Route path="/approval-listing" component={ApprovalListing} />
 
-                    <Route
-                      path="/reason-master"
-                      component={AuthMiddleware(ReasonListing, REASON)}
-                    />
+                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
 
-                    <Route
-                      path="/volume-master"
-                      component={AuthMiddleware(VolumeListing, VOLUME)}
-                    />
+                    <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
 
-                    <Route
-                      path="/client-master"
-                      component={AuthMiddleware(ClientMaster, CLIENT)}
-                    />
+                    <Route path="/client-master" component={AuthMiddleware(ClientMaster, CLIENT)} />
 
-                    <Route
-                      path="/exchange-master"
-                      component={AuthMiddleware(
-                        ExchangeRateListing,
-                        EXCHANGE_RATE,
-                      )}
-                    />
+                    <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing, EXCHANGE_RATE,)} />
 
-                    <Route
-                      path="/tax-master"
-                      component={AuthMiddleware(TaxListing, TAX)}
-                    />
+                    <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
 
                     <Route
                       render={(props) => (

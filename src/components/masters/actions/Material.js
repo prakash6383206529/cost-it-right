@@ -986,11 +986,9 @@ export function getRMDomesticDataList(data, callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        let payload
         const queryParams = `material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
-
             if (response.data.Result || response.status === 204) {
                 //console.log(response, "RESPPPPPPP");
                 dispatch({
@@ -1000,6 +998,7 @@ export function getRMDomesticDataList(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            console.log('error: ', error);
 
             dispatch({ type: API_FAILURE, });
             callback(error);

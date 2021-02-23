@@ -1301,7 +1301,7 @@ export const SurfaceTreatmentAssemblyGetJSON = [
             "CostingDetailId": "32867950-5a1e-4aec-93d9-c5fc19255e57",
             "IsAssemblyPart": true,
             //"Type": "Assembly",
-            "NetSurfaceTreatmentCost": 500,
+            "NetSurfaceTreatmentCost": 500, //Total cost that includes total of surface, total of transportation, total of All surface treatment assembly
             "NetSurfaceTreatmentCostAssembly": 500,
             "NetTransportationCostAssembly": 500,
             "SurfaceTreatmentCost": 0,
@@ -1336,7 +1336,7 @@ export const SurfaceTreatmentAssemblyGetJSON = [
                 "CostingId": "1b9c72b6-c7fe-48fb-ace7-52b5fb001042",
                 "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
                 "PartId": "bc3989f4-8c60-4442-8bd9-3a91a8e05d47",
-                "PartNumber": "PISTON",
+                "PartNumber": "CompA",
                 "BOMLevel": "L1",
                 "IsAssemblyPart": false,
                 "IsOpen": false,
@@ -1461,3 +1461,4 @@ export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
+

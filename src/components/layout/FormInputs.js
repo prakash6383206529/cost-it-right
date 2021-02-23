@@ -584,11 +584,7 @@ export function renderText(field) {
 }
 
 export function InputHiddenField(field) {
-  const {
-    input,
-    meta: { touched, error },
-    ...others
-  } = field;
+  const { input, meta: { touched, error }, ...others } = field;
   return (
     <div>
       <input {...input} {...others} />
@@ -597,22 +593,10 @@ export function InputHiddenField(field) {
 }
 
 export function renderDatePicker(field) {
-  const {
-    input,
-    placeholder,
-    defaultValue,
-    meta: { touched, error },
-  } = field;
+  const { input, placeholder, defaultValue, meta: { touched, error }, } = field;
   return (
     <div className={"react-picker-box"}>
-      <label>
-        {field.label}
-        {field.required && field.required === true ? (
-          <span className="asterisk-required">*</span>
-        ) : (
-            ""
-          )}{" "}
-      </label>
+      <label>{field.label}{field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}      </label>
       <DatePicker
         {...input}
         dateFormat="MM/dd/yyyy"
@@ -625,9 +609,7 @@ export function renderDatePicker(field) {
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}
         className={field.className}
-        onSelect={
-          field.changeHandler ? (date) => field.changeHandler(date) : null
-        }
+        onSelect={field.changeHandler ? (date) => field.changeHandler(date) : null}
         autoComplete={field.autoComplete}
         disabledKeyboardNavigation
         onChangeRaw={(e) => e.preventDefault()}
