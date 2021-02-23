@@ -10,7 +10,7 @@ import {
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
-  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getTechnologySelectList
+  getCurrencySelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getTechnologySelectList, getPlantSelectListByType
 } from '../../../actions/Common';
 import {
   createRMImport, getRMImportDataById, updateRMImportAPI, getRawMaterialNameChild,
@@ -29,7 +29,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 const selector = formValueSelector('AddRMImport');
@@ -104,6 +104,7 @@ class AddRMImport extends Component {
     this.props.fetchSupplierCityDataAPI(res => { });
     this.props.getVendorListByVendorType(false, () => { })
     this.props.getTechnologySelectList(() => { })
+    this.props.getPlantSelectListByType(ZBC, () => { })
   }
 
   /**
@@ -459,7 +460,7 @@ class AddRMImport extends Component {
   renderListing = (label) => {
     const { gradeSelectList, rmSpecification, plantList, filterPlantList,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, vendorListByVendorType, technologySelectList } = this.props;
+      UOMSelectList, currencySelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -503,7 +504,7 @@ class AddRMImport extends Component {
       return temp
     }
     if (label === 'plant') {
-      plantList && plantList.map(item => {
+      plantSelectList && plantSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ Text: item.Text, Value: item.Value })
         return null;
@@ -1535,7 +1536,7 @@ function mapStateToProps(state) {
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
     categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
-    currencySelectList, technologySelectList } = comman;
+    currencySelectList, technologySelectList, plantSelectList } = comman;
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
     gradeSelectList, vendorListByVendorType } = material;
@@ -1556,7 +1557,7 @@ function mapStateToProps(state) {
     plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList
+    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList
   }
 
 }
@@ -1588,7 +1589,8 @@ export default connect(mapStateToProps, {
   fileUploadRMDomestic,
   getCurrencySelectList,
   fetchPlantDataAPI,
-  getTechnologySelectList
+  getTechnologySelectList,
+  getPlantSelectListByType
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

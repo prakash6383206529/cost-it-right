@@ -205,6 +205,8 @@ class BOPDomesticListing extends Component {
         return cell ? 'VBC' : 'ZBC';
     }
 
+
+
     /**
     * @method indexFormatter
     * @description Renders serial number
@@ -228,6 +230,10 @@ class BOPDomesticListing extends Component {
 
     renderCostingHead = () => {
         return <>Costing <br />Head </>
+    }
+
+    renderEffectiveDate = () => {
+        return <>Effective <br />Date </>
     }
 
     /**
@@ -496,7 +502,7 @@ class BOPDomesticListing extends Component {
                             <TableHeaderColumn dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{'No. of Pcs'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{'Basic Rate'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

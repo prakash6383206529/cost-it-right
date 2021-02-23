@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, email, minLength7, maxLength70, minLength10 } from "../../../helper/validation";
+import { required, number, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength10, maxLength3 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
@@ -269,7 +269,7 @@ class AddClientDrawer extends Component {
                                             name={"CompanyName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=""
@@ -283,7 +283,7 @@ class AddClientDrawer extends Component {
                                             name={"ClientName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=""
@@ -312,10 +312,10 @@ class AddClientDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[number]}
+                                                    validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
-                                                    maxLength={12}
+                                                    // maxLength={12}
                                                     className=""
                                                     customClassName={'withBorder'}
                                                 />
@@ -326,7 +326,7 @@ class AddClientDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[number]}
+                                                    validate={[required, postiveNumber, maxLength3, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
                                                     maxLength={3}
@@ -347,7 +347,7 @@ class AddClientDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[number, minLength10]}
+                                            validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
                                             // required={true}
                                             maxLength={10}
                                             customClassName={'withBorder'}
@@ -408,7 +408,7 @@ class AddClientDrawer extends Component {
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[number]}
+                                            validate={[required, postiveNumber]}
                                             component={renderText}
                                             // required={true}
                                             maxLength={6}

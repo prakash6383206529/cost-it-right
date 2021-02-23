@@ -10,6 +10,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
+import { round } from 'lodash';
 
 function ManageSOBDrawer(props) {
 
@@ -31,6 +32,9 @@ function ManageSOBDrawer(props) {
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
 
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  console.log(initialConfiguration, "INITIAL");
+
   const fieldValues = useWatch({
     control,
     name: ['GridFields'],
@@ -51,6 +55,7 @@ function ManageSOBDrawer(props) {
         setGridDataOldArray(Data.BoughtOutPartVendorList)
       }
     }))
+
   }, []);
 
   // const VendorsBOPSOBData = useSelector(state => state.boughtOutparts.VendorsBOPSOBData)
@@ -86,17 +91,18 @@ function ManageSOBDrawer(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
-        ShareOfBusinessPercentage: checkPercentageValue(event.target.value) ? parseInt(event.target.value) : 0,
+        //ShareOfBusinessPercentage: checkPercentageValue(event.target.value) ? Number(event.target.value) : 0,
+        ShareOfBusinessPercentage: checkForNull(event.target.value) ? Number(event.target.value) : 0,
         //isSOBChanged: checkIsSOBChanged(event, index),
-        WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(parseInt(event.target.value)), 2),
+        WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(Number(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
 
 
       setGridData(tempArray)
-      //if (!checkPercentageValue(event.target.value)) {
-      setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
-      // return false
+      // if (!checkPercentageValue(event.target.value)) {
+      //   setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
+      //   return false
       // }
 
     } else {
@@ -175,8 +181,8 @@ function ManageSOBDrawer(props) {
       return accummlator + checkForNull(el.ShareOfBusinessPercentage)
     }, 0)
     console.log(sum, "SUM");
-    if (sum > 100) {
-      toastr.warning('Total SOB should be less than 100')
+    if (Number(sum) > 100) {
+      toastr.warning('Total SOB% should be up to 100%')
       return false
     }
 
@@ -247,7 +253,9 @@ function ManageSOBDrawer(props) {
                                   Controller={Controller}
                                   control={control}
                                   register={register({
-                                    max: '100'
+                                    validate: {
+                                      lessThanTen: value => Number(value, 10) < 10 || 'should be lower than 10',
+                                    },
                                   })}
                                   mandatory={false}
                                   rules={{
@@ -257,10 +265,15 @@ function ManageSOBDrawer(props) {
                                       value: /^[0-9]\d*(\.\d+)?$/i,
                                       message: 'Invalid Number.'
                                     },
+                                    // maxLength: {
+                                    //   value: 10,
+                                    //   message: 'Length should not be more than 10'
+                                    // },
+
                                     max: {
                                       value: 100,
                                       message: "Should not be greater then 100"
-                                    }
+                                    },
                                   }}
 
                                   defaultValue={item.ShareOfBusinessPercentage}
@@ -270,11 +283,12 @@ function ManageSOBDrawer(props) {
                                     e.preventDefault()
                                     handleSOBChange(e, index)
                                   }}
+
                                   errors={errors && errors.GridFields && errors.GridFields[index] !== undefined ? errors.GridFields[index].ShareOfBusinessPercentage : ''}
                                   disabled={isDisable ? true : false}
                                 />
                               </td>
-                              <td>{item.WeightedCost}</td>
+                              <td>{checkForDecimalAndNull(item.WeightedCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                             </tr>
                           )
                         })
@@ -285,7 +299,7 @@ function ManageSOBDrawer(props) {
                           <td><b>{'BOP Cost'}</b></td>
                           <td>{''}</td>
                           <td><b>{`Net landed Cost(Weighted Average)`}</b></td>
-                          <td><b>{`:${WeightedCost}`}</b></td>
+                          <td><b>{`:${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</b></td>
                         </tr>
                       }
 

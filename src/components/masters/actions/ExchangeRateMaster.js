@@ -61,6 +61,7 @@ export function getExchangeRateDataList(data, callback) {
  * @description GET EXCHANGE RATE DATA
  */
 export function getExchangeRateData(ID, callback) {
+    console.log(ID, "ID IN ACTION");
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (ID !== '') {
@@ -83,7 +84,7 @@ export function getExchangeRateData(ID, callback) {
                 type: GET_EXCHANGE_RATE_DATA,
                 payload: {},
             });
-            callback({});
+            // callback({});
         }
     };
 }

@@ -889,9 +889,9 @@ class AddLabour extends Component {
                                     <td>{item.LabourType}</td>
                                     <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                     <td>
-                                      {moment(item.EffectiveDate).format(
+                                      {item.EffectiveDate ? moment(item.EffectiveDate).format(
                                         "DD/MM/YYYY"
-                                      )}
+                                      ) : '-'}
                                     </td>
                                     <td>
                                       <button

@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, maxLength25, maxLength11, maxLength12, required, email,
-  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10, checkWhiteSpaces
+  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
@@ -612,6 +612,7 @@ class UserRegistration extends Component {
    * @returns {{}}
    */
   onSubmit(values) {
+    console.log(values, "Values");
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
       oldTechnologyLevelGrid, UserId } = this.state;
@@ -664,8 +665,8 @@ class UserRegistration extends Component {
         RoleName: role.label,
         UserCode: registerUserData.UserCode,
         CreatedDate: registerUserData.CreatedDate,
-        AddressLine1: values.AddressLine1,
-        AddressLine2: values.AddressLine2,
+        AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
+        AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
         ZipCode: values.ZipCode,
         PhoneNumber: values.PhoneNumber,
         Extension: values.Extension,
@@ -736,8 +737,8 @@ class UserRegistration extends Component {
         MiddleName: values.MiddleName,
         LastName: values.LastName,
         RoleName: role.label,
-        AddressLine1: values.AddressLine1,
-        AddressLine2: values.AddressLine2,
+        AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
+        AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
         ZipCode: values.ZipCode,
         PhoneNumber: values.PhoneNumber,
         Extension: values.Extension,
@@ -794,10 +795,10 @@ class UserRegistration extends Component {
                         name={"FirstName"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName, checkWhiteSpaces]}
+                        validate={[required, minLength3, maxLength80, alphabetsOnlyForName, checkWhiteSpaces]}
                         component={renderText}
                         required={true}
-                        maxLength={26}
+                        // maxLength={26}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -808,10 +809,10 @@ class UserRegistration extends Component {
                         name={"LastName"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[required, minLength3, maxLength25, alphabetsOnlyForName, checkWhiteSpaces]}
+                        validate={[required, minLength3, maxLength80, alphabetsOnlyForName, checkWhiteSpaces]}
                         component={renderText}
                         required={true}
-                        maxLength={26}
+                        // maxLength={26}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -823,9 +824,9 @@ class UserRegistration extends Component {
                         placeholder={'Enter'}
                         component={renderText}
                         isDisabled={false}
-                        validate={[required, number, minLength10, maxLength10, checkWhiteSpaces]}
+                        validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
                         required={true}
-                        maxLength={10}
+                        // maxLength={10}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -837,7 +838,7 @@ class UserRegistration extends Component {
                             name={"PhoneNumber"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[number, minLength10, maxLength12]}
+                            validate={[postiveNumber, maxLength10]}
                             component={renderText}
                             //required={true}
                             maxLength={10}
@@ -850,7 +851,7 @@ class UserRegistration extends Component {
                             name={"Extension"}
                             type="text"
                             placeholder={'Ext'}
-                            validate={[number]}
+                            validate={[postiveNumber, maxLength3]}
                             component={renderText}
                             //required={true}
                             maxLength={3}
@@ -872,9 +873,9 @@ class UserRegistration extends Component {
                         label="Email ID"
                         component={renderEmailInputField}
                         placeholder={'Enter'}
-                        validate={[required, email, minLength7, maxLength70, checkWhiteSpaces]}
+                        validate={[required, email, minLength7, maxLength80, checkWhiteSpaces]}
                         required={true}
-                        maxLength={70}
+                        maxLength={80}
                         isDisabled={this.state.isEditFlag ? true : false}
                         customClassName={'withBorderEmail'}
                       />
@@ -908,7 +909,7 @@ class UserRegistration extends Component {
                             isShowHide={this.state.isShowHidePassword}
                             showHide={this.showHidePasswordHandler}
                             required={true}
-                            maxLength={26}
+                            // maxLength={26}
                             isEyeIcon={true}
                             customClassName={'withBorderPWD'}
                           />
@@ -921,7 +922,7 @@ class UserRegistration extends Component {
                             component={renderPasswordInputField}
                             validate={[required, minLength6, maxLength18, checkWhiteSpaces]}
                             required={true}
-                            maxLength={26}
+                            // maxLength={26}
                             isShowHide={this.state.isShowHide}
                             showHide={this.showHideHandler}
                             isEyeIcon={true}
@@ -942,10 +943,10 @@ class UserRegistration extends Component {
                         name={"AddressLine1"}
                         type="text"
                         placeholder={'Enter'}
-                        //validate={[required]}
+                        validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                         component={renderText}
                         //required={true}
-                        maxLength={45}
+                        // maxLength={45}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -955,10 +956,10 @@ class UserRegistration extends Component {
                         name={"AddressLine2"}
                         type="text"
                         placeholder={'Enter'}
-                        //validate={[required]}
+                        validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                         component={renderText}
                         //required={true}
-                        maxLength={45}
+                        // maxLength={45}
                         customClassName={'withBorder'}
                       />
                     </div>
@@ -983,7 +984,7 @@ class UserRegistration extends Component {
                         name={"ZipCode"}
                         type="text"
                         placeholder={'Enter'}
-                        validate={[number, maxLength6]}
+                        validate={[postiveNumber, maxLength6]}
                         component={renderText}
                         //required={true}
                         maxLength={6}

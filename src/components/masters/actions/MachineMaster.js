@@ -340,6 +340,7 @@ export function getMachineSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const id = '802da383-4745-420d-9186-2dbe42f00f5b';
+        // const id = "00000000-0000-0000-0000-000000000000" uncomment it when code is deployed.
         const request = axios.get(`${API.getMachineSelectList}/${id}`, headers);
         request.then((response) => {
             if (response.data.Result) {

@@ -47,7 +47,7 @@ class AddTaxDetails extends Component {
           setTimeout(() => {
             this.setState({
               country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._d
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
             })
           }, 500)
 

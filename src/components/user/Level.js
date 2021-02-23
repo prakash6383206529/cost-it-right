@@ -3,7 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, number, checkWhiteSpaces, alphaNumeric, notSingleSpecialCharacter } from "../../helper/validation";
+import { required, number, checkWhiteSpaces, alphaNumeric, notSingleSpecialCharacter, acceptAllExceptSingleSpecialCharacter, maxLength80, postiveNumber, maxLength2 } from "../../helper/validation";
 import { renderText, searchableSelect } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import {
@@ -335,7 +335,7 @@ class Level extends Component {
                           name={"LevelName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, checkWhiteSpaces,]}
+                          validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80]}
                           component={renderText}
                           required={true}
                           maxLength={26}
@@ -348,10 +348,10 @@ class Level extends Component {
                           name={"Sequence"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number]}
+                          validate={[postiveNumber, maxLength2]}
                           component={renderText}
                           required={false}
-                          maxLength={26}
+                          // maxLength={26}
                           customClassName={'withBorder'}
                         />
                       </div>

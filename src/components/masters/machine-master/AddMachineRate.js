@@ -18,7 +18,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -869,8 +869,9 @@ class AddMachineRate extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration } = this.props;
+    const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag } = this.state;
+
 
     return (
       <>
@@ -956,6 +957,7 @@ class AddMachineRate extends Component {
                           />
                         </Col>}
                       {this.state.IsVendor &&
+                        checkVendorPlantConfigurable() &&
                         <Col md="3">
                           <Field
                             label="Vendor Plant"
@@ -1369,12 +1371,15 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, machine, auth } = state;
+  console.log(auth, "AUTH");
   const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
   const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
   const { vendorListByVendorType } = material;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, } = auth;
+
+
 
   let initialValues = {};
 

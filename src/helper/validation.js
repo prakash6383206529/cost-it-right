@@ -7,6 +7,8 @@ export const minLength = min => value =>
 export const maxLength = max => value =>
     value && value.length > max ? `Max length must be ${max}.` : undefined;
 
+
+
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
 export const minLength3 = minLength(3);

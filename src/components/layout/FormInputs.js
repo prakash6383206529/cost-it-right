@@ -618,7 +618,7 @@ export function renderDatePicker(field) {
         dateFormat="MM/dd/yyyy"
         placeholderText={placeholder}
         //maxDate={new Date()}
-        minDate={new Date()}
+        // minDate={new Date()}
         showMonthDropdown
         showYearDropdown
         readonly="readonly"

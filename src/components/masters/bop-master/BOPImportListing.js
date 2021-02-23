@@ -236,6 +236,9 @@ class BOPImportListing extends Component {
         return <>Costing <br />Head </>
     }
 
+    renderEffectiveDate = () => {
+        return <>Effective <br />Date </>
+    }
 
     /**
     * @method renderListing
@@ -484,7 +487,7 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{'No. of Pcs'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="left"  >{'Net Landed Cost'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BoughtOutPartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

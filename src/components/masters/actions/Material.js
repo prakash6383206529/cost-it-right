@@ -984,23 +984,15 @@ export function getVendorListByVendorType(isVendor, callback) {
  */
 export function getRMDomesticDataList(data, callback) {
     return (dispatch) => {
-        // dispatch({
-        //     type: GET_RM_DOMESTIC_LIST,
-        //     payload: [],
-        // })
+
         dispatch({ type: API_REQUEST });
         let payload
         const queryParams = `material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
-            console.log(response, "RESPO");
-            // if (response.status === 204 && response.data === '') {
-            //     payload = []
-            // } 
-            // else {
-            //     payload = response.data.DataList
-            // }
-            if (response.data.Result) {
+
+            if (response.data.Result || response.status === 204) {
+                //console.log(response, "RESPPPPPPP");
                 dispatch({
                     type: GET_RM_DOMESTIC_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList

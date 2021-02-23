@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, } from "../../../helper/validation";
-import { renderText, searchableSelect, } from "../../layout/FormInputs";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
-import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import $ from 'jquery';
 import moment from 'moment';
+import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 const selector = formValueSelector('AddExchangeRate');
 
 class AddExchangeRate extends Component {
@@ -31,7 +31,9 @@ class AddExchangeRate extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    console.log("COMING IN COMPONENT");
     this.props.getCurrencySelectList(() => { })
+    // this.props.getExchangeRateData('', (res) => { })
     this.getDetail()
   }
 
@@ -89,6 +91,7 @@ class AddExchangeRate extends Component {
   */
   getDetail = () => {
     const { data } = this.props;
+    console.log("COMING IN DETAIL", data);
     if (data && data.isEditFlag) {
       this.setState({
         isLoader: true,
@@ -96,6 +99,7 @@ class AddExchangeRate extends Component {
         ExchangeRateId: data.ID,
       })
       $('html, body').animate({ scrollTop: 0 }, 'slow');
+      console.log("DATA IM GETDETAIL.........................", data.ID);
       this.props.getExchangeRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -109,12 +113,19 @@ class AddExchangeRate extends Component {
               isEditFlag: true,
               isLoader: false,
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._d
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
             })
           }, 500)
 
         }
       })
+    }
+    else {
+      this.props.change('BankRate', '')
+      this.props.change('CustomRate', '')
+      this.props.change('CurrencyExchangeRate', '')
+      this.props.change('BankCommissionPercentage', '')
+      this.props.change('EffectiveDate', '')
     }
   }
 
@@ -123,14 +134,15 @@ class AddExchangeRate extends Component {
   * @description used to Reset form
   */
   cancel = () => {
+    console.log("Comig in cancel");
     const { reset } = this.props;
     reset();
     this.setState({
       selectedTechnology: [],
       isEditFlag: false,
     })
-    this.props.getExchangeRateData('', () => { })
     this.props.hideForm()
+    // this.props.getExchangeRateData('', (res) => { })
   }
 
   /**
@@ -139,7 +151,7 @@ class AddExchangeRate extends Component {
   */
   onSubmit = (values) => {
     const { isEditFlag, currency, effectiveDate, ExchangeRateId } = this.state;
-
+    console.log(values, "VALUES");
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
 
@@ -171,11 +183,14 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: new Date(effectiveDate),
+        //EffectiveDate: (values.EffectiveDate),
         LoggedInUserId: loggedInUserId(),
       }
+      console.log(formData, "formData");
       this.props.createExchangeRate(formData, (res) => {
         if (res.data.Result) {
+          console.log("Coming here for toaster");
           toastr.success(MESSAGES.EXCHANGE_ADD_SUCCESS);
           this.cancel();
         }
@@ -299,12 +314,12 @@ class AddExchangeRate extends Component {
                       </Col>
                       <Col md="3">
                         <div className="form-group">
-                          <label>
+                          {/* <label>
                             Effective Date
-                              {/* <span className="asterisk-required">*</span> */}
-                          </label>
+                              <span className="asterisk-required">*</span>
+                          </label> */}
                           <div className="inputbox date-section">
-                            <DatePicker
+                            {/* <DatePicker
                               name="EffectiveDate"
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
@@ -317,8 +332,27 @@ class AddExchangeRate extends Component {
                               className="withBorder"
                               autoComplete={"off"}
                               disabledKeyboardNavigation
+                              validate={[required]}
                               onChangeRaw={(e) => e.preventDefault()}
+                              required
                               disabled={false}
+
+                            /> */}
+                            <Field
+                              label="Effective Date"
+                              name="EffectiveDate"
+                              selected={this.state.effectiveDate}
+                              onChange={this.handleEffectiveDateChange}
+                              type="text"
+                              validate={[required]}
+                              autoComplete={'off'}
+                              required={true}
+                              changeHandler={(e) => {
+                                //e.preventDefault()
+                              }}
+                              component={renderDatePicker}
+                              className="form-control"
+                            //minDate={moment()}
                             />
                           </div>
                         </div>
@@ -371,16 +405,17 @@ class AddExchangeRate extends Component {
 */
 function mapStateToProps(state) {
   const { exchangeRate, } = state;
-  const filedObj = selector(state, 'OperationCode', 'BankCommissionPercentage');
+  const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage');
   const { exchangeRateData, currencySelectList } = exchangeRate;
 
   let initialValues = {};
   if (exchangeRateData && exchangeRateData !== undefined) {
     initialValues = {
-      CurrencyExchangeRate: exchangeRateData.CurrencyExchangeRate,
-      BankRate: exchangeRateData.BankRate,
-      BankCommissionPercentage: exchangeRateData.BankCommissionPercentage,
-      CustomRate: exchangeRateData.CustomRate,
+      CurrencyExchangeRate: exchangeRateData.CurrencyExchangeRate ? exchangeRateData.CurrencyExchangeRate : '',
+      BankRate: exchangeRateData.BankRate ? exchangeRateData.BankRate : '',
+      BankCommissionPercentage: exchangeRateData.BankCommissionPercentage ? exchangeRateData.BankCommissionPercentage : '',
+      CustomRate: exchangeRateData.CustomRate ? exchangeRateData.CustomRate : '',
+      EffectiveDate: moment(exchangeRateData.EffectiveDate) ? moment(exchangeRateData.EffectiveDate) : ''
     }
   }
 

@@ -483,6 +483,7 @@ class AddMoreDetails extends Component {
   closeProcessDrawer = (e = '') => {
     this.setState({ isOpenProcessDrawer: false }, () => {
       //this.props.getMachineTypeSelectList(() => { })
+      this.props.getProcessesSelectList(() => { })
     })
   }
 
@@ -1783,7 +1784,7 @@ class AddMoreDetails extends Component {
                           name={"MachineCost"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, postiveNumber, maxLength20]}
+                          validate={[required, positiveAndDecimalNumber, maxLength20]}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}
@@ -1797,7 +1798,7 @@ class AddMoreDetails extends Component {
                           name={"AccessoriesCost"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[postiveNumber, maxLength20]}
+                          validate={[positiveAndDecimalNumber, maxLength20]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}
@@ -1811,7 +1812,7 @@ class AddMoreDetails extends Component {
                           name={"InstallationCharges"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[postiveNumber, maxLength20]}
+                          validate={[positiveAndDecimalNumber, maxLength20]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}
@@ -2306,7 +2307,7 @@ class AddMoreDetails extends Component {
                           name={"BuildingCostPerSquareFeet"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number, postiveNumber]}
+                          validate={[number, positiveAndDecimalNumber]}
                           component={renderText}
                           //required={true}
                           disabled={false}
@@ -2320,7 +2321,7 @@ class AddMoreDetails extends Component {
                           name={"MachineFloorAreaPerSquareFeet"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[number, postiveNumber]}
+                          validate={[number, positiveAndDecimalNumber]}
                           component={renderText}
                           //required={true}
                           disabled={isEditFlag ? true : false}

@@ -39,6 +39,8 @@ class AddVendorDrawer extends Component {
 
             isOpenVendorPlant: false,
             VendorId: '',
+
+            isVisible: false
         }
     }
 
@@ -243,6 +245,7 @@ class AddVendorDrawer extends Component {
                 isLoader: true,
                 isEditFlag: true,
                 VendorId: ID,
+                isVisible: true
             })
             $('html, body').animate({ scrollTop: 0 }, 'slow');
             this.props.getSupplierByIdAPI(ID, isEditFlag, (res) => {
@@ -418,7 +421,7 @@ class AddVendorDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, } = this.props;
+        const { handleSubmit, isEditFlag, isVisible } = this.props;
         const { country, isOpenVendorPlant } = this.state;
         return (
             <div>
@@ -653,7 +656,8 @@ class AddVendorDrawer extends Component {
                                     </Col>
                                 </Row>
                                 <Row className="pl-3">
-                                    {this.checkVendorSelection() && checkVendorPlantConfigurable() &&
+                                    {/* THIS DROPDOWN WILL BE VISIBLE ONLY FOR PARTICULAR VENDOR TYPE AND IN EDIT MODE ONLY */}
+                                    {this.checkVendorSelection() && checkVendorPlantConfigurable() && this.props.isEditFlag &&
                                         <>
                                             <Col md="12">
                                                 <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -669,6 +673,7 @@ class AddVendorDrawer extends Component {
                                                             optionLabel={option => option.Text}
                                                             component={renderMultiSelectField}
                                                             mendatory={false}
+
                                                             className="multiselect-with-border"
                                                         />
                                                     </div>

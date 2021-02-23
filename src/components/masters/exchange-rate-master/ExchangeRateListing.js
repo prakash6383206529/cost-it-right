@@ -9,7 +9,7 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList } from '../actions/ExchangeRateMaster';
+import { getExchangeRateDataList, deleteExchangeRate, getCurrencySelectList, getExchangeRateData } from '../actions/ExchangeRateMaster';
 import AddExchangeRate from './AddExchangeRate';
 import { EXCHANGE_RATE } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
@@ -235,6 +235,8 @@ class ExchangeRateListing extends Component {
     }
 
     hideForm = () => {
+        console.log(("IN EXCHANGE RATE"));
+        // this.props.getExchangeRateData('', (res) => { })
         this.setState({
             currency: [],
             data: { isEditFlag: false, ID: '' },
@@ -373,7 +375,7 @@ class ExchangeRateListing extends Component {
                         <TableHeaderColumn dataField="BankRate" columnTitle={true} dataAlign="center" >{'Bank Rate(INR)'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="BankCommissionPercentage" columnTitle={true} dataAlign="center" >{'Bank Commission %'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="center" >{'Custom Rate(INR)'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
@@ -405,6 +407,7 @@ export default connect(mapStateToProps, {
     deleteExchangeRate,
     getCurrencySelectList,
     getLeftMenu,
+    getExchangeRateData
 })(reduxForm({
     form: 'ExchangeRateListing',
     onSubmitFail: errors => {

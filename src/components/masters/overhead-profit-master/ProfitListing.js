@@ -21,6 +21,7 @@ import Switch from "react-switch";
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 
 class ProfitListing extends Component {
     constructor(props) {
@@ -44,6 +45,7 @@ class ProfitListing extends Component {
     */
     componentDidMount() {
         this.props.fetchModelTypeAPI('--Model Types--', res => { });
+        this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
         this.props.getVendorWithVendorCodeSelectList()
         this.getDataList()
     }
@@ -270,7 +272,7 @@ class ProfitListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { filterOverheadSelectList } = this.props;
+        const { filterOverheadSelectList, costingHead } = this.props;
         const temp = [];
 
         if (label === 'costingHead') {
@@ -294,6 +296,16 @@ class ProfitListing extends Component {
             });
             return temp;
         }
+        if (label === 'ProfitApplicability') {
+            costingHead && costingHead.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
+
+
     }
 
     /**
@@ -360,6 +372,7 @@ class ProfitListing extends Component {
             costingHead: [],
             ModelType: [],
             vendorName: [],
+            overheadAppli: []
         }, () => {
             this.props.fetchModelTypeAPI('--Model Types--', res => { });
             this.props.getVendorWithVendorCodeSelectList()
@@ -451,6 +464,31 @@ class ProfitListing extends Component {
                                             required={true}
                                             handleChangeDescription={this.handleModelTypeChange}
                                             valueDescription={this.state.ModelType}
+                                        //disabled={isEditFlag ? true : false}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="ProfitApplicabilityId"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={"Profit Applicability"}
+                                            options={this.renderListing(
+                                                "ProfitApplicability"
+                                            )}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.overheadAppli == null ||
+                                                    this.state.overheadAppli.length === 0
+                                                    ? [required]
+                                                    : []
+                                            }
+                                            required={true}
+                                            handleChangeDescription={
+                                                this.handleOverheadChange
+                                            }
+                                            valueDescription={this.state.overheadAppli}
                                         //disabled={isEditFlag ? true : false}
                                         />
                                     </div>
@@ -561,11 +599,13 @@ class ProfitListing extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { overheadProfit, } = state;
+    const { overheadProfit, comman } = state;
 
     const { filterOverheadSelectList, overheadProfitList } = overheadProfit;
 
-    return { filterOverheadSelectList, overheadProfitList }
+    const { costingHead } = comman;
+
+    return { filterOverheadSelectList, overheadProfitList, costingHead }
 
 }
 
@@ -583,6 +623,7 @@ export default connect(mapStateToProps, {
     getVendorWithVendorCodeSelectList,
     getProfitVendorFilterByModelSelectList,
     getProfitModelFilterByVendorSelectList,
+    fetchCostingHeadsAPI
 })(reduxForm({
     form: 'ProfitListing',
     enableReinitialize: true,

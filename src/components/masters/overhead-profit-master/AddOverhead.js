@@ -118,7 +118,6 @@ class AddOverhead extends Component {
 
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
-
             const modelObj = modelTypes && modelTypes.find(item => item.Value === Data.ModelTypeId)
             const AppliObj = costingHead && costingHead.find(item => item.Value === Data.OverheadApplicabilityId)
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)

@@ -52,6 +52,7 @@ class VendorListing extends Component {
             DownloadAccessibility: false,
             BulkUploadAccessibility: false,
             ActivateAccessibility: false,
+
         }
     }
 
@@ -190,7 +191,8 @@ class VendorListing extends Component {
         this.props.deleteSupplierAPI(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
-                this.getTableListData(null, null, null)
+                this.filterList()
+                //this.getTableListData(null, null, null)
             }
         });
     }
@@ -222,7 +224,8 @@ class VendorListing extends Component {
                 // } else {
                 //     toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
                 // }
-                this.getTableListData(null, null, null)
+                //this.getTableListData(null, null, null)
+                this.filterList()
             }
         })
     }
@@ -383,7 +386,8 @@ class VendorListing extends Component {
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.getTableListData(null, null, null)
+            this.filterList()
+            // this.getTableListData(null, null, null)
         })
     }
 
@@ -550,64 +554,14 @@ class VendorListing extends Component {
                     tableHeaderClass="my-custom-header"
                     pagination
                 >
-                    <TableHeaderColumn
-                        dataField="VendorType"
-                        dataAlign="left"
-                        dataSort={true}
-                    >
-                        Vendor Type
-              </TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="VendorName"
-                        dataAlign="left"
-                        dataSort={true}
-                    >
-                        Vendor Name
-              </TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="VendorCode"
-                        dataAlign="left"
-                        dataSort={true}
-                    >
-                        Vendor Code
-              </TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="Country"
-                        dataAlign="left"
-                        dataSort={true}
-                    >
-                        Country
-              </TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="State"
-                        dataAlign="left"
-                        dataSort={true}
-                    >
-                        State
-              </TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="City"
-                        dataAlign="left"
-                        dataSort={true}
-                    >
-                        City
-              </TableHeaderColumn>
-                    <TableHeaderColumn
-                        dataField="IsActive"
-                        export={false}
-                        dataFormat={this.statusButtonFormatter}
-                    >
-                        Status
-              </TableHeaderColumn>
-                    <TableHeaderColumn
-                        className="action"
-                        dataField="VendorId"
-                        export={false}
-                        isKey={true}
-                        dataFormat={this.buttonFormatter}
-                    >
-                        Actions
-              </TableHeaderColumn>
+                    <TableHeaderColumn dataField="VendorType" dataAlign="left" dataSort={true} >Vendor Type</TableHeaderColumn>
+                    <TableHeaderColumn dataField="VendorName" dataAlign="left" dataSort={true}>Vendor Name</TableHeaderColumn>
+                    <TableHeaderColumn dataField="VendorCode" dataAlign="left" dataSort={true}> Vendor Code </TableHeaderColumn>
+                    <TableHeaderColumn dataField="Country" dataAlign="left" dataSort={true}>Country</TableHeaderColumn>
+                    <TableHeaderColumn dataField="State" dataAlign="left" dataSort={true}> State </TableHeaderColumn>
+                    <TableHeaderColumn dataField="City" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
+                    <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
+                    <TableHeaderColumn className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}> Actions </TableHeaderColumn>
                 </BootstrapTable>
                 {isBulkUpload && (
                     <BulkUpload

@@ -83,7 +83,8 @@ class VBCPlantListing extends Component {
         this.props.deletePlantAPI(Id, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
-                this.getTableListData();
+                // this.getTableListData();
+                this.filterList()
             }
         });
     }
@@ -126,7 +127,8 @@ class VBCPlantListing extends Component {
                 // } else {
                 //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 // }
-                this.getTableListData()
+                //this.getTableListData()
+                this.filterList()
             }
         })
     }
@@ -321,7 +323,8 @@ class VBCPlantListing extends Component {
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.getTableListData()
+            this.filterList()
+            //this.getTableListData()
         })
     }
 
@@ -477,7 +480,7 @@ class VBCPlantListing extends Component {
                     <TableHeaderColumn dataField="StateName" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
                     <TableHeaderColumn dataField="CityName" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                    <TableHeaderColumn className="action" searchable={false} dataField="PlantId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
 
                 {isOpenVendor && <AddVBCPlant

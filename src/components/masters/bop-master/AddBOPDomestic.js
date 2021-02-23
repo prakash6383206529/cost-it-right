@@ -743,6 +743,12 @@ class AddBOPDomestic extends Component {
                                 }
                                 options={this.renderListing("plant")}
                                 selectionChanged={this.handlePlant}
+                                validate={
+                                  this.state.selectedPlants == null ||
+                                    this.state.selectedPlants.length === 0
+                                    ? [required]
+                                    : []
+                                }
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
@@ -806,6 +812,12 @@ class AddBOPDomestic extends Component {
                                 }
                                 options={this.renderListing("VendorPlant")}
                                 selectionChanged={this.handleVendorPlant}
+                                validate={
+                                  this.state.selectedVendorPlants == null ||
+                                    this.state.selectedVendorPlants.length === 0
+                                    ? [required]
+                                    : []
+                                }
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}

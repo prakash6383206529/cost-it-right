@@ -413,164 +413,164 @@ class InterestRateListing extends Component {
       <>
         {/* {this.props.loading && <Loader />} */}
         <div className="container-fluid">
-        <form
-          onSubmit={handleSubmit(this.onSubmit.bind(this))}
-          noValidate
-        >
-          <Row>
-            <Col md="12">
-              <h1>Interest Rate Master</h1>
-            </Col>
-            <Col md="12">
-              <hr className="m-0" />
-            </Col>            
-          </Row>
-          <Row className="pt-4 filter-row-large blue-before">
-            {this.state.shown ? (
-              <Col lg="10" md="12" className="filter-block">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                  <div className="flex-fills">
-                    <h5>{`Filter By:`}</h5>
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="vendorName"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={"Vendors"}
-                      isClearable={false}
-                      options={this.renderListing("VendorList")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={this.handleVendorName}
-                      valueDescription={this.state.vendorName}
-                    />
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="ICCApplicability"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={"ICC Applicability"}
-                      isClearable={false}
-                      options={this.renderListing("ICC")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={this.handleICCApplicability}
-                      valueDescription={this.state.ICCApplicability}
-                      disabled={false}
-                    />
-                  </div>
-                  <div className="flex-fill">
-                    <Field
-                      name="PaymentTermsApplicability"
-                      type="text"
-                      label=""
-                      component={searchableSelect}
-                      placeholder={"Payment Term Applicability"}
-                      isClearable={false}
-                      options={this.renderListing("PaymentTerms")}
-                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                      //validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
-                      //required={true}
-                      handleChangeDescription={
-                        this.handlePaymentApplicability
-                      }
-                      valueDescription={
-                        this.state.PaymentTermsApplicability
-                      }
-                      disabled={false}
-                    />
-                  </div>
+          <form
+            onSubmit={handleSubmit(this.onSubmit.bind(this))}
+            noValidate
+          >
+            <Row>
+              <Col md="12">
+                <h1>Interest Rate Master</h1>
+              </Col>
+              <Col md="12">
+                <hr className="m-0" />
+              </Col>
+            </Row>
+            <Row className="pt-4 filter-row-large blue-before">
+              {this.state.shown ? (
+                <Col lg="10" md="12" className="filter-block">
+                  <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="vendorName"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"Vendors"}
+                        isClearable={false}
+                        options={this.renderListing("VendorList")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={this.handleVendorName}
+                        valueDescription={this.state.vendorName}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="ICCApplicability"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"ICC Applicability"}
+                        isClearable={false}
+                        options={this.renderListing("ICC")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.ICCApplicability == null || this.state.ICCApplicability.length === 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={this.handleICCApplicability}
+                        valueDescription={this.state.ICCApplicability}
+                        disabled={false}
+                      />
+                    </div>
+                    <div className="flex-fill">
+                      <Field
+                        name="PaymentTermsApplicability"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"Payment Term Applicability"}
+                        isClearable={false}
+                        options={this.renderListing("PaymentTerms")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        //validate={(this.state.PaymentTermsApplicability == null || this.state.PaymentTermsApplicability.length === 0) ? [required] : []}
+                        //required={true}
+                        handleChangeDescription={
+                          this.handlePaymentApplicability
+                        }
+                        valueDescription={
+                          this.state.PaymentTermsApplicability
+                        }
+                        disabled={false}
+                      />
+                    </div>
 
-                  <div className="flex-fill">
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.resetFilter}
-                      className="reset mr10"
-                    >
-                      {"Reset"}
-                    </button>
-                    <button
-                      type="button"
-                      //disabled={pristine || submitting}
-                      onClick={this.filterList}
-                      className="apply mr5"
-                    >
-                      {"Apply"}
-                    </button>
+                    <div className="flex-fill">
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.resetFilter}
+                        className="reset mr10"
+                      >
+                        {"Reset"}
+                      </button>
+                      <button
+                        type="button"
+                        //disabled={pristine || submitting}
+                        onClick={this.filterList}
+                        className="apply mr5"
+                      >
+                        {"Apply"}
+                      </button>
+                    </div>
+                  </div>
+                </Col>) : ("")}
+              <Col md="6" className="search-user-block mb-3">
+                <div className="d-flex justify-content-end bd-highlight w100">
+                  <div>
+                    {this.state.shown ? (
+                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                    ) : (
+                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                      )}
+                    {BulkUploadAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={this.bulkToggle}
+                      >
+                        <div className={"upload"}></div>Bulk Upload
+                      </button>
+                    )}
+                    {AddAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn"}
+                        onClick={this.formToggle}
+                      >
+                        <div className={"plus"}></div>ADD
+                      </button>
+                    )}
                   </div>
                 </div>
-              </Col>) : ("")}
-            <Col md="6" className="search-user-block mb-3">
-              <div className="d-flex justify-content-end bd-highlight w100">
-                <div>
-                  {this.state.shown ? (
-                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                      <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                  ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
-                  {BulkUploadAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={this.bulkToggle}
-                    >
-                      <div className={"upload"}></div>Bulk Upload
-                    </button>
-                  )}
-                  {AddAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn"}
-                      onClick={this.formToggle}
-                    >
-                      <div className={"plus"}></div>ADD
-                    </button>
-                  )}
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </form>
-        <BootstrapTable
-          data={this.props.interestRateDataList}
-          striped={false}
-          hover={false}
-          bordered={false}
-          options={options}
-          search
-          // exportCSV
-          //ignoreSinglePage
-          ref={'table'}
-          trClassName={'userlisting-row'}
-          tableHeaderClass='my-custom-header'
-          pagination>
-          <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-          <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-          <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{'ICC Applicability'}</TableHeaderColumn>
-          <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{'Annual ICC (%)'}</TableHeaderColumn>
-          <TableHeaderColumn dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{'Payment Term Applicability'}</TableHeaderColumn>
-          <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{'Repayment Period (Days)'}</TableHeaderColumn>
-          <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{'Payment Term Interest Rate (%) '}</TableHeaderColumn>
-          <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-          <TableHeaderColumn searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-        </BootstrapTable>
-        {isBulkUpload && <BulkUpload
-          isOpen={isBulkUpload}
-          closeDrawer={this.closeBulkUploadDrawer}
-          isEditFlag={false}
-          fileName={'InterestRate'}
-          isZBCVBCTemplate={true}
-          messageLabel={'Interest Rate'}
-          anchor={'right'}
-        />}
+              </Col>
+            </Row>
+          </form>
+          <BootstrapTable
+            data={this.props.interestRateDataList}
+            striped={false}
+            hover={false}
+            bordered={false}
+            options={options}
+            search
+            // exportCSV
+            //ignoreSinglePage
+            ref={'table'}
+            trClassName={'userlisting-row'}
+            tableHeaderClass='my-custom-header'
+            pagination>
+            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{'ICC Applicability'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{'Annual ICC (%)'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{'Payment Term Applicability'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{'Repayment Period (Days)'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{'Payment Term Interest Rate (%) '}</TableHeaderColumn>
+            <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+            <TableHeaderColumn searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+          </BootstrapTable>
+          {isBulkUpload && <BulkUpload
+            isOpen={isBulkUpload}
+            closeDrawer={this.closeBulkUploadDrawer}
+            isEditFlag={false}
+            fileName={'InterestRate'}
+            isZBCVBCTemplate={true}
+            messageLabel={'Interest Rate'}
+            anchor={'right'}
+          />}
         </div>
       </ >
     );
