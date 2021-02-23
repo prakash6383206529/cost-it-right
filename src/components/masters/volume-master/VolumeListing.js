@@ -17,7 +17,7 @@ import {
 import { getPlantSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
 import $ from 'jquery'
-import { Months } from '../../../config/masterData'
+import { costingHeadObjs, Months } from '../../../config/masterData'
 import AddVolume from './AddVolume'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { VOLUME } from '../../../config/constants'
@@ -28,68 +28,68 @@ import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 const initialTableData = [
   {
-    VolumeDetailId: 0,
+    VolumeApprovedDetailId: 0,
     Month: 'April',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
-  { VolumeDetailId: 1, Month: 'May', BudgetedQuantity: 0, ApprovedQuantity: 0 },
+  { VolumeApprovedDetailId: 1, Month: 'May', BudgetedQuantity: 0, ApprovedQuantity: 0 },
   {
-    VolumeDetailId: 2,
+    VolumeApprovedDetailId: 2,
     Month: 'June',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 3,
+    VolumeApprovedDetailId: 3,
     Month: 'July',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 4,
+    VolumeApprovedDetailId: 4,
     Month: 'August',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 5,
+    VolumeApprovedDetailId: 5,
     Month: 'September',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 6,
+    VolumeApprovedDetailId: 6,
     Month: 'October',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 7,
+    VolumeApprovedDetailId: 7,
     Month: 'November',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 8,
+    VolumeApprovedDetailId: 8,
     Month: 'December',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 9,
+    VolumeApprovedDetailId: 9,
     Month: 'January',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 10,
+    VolumeApprovedDetailId: 10,
     Month: 'February',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
   },
   {
-    VolumeDetailId: 11,
+    VolumeApprovedDetailId: 11,
     Month: 'March',
     BudgetedQuantity: 0,
     ApprovedQuantity: 0,
@@ -109,6 +109,7 @@ class VolumeListing extends Component {
       month: [],
       vendorName: [],
       plant: [],
+      costing_head: [],
 
       isActualBulkUpload: false,
       isBudgetedBulkUpload: false,
@@ -168,12 +169,13 @@ class VolumeListing extends Component {
    * @method getTableListData
    * @description Get user list data
    */
-  getTableListData = (year = '', month = '', vendor_id = '', plant_id = '') => {
+  getTableListData = (year = '', month = '', vendor_id = '', plant_id = '', costing_head = '') => {
     let filterData = {
       year: year,
       month: month,
       vendor_id: vendor_id,
       plant_id: plant_id,
+      costing_head: costing_head
     }
     this.props.getVolumeDataList(filterData, (res) => {
       if (res.status === 204 && res.data === '') {
@@ -197,11 +199,13 @@ class VolumeListing extends Component {
    */
   renderListing = (label) => {
     const {
-      vendorListByVendorType,
-      plantSelectList,
-      financialYearSelectList,
-    } = this.props
+      vendorListByVendorType, plantSelectList, financialYearSelectList, costingHead } = this.props
     const temp = []
+
+    if (label === 'costingHead') {
+      return costingHeadObjs;
+    }
+
 
     if (label === 'VendorList') {
       vendorListByVendorType &&
@@ -274,7 +278,7 @@ class VolumeListing extends Component {
     this.props.deleteVolume(ID, (res) => {
       if (res.data.Result === true) {
         toastr.success(MESSAGES.DELETE_VOLUME_SUCCESS)
-        this.getTableListData(null, null, null, null, null)
+        this.getTableListData(null, null, null, null, null, null)
       }
     })
   }
@@ -464,16 +468,30 @@ class VolumeListing extends Component {
   }
 
   /**
+  * @method handleHeadChange
+  * @description called
+  */
+  handleHeadChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ costing_head: newValue, });
+    } else {
+      this.setState({ costing_head: [], })
+    }
+  };
+
+  /**
    * @method filterList
    * @description Filter user listing on the basis of role and department
    */
   filterList = () => {
-    const { year, month, vendorName, plant } = this.state
+    const { year, month, vendorName, plant, costing_head } = this.state
     const yearTemp = year ? year.value : null
     const monthTemp = month ? month.value : null
     const vendorNameTemp = vendorName ? vendorName.value : null
     const plantTemp = plant ? plant.value : null
-    this.getTableListData(yearTemp, monthTemp, vendorNameTemp, plantTemp)
+    const costingHead = costing_head ? costing_head.value : null
+
+    this.getTableListData(yearTemp, monthTemp, vendorNameTemp, plantTemp, costingHead)
   }
 
   /**
@@ -566,12 +584,33 @@ class VolumeListing extends Component {
             </Row>
             <Row className="pt-4 blue-before">
               {this.state.shown ? (
-                <Col md="8" className="filter-block">
+                <Col md="10" className="filter-block">
                   <div className="d-inline-flex justify-content-start align-items-top w100">
                     <div className="flex-fills">
                       <h5>{`Filter By:`}</h5>
                     </div>
-
+                    <div className="flex-fill">
+                      <Field
+                        name="costing_head"
+                        type="text"
+                        label=""
+                        component={searchableSelect}
+                        placeholder={"Costing Head"}
+                        isClearable={false}
+                        options={this.renderListing("costingHead")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.costing_head == null ||
+                            this.state.costing_head.length === 0
+                            ? [required]
+                            : []
+                        }
+                        required={true}
+                        handleChangeDescription={this.handleHeadChange}
+                        valueDescription={this.state.costing_head}
+                      //disabled={isEditFlag ? true : false}
+                      />
+                    </div>
                     <div className="flex-fill">
                       <Field
                         name="year"
@@ -734,98 +773,15 @@ class VolumeListing extends Component {
             tableHeaderClass="my-custom-header"
             pagination
           >
-            <TableHeaderColumn
-              dataField="IsVendor"
-              columnTitle={true}
-              dataAlign="left"
-              dataSort={true}
-              searchable={false}
-              dataFormat={this.costingHeadFormatter}
-              width={100}
-            >
-              {this.renderCostingHead()}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="Year"
-              width={100}
-              columnTitle={true}
-              dataAlign="left"
-              searchable={false}
-              dataSort={true}
-              width={100}
-            >
-              {'Year'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="Month"
-              width={100}
-              columnTitle={true}
-              dataAlign="left"
-              searchable={false}
-              dataSort={true}
-              width={100}
-            >
-              {'Month'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="VendorName"
-              columnTitle={true}
-              searchable={false}
-              dataAlign="left"
-              dataSort={true}
-              width={120}
-            >
-              {'Vendor Name'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="PartNumber"
-              columnTitle={true}
-              dataAlign="left"
-              dataSort={true}
-              width={110}
-            >
-              {'Part No.'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="PartName"
-              columnTitle={true}
-              dataAlign="left"
-              dataSort={true}
-              width={110}
-            >
-              {'Part Name'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="BudgetedQuantity"
-              searchable={false}
-              columnTitle={true}
-              dataAlign="left"
-              dataSort={true}
-              width={150}
-            >
-              {'Budgeted Quantity'}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              dataField="ApprovedQuantity"
-              columnTitle={true}
-              searchable={false}
-              dataAlign="left"
-              dataSort={true}
-              width={120}
-            >
-              {'Actual Quantity '}
-            </TableHeaderColumn>
-            <TableHeaderColumn
-              width={120}
-              className="action"
-              dataField="VolumeId"
-              searchable={false}
-              export={false}
-              isKey={true}
-              dataFormat={this.buttonFormatter}
-            >
-              Actions
-          </TableHeaderColumn>
+            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} dataFormat={this.costingHeadFormatter}            >              {this.renderCostingHead()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="Year" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true}            >              {'Year'}            </TableHeaderColumn>
+            <TableHeaderColumn dataField="Month" width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true}            >              {'Month'}            </TableHeaderColumn>
+            <TableHeaderColumn dataField="VendorName" columnTitle={true} searchable={false} dataAlign="left" dataSort={true}            >              {'Vendor Name'}            </TableHeaderColumn>
+            <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="left" dataSort={true}            >              {'Part No.'}            </TableHeaderColumn>
+            <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={true}         >              {'Part Name'}            </TableHeaderColumn>
+            <TableHeaderColumn dataField="BudgetedQuantity" searchable={false} columnTitle={true} dataAlign="left" dataSort={true}            >              {'Budgeted Quantity'}            </TableHeaderColumn>
+            <TableHeaderColumn dataField="ApprovedQuantity" columnTitle={true} searchable={false} dataAlign="left" dataSort={true}            >              {'Actual Quantity '}            </TableHeaderColumn>
+            <TableHeaderColumn width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}            >              Actions          </TableHeaderColumn>
           </BootstrapTable>
           {isActualBulkUpload && (
             <BulkUpload

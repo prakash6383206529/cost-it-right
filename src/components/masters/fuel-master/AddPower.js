@@ -24,6 +24,7 @@ import NoContentFound from '../../common/NoContentFound';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import moment from 'moment';
 import { calculatePercentageValue } from '../../../helper';
+import { AcceptablePowerUOM } from '../../../config/masterData';
 const selector = formValueSelector('AddPower');
 
 class AddPower extends Component {
@@ -805,7 +806,7 @@ class AddPower extends Component {
   */
   renderListing = (label) => {
     const { powerTypeSelectList, vendorWithVendorCodeSelectList, filterPlantList,
-      fuelComboSelectList, plantSelectList } = this.props;
+      UOMSelectList, plantSelectList, fuelComboSelectList } = this.props;
     const temp = [];
 
     if (label === 'VendorNameList') {
@@ -841,11 +842,12 @@ class AddPower extends Component {
     }
 
     if (label === 'UOM') {
-      fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
+      UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptablePowerUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false;
-        if (item.Text === 'Liter' || item.Text === 'Kilogram') {
-          temp.push({ label: item.Text, value: item.Value })
-        }
+        temp.push({ label: item.Text, value: item.Value })
+
       });
       return temp;
     }

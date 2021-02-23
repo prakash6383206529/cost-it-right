@@ -26,6 +26,7 @@ import {
   getUOMSelectList,
   fetchSupplierCityDataAPI,
   fetchPlantDataAPI,
+  getPlantSelectListByType
 } from '../../../actions/Common'
 import {
   createRMDomestic,
@@ -55,7 +56,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL } from '../../../config/constants'
+import { FILE_URL, ZBC } from '../../../config/constants'
 import ImageModel from '../../common/ImageModel'
 const selector = formValueSelector('AddRMDomestic')
 
@@ -127,6 +128,7 @@ class AddRMDomestic extends Component {
     this.props.fetchSupplierCityDataAPI((res) => { })
     this.props.getVendorListByVendorType(false, () => { })
     this.props.getTechnologySelectList(() => { })
+    this.props.getPlantSelectListByType(ZBC, () => { })
 
   }
 
@@ -545,7 +547,8 @@ class AddRMDomestic extends Component {
       rawMaterialNameSelectList,
       UOMSelectList,
       vendorListByVendorType,
-      technologySelectList
+      technologySelectList,
+      plantSelectList
     } = this.props
     const temp = []
 
@@ -595,7 +598,7 @@ class AddRMDomestic extends Component {
       return temp
     }
     if (label === 'plant') {
-      plantList && plantList.map((item) => {
+      plantSelectList && plantSelectList.map((item) => {
         if (item.Value === '0') return false
         temp.push({ Text: item.Text, Value: item.Value })
         return null
@@ -1648,7 +1651,6 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material } = state
-  console.log(comman, "COm");
   const fieldsObj = selector(state, 'BasicRate')
 
   const {
@@ -1665,7 +1667,8 @@ function mapStateToProps(state) {
     filterPlantListByCity,
     filterPlantListByCityAndSupplier,
     UOMSelectList,
-    technologySelectList
+    technologySelectList,
+    plantSelectList
   } = comman
 
   const {
@@ -1708,7 +1711,8 @@ function mapStateToProps(state) {
     filterPlantList,
     UOMSelectList,
     vendorListByVendorType,
-    technologySelectList
+    technologySelectList,
+    plantSelectList
   }
 }
 
@@ -1741,7 +1745,7 @@ export default connect(mapStateToProps, {
   fileUploadRMDomestic,
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
-
+  getPlantSelectListByType,
 })(
   reduxForm({
     form: 'AddRMDomestic',

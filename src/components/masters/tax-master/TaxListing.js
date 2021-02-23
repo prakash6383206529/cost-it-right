@@ -236,11 +236,11 @@ class TaxListing extends Component {
                 trClassName={'userlisting-row'}
                 tableHeaderClass='my-custom-class'
                 pagination>
-                <TableHeaderColumn dataField="TaxName" dataAlign="" dataSort={true}>Tax Name</TableHeaderColumn>
+                <TableHeaderColumn dataField="TaxName" dataAlign="center" dataSort={true}>Tax Name</TableHeaderColumn>
                 <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
                 <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
-                <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="" dataFormat={this.effectiveDateFormatter} dataSort={true} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                <TableHeaderColumn width={100} searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataSort={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
               </BootstrapTable>
             </Col>

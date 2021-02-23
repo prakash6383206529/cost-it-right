@@ -67,7 +67,7 @@ export const RMDomesticZBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
-    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Material", value: "Material" },
     { label: "Plant", value: "Plant" },
     { label: "VendorName", value: "VendorName" },
@@ -90,7 +90,7 @@ export const RMDomesticZBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
+        "TechnologyName": "Technology Name",
         "Material": "Material Name",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
@@ -116,7 +116,7 @@ export const RMDomesticVBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
-    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Material", value: "Material" },
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" },
@@ -138,7 +138,7 @@ export const RMDomesticVBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
+        "TechnologyName": "Technology Name",
         "Material": "Material Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
@@ -163,7 +163,7 @@ export const RMImportZBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
-    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Material", value: "Material" },
     { label: "Plant", value: "Plant" },
     { label: "VendorName", value: "VendorName" },
@@ -188,7 +188,7 @@ export const RMImportZBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
+        "TechnologyName": "Technology Name",
         "Material": "Material Name",
         "Plant": "Plant Name",
         "VendorName": "Vendor Name",
@@ -215,7 +215,7 @@ export const RMImportVBC = [
     { label: "RMGrade", value: "RMGrade" },
     { label: "RMSpec", value: "RMSpec" },
     { label: "Category", value: "Category" },
-    // { label: "Technology", value: "Technology" }, NEED TO UNCOMMENT AFTER KEY IS BEING ADDED IN BACKEND
+    { label: "TechnologyName", value: "TechnologyName" },
     { label: "Material", value: "Material" },
     { label: "VendorName", value: "VendorName" },
     { label: "VendorCode", value: "VendorCode" },
@@ -238,7 +238,7 @@ export const RMImportVBCTempData = [
         "RMGrade": "RMGrade Name",
         "RMSpec": "RMSpec Name",
         "Category": "Category Name",
-        // "Technology":"Technology Name", NNE DTO UNCOMMENT AFTER KEY IS ADDED IN BACKEND
+        "TechnologyName": "Technology Name",
         "Material": "Material Name",
         "VendorName": "Vendor Name",
         "VendorCode": "Vendor123",
@@ -665,7 +665,7 @@ export const BOP_VBC_IMPORT_TempData = [
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'Plant', value: 'Plant', },
     { label: 'PartNo', value: 'PartNo', },
-    { label: 'OldPartNo', value: 'OldPartNo', },
+    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', },
     { label: 'Year', value: 'Year', },
     { label: 'Month', value: 'Month', },
@@ -676,7 +676,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'Plant': 'P1',
         'PartNo': 'Part 1',
-        'OldPartNo': 'Old Part 2',
+        // 'OldPartNo': 'Old Part 2',
         'PartName': 'Part 1',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
@@ -690,7 +690,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 export const VOLUME_ACTUAL_VBC = [
     { label: 'VendorName', value: 'VendorName', },
     { label: 'PartNo', value: 'PartNo', },
-    { label: 'OldPartNo', value: 'OldPartNo', },
+    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', },
     { label: 'Year', value: 'Year', },
     { label: 'Month', value: 'Month', },
@@ -701,7 +701,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
         'VendorName': 'Vendor Name',
         'PartNo': 'Part1',
-        'OldPartNo': 'Old Part1',
+        // 'OldPartNo': 'Old Part1',
         'PartName': 'Part Name1',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
@@ -716,7 +716,7 @@ export const VOLUME_BUDGETED_ZBC = [
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', },
     { label: 'Plant', value: 'Plant', },
     { label: 'PartNo', value: 'PartNo', },
-    { label: 'OldPartNo', value: 'OldPartNo', },
+    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', },
     { label: 'Year', value: 'Year', },
     { label: 'Month', value: 'Month', },
@@ -727,7 +727,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
         'BudgetedQuantity': 'BudgetedQuantity',
         'Plant': 'Plant1',
         'PartNo': 'Part No1',
-        'OldPartNo': 'Old Part1',
+        // 'OldPartNo': 'Old Part1',
         'PartName': 'PartName',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
@@ -741,7 +741,7 @@ export const VOLUME_BUDGETED_VBC = [
     { label: 'BudgetedQuantity', value: 'BudgetedQuantity', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'PartNo', value: 'PartNo', },
-    { label: 'OldPartNo', value: 'OldPartNo', },
+    // { label: 'OldPartNo', value: 'OldPartNo', },
     { label: 'PartName', value: 'PartName', },
     { label: 'Year', value: 'Year', },
     { label: 'Month', value: 'Month', },
@@ -752,7 +752,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'BudgetedQuantity': 'BudgetedQuantity',
         'VendorName': 'VendorName',
         'PartNo': 'PartNo',
-        'OldPartNo': 'OldPartNo',
+        // 'OldPartNo': 'OldPartNo',
         'PartName': 'PartName',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
@@ -1232,11 +1232,18 @@ export const monthSequence = [
     { seq: 11, month: 'March' },
 ]
 
+// COSTING HEAD WITH ZBC,VBC,CBC
 export const costingHeadObj = [
     { label: 'Zero Based', value: 'ZBC' },
     { label: 'Vendor Based', value: 'VBC' },
+    { label: 'Client Based', value: 'CBC' }
 ]
 
+// COSTING HEAD WITHOUT CBC
+export const costingHeadObjs = [
+    { label: 'Zero Based', value: 'ZBC' },
+    { label: 'Vendor Based', value: 'VBC' },
+]
 export const SurfaceTreatmentAssemblySaveJSON = [
     {
         "CostingId": "1b9c72b6-c7fe-48fb-ace7-52b5fb001042",

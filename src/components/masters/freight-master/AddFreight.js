@@ -344,7 +344,7 @@ class AddFreight extends Component {
         gridTable: tempArray,
         FullTruckCapacity: [],
         RateCriteria: [],
-        effectiveDate: new Date(),
+        effectiveDate: '',
       },
       () => this.props.change("Rate", 0)
     );
@@ -900,25 +900,11 @@ class AddFreight extends Component {
                                         <td>{item.RateCriteria}</td>
                                         <td>{checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                         <td>
-                                          {moment(item.EffectiveDate).format(
-                                            "DD/MM/YYYY"
-                                          )}
+                                          {item.EffectiveDate ? moment(item.EffectiveDate).format("DD/MM/YYYY") : '-'}
                                         </td>
                                         <td>
-                                          <button
-                                            className="Edit mr-2"
-                                            type={"button"}
-                                            onClick={() =>
-                                              this.editGridItemDetails(index)
-                                            }
-                                          />
-                                          <button
-                                            className="Delete"
-                                            type={"button"}
-                                            onClick={() =>
-                                              this.deleteGridItem(index)
-                                            }
-                                          />
+                                          <button className="Edit mr-2" type={"button"} onClick={() => this.editGridItemDetails(index)} />
+                                          <button className="Delete" type={"button"} onClick={() => this.deleteGridItem(index)} />
                                         </td>
                                       </tr>
                                     );

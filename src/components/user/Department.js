@@ -4,7 +4,7 @@ import { langs } from "../../config/localization";
 import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
-import { required, alphabetsOnlyForName, number, checkWhiteSpaces } from "../../helper/validation";
+import { required, alphabetsOnlyForName, number, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../helper/validation";
 import { renderText } from "../layout/FormInputs";
 import "./UserRegistration.scss";
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI } from "../../actions/auth/AuthActions";
@@ -143,7 +143,7 @@ class Department extends Component {
 												name={"DepartmentName"}
 												type="text"
 												placeholder={''}
-												validate={[required, alphabetsOnlyForName, checkWhiteSpaces]}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
 												component={renderText}
 												required={true}
 												maxLength={26}

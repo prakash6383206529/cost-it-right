@@ -756,6 +756,12 @@ class AddBOPImport extends Component {
                                 selectionChanged={this.handlePlant}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
+                                validate={
+                                  this.state.selectedPlants == null ||
+                                    this.state.selectedPlants.length === 0
+                                    ? [required]
+                                    : []
+                                }
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
@@ -821,6 +827,12 @@ class AddBOPImport extends Component {
                                 }
                                 options={this.renderListing("VendorPlant")}
                                 selectionChanged={this.handleVendorPlant}
+                                validate={
+                                  this.state.selectedVendorPlants == null ||
+                                    this.state.selectedVendorPlants.length === 0
+                                    ? [required]
+                                    : []
+                                }
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}

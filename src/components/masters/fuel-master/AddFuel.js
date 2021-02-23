@@ -6,7 +6,7 @@ import { required, decimalLength2, number, checkForDecimalAndNull, positiveAndDe
 import {
   renderNumberInputField, searchableSelect, focusOnError, renderText,
 } from "../../layout/FormInputs";
-import { } from '../../../actions/Common';
+import { getUOMSelectList } from '../../../actions/Common';
 import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -51,6 +51,7 @@ class AddFuel extends Component {
   componentDidMount() {
     const { data } = this.props;
     this.getDetails(data);
+    this.props.getUOMSelectList(() => { })
     this.props.getFuelComboData(() => { })
 
   }
@@ -295,7 +296,7 @@ class AddFuel extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { fuelComboSelectList } = this.props;
+    const { fuelComboSelectList, UOMSelectList } = this.props;
     const temp = [];
     if (label === 'fuel') {
       fuelComboSelectList && fuelComboSelectList.Fuels.map(item => {
@@ -312,13 +313,12 @@ class AddFuel extends Component {
       return temp;
     }
     if (label === 'uom') {
-      fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.map(item => {
-        // const accept = AcceptableFuelUOM.includes(item.Type)
-        // if (accept === false) return false
+      UOMSelectList && UOMSelectList.map(item => {
+        const accept = AcceptableFuelUOM.includes(item.Type)
+        if (accept === false) return false
         if (item.Value === '0') return false;
-        if (item.Text === 'Kilogram' || item.Text === 'Liter') {
-          temp.push({ label: item.Text, value: item.Value })
-        }
+        temp.push({ label: item.Text, value: item.Value })
+
       });
       return temp;
     }
@@ -410,7 +410,7 @@ class AddFuel extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, } = this.props;
     const { isOpenFuelDrawer, isEditFlag } = this.state;
 
     return (
@@ -687,14 +687,15 @@ class AddFuel extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { fuel, auth } = state;
+  const { fuel, auth, comman } = state;
   const fieldsObj = selector(state, 'Rate');
   let initialValues = {};
 
+  const { UOMSelectList, } = comman;
   const { fuelComboSelectList } = fuel;
   const { initialConfiguration } = auth;
 
-  return { initialValues, fieldsObj, fuelComboSelectList, initialConfiguration }
+  return { initialValues, fieldsObj, fuelComboSelectList, initialConfiguration, UOMSelectList }
 
 }
 
@@ -709,6 +710,7 @@ export default connect(mapStateToProps, {
   createFuelDetail,
   updateFuelDetail,
   getFuelDetailData,
+  getUOMSelectList
 })(reduxForm({
   form: 'AddFuel',
   enableReinitialize: true,

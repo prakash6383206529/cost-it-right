@@ -375,7 +375,11 @@ class FuelListing extends Component {
                             <TableHeaderColumn dataField="UnitOfMeasurementName" columnTitle={true} dataAlign="center" dataSort={true} >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="center" dataSort={true} >{'State'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
+<<<<<<< HEAD
                             <TableHeaderColumn width={180} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
+=======
+                            <TableHeaderColumn width={180} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
+>>>>>>> m1-frontend-09-02-2020-mahak
                             <TableHeaderColumn width={180} columnTitle={true} dataAlign="center" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} width={100} dataAlign="center" dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>

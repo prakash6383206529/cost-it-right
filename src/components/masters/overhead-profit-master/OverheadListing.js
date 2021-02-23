@@ -3,12 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
-import {
-    getOverheadDataList, deleteOverhead, activeInactiveOverhead, fetchModelTypeAPI,
-    getVendorWithVendorCodeSelectList,
-    getVendorFilterByModelTypeSelectList,
-    getModelTypeFilterByVendorSelectList,
-} from '../actions/OverheadProfit';
+import { getOverheadDataList, deleteOverhead, activeInactiveOverhead, fetchModelTypeAPI, getVendorWithVendorCodeSelectList, getVendorFilterByModelTypeSelectList, getModelTypeFilterByVendorSelectList, } from '../actions/OverheadProfit';
+import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -44,7 +40,9 @@ class OverheadListing extends Component {
     */
     componentDidMount() {
         this.props.fetchModelTypeAPI('--Model Types--', res => { });
+        this.props.fetchCostingHeadsAPI('--Costing Heads--', res => { });
         this.props.getVendorWithVendorCodeSelectList()
+
         this.getDataList(null, null, null, null)
     }
 
@@ -256,7 +254,7 @@ class OverheadListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { filterOverheadSelectList } = this.props;
+        const { filterOverheadSelectList, costingHead } = this.props;
         const temp = [];
 
         if (label === 'costingHead') {
@@ -274,6 +272,15 @@ class OverheadListing extends Component {
 
         if (label === 'VendorNameList') {
             filterOverheadSelectList && filterOverheadSelectList.VendorsSelectList && filterOverheadSelectList.VendorsSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
+
+        if (label === 'OverheadApplicability') {
+            costingHead && costingHead.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
@@ -365,6 +372,15 @@ class OverheadListing extends Component {
     onSubmit = (values) => {
 
     }
+    /**
+     * @method handleOverheadChange
+     * @description Handle overhead chnage
+    */
+    handleOverheadChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ overheadAppli: newValue });
+        }
+    };
 
     /**
     * @method render
@@ -437,6 +453,31 @@ class OverheadListing extends Component {
                                             required={true}
                                             handleChangeDescription={this.handleModelTypeChange}
                                             valueDescription={this.state.ModelType}
+                                        //disabled={isEditFlag ? true : false}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="OverheadApplicability"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={"Overhead Applicability"}
+                                            options={this.renderListing(
+                                                "OverheadApplicability"
+                                            )}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={
+                                                this.state.overheadAppli == null ||
+                                                    this.state.overheadAppli.length === 0
+                                                    ? [required]
+                                                    : []
+                                            }
+                                            required={true}
+                                            handleChangeDescription={
+                                                this.handleOverheadChange
+                                            }
+                                            valueDescription={this.state.overheadAppli}
                                         //disabled={isEditFlag ? true : false}
                                         />
                                     </div>
@@ -546,11 +587,13 @@ class OverheadListing extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    const { overheadProfit, } = state;
+    const { overheadProfit, comman } = state;
+
+    const { costingHead } = comman;
 
     const { filterOverheadSelectList, overheadProfitList } = overheadProfit;
 
-    return { filterOverheadSelectList, overheadProfitList }
+    return { filterOverheadSelectList, overheadProfitList, costingHead }
 
 }
 
@@ -562,6 +605,7 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
     getOverheadDataList,
+    fetchCostingHeadsAPI,
     deleteOverhead,
     fetchModelTypeAPI,
     activeInactiveOverhead,

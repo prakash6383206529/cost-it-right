@@ -172,7 +172,7 @@ class AddInterestRate extends Component {
           setTimeout(() => {
             const { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
 
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
+            const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorIdRef)
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
             const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
 
@@ -183,7 +183,7 @@ class AddInterestRate extends Component {
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._d
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
             })
           }, 500)
 

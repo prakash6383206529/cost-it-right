@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
-import { required } from '../../../helper/validation'
+import { maxLength, postiveNumber, required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
 import { getVendorListByVendorType } from '../actions/Material'
 import {
@@ -121,12 +121,10 @@ class AddVolume extends Component {
    */
 
   componentDidMount() {
-    console.log('How many time render')
     setTimeout(() => {
       this.setState({
         duplicateTableData: this.props.initialTableData,
       })
-      console.log(this.state.duplicateTableData, 'Duplicate Table Data')
     }, 100)
 
     this.props.getPlantSelectListByType(ZBC, () => { })
@@ -137,11 +135,7 @@ class AddVolume extends Component {
   }
 
   componentWillUnmount() {
-    console.log(this.state.duplicateTableData, 'Duplicate InitialTableData')
-
-    // console.log(this.state.duplicateTableData, 'In unmount')
     this.setState({ tableData: [] })
-    console.log('tableData: ', this.state.tableData)
   }
 
   /**
@@ -300,10 +294,14 @@ class AddVolume extends Component {
    * @description CHECK FOR ENTER NUMBER IN CELL
    */
   beforeSaveCell = (row, cellName, cellValue) => {
-    if (Number.isInteger(Number(cellValue))) {
+    if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
+      if (cellValue.length > 8) {
+        toastr.warning("Value should not be more than 8")
+        return false
+      }
       return true
     } else {
-      toastr.warning('Please enter numbers.')
+      toastr.warning('Please enter a valid positive numbers.')
       return false
     }
   }
@@ -314,6 +312,7 @@ class AddVolume extends Component {
     const { tableData } = this.state
 
     let filterData = tableData.map((item) => {
+      // console.log(ID, item.VolumeApprovedDetailId, "ITEM VOLUME");
       if (item.VolumeApprovedDetailId === ID) {
         return { ...item, BudgetedQuantity: 0, ApprovedQuantity: 0 }
       }
@@ -426,7 +425,17 @@ class AddVolume extends Component {
    */
   cancel = () => {
     const { reset } = this.props
+    const { tableData } = this.state
+
+    // THIS IS FOR RESETING THE VALUE OF TABLE TO ZERO
+    tableData.map((item) => {
+      item.BudgetedQuantity = 0;
+      item.ApprovedQuantity = 0
+    })
+
     reset('AddVolume')
+
+
 
     this.setState(
       {
@@ -464,51 +473,55 @@ class AddVolume extends Component {
     //     return plantArray;
     // })
 
+    // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
+    const filteredArray = tableData.filter(item => item.BudgetedQuantity === 0 && item.ApprovedQuantity === 0)
+    if (filteredArray.length === 12) {
+      toastr.warning("Please fill atleast one entry")
+      return false
+    }
+
+
     let budgetArray = []
-    tableData &&
-      tableData.map((item) => {
-        budgetArray.push({
-          Month: item.Month,
-          BudgetedQuantity: item.BudgetedQuantity,
-          VolumeDetailId: item.VolumeDetailId,
-        })
-        return budgetArray
+    tableData && tableData.map((item) => {
+      budgetArray.push({
+        Month: item.Month,
+        BudgetedQuantity: item.BudgetedQuantity,
+        VolumeDetailId: item.VolumeDetailId,
       })
+      return budgetArray
+    })
 
     let approvedArray = []
-    tableData &&
-      tableData.map((item) => {
-        approvedArray.push({
-          Month: item.Month,
-          ApprovedQuantity: item.ApprovedQuantity,
-          VolumeDetailId: item.VolumeDetailId,
-        })
-        return approvedArray
+    tableData && tableData.map((item) => {
+      approvedArray.push({
+        Month: item.Month,
+        ApprovedQuantity: item.ApprovedQuantity,
+        VolumeDetailId: item.VolumeDetailId,
       })
+      return approvedArray
+    })
 
     let updateBudgetArray = []
-    tableData &&
-      tableData.map((item) => {
-        updateBudgetArray.push({
-          VolumeBudgetedDetailId: item.VolumeBudgetedDetailId,
-          Month: item.Month,
-          BudgetedQuantity: item.BudgetedQuantity,
-          Sequence: 0,
-        })
-        return updateBudgetArray
+    tableData && tableData.map((item) => {
+      updateBudgetArray.push({
+        VolumeBudgetedDetailId: item.VolumeBudgetedDetailId,
+        Month: item.Month,
+        BudgetedQuantity: item.BudgetedQuantity,
+        Sequence: 0,
       })
+      return updateBudgetArray
+    })
 
     let updateApproveArray = []
-    tableData &&
-      tableData.map((item) => {
-        updateApproveArray.push({
-          VolumeApprovedDetailId: item.VolumeApprovedDetailId,
-          Month: item.Month,
-          ApprovedQuantity: item.ApprovedQuantity,
-          Sequence: 0,
-        })
-        return updateApproveArray
+    tableData && tableData.map((item) => {
+      updateApproveArray.push({
+        VolumeApprovedDetailId: item.VolumeApprovedDetailId,
+        Month: item.Month,
+        ApprovedQuantity: item.ApprovedQuantity,
+        Sequence: 0,
       })
+      return updateApproveArray
+    })
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
@@ -530,9 +543,7 @@ class AddVolume extends Component {
 
       let formData = {
         IsVendor: IsVendor,
-        VendorId: IsVendor
-          ? vendorName.value
-          : userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         PartId: part.value,
         PartNumber: part.label,
         OldPartNumber: '',
@@ -741,38 +752,12 @@ class AddVolume extends Component {
                             bordered={false}
                             cellEdit={cellEditProp}
                           >
-                            <TableHeaderColumn
-                              dataField="Month"
-                              editable={false}
-                            >
-                              Month
-                              </TableHeaderColumn>
-                            <TableHeaderColumn dataField="BudgetedQuantity" dataAlign='center'>
-                              Budgeted Quantity
-                              </TableHeaderColumn>
-                            <TableHeaderColumn dataField="ApprovedQuantity" dataAlign='center'>
-                              Actual Quantity
-                              </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign='center'
-                              dataField="VolumeApprovedDetailId"
-                              hidden
-                            >
-                              Volume Approv Id
-                              </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign='center'
-                              dataField="VolumeBudgetedDetailId"
-                              hidden
-                            >
-                              Vol Budget Id
-                              </TableHeaderColumn>
-                            <TableHeaderColumn width={100}
-                              className="action"
-                              dataField="VolumeApprovedDetailId"
-                              isKey={true}
-                              dataFormat={this.buttonFormatter}
-                            >
-                              Actions
-                              </TableHeaderColumn>
+                            <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
+                            <TableHeaderColumn dataField="BudgetedQuantity" dataAlign='center'>Budgeted Quantity </TableHeaderColumn>
+                            <TableHeaderColumn dataField="ApprovedQuantity" dataAlign='center'>Actual Quantity  </TableHeaderColumn>
+                            <TableHeaderColumn dataAlign='center' dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
+                            <TableHeaderColumn dataAlign='center' dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
+                            <TableHeaderColumn width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
                           </BootstrapTable>
                         </Col>
                       </Row>

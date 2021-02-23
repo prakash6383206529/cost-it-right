@@ -1343,6 +1343,7 @@ export function getRawMaterialCategory(callback) {
 * @description GET PLANT LIST BY ZBC, VBC
 */
 export function getPlantSelectListByType(TYPE, callback) {
+
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}`, headers);

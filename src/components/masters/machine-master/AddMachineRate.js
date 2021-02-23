@@ -18,7 +18,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -869,8 +869,9 @@ class AddMachineRate extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration } = this.props;
+    const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, } = this.props;
     const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, IsCopied, isViewFlag } = this.state;
+
 
     return (
       <>
@@ -926,6 +927,41 @@ class AddMachineRate extends Component {
                           <Field
                             label="Technology"
                             name="technology"
+                            placeholder="--Select--"
+                            selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
+                            options={this.renderListing('technology')}
+                            selectionChanged={this.handleTechnology}
+                            optionValue={option => option.Value}
+                            optionLabel={option => option.Text}
+                            component={renderMultiSelectField}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                            disabled={this.state.isViewFlag ? true : false}
+                          //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                          />
+                        </Col>
+                        {this.state.IsVendor &&
+                          <Col md="3">
+                            <Field
+                              name="VendorName"
+                              type="text"
+                              label="Vendor Name"
+                              component={searchableSelect}
+                              placeholder={'--select--'}
+                              options={this.renderListing('VendorNameList')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handleVendorName}
+                              valueDescription={this.state.vendorName}
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>}
+
+                        <Col md="3">
+                          <Field
+                            label="Technology"
+                            name="technology"
                             placeholder="Select"
                             selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                             options={this.renderListing('technology')}
@@ -957,6 +993,7 @@ class AddMachineRate extends Component {
                             />
                           </Col>}
                         {this.state.IsVendor &&
+                          checkVendorPlantConfigurable() &&
                           <Col md="3">
                             <Field
                               label="Vendor Plant"
@@ -1384,12 +1421,15 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, machine, auth } = state;
+  console.log(auth, "AUTH");
   const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
   const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;
   const { machineTypeSelectList, processSelectList, machineData, loading } = machine;
   const { vendorListByVendorType } = material;
-  const { initialConfiguration } = auth;
+  const { initialConfiguration, } = auth;
+
+
 
   let initialValues = {};
 

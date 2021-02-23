@@ -394,6 +394,7 @@ class AddOperation extends Component {
   */
   cancel = () => {
     const { reset } = this.props;
+    this.props.getPlantBySupplier('', () => { })
     reset();
     this.setState({
       selectedTechnology: [],

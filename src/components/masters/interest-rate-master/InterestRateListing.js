@@ -584,27 +584,28 @@ class InterestRateListing extends Component {
             trClassName={'userlisting-row'}
             tableHeaderClass='my-custom-header'
             pagination>
-            <TableHeaderColumn width={120} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="ICCApplicability" columnTitle={true} dataAlign="left" >{this.renderIccApp()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="ICCPercent" columnTitle={true} dataAlign="left" >{this.renderAnnualIcc()}</TableHeaderColumn>
-            <TableHeaderColumn width={160} dataField="PaymentTermApplicability" columnTitle={true} dataAlign="left" >{this.renderPaymentTerm()}</TableHeaderColumn>
-            <TableHeaderColumn width={160} dataField="RepaymentPeriod" columnTitle={true} dataAlign="left" >{this.renderRepayment()}</TableHeaderColumn>
-            <TableHeaderColumn width={160} dataField="PaymentTermPercent" columnTitle={true} dataAlign="left" >{this.renderInterestRate()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="EffectiveDate" columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
-            <TableHeaderColumn searchable={false} width={110} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+            <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{'ICC Applicability'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{'Annual ICC (%)'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{'Payment Term Applicability'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{'Repayment Period (Days)'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{'Payment Term Interest Rate (%) '}</TableHeaderColumn>
+            <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+            <TableHeaderColumn searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
           </BootstrapTable>
-
-          {isBulkUpload && <BulkUpload
-            isOpen={isBulkUpload}
-            closeDrawer={this.closeBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'InterestRate'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Interest Rate'}
-            anchor={'right'}
-          />}
-        </div>
+          {
+            isBulkUpload && <BulkUpload
+              isOpen={isBulkUpload}
+              closeDrawer={this.closeBulkUploadDrawer}
+              isEditFlag={false}
+              fileName={'InterestRate'}
+              isZBCVBCTemplate={true}
+              messageLabel={'Interest Rate'}
+              anchor={'right'}
+            />
+          }
+        </div >
       </ >
     );
   }

@@ -86,7 +86,8 @@ class LabourListing extends Component {
     this.props.getZBCPlantList(() => { })
     this.props.getStateSelectList(() => { })
     this.props.getMachineTypeSelectList(() => { })
-    this.getTableListData()
+    // this.getTableListData()
+    this.filterList()
   }
 
   /**
@@ -216,7 +217,8 @@ class LabourListing extends Component {
     this.props.deleteLabour(ID, (res) => {
       if (res.data.Result === true) {
         toastr.success(MESSAGES.DELETE_LABOUR_SUCCESS)
-        this.getTableListData(null, null, null, null)
+        //this.getTableListData(null, null, null, null)
+        this.filterList()
       }
     })
   }
@@ -482,7 +484,8 @@ class LabourListing extends Component {
         data: { isEditFlag: false, ID: '' },
       },
       () => {
-        this.getTableListData()
+        // this.getTableListData()
+        this.filterList()
       },
     )
   }
@@ -720,16 +723,7 @@ class LabourListing extends Component {
             pagination
           >
             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-            <TableHeaderColumn
-              dataField="IsContractBase"
-              columnTitle={true}
-              dataAlign="left"
-              dataSort={true}
-              dataFormat={this.costingHeadFormatter}
-              width={110}
-            >
-              {this.renderEmploymentTerm()}
-            </TableHeaderColumn>
+            <TableHeaderColumn dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {'Employment Terms '}  </TableHeaderColumn>
             <TableHeaderColumn
               dataField="Vendor"
               columnTitle={true}
@@ -781,6 +775,7 @@ class LabourListing extends Component {
             </TableHeaderColumn>
             <TableHeaderColumn
               dataField="EffectiveDate"
+              dataSort={true}
               columnTitle={true}
               dataAlign="left"
               dataSort={true}

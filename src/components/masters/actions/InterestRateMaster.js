@@ -42,11 +42,11 @@ export function getInterestRateDataList(data, callback) {
         let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}`
         axios.get(`${API.getInterestRateDataList}?${queryParams}`, { headers })
             .then((response) => {
-
-                dispatch({
-                    type: GET_INTEREST_RATE_DATA_LIST,
-                    payload: response.data.DataList
-                })
+                if (response.data.Result || response.status === 204)
+                    dispatch({
+                        type: GET_INTEREST_RATE_DATA_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    })
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

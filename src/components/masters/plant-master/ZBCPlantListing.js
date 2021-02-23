@@ -31,8 +31,9 @@ class ZBCPlantListing extends Component {
     }
 
     componentDidMount() {
-        this.getTableListData();
+        // this.getTableListData();
         this.props.fetchCountryDataAPI(() => { })
+        this.filterList()
         //this.props.onRef(this)
     }
 
@@ -59,6 +60,7 @@ class ZBCPlantListing extends Component {
             isEditFlag: true,
             ID: Id,
         })
+
     }
 
     /**
@@ -84,7 +86,8 @@ class ZBCPlantListing extends Component {
         this.props.deletePlantAPI(ID, (res) => {
             if (res.data.Result === true) {
                 toastr.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
-                this.getTableListData();
+                this.filterList()
+                //this.getTableListData();
             }
         });
     }
@@ -127,7 +130,8 @@ class ZBCPlantListing extends Component {
                 // } else {
                 //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
                 // }
-                this.getTableListData()
+                // this.getTableListData()
+                this.filterList()
             }
         })
     }
@@ -321,7 +325,8 @@ class ZBCPlantListing extends Component {
             isEditFlag: false,
             ID: '',
         }, () => {
-            this.getTableListData()
+            //this.getTableListData()
+            this.filterList()
         })
     }
 
