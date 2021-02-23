@@ -513,7 +513,7 @@ function TabSurfaceTreatment(props) {
                       <tbody>
 
                         {
-                          tabData && tabData.map((item, index) => {
+                          SurfaceTabData && SurfaceTabData.map((item, index) => {
                             if (item && item.PartType === 'Component') {
 
                               return (
