@@ -458,7 +458,7 @@ class InterestRateListing extends Component {
               </Col>
             </Row>
             <Row className="pt-4 filter-row-large blue-before">
-              {this.state.shown ? (
+              {this.state.shown &&
                 <Col lg="10" md="12" className="filter-block">
                   <div className="d-inline-flex justify-content-start align-items-top w100">
                     <div className="flex-fills">
@@ -538,7 +538,7 @@ class InterestRateListing extends Component {
                       </button>
                     </div>
                   </div>
-                </Col>) : ("")}
+                </Col>}
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>

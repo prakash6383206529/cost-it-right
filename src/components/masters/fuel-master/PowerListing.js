@@ -389,7 +389,7 @@ class PowerListing extends Component {
             </Col>
           </Row>
           <Row>
-            {this.state.shown ? (
+            {this.state.shown && (
               <Col md="8" className="filter-block mt-4">
                 <div className="d-inline-flex justify-content-start align-items-top w100">
                   <div className="flex-fills">
@@ -501,7 +501,7 @@ class PowerListing extends Component {
                     </button>
                   </div>
                 </div>
-              </Col>) : ("")}
+              </Col>)}
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 <div>

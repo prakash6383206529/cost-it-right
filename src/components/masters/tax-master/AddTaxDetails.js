@@ -308,7 +308,7 @@ class AddTaxDetails extends Component {
                   </button>
                   <button
                     type="submit"
-                    className="submit-button mr-3 save-btn"
+                    className="submit-button save-btn"
                   >
                     <div className={"check-icon"}>
                       <img
