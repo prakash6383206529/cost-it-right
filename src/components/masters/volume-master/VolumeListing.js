@@ -26,6 +26,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { loggedInUserId } from '../../../helper/auth'
 import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
+import ConfirmComponent from '../../../helper/ConfirmComponent'
 const initialTableData = [
   {
     VolumeApprovedDetailId: 0,
@@ -266,6 +267,7 @@ class VolumeListing extends Component {
         this.confirmDeleteItem(Id)
       },
       onCancel: () => console.log('CANCEL: clicked'),
+      component: () => <ConfirmComponent />,
     }
     return toastr.confirm(MESSAGES.VOLUME_DELETE_ALERT, toastrConfirmOptions)
   }
@@ -583,8 +585,8 @@ class VolumeListing extends Component {
               <Col md="12"><hr className="m-0" /></Col>
             </Row>
             <Row className="pt-4 blue-before">
-              {this.state.shown ? (
-                <Col md="10" className="filter-block">
+              {this.state.shown && (
+                <Col md="8" className="filter-block">
                   <div className="d-inline-flex justify-content-start align-items-top w100">
                     <div className="flex-fills">
                       <h5>{`Filter By:`}</h5>
@@ -716,7 +718,7 @@ class VolumeListing extends Component {
                       </button>
                     </div>
                   </div>
-                </Col>) : ("")}
+                </Col>)}
 
               <Col md="7" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight">

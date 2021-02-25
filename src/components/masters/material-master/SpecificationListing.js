@@ -314,7 +314,7 @@ class SpecificationListing extends Component {
                 {this.props.loading && <Loader />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
-                        {this.state.shown ? (
+                        {this.state.shown && (
                             <Col md="8" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
                                     <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
@@ -369,9 +369,7 @@ class SpecificationListing extends Component {
                                     </div>
                                 </div>
                             </Col>
-                        ) : (
-                                ""
-                            )}
+                        )}
                         <Col md={6} className="text-right mb-3 search-user-block">
                             {this.state.shown ? (
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>

@@ -327,7 +327,7 @@ class FreightListing extends Component {
         {this.props.loading && <Loader />}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
-            {this.state.shown ? (
+            {this.state.shown && (
               <Col md="10" className="filter-block">
                 <div className="d-inline-flex justify-content-start align-items-top w100">
                   <div className="flex-fills">
@@ -438,7 +438,7 @@ class FreightListing extends Component {
                     </button>
                   </div>
                 </div>
-              </Col>) : ("")}
+              </Col>)}
             <Col md="6" className="search-user-block mb-3">
               <div className="d-flex justify-content-end bd-highlight w100">
                 <div>
