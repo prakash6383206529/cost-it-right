@@ -168,11 +168,11 @@ function BOPCost(props) {
                     <tr>
                       <th>{`BOP Part No.`}</th>
                       <th>{`BOP Part Name`}</th>
-                      <th>{`Currency`}</th>
-                      <th>{`Landed Cost(INR)`}</th>
-                      <th style={{ width: 200 }}>{`Quantity`}</th>
-                      <th>{`Net BOP Cost`}</th>
-                      <th>{`Action`}</th>
+                      <th style={{ width: "220px" }}>{`Currency`}</th>
+                      <th style={{ width: "220px" }} >{`Landed Cost(INR)`}</th>
+                      <th style={{ width: "220px" }} >{`Quantity`}</th>
+                      <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
+                      <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody >
@@ -217,8 +217,8 @@ function BOPCost(props) {
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="SaveIcon mt15 mr5" type={'button'} onClick={() => SaveItem(index)} />
-                                <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
+                                <button className="SaveIcon  mr5" type={'button'} onClick={() => SaveItem(index)} />
+                                <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />
                               </td>
                             </tr>
                             :
@@ -230,8 +230,8 @@ function BOPCost(props) {
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                                <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                                <button className="Edit  mr-2" type={'button'} onClick={() => editItem(index)} />
+                                <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />
                               </td>
                             </tr>
 

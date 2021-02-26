@@ -467,11 +467,11 @@ function ProcessCost(props) {
                     <th>{`Process Name`}</th>
                     <th>{`Process Description`}</th>
                     <th>{`Machine Name`}</th>
-                    <th>{`Machine Rate`}</th>
-                    <th>{`UOM`}</th>
-                    <th>{`Quantity`}</th>
-                    <th>{`Net Cost`}</th>
-                    <th>{`Action`}</th>
+                    <th style={{ width: "220px" }}>{`Machine Rate`}</th>
+                    <th style={{ width: "220px" }}>{`UOM`}</th>
+                    <th style={{ width: "220px" }}>{`Quantity`}</th>
+                    <th style={{ width: "220px" }} >{`Net Cost`}</th>
+                    <th style={{ width: "145px" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -746,7 +746,7 @@ function ProcessCost(props) {
                               onClick={() => editItem(index)}
                             /> */}
                             <button
-                              className="Delete mt15"
+                              className="Delete"
                               type={'button'}
                               onClick={() => deleteItem(index)}
                             />

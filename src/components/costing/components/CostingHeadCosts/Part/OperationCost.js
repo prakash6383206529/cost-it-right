@@ -196,11 +196,11 @@ function OperationCost(props) {
                     <th>{`Operation Code`}</th>
                     <th>{`UOM`}</th>
                     <th>{`Rate`}</th>
-                    <th style={{ width: 200 }}>{`Quantity`}</th>
-                    <th>{`Labour Rate`}</th>
-                    <th>{`Labour Quantity`}</th>
-                    <th>{`Net Cost`}</th>
-                    <th>{`Action`}</th>
+                    <th style={{ width: "220px" }} >{`Quantity`}</th>
+                    <th style={{ width: "220px" }}>{`Labour Rate`}</th>
+                    <th style={{ width: "220px" }}>{`Labour Quantity`}</th>
+                    <th style={{ width: "220px" }}>{`Net Cost`}</th>
+                    <th style={{ width: "145px" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
@@ -278,8 +278,8 @@ function OperationCost(props) {
                             </td>
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="SaveIcon mt15 mr-2" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon mt15" type={'button'} onClick={() => CancelItem(index)} />
+                              <button className="SaveIcon  mr-2" type={'button'} onClick={() => SaveItem(index)} />
+                              <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />
                             </td>
                           </tr>
                           :
@@ -293,8 +293,8 @@ function OperationCost(props) {
                             <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
+                              <button className="Edit  mr-2" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Delete " type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
                             </td>
                           </tr>
                       )

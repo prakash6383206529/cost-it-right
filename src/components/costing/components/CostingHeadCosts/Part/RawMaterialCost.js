@@ -259,11 +259,11 @@ function RawMaterialCost(props) {
                       <th>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
-                      <th className="text-center">{`Weight Calculator`}</th>
-                      <th>{`Gross Weight`}</th>
-                      <th>{`Finish Weight`}</th>
-                      <th>{`Net RM Cost`}</th>
-                      <th>{`Action`}</th>
+                      <th style={{ width: "220px" }} className="text-center">{`Weight Calculator`}</th>
+                      <th style={{ width: "220px" }}>{`Gross Weight`}</th>
+                      <th style={{ width: "220px" }}>{`Finish Weight`}</th>
+                      <th style={{ width: "220px" }}>{`Net RM Cost`}</th>
+                      <th style={{ width: "145px" }}>{`Action`}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -276,7 +276,7 @@ function RawMaterialCost(props) {
                             <td>{item.ScrapRate}</td>
                             <td className="text-center">
                               <button
-                                className="CalculatorIcon cr-cl-icon mt15"
+                                className="CalculatorIcon cr-cl-icon "
                                 type={'button'}
                                 onClick={() => toggleWeightCalculator(index)}
                               />
@@ -344,7 +344,7 @@ function RawMaterialCost(props) {
                             </td>
                             <td>
                               <button
-                                className="Delete mt15"
+                                className="Delete "
                                 type={'button'}
                                 onClick={() => deleteItem(index)}
                               />

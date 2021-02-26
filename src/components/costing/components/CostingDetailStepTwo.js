@@ -7,7 +7,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
-import CostingHeadTabs from './CostingHeaderTabs/index'
+import CostingHeadTabs from './costingHeaderTabs/index'
 import { VBC, ZBC } from '../../../config/constants';
 
 export const costingInfoContext = React.createContext()
@@ -346,7 +346,7 @@ function CostingDetailStepTwo(props) {
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
                     <tbody>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No.:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">{costingData.VendorType}:</span><span className="dark-blue pl-1"> SOB:{costingData.ShareOfBusinessPercent}%</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing ID:</span><span className="dark-blue pl-1"> {costingData.CostingNumber}</span></p></div></td>
