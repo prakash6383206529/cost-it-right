@@ -798,8 +798,8 @@ class AddRMImport extends Component {
                       <div className="col-md-6">
                         <h2>
                           {isEditFlag
-                            ? `Update Raw Material Import Details`
-                            : `Add Raw Material Import Details`}
+                            ? `Update Raw Material (Import)`
+                            : `Add Raw Material (Import)`}
                         </h2>
                       </div>
                     </div>

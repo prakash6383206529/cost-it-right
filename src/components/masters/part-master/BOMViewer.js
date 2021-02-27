@@ -84,6 +84,7 @@ class BOMViewer extends Component {
   }
 
   closeChildDrawer = (e = '', childData = {}) => {
+
     this.setState({ isOpenChildDrawer: false }, () => {
       this.setChildPartsData(childData)
     })
@@ -275,7 +276,7 @@ class BOMViewer extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag, isFromVishualAd, initialConfiguration } = this.props;
-    const { isOpenChildDrawer, isOpenVisualDrawer, } = this.state;
+    const { isOpenChildDrawer, isOpenVisualDrawer, flowpoints } = this.state;
 
     return (
       <>
@@ -310,43 +311,48 @@ class BOMViewer extends Component {
                   {(!isEditFlag || initialConfiguration.IsBOMEditable) &&
                     !isFromVishualAd && (
                       <Col md="4">
-                        <button
-                          type={"button"}
-                          className="reset-btn  pull-right mt10 btn-danger"
-                          onClick={() =>
-                            this.setState({
-                              displayDeleteIcon: !this.state
-                                .displayDeleteIcon,
-                              displayEditIcon: false,
-                            })
-                          }
-                        >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/trash-red.svg")}
-                              alt="delete-icon.jpg"
-                            />
-                          </div>{" "}
-                          {"Delete"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            this.setState({
-                              displayEditIcon: !this.state.displayEditIcon,
-                              displayDeleteIcon: false,
-                            })
-                          }
-                          className={"user-btn edit-btn mr15 pull-right mt10"}
-                        >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/edit-yellow.svg")}
-                              alt="delete-icon.jpg"
-                            />
-                          </div>
-                          {"EDIT"}
-                        </button>
+                        {  flowpoints.length > 1 &&
+                          <>
+                            <button
+                              type={"button"}
+                              className="reset-btn  pull-right mt10 btn-danger"
+                              onClick={() =>
+                                this.setState({
+                                  displayDeleteIcon: !this.state
+                                    .displayDeleteIcon,
+                                  displayEditIcon: false,
+                                })
+                              }
+                            >
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/trash-red.svg")}
+                                  alt="delete-icon.jpg"
+                                />
+                              </div>{" "}
+                              {"Delete"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                this.setState({
+                                  displayEditIcon: !this.state.displayEditIcon,
+                                  displayDeleteIcon: false,
+                                })
+                              }
+                              className={"user-btn edit-btn mr15 pull-right mt10"}
+                            >
+                              <div className={"cross-icon"}>
+                                <img
+                                  src={require("../../../assests/images/edit-yellow.svg")}
+                                  alt="delete-icon.jpg"
+                                />
+                              </div>
+                              {"EDIT"}
+                            </button>
+                          </>
+                        }
+
                         <button
                           type="button"
                           onClick={this.childDrawerToggle}

@@ -7,7 +7,12 @@ export const minLength = min => value =>
 export const maxLength = max => value =>
     value && value.length > max ? `Max length must be ${max}.` : undefined;
 
+//THIS IS FOR MIN VALUE
+export const minValue = min => value =>
+    value && value < min ? `Min value must be ${min}.` : undefined;
 
+
+export const minValue1 = minValue(1);
 
 export const minLength1 = minLength(1);
 export const minLength2 = minLength(2);
@@ -44,6 +49,8 @@ export const maxLength1000 = maxLength(1000);
 export const maxLength5000 = maxLength(5000);
 export const maxLength512 = maxLength(512);
 export const maxLength80 = maxLength(80);
+
+
 //export const maxLengthN = maxLength(n)
 
 export const checkFacebooklink = value =>
@@ -310,4 +317,5 @@ export const checkPercentageValue = (value, msg = "Percentage value should not b
     }
     return true
 }
+
 

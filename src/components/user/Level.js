@@ -109,9 +109,14 @@ class Level extends Component {
     }
 
     if (label === 'level') {
-      levelList && levelList.map(item =>
-        temp.push({ label: item.LevelName, value: item.LevelId })
-      );
+      let level = 5
+
+      for (let i = 1; i <= level; i++) {
+        temp.push({ label: `L-${i}`, value: i })
+      }
+      // levelList && levelList.map(item =>
+      //   temp.push({ label: item.LevelName, value: item.LevelId })
+      // );
       return temp;
     }
 
@@ -276,7 +281,7 @@ class Level extends Component {
           TechnologyId: technology.value,
         }
         this.props.setApprovalLevelForTechnology(formData, (res) => {
-          if (res.data.Result) {
+          if (res && res.data && res.data.Result) {
             toastr.success(MESSAGES.ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY)
           }
           this.props.reset();
@@ -405,7 +410,7 @@ class Level extends Component {
                         <Field
                           name="LevelId"
                           type="text"
-                          label="Level"
+                          label="Highest Level"
                           className="w-100"
                           component={searchableSelect}
                           options={this.searchableSelectType('level')}

@@ -743,7 +743,7 @@ export function assignUserLevelAPI(requestData, callback) {
 export function setApprovalLevelForTechnology(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.setApprovalLevelForTechnology, requestData, { headers })
+        axios.post(API.setApprovalLevelForTechnology, requestData, headers)
             .then((response) => {
                 if (response.data.Result) {
                     callback(response);

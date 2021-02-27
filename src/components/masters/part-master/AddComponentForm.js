@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength5, postiveNumber, } from "../../../helper/validation";
+import { required, number, maxLength5, postiveNumber, minValue1, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
@@ -125,6 +125,9 @@ class AddComponentForm extends Component {
 
     this.props.getDrawerComponentPartData('', res => { })
     if (isAddMore) {
+      this.setState({
+        part: []
+      })
       this.props.setChildParts(childData)
     } else {
       this.props.toggleDrawer('', childData)
@@ -185,9 +188,9 @@ class AddComponentForm extends Component {
                 name={"PartDescription"}
                 type="text"
                 placeholder={""}
-                validate={[required]}
+                validate={[]}
                 component={renderText}
-                required={true}
+                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -199,9 +202,9 @@ class AddComponentForm extends Component {
                 name={"ECNNumber"}
                 type="text"
                 placeholder={""}
-                validate={[required]}
+                validate={[]}
                 component={renderText}
-                required={true}
+                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -214,9 +217,9 @@ class AddComponentForm extends Component {
                 name={"RevisionNumber"}
                 type="text"
                 placeholder={""}
-                validate={[required]}
+                validate={[]}
                 component={renderText}
-                required={true}
+                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -228,9 +231,9 @@ class AddComponentForm extends Component {
                 name={"DrawingNumber"}
                 type="text"
                 placeholder={""}
-                validate={[required]}
+                validate={[]}
                 component={renderText}
-                required={true}
+                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -243,9 +246,9 @@ class AddComponentForm extends Component {
                 name={"GroupCode"}
                 type="text"
                 placeholder={""}
-                validate={[required]}
+                validate={[]}
                 component={renderText}
-                required={true}
+                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -257,7 +260,7 @@ class AddComponentForm extends Component {
                 name={"Quantity"}
                 type="text"
                 placeholder={""}
-                validate={[postiveNumber, maxLength5, required]}
+                validate={[postiveNumber, maxLength5, required, minValue1]}
                 component={renderText}
                 required={true}
                 className=""

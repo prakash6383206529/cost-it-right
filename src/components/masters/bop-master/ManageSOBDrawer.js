@@ -216,7 +216,7 @@ function ManageSOBDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <HeaderTitle title={'Add SOB %'} customClass={'underLine-title'} />
+                  <HeaderTitle title={'Update SOB %'} customClass={'underLine-title'} />
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -329,7 +329,7 @@ function ManageSOBDrawer(props) {
                     type={'submit'}
                     className="submit-button mr5 save-btn">
                     <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                    {'Save'}
+                    {'Update'}
                   </button>
                 </div>
               </Row>

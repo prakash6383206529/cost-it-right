@@ -34,6 +34,7 @@ import {
   GET_COSTING_BY_VENDOR_VENDOR_PLANT,
   GET_COSTING_STATUS,
   SET_ITEM_DATA,
+  GET_BULKUPLOAD_COSTING_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -312,6 +313,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         itemDataObject: action.payload,
+      }
+    case GET_BULKUPLOAD_COSTING_LIST:
+      return {
+        ...state,
+        loading: false,
+        costingBulkUploadList: action.payload
       }
     default:
       return state

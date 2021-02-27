@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5 } from "../../../helper/validation";
+import { required, number, postiveNumber, maxLength5, minValue1 } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY } from '../../../config/constants';
@@ -122,9 +122,13 @@ class AddAssemblyForm extends Component {
             PartId: assemblyPart ? assemblyPart.value : '',
             Input: getRandomSixDigit(),
         }
+
         this.props.getDrawerAssemblyPartDetail('', res => { })
 
         if (isAddMore) {
+            this.setState({
+                assemblyPart: []
+            })
             this.props.setChildParts(childData)
         } else {
             this.props.toggleDrawer('', childData)
@@ -168,9 +172,9 @@ class AddAssemblyForm extends Component {
                                 name={"AssemblyPartName"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                validate={[]}
                                 component={renderText}
-                                required={true}
+                                // required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}
@@ -183,9 +187,9 @@ class AddAssemblyForm extends Component {
                                 name={"Description"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                validate={[]}
                                 component={renderText}
-                                required={true}
+                                // required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}
@@ -197,9 +201,9 @@ class AddAssemblyForm extends Component {
                                 name={"ECNNumber"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                validate={[]}
                                 component={renderText}
-                                required={true}
+                                // required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}
@@ -212,9 +216,9 @@ class AddAssemblyForm extends Component {
                                 name={"RevisionNumber"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                validate={[]}
                                 component={renderText}
-                                required={true}
+                                // required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}
@@ -226,9 +230,9 @@ class AddAssemblyForm extends Component {
                                 name={"DrawingNumber"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                validate={[]}
                                 component={renderText}
-                                required={true}
+                                // required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}
@@ -241,9 +245,9 @@ class AddAssemblyForm extends Component {
                                 name={"GroupCode"}
                                 type="text"
                                 placeholder={''}
-                                validate={[required]}
+                                validate={[]}
                                 component={renderText}
-                                required={true}
+                                // required={true}
                                 className=""
                                 customClassName={'withBorder'}
                                 disabled={true}
@@ -255,7 +259,7 @@ class AddAssemblyForm extends Component {
                                 name={"Quantity"}
                                 type="text"
                                 placeholder={''}
-                                validate={[postiveNumber, maxLength5, required]}
+                                validate={[postiveNumber, maxLength5, required, minValue1]}
                                 component={renderText}
                                 required={true}
                                 className=""

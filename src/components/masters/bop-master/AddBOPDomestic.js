@@ -565,8 +565,8 @@ class AddBOPDomestic extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isEditFlag
-                            ? `Update BOP Details`
-                            : `Add BOP Details`}
+                            ? `Update BOP (Domestic)`
+                            : `Add BOP (Domestic)`}
                         </h1>
                       </div>
                     </div>

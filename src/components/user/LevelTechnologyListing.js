@@ -67,7 +67,7 @@ class LevelTechnologyListing extends Component {
 				this.confirmDeleteItem(Id)
 			},
 			onCancel: () => console.log('CANCEL: clicked'),
-			component: () => <ConfirmComponent/>
+			component: () => <ConfirmComponent />
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
@@ -94,7 +94,7 @@ class LevelTechnologyListing extends Component {
 		return (
 			<>
 				{EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell)} />}
-				{DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
 	}
@@ -120,10 +120,10 @@ class LevelTechnologyListing extends Component {
 			firstPage: <span className="first-page-pg"></span>, // First page button text
 			lastPage: <span className="last-page-pg"></span>,
 			pagination: true,
-			sizePerPageList: [ {
-			text: '5', value: 5
+			sizePerPageList: [{
+				text: '5', value: 5
 			}, {
-			text: '10', value: 10
+				text: '10', value: 10
 			}],
 			sizePerPage: 5,
 		};

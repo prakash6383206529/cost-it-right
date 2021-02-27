@@ -287,8 +287,8 @@ class AddIndivisualPart extends Component {
                         <div className="form-heading mb-0">
                           <h1>
                             {this.state.isEditFlag
-                              ? "Update Individual Part"
-                              : "Add  Individual Part"}
+                              ? "Update Component/ Part"
+                              : "Add  Component/ Part"}
                           </h1>
                         </div>
                       </Col>

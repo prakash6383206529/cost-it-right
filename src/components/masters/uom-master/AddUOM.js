@@ -106,7 +106,8 @@ class AddUOM extends Component {
   */
   onSubmit = (values) => {
     const { unitTypes } = this.state;
-
+    const { reset } = this.props;
+    reset()
     /** Update detail of the existing UOM  */
     if (this.props.isEditFlag) {
       const { ID } = this.props;
@@ -153,7 +154,7 @@ class AddUOM extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, } = this.props;
+    const { handleSubmit, isEditFlag, pristine, submitting } = this.props;
     return (
       <Drawer
         anchor={this.props.anchor}
@@ -230,7 +231,14 @@ class AddUOM extends Component {
                     </div>{" "}
                     {"Cancel"}
                   </button>
-                  <button
+                  <input
+                    // disabled={pristine || submitting}
+                    // onClick={reset}
+                    type="submit"
+                    value="Save"
+                    className="btn  login-btn w-10 dark-pinkbtn"
+                  />
+                  {/* <button
                     type="submit"
                     className="submit-button save-btn"
                   >
@@ -241,7 +249,7 @@ class AddUOM extends Component {
                       />{" "}
                     </div>
                     {isEditFlag ? "Update" : "Save"}
-                  </button>
+                  </button> */}
                 </div>
               </Row>
             </form>

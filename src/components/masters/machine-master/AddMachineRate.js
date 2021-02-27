@@ -884,7 +884,7 @@ class AddMachineRate extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading">
-                        <h2>{isEditFlag ? `Update Machine` : `Add Machine`}</h2>
+                        <h2>{isEditFlag ? `Update Machine Rate` : `Add Machine Rate`}</h2>
                       </div>
                     </div>
                   </div>

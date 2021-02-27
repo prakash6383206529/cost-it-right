@@ -9,12 +9,8 @@ import { MESSAGES } from '../../../config/message'
 import { CONSTANT } from '../../../helper/AllConastant'
 import NoContentFound from '../../common/NoContentFound'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
-import {
-  getVolumeDataList,
-  deleteVolume,
-  getFinancialYearSelectList,
-} from '../actions/Volume'
-import { getPlantSelectList } from '../../../actions/Common'
+import { getVolumeDataList, deleteVolume, getFinancialYearSelectList, } from '../actions/Volume'
+import { getPlantSelectList, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getVendorListByVendorType } from '../actions/Material'
 import $ from 'jquery'
 import { costingHeadObjs, Months } from '../../../config/masterData'
@@ -161,7 +157,8 @@ class VolumeListing extends Component {
 
     this.props.getPlantSelectList(() => { })
     this.props.getFinancialYearSelectList(() => { })
-    this.props.getVendorListByVendorType(true, () => { })
+    // this.props.getVendorListByVendorType(true, () => { })
+    this.props.getVendorWithVendorCodeSelectList()
     this.getTableListData()
   }
 
@@ -198,8 +195,7 @@ class VolumeListing extends Component {
    * @description Used show listing of unit of measurement
    */
   renderListing = (label) => {
-    const {
-      vendorListByVendorType, plantSelectList, financialYearSelectList, costingHead } = this.props
+    const { vendorWithVendorCodeSelectList, plantSelectList, financialYearSelectList, costingHead } = this.props
     const temp = []
 
     if (label === 'costingHead') {
@@ -208,8 +204,8 @@ class VolumeListing extends Component {
 
 
     if (label === 'VendorList') {
-      vendorListByVendorType &&
-        vendorListByVendorType.map((item) => {
+      vendorWithVendorCodeSelectList &&
+        vendorWithVendorCodeSelectList.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -817,8 +813,8 @@ class VolumeListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ comman, material, volume, auth }) {
-  const { loading, plantSelectList } = comman
-  const { vendorListByVendorType } = material
+  const { loading, plantSelectList, vendorWithVendorCodeSelectList } = comman
+  const { vendorListByVendorType, } = material
   const { financialYearSelectList, volumeDataList } = volume
   const { leftMenuData } = auth
   return {
@@ -827,7 +823,8 @@ function mapStateToProps({ comman, material, volume, auth }) {
     plantSelectList,
     financialYearSelectList,
     leftMenuData,
-    volumeDataList
+    volumeDataList,
+    vendorWithVendorCodeSelectList
   }
 }
 
@@ -844,6 +841,7 @@ export default connect(mapStateToProps, {
   deleteVolume,
   getFinancialYearSelectList,
   getLeftMenu,
+  getVendorWithVendorCodeSelectList
 })(
   reduxForm({
     form: 'VolumeListing',

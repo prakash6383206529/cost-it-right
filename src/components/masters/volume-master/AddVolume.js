@@ -4,17 +4,9 @@ import { Field, reduxForm } from 'redux-form'
 import { Row, Col } from 'reactstrap'
 import { maxLength, postiveNumber, required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
-import { getVendorListByVendorType } from '../actions/Material'
-import {
-  createVolume,
-  updateVolume,
-  getVolumeData,
-  getFinancialYearSelectList,
-} from '../actions/Volume'
-import {
-  getPlantSelectListByType,
-  getPlantBySupplier,
-} from '../../../actions/Common'
+// import { getVendorListByVendorType } from '../actions/Material'
+import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, } from '../actions/Volume'
+import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
@@ -128,7 +120,8 @@ class AddVolume extends Component {
     }, 100)
 
     this.props.getPlantSelectListByType(ZBC, () => { })
-    this.props.getVendorListByVendorType(true, () => { })
+    // this.props.getVendorListByVendorType(true, () => { })
+    this.props.getVendorWithVendorCodeSelectList()
     this.props.getFinancialYearSelectList(() => { })
     this.props.getPartSelectList(() => { })
     this.getDetail()
@@ -145,7 +138,7 @@ class AddVolume extends Component {
   renderListing = (label) => {
     const {
       plantSelectList,
-      vendorListByVendorType,
+      vendorWithVendorCodeSelectList,
       filterPlantList,
       financialYearSelectList,
       partSelectList,
@@ -162,8 +155,8 @@ class AddVolume extends Component {
       return temp
     }
     if (label === 'VendorNameList') {
-      vendorListByVendorType &&
-        vendorListByVendorType.map((item) => {
+      vendorWithVendorCodeSelectList &&
+        vendorWithVendorCodeSelectList.map((item) => {
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -252,7 +245,8 @@ class AddVolume extends Component {
 
   closeVendorDrawer = (e = '') => {
     this.setState({ isOpenVendor: false }, () => {
-      this.props.getVendorListByVendorType(true, () => { })
+
+      this.props.getVendorWithVendorCodeSelectList()
     })
   }
 
@@ -337,13 +331,16 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
+          console.log(Data, "Data");
 
           let plantArray = []
-          if (Data && Data.Plant) {
+          if (Data && Data.Plant.length !== 0) {
+            console.log("Coming?");
             plantArray.push({
               label: Data.Plant[0].PlantName,
               value: Data.Plant[0].PlantId,
             })
+
           }
 
           let vendorPlantArray = []
@@ -353,7 +350,9 @@ class AddVolume extends Component {
                 Text: item.PlantName,
                 Value: item.PlantId,
               })
+
               return vendorPlantArray
+
             })
 
           let tableArray = []
@@ -369,20 +368,23 @@ class AddVolume extends Component {
                     ApprovedQuantity: item.ApprovedQuantity,
                     Sequence: el.Sequence,
                   })
+
                   return tableArray.sort()
                 }
+
               })
             })
 
           setTimeout(() => {
             const {
-              vendorListByVendorType,
+              vendorWithVendorCodeSelectList,
               financialYearSelectList,
               partSelectList,
             } = this.props
+
             const vendorObj =
-              vendorListByVendorType &&
-              vendorListByVendorType.find(
+              vendorWithVendorCodeSelectList &&
+              vendorWithVendorCodeSelectList.find(
                 (item) => item.Value === Data.VendorId,
               )
             const yearObj =
@@ -559,7 +561,7 @@ class AddVolume extends Component {
             },
           ]
           : [],
-        VendorPlant: [],
+        VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,
       }
@@ -816,7 +818,7 @@ class AddVolume extends Component {
  * @param {*} state
  */
 function mapStateToProps({ comman, volume, material, part }) {
-  const { plantSelectList, filterPlantList } = comman
+  const { plantSelectList, filterPlantList, vendorWithVendorCodeSelectList } = comman
   const { volumeData, financialYearSelectList } = volume
   const { vendorListByVendorType } = material
   const { partSelectList } = part
@@ -837,6 +839,7 @@ function mapStateToProps({ comman, volume, material, part }) {
     financialYearSelectList,
     partSelectList,
     initialValues,
+    vendorWithVendorCodeSelectList
   }
 }
 
@@ -848,13 +851,14 @@ function mapStateToProps({ comman, volume, material, part }) {
  */
 export default connect(mapStateToProps, {
   getPlantSelectListByType,
-  getVendorListByVendorType,
+  // getVendorListByVendorType,
   getPlantBySupplier,
   createVolume,
   updateVolume,
   getVolumeData,
   getFinancialYearSelectList,
   getPartSelectList,
+  getVendorWithVendorCodeSelectList
 })(
   reduxForm({
     form: 'AddVolume',
