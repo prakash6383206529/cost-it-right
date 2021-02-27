@@ -1,10 +1,8 @@
 import React, { useContext, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { getRMCCTabData, } from '../../../actions/Costing';
-
+import { getSurfaceTreatmentTabData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, } from '../../../../../helper';
-import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
 
@@ -19,15 +17,29 @@ function AssemblySurfaceTreatment(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
-  const toggle = (BOMLevel, PartNumber) => {
+  const toggle = (BOMLevel, PartNumber, IsCollapse) => {
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     const Params = {
       index: props.index,
       BOMLevel: BOMLevel,
       PartNumber: PartNumber,
+      IsCollapse
     }
-    props.toggleAssembly(Params)
+    if (Object.keys(costData).length > 0) {
+      const data = {
+        CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
+        PartId: item.PartId,
+      }
+      dispatch(getSurfaceTreatmentTabData(data, false, (res) => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.DataList[0];
+          props.toggleAssembly(Params, Data)
+        }
+      }))
+    } else {
+      props.toggleAssembly(Params)
+    }
   }
 
   /**
@@ -77,7 +89,7 @@ function AssemblySurfaceTreatment(props) {
   return (
     <>
       <tr>
-        <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+        <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, true)}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
               {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
@@ -86,28 +98,44 @@ function AssemblySurfaceTreatment(props) {
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, 2) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, 2) : 0}</td>
-          <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, 2) : 0}</td>
-
-          {/* <td>
-            {item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}
+          <td>
+            {item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, 2) : 0}
             {
-              item.CostingPartDetails && item.CostingPartDetails.CostingOperationCostResponse ?
+              item.CostingPartDetails && (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null) ?
                 <div class="tooltip-n ml-2"><i className="fa fa-info-circle text-primary tooltip-icon"></i>
                   <span class="tooltiptext">
-                    {`Assembly's Conversion Cost:- ${item.CostingPartDetails.TotalOperationCostPerAssembly}`}
+                    {`Assembly's Surface Treatment Cost:- ${item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly + item.CostingPartDetails.TotalTransportationCostPerAssembly}`}
                     <br></br>
-                    {`Child Parts Conversion Cost:- ${item.CostingPartDetails.TotalConversionCost - item.CostingPartDetails.TotalOperationCostPerAssembly}`}
+                    {`Child Parts Surface Treatment Cost:- ${item.CostingPartDetails.NetSurfaceTreatmentCost - (item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly + item.CostingPartDetails.TotalTransportationCostPerAssembly)}`}
                   </span>
                 </div> : ''
             }
-          </td> */}
+          </td>
         </div>
         <td>
-          <button
-            type="button"
-            className={'user-btn'}
-            onClick={DrawerToggle}>
-            <div className={'plus'}></div>Add Surface Treatment</button>
+          {(item.CostingPartDetails.SurfaceTreatmentDetails || item.CostingPartDetails.TransportationDetails) ?
+            <button
+              type="button"
+              className={'user-btn'}
+              //onClick={DrawerToggle}
+              onClick={() => {
+                toggle(item.BOMLevel, item.PartNumber, false)
+                DrawerToggle()
+              }}
+            >
+              <div className={'plus'}></div>View Surface Treatment</button>
+            :
+            <button
+              type="button"
+              className={'user-btn'}
+              //onClick={DrawerToggle}
+              onClick={() => {
+                toggle(item.BOMLevel, item.PartNumber, false)
+                DrawerToggle()
+              }}
+            >
+              <div className={'plus'}></div>Add Surface Treatment</button>
+          }
         </td>
       </tr>
 
@@ -126,8 +154,6 @@ function AssemblySurfaceTreatment(props) {
         item={item}
         surfaceData={item.CostingPartDetails.SurfaceTreatmentDetails}
         transportationData={item.CostingPartDetails.TransportationDetails}
-        //setSurfaceCost={props.setSurfaceCost}
-        //setTransportationCost={props.setTransportationCost}
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
         IsAssemblyCalculation={true}

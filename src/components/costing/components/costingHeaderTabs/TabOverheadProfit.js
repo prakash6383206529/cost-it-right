@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, saveCostingOverheadProfitTab, } from '../../actions/Costing';
+import { getOverheadProfitTabData, setOverheadProfitData, saveCostingOverheadProfitTab, } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import OverheadProfit from '../CostingHeadCosts/OverheadProfit';
 import Switch from "react-switch";
+import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
+import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
+import { LEVEL0 } from '../../../../helper/AllConastant';
 
 function TabOverheadProfit(props) {
 
@@ -30,16 +33,12 @@ function TabOverheadProfit(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        //PlantId: costData.PlantId,
       }
-      dispatch(getOverheadProfitTabData(data, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setTabData(Data.CostingPartDetails)
-        }
-      }))
+      dispatch(getOverheadProfitTabData(data, (res) => { }))
     }
   }, [costData]);
+
+  const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -58,6 +57,63 @@ function TabOverheadProfit(props) {
     let tempObj = { ...tempData, IsOpen: !tempData.IsOpen }
     let tempArr = Object.assign([...tabData], { [index]: tempObj })
     setTabData(tempArr)
+  }
+
+  /**
+  * @method toggleAssembly
+  * @description SET ASSEMBLY DETAILS
+  */
+  const toggleAssembly = (params, Children = {}) => {
+    let arr = setAssembly(params, Children, OverheadProfitTabData)
+    console.log('toggleAssembly  Sunday: ', params, arr);
+    dispatch(setOverheadProfitData(arr, () => { }))
+  }
+
+  /**
+  * @method setAssembly
+  * @description SET ASSEMBLY DETAILS
+  */
+  const setAssembly = (params, Children, arr) => {
+    let tempArr = [];
+    try {
+
+      tempArr = arr && arr.map(i => {
+
+        const { CostingChildPartDetails, CostingPartDetails } = Children;
+
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          i.CostingChildPartDetails = params.BOMLevel !== LEVEL0 ? ChangeBOMLeveL(CostingChildPartDetails, params.BOMLevel) : i.CostingChildPartDetails;
+          i.CostingPartDetails = CostingPartDetails;
+
+          i.IsAssemblyPart = true;
+          i.IsOpen = !i.IsOpen;
+
+        } else {
+          setAssembly(params, Children, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+
+  }
+
+  /**
+  * @method ChangeBOMLeveL
+  * @description INCREASE BOM LEVEL BY 1 
+  */
+  const ChangeBOMLeveL = (item, level) => {
+    let tempArr = [];
+    const ChangedLevel = parseInt(level.substr(1, level.length - 1)) + 1;
+    tempArr = item && item.map(i => {
+      i.BOMLevel = "L" + ChangedLevel;
+      return i;
+    });
+    return tempArr;
   }
 
   /**
@@ -277,17 +333,14 @@ function TabOverheadProfit(props) {
                 </Col>
               </Row>
 
-              <form
-                noValidate
-                className="form"
-                onSubmit={handleSubmit(onSubmit)}
-              >
+              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 <Row>
                   <Col md="12">
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
                           <th style={{ width: "100px" }}>{``}</th>
+                          <th style={{ width: '100px' }}>{`Type`}</th>
                           <th style={{ width: "100px" }}>{`Net Overheads`}</th>
                           <th style={{ width: "150px" }}>{`Net Profit`}</th>
                           <th style={{ width: "150px" }}>{`Net Rejection`}</th>
@@ -296,46 +349,87 @@ function TabOverheadProfit(props) {
                         </tr>
                       </thead>
                       <tbody>
-                        {tabData &&
-                          tabData.map((item, index) => {
+                        {OverheadProfitTabData && OverheadProfitTabData.map((item, index) => {
+
+                          if (item && item.PartType === 'Component') {
+
                             return (
-                              <>
-                                <tr key={index} onClick={() => toggle(index)}>
-                                  <td>
-                                    <span class="cr-prt-nm cr-prt-link">
-                                      {item.PartName}
-                                    </span>
-                                  </td>
-                                  <td>{item.OverheadNetCost !== null ? checkForDecimalAndNull(item.OverheadNetCost, 2) : 0}</td>
-                                  <td>{item.ProfitNetCost !== null ? checkForDecimalAndNull(item.ProfitNetCost, 2) : 0}</td>
-                                  <td>{item.RejectionNetCost !== null ? checkForDecimalAndNull(item.RejectionNetCost, 2) : 0}</td>
-                                  <td>{item.ICCCost !== null ? checkForDecimalAndNull(item.ICCCost, 2) : 0}</td>
-                                  <td>{item.PaymentTermCost !== null ? checkForDecimalAndNull(item.PaymentTermCost, 2) : 0}</td>
-                                </tr>
-                                {item.IsOpen && (
-                                  <tr>
-                                    <td colSpan={6}>
-                                      <div>
-                                        <OverheadProfit
-                                          index={index}
-                                          tabData={item}
-                                          headCostRMCCBOPData={props.headCostRMCCBOPData}
-                                          OverheadCost={OverheadCost}
-                                          ProfitCost={ProfitCost}
-                                          setOverheadDetail={setOverheadDetail}
-                                          setProfitDetail={setProfitDetail}
-                                          setRejectionDetail={setRejectionDetail}
-                                          setICCDetail={setICCDetail}
-                                          setPaymentTermsDetail={setPaymentTermsDetail}
-                                          saveCosting={saveCosting}
-                                        />
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )}
+                              < >
+                                <PartOverheadProfit
+                                  index={index}
+                                  item={item}
+                                  OverheadCost={OverheadCost}
+                                  ProfitCost={ProfitCost}
+                                  setOverheadDetail={setOverheadDetail}
+                                  setProfitDetail={setProfitDetail}
+                                  setRejectionDetail={setRejectionDetail}
+                                  setICCDetail={setICCDetail}
+                                  setPaymentTermsDetail={setPaymentTermsDetail}
+                                  saveCosting={saveCosting}
+                                />
                               </>
-                            );
-                          })}
+                            )
+
+                          } else {
+                            return (
+                              < >
+                                <AssemblyOverheadProfit
+                                  index={index}
+                                  item={item}
+                                  children={item.CostingChildPartDetails}
+                                  toggleAssembly={toggleAssembly}
+                                  OverheadCost={OverheadCost}
+                                  ProfitCost={ProfitCost}
+                                  setOverheadDetail={setOverheadDetail}
+                                  setProfitDetail={setProfitDetail}
+                                  setRejectionDetail={setRejectionDetail}
+                                  setICCDetail={setICCDetail}
+                                  setPaymentTermsDetail={setPaymentTermsDetail}
+                                  saveCosting={saveCosting}
+                                />
+                              </>
+                            )
+                          }
+
+                          // return (
+                          //   <>
+                          //     <tr key={index} onClick={() => toggle(index)}>
+                          //       <td>
+                          //         <span class="cr-prt-nm cr-prt-link">
+                          //           {item.PartName}
+                          //         </span>
+                          //       </td>
+                          //       <td>{item.OverheadNetCost !== null ? checkForDecimalAndNull(item.OverheadNetCost, 2) : 0}</td>
+                          //       <td>{item.ProfitNetCost !== null ? checkForDecimalAndNull(item.ProfitNetCost, 2) : 0}</td>
+                          //       <td>{item.RejectionNetCost !== null ? checkForDecimalAndNull(item.RejectionNetCost, 2) : 0}</td>
+                          //       <td>{item.ICCCost !== null ? checkForDecimalAndNull(item.ICCCost, 2) : 0}</td>
+                          //       <td>{item.PaymentTermCost !== null ? checkForDecimalAndNull(item.PaymentTermCost, 2) : 0}</td>
+                          //     </tr>
+                          //     {item.IsOpen && (
+                          //       <tr>
+                          //         <td colSpan={6}>
+                          //           <div>
+                          //             <OverheadProfit
+                          //               index={index}
+                          //               tabData={item}
+                          //               headCostRMCCBOPData={props.headCostRMCCBOPData}
+                          //               OverheadCost={OverheadCost}
+                          //               ProfitCost={ProfitCost}
+                          //               setOverheadDetail={setOverheadDetail}
+                          //               setProfitDetail={setProfitDetail}
+                          //               setRejectionDetail={setRejectionDetail}
+                          //               setICCDetail={setICCDetail}
+                          //               setPaymentTermsDetail={setPaymentTermsDetail}
+                          //               saveCosting={saveCosting}
+                          //             />
+                          //           </div>
+                          //         </td>
+                          //       </tr>
+                          //     )}
+                          //   </>
+                          // );
+
+                        })}
                       </tbody>
                     </Table>
                   </Col>

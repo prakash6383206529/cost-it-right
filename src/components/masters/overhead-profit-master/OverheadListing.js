@@ -422,12 +422,7 @@ class OverheadListing extends Component {
                                             isClearable={false}
                                             options={this.renderListing("costingHead")}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.costingHead == null ||
-                                                    this.state.costingHead.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
+                                            validate={this.state.costingHead == null || this.state.costingHead.length === 0 ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.handleHeadChange}
                                             valueDescription={this.state.costingHead}
@@ -444,12 +439,7 @@ class OverheadListing extends Component {
                                             isClearable={false}
                                             options={this.renderListing("ModelType")}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.ModelType == null ||
-                                                    this.state.ModelType.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
+                                            validate={this.state.ModelType == null || this.state.ModelType.length === 0 ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.handleModelTypeChange}
                                             valueDescription={this.state.ModelType}
@@ -463,16 +453,9 @@ class OverheadListing extends Component {
                                             label=""
                                             component={searchableSelect}
                                             placeholder={"Overhead Applicability"}
-                                            options={this.renderListing(
-                                                "OverheadApplicability"
-                                            )}
+                                            options={this.renderListing("OverheadApplicability")}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.overheadAppli == null ||
-                                                    this.state.overheadAppli.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
+                                            validate={this.state.overheadAppli == null || this.state.overheadAppli.length === 0 ? [required] : []}
                                             required={true}
                                             handleChangeDescription={
                                                 this.handleOverheadChange
@@ -491,12 +474,7 @@ class OverheadListing extends Component {
                                             isClearable={false}
                                             options={this.renderListing("VendorNameList")}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.vendorName == null ||
-                                                    this.state.vendorName.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
+                                            validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.handleVendorName}
                                             valueDescription={this.state.vendorName}
@@ -528,13 +506,14 @@ class OverheadListing extends Component {
                         <Col md="6" className="search-user-block mb-3 pl-0">
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div>
-                                    {this.state.shown ? (
+                                    {this.state.shown ?
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                    ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
-                                    {AddAccessibility && (
+                                            <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" />
+                                        </button>
+                                        :
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    }
+                                    {AddAccessibility &&
                                         <button
                                             type="button"
                                             className={"user-btn"}
@@ -542,7 +521,7 @@ class OverheadListing extends Component {
                                         >
                                             <div className={"plus"}></div>ADD
                                         </button>
-                                    )}
+                                    }
                                 </div>
                             </div>
                         </Col>

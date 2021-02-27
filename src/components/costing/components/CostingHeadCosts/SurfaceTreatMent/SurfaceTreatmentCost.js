@@ -16,6 +16,7 @@ function SurfaceTreatmentCost(props) {
   });
 
   const [gridData, setGridData] = useState(props.data)
+  console.log('gridData: ', gridData);
   const [OldGridData, setOldGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -30,9 +31,9 @@ function SurfaceTreatmentCost(props) {
         PartNumber: props.item.PartNumber,
       }
       if (props.IsAssemblyCalculation) {
-        //props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+        props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       } else {
-        props.setSurfaceCost(gridData, Params)
+        props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
       }
     }, 100)
   }, [gridData]);

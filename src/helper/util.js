@@ -235,7 +235,7 @@ export function displayDateTimeFormate(date) {
 }
 
 //let showConnectionAlert = true;
-export function requestError(error) {}
+export function requestError(error) { }
 
 /**
  * @method validateText
@@ -361,7 +361,7 @@ export function checkNumberOfDayDiff(date1, date2) {
   return Math.floor(
     (Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) -
       Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) /
-      (1000 * 60 * 60 * 24),
+    (1000 * 60 * 60 * 24),
   )
 }
 
@@ -381,7 +381,7 @@ export function renderOptionList(categoriesMaster) {
   return categoryArray
 }
 
-export function renderAction(menuData = [], Master = '', actionKey = '') {}
+export function renderAction(menuData = [], Master = '', actionKey = '') { }
 
 /**
  * @description GET MACHINE RATE
@@ -492,20 +492,16 @@ export function calculatePercentage(value) {
 }
 
 /**
-<<<<<<< HEAD
- * @description getRandomSixDigit
-=======
  * @description CHECK PERMISSION AND PRIVILEGE 
  * @param checkPermission
  * @returns {string}
  */
 export function calculatePercentageValue(value, percent) {
-    return value * percent / 100
+  return value * percent / 100
 }
 
 /**
  * @description getRandomSixDigit 
->>>>>>> m1-frontend-variable-mhr-drawer
  * @returns {number}
  */
 export function getRandomSixDigit() {
@@ -517,11 +513,7 @@ export function getRandomSixDigit() {
  * @returns {number}
  */
 export function getWeightOfSheet(data) {
-  const value =
-    data.Density *
-    (Math.PI / 4) *
-    (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2)) *
-    data.SheetLength
+  const value = data.Density * (Math.PI / 4) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2)) * data.SheetLength
   return checkForNull(value)
 }
 
@@ -530,11 +522,7 @@ export function getWeightOfSheet(data) {
  * @returns {number}
  */
 export function getWeightOfPart(data) {
-  const value =
-    data.Density *
-    (Math.PI / 4) *
-    (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2)) *
-    data.PartLength
+  const value = data.Density * (Math.PI / 4) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2)) * data.PartLength
   return checkForNull(value)
 }
 
@@ -556,10 +544,7 @@ export function getWeightOfScrap(data) {
  * @returns {number}
  */
 export function getNetSurfaceArea(data) {
-  const value =
-    Math.PI * data.OuterDiameter * data.PartLength +
-    (Math.PI / 2) *
-      (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
@@ -568,11 +553,7 @@ export function getNetSurfaceArea(data) {
  * @returns {number}
  */
 export function getNetSurfaceAreaBothSide(data) {
-  const value =
-    Math.PI * data.OuterDiameter * data.PartLength +
-    Math.PI * data.InnerDiameter * data.PartLength +
-    (Math.PI / 2) *
-      (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
+  const value = Math.PI * data.OuterDiameter * data.PartLength + Math.PI * data.InnerDiameter * data.PartLength + (Math.PI / 2) * (Math.pow(data.OuterDiameter, 2) - Math.pow(data.InnerDiameter, 2))
   return checkForNull(value)
 }
 
@@ -589,11 +570,11 @@ export function formViewData(costingSummary) {
     : '-'
   obj.gWeight = dataFromAPI.CostingPartDetails
     ? dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0]
-        .WeightCalculatorRequest.GrossWeight
+      .WeightCalculatorRequest.GrossWeight
     : '-'
   obj.fWeight = dataFromAPI.CostingPartDetails
     ? dataFromAPI.CostingPartDetails[0].CostingRawMaterialsCost[0]
-        .WeightCalculatorRequest.FinishWeight
+      .WeightCalculatorRequest.FinishWeight
     : '-'
   obj.netRM = dataFromAPI.NetRawMaterialsCost
     ? dataFromAPI.NetRawMaterialsCost
@@ -620,101 +601,101 @@ export function formViewData(costingSummary) {
   obj.overheadOn = {
     overheadTitle: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-          .OverheadApplicability
+        .OverheadApplicability
       : '-',
     overheadValue: dataFromAPI.CostingPartDetails
       ? (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-          .OverheadCCTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadCCTotalCost,
-            )
-          : 0) +
-        (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-          .OverheadBOPTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadBOPTotalCost,
-            )
-          : 0) +
-        (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-          .OverheadRMTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadRMTotalCost,
-            )
-          : 0) +
-        (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-          .OverheadFixedTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
-                .OverheadFixedTotalCost,
-            )
-          : 0)
+        .OverheadCCTotalCost
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+            .OverheadCCTotalCost,
+        )
+        : 0) +
+      (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+        .OverheadBOPTotalCost
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+            .OverheadBOPTotalCost,
+        )
+        : 0) +
+      (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+        .OverheadRMTotalCost
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+            .OverheadRMTotalCost,
+        )
+        : 0) +
+      (dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+        .OverheadFixedTotalCost
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingOverheadDetail
+            .OverheadFixedTotalCost,
+        )
+        : 0)
       : '-',
   }
   obj.profitOn = {
     profitTitle: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-          .ProfitApplicability
+        .ProfitApplicability
       : '-',
     profitValue: dataFromAPI.CostingPartDetails
       ? (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitCCTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitCCTotalCost,
-            )
-          : 0) +
-        (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-          .ProfitBOPTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitBOPTotalCost,
-            )
-          : 0) +
-        (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitRMTotalCost,
-            )
-          : 0) +
-        (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-          .ProfitFixedTotalCost
-          ? parseInt(
-              dataFromAPI.CostingPartDetails[0].CostingProfitDetail
-                .ProfitFixedTotalCost,
-            )
-          : 0)
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+            .ProfitCCTotalCost,
+        )
+        : 0) +
+      (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+        .ProfitBOPTotalCost
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+            .ProfitBOPTotalCost,
+        )
+        : 0) +
+      (dataFromAPI.CostingPartDetails[0].CostingProfitDetail.ProfitRMTotalCost
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+            .ProfitRMTotalCost,
+        )
+        : 0) +
+      (dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+        .ProfitFixedTotalCost
+        ? parseInt(
+          dataFromAPI.CostingPartDetails[0].CostingProfitDetail
+            .ProfitFixedTotalCost,
+        )
+        : 0)
       : '-',
   }
   obj.rejectionOn = {
     rejectionTitle: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingRejectionDetail
-          .RejectionApplicability
+        .RejectionApplicability
       : '-',
     rejectionValue: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingRejectionDetail
-          .RejectionTotalCost
+        .RejectionTotalCost
       : '-',
   }
   obj.iccOn = {
     iccTitle: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-          .ICCApplicabilityDetail.ICCApplicability
+        .ICCApplicabilityDetail.ICCApplicability
       : '-',
     iccValue: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-          .ICCApplicabilityDetail.NetCost
+        .ICCApplicabilityDetail.NetCost
       : '-',
   }
   obj.paymentTerms = {
     paymentTitle: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-          .PaymentTermDetail.PaymentTermApplicability
+        .PaymentTermDetail.PaymentTermApplicability
       : '-',
     paymentValue: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].CostingInterestRateDetail
-          .PaymentTermDetail.NetCost
+        .PaymentTermDetail.NetCost
       : '-',
   }
   obj.nOverheadProfit = dataFromAPI.NetOverheadAndProfitCost
@@ -732,7 +713,7 @@ export function formViewData(costingSummary) {
   obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails
     ? dataFromAPI.CostingPartDetails[0].OverAllApplicability.ToolMaintenanceCost
       ? dataFromAPI.CostingPartDetails[0].OverAllApplicability
-          .ToolMaintenanceCost
+        .ToolMaintenanceCost
       : '-'
     : '-'
   obj.toolPrice = dataFromAPI.CostingPartDetails
@@ -754,15 +735,15 @@ export function formViewData(costingSummary) {
   obj.otherDiscountValue = {
     discountPercentValue: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-          .HundiOrDiscountPercentage
+        .HundiOrDiscountPercentage
         ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-            .HundiOrDiscountPercentage
+          .HundiOrDiscountPercentage
         : '-'
       : '-',
     discountValue: dataFromAPI.CostingPartDetails
       ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.HundiOrDiscountValue
         ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-            .HundiOrDiscountValue
+          .HundiOrDiscountValue
         : '-'
       : '-',
   }
@@ -779,7 +760,7 @@ export function formViewData(costingSummary) {
   obj.nPOPriceWithCurrency = dataFromAPI.CostingPartDetails
     ? dataFromAPI.CostingPartDetails[0].OtherCostDetails.NetPOPriceOtherCurrency
       ? dataFromAPI.CostingPartDetails[0].OtherCostDetails
-          .NetPOPriceOtherCurrency
+        .NetPOPriceOtherCurrency
       : '-'
     : '-'
   obj.currency = {

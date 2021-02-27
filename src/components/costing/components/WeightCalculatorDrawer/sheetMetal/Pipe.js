@@ -206,10 +206,7 @@ function Pipe(props) {
       ExtraVariable: '',
     }
     const NetSurfaceAreaBothSide = getNetSurfaceAreaBothSide(data)
-    setValue(
-      'NetSurfaceArea',
-      checkForDecimalAndNull(NetSurfaceAreaBothSide, 2),
-    )
+    setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceAreaBothSide, 2))
   }
 
   /**

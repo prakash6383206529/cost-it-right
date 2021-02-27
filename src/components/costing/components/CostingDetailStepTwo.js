@@ -189,7 +189,7 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      //dispatch(setCostingDataList(tempArr, () => { }))
+      dispatch(setCostingDataList(tempArr, () => { }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       dispatch(setSurfaceCostData(data, () => { }))
 
