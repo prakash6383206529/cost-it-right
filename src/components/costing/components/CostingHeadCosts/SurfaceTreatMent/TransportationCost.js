@@ -26,6 +26,7 @@ function TransportationCost(props) {
   const [uom, setUOM] = useState(data && data.UOMId !== undefined ? { label: data.UOM, value: data.UOMId } : [])
   const [Quantity, setQuantity] = useState('')
   const [Rate, setRate] = useState('')
+  const [OldTransportObj, setOldTransportObj] = useState(data)
 
   const dispatch = useDispatch()
 
@@ -44,7 +45,7 @@ function TransportationCost(props) {
       PartNumber: props.item.PartNumber,
     }
     if (props.IsAssemblyCalculation) {
-      //props.setAssemblyTransportationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+      props.setAssemblyTransportationCost(tempObj, Params, JSON.stringify(tempObj) !== JSON.stringify(OldTransportObj) ? true : false)
     } else {
       props.setTransportationCost(tempObj, Params)
     }

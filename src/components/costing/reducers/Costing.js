@@ -35,6 +35,7 @@ import {
   GET_COSTING_STATUS,
   SET_ITEM_DATA,
   SET_SURFACE_TAB_DATA,
+  SET_OVERHEAD_PROFIT_TAB_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -319,6 +320,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         SurfaceTabData: action.payload
+      };
+    case SET_OVERHEAD_PROFIT_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        OverheadProfitTabData: action.payload
       };
     default:
       return state

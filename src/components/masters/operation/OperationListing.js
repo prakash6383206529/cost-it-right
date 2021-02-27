@@ -485,7 +485,7 @@ class OperationListing extends Component {
                             <Col md="12"><hr className="m-0" /></Col>
                         </Row>
                         <Row className="pt-4 filter-row-large blue-before">
-                            {this.state.shown ? (
+                            {this.state.shown &&
                                 <Col md="12" lg="9" className="filter-block">
                                     <div className="d-inline-flex justify-content-start align-items-top w100">
                                         <div className="flex-fills">
@@ -501,12 +501,7 @@ class OperationListing extends Component {
                                                 isClearable={false}
                                                 options={this.renderListing("costingHead")}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={
-                                                    this.state.costingHead == null ||
-                                                        this.state.costingHead.length === 0
-                                                        ? [required]
-                                                        : []
-                                                }
+                                                validate={this.state.costingHead == null || this.state.costingHead.length === 0 ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleHeadChange}
                                                 valueDescription={this.state.costingHead}
@@ -522,12 +517,7 @@ class OperationListing extends Component {
                                                 isClearable={false}
                                                 options={this.renderListing("technology")}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={
-                                                    this.state.selectedTechnology == null ||
-                                                        this.state.selectedTechnology.length === 0
-                                                        ? [required]
-                                                        : []
-                                                }
+                                                validate={this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleTechnology}
                                                 valueDescription={this.state.selectedTechnology}
@@ -543,12 +533,7 @@ class OperationListing extends Component {
                                                 isClearable={false}
                                                 options={this.renderListing("OperationNameList")}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={
-                                                    this.state.operationName == null ||
-                                                        this.state.operationName.length === 0
-                                                        ? [required]
-                                                        : []
-                                                }
+                                                validate={this.state.operationName == null || this.state.operationName.length === 0 ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleOperationName}
                                                 valueDescription={this.state.operationName}
@@ -564,12 +549,7 @@ class OperationListing extends Component {
                                                 isClearable={false}
                                                 options={this.renderListing("VendorList")}
                                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                                validate={
-                                                    this.state.vendorName == null ||
-                                                        this.state.vendorName.length === 0
-                                                        ? [required]
-                                                        : []
-                                                }
+                                                validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                                 required={true}
                                                 handleChangeDescription={this.handleVendorName}
                                                 valueDescription={this.state.vendorName}
@@ -595,16 +575,17 @@ class OperationListing extends Component {
                                             </button>
                                         </div>
                                     </div>
-                                </Col>) : ("")}
+                                </Col>}
                             <Col md="6" lg="6" className="search-user-block mb-3">
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     <div>
-                                        {this.state.shown ? (
+                                        {this.state.shown ?
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                        ) : (
-                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                            )}
+                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" />
+                                            </button>
+                                            :
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        }
                                         {BulkUploadAccessibility && (
                                             <button
                                                 type="button"

@@ -927,41 +927,6 @@ class AddMachineRate extends Component {
                           <Field
                             label="Technology"
                             name="technology"
-                            placeholder="--Select--"
-                            selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
-                            options={this.renderListing('technology')}
-                            selectionChanged={this.handleTechnology}
-                            optionValue={option => option.Value}
-                            optionLabel={option => option.Text}
-                            component={renderMultiSelectField}
-                            mendatory={true}
-                            className="multiselect-with-border"
-                            disabled={this.state.isViewFlag ? true : false}
-                          //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                          />
-                        </Col>
-                        {this.state.IsVendor &&
-                          <Col md="3">
-                            <Field
-                              name="VendorName"
-                              type="text"
-                              label="Vendor Name"
-                              component={searchableSelect}
-                              placeholder={'--select--'}
-                              options={this.renderListing('VendorNameList')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={(this.state.vendorName == null || this.state.vendorName.length === 0) ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handleVendorName}
-                              valueDescription={this.state.vendorName}
-                              disabled={isEditFlag ? true : false}
-                            />
-                          </Col>}
-
-                        <Col md="3">
-                          <Field
-                            label="Technology"
-                            name="technology"
                             placeholder="Select"
                             selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                             options={this.renderListing('technology')}

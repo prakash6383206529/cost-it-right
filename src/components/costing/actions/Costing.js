@@ -37,6 +37,7 @@ import {
   GET_COSTING_STATUS,
   SET_ITEM_DATA,
   SET_SURFACE_TAB_DATA,
+  SET_OVERHEAD_PROFIT_TAB_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -775,6 +776,36 @@ export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
 }
 
 /**
+ * @method setSurfaceData
+ * @description SET SURFACE TAB DATA  
+ */
+export function setSurfaceData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_TAB_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method saveComponentCostingSurfaceTab
+ * @description SAVE COMPONENT COSTING SURFACE TAB
+ */
+export function saveComponentCostingSurfaceTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveComponentCostingSurfaceTab, data, headers);
+    request.then((response) => {
+      callback(response);
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+    });
+  };
+}
+
+/**
  * @method saveCostingSurfaceTreatmentTab
  * @description SAVE COSTING SURFACE TREATMENT TAB
  */
@@ -845,12 +876,18 @@ export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
  * @method getOverheadProfitTabData
  * @description GET OVERHEAD & PROFIT DATA IN COSTING DETAIL
  */
-export function getOverheadProfitTabData(data, callback) {
+export function getOverheadProfitTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
+      if (IsUseReducer && response.data.Result) {
+        let TabData = response.data.DataList;
+        dispatch({
+          type: SET_OVERHEAD_PROFIT_TAB_DATA,
+          payload: TabData,
+        });
+      } else {
         callback(response);
       }
     }).catch((error) => {
@@ -862,22 +899,32 @@ export function getOverheadProfitTabData(data, callback) {
 }
 
 /**
+ * @method setOverheadProfitData
+ * @description SET OVERHEAD PROFIT TAB DATA  
+ */
+export function setOverheadProfitData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_TAB_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
  * @method getOverheadProfitDataByModelType
  * @description GET OVERHEAD & PROFIT DATA BY MODEL TYPE
  */
 export function getOverheadProfitDataByModelType(ModelTypeId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getOverheadProfitDataByModelType}/${ModelTypeId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
+    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${ModelTypeId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    })
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         callback(error)

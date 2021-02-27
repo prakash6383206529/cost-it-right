@@ -1,4 +1,6 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { saveComponentCostingSurfaceTab } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -7,6 +9,8 @@ import { Row, Col, } from 'reactstrap';
 function SurfaceTreatment(props) {
 
   const { surfaceData, transportationData, item } = props;
+
+  const dispatch = useDispatch()
 
   /**
   * @method toggleDrawer
@@ -51,18 +55,18 @@ function SurfaceTreatment(props) {
           "IsAssemblyPart": true,
           //"Type": "Assembly",
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
-          "NetSurfaceTreatmentCostAssembly": item.CostingPartDetails.NetSurfaceTreatmentCostAssembly,
-          "NetTransportationCostAssembly": item.CostingPartDetails.NetTransportationCostAssembly,
           "SurfaceTreatmentCost": item.CostingPartDetails.SurfaceTreatmentCost,
           "TransportationCost": item.CostingPartDetails.TransportationCost,
+          "TotalSurfaceTreatmentCostPerAssembly": item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly,
+          "TotalTransportationCostPerAssembly": item.CostingPartDetails.TotalTransportationCostPerAssembly,
           "SurfaceTreatmentDetails": item.CostingPartDetails.SurfaceTreatmentDetails,
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
       }
-      // dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
-      //   console.log('Success', res)
-      props.closeDrawer('')
-      // }))
+      dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+        console.log('Success', res)
+        props.closeDrawer('')
+      }))
 
     } else {
 
@@ -81,10 +85,10 @@ function SurfaceTreatment(props) {
           "TransportationDetails": item.CostingPartDetails.TransportationDetails,
         },
       }
-      // dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
-      //   console.log('Success', res)
-      props.closeDrawer('')
-      // }))
+      dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+        console.log('Success', res)
+        props.closeDrawer('')
+      }))
     }
   }
 
@@ -115,9 +119,20 @@ function SurfaceTreatment(props) {
                 <div className="user-page p-0">
                   <div className="cr-process-costwrap">
                     <Row className="cr-innertool-cost">
-                      <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? item.CostingPartDetails.SurfaceTreatmentCost : 0}`}</Col>
-                      <Col md="4" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? item.CostingPartDetails.TransportationCost : 0}`}</Col>
-                      <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? item.CostingPartDetails.NetSurfaceTreatmentCost : 0}`}</Col>
+                      {
+                        props.IsAssemblyCalculation ?
+                          <>
+                            <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0}`}</Col>
+                            <Col md="4" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0}`}</Col>
+                            <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col>
+                          </>
+                          :
+                          <>
+                            <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? item.CostingPartDetails.SurfaceTreatmentCost : 0}`}</Col>
+                            <Col md="4" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? item.CostingPartDetails.TransportationCost : 0}`}</Col>
+                            <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? item.CostingPartDetails.NetSurfaceTreatmentCost : 0}`}</Col>
+                          </>
+                      }
                     </Row>
 
                     <hr />
