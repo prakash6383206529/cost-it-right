@@ -42,6 +42,7 @@ class AddChildDrawer extends Component {
     }
 
     toggleDrawer = (event, childData = {}) => {
+
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }

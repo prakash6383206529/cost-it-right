@@ -30,7 +30,8 @@ import {
   SAVE_COSTING_AS_DRAFT_SUCCESS,
   ADD_BOP_GRID_COSTING_SUCCESS,
   SAVE_BOP_COSTING_SUCCESS,
-  GET_RAW_MATERIAL_CALCI_INFO
+  GET_RAW_MATERIAL_CALCI_INFO,
+  GET_BULKUPLOAD_COSTING_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -728,6 +729,11 @@ export function saveCostingAsDraft(data, callback) {
   };
 }
 
+/**
+ * @method getRawMaterialCalculationByTechnology
+ * @description Get raw materical calculator data by technology
+*/
+
 export function getRawMaterialCalculationByTechnology(technologyName, layoutType, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
@@ -746,6 +752,132 @@ export function getRawMaterialCalculationByTechnology(technologyName, layoutType
       dispatch({ type: API_FAILURE });
       callback(error);
       apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getCostingBulkUploadList
+ * @description Get list of all costing sheet which is send for bulkupload
+*/
+
+export function getCostingBulkUploadList(callback) {
+  let JSON = {
+    status: 200,
+    data: {
+      DataList: [
+        {
+          CostingStatus: 'In Progress',
+          NoOfCorrectRow: 0,
+          NoOfIncorrectRow: 0,
+          FileNameId: 1,
+          FileName: 'BulkUpload1',
+
+        },
+        {
+          CostingStatus: 'Pending For Approval',
+          NoOfCorrectRow: 5,
+          NoOfIncorrectRow: 2,
+          FileNameId: 2,
+          FileName: 'BulkUpload2',
+
+        },
+        {
+          CostingStatus: 'Approved',
+          NoOfCorrectRow: 2,
+          NoOfIncorrectRow: 1,
+          FileNameId: 3,
+          FileName: 'BulkUpload3',
+
+        },
+        {
+          CostingStatus: 'Error',
+          NoOfCorrectRow: 3,
+          NoOfIncorrectRow: 1,
+          FileNameId: 4,
+          FileName: 'BulkUpload4',
+
+        },
+      ],
+    },
+  }
+
+
+  return (dispatch) => {
+
+    dispatch({
+      type: GET_BULKUPLOAD_COSTING_LIST,
+      payload: JSON.data.DataList,
+    });
+    callback(JSON);
+    // callback(JSON)
+    //dispatch({ type: API_REQUEST });
+
+    //   const request = axios.get(`${API.getCostingBulkUploadList}`, headers);
+    //   request.then((response) => {
+    //     if (response.data.Result) {
+    //       dispatch({
+    //         type: GET_BULKUPLOAD_COSTING_LIST,
+    //         payload: response.data.Data,
+    //       });
+    //       callback(response);
+    //     }
+    //   }).catch((error) => {
+    //     dispatch({ type: API_FAILURE });
+    //     callback(error);
+    //     apiErrors(error);
+    //   });
+  };
+}
+
+export function getErrorFile(costingId, callback) {
+  return (dispatch) => {
+    const request = axios.get(`${API.getErrorFile}/${costingId}`, headers);
+    request.then((response) => {
+      if (response.status.Result) {
+        // dispatch()
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+    })
+  }
+}
+
+/**
+ * @method bulkUploadCosting
+ * @description Costing Bulk Upload
+*/
+
+export function bulkUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadCosting, data, headers);
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      //apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method sendForApprovalFromBulkUpload
+ * @description Send for Approval or Reject
+*/
+
+export function sendForApprovalFromBulkUpload(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.sendStatusForApproval, data, headers);
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      //apiErrors(error);
     });
   };
 }

@@ -225,7 +225,7 @@ export function getVendorTypesSelectList() {
  */
 export function getAllVendorSelectList() {
     return (dispatch) => {
-        const request = axios.get(API.getAllVendorSelectList, headers);
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
         request.then((response) => {
             dispatch({
                 type: GET_ALL_VENDOR_SELECTLIST_SUCCESS,

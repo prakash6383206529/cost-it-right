@@ -8,6 +8,7 @@ import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getInterestRateDataList, deleteInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, } from '../actions/InterestRateMaster';
 import { getVendorListByVendorType, } from '../actions/Material';
 import Switch from "react-switch";
@@ -66,7 +67,8 @@ class InterestRateListing extends Component {
       }
     })
 
-    this.props.getVendorListByVendorType(true, () => { })
+    // this.props.getVendorListByVendorType(true, () => { })
+    this.props.getVendorWithVendorCodeSelectList()
     this.props.getICCAppliSelectList(() => { })
     this.props.getPaymentTermsAppliSelectList(() => { })
     this.getTableListData()
@@ -99,7 +101,7 @@ class InterestRateListing extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
+    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
     const temp = [];
 
     if (label === 'costingHead') {
@@ -111,7 +113,7 @@ class InterestRateListing extends Component {
     }
 
     if (label === 'VendorList') {
-      vendorListByVendorType && vendorListByVendorType.map(item => {
+      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
@@ -616,11 +618,12 @@ class InterestRateListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, auth, interestRate }) {
+function mapStateToProps({ material, auth, interestRate, comman }) {
   const { leftMenuData } = auth;
   const { vendorListByVendorType } = material;
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateDataList } = interestRate;
-  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList };
+  const { vendorWithVendorCodeSelectList } = comman;
+  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList };
 }
 
 /**
@@ -636,6 +639,7 @@ export default connect(mapStateToProps, {
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
   getLeftMenu,
+  getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {

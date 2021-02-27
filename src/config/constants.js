@@ -526,6 +526,10 @@ export const API = {
   getCostingOverHeadProByModelType: `${BASE_URL}/costing-sheet-metal/get-costing-overhead-profit-by-model-type`,
   saveCosting: `${BASE_URL}/costing-sheet-metal/save-costing`,
   saveBOPCosting: `${BASE_URL}/costing-sheet-metal/save-costing-bought-out-part`,
+  getCostingBulkUploadList: `${BASE_URL}/`,
+  getErrorFile: `${BASE_URL}`,
+  uploadCosting: `${BASE_URL}/`,
+  sendStatusForApproval: `${BASE_URL}/`,
 
 
   //COST SUMMARY
@@ -1066,6 +1070,7 @@ export const SET_RMCCBOP_DATA = 'SET_RMCCBOP_DATA';
 export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
 export const SET_OVERHEAD_PROFIT_COST_DATA = 'SET_OVERHEAD_PROFIT_COST_DATA';
 export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
+export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1306,6 +1311,7 @@ export const BOUGHTOUTPART = 'BoughtOutPart'
 export const COSTING_PATH = '/costing'
 export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
+export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',

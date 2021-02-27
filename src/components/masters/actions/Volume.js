@@ -57,11 +57,12 @@ export function updateVolume(requestData, callback) {
  * @description Get Volume Data
  */
 export function getVolumeData(VolumeId, callback) {
+
+
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     if (VolumeId !== '') {
-      axios
-        .get(`${API.getVolumeData}/${VolumeId}`, headers)
+      axios.get(`${API.getVolumeData}/${VolumeId}`, headers)
         .then((response) => {
           if (response.data.Result === true) {
             dispatch({
@@ -72,6 +73,7 @@ export function getVolumeData(VolumeId, callback) {
           }
         })
         .catch((error) => {
+
           apiErrors(error)
           dispatch({ type: API_FAILURE })
         })

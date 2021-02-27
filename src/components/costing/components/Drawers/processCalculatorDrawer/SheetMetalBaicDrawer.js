@@ -8,6 +8,7 @@ import {
 } from '../../../../layout/HookFormInputs'
 
 function SheetMetalBaicDrawer(props) {
+  console.log("SHETETETETET");
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
   console.log(WeightCalculatorRequest, "Wight");
   const defaultValues = {

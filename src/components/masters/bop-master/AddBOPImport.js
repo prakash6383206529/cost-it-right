@@ -579,8 +579,8 @@ class AddBOPImport extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isEditFlag
-                            ? `Update BOP Details`
-                            : `Add BOP Details`}
+                            ? `Update BOP (Import)`
+                            : `Add BOP (Import)`}
                         </h1>
                       </div>
                     </div>

@@ -34,34 +34,10 @@ import CostingRoutes from './costing/Routes'
 import Costing from './costing/components'
 import { showUserData } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
-import {
-  BOP,
-  DASHBOARD,
-  FREIGHT,
-  FUEL_AND_POWER,
-  INTEREST_RATE,
-  LABOUR,
-  MACHINE,
-  OPERATION,
-  OVERHEAD_AND_PROFIT,
-  PART,
-  PLANT,
-  RAW_MATERIAL,
-  UOM,
-  USER,
-  VENDOR,
-  SHEET_METAL,
-  REASON,
-  VOLUME,
-  CLIENT,
-  EXCHANGE_RATE,
-  TAX,
-  COSTING_PATH,
-  APPROVAL_LISTING_PATH,
-  APPROVAL_SUMMARY_PATH,
-} from '../config/constants'
+import { BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION, OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
+import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
 
 class Main extends Component {
   constructor(props) {
@@ -122,7 +98,13 @@ class Main extends Component {
       isLogin = false
     }
 
-    const fullSizeClass = location.pathname === COSTING_PATH || location.pathname === APPROVAL_LISTING_PATH || location.pathname === APPROVAL_SUMMARY_PATH ? 'w-100' : ''
+    const fullSizeClass =
+      location.pathname === COSTING_PATH ||
+        location.pathname === APPROVAL_LISTING_PATH ||
+        location.pathname === APPROVAL_SUMMARY_PATH ||
+        location.pathname === COSTING_BULK_UPLOAD
+        ? 'w-100'
+        : ''
 
     return (
       <Suspense fallback={<Loader />}>
@@ -161,7 +143,9 @@ class Main extends Component {
                 !this.state.visibelPageNotFound &&
                 location.pathname !== COSTING_PATH &&
                 location.pathname !== APPROVAL_SUMMARY_PATH &&
-                location.pathname !== APPROVAL_LISTING_PATH && (
+                location.pathname !== APPROVAL_LISTING_PATH &&
+                location.pathname !== COSTING_BULK_UPLOAD &&
+                (
                   <LeftMenu {...this.props} />
                 )}
 
@@ -220,7 +204,12 @@ class Main extends Component {
 
                     <Route path="/approval-listing" component={ApprovalListing} />
 
-                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
+                    <Route path="/costing-bulkUpload" component={CostingSummaryBulkUpload} />
+
+                    <Route
+                      path="/reason-master"
+                      component={AuthMiddleware(ReasonListing, REASON)}
+                    />
 
                     <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
 

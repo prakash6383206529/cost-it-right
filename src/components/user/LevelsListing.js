@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getAllLevelAPI, deleteUserLevelAPI, getLeftMenu, } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
+import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
@@ -16,6 +17,10 @@ import Level from './Level';
 import { LEVELS } from '../../config/constants';
 import { GridTotalFormate } from '../common/TableGridFunctions';
 import ConfirmComponent from '../../helper/ConfirmComponent';
+import { renderText } from '../layout/FormInputs';
+import { Field, reduxForm } from 'redux-form';
+import { focusOnError } from "../layout/FormInputs";
+import ImpactDrawer from './ImpactDrawer';
 
 class LevelsListing extends Component {
 	constructor(props) {
@@ -29,6 +34,9 @@ class LevelsListing extends Component {
 			AddAccessibility: false,
 			EditAccessibility: false,
 			DeleteAccessibility: false,
+
+			showImpact: false,
+			idForImpact: ''
 		}
 	}
 
@@ -126,16 +134,44 @@ class LevelsListing extends Component {
 	 * @method editItemDetails
 	 * @description confirm edit item
 	 */
-	editItemDetails = (Id) => {
+	editItemDetails = (cell, Id) => {
+		console.log(Id, "ID");
 		this.setState({
-			isEditFlag: true,
-			LevelId: Id,
-			isOpen: true,
-			isShowForm: true,
+			// isEditFlag: true,
+			// LevelId: Id,
+			//isOpen: true,
+			// isShowForm: true,
+			idForImpact: Id,
+			showImpact: true,
 			isShowMappingForm: false,
 		})
 	}
 
+	closeImpactDrawer = (e = '', ImpactValue = '') => {
+		const { idForImpact, tableData } = this.state
+		console.log(ImpactValue, "Value from Drawer");
+
+		let tempData = tableData[idForImpact]
+		console.log(tempData, "TEMP");
+		tempData = {
+			...tempData,
+			Condition: ImpactValue
+		}
+		let gridTempArr = Object.assign([...tableData], { [idForImpact]: tempData })
+
+
+		this.setState({
+			// isOpen: false,
+			// isShowMappingForm: false,
+			tableData: gridTempArr,
+			isShowForm: false,
+			showImpact: false
+			// isEditFlag: false,
+		}, () => {
+			this.getUpdatedData()
+			this.child.getUpdatedData();
+		})
+	}
 	/**
 	* @method deleteItem
 	* @description confirm delete level
@@ -146,7 +182,7 @@ class LevelsListing extends Component {
 				this.confirmDeleteItem(Id)
 			},
 			onCancel: () => console.log('CANCEL: clicked'),
-			component: () => <ConfirmComponent/>
+			component: () => <ConfirmComponent />
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
 	}
@@ -176,8 +212,8 @@ class LevelsListing extends Component {
 		const { EditAccessibility, DeleteAccessibility } = this.state;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell)} />}
-				{DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
+				{EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell, rowIndex)} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
 	}
@@ -186,90 +222,199 @@ class LevelsListing extends Component {
 
 	}
 
+	handleChange = (cell, row, enumObject, rowIndex) => {
+		let data = {
+			Id: row.LevelId,
+			ModifiedBy: loggedInUserId(),
+			IsActive: !cell, //Status of the user.
+		}
+		const toastrConfirmOptions = {
+			onOk: () => {
+				this.confirmDeactivateItem(data, cell)
+			},
+			onCancel: () => console.log('CANCEL: clicked'),
+			component: () => <ConfirmComponent />,
+		};
+		return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
+	}
+
+	confirmDeactivateItem = (data, cell) => {
+		//   this.props.activeInactiveStatus(data, res => {
+		//     if (res && res.data && res.data.Result) {
+		//         // if (cell == true) {
+		//         //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+		//         // } else {
+		//         //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+		//         // }
+		//         // this.getTableListData()
+		//         this.filterList()
+		//     }
+		// })
+	}
+
+	/**
+   * @method statusButtonFormatter
+   * @description Renders buttons
+   */
+	statusButtonFormatter = (cell, row, enumObject, rowIndex) => {
+		const { ActivateAccessibility } = this.props;
+		// if (ActivateAccessibility) {
+		return (
+			<>
+				<label htmlFor="normal-switch">
+					{/* <span>Switch with default style</span> */}
+					<Switch
+						onChange={() => this.handleChange(cell, row, enumObject, rowIndex)}
+						checked={cell}
+						background="#ff6600"
+						onColor="#4DC771"
+						onHandleColor="#ffffff"
+						offColor="#FC5774"
+						id="normal-switch"
+						height={24}
+					/>
+				</label>
+			</>
+		)
+		// } else {
+		// 	return (
+		// 		<>
+		// 			{
+		// 				cell ?
+		// 					<div className={'Activated'}> {'Active'}</div>
+		// 					:
+		// 					<div className={'Deactivated'}>{'Deactive'}</div>
+		// 			}
+		// 		</>
+		// 	)
+		// }
+	}
+
+	/**
+   * @method TextFormatter
+   * @description Renders buttons
+   */
+	TextFormatter = (cell, row, enumObject, rowIndex) => {
+		// console.log(rowIndex, "Row Index");
+		// this.setState({
+		// 	idForImpact: rowIndex
+		// })
+		return (
+			<>
+				{/* <input type="text" value={cell} name={rowIndex} /> */}
+				<Field
+					label=""
+					name={`Condition${rowIndex}`}
+					type="text"
+					placeholder={'Enter'}
+					//validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+					component={renderText}
+					//required={true}
+					// maxLength={26}
+					customClassName={'withBorder'}
+				/>
+			</>
+		)
+	}
+
 	/**
 	* @method render
 	* @description Renders the component
 	*/
 	render() {
 		const { isEditFlag, isShowForm, isShowMappingForm, isOpen, LevelId,
-			AddAccessibility, EditAccessibility, DeleteAccessibility } = this.state;
+			AddAccessibility, EditAccessibility, DeleteAccessibility, showImpact } = this.state;
 		const options = {
-      //clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
-      afterSearch: this.afterSearch,
-      paginationShowsTotal: this.renderPaginationShowsTotal,
-      prePage: <span className="prev-page-pg"></span>, // Previous page button text
-      nextPage: <span className="next-page-pg"></span>, // Next page button text
-      firstPage: <span className="first-page-pg"></span>, // First page button text
-      lastPage: <span className="last-page-pg"></span>,
-      pagination: true,
-        sizePerPageList: [ {
-          text: '5', value: 5
-        }, {
-          text: '10', value: 10
-        }],
-        sizePerPage: 5,
-    };
+			//clearSearch: true,
+			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+			afterSearch: this.afterSearch,
+			paginationShowsTotal: this.renderPaginationShowsTotal,
+			prePage: <span className="prev-page-pg"></span>, // Previous page button text
+			nextPage: <span className="next-page-pg"></span>, // Next page button text
+			firstPage: <span className="first-page-pg"></span>, // First page button text
+			lastPage: <span className="last-page-pg"></span>,
+			pagination: true,
+			sizePerPageList: [{
+				text: '5', value: 5
+			}, {
+				text: '10', value: 10
+			}],
+			sizePerPage: 5,
+		};
 		return (
 			<>
-				{this.props.loading && <Loader />}
-				<Row className="pt-4">
-					<Col md="6">
-						<Row>
-							<Col md="6">
-								<h2 className="manage-level-heading">{`Levels`}</h2>
-							</Col>
-							<Col md="6" className="text-right">
-								{AddAccessibility && <button
-									type="button"
-									className={'user-btn'}
-									onClick={this.levelToggler}>
-									<div className={'plus'}></div>
-									{'Add'}</button>}
-							</Col>
-							<Col className="mt-0 level-table">
-								<BootstrapTable
-									data={this.state.tableData}
-									striped={false}
-									bordered={false}
-									hover={false}
-									options={options}
-									//search
-									ignoreSinglePage
-									ref={'table'}
-									trClassName={'userlisting-row'}
-									tableHeaderClass={'my-custom-header'}
-									pagination>
-									<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-									<TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn>
-									<TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-								</BootstrapTable>
-							</Col>
-						</Row>
-					</Col>
-					<Col md="6">
-						<LevelTechnologyListing
-							onRef={ref => (this.child = ref)}
-							mappingToggler={this.mappingToggler}
-							getLevelMappingDetail={this.getLevelMappingDetail}
-							AddAccessibility={AddAccessibility}
-							EditAccessibility={EditAccessibility}
-							DeleteAccessibility={DeleteAccessibility}
-						/>
-					</Col>
-				</Row>
+				<form>
+					{this.props.loading && <Loader />}
+					<Row className="pt-4">
+						<Col md="12">
+							<LevelTechnologyListing
+								onRef={ref => (this.child = ref)}
+								mappingToggler={this.mappingToggler}
+								getLevelMappingDetail={this.getLevelMappingDetail}
+								AddAccessibility={AddAccessibility}
+								EditAccessibility={EditAccessibility}
+								DeleteAccessibility={DeleteAccessibility}
+							/>
+						</Col>
+					</Row>
+					<Row className="pt-4">
+						<Col md="12">
+							<Row>
+								<Col md="12">
+									<h2 className="manage-level-heading">{`Levels`}</h2>
+								</Col>
 
-				{isOpen && (
-					<Level
-						isOpen={isOpen}
-						isShowForm={isShowForm}
-						isShowMappingForm={isShowMappingForm}
-						closeDrawer={this.closeDrawer}
-						isEditFlag={isEditFlag}
-						LevelId={LevelId}
-						anchor={'right'}
-					/>
-				)}
+								<Col className="mt-0 level-table">
+									<BootstrapTable
+										data={this.state.tableData}
+										striped={false}
+										bordered={false}
+										hover={false}
+										options={options}
+										//search
+										ignoreSinglePage
+										ref={'table'}
+										trClassName={'userlisting-row'}
+										tableHeaderClass={'my-custom-header'}
+										pagination>
+										<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
+										<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
+										<TableHeaderColumn dataField="Users" dataAlign="left">Users</TableHeaderColumn>
+										<TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
+										<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
+
+										{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
+										<TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+									</BootstrapTable>
+								</Col>
+							</Row>
+						</Col>
+
+					</Row>
+
+					{isOpen && (
+						<Level
+							isOpen={isOpen}
+							isShowForm={isShowForm}
+							isShowMappingForm={isShowMappingForm}
+							closeDrawer={this.closeDrawer}
+							isEditFlag={isEditFlag}
+							LevelId={LevelId}
+							anchor={'right'}
+						/>
+					)}
+					{showImpact && (
+						<ImpactDrawer
+							isOpen={showImpact}
+							isShowForm={isShowForm}
+							isShowMappingForm={isShowMappingForm}
+							closeDrawer={this.closeImpactDrawer}
+							//isEditFlag={isEditFlag}
+							//LevelId={LevelId}
+							anchor={'right'}
+						/>
+					)}
+				</form>
 			</>
 		);
 	}
@@ -292,5 +437,11 @@ export default connect(mapStateToProps,
 		getAllLevelAPI,
 		deleteUserLevelAPI,
 		getLeftMenu,
-	})(LevelsListing);
+	})(reduxForm({
+		form: 'LevelsListing',
+		onSubmitFail: errors => {
+			focusOnError(errors);
+		},
+		enableReinitialize: true,
+	})(LevelsListing));
 

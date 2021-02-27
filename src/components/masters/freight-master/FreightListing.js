@@ -8,15 +8,16 @@ import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import { getVendorListByVendorType, } from '../actions/Material';
-import { fetchSupplierCityDataAPI } from '../../../actions/Common';
+import { fetchSupplierCityDataAPI, getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj } from '../../../config/masterData';
+import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+// import { getVendorWithVendorCodeSelectList, } from '../actions/OverheadProfit';
 
 class FreightListing extends Component {
   constructor(props) {
@@ -39,7 +40,8 @@ class FreightListing extends Component {
   * @description Called after rendering the component
   */
   componentDidMount() {
-    this.props.getVendorListByVendorType(true, () => { })
+    // this.props.getVendorListByVendorType(true, () => { })
+    this.props.getVendorWithVendorCodeSelectList()
     this.props.fetchSupplierCityDataAPI(res => { });
     this.getDataList()
   }
@@ -231,11 +233,11 @@ class FreightListing extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { cityList, vendorListByVendorType, } = this.props;
+    const { cityList, vendorListByVendorType, vendorWithVendorCodeSelectList } = this.props;
     const temp = [];
 
     if (label === 'costingHead') {
-      return costingHeadObj;
+      return costingHeadObjs;
     }
     if (label === 'SourceLocation') {
       cityList && cityList.map(item => {
@@ -253,7 +255,7 @@ class FreightListing extends Component {
       return temp;
     }
     if (label === 'vendor') {
-      vendorListByVendorType && vendorListByVendorType.map(item => {
+      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
@@ -288,6 +290,7 @@ class FreightListing extends Component {
       destinationLocation: [],
     }, () => {
       this.getDataList()
+      this.props.getVendorWithVendorCodeSelectList()
     })
 
   }
@@ -498,8 +501,8 @@ class FreightListing extends Component {
 function mapStateToProps({ freight, material, comman }) {
   const { freightDetail } = freight;
   const { vendorListByVendorType } = material;
-  const { cityList, } = comman;
-  return { vendorListByVendorType, cityList, freightDetail }
+  const { cityList, vendorWithVendorCodeSelectList } = comman;
+  return { vendorListByVendorType, cityList, freightDetail, vendorWithVendorCodeSelectList }
 }
 
 /**
@@ -513,6 +516,7 @@ export default connect(mapStateToProps, {
   deleteFright,
   getVendorListByVendorType,
   fetchSupplierCityDataAPI,
+  getVendorWithVendorCodeSelectList,
 })(reduxForm({
   form: 'FreightListing',
   enableReinitialize: true,

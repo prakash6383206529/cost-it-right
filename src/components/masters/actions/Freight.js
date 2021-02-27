@@ -53,10 +53,11 @@ export function getFreightDataList(filterData, callback) {
         const queryParams = `freight_for=${filterData.freight_for}&vendor_id=${filterData.vendor_id}&source_city_id=${filterData.source_city_id}&destination_city_id=${filterData.destination_city_id}`
         const request = axios.get(`${API.getFreightDataList}?${queryParams}`, headers);
         request.then((response) => {
-            dispatch({
-                type: GET_FREIGHT_SUCCESS,
-                payload: response.data.DataList,
-            });
+            if (response.data.Result || response.status === 204)
+                dispatch({
+                    type: GET_FREIGHT_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                });
             callback(response)
         }).catch((error) => {
             dispatch({ type: API_FAILURE });

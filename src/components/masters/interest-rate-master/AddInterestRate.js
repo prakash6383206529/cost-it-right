@@ -4,10 +4,8 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
-import {
-  updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList,
-  getICCAppliSelectList, getInterestRateData,
-} from '../actions/InterestRateMaster';
+import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
+import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -50,6 +48,7 @@ class AddInterestRate extends Component {
    */
   componentDidMount() {
     this.props.getICCAppliSelectList(() => { })
+    this.props.getVendorWithVendorCodeSelectList()
     this.props.getPaymentTermsAppliSelectList(() => { })
     this.getDetail()
   }
@@ -73,10 +72,10 @@ class AddInterestRate extends Component {
   * @description Used show listing of unit of measurement
   */
   renderListing = (label) => {
-    const { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
+    const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList } = this.props;
     const temp = [];
     if (label === 'VendorNameList') {
-      vendorListByVendorType && vendorListByVendorType.map(item => {
+      vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
       });
@@ -170,9 +169,9 @@ class AddInterestRate extends Component {
           let Data = res.data.Data;
 
           setTimeout(() => {
-            const { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
+            const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
 
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorIdRef)
+            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorIdRef)
             const iccObj = iccApplicabilitySelectList && iccApplicabilitySelectList.find(item => item.Value === Data.ICCApplicability)
             const paymentObj = paymentTermsSelectList && paymentTermsSelectList.find(item => item.Value === Data.PaymentTermApplicability)
 
@@ -533,12 +532,13 @@ class AddInterestRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { interestRate, material, } = state;
+  const { interestRate, material, comman } = state;
 
   const filedObj = selector(state, 'ICCPercent', 'PaymentTermPercent');
 
   const { vendorListByVendorType } = material;
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateData } = interestRate;
+  const { vendorWithVendorCodeSelectList } = comman;
 
   let initialValues = {};
   if (interestRateData && interestRateData !== undefined) {
@@ -551,7 +551,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    paymentTermsSelectList, iccApplicabilitySelectList, vendorListByVendorType, interestRateData, initialValues, filedObj
+    paymentTermsSelectList, iccApplicabilitySelectList, vendorWithVendorCodeSelectList, interestRateData, initialValues, filedObj
   }
 }
 
@@ -568,6 +568,7 @@ export default connect(mapStateToProps, {
   getPaymentTermsAppliSelectList,
   getICCAppliSelectList,
   getVendorListByVendorType,
+  getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'AddInterestRate',
   enableReinitialize: true,

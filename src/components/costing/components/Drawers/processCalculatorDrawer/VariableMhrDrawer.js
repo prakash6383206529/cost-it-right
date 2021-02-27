@@ -154,6 +154,14 @@ function VariableMhrDrawer(props) {
       }
     } else if (technology === 'Sheet Metal') {
       switch (process) {
+        case 'Facing':
+          return (
+            <Facing
+              calculateMachineTime={calculateMachineTime}
+              technology={technology}
+              calculatorData={calculatorData}
+            />
+          )
         default:
           return (
             <SheetMetalBaicDrawer

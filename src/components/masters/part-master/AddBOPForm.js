@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5, } from "../../../helper/validation";
+import { required, number, postiveNumber, maxLength5, minValue1, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { } from '../../../actions/Common';
@@ -130,6 +130,9 @@ class AddBOPForm extends Component {
     this.props.getDrawerBOPData('', () => { })
 
     if (isAddMore) {
+      this.setState({
+        BOPPart: []
+      })
       this.props.setChildParts(childData)
     } else {
       this.props.toggleDrawer('', childData)
@@ -177,9 +180,9 @@ class AddBOPForm extends Component {
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
-                validate={[required]}
+                validate={[]}
                 component={renderText}
-                required={true}
+                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -192,9 +195,9 @@ class AddBOPForm extends Component {
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}
-                validate={[required]}
+                validate={[]}
                 component={renderText}
-                required={true}
+                // required={true}
                 className=""
                 customClassName={"withBorder"}
                 disabled={true}
@@ -221,7 +224,7 @@ class AddBOPForm extends Component {
                 name={"Quantity"}
                 type="text"
                 placeholder={""}
-                validate={[postiveNumber, maxLength5, required]}
+                validate={[postiveNumber, maxLength5, required, minValue1]}
                 component={renderText}
                 required={true}
                 className=""
