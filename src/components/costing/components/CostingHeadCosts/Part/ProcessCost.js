@@ -81,10 +81,10 @@ function ProcessCost(props) {
     } else {
       if (tempData.UOM === 'Hours') {
         time = value === '0.00' ? '0.00' : checkForDecimalAndNull(value / 60, 4)
-        netCost = value === '0.00' ? '0.00' : value * Number(tempData.MachineRate)
+        netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
       } else {
         time = value === '0.00' ? '0.00' : value
-        netCost = value === '0.00' ? '0.00' : value * Number(tempData.MachineRate)
+        netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
       }
       tempData = {
         ...tempData,
@@ -145,7 +145,7 @@ function ProcessCost(props) {
           ProcessDetailId: '',
           MachineId: el.MachineId,
           MachineRateId: el.MachineRateId,
-          MachineRate: el.MachineRate,
+          MHR: el.MachineRate,
           ProcessName: el.ProcessName,
           ProcessDescription: el.Description,
           MachineName: el.MachineName,
@@ -304,7 +304,7 @@ function ProcessCost(props) {
 
   const handleQunatity = (event, index) => {
     let tempData = gridData[index]
-    let netCost = Number(event.target.value) * Number(tempData.MachineRate)
+    let netCost = Number(event.target.value) * Number(tempData.MHR)
     tempData = {
       ...tempData,
       Quantity: event.target.value,
@@ -323,7 +323,7 @@ function ProcessCost(props) {
     let tempData = gridData[index]
 
     if (!isNaN(event.target.value)) {
-      const ProcessCost = tempData.MachineRate * parseInt(event.target.value)
+      const ProcessCost = tempData.MHR * parseInt(event.target.value)
       tempData = {
         ...tempData,
         Quantity: parseInt(event.target.value),
@@ -646,7 +646,7 @@ function ProcessCost(props) {
                           <td>{item.ProcessName}</td>
                           <td>{item.ProcessDescription}</td>
                           <td>{item.MachineName}</td>
-                          <td>{item.MachineRate}</td>
+                          <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
                           <td style={{ width: 150 }}>
                             <span className="d-inline-block w90px mr-2">

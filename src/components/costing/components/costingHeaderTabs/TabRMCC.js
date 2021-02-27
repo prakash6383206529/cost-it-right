@@ -163,6 +163,22 @@ function TabRMCC(props) {
   }
 
   /**
+  * @method getToolTotalCost
+  * @description GET TOOL TOTAL COST
+  */
+  const getToolTotalCost = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+        return accummlator + checkForNull(GridTotalCost);
+      } else {
+        return accummlator + checkForNull(el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost && el.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? el.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0);
+      }
+    }, 0)
+    return NetCost;
+  }
+
+  /**
   * @method getCCTotalCostForAssembly
   * @description GET CC TOTAL COST FOR ASSEMBLY
   */
@@ -461,7 +477,7 @@ function TabRMCC(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.ToolsCostTotal = getToolTotalCostForAssembly(i.CostingChildPartDetails, toolGrid && toolGrid.ToolsCostTotal !== undefined ? checkForNull(toolGrid.ToolsCostTotal) : 0, params);
+          i.CostingPartDetails.ToolsCostTotal = getToolTotalCost(i.CostingChildPartDetails, toolGrid && toolGrid.ToolsCostTotal !== undefined ? checkForNull(toolGrid.ToolsCostTotal) : 0, params);
           setToolCostInDataList(toolGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -558,7 +574,7 @@ function TabRMCC(props) {
           i.CostingPartDetails.TotalRawMaterialsCost = getRMTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.CostingRawMaterialsCost, params);
           i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.CostingBoughtOutPartCost, params);
           i.CostingPartDetails.TotalProcessCost = getProcessTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params);
-          i.CostingPartDetails.TotalOperationCost = getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params);
+          i.CostingPartDetails.TotalOperationCost = getOperationTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params);
 
           // i.CostingPartDetails.TotalConversionCost = getProcessTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params) +
           //   getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params) +
@@ -567,18 +583,20 @@ function TabRMCC(props) {
 
           i.CostingPartDetails.TotalConversionCost = getProcessTotalCost(CostingChildPartDetails, CostingPartDetails.TotalProcessCost, params) +
             getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
-            checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) +
-            checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
+            getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCostPerAssembly, params) +
+            getToolTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalToolCostPerAssembly, params);
+          // checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) +
+          // checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly);
 
           // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = (getTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails, 'ALL', 0, params)) +
           //   checkForNull(CostingPartDetails.TotalOperationCostPerAssembly);
 
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getRMTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.CostingRawMaterialsCost, params) +
-            getBOPTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.CostingBoughtOutPartCost, params) +
-            getProcessTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params) +
-            getOperationTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params) +
-            GetOperationCostTotal(CostingPartDetails.CostingOperationCostResponse) +
-            GetToolCostTotal(CostingPartDetails.CostingToolCostResponse);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getRMTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.CostingRawMaterialsCost, params) +
+            getBOPTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.CostingBoughtOutPartCost, params) +
+            getProcessTotalCost(CostingChildPartDetails, CostingPartDetails.TotalProcessCost, params) +
+            getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
+            getOperationTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalOperationCostPerAssembly, params) +
+            getToolTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalToolCostPerAssembly, params);
 
           i.IsAssemblyPart = true;
           i.IsOpen = !i.IsOpen;
