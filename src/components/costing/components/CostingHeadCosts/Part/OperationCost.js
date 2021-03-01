@@ -171,13 +171,13 @@ function OperationCost(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <Row>
+          <Row className="align-items-center">
             <Col md="8">
-              <div className="left-border">
-                {'Operation Cost:'}
+              <div className="bottom-border">
+                {'Operation Cost ( Without Labour Cost)'}
               </div>
             </Col>
-            <Col col={'4'}>
+            <Col md={'4'}>
               <button
                 type="button"
                 className={'user-btn'}
@@ -278,8 +278,8 @@ function OperationCost(props) {
                             </td>
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="SaveIcon  mr-2" type={'button'} onClick={() => SaveItem(index)} />
-                              <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />
+                              <button className="SaveIcon mb-0 mr-2 align-middle" type={'button'} onClick={() => SaveItem(index)} />
+                              <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => CancelItem(index)} />
                             </td>
                           </tr>
                           :
@@ -293,8 +293,8 @@ function OperationCost(props) {
                             <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="Edit  mr-2" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete " type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
+                              <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
                             </td>
                           </tr>
                       )

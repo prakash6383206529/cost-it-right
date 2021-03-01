@@ -31,6 +31,9 @@ function CostingHeaderTabs(props) {
   return (
     <>
       <div className="user-page p-0">
+        <div className="text-right w-100">
+          <button type="button" class="btn-primary btn btn-lg mt-2"> <img src={require("../../../../assests/images/hirarchy-icon.svg")} alt="hirarchy-icon.jpg" /> <span>View Hirarchy</span></button>
+        </div>
         <div>
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>

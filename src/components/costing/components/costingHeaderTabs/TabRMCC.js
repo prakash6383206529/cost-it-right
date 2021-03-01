@@ -850,7 +850,7 @@ function TabRMCC(props) {
               >
                 <Row>
                   <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm">
+                    <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
@@ -858,7 +858,7 @@ function TabRMCC(props) {
                           <th style={{ width: '150px' }}>{`RM Cost`}</th>
                           <th style={{ width: '150px' }}>{`BOP Cost`}</th>
                           <th style={{ width: '200px' }}>{`Conversion Cost`}</th>
-                          <th style={{ width: '200px' }}>{`Quantity`}</th>
+                          <th style={{ width: '200px' }}>{`Quantity`} <button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button></th>
                           <th style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
                           <th style={{ width: '100px' }}>{``}</th>
                         </tr>
@@ -913,24 +913,30 @@ function TabRMCC(props) {
                     </Table>
                   </Col>
                 </Row>
+                <div className="col-sm-12 text-right bluefooter-butn">
+                  <button type={"button"} className="reset mr15 cancel-btn">
+                    <div className={"cross-icon"}>
+                      <img
+                        src={require("../../../../assests/images/times.png")}
+                        alt="cancel-icon.jpg"
+                      />
+                    </div>{" "}
+                    {"Cancel"}
+                  </button>
+                  <button
+                    type={'button'}
+                    className="submit-button mr-3 save-btn"
+                  >
+                    <div className={'check-icon'}>
+                      <img
+                        src={require('../../../../assests/images/check.png')}
+                        alt="check-icon.jpg"
+                      />{' '}
+                    </div>
+                    {'Save'}
+                  </button>
+                </div>
 
-                {/* <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
-                  <div className="col-sm-12 text-right bluefooter-butn">
-                    <button
-                      type={'button'}
-                      className="submit-button mr-3 save-btn"
-                      onClick={saveCosting}
-                    >
-                      <div className={'check-icon'}>
-                        <img
-                          src={require('../../../../assests/images/check.png')}
-                          alt="check-icon.jpg"
-                        />{' '}
-                      </div>
-                      {'Save'}
-                    </button>
-                  </div>
-                </Row> */}
               </form>
             </div>
           </Col>

@@ -747,6 +747,27 @@ button.add-btn {
   line-height: initial;
   font-size: 17px;
 }
+
+.bottom-border {
+  position: relative;
+  padding: 5px;
+  margin-bottom: 15px;
+  color: #3D4465;
+  padding-bottom: 15px;
+  line-height: initial;
+  font-size: 17px;
+  padding-left: 0px;
+  &:before{
+    border-bottom: 2px solid #d62c8c;
+    content: "";
+    height: 2px;
+    position: absolute;
+    left: 0;
+    width: 30px;
+    bottom: 5px;
+  }
+}
+
 .table.cr-brdr-main thead th{color:#3D4465;}
 .withBorder .form-control {
   border: 1px solid #c2cbe8;
@@ -1430,8 +1451,8 @@ button.user-btn.pull-right {
     .Close {
     position: absolute;
     left: 0px;
-    top: 3px;
-    height: 15px;
+    top: 5px;
+    height: 10px;
     width: 15px;
     background: transparent url("../../assests/images/caret-down.svg") 0% 0% no-repeat padding-box;
     opacity: 1;
@@ -1440,8 +1461,8 @@ button.user-btn.pull-right {
   .Open {
     position: absolute;
     left: 0px;
-    top: 3px;
-    height: 15px;
+    top: 5px;
+    height: 10px;
     width: 15px;
     background: transparent url("../../assests/images/caret-up.svg") 0% 0% no-repeat padding-box;
     opacity: 1;
@@ -2180,7 +2201,7 @@ table{
   color: #3D4465;
 }
 .add-min-height{
-  .btn-primary,.user-btn{
+  .btn-secondary,.btn-primary,.user-btn{
     height: 40px;
   }
   .reset-btn{
@@ -2188,6 +2209,7 @@ table{
   }
   .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: 27px;}
 }
+button:disabled{pointer-events: none;}
 
 //=============== costing details page only
 .costing-details-page{
@@ -2571,7 +2593,23 @@ table{
 .costing-highlight-row{
   background-color: #F8FCFF;
 }
-
+body {
+  .btn-lg{
+    height: auto;
+    padding: 11px 18px;
+    img{
+      width: auto;
+      height: 18px;
+      display: inline-block;
+      vertical-align: middle;
+      padding-right: 8px;
+    }
+    span{
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+}
 
 
 
