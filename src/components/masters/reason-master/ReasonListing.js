@@ -257,7 +257,7 @@ class ReasonListing extends Component {
         <div className="container-fluid">
           {/* {this.props.loading && <Loader />} */}
           <Row>
-            <Col md={12}><h1>Reason</h1></Col>
+            <Col md={12}><h1>Reason Master</h1></Col>
             <Col md={12}><hr className="mt-0" /></Col>
           </Row>
           <Row className="no-filter-row">

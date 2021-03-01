@@ -232,11 +232,11 @@ function RawMaterialCost(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <Row>
+          <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">{'Raw Material Cost:'}</div>
             </Col>
-            <Col col={'2'}>
+            <Col md={'2'}>
               {gridData && gridData.length <= gridLength && (
                 <button
                   type="button"

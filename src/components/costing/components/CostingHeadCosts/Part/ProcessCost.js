@@ -416,12 +416,12 @@ function ProcessCost(props) {
         <div className="cr-process-costwrap">
           <Row className="cr-innertool-cost">
 
-            <Col md="3" className="cr-costlabel">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</Col>
-            <Col md="3" className="cr-costlabel">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</Col>
-            <Col md="3" className="cr-costlabel">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</Col>
+            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</span></Col>
 
-            <Col md="3" className="switch cr-costlabel">
-              <label className="switch-level">
+            <Col md="3" className="switch cr-costlabel text-right">
+              <label className="switch-level d-inline-flex w-auto">
                 <div className={'left-title'}>{''}</div>
                 <Switch
                   onChange={onToolToggle}
@@ -442,11 +442,11 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          <Row>
+          <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">{'Process Cost:'}</div>
             </Col>
-            <Col col={'2'}>
+            <Col md={'2'}>
               <button
                 type="button"
                 className={'user-btn'}

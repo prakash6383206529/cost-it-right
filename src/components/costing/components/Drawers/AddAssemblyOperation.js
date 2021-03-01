@@ -130,7 +130,7 @@ function AddAssemblyOperation(props) {
             <Row className="drawer-heading sticky-top-0">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Add Operation'}</h3>
+                  <h3>{'Add Assembly Operation Cost'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -139,18 +139,18 @@ function AddAssemblyOperation(props) {
               </Col>
             </Row>
 
-            <Row className="mb-3">
+            <Row className="mb-3 pt-3">
               <Col>
                 <div className="user-page p-0">
                   <div className="cr-process-costwrap">
                     <Row className="cr-innertool-cost">
 
-                      <Col md="3" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</Col>
-                      <Col md="3" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
-                      <Col md="3" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</Col>
+                      <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalOperationCostPerAssembly !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly : 0}`}</span></Col>
+                      <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalToolCostPerAssembly !== null ? item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col>
+                      <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col>
 
-                      <Col md="3" className="switch cr-costlabel">
-                        <label className="switch-level">
+                      <Col md="3" className="switch cr-costlabel text-right">
+                        <label className="switch-level d-inline-flex w-auto mb-0">
                           <div className={'left-title'}>{''}</div>
                           <Switch
                             onChange={onToolToggle}
@@ -196,17 +196,16 @@ function AddAssemblyOperation(props) {
               <div className="col-sm-12 text-right">
                 <button
                   type={'button'}
-                  className="submit-button mr5 save-btn"
-                  onClick={saveData} >
-                  <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'SAVE'}
-                </button>
-
-                <button
-                  type={'button'}
                   className="reset mr15 cancel-btn"
                   onClick={cancel} >
                   <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                </button>
+                <button
+                  type={'button'}
+                  className="submit-button mr15 save-btn"
+                  onClick={saveData} >
+                  <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  {'SAVE'}
                 </button>
               </div>
             </Row>
