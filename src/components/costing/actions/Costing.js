@@ -952,6 +952,42 @@ export function saveCostingOverheadProfitTab(data, callback) {
 }
 
 /**
+ * @method saveAssemblyOverheadProfitTab
+ * @description SAVE ASSEMBLY OVERHEAD PROFIT TAB
+ */
+export function saveAssemblyOverheadProfitTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveAssemblyOverheadProfitTab, data, headers)
+    request
+      .then((response) => {
+        callback(response)
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+/**
+ * @method saveComponentOverheadProfitTab
+ * @description SAVE COMPONENT COSTING OVERHEAD PROFIT TAB
+ */
+export function saveComponentOverheadProfitTab(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveComponentOverheadProfitTab, data, headers)
+    request
+      .then((response) => {
+        callback(response)
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+/**
  * @method getInventoryDataByHeads
  * @description GET INVENTORY DETAIL BY COSTING HEADS
  */

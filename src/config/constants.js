@@ -463,6 +463,8 @@ export const API = {
   getOverheadProfitTabData: `${BASE_URL}/costing/get-costing-detail-for-overhead-and-profit`,
   getOverheadProfitDataByModelType: `${BASE_URL}/costing/get-zbc-costing-overhead-profit-details`,
   saveCostingOverheadProfitTab: `${BASE_URL}/costing/save-costing-detail-for-overhead-and-profit`,
+  saveComponentOverheadProfitTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-overhead-and-profit`,
+  saveAssemblyOverheadProfitTab: `${BASE_URL}/costing/save-assembly-costing-detail-for-overhead-and-profit`,
   getInventoryDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-icc-applicability`,
   getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-payment-term-applicability`,
 
