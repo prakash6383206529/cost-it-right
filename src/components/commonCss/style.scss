@@ -2435,22 +2435,22 @@ button:disabled{pointer-events: none;}
     position: absolute;
     z-index: 1;
     bottom: 100%;
-    left: 50%;
+    left: -140px;
     margin-left: -4px;
     font-size: 14px;
-    // &:after {
-    //   position: absolute;
-    //   display: block;
-    //   content: "";
-    //   border-color: transparent;
-    //   border-style: solid;
-    //   left: 0;
-    //   right: 0;
-    //   width: 8px;
-    //   margin: auto;
-    //   bottom: -6px;
-    //   border-top-color:#D0D8E5;
-    // }
+    &:after {
+      position: absolute;
+      display: block;
+      content: "";
+      border-color: transparent;
+      border-style: solid;
+      left: 0;
+      right: 0;
+      width: 8px;
+      margin: auto;
+      bottom: -6px;
+      border-top-color:#D0D8E5;
+    }
   }
   .tooltip-icon{
     cursor: pointer;
@@ -2610,7 +2610,12 @@ body {
     }
   }
 }
-
+.cr-subtabs-head{
+  border: 1px solid #C2CBE8;
+}
+.costing-border{border: 1px solid #C2CBE8;}
+.costing-border-x{border-left: 1px solid #C2CBE8;border-right: 1px solid #C2CBE8;}
+.costing-border-y{border-top: 1px solid #C2CBE8;border-top: 1px solid #C2CBE8;}
 
 
 

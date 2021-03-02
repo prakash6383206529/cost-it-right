@@ -150,13 +150,13 @@ function TabToolCost(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              <Row>
+              {/* <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
                     <h2>{""}</h2>
                   </div>
                 </Col>
-              </Row>
+              </Row> */}
 
               <Row>
                 <Col md="1">{"Applicability:"}</Col>
