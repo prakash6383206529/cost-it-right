@@ -161,13 +161,13 @@ function TabPackagingFreight(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              <Row>
+              {/* <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
                     <h2>{""}</h2>
                   </div>
                 </Col>
-              </Row>
+              </Row> */}
 
               <form
                 noValidate
@@ -198,17 +198,17 @@ function TabPackagingFreight(props) {
                                   <td>
                                     {item.PackagingNetCost !== null
                                       ? checkForDecimalAndNull(
-                                          item.PackagingNetCost,
-                                          2
-                                        )
+                                        item.PackagingNetCost,
+                                        2
+                                      )
                                       : 0}
                                   </td>
                                   <td>
                                     {item.FreightNetCost !== null
                                       ? checkForDecimalAndNull(
-                                          item.FreightNetCost,
-                                          2
-                                        )
+                                        item.FreightNetCost,
+                                        2
+                                      )
                                       : 0}
                                   </td>
                                 </tr>

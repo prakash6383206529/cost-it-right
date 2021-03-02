@@ -239,41 +239,43 @@ function TabOverheadProfit(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              <Row>
+              {/* <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
                     <h2>{""}</h2>
                   </div>
                 </Col>
-              </Row>
+              </Row> */}
 
-              <Row>
-                <Col md="1">{"Applicability:"}</Col>
-                <Col md="8" className="switch mb15">
-                  <label className="switch-level d-inline-flex w-auto">
-                    <div className={"left-title"}>{" Assembly Level"}</div>
-                    <span className="cr-sw-level">
-                      <span className="cr-switch-icon">
-                        <Switch
-                          onChange={onPressApplicability}
-                          checked={IsApplicableForChildParts}
-                          id="normal-switch"
-                          disabled={false}
-                          background="#4DC771"
-                          onColor="#4DC771"
-                          onHandleColor="#ffffff"
-                          offColor="#CCC"
-                          uncheckedIcon={false}
-                          checkedIcon={false}
-                          height={20}
-                          width={46}
-                        />
+              <Row className="m-0">
+                <Col md="12" className="px-3 py-4 costing-border-x border-bottom-0">
+                  <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
+                  <div className="switch d-inline-flex">
+                    <label className="switch-level d-inline-flex w-auto">
+                      <div className={"left-title"}><b>{" Assembly Level"}</b></div>
+                      <span className="cr-sw-level">
+                        <span className="cr-switch-icon">
+                          <Switch
+                            onChange={onPressApplicability}
+                            checked={IsApplicableForChildParts}
+                            id="normal-switch"
+                            disabled={false}
+                            background="#4DC771"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#CCC"
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            height={20}
+                            width={46}
+                          />
+                        </span>
+                        <div className={"right-title"}>
+                          {"Sub Assembly Level"}
+                        </div>
                       </span>
-                      <div className={"right-title"}>
-                        {"Sub Assembly Level"}
-                      </div>
-                    </span>
-                  </label>
+                    </label>
+                  </div>
                 </Col>
               </Row>
 
