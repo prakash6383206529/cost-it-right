@@ -1,19 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { CONSTANT } from '../../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectList, getPaymentTermsAppliSelectList } from '../../../../../actions/Common';
-import { getOverheadProfitTabData } from '../../../actions/Costing';
+import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
+import { getOverheadProfitTabData, saveComponentOverheadProfitTab } from '../../../actions/Costing';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import Switch from "react-switch";
 import OverheadProfit from '.';
 
 function PartOverheadProfit(props) {
   const { item } = props;
+
+  const [Count, setCount] = useState(0);
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -26,6 +21,7 @@ function PartOverheadProfit(props) {
       BOMLevel: BOMLevel,
       PartNumber: PartNumber,
     }
+    setCount(Count + 1)
     setTimeout(() => {
       if (Object.keys(costData).length > 0) {
         const data = {
@@ -43,13 +39,35 @@ function PartOverheadProfit(props) {
     }, 500)
   }
 
+  /**
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
+  const onSubmit = (values) => { }
 
   /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
-  const onSubmit = (values) => {
-    props.saveCosting()
+  * @method SAVE API CALL WHEN COMPONENT CLOSED
+  * @description Used to Submit the form
+  */
+  useEffect(() => {
+    if (item.IsOpen === false && Count > 1) {
+      console.log('Save API Call!!!!!!!!!')
+    }
+  }, [item.IsOpen])
+
+  /**
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
+  const saveCosting = (values) => {
+    let reqData = {
+      "CostingId": item.CostingId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsSurfaceTreatmentApplicable": true,
+      "IsApplicableForChildParts": false,
+      "CostingPartDetails": item.CostingPartDetails
+    }
+    dispatch(saveComponentOverheadProfitTab(reqData, res => { }))
   }
 
   /**
@@ -65,13 +83,11 @@ function PartOverheadProfit(props) {
           </span>
         </td>
         <td>{item && item.PartType}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        {/* <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td> */}
-        <td>{1}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{''}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.OverheadCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.OverheadCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.ProfitCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ProfitCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.RejectionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.RejectionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.ICCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ICCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.PaymentTermCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PaymentTermCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td">
@@ -87,7 +103,7 @@ function PartOverheadProfit(props) {
                 setRejectionDetail={props.setRejectionDetail}
                 setICCDetail={props.setICCDetail}
                 setPaymentTermsDetail={props.setPaymentTermsDetail}
-                saveCosting={props.saveCosting}
+                saveCosting={saveCosting}
               />
             </div>
           </div >

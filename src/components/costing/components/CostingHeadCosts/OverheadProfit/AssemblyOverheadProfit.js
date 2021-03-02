@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Col, Row, } from 'reactstrap';
-import { toastr } from 'react-redux-toastr';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
-import { getOverheadProfitTabData } from '../../../actions/Costing';
+import { checkForDecimalAndNull, loggedInUserId, } from '../../../../../helper';
+import { getOverheadProfitTabData, saveAssemblyOverheadProfitTab } from '../../../actions/Costing';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
+import OverheadProfit from '.';
 
 function AssemblyOverheadProfit(props) {
   const { children, item, index } = props;
@@ -58,8 +57,24 @@ function AssemblyOverheadProfit(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
-    props.saveCosting()
+  const onSubmit = (values) => { }
+
+
+  /**
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
+  const saveCosting = (values) => {
+    let reqData = {
+      "CostingId": item.CostingId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsSurfaceTreatmentApplicable": true,
+      "IsApplicableForChildParts": false,
+      "CostingPartDetails": item.CostingPartDetails,
+    }
+    dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
+      console.log('saveAssemblyOverheadProfitTab: ', res);
+    }))
   }
 
   /**
@@ -75,15 +90,34 @@ function AssemblyOverheadProfit(props) {
           </span>
         </td>
         <td>{item && item.PartType}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.OverheadNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.OverheadNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.ProfitNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ProfitNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.RejectionNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.RejectionNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.OverheadCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.OverheadCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.ProfitCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ProfitCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.RejectionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.RejectionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.ICCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ICCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.PaymentTermCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PaymentTermCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
       </tr>
+      {item.IsOpen && <tr>
+        <td colSpan={8} className="cr-innerwrap-td">
+          <div className="user-page p-0">
+            <div>
+              <OverheadProfit
+                index={props.index}
+                data={item}
+                OverheadCost={props.OverheadCost}
+                ProfitCost={props.ProfitCost}
+                setOverheadDetail={props.setOverheadDetail}
+                setProfitDetail={props.setProfitDetail}
+                setRejectionDetail={props.setRejectionDetail}
+                setICCDetail={props.setICCDetail}
+                setPaymentTermsDetail={props.setPaymentTermsDetail}
+                saveCosting={saveCosting}
+              />
+            </div>
+          </div >
+        </td>
+      </tr>}
 
-      {/* {IsOpen && nestedAssembly} */}
-      {item.IsOpen && nestedAssembly}
+      {/* {item.IsOpen && nestedAssembly} */}
 
     </ >
   );
