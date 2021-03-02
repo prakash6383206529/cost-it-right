@@ -278,10 +278,11 @@ function TabDiscountOther(props) {
   return (
     <>
       <div className="login-container signup-form">
-        <Row>
-          <Col md="12">
-            <div className="shadow-lgg login-formg">
-              {/* <Row>
+        <div className="p-3 costing-border w-100 border-top-0">
+          <Row>
+            <Col md="12">
+              <div className="shadow-lgg login-formg">
+                {/* <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
                     <h2>{""}</h2>
@@ -289,331 +290,329 @@ function TabDiscountOther(props) {
                 </Col>
               </Row> */}
 
-              <Row>
-                <Col md="12">
-                  <Table
-                    className="table cr-brdr-main bluefooter-butn"
-                    size="sm"
-                  >
-                    <thead>
-                      <tr>
-                        <th>{``}</th>
-                        <th>{``}</th>
-                        <th>{``}</th>
-                        <th>{``}</th>
-                        <th>{``}</th>
-                        <th>{``}</th>
-                        <th>{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue}`}</th>
-                      </tr>
-                    </thead>
-                  </Table>
-                </Col>
-              </Row>
-
-              <form
-                noValidate
-                className="form"
-                onSubmit={handleSubmit(onSubmit)}
-              >
                 <Row>
-                  <Col md="4" className="border-right">
-                    <TextFieldHookForm
-                      label="Hundi/Other Discount(%)"
-                      name={"HundiOrDiscountPercentage"}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={(e) => {
-                        e.preventDefault();
-                        handleDiscountChange(e);
-                      }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      errors={errors.HundiOrDiscountPercentage}
-                      disabled={false}
-                    />
-                  </Col>
-                  <Col md="4" className="border-right">
-                    <TextFieldHookForm
-                      label="Other Cost Description"
-                      name={"OtherCostDescription"}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      errors={errors.OtherCostDescription}
-                      disabled={false}
-                    />
-                  </Col>
-                  <Col md="4">
-                    <TextFieldHookForm
-                      label="Net PO Price(INR)"
-                      name={'NetPOPriceINR'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.NetPOPriceINR}
-                      disabled={true}
-                    />
+                  <Col md="12" className="pt-2">
+                    <Table
+                      className="table cr-brdr-main cr-bg-tbl mt-1"
+                      size="sm"
+                    >
+                      <thead>
+                        <tr>
+                          <th className="fs1 font-weight-500" style={{ width: "33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500" style={{ width: "33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue}`}</th>
+                        </tr>
+                      </thead>
+                    </Table>
                   </Col>
                 </Row>
 
-                <Row>
-                  <Col md="4" className="border-right">
-                    <TextFieldHookForm
-                      label="Hundi/Discount Value"
-                      name={'HundiOrDiscountValue'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.HundiOrDiscountValue}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="4" className="border-right">
-                    <TextFieldHookForm
-                      label="Any Other Cost"
-                      name={"AnyOtherCost"}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        //required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          message: "Invalid Number.",
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      errors={errors.AnyOtherCost}
-                      disabled={false}
-                    />
-                  </Col>
-                  <Col md="4">
-                    <label
-                      className={`custom-checkbox`}
-                      onChange={onPressChangeCurrency}
-                    >
-                      Change Currency
-                      <input
-                        type="checkbox"
-                        checked={IsCurrencyChange}
+                <form
+                  noValidate
+                  className="form"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <Row>
+                    <Col md="4" className="border-right">
+                      <TextFieldHookForm
+                        label="Hundi/Other Discount(%)"
+                        name={"HundiOrDiscountPercentage"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          pattern: {
+                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.'
+                          },
+                          // maxLength: 4,
+                        }}
+                        handleChange={(e) => {
+                          e.preventDefault();
+                          handleDiscountChange(e);
+                        }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.HundiOrDiscountPercentage}
                         disabled={false}
                       />
-                      <span
-                        className=" before-box"
-                        checked={IsCurrencyChange}
-                        onChange={onPressChangeCurrency}
-                      />
-                    </label>
-
-                    {IsCurrencyChange && (
-                      <>
-                        <SearchableSelectHookForm
-                          label={"Select Currency"}
-                          name={"Currency"}
-                          placeholder={"-Select-"}
-                          Controller={Controller}
-                          control={control}
-                          rules={{ required: true }}
-                          register={register}
-                          defaultValue={currency.length !== 0 ? currency : ""}
-                          options={renderListing("Currency")}
-                          mandatory={true}
-                          handleChange={handleCurrencyChange}
-                          errors={errors.Currency}
-                          disabled={false}
-                        />
-
-                        <TextFieldHookForm
-                          label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
-                          name={'NetPOPriceOtherCurrency'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={true}
-                          rules={{
-                            required: true,
-                            // pattern: {
-                            //   value: /^[0-9]*$/i,
-                            //   message: 'Invalid Number.'
-                            // },
-                            // maxLength: 4,
-                          }}
-                          handleChange={() => { }}
-                          defaultValue={""}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.NetPOPriceOtherCurrency}
-                          disabled={true}
-                        />
-                      </>
-                    )}
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col md="12">
-                    <div className="left-border">
-                      {'Remarks & Attachments'}
-                    </div>
-                  </Col>
-
-                  <Col md="6">
-                    <TextAreaHookForm
-                      label="Remarks & Attachments"
-                      name={"Remarks"}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      rows={6}
-                      mandatory={false}
-                      rules={
-                        {
-                          //required: true,
+                    </Col>
+                    <Col md="4" className="border-right">
+                      <TextFieldHookForm
+                        label="Other Cost Description"
+                        name={"OtherCostDescription"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
                           // pattern: {
                           //   value: /^[0-9]*$/i,
                           //   message: 'Invalid Number.'
                           // },
                           // maxLength: 4,
-                        }
-                      }
-                      handleChange={() => { }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      errors={errors.Remarks}
-                      disabled={false}
-                    />
-                  </Col>
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.OtherCostDescription}
+                        disabled={false}
+                      />
+                    </Col>
+                    <Col md="4">
+                      <TextFieldHookForm
+                        label="Net PO Price(INR)"
+                        name={'NetPOPriceINR'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          // pattern: {
+                          //   value: /^[0-9]*$/i,
+                          //   message: 'Invalid Number.'
+                          // },
+                          // maxLength: 4,
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.NetPOPriceINR}
+                        disabled={true}
+                      />
+                    </Col>
+                  </Row>
 
-                  <Col md="3" className="height152-label">
-                    <label>Upload Files (upload up to 3 files)</label>
-                    {files && files.length >= 8 ? (
-                      ""
-                    ) : (
-                        <Dropzone
-                          getUploadParams={getUploadParams}
-                          onChangeStatus={handleChangeStatus}
-                          PreviewComponent={Preview}
-                          //onSubmit={this.handleSubmit}
-                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                          initialFiles={initialFiles}
-                          maxFiles={8}
-                          maxSizeBytes={2000000}
-                          inputContent={(files, extra) =>
-                            extra.reject ? (
-                              "Image, audio and video files only"
-                            ) : (
-                                <div className="text-center">
-                                  <i className="text-primary fa fa-cloud-upload"></i>
-                                  <span className="d-block">
-                                    Drag and Drop or{" "}
-                                    <span className="text-primary">Browse</span>
-                                    <br />
+                  <Row>
+                    <Col md="4" className="border-right">
+                      <TextFieldHookForm
+                        label="Hundi/Discount Value"
+                        name={'HundiOrDiscountValue'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          pattern: {
+                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.'
+                          },
+                          // maxLength: 4,
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.HundiOrDiscountValue}
+                        disabled={true}
+                      />
+                    </Col>
+                    <Col md="4" className="border-right">
+                      <TextFieldHookForm
+                        label="Any Other Cost"
+                        name={"AnyOtherCost"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          //required: true,
+                          pattern: {
+                            value: /^[0-9]*$/i,
+                            message: "Invalid Number.",
+                          },
+                          // maxLength: 4,
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.AnyOtherCost}
+                        disabled={false}
+                      />
+                    </Col>
+                    <Col md="4">
+                      <label
+                        className={`custom-checkbox`}
+                        onChange={onPressChangeCurrency}
+                      >
+                        Change Currency
+                      <input
+                          type="checkbox"
+                          checked={IsCurrencyChange}
+                          disabled={false}
+                        />
+                        <span
+                          className=" before-box"
+                          checked={IsCurrencyChange}
+                          onChange={onPressChangeCurrency}
+                        />
+                      </label>
+
+                      {IsCurrencyChange && (
+                        <>
+                          <SearchableSelectHookForm
+                            label={"Select Currency"}
+                            name={"Currency"}
+                            placeholder={"-Select-"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={currency.length !== 0 ? currency : ""}
+                            options={renderListing("Currency")}
+                            mandatory={true}
+                            handleChange={handleCurrencyChange}
+                            errors={errors.Currency}
+                            disabled={false}
+                          />
+
+                          <TextFieldHookForm
+                            label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
+                            name={'NetPOPriceOtherCurrency'}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{
+                              required: true,
+                              // pattern: {
+                              //   value: /^[0-9]*$/i,
+                              //   message: 'Invalid Number.'
+                              // },
+                              // maxLength: 4,
+                            }}
+                            handleChange={() => { }}
+                            defaultValue={""}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.NetPOPriceOtherCurrency}
+                            disabled={true}
+                          />
+                        </>
+                      )}
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md="12">
+                      <div className="bottom-border mb-0 mt-3">
+                        {'Remarks & Attachments'}
+                      </div>
+                    </Col>
+
+                    <Col md="6">
+                      <TextAreaHookForm
+                        label="Remarks & Attachments"
+                        name={"Remarks"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        rows={6}
+                        mandatory={false}
+                        rules={
+                          {
+                            //required: true,
+                            // pattern: {
+                            //   value: /^[0-9]*$/i,
+                            //   message: 'Invalid Number.'
+                            // },
+                            // maxLength: 4,
+                          }
+                        }
+                        handleChange={() => { }}
+                        defaultValue={""}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.Remarks}
+                        disabled={false}
+                      />
+                    </Col>
+
+                    <Col md="3" className="height152-label">
+                      <label>Upload Attachment ( upload up to 4 files )</label>
+                      {files && files.length >= 4 ? (
+                        <div class="alert alert-danger" role="alert">
+                          Max file uploaded.
+                        </div>
+                      ) : (
+                          <Dropzone
+                            getUploadParams={getUploadParams}
+                            onChangeStatus={handleChangeStatus}
+                            PreviewComponent={Preview}
+                            //onSubmit={this.handleSubmit}
+                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                            initialFiles={initialFiles}
+                            maxFiles={4}
+                            maxSizeBytes={2000000}
+                            inputContent={(files, extra) =>
+                              extra.reject ? (
+                                "Image, audio and video files only"
+                              ) : (
+                                  <div className="text-center">
+                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                    <span className="d-block">
+                                      Drag and Drop or{" "}
+                                      <span className="text-primary">Browse</span>
+                                      <br />
                                 file to upload
                               </span>
-                                </div>
-                              )
-                          }
-                          styles={{
-                            dropzoneReject: {
-                              borderColor: "red",
-                              backgroundColor: "#DAA",
-                            },
-                            inputLabel: (files, extra) =>
-                              extra.reject ? { color: "red" } : {},
-                          }}
-                          classNames="draper-drop"
-                        />
-                      )}
-                  </Col>
-                  <Col md="3">
-                    <div className={"attachment-wrapper"}>
-                      {files &&
-                        files.map((f) => {
-                          const withOutTild = f.FileURL.replace("~", "");
-                          const fileURL = `${FILE_URL}${withOutTild}`;
-                          return (
-                            <div className={"attachment images"}>
-                              <a href={fileURL} target="_blank">
-                                {f.OriginalFileName}
-                              </a>
-                              {/* <a href={fileURL} target="_blank" download={f.FileName}>
+                                  </div>
+                                )
+                            }
+                            styles={{
+                              dropzoneReject: {
+                                borderColor: "red",
+                                backgroundColor: "#DAA",
+                              },
+                              inputLabel: (files, extra) =>
+                                extra.reject ? { color: "red" } : {},
+                            }}
+                            classNames="draper-drop"
+                          />
+                        )}
+                    </Col>
+                    <Col md="3">
+                      <div className={"attachment-wrapper"}>
+                        {files &&
+                          files.map((f) => {
+                            const withOutTild = f.FileURL.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                              <div className={"attachment images"}>
+                                <a href={fileURL} target="_blank">
+                                  {f.OriginalFileName}
+                                </a>
+                                {/* <a href={fileURL} target="_blank" download={f.FileName}>
                                                                         <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
                                                                     </a> */}
-                              {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
+                                {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
 
-                              <img
-                                alt={""}
-                                className="float-right"
-                                onClick={() => deleteFile(f.FileId, f.FileName)}
-                                src={require("../../../../assests/images/red-cross.png")}
-                              ></img>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </Col>
-                </Row>
+                                <img
+                                  alt={""}
+                                  className="float-right"
+                                  onClick={() => deleteFile(f.FileId, f.FileName)}
+                                  src={require("../../../../assests/images/red-cross.png")}
+                                ></img>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </Col>
+                  </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
-                  <div className="col-sm-12 text-right bluefooter-butn">
+
+                  <div className="col-sm-12 text-right bluefooter-butn mt-3">
                     <button
                       type={"submit"}
                       className="submit-button mr5 save-btn"
@@ -627,11 +626,12 @@ function TabDiscountOther(props) {
                       {"Save"}
                     </button>
                   </div>
-                </Row>
-              </form>
-            </div>
-          </Col>
-        </Row>
+
+                </form>
+              </div>
+            </Col>
+          </Row>
+        </div>
       </div>
     </>
   );

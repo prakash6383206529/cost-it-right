@@ -7,7 +7,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
-import CostingHeadTabs from './CostingHeaderTabs/index'
+import CostingHeadTabs from './costingHeaderTabs/index'
 import { VBC, ZBC } from '../../../config/constants';
 
 export const costingInfoContext = React.createContext()
@@ -376,17 +376,17 @@ function CostingDetailStepTwo(props) {
                           CostingDataList.map((item, index) => {
                             return (
                               <>
-                                <td><span className="cr-prt-nm">{item.PartNumber}</span></td>
-                                <td><span className="dark-blue">{netRMCostPerAssembly(item)}</span></td>
-                                <td><span className="dark-blue">{netBOPCostPerAssembly(item)}</span></td>
-                                <td><span className="dark-blue">{netConversionCostPerAssembly(item)}</span></td>
-                                <td><span className="dark-blue">{netRMCCcost(item)}</span></td>
-                                <td><span className="dark-blue">{netSurfaceTreatmentCost(item)}</span></td>
-                                <td><span className="dark-blue">{netOverheadProfitCost(item)}</span></td>
-                                <td><span className="dark-blue">{netPackagingFreightCost(item)}</span></td>
-                                <td><span className="dark-blue">{netToolCost(item)}</span></td>
-                                <td><span className="dark-blue">{netDiscountOtherCost(item)}</span></td>
-                                <td><span className="dark-blue">{netTotalCost(item)}</span></td>
+                                <td><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netRMCostPerAssembly(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netBOPCostPerAssembly(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netConversionCostPerAssembly(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netRMCCcost(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netSurfaceTreatmentCost(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netOverheadProfitCost(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netPackagingFreightCost(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netToolCost(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netDiscountOtherCost(item)}</span></td>
+                                <td><span className="dark-blue fs1 font-weight-500">{netTotalCost(item)}</span></td>
                               </>
                             )
                           }

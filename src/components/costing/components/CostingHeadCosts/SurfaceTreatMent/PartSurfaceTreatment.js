@@ -85,7 +85,7 @@ function PartSurfaceTreatment(props) {
               //onClick={DrawerToggle}
               onClick={() => toggle(item.BOMLevel, item.PartNumber)}
             >
-              <div className={'plus'}></div>View Surface Treatment</button>
+              <div className={'fa fa-eye pr-1'}></div>View Surface Treatment</button>
             :
             <button
               type="button"

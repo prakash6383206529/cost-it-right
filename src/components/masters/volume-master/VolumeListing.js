@@ -582,7 +582,7 @@ class VolumeListing extends Component {
             </Row>
             <Row className="pt-4 blue-before">
               {this.state.shown && (
-                <Col md="8" className="filter-block">
+                <Col md="11" className="filter-block">
                   <div className="d-inline-flex justify-content-start align-items-top w100">
                     <div className="flex-fills">
                       <h5>{`Filter By:`}</h5>

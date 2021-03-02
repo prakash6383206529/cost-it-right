@@ -165,7 +165,7 @@ function AddSurfaceTreatment(props) {
             </Row>
 
 
-            <Row>
+            <Row className="mx-0 mb-3">
               <Col>
                 <BootstrapTable
                   data={tableData}
@@ -193,24 +193,24 @@ function AddSurfaceTreatment(props) {
               </Col>
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between">
-              <div className="col-sm-12 text-left bluefooter-butn">
-                <button
-                  type={'button'}
-                  className="submit-button mr5 save-btn"
-                  onClick={addRow} >
-                  <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'SELECT'}
-                </button>
 
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button>
-              </div>
-            </Row>
+            <div className="col-sm-12 text-left ">
+              <button
+                type={'button'}
+                className="submit-button mr5 save-btn"
+                onClick={addRow} >
+                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                {'SELECT'}
+              </button>
+
+              <button
+                type={'button'}
+                className="reset cancel-btn"
+                onClick={cancel} >
+                <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+              </button>
+            </div>
+
 
           </div>
         </Container>

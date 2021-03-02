@@ -158,33 +158,35 @@ function TabToolCost(props) {
                 </Col>
               </Row> */}
 
-              <Row>
-                <Col md="1">{"Applicability:"}</Col>
-                <Col md="8" className="switch mb15">
-                  <label className="switch-level d-inline-flex w-auto">
-                    <div className={"left-title"}>{"Overall"}</div>
-                    <span className="cr-sw-level">
-                      <span className="cr-switch-icon">
-                        <Switch
-                          onChange={onPressApplicability}
-                          checked={IsApplicableProcessWise}
-                          id="normal-switch"
-                          disabled={IsApplicablilityDisable}
-                          background="#4DC771"
-                          onColor="#4DC771"
-                          onHandleColor="#ffffff"
-                          offColor="#CCC"
-                          uncheckedIcon={false}
-                          checkedIcon={false}
-                          height={20}
-                          width={46}
-                        />
+              <Row className="m-0  costing-border ">
+                <Col md="9" className="px-3 py-4 ">
+                  <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
+                  <div className="switch d-inline-flex">
+                    <label className="switch-level d-inline-flex w-auto">
+                      <div className={"left-title"}>{"Overall"}</div>
+                      <span className="cr-sw-level">
+                        <span className="cr-switch-icon">
+                          <Switch
+                            onChange={onPressApplicability}
+                            checked={IsApplicableProcessWise}
+                            id="normal-switch"
+                            disabled={IsApplicablilityDisable}
+                            background="#4DC771"
+                            onColor="#4DC771"
+                            onHandleColor="#ffffff"
+                            offColor="#CCC"
+                            uncheckedIcon={false}
+                            checkedIcon={false}
+                            height={20}
+                            width={46}
+                          />
+                        </span>
+                        <div className={"right-title"}>{"Process Wise"}</div>
                       </span>
-                      <div className={"right-title"}>{"Process Wise"}</div>
-                    </span>
-                  </label>
+                    </label>
+                  </div>
                 </Col>
-                <Col md="2">{"Net Tool Cost"}</Col>
+                <Col md="3" className="px-3 py-4 ">{"Net Tool Cost"}</Col>
               </Row>
 
               <form

@@ -176,14 +176,14 @@ function TabPackagingFreight(props) {
               >
                 <Row>
                   <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm">
+                    <Table className="table cr-brdr-main mb-0 " size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: "100px" }}>{``}</th>
-                          <th
+                          <th className="py-4 align-middle" style={{ width: "100px" }}>{``}</th>
+                          <th className="py-4 align-middle"
                             style={{ width: "100px" }}
                           >{`Net Packaging Cost`}</th>
-                          <th
+                          <th className="py-4 align-middle"
                             style={{ width: "150px" }}
                           >{`Net Freight Cost`}</th>
                         </tr>
@@ -238,24 +238,22 @@ function TabPackagingFreight(props) {
                     </Table>
                   </Col>
                 </Row>
+                <div className="col-sm-12 text-right bluefooter-butn">
+                  <button
+                    type={"button"}
+                    className="submit-button mr5 save-btn"
+                    onClick={saveCosting}
+                  >
+                    <div className={"check-icon"}>
+                      <img
+                        src={require("../../../../assests/images/check.png")}
+                        alt="check-icon.jpg"
+                      />{" "}
+                    </div>
+                    {"Save"}
+                  </button>
+                </div>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
-                  <div className="col-sm-12 text-right bluefooter-butn">
-                    <button
-                      type={"button"}
-                      className="submit-button mr5 save-btn"
-                      onClick={saveCosting}
-                    >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
-                      {"Save"}
-                    </button>
-                  </div>
-                </Row>
               </form>
             </div>
           </Col>

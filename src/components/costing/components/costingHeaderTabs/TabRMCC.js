@@ -871,14 +871,14 @@ function TabRMCC(props) {
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '100px' }}>{`Type`}</th>
-                          <th style={{ width: '150px' }}>{`RM Cost`}</th>
-                          <th style={{ width: '150px' }}>{`BOP Cost`}</th>
-                          <th style={{ width: '200px' }}>{`Conversion Cost`}</th>
-                          <th style={{ width: '200px' }}>{`Quantity`} <button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button></th>
-                          <th style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
-                          <th style={{ width: '100px' }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
+                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`BOP Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Conversion Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
+                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
                         </tr>
                       </thead>
                       <tbody>

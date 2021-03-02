@@ -197,7 +197,7 @@ function AddOperation(props) {
             </Row>
 
             <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-              <div className="col-sm-12 text-right">
+              <div className="col-sm-12 text-left px-3">
                 <button
                   type={'button'}
                   className="submit-button mr5 save-btn"
@@ -208,7 +208,7 @@ function AddOperation(props) {
 
                 <button
                   type={'button'}
-                  className="reset mr15 cancel-btn"
+                  className="reset cancel-btn"
                   onClick={cancel} >
                   <div className={'cross-icon'}><img src={require('../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                 </button>
