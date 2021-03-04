@@ -1324,7 +1324,6 @@ export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 
-
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',
   costingName: '',
