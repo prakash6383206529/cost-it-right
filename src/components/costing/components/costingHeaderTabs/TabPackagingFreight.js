@@ -224,21 +224,6 @@ function TabPackagingFreight(props) {
                     {"Save"}
                   </button>
                 </div>
-
-                <Row className="sf-btn-footer no-gutters justify-content-between mt25 mb-35-minus">
-                  <div className="col-sm-12 text-right bluefooter-butn">
-                    <button
-                      type={"button"}
-                      className="submit-button mr5 save-btn"
-                      onClick={saveCosting}
-                    >
-                      <div className={"check-icon"}>
-                        <img src={require("../../../../assests/images/check.png")} alt="check-icon.jpg" />{" "}
-                      </div>
-                      {"Save"}
-                    </button>
-                  </div>
-                </Row>
               </form>
             </div>
           </Col>
