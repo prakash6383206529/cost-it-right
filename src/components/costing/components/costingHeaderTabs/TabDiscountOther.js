@@ -291,27 +291,6 @@ function TabDiscountOther(props) {
               </Row> */}
 
                 <Row>
-                  <Col md="12">
-                    <Table
-                      className="table cr-brdr-main bluefooter-butn"
-                      size="sm"
-                    >
-                      <thead>
-                        <tr>
-                          <th>{``}</th>
-                          <th>{``}</th>
-                          <th>{``}</th>
-                          <th>{``}</th>
-                          <th>{``}</th>
-                          <th>{``}</th>
-                          <th>{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue : props.netPOPrice}`}</th>
-                        </tr>
-                      </thead>
-                    </Table>
-                  </Col>
-                </Row>
-
-                <Row>
                   <Col md="12" className="pt-2">
                     <Table
                       className="table cr-brdr-main cr-bg-tbl mt-1"
@@ -321,7 +300,7 @@ function TabDiscountOther(props) {
                         <tr>
                           <th className="fs1 font-weight-500" style={{ width: "33%" }}>{``}</th>
                           <th className="fs1 font-weight-500" style={{ width: "33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue}`}</th>
+                          <th className="fs1 font-weight-500" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
