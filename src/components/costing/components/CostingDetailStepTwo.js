@@ -264,8 +264,44 @@ function CostingDetailStepTwo(props) {
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      //dispatch(setCostingDataList(tempArr, () => { }))
+      dispatch(setCostingDataList(tempArr, () => { }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
+
+    }, 500)
+
+  }
+
+  /**
+   * @method setHeaderCostToolTab
+   * @description SET COSTS FOR TOP HEADER FROM TOOL TAB 
+   */
+  const setHeaderCostToolTab = (data) => {
+    const headerIndex = 0;
+
+    setTimeout(() => {
+      let DataList = CostingDataList;
+      let tempData = CostingDataList && CostingDataList[headerIndex];
+
+      let OverAllCost = 0;
+      if (tempData && tempData !== undefined) {
+        OverAllCost =
+          tempData.NetTotalRMBOPCC +
+          tempData.NetSurfaceTreatmentCost +
+          tempData.NetOverheadAndProfitCost +
+          tempData.NetPackagingAndFreight +
+          checkForNull(data.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+      }
+
+      tempData = {
+        ...tempData,
+        ToolCost: data.ToolCost,
+        TotalCost: OverAllCost,
+      }
+      let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+
+      dispatch(setCostingDataList(tempArr, () => { }))
+      dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
+      //dispatch(setSurfaceCostData(data, () => { }))
 
     }, 500)
 
@@ -293,7 +329,7 @@ function CostingDetailStepTwo(props) {
         NetPOPriceINR: checkForDecimalAndNull(SumOfTab - cost, 2),
         HundiOrDiscountValue: checkForDecimalAndNull(cost, 2),
       }
-      dispatch(setDiscountCost(discountValues), () => { })
+      dispatch(setDiscountCost(discountValues, () => { }))
 
       OverAllCost = checkForNull(tempData.NetTotalRMBOPCC) +
         checkForNull(tempData.NetSurfaceTreatmentCost) +
@@ -309,7 +345,7 @@ function CostingDetailStepTwo(props) {
         }
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-        //dispatch(setCostingDataList(tempArr, () => { }))
+        dispatch(setCostingDataList(tempArr, () => { }))
         dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
       }, 500)
@@ -434,12 +470,13 @@ function CostingDetailStepTwo(props) {
                   <costingInfoContext.Provider value={costingData} >
                     <netHeadCostContext.Provider value={RMCCBOPCost} >
                       <CostingHeadTabs
-                        costData={costingData}
+                        //costData={costingData}
                         netPOPrice={NetPOPrice}
                         setHeaderCost={setHeaderCostRMCCTab}
                         setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
                         setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
                         setHeaderPackageFreightTab={setHeaderPackageFreightTab}
+                        setHeaderCostToolTab={setHeaderCostToolTab}
                         setHeaderDiscountTab={setHeaderDiscountTab}
                         DiscountTabData={DiscountCostData}
                         headCostRMCCBOPData={RMCCBOPCost}

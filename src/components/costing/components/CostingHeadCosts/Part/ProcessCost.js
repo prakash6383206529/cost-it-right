@@ -421,7 +421,8 @@ function ProcessCost(props) {
             <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</span></Col>
 
             <Col md="3" className="switch cr-costlabel text-right">
-              <label className="switch-level d-inline-flex w-auto">
+              {/* DISABLED FOR FUTURE SCOPE 03-03-2021 */}
+              {/* <label className="switch-level d-inline-flex w-auto">
                 <div className={'left-title'}>{''}</div>
                 <Switch
                   onChange={onToolToggle}
@@ -438,7 +439,7 @@ function ProcessCost(props) {
                   width={46}
                 />
                 <div className={'right-title'}>Show Tool Cost</div>
-              </label>
+              </label> */}
             </Col>
           </Row>
 

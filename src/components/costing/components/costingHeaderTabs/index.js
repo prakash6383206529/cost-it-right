@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import React, { useState, useContext } from 'react';
+import { connect, } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import TabRMCC from './TabRMCC';
@@ -8,11 +8,15 @@ import TabOverheadProfit from './TabOverheadProfit';
 import TabPackagingFreight from './TabPackagingFreight';
 import TabDiscountOther from './TabDiscountOther';
 import TabToolCost from './TabToolCost';
+import { costingInfoContext } from '../CostingDetailStepTwo';
+import BOMViewer from '../../../masters/part-master/BOMViewer';
 
 function CostingHeaderTabs(props) {
 
   const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
+  const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
+  const costData = useContext(costingInfoContext);
 
   /**
   * @method toggle
@@ -25,15 +29,32 @@ function CostingHeaderTabs(props) {
   }
 
   /**
+* @method closeVisualDrawer
+* @description CLOSE VISUAL AD DRAWER
+*/
+  const closeVisualDrawer = () => {
+    setIsOpenViewHirarchy(false)
+  }
+
+  /**
   * @method render
   * @description Renders the component
   */
   return (
     <>
       <div className="user-page p-0">
-        <div className="text-right w-100">
-          <button type="button" class="btn-primary btn btn-lg mt-2"> <img src={require("../../../../assests/images/hirarchy-icon.svg")} alt="hirarchy-icon.jpg" /> <span>View Hirarchy</span></button>
-        </div>
+
+        {costData.IsAssemblyPart &&
+          <div className="text-right w-100">
+            <button
+              type="button"
+              onClick={() => setIsOpenViewHirarchy(true)}
+              class="btn-primary btn btn-lg mt-2">
+              <img src={require("../../../../assests/images/hirarchy-icon.svg")} alt="hirarchy-icon.jpg" />
+              <span>View Hirarchy</span>
+            </button>
+          </div>}
+
         <div>
           <Nav tabs className="subtabs cr-subtabs-head">
             <NavItem>
@@ -101,6 +122,7 @@ function CostingHeaderTabs(props) {
               <TabToolCost
                 netPOPrice={netPOPrice}
                 activeTab={activeTab}
+                setHeaderCost={props.setHeaderCostToolTab}
               />
             </TabPane>
             <TabPane tabId="6">
@@ -114,6 +136,15 @@ function CostingHeaderTabs(props) {
           </TabContent>
         </div>
       </div >
+      {IsOpenViewHirarchy && <BOMViewer
+        isOpen={IsOpenViewHirarchy}
+        closeDrawer={closeVisualDrawer}
+        isEditFlag={true}
+        PartId={costData.PartId}
+        anchor={'right'}
+        isFromVishualAd={true}
+        NewAddedLevelOneChilds={[]}
+      />}
     </ >
   );
 }

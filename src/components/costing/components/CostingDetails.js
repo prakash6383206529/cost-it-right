@@ -80,7 +80,6 @@ function CostingDetails() {
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
-  //console.log('watch', watch('zbcPlantGridFields'))
   const fieldValues = useWatch({
     control,
     name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
@@ -283,7 +282,6 @@ function CostingDetails() {
    * @description HANDLE ZBC SOB CHANGE
    */
   const handleZBCSOBChange = (event, index) => {
-    //console.log('zbcPlantGridFields', event.target.name, fieldValues.zbcPlantGridFields)
 
     let tempArray = []
     let tempData = zbcPlantGrid[index]
@@ -330,10 +328,8 @@ function CostingDetails() {
 
     if (type === ZBC && newValue !== '') {
       let tempData = zbcPlantGrid[index]
-      let selectedOptionObj = tempData.CostingOptions.find(
-        (el) => el.CostingId === newValue.value,
-      )
-      //console.log('selectedOptionObj: ', selectedOptionObj);
+      let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
+
       tempData = {
         ...tempData,
         SelectedCostingVersion: newValue,
@@ -346,9 +342,7 @@ function CostingDetails() {
 
     if (type === VBC && newValue !== '') {
       let tempData = vbcVendorGrid[index]
-      let selectedOptionObj = tempData.CostingOptions.find(
-        (el) => el.CostingId === newValue.value,
-      )
+      let selectedOptionObj = tempData.CostingOptions.find((el) => el.CostingId === newValue.value,)
 
       tempData = {
         ...tempData,
@@ -439,19 +433,13 @@ function CostingDetails() {
     let NetZBCSOB = 0
     let NetVBCSOB = 0
 
-    NetZBCSOB =
-      zbcPlantGridFields &&
-      zbcPlantGridFields !== undefined &&
-      zbcPlantGridFields.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ShareOfBusinessPercent)
-      }, 0)
+    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields !== undefined && zbcPlantGridFields.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.ShareOfBusinessPercent)
+    }, 0)
 
-    NetVBCSOB =
-      vbcGridFields &&
-      vbcGridFields !== undefined &&
-      vbcGridFields.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ShareOfBusinessPercent)
-      }, 0)
+    NetVBCSOB = vbcGridFields && vbcGridFields !== undefined && vbcGridFields.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.ShareOfBusinessPercent)
+    }, 0)
 
     return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
     // return true;
@@ -713,12 +701,12 @@ function CostingDetails() {
       setStepOne(false)
     }
   }
+
   /**
    * @method copyCosting
    * @description COPY EXIS COSTING
    */
   const copyCosting = (index, type) => {
-    console.log(type, 'type')
     /*Commented because of error*/
     // if (!checkSOBTotal()) {
     //   warningMessageHandle('SOB_WARNING')
@@ -733,10 +721,6 @@ function CostingDetails() {
     // }
     /*Copy Costing Drawer code here*/
     setIsCopyCostingDrawer(true)
-    console.log(
-      getValues(`${vbcGridFields}[${index}]CostingVersion`),
-      'VBC DATA',
-    )
 
     if (type === ZBC) {
       const tempcopyCostingData = zbcPlantGrid[index]
@@ -755,6 +739,7 @@ function CostingDetails() {
     }
     setType(type)
   }
+
   /**
    * @method cancel
    * @description used to Reset form
@@ -768,6 +753,7 @@ function CostingDetails() {
       Part: '',
     })
   }
+
   /**
    * @method backToFirstStep
    * @description used to Reset form
@@ -791,7 +777,6 @@ function CostingDetails() {
 
   }
 
-  //console.log('errors >>>', errors);
   /**
    * @method onSubmit
    * @description Used to Submit the form
@@ -1021,7 +1006,6 @@ function CostingDetails() {
                               <tbody>
                                 {zbcPlantGrid &&
                                   zbcPlantGrid.map((item, index) => {
-                                    console.log(item, "itemk");
                                     return (
                                       <tr key={index}>
                                         <td>{item.PlantCode}</td>

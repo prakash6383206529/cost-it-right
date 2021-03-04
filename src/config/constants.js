@@ -472,13 +472,14 @@ export const API = {
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
 
   getToolTabData: `${BASE_URL}/costing/get-costing-detail-for-tools-cost`,
-  saveToolTab: `${BASE_URL}/costing/save-costing-detail-for-tools-cost`,
+  saveToolTab: `${BASE_URL}/costing/save-costing-detail-for-tool-cost`,
 
   getDiscountOtherCostTabData: `${BASE_URL}/costing/get-costing-detail-for-other-cost`,
   saveDiscountOtherCostTab: `${BASE_URL}/costing/save-costing-detail-for-other-cost`,
   getExchangeRateByCurrency: `${BASE_URL}/costing/get-costing-exchange-rate-by-currency`,
 
   fileUploadCosting: `${BASE_URL}/costing/costing-file-upload`,
+  fileDeleteCosting: `${BASE_URL}/costing/delete-costing-attachment-file`,
 
   getRateCriteriaByCapacitySelectList: `${BASE_URL}/costing/get-rate-criteria-by-capacity-select-list`,
   getRateByCapacityCriteria: `${BASE_URL}/costing/get-rate-by-capacity-criteria`,
@@ -1117,6 +1118,9 @@ export const GET_INTEREST_RATE_DATA_LIST = 'GET_INTEREST_RATE_DATA_LIST';
 export const SET_ITEM_DATA = 'SET_ITEM_DATA';
 export const SET_SURFACE_TAB_DATA = 'SET_SURFACE_TAB_DATA';
 export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
+export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
+export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
+export const SET_OTHER_DISCOUNT_TAB_DATA = 'SET_OTHER_DISCOUNT_TAB_DATA';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'

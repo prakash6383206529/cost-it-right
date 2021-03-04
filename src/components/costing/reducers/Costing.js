@@ -36,7 +36,10 @@ import {
   SET_ITEM_DATA,
   SET_SURFACE_TAB_DATA,
   SET_OVERHEAD_PROFIT_TAB_DATA,
-  GET_BULKUPLOAD_COSTING_LIST
+  GET_BULKUPLOAD_COSTING_LIST,
+  SET_PACKAGE_AND_FREIGHT_TAB_DATA,
+  SET_TOOL_TAB_DATA,
+  SET_OTHER_DISCOUNT_TAB_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -327,6 +330,24 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         OverheadProfitTabData: action.payload
+      };
+    case SET_PACKAGE_AND_FREIGHT_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        PackageAndFreightTabData: action.payload
+      };
+    case SET_TOOL_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        ToolTabData: action.payload
+      };
+    case SET_OTHER_DISCOUNT_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        DiscountOtherTabData: action.payload
       };
     case GET_BULKUPLOAD_COSTING_LIST:
       return {

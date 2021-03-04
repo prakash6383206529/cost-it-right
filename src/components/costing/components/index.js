@@ -5,14 +5,12 @@ import classnames from 'classnames';
 import CostingDetails from './CostingDetails';
 import CostingSummaryTable from './CostingSummaryTable';
 import CostingSummary from './CostingSummary';
-import { storePartNumber } from '../actions/Costing'
-import Row from 'reactstrap/lib/Row';
+import { storePartNumber } from '../actions/Costing';
 
 function Costing(props) {
 
   const [activeTab, setActiveTab] = useState('1');
   const partNumber = useSelector(state => state.costing.partNo);
-  console.log('partNumber: ', partNumber);
 
   /**
   * @method toggle
@@ -60,16 +58,16 @@ function Costing(props) {
                 Costing Summary
                 </NavLink>
             </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === "3" })}
-                onClick={() => {
-                  toggle("3");
-                }}
-              >
-                Insights
+            {/* <NavItem>
+                <NavLink
+                  className={classnames({ active: activeTab === "3" })}
+                  onClick={() => {
+                    toggle("3");
+                  }}
+                >
+                  Insights
                 </NavLink>
-            </NavItem>
+              </NavItem> */}
           </Nav>
           <TabContent activeTab={activeTab}>
             {activeTab === "1" && (
@@ -83,17 +81,16 @@ function Costing(props) {
                 {
                   // <CostingSummaryTable />
                 }
-                {partNumber != "" && <CostingSummaryTable />}
+                {partNumber !== "" && <CostingSummaryTable />}
               </TabPane>
             )}
-            {activeTab === "3" && <TabPane tabId="3">{"Insights"}</TabPane>}
+            {/* {activeTab === "3" && <TabPane tabId="3">{"Insights"}</TabPane>} */}
           </TabContent>
         </div>
       </div>
     </>
   );
 }
-
 
 const CostingForm = connect()(Costing);
 export default CostingForm;
