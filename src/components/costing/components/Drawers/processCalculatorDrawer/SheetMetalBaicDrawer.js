@@ -1,66 +1,151 @@
-import React, { Fragment, useState, useEffect } from 'react'
+import React, { Fragment, useState, useEffect, useContext } from 'react';
+// import React, { Fragment, useState, useEffect, } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../../layout/HookFormInputs'
+import { costingInfoContext } from '../../CostingDetailStepTwo';
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkPercentageValue, loggedInUserId } from '../../../../../helper'
+import { HOUR, KG, NO, SHOTS, STROKE } from '../../../../../config/constants';
+import { saveProcessCostCalculationData } from '../../../actions/CostWorking';
+import { toastr } from 'react-redux-toastr';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SheetMetalBaicDrawer(props) {
-  console.log("SHETETETETET");
+
+  const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
-  console.log(WeightCalculatorRequest, "Wight");
+  const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+
   const defaultValues = {
-    tonnage: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Tonnage !== undefined
-      ? WeightCalculatorRequest.Tonnage
-      : '',
-    cycleTime: WeightCalculatorRequest &&
+    MachineTonnage: props.calculatorData ? props.calculatorData.MachineTonnage : '',
+    CycleTime: WeightCalculatorRequest &&
       WeightCalculatorRequest.CycleTime !== undefined
       ? WeightCalculatorRequest.CycleTime
       : '',
-    efficiency: WeightCalculatorRequest &&
+    Efficiency: WeightCalculatorRequest &&
       WeightCalculatorRequest.Efficiency !== undefined
       ? WeightCalculatorRequest.Efficiency
-      : '',
-    cavity: WeightCalculatorRequest &&
+      : 100,
+    Cavity: WeightCalculatorRequest &&
       WeightCalculatorRequest.Cavity !== undefined
       ? WeightCalculatorRequest.Cavity
-      : ''
+      : '',
+    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : " ",
+    ProcessCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " "
   }
+
   const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    defaultValues: defaultValues,
-  })
-  const { technology, process, tonnage, calculateMachineTime } = props
+    register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+      mode: 'onChange',
+      reValidateMode: 'onChange',
+      defaultValues: defaultValues,
+    })
+
+  const dispatch = useDispatch()
+  const { technology, process, MachineTonnage, calculateMachineTime } = props
   const isEditFlag = WeightCalculatorRequest ? true : false
-  //   const [totalMachiningTime, setTotalMachiningTime] = useState('0.00')
-  //   const trimVal = getConfigurationKey()
-  //   const trim = trimVal.NumberOfDecimalForWeightCalculation
-  //   console.log(trim, 'Trim')
+  const [processCost, setProcessCost] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '')
+  const [disable, setDisabled] = useState(false)
+
+  const tempProcessObj = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : ''
+
+  const fieldValues = useWatch({
+    control,
+    name: ['Efficiency', 'Quantity'],
+  })
+  useEffect(() => {
+    calculateProcessCost()
+  }, [fieldValues])
+
   const onSubmit = (value) => {
     console.log('coming')
     console.log(value, 'Handle Value in Facing')
     let obj = {}
-    obj.Tonnage = value.tonnage
-    obj.CycleTime = value.cycleTime
-    obj.Efficiency = value.efficiency
-    obj.Cavity = value.cavity
-    calculateMachineTime('0.00', obj)
+    obj.ProcessCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCalculationId ? WeightCalculatorRequest.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
+    obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
+    obj.IsChangeApplied = tempProcessObj === value.processCost ? false : true //Need to make it dynamic
+    obj.TechnologyId = costData.TechnologyId
+    obj.CostingId = costData.CostingId
+    obj.TechnologyName = costData.TechnologyName
+    obj.PartId = costData.PartId
+    obj.UnitOfMeasurementId = props.calculatorData.UnitOfMeasurementId
+    obj.MachineRateId = props.calculatorData.MachineRateId
+    obj.PartNumber = costData.PartNumber
+    obj.ProcessId = props.calculatorData.ProcessId
+    obj.ProcessName = props.calculatorData.ProcessName
+    obj.ProcessDescription = props.calculatorData.ProcessDescription
+    obj.MachineName = costData.MachineName
+    obj.MachineRate = props.calculatorData.MHR
+    obj.UOM = props.calculatorData.UOM
+    obj.Tonnage = value.MachineTonnage
+    obj.CycleTime = value.CycleTime
+    obj.Efficiency = value.Efficiency
+    obj.Cavity = value.Cavity
+    obj.Quantity = value.Quantity
+    obj.ProcessCost = processCost
+    obj.LoggedInUserId = loggedInUserId()
+    dispatch(saveProcessCostCalculationData(obj, res => {
+      if (res.data.Result) {
+        obj.ProcessCalculationId = res.data.Identity
+        toastr.success('Calculation saved sucessfully.')
+        calculateMachineTime('0.00', obj)
+      }
+    }))
   }
+  /**
+   * @method calculateProcessCost
+   * @description FOR CALCULATING PROCESS COST 
+  */
+  const calculateProcessCost = () => {
+    const efficiency = getValues('Efficiency')
+    const quantity = getValues('Quantity')
+    const rate = props.calculatorData.MHR
+    let cost
+    switch (props.calculatorData.UOM) {
+      case KG:
+        setDisabled(true)
+        cost = (1 / (efficiency * 100)) * (quantity * rate)
+        setProcessCost(cost)
+        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+        return true
+      case HOUR:
+        //This need to be done later
+        return;
+      case STROKE:
+        setDisabled(true)
+        cost = (1 / (efficiency * 100)) * (rate / quantity)
+        setProcessCost(cost)
+        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+        return true
+      case NO:
+        setDisabled(true)
+        cost = (1 / (efficiency * 100)) * (quantity * rate)
+        setProcessCost(cost)
+        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+        return true
+      case SHOTS:
+        // This need to be confirm
+        setDisabled(true)
+        cost = (1 / (efficiency * 100)) * (quantity * rate)
+        setProcessCost(cost)
+        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+        return true
+      default:
+        break;
+    }
+
+  }
+
   const onCancel = () => {
     calculateMachineTime('0.00')
   }
+
+  const checlPercentageForEfficiency = (e) => {
+    checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")
+    setValue('Efficiency', 100)
+  }
+
   return (
     <Fragment>
       <Row>
@@ -73,10 +158,10 @@ function SheetMetalBaicDrawer(props) {
                 </Col> */}
                 <Col md="12">
                   <Row className={'mt15'}>
-                    <Col md="3">
+                    <Col md="2">
                       <TextFieldHookForm
                         label={`Tonnage`}
-                        name={'tonnage'}
+                        name={'MachineTonnage'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -91,23 +176,23 @@ function SheetMetalBaicDrawer(props) {
                           // maxLength: 4,
                         }}
                         handleChange={() => { }}
-                        defaultValue={tonnage}
+                        defaultValue={MachineTonnage}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.tonnage}
+                        errors={errors.MachineTonnage}
                         disabled={true}
                       />
                     </Col>
-                    <Col md="3">
+                    <Col md="2">
                       <TextFieldHookForm
                         label={`Cycle Time`}
-                        name={'cycleTime'}
+                        name={'CycleTime'}
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={!disable}
                         rules={{
-                          required: true,
+                          required: !disable,
                           pattern: {
                             //value: /^[0-9]*$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
@@ -119,45 +204,21 @@ function SheetMetalBaicDrawer(props) {
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.cycleTime}
-                        disabled={false}
+                        errors={errors.CycleTime}
+                        disabled={disable}
                       />
                     </Col>
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label={`Efficiency`}
-                        name={'efficiency'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.efficiency}
-                        disabled={false}
-                      />
-                    </Col>
-                    <Col md="3">
+
+                    <Col md="2">
                       <TextFieldHookForm
                         label={`Cavity`}
-                        name={'cavity'}
+                        name={'Cavity'}
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={!disable}
                         rules={{
-                          required: false,
+                          required: !disable,
                           pattern: {
                             value: /^[0-9\b]+$/i,
                             //value: /^[0-9]\d*(\.\d+)?$/i,
@@ -169,8 +230,83 @@ function SheetMetalBaicDrawer(props) {
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.cavity}
+                        errors={errors.Cavity}
+                        disabled={disable}
+                      />
+                    </Col>
+                    <Col md="2">
+                      <TextFieldHookForm
+                        label={`Efficiency`}
+                        name={'Efficiency'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          pattern: {
+                            //value: /^[0-9]*$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.',
+                          },
+                          // maxLength: 4,
+                        }}
+                        handleChange={checlPercentageForEfficiency}
+                        defaultValue={100}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.Efficiency}
                         disabled={false}
+                      />
+                    </Col>
+                    <Col md="2">
+                      <TextFieldHookForm
+                        label={props.calculatorData.UOM === KG ? `Finished Weight` : `Quantity`}
+                        name={'Quantity'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          pattern: {
+                            // value: /^[0-9\b]+$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.',
+                          },
+                          // maxLength: 4,
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.Quantity}
+                        disabled={false}
+                      />
+                    </Col>
+                    <Col md="2">
+                      <TextFieldHookForm
+                        label={`Total Process Cost`}
+                        name={'ProcessCost'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false,
+                          // pattern: {
+                          //   value: /^[0-9\b]+$/i,
+                          //   //value: /^[0-9]\d*(\.\d+)?$/i,
+                          //   message: 'Invalid Number.',
+                          // },
+                          // maxLength: 4,
+                        }}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.ProcessCost}
+                        disabled={true}
                       />
                     </Col>
                   </Row>
@@ -210,7 +346,7 @@ function SheetMetalBaicDrawer(props) {
                 <div className={'check-icon'}>
                   <i class="fa fa-check" aria-hidden="true"></i>
                 </div>
-                {isEditFlag ? 'UPDATE' : 'SAVE'}
+                {'SAVE'}
               </button>
             </div>
           </form>

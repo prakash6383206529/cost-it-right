@@ -472,6 +472,7 @@ class AddMachineRate extends Component {
     const { fieldsObj } = this.props;
     const tempArray = [];
 
+
     if (processName.length === 0 || UOM.length === 0) {
       toastr.warning('Fields should not be empty');
       return false;
@@ -484,7 +485,14 @@ class AddMachineRate extends Component {
       return false;
     }
 
-    const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+    // const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+
+    const MachineRate = fieldsObj.MachineRate
+
+    // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
+    if (MachineRate < 0 || isNaN(MachineRate)) {
+      return false;
+    }
 
     tempArray.push(...processGrid, {
       processName: processName.label,
@@ -523,7 +531,12 @@ class AddMachineRate extends Component {
       return false;
     }
 
-    const MachineRate = fieldsObj && fieldsObj.MachineRate !== undefined ? checkForNull(fieldsObj.MachineRate) : 0;
+
+    const MachineRate = fieldsObj.MachineRate
+    // CONDITION TO CHECK MACHINE RATE IS NEGATIVE OR NOT A NUMBER
+    if (MachineRate < 0 || isNaN(MachineRate)) {
+      return false;
+    }
 
     let tempData = processGrid[processGridEditIndex];
     tempData = {
@@ -1386,7 +1399,6 @@ class AddMachineRate extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, machine, auth } = state;
-  console.log(auth, "AUTH");
   const fieldsObj = selector(state, 'MachineNumber', 'MachineName', 'TonnageCapacity', 'MachineRate', 'Description');
 
   const { plantList, technologySelectList, plantSelectList, filterPlantList, UOMSelectList, } = comman;

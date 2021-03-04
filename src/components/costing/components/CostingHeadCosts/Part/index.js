@@ -40,7 +40,7 @@ function PartCompoment(props) {
   }
 
   useEffect(() => {
-
+    // OBJECT FOR SENDING OBJECT TO API
     if (IsOpen === false && Count > 0) {
       let requestData = {
         "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
