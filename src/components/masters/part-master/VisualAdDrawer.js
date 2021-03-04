@@ -65,7 +65,6 @@ export default function VishualAdDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
-
                                 <Col md="12">
                                     <TextFieldHookForm
                                         label="Quantity"
