@@ -231,14 +231,14 @@ class AddUOM extends Component {
                     </div>{" "}
                     {"Cancel"}
                   </button>
-                  <input
+                  {/* <input
                     // disabled={pristine || submitting}
                     // onClick={reset}
                     type="submit"
                     value="Save"
                     className="btn  login-btn w-10 dark-pinkbtn"
-                  />
-                  {/* <button
+                  /> */}
+                  <button
                     type="submit"
                     className="submit-button save-btn"
                   >
@@ -248,8 +248,8 @@ class AddUOM extends Component {
                         alt="check-icon.jpg"
                       />{" "}
                     </div>
-                    {isEditFlag ? "Update" : "Save"}
-                  </button> */}
+                    {"Save"}
+                  </button>
                 </div>
               </Row>
             </form>
