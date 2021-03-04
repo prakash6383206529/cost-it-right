@@ -591,12 +591,12 @@ function TabSurfaceTreatment(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: "100px" }}>{``}</th>
-                          <th style={{ width: '100px' }}>{`Type`}</th>
-                          <th style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
-                          <th style={{ width: "150px" }}>{`Transportation Cost`}</th>
-                          <th style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
-                          <th style={{ width: "100px" }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
+                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Transportation Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
                         </tr>
                       </thead>
                       <tbody>

@@ -322,7 +322,7 @@ class AddClientDrawer extends Component {
                                             </Col>
                                             <Col className="Ext phoneNumber pr-0" md="4">
                                                 <Field
-                                                    label="Ext"
+                                                    label="Ext."
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={''}

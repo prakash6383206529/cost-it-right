@@ -49,9 +49,9 @@ function CostingSummary() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getCostingTechnologySelectList(() => {}))
-    dispatch(getAllPartSelectList(() => {}))
-    dispatch(getPartInfo('', () => {}))
+    dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getAllPartSelectList(() => { }))
+    dispatch(getPartInfo('', () => { }))
   }, [])
 
   const technologySelectList = useSelector(
@@ -99,11 +99,11 @@ function CostingSummary() {
   const handleTechnologyChange = (newValue) => {
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
-      dispatch(getPartInfo('', () => {}))
+      dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
-      dispatch(getPartInfo('', () => {}))
+      dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
       reset({
         Part: '',
@@ -294,7 +294,7 @@ function CostingSummary() {
                 }),
               )
             } else {
-              dispatch(getPartInfo('', () => {}))
+              dispatch(getPartInfo('', () => { }))
               setValue('PartName', '')
               setValue('Description', '')
               setValue('ECNNumber', '')
@@ -309,7 +309,7 @@ function CostingSummary() {
       }
     } else {
       setPart([])
-      dispatch(getPartInfo('', () => {}))
+      dispatch(getPartInfo('', () => { }))
     }
   }
 
@@ -370,22 +370,15 @@ function CostingSummary() {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{''}</h2>
-                  </div>
-                </Col>
-              </Row>
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(() => {})}
+                onSubmit={handleSubmit(() => { })}
               >
                 {
                   <>
                     <Row>
-                      <Col md="12">
+                      <Col md="12" className="mt-3">
                         <div className="left-border">{'Part Details:'}</div>
                       </Col>
 
@@ -436,7 +429,7 @@ function CostingSummary() {
                           rules={{
                             required: false,
                           }}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -454,7 +447,7 @@ function CostingSummary() {
                           register={register}
                           rules={{ required: false }}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -471,7 +464,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -488,7 +481,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -505,7 +498,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -522,7 +515,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}

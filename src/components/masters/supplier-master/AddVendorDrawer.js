@@ -526,7 +526,7 @@ class AddVendorDrawer extends Component {
                                             </Col>
                                             <Col md={4} className="pr-0">
                                                 <Field
-                                                    label="Ext"
+                                                    label="Ext."
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={'Ext'}

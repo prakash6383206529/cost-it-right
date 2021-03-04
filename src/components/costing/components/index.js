@@ -39,58 +39,38 @@ function Costing(props) {
         {/* {this.props.loading && <Loader/>} */}
         <div>
           <h1>Costing</h1>
-          <span className="position-relative costing-page-tabs d-block w-100">
-            <div className="right-actions">
-              <button className="btn btn-link text-primary">
-                <img src={require('../../../assests/images/print.svg')} alt="print-button" />
-                <span className="d-block mt-1">PRINT</span>
-              </button>
-              <button className="btn btn-link text-primary">
-                <img src={require('../../../assests/images/excel.svg')} alt="print-button" />
-                <span className="d-block mt-1">XLS</span>
-              </button>
-              <button className="btn btn-link text-primary">
-                <img src={require('../../../assests/images/pdf.svg')} alt="print-button" />
-                <span className="d-block mt-1">PDF</span>
-              </button>
-              <button className="btn btn-link text-primary">
-                <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
-                <span className="d-block mt-1">ADD BOM</span>
-              </button>
-            </div>
-            <Nav tabs className="subtabs mt-0">
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === "1" })}
-                  onClick={() => {
-                    toggle("1");
-                  }}
-                >
-                  Costing Details
+          <Nav tabs className="subtabs mt-0">
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "1" })}
+                onClick={() => {
+                  toggle("1");
+                }}
+              >
+                Costing Details
                 </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === "2" })}
-                  onClick={() => {
-                    toggle("2");
-                  }}
-                >
-                  Costing Summary
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "2" })}
+                onClick={() => {
+                  toggle("2");
+                }}
+              >
+                Costing Summary
                 </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  className={classnames({ active: activeTab === "3" })}
-                  onClick={() => {
-                    toggle("3");
-                  }}
-                >
-                  Insights
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === "3" })}
+                onClick={() => {
+                  toggle("3");
+                }}
+              >
+                Insights
                 </NavLink>
-              </NavItem>
-            </Nav>
-          </span>
+            </NavItem>
+          </Nav>
           <TabContent activeTab={activeTab}>
             {activeTab === "1" && (
               <TabPane tabId="1">

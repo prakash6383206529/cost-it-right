@@ -330,7 +330,26 @@ function CostingDetailStepTwo(props) {
 
   return (
     <>
-
+      <span className="position-relative costing-page-tabs d-block w-100">
+        <div className="right-actions">
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/print.svg')} alt="print-button" />
+            <span className="d-block mt-1">PRINT</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/excel.svg')} alt="print-button" />
+            <span className="d-block mt-1">XLS</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/pdf.svg')} alt="print-button" />
+            <span className="d-block mt-1">PDF</span>
+          </button>
+          <button className="btn btn-link text-primary pr-0">
+            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+            <span className="d-block mt-1">ADD BOM</span>
+          </button>
+        </div>
+      </span>
       <div className="login-container signup-form">
         <Row>
           <Col md="12">
@@ -406,8 +425,9 @@ function CostingDetailStepTwo(props) {
                     {'Back '}
                   </button>
                 </Col>
-                <hr />
               </Row>
+
+              <Row className="sepration-box"></Row>
 
               <Row>
                 <Col md="12">

@@ -1012,7 +1012,9 @@ function OverheadProfit(props) {
                   {'Overhead & Profit:'}
                 </div>
               </Col>
+            </Row>
 
+            <Row className="costing-border px-2 py-3 m-0 overhead-profit-tab-costing">
 
               <Col md="3">
                 <SearchableSelectHookForm
@@ -1031,357 +1033,353 @@ function OverheadProfit(props) {
                 />
               </Col>
 
-              <Col md="7">
+              <Col md="6">
                 {''}
               </Col>
 
-              <Col md="2">
+              <Col md="3">
                 <label>
                   {'Net Overhead & Profit'}
                 </label>
                 {checkForDecimalAndNull(data.CostingPartDetails.OverheadCost, initialConfiguration.NumberOfDecimalForTransaction) + checkForDecimalAndNull(data.CostingPartDetails.ProfitCost, initialConfiguration.NumberOfDecimalForTransaction)}
               </Col>
 
-              <Col md="12" className="mt25">
+              <Col md="12" className="">
                 <div className="left-border">
                   {`Overheads ${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
                 </div>
               </Col>
 
-              <Col md="3">
-                <label>
-                  {'Overhead On'}
-                </label>
+              <Col md="12">
+                <Row className="costing-border px-2 py-3 m-0 w-100">
+                  <Col md="3">
+                    <label>
+                      {'Overhead On'}
+                    </label>
+                  </Col>
+                  <Col md="3">
+                    <label>
+                      {'Percentage (%)'}
+                    </label>
+                  </Col>
+                  <Col md="3">
+                    <label>
+                      {'Cost(Applicability)'}
+                    </label>
+                  </Col>
+                  <Col md="3">
+                    <label>
+                      {'Overhead'}
+                    </label>
+                  </Col>
+
+
+                  {
+                    overheadObj && overheadObj.IsOverheadFixedApplicable &&
+                    <>
+                      <Col md="3">
+                        <label>
+                          {'Fixed'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadFixedPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{
+                            required: false,
+                            pattern: {
+                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              message: 'Invalid Number.'
+                            },
+                          }}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadFixedPercentage}
+                          disabled={false}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadFixedCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadFixedCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadFixedTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadFixedTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+
+                    </>
+                  }
+
+                  {
+                    overheadObj && overheadObj.IsOverheadCombined &&
+                    <>
+                      <Col md="3">
+                        <label>
+                          {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={overheadObj.OverheadPercentage !== null ? overheadObj.OverheadPercentage : ''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadCombinedCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={overheadObj.OverheadCombinedCost !== null ? overheadObj.OverheadCombinedCost : ''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadCombinedCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadCombinedTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={overheadObj.OverheadCombinedTotalCost !== null ? overheadObj.OverheadCombinedTotalCost : ''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadCombinedTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+
+                    </>
+                  }
+
+                  {
+                    overheadObj && overheadObj.IsOverheadRMApplicable &&
+                    <>
+                      <Col md="3">
+                        <label>
+                          {'RM'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadRMPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadRMPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadRMCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadRMCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadRMTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadRMTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+
+                    </>
+                  }
+
+                  {
+                    overheadObj && overheadObj.IsOverheadBOPApplicable &&
+                    <>
+                      <Col md="3">
+                        <label>
+                          {'BOP'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadBOPPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadBOPPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadBOPCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadBOPCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadBOPTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadBOPTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+                    </>
+                  }
+
+                  {
+                    overheadObj && overheadObj.IsOverheadCCApplicable &&
+                    <>
+                      <Col md="3">
+                        <label>
+                          {'CC'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadCCPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadCCPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadCCCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadCCCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'OverheadCCTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.OverheadCCTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+                    </>
+                  }
+                </Row>
               </Col>
-              <Col md="3">
-                <label>
-                  {'Percentage (%)'}
-                </label>
-              </Col>
-              <Col md="3">
-                <label>
-                  {'Cost(Applicability)'}
-                </label>
-              </Col>
-              <Col md="3">
-                <label>
-                  {'Overhead'}
-                </label>
-              </Col>
-
-              {
-                overheadObj && overheadObj.IsOverheadFixedApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'Fixed'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadFixedPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadFixedPercentage}
-                      disabled={false}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadFixedCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadFixedCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadFixedTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadFixedTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-
-                </>
-              }
-
-              {
-                overheadObj && overheadObj.IsOverheadCombined &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={overheadObj.OverheadPercentage !== null ? overheadObj.OverheadPercentage : ''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadCombinedCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={overheadObj.OverheadCombinedCost !== null ? overheadObj.OverheadCombinedCost : ''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadCombinedCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadCombinedTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={overheadObj.OverheadCombinedTotalCost !== null ? overheadObj.OverheadCombinedTotalCost : ''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadCombinedTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-
-                </>
-              }
-
-              {
-                overheadObj && overheadObj.IsOverheadRMApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'RM'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadRMPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadRMPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadRMCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadRMCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadRMTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadRMTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-
-                </>
-              }
-
-              {
-                overheadObj && overheadObj.IsOverheadBOPApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'BOP'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadBOPPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadBOPPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadBOPCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadBOPCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadBOPTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadBOPTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-                </>
-              }
-
-              {
-                overheadObj && overheadObj.IsOverheadCCApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'CC'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadCCPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadCCPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadCCCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadCCCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'OverheadCCTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.OverheadCCTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-                </>
-              }
-
-
-
-
-
-
-
-
-
 
               <Col md="12" className="mt25">
                 <div className="left-border">

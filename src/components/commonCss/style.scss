@@ -738,6 +738,10 @@ button.add-btn {
   border-radius: 3px;
 }
 
+.fs1{font-size: 16px;}
+.fs2{font-size: 18px;}
+.font-weight-500{font-weight: 500 !important;}
+
 .left-border {
   border-left: 2px solid #d62c8c;
   padding: 5px;
@@ -1823,6 +1827,8 @@ html {
 	}
 }
 .content-page {
+  box-shadow: 0px 5px 10px #0000000a;
+  border: 1px solid #ececec;
 	h2.heading-main {
 		margin-bottom: 25px;
 	}
@@ -2218,6 +2224,30 @@ button:disabled{pointer-events: none;}
 
 //=============== costing details page only
 .costing-details-page{
+  .sepration-box{
+    margin: 20px 0;
+    padding: 20px;
+    position: relative;
+    &::before{
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -40px;
+      right: -40px;
+      background-color: #edf0f5;
+    }
+    &::after{
+      content: "";
+      position: absolute;
+      top: -1px;
+      bottom: -1px;
+      left: -30px;
+      right: -30px;
+      border-top: 1px solid #ececec;
+      border-bottom: 1px solid #ececec;
+    }
+  }
   .costing-table-next{
     tbody{
       td{
@@ -2532,6 +2562,14 @@ button:disabled{pointer-events: none;}
 }
 .sob-background{background-color: #E8F2FB;}
 .css-6q0nyr-Svg{color: #959CB6;}
+.add-volume-table{
+  td{
+    .edit-text.form-control{
+      border: 1px solid #c2cbe8;
+      max-width: 250px;
+    }
+  }
+}
 
 // =================costing details page =================
 .dark-blue-text{
@@ -2558,8 +2596,13 @@ button:disabled{pointer-events: none;}
   }
   .cr-innerwrap-td{
     .left-border{
+      padding-top: 2px;
+      padding-bottom: 2px;
       margin-top: 15px;
       margin-bottom: 12px;
+    }
+    .bottom-border{
+      margin-bottom: 8px;
     }
     table{
       td{
@@ -2585,7 +2628,7 @@ button:disabled{pointer-events: none;}
   .right-actions{
     position: absolute;
     right: 0;
-    top: -45px;
+    top: -90px;
     z-index: 2;
     span.d-block{
       font-size: 14px;
@@ -2595,8 +2638,15 @@ button:disabled{pointer-events: none;}
     }
   }  
 }
-.costing-highlight-row{
-  background-color: #F8FCFF;
+.costing-details-page{
+  .costing-highlight-row{
+    background-color: #F8FCFF;
+    >div{
+      >td{
+        padding: 22px 30px;
+      }
+    }
+  }
 }
 body {
   .btn-lg{
@@ -2619,11 +2669,18 @@ body {
   border: 1px solid #C2CBE8;
 }
 .costing-border{border: 1px solid #C2CBE8;}
+.costing-border-left{border-left: 1px solid #C2CBE8;}
+.costing-border-right{border-right: 1px solid #C2CBE8;}
 .costing-border-x{border-left: 1px solid #C2CBE8;border-right: 1px solid #C2CBE8;}
 .costing-border-y{border-top: 1px solid #C2CBE8;border-top: 1px solid #C2CBE8;}
-.fs1{font-size: 16px;}
-.fs2{font-size: 18px;}
-.font-weight-500{font-weight: 500 !important;}
+.overhead-profit-tab-costing{
+  .form-group.inputbox.withBorder{
+    label{
+      display: none;
+    }
+  }
+}
+
 
 // responsive media query start
 @media(max-width:1600px){

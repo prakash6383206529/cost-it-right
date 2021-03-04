@@ -337,7 +337,7 @@ class AddZBCPlant extends Component {
                       </Col>
                       <Col className="Ext phoneNumber pr-0" md="4">
                         <Field
-                          label="Ex."
+                          label="Ext."
                           name={"Extension"}
                           type="text"
                           placeholder={""}

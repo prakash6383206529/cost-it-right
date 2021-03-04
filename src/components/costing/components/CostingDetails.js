@@ -807,19 +807,12 @@ function CostingDetails() {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{""}</h2>
-                  </div>
-                </Col>
-              </Row>
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 {stepOne && (
                   <>
                     <Row>
                       <Col md="12">
-                        <div className="left-border mt-3 mb-2">{"Part Details:"}</div>
+                        <div className="left-border mt-3 ">{"Part Details:"}</div>
                       </Col>
                       <Col className="col-md-15">
                         <SearchableSelectHookForm

@@ -104,6 +104,7 @@ class AddVolume extends Component {
       isEditFlag: false,
       isShowForm: false,
       VolumeId: '',
+      edit: false,
     }
   }
 
@@ -273,12 +274,8 @@ class AddVolume extends Component {
   buttonFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
-        {/* <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} /> */}
-        <button
-          className="Delete"
-          type={'button'}
-          onClick={() => this.deleteItem(cell, rowIndex)}
-        />
+        <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
+        <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
       </>
     )
   }
@@ -300,7 +297,9 @@ class AddVolume extends Component {
     }
   }
 
-  editItemDetails = (ID) => { }
+  editItemDetails = (ID) => {
+    this.setState({ edit: true })
+  }
 
   deleteItem = (ID, index) => {
     const { tableData } = this.state
@@ -581,7 +580,7 @@ class AddVolume extends Component {
   */
   render() {
     const { handleSubmit, } = this.props;
-    const { isEditFlag, isOpenVendor, } = this.state;
+    const { isEditFlag, isOpenVendor, edit } = this.state;
 
     const cellEditProp = {
       mode: 'click',
@@ -753,12 +752,13 @@ class AddVolume extends Component {
                             hover={false}
                             bordered={false}
                             cellEdit={cellEditProp}
+                            className="add-volume-table"
                           >
                             <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
-                            <TableHeaderColumn dataField="BudgetedQuantity" dataAlign='center'>Budgeted Quantity </TableHeaderColumn>
-                            <TableHeaderColumn dataField="ApprovedQuantity" dataAlign='center'>Actual Quantity  </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign='center' dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
-                            <TableHeaderColumn dataAlign='center' dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
+                            <TableHeaderColumn dataField="BudgetedQuantity" editable={edit}>Budgeted Quantity </TableHeaderColumn>
+                            <TableHeaderColumn dataField="ApprovedQuantity" editable={edit}>Actual Quantity  </TableHeaderColumn>
+                            <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
+                            <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
                             <TableHeaderColumn width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>
                           </BootstrapTable>
                         </Col>
