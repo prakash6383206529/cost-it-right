@@ -54,7 +54,7 @@ export default function VishualAdDrawer(props) {
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{'Update Quantity'}</h3>
+                                    <h3>{'Update Quantity1'}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -73,6 +73,19 @@ export default function VishualAdDrawer(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^[1-9][0-9]*$/,
+                                                // value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.',
+                                            },
+                                            min: {
+                                                value: 1,
+                                                message: 'Min val 1' // JS only: <p>error message</p> TS only support string
+                                            }
+                                            // maxLength: 4,
+                                        }}
                                         mandatory={true}
                                         handleChange={() => { }}
                                         defaultValue={props.updatedQuantity}

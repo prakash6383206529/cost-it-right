@@ -34,7 +34,7 @@ function TabOverheadProfit(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
       }
-      dispatch(getOverheadProfitTabData(data, (res) => { }))
+      dispatch(getOverheadProfitTabData(data, true, (res) => { }))
     }
   }, [costData]);
 

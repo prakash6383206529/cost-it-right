@@ -1462,8 +1462,6 @@ export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area'
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
 
-<<<<<<< HEAD
-=======
 
 export const CostingBulkUpload = [
     { label: "SlNo", value: "SlNo", },
@@ -1636,4 +1634,3 @@ export const CostingBulkUploadTempData = [
         "L3Total": "2000"
     }
 ]
->>>>>>> m1-frontend-09-02-2020-mahak

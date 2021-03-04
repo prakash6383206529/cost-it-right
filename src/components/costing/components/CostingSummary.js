@@ -5,20 +5,8 @@ import { Row, Col } from 'reactstrap'
 import DatePicker from 'react-datepicker'
 import { toastr } from 'react-redux-toastr'
 import moment from 'moment'
-import {
-  getCostingTechnologySelectList,
-  getAllPartSelectList,
-  getPartInfo,
-  checkPartWithTechnology,
-  storePartNumber,
-  getCostingSummaryByplantIdPartNo,
-  setCostingViewData,
-  getSingleCostingDetails,
-} from '../actions/Costing'
-import {
-  TextFieldHookForm,
-  SearchableSelectHookForm,
-} from '../../layout/HookFormInputs'
+import { getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, } from '../actions/Costing'
+import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
 import { VIEW_COSTING_DATA } from '../../../config/constants'
 import { formViewData } from '../../../helper'
@@ -49,9 +37,9 @@ function CostingSummary() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getCostingTechnologySelectList(() => {}))
-    dispatch(getAllPartSelectList(() => {}))
-    dispatch(getPartInfo('', () => {}))
+    dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getAllPartSelectList(() => { }))
+    dispatch(getPartInfo('', () => { }))
   }, [])
 
   const technologySelectList = useSelector(
@@ -99,11 +87,11 @@ function CostingSummary() {
   const handleTechnologyChange = (newValue) => {
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
-      dispatch(getPartInfo('', () => {}))
+      dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
-      dispatch(getPartInfo('', () => {}))
+      dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
       reset({
         Part: '',
@@ -294,7 +282,7 @@ function CostingSummary() {
                 }),
               )
             } else {
-              dispatch(getPartInfo('', () => {}))
+              dispatch(getPartInfo('', () => { }))
               setValue('PartName', '')
               setValue('Description', '')
               setValue('ECNNumber', '')
@@ -309,7 +297,7 @@ function CostingSummary() {
       }
     } else {
       setPart([])
-      dispatch(getPartInfo('', () => {}))
+      dispatch(getPartInfo('', () => { }))
     }
   }
 
@@ -380,7 +368,7 @@ function CostingSummary() {
               <form
                 noValidate
                 className="form"
-                onSubmit={handleSubmit(() => {})}
+                onSubmit={handleSubmit(() => { })}
               >
                 {
                   <>
@@ -436,7 +424,7 @@ function CostingSummary() {
                           rules={{
                             required: false,
                           }}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -454,7 +442,7 @@ function CostingSummary() {
                           register={register}
                           rules={{ required: false }}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -471,7 +459,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -488,7 +476,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -505,7 +493,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -522,7 +510,7 @@ function CostingSummary() {
                           control={control}
                           register={register}
                           mandatory={false}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}

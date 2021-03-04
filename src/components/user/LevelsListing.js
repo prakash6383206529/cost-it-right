@@ -378,13 +378,13 @@ class LevelsListing extends Component {
 										tableHeaderClass={'my-custom-header'}
 										pagination>
 										<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-										<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
-										<TableHeaderColumn dataField="Users" dataAlign="left">Users</TableHeaderColumn>
-										<TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
+										<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
+										<TableHeaderColumn dataField="Users" dataAlign="center">Users</TableHeaderColumn>
+										{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
 										<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
 
 										{/* <TableHeaderColumn dataField="Sequence" dataAlign="center" dataSort={true}>Sequence</TableHeaderColumn> */}
-										<TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+										{/* <TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>  */}
 									</BootstrapTable>
 								</Col>
 							</Row>

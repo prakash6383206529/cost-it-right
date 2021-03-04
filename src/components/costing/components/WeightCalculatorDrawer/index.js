@@ -20,7 +20,7 @@ import Rubber from './Rubber'
 function OpenWeightCalculator(props) {
   const { rmRowData, isEditFlag } = props
 
-  const technology = props.technology ? props.technology : 'Plastic';
+  const technology = props.technology;
 
   /**
    * @method toggleDrawer
@@ -53,7 +53,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
           />
         )
-      case 'Forging':
+      case 'Forgining':
         return (
           <ForgingCalculator
             rmRowData={props.rmRowData}

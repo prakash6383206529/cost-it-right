@@ -11,7 +11,7 @@ import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
 import WeightCalculator from '../../WeightCalculatorDrawer'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
-import { getRawMaterialCalculationByTechnology } from '../../../actions/CostWorking'
+import { getRawMaterialCalculationByTechnology, saveRawMaterialCalciData } from '../../../actions/CostWorking'
 
 function RawMaterialCost(props) {
 
@@ -20,7 +20,10 @@ function RawMaterialCost(props) {
     reValidateMode: 'onChange',
   })
 
-  const technology = props.technology ? props.technology : 'Sheet Metal'
+  const costData = useContext(costingInfoContext)
+  console.log(costData, "DATA");
+  // const technology = props.technology ? props.technology : 'Sheet Metal'
+  // const technology = costData.TechnologyName
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
@@ -31,21 +34,20 @@ function RawMaterialCost(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    switch (technology) {
+    switch (costData.TechnologyName) {
       case 'Sheet Metal':
         return setGridLength(0)
       case 'Plastic':
         return setGridLength(0)
       case 'Rubber':
         return setGridLength(3)
-      case 'Forging':
+      case 'Forgining':
         return setGridLength(0)
       default:
         return setGridLength(0)
     }
   }, [])
 
-  const costData = useContext(costingInfoContext)
 
   useEffect(() => {
     setTimeout(() => {
@@ -78,6 +80,7 @@ function RawMaterialCost(props) {
         MaterialType: rowData.MaterialType,
         Density: rowData.Density,
         UOM: rowData.UOM,
+        UOMId: rowData.UOMId,
         ScrapRate: rowData.ScrapRate,
         FinishWeight: '',
         GrossWeight: '',
@@ -98,19 +101,26 @@ function RawMaterialCost(props) {
     setEditIndex(index)
     let tempArr = []
     let tempData = gridData[index]
-    dispatch(getRawMaterialCalculationByTechnology(technology, 'default', res => {
+    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "") {
+      toastr.warning("Density is not avaliable for weight calculation.")
+      return false
+    }
+    dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
+        console.log(data, "DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         tempData = { ...tempData, WeightCalculatorRequest: data, }
+        console.log('tempData: ', tempData);
 
-        tempArr = Object.assign([...gridData], { [editIndex]: tempData })
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        console.log('tempArr: ', tempArr);
         setTimeout(() => {
           setGridData(tempArr)
+          setWeightDrawerOpen(true)
         }, 100)
       }
     }))
 
-    setWeightDrawerOpen(true)
   }
 
   /**
@@ -121,6 +131,7 @@ function RawMaterialCost(props) {
     setInputDiameter(weightData.Diameter)
     setWeight(weightData)
     setWeightDrawerOpen(false)
+
   }
 
   /**
@@ -138,7 +149,7 @@ function RawMaterialCost(props) {
         return ''
       }
       const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
-      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
+      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
     } else {
@@ -160,7 +171,7 @@ function RawMaterialCost(props) {
 
       //if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
-      tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
+      tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
       //} else {
@@ -190,6 +201,7 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData) => {
+    console.log(weightData, "WC");
     let tempArr = []
     let tempData = gridData[editIndex]
 
@@ -198,7 +210,15 @@ function RawMaterialCost(props) {
       const GrossWeight = weightData.GrossWeight
       const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
 
-      tempData = { ...tempData, FinishWeight: FinishWeight, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: weightData, }
+      tempData = {
+        ...tempData,
+        FinishWeight: FinishWeight,
+        GrossWeight: GrossWeight,
+        NetLandedCost: NetLandedCost,
+        WeightCalculatorRequest: weightData,
+        WeightCalculationId: weightData.WeightCalculationId,
+        IsCalculatedEntry: true
+      }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setTimeout(() => {
@@ -278,6 +298,7 @@ function RawMaterialCost(props) {
                               <button
                                 className="CalculatorIcon cr-cl-icon "
                                 type={'button'}
+                                // disabled={(item.Density === undefined || item.Density === "" || item.Density === null) ? true : false}
                                 onClick={() => toggleWeightCalculator(index)}
                               />
                             </td>
@@ -382,7 +403,7 @@ function RawMaterialCost(props) {
           closeDrawer={closeWeightDrawer}
           isEditFlag={false}
           inputDiameter={inputDiameter}
-          technology={technology}
+          technology={costData.TechnologyName}
           ID={''}
           anchor={'right'}
           rmRowData={gridData[editIndex]}

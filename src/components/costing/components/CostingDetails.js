@@ -436,25 +436,25 @@ function CostingDetails() {
   const checkSOBTotal = () => {
     const { zbcPlantGridFields, vbcGridFields } = fieldValues
 
-    let NetZBCSOB = 0
-    let NetVBCSOB = 0
+    // let NetZBCSOB = 0
+    // let NetVBCSOB = 0
 
-    NetZBCSOB =
-      zbcPlantGridFields &&
-      zbcPlantGridFields !== undefined &&
-      zbcPlantGridFields.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ShareOfBusinessPercent)
-      }, 0)
+    // NetZBCSOB =
+    //   zbcPlantGridFields &&
+    //   zbcPlantGridFields !== undefined &&
+    //   zbcPlantGridFields.reduce((accummlator, el) => {
+    //     return accummlator + checkForNull(el.ShareOfBusinessPercent)
+    //   }, 0)
 
-    NetVBCSOB =
-      vbcGridFields &&
-      vbcGridFields !== undefined &&
-      vbcGridFields.reduce((accummlator, el) => {
-        return accummlator + checkForNull(el.ShareOfBusinessPercent)
-      }, 0)
+    // NetVBCSOB =
+    //   vbcGridFields &&
+    //   vbcGridFields !== undefined &&
+    //   vbcGridFields.reduce((accummlator, el) => {
+    //     return accummlator + checkForNull(el.ShareOfBusinessPercent)
+    //   }, 0)
 
-    return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
-    // return true;
+    // return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
+    return true;
   }
 
 

@@ -24,7 +24,7 @@ import InjectionMoulding from './InjectionMoulding'
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
   console.log(calculatorData, 'Process')
-  const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
+  const tonnage = calculatorData.MachineTonnage ? calculatorData.MachineTonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
     console.log('Form Value in drawer', time)
@@ -222,7 +222,7 @@ function VariableMhrDrawer(props) {
                 </span>
                 <span className="d-inline-block mr-4 mb-3">
                   <span className="cr-tbl-label d-block">Machine Rate:</span>
-                  <span>{calculatorData.MachineRate}</span>
+                  <span>{calculatorData.MHR}</span>
                 </span>
                 <span className="d-inline-block mr-4 mb-3 pr-3">
                   <span className="cr-tbl-label d-block">UOM:</span>
@@ -230,7 +230,7 @@ function VariableMhrDrawer(props) {
                 </span>
               </Col>
               <div className="w-100">
-                {getProcessComponent('Facing')}
+                {getProcessComponent(technology)}
               </div>
             </Row>
           </div>
