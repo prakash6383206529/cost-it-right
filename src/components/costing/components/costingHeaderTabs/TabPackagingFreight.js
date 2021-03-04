@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getPackageFreightTabData, saveCostingPackageFreightTab } from '../../actions/Costing';
+import { getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFreightData } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
@@ -11,68 +11,61 @@ function TabPackagingFreight(props) {
 
   const { handleSubmit, } = useForm();
 
-  const [tabData, setTabData] = useState([]);
-  const [packageTotal, setPackageTotal] = useState(0);
-  const [freightTotal, setFreightTotal] = useState(0);
-
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  const PackageAndFreightTabData = useSelector(state => state.costing.PackageAndFreightTabData)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        //PlantId: costData.PlantId,
       }
-      dispatch(getPackageFreightTabData(data, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          setTabData(Data.CostingPartDetails)
-        }
-      }))
+      dispatch(getPackageFreightTabData(data, true, (res) => { }))
     }
   }, [costData]);
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
+    let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData !== undefined && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
     let topHeaderData = {
-      NetFreightPackagingCost: checkForNull(packageTotal) + checkForNull(freightTotal),
-      FreightNetCost: freightTotal,
-      PackagingNetCost: packageTotal,
+      NetFreightPackagingCost: TopHeaderValues && checkForNull(TopHeaderValues.NetFreightPackagingCost),
     }
     props.setHeaderCost(topHeaderData)
-  }, [tabData]);
-
-  const toggle = (index) => {
-    let tempData = tabData[index];
-    let tempObj = { ...tempData, IsOpen: !tempData.IsOpen }
-    let tempArr = Object.assign([...tabData], { [index]: tempObj })
-    setTabData(tempArr)
-  }
+  }, [PackageAndFreightTabData]);
 
   /**
   * @method setPackageCost
   * @description SET PACKAGE COST
   */
-  const setPackageCost = (GridData, index) => {
-    let tempObj = tabData[index];
-    console.log('GridData: ', GridData);
+  const setPackageCost = (GridData, GridIndex) => {
+    let arr = dispatchPackageCost(GridData, GridIndex, PackageAndFreightTabData)
+    dispatch(setPackageAndFreightData(arr, () => { }))
+  }
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          PackagingNetCost: packageTotalCost(GridData),
-          NetFreightPackagingCost: tempObj.FreightNetCost !== null ? tempObj.FreightNetCost : 0 + packageTotalCost(GridData),
-          CostingPackagingDetail: GridData
-        })
-    })
+  /**
+  * @method dispatchPackageCost
+  * @description SET PACKAGE COST
+  */
+  const dispatchPackageCost = (GridData, GridIndex, arr) => {
+    let tempArr = [];
+    try {
 
-    setTimeout(() => {
-      setPackageTotal(packageTotalCost(GridData))
-      setTabData(tempArr)
-    }, 200)
+      tempArr = arr && arr.map(i => {
+
+        i.CostingPartDetails.PackagingNetCost = packageTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.FreightNetCost + packageTotalCost(GridData);
+        i.CostingPartDetails.CostingPackagingDetail = GridData;
+
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
 
   }
 
@@ -92,22 +85,32 @@ function TabPackagingFreight(props) {
   * @method setFreightCost
   * @description SET FREIGHT COST
   */
-  const setFreightCost = (GridData, index) => {
-    let tempObj = tabData[index];
+  const setFreightCost = (GridData, GridIndex) => {
+    let arr = dispatchFreightCost(GridData, GridIndex, PackageAndFreightTabData)
+    dispatch(setPackageAndFreightData(arr, () => { }))
+  }
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          FreightNetCost: freightTotalCost(GridData),
-          NetFreightPackagingCost: tempObj.PackagingNetCost + freightTotalCost(GridData),
-          CostingFreightDetail: GridData
-        })
-    })
+  /**
+  * @method dispatchFreightCost
+  * @description SET FREIGHT COST
+  */
+  const dispatchFreightCost = (GridData, GridIndex, arr) => {
+    let tempArr = [];
+    try {
 
-    setTimeout(() => {
-      setFreightTotal(freightTotalCost(GridData))
-      setTabData(tempArr)
-    }, 200)
+      tempArr = arr && arr.map(i => {
+
+        i.CostingPartDetails.FreightNetCost = freightTotalCost(GridData);
+        i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.PackagingNetCost + freightTotalCost(GridData);
+        i.CostingPartDetails.CostingFreightDetail = GridData;
+
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
 
   }
 
@@ -134,14 +137,11 @@ function TabPackagingFreight(props) {
       "PartNumber": costData.PartNumber,
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
-      "FreightNetCost": checkForNull(freightTotal),
-      "PackagingNetCost": checkForNull(packageTotal),
-      "NetFreightPackagingCost": checkForNull(packageTotal) + checkForNull(freightTotal),
-      "CostingPartDetails": tabData
+      "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
 
     dispatch(saveCostingPackageFreightTab(data, res => {
-      console.log('saveCostingPackageFreightTab: ', res);
+      //console.log('saveCostingPackageFreightTab: ', res);
     }))
 
   }
@@ -150,10 +150,7 @@ function TabPackagingFreight(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
-
-
-  }
+  const onSubmit = (values) => { }
 
   return (
     <>
@@ -180,60 +177,34 @@ function TabPackagingFreight(props) {
                       <thead>
                         <tr>
                           <th style={{ width: "100px" }}>{``}</th>
-                          <th
-                            style={{ width: "100px" }}
-                          >{`Net Packaging Cost`}</th>
-                          <th
-                            style={{ width: "150px" }}
-                          >{`Net Freight Cost`}</th>
+                          <th style={{ width: "100px" }}>{`Net Packaging Cost`}</th>
+                          <th style={{ width: "150px" }}>{`Net Freight Cost`}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {tabData &&
-                          tabData.map((item, index) => {
-                            return (
-                              <>
-                                <tr key={index} onClick={() => toggle(index)}>
-                                  <td>{item.PartName}</td>
-                                  <td>
-                                    {item.PackagingNetCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.PackagingNetCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
-                                  <td>
-                                    {item.FreightNetCost !== null
-                                      ? checkForDecimalAndNull(
-                                          item.FreightNetCost,
-                                          2
-                                        )
-                                      : 0}
-                                  </td>
-                                </tr>
-                                {item.IsOpen && (
-                                  <tr>
-                                    <td colSpan={3}>
-                                      <div>
-                                        <PackageAndFreight
-                                          index={index}
-                                          packageData={
-                                            item.CostingPackagingDetail
-                                          }
-                                          freightData={
-                                            item.CostingFreightDetail
-                                          }
-                                          setPackageCost={setPackageCost}
-                                          setFreightCost={setFreightCost}
-                                        />
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )}
-                              </>
-                            );
-                          })}
+                        {PackageAndFreightTabData && PackageAndFreightTabData.map((item, index) => {
+                          return (
+                            <>
+                              <tr key={index}>
+                                <td>{item.PartName}</td>
+                                <td>{item.CostingPartDetails.PackagingNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PackagingNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+                                <td>{item.CostingPartDetails.FreightNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.FreightNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+                              </tr>
+                              <tr>
+                                <td colSpan={3}>
+                                  <div>
+                                    <PackageAndFreight
+                                      index={index}
+                                      item={item}
+                                      setPackageCost={setPackageCost}
+                                      setFreightCost={setFreightCost}
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                            </>
+                          );
+                        })}
                       </tbody>
                     </Table>
                   </Col>
@@ -247,10 +218,7 @@ function TabPackagingFreight(props) {
                       onClick={saveCosting}
                     >
                       <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
+                        <img src={require("../../../../assests/images/check.png")} alt="check-icon.jpg" />{" "}
                       </div>
                       {"Save"}
                     </button>

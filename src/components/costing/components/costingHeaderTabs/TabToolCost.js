@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getToolTabData, saveToolTab, } from '../../actions/Costing';
+import { getToolTabData, saveToolTab, setToolTabData } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
@@ -10,14 +10,16 @@ import Tool from '../CostingHeadCosts/Tool';
 
 function TabToolCost(props) {
 
-  const { register, handleSubmit, reset } = useForm();
+  const { handleSubmit, } = useForm();
 
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
-  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(false);
+  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
   const [tabData, setTabData] = useState([]);
   const [toolCost, setNetToolCost] = useState('');
 
   const dispatch = useDispatch()
+  const ToolTabData = useSelector(state => state.costing.ToolTabData)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const costData = useContext(costingInfoContext);
 
@@ -26,80 +28,98 @@ function TabToolCost(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        //PlantId: costData.PlantId,
       }
-      dispatch(getToolTabData(data, (res) => {
-        if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          if (Data.IsProcessWiseApplicability === true) {
-            setIsApplicableProcessWise(Data.IsProcessWiseApplicability)
-            setIsApplicablilityDisable(Data.IsProcessWiseApplicability)
-          }
-          setTabData(Data.CostingPartDetails)
-        }
-      }))
+      dispatch(getToolTabData(data, true, (res) => { }))
     }
   }, [costData]);
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    // let topHeaderData = {
-    //   NetSurfaceTreatmentCost: surfaceTotal + transportationTotal,
-    // }
-    // props.setHeaderCost(topHeaderData)
-  }, [tabData]);
-
-  const toggle = (index) => {
-    let tempData = tabData[index];
-    let tempObj = { ...tempData, IsOpen: !tempData.IsOpen }
-    let tempArr = Object.assign([...tabData], { [index]: tempObj })
-    setTabData(tempArr)
-  }
+    let TopHeaderValues = ToolTabData && ToolTabData !== undefined && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
+    let topHeaderData = {
+      ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
+    }
+    props.setHeaderCost(topHeaderData)
+  }, [ToolTabData]);
 
   /**
   * @method setOverAllApplicabilityCost
   * @description SET OVERALL APPLICABILITY DEATILS
   */
-  const setOverAllApplicabilityCost = (OverAllToolObj, index) => {
-    let tempObj = tabData[index];
+  const setOverAllApplicabilityCost = (OverAllToolObj) => {
+    let arr = dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
+    console.log('dispatchOverallApplicabilityCost Sunday: ', arr);
+    //dispatch(setToolTabData(arr, () => { }))
+  }
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          OverAllApplicability: OverAllToolObj,
-          NetToolCost: OverAllToolObj.NetToolCost,
-          CostingToolsCostResponse: [],
-        })
-    })
+  /**
+  * @method dispatchOverallApplicabilityCost
+  * @description SET OVERALL APPLICABILITY DEATILS
+  */
+  const dispatchOverallApplicabilityCost = (OverAllToolObj, arr) => {
+    let tempArr = [];
+    try {
 
-    setTimeout(() => {
-      setNetToolCost(OverAllToolObj.NetToolCost)
-      setTabData(tempArr)
-    }, 200)
+      tempArr = arr && arr.map(i => {
+
+        i.CostingPartDetails.OverAllApplicability = OverAllToolObj;
+        i.CostingPartDetails.NetToolCost = OverAllToolObj.NetToolCost;
+        i.CostingPartDetails.CostingToolCostResponse = [];
+
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
 
   }
 
   /**
-  * @method setToolCost
-  * @description SET OVERHEAD DEATILS
+* @method setToolCost
+* @description SET TOOL COST
+*/
+  const setToolCost = (ToolGrid) => {
+    let arr = dispatchToolCost(ToolGrid, ToolTabData)
+    console.log('dispatchToolCost Sunday: ', arr);
+    dispatch(setToolTabData(arr, () => { }))
+  }
+
+  /**
+  * @method dispatchToolCost
+  * @description SET TOOL COST
   */
-  const setToolCost = (ToolObj, index) => {
-    let tempObj = tabData[index];
+  const dispatchToolCost = (ToolGrid, arr) => {
+    let tempArr = [];
+    try {
 
-    let tempArr = Object.assign([...tabData], {
-      [index]: Object.assign({}, tabData[index],
-        {
-          CostingToolsCostResponse: ToolObj,
-          NetToolCost: ToolObj.NetToolCost,
-          OverAllApplicability: {},
-        })
-    })
+      tempArr = arr && arr.map(i => {
 
-    setTimeout(() => {
-      setNetToolCost(ToolObj.NetToolCost)
-      setTabData(tempArr)
-    }, 200)
+        i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
+        i.CostingPartDetails.TotalToolCost = getTotalCost(ToolGrid);
+        //i.CostingPartDetails.OverAllApplicability = {};
 
+        return i;
+      });
+
+    } catch (error) {
+      console.log('error: ', error);
+    }
+    return tempArr;
+
+  }
+
+  /**
+  * @method getTotalCost
+  * @description GET TOTAL COST
+  */
+  const getTotalCost = (item) => {
+    let cost = 0;
+    cost = item && item.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.NetToolCost);
+    }, 0)
+    return cost;
   }
 
   /**
@@ -116,17 +136,11 @@ function TabToolCost(props) {
   */
   const saveCosting = (formData) => {
     const data = {
-      "IsProcessWiseApplicability": IsApplicableProcessWise,
-      "NetToolsCost": toolCost,
-      "NetToolCost": toolCost,
+      "IsToolCostProcessWise": false,
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
-      "PartNumber": costData.PartNumber,
-      "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
-      //"Version": "string",
-      "CostingPartDetails": tabData,
-
+      "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails
     }
 
     dispatch(saveToolTab(data, res => {
@@ -139,10 +153,7 @@ function TabToolCost(props) {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  const onSubmit = (values) => {
-
-
-  }
+  const onSubmit = (values) => { }
 
   return (
     <>
@@ -202,42 +213,35 @@ function TabToolCost(props) {
                         </tr>
                       </thead> */}
                       <tbody>
-                        {tabData &&
-                          tabData.map((item, index) => {
-                            return (
-                              <>
-                                <tr key={index} onClick={() => toggle(index)}>
-                                  <td>
-                                    <span class="cr-prt-nm cr-prt-link">
-                                      {item.PartName}
-                                    </span>
-                                  </td>
-                                  <td>{checkForDecimalAndNull(item.NetToolCost, 2)}</td>
-                                </tr>
-                                {item.IsOpen && (
-                                  <tr>
-                                    <td colSpan={2}>
-                                      <div>
-                                        <Tool
-                                          index={index}
-                                          IsApplicableProcessWise={
-                                            IsApplicableProcessWise
-                                          }
-                                          data={item}
-                                          // headCostRMCCBOPData={props.headCostRMCCBOPData}
-                                          setOverAllApplicabilityCost={
-                                            setOverAllApplicabilityCost
-                                          }
-                                          setToolCost={setToolCost}
-                                          saveCosting={saveCosting}
-                                        />
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )}
-                              </>
-                            );
-                          })}
+                        {ToolTabData && ToolTabData.map((item, index) => {
+                          return (
+                            <>
+                              <tr key={index}>
+                                <td>
+                                  <span class="cr-prt-nm cr-prt-link">
+                                    {item.PartName}
+                                  </span>
+                                </td>
+                                <td>{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
+                              </tr>
+                              <tr>
+                                <td colSpan={2}>
+                                  <div>
+                                    <Tool
+                                      index={index}
+                                      IsApplicableProcessWise={item.CostingPartDetails.IsToolCostProcessWise}
+                                      data={item}
+                                      // headCostRMCCBOPData={props.headCostRMCCBOPData}
+                                      setOverAllApplicabilityCost={setOverAllApplicabilityCost}
+                                      setToolCost={setToolCost}
+                                      saveCosting={saveCosting}
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                            </>
+                          );
+                        })}
                       </tbody>
                     </Table>
                   </Col>

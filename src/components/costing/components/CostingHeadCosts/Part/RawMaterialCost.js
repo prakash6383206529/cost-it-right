@@ -338,9 +338,7 @@ function RawMaterialCost(props) {
                               }
                             </td>
                             <td>
-                              {item.NetLandedCost
-                                ? checkForDecimalAndNull(item.NetLandedCost, 2)
-                                : ''}
+                              {item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, 2) : ''}
                             </td>
                             <td>
                               <button

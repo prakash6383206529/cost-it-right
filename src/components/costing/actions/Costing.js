@@ -38,6 +38,8 @@ import {
   SET_ITEM_DATA,
   SET_SURFACE_TAB_DATA,
   SET_OVERHEAD_PROFIT_TAB_DATA,
+  SET_PACKAGE_AND_FREIGHT_TAB_DATA,
+  SET_TOOL_TAB_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1034,13 +1036,22 @@ export function getPaymentTermsDataByHeads(Id, callback) {
  * @method getPackageFreightTabData
  * @description GET PACKAGE AND FREIGHT DATA IN COSTING DETAIL
  */
-export function getPackageFreightTabData(data, callback) {
+export function getPackageFreightTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
-        callback(response);
+        if (IsUseReducer && response.data.Result) {
+          let TabData = response.data.DataList;
+          dispatch({
+            type: SET_PACKAGE_AND_FREIGHT_TAB_DATA,
+            payload: TabData,
+          });
+          //callback(response);
+        } else {
+          callback(response);
+        }
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -1049,6 +1060,20 @@ export function getPackageFreightTabData(data, callback) {
     });
   };
 }
+
+/**
+ * @method setPackageAndFreightData
+ * @description SET PACKAGE AND FREIGHT TAB DATA  
+ */
+export function setPackageAndFreightData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_PACKAGE_AND_FREIGHT_TAB_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
 
 /**
  * @method saveCostingPackageFreightTab
@@ -1138,13 +1163,22 @@ export function getRateByCapacityCriteria(data, callback) {
  * @method getToolTabData
  * @description GET TOOL DATA IN COSTING DETAIL
  */
-export function getToolTabData(data, callback) {
+export function getToolTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
-        callback(response);
+        if (IsUseReducer && response.data.Result) {
+          let TabData = response.data.DataList;
+          dispatch({
+            type: SET_TOOL_TAB_DATA,
+            payload: TabData,
+          });
+          //callback(response);
+        } else {
+          callback(response);
+        }
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
@@ -1153,6 +1187,20 @@ export function getToolTabData(data, callback) {
     });
   };
 }
+
+/**
+ * @method setToolTabData
+ * @description SET TOOL TAB DATA  
+ */
+export function setToolTabData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_TAB_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
 
 /**
  * @method saveToolTab

@@ -22,7 +22,7 @@ function PackageCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   useEffect(() => {
-    props.setPackageCost(gridData, props.index)
+    props.setPackageCost(gridData, 0)
   }, [gridData]);
 
   /**
@@ -119,8 +119,7 @@ function PackageCost(props) {
                 </thead>
                 <tbody>
                   {
-                    gridData &&
-                    gridData.map((item, index) => {
+                    gridData && gridData.map((item, index) => {
                       return (
                         <tr key={index}>
                           <td>{item.PackagingDescription}</td>
@@ -134,7 +133,7 @@ function PackageCost(props) {
                       )
                     })
                   }
-                  {gridData.length === 0 &&
+                  {gridData && gridData.length === 0 &&
                     <tr>
                       <td colSpan={7}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />

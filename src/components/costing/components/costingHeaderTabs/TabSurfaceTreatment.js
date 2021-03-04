@@ -5,7 +5,6 @@ import { Row, Col, Table, } from 'reactstrap';
 import { getSurfaceTreatmentTabData, setSurfaceData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
-import { SurfaceTreatmentAssemblyGetJSON } from '../../../../config/masterData';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../helper/AllConastant';
@@ -15,8 +14,6 @@ function TabSurfaceTreatment(props) {
   const { netPOPrice } = props;
 
   const { handleSubmit, } = useForm();
-  const [surfaceTotal, setSurfaceTotal] = useState('');
-  const [transportationTotal, setTransportationTotal] = useState('');
   const [isIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
 
   const dispatch = useDispatch()
@@ -116,7 +113,6 @@ function TabSurfaceTreatment(props) {
   */
   const setPartDetails = (Params, Data = {}) => {
     let arr = formatData(Params, Data, SurfaceTabData)
-    console.log('setPartDetails Sunday: ', arr);
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -177,7 +173,6 @@ function TabSurfaceTreatment(props) {
   */
   const toggleAssembly = (params, Children = {}) => {
     let arr = setAssembly(params, Children, SurfaceTabData)
-    console.log('toggleAssembly  Sunday: ', params, arr);
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -246,7 +241,6 @@ function TabSurfaceTreatment(props) {
   */
   const setSurfaceCost = (surfaceGrid, params) => {
     let arr = dispatchSurfaceCost(surfaceGrid, params, SurfaceTabData)
-    console.log('setSurfaceCost Sunday: ', params, arr);
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -322,7 +316,6 @@ function TabSurfaceTreatment(props) {
     cost = item && item.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.SurfaceTreatmentCost);
     }, 0)
-    setSurfaceTotal(cost)
     return cost;
   }
 
@@ -332,7 +325,6 @@ function TabSurfaceTreatment(props) {
   */
   const setTransportationCost = (transportationObj, params) => {
     let arr = dispatchTransportationCost(transportationObj, params, SurfaceTabData)
-    console.log('setTransportationCost Sunday: ', params, arr);
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -402,7 +394,6 @@ function TabSurfaceTreatment(props) {
   */
   const setAssemblySurfaceCost = (surfaceGrid, params, IsGridChanged) => {
     let arr = dispatchAssemblySurfaceCost(surfaceGrid, params, SurfaceTabData, IsGridChanged)
-    console.log('setAssemblySurfaceCost Sunday: ', params, arr);
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -458,7 +449,6 @@ function TabSurfaceTreatment(props) {
   */
   const setAssemblyTransportationCost = (TransportationObj, params) => {
     let arr = dispatchAssemblyTransportationCost(TransportationObj, params, SurfaceTabData)
-    console.log('setAssemblyTransportationCost Sunday: ', params, arr);
     dispatch(setSurfaceData(arr, () => { }))
   }
 
@@ -522,16 +512,7 @@ function TabSurfaceTreatment(props) {
   */
   const saveCosting = () => {
     const data = {
-      CostingId: costData.CostingId,
-      PartId: costData.PartId,
-      PartNumber: costData.PartNumber,
-      NetPOPrice: netPOPrice,
-      LoggedInUserId: loggedInUserId(),
-      NetSurfaceTreatmentCost: surfaceTotal + transportationTotal,
-      SurfaceTreatmentCost: surfaceTotal,
-      TransportationCost: transportationTotal,
-      IsIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatment,
-      CostingPartDetails: SurfaceTabData,
+
     }
 
     // dispatch(saveCostingSurfaceTreatmentTab(data, res => {

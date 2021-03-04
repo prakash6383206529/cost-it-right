@@ -4,7 +4,7 @@ import FreightCost from './FreightCost';
 
 function PackageAndFreight(props) {
 
-  const { packageData, freightData, } = props;
+  const { item, } = props;
 
   /**
   * @method render
@@ -16,13 +16,15 @@ function PackageAndFreight(props) {
         <div>
           <PackageCost
             index={props.index}
-            data={packageData}
+            item={item}
+            data={item.CostingPartDetails.CostingPackagingDetail}
             setPackageCost={props.setPackageCost}
           />
           <hr />
           <FreightCost
             index={props.index}
-            data={freightData}
+            item={item}
+            data={item.CostingPartDetails.CostingFreightDetail}
             setFreightCost={props.setFreightCost}
           />
         </div>

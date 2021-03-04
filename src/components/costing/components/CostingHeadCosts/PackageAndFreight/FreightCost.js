@@ -112,8 +112,7 @@ function FreightCost(props) {
                 </thead>
                 <tbody >
                   {
-                    gridData &&
-                    gridData.map((item, index) => {
+                    gridData && gridData.map((item, index) => {
                       return (
                         <tr key={index}>
                           <td>{item.IsPartTruckLoad ? 'PTL' : 'FTL'}</td>
@@ -130,7 +129,7 @@ function FreightCost(props) {
                       )
                     })
                   }
-                  {gridData.length === 0 &&
+                  {gridData && gridData.length === 0 &&
                     <tr>
                       <td colSpan={7}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />

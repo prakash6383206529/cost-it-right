@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency
+  getExchangeRateByCurrency, setDiscountCost,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -18,9 +18,8 @@ import { toastr } from 'react-redux-toastr';
 function TabDiscountOther(props) {
 
   const { DiscountTabData } = props;
-  const { register, handleSubmit, setValue, getValues, reset, errors, control } = useForm();
+  const { register, handleSubmit, setValue, getValues, errors, control } = useForm();
 
-  const [tabData, setTabData] = useState({});
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
   const [files, setFiles] = useState([]);
@@ -30,6 +29,7 @@ function TabDiscountOther(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
   const fieldValues = useWatch({
     control,
@@ -41,23 +41,31 @@ function TabDiscountOther(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        PlantId: costData.PlantId,
       }
       dispatch(getDiscountOtherCostTabData(data, (res) => {
         if (res && res.data && res.data.Result) {
-          let Data = res.data.Data;
-          if (Data && Data.CostingPartDetails[0] && Data.CostingPartDetails[0].DiscountCost !== null) {
-            let OtherCostDetails = Data.CostingPartDetails[0].OtherCostDetails;
-            setCurrency(OtherCostDetails.IsCurrencyChange ? true : false)
-            setValue([
-              { HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '' },
-              { OtherCostDescription: OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '' },
-              { NetPOPriceINR: OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '' },
-              { HundiOrDiscountValue: OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '' },
-              { AnyOtherCost: OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '' },
-              { Currency: OtherCostDetails.Currency !== null ? { label: '', value: '' } : [] },
-              { NetPOPriceAfterCurrencyChange: OtherCostDetails.NetPOPriceAfterCurrencyChange !== null ? OtherCostDetails.NetPOPriceAfterCurrencyChange : '' },
-            ])
+          let Data = res.data.DataList[0];
+          if (Data && Data.CostingPartDetails && Data.CostingPartDetails.GrandTotalCost !== null) {
+            let OtherCostDetails = Data.CostingPartDetails.OtherCostDetails;
+
+            setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
+            setFiles(Data.Attachements ? Data.Attachements : [])
+            setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
+            setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
+            setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '')
+            setValue('HundiOrDiscountValue', OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '')
+            setValue('AnyOtherCost', OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '')
+            setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
+            setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
+            setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
+
+            // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
+            const discountValues = {
+              NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', 2),
+              HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', 2),
+            }
+            dispatch(setDiscountCost(discountValues, () => { }))
+
           }
         }
       }))
@@ -77,8 +85,6 @@ function TabDiscountOther(props) {
     }, 500)
   }, [props]);
 
-  const currencySelectList = useSelector(state => state.comman.currencySelectList)
-
   /**
   * @method handleDiscountChange
   * @description HANDLE DISCOUNT CHANGE
@@ -87,7 +93,7 @@ function TabDiscountOther(props) {
     if (!isNaN(event.target.value)) {
 
       let topHeaderData = {
-        //DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
         HundiOrDiscountPercentage: checkForNull(event.target.value),
       }
       props.setHeaderCost(topHeaderData)
@@ -96,7 +102,6 @@ function TabDiscountOther(props) {
       toastr.warning('Please enter valid number.')
     }
   }
-
 
   /**
   * @method onPressChangeCurrency
@@ -232,41 +237,36 @@ function TabDiscountOther(props) {
       "PartNumber": costData.PartNumber,
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
-      "NetOtherCostCost": 0,
-      "CostingPartDetails": [
-        {
-          "CostingDetailId": costData.CostingId,
-          "PartId": costData.PartId,
-          "PartTypeId": "00000000-0000-0000-0000-000000000000",
-          "Type": costData.VendorType,
-          "PartNumber": costData.PartNumber,
-          "PartName": costData.PartName,
-          "Quantity": 0,
-          "GrandTotalCost": 0,
-          "IsOpen": true,
-          "IsPrimary": true,
-          "Sequence": 0,
-          "NetOtherCost": values.TotalOtherCost,
-          "OtherCost": values.AnyOtherCost,
-          "DiscountCost": values.HundiOrDiscountValue,
-          "OtherCostDetails": {
-            "OtherCostDetailId": '',
-            "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
-            "HundiOrDiscountValue": values.HundiOrDiscountValue,
-            "AnyOtherCost": values.AnyOtherCost,
-            "OtherCostPercentage": values.OtherCostPercentage,
-            "TotalOtherCost": values.TotalOtherCost,
-            "TotalDiscount": values.TotalDiscount,
-            "IsChangeCurrency": IsCurrencyChange,
-            "NetPOPriceINR": values.NetPOPriceINR,
-            "NetPOPriceOtherCurrency": values.NetPOPriceOtherCurrency,
-            "CurrencyId": currency.value,
-            "Currency": currency.label,
-            "Remark": values.Remarks,
-            "OtherCostDescription": values.OtherCostDescription,
-          }
+      "CostingPartDetails": {
+        "CostingDetailId": costData.CostingId,
+        "PartId": costData.PartId,
+        "PartTypeId": "00000000-0000-0000-0000-000000000000",
+        "Type": costData.VendorType,
+        "PartNumber": costData.PartNumber,
+        "PartName": costData.PartName,
+        "Quantity": 1,
+        "IsOpen": true,
+        "IsPrimary": true,
+        "Sequence": 0,
+        "TotalCost": values.NetPOPriceINR,
+        "NetDiscountsAndOtherCost": values.HundiOrDiscountValue,
+        "OtherCostDetails": {
+          "OtherCostDetailId": '',
+          "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
+          "HundiOrDiscountValue": values.HundiOrDiscountValue,
+          "AnyOtherCost": values.AnyOtherCost,
+          "OtherCostPercentage": values.OtherCostPercentage,
+          "TotalOtherCost": values.TotalOtherCost,
+          "TotalDiscount": values.TotalDiscount,
+          "IsChangeCurrency": IsCurrencyChange,
+          "NetPOPriceINR": values.NetPOPriceINR,
+          "NetPOPriceOtherCurrency": values.NetPOPriceOtherCurrency,
+          "CurrencyId": currency.value,
+          "Currency": currency.label,
+          "Remark": values.Remarks,
+          "OtherCostDescription": values.OtherCostDescription,
         }
-      ],
+      },
       "Attachements": updatedFiles
     }
 
@@ -303,7 +303,7 @@ function TabDiscountOther(props) {
                         <th>{``}</th>
                         <th>{``}</th>
                         <th>{``}</th>
-                        <th>{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue}`}</th>
+                        <th>{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue : props.netPOPrice}`}</th>
                       </tr>
                     </thead>
                   </Table>
