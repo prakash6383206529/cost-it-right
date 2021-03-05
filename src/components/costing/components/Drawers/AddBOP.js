@@ -14,7 +14,6 @@ import { toastr } from 'react-redux-toastr';
 function AddBOP(props) {
 
   const [tableData, setTableDataList] = useState([]);
-
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [selectedIds, setSelectedIds] = useState(props.Ids);
   const dispatch = useDispatch()
