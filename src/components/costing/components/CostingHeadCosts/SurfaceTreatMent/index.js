@@ -23,7 +23,6 @@ function SurfaceTreatment(props) {
     props.closeDrawer('')
   };
 
-
   /**
   * @method cancel
   * @description used to Reset form
@@ -32,9 +31,7 @@ function SurfaceTreatment(props) {
     props.closeDrawer()
   }
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
+  const onSubmit = data => toggleDrawer('')
 
   /**
   * @method saveData
@@ -46,7 +43,7 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
@@ -64,7 +61,6 @@ function SurfaceTreatment(props) {
         },
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
-        console.log('Success', res)
         props.closeDrawer('')
       }))
 
@@ -72,7 +68,7 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": true,
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
@@ -86,7 +82,6 @@ function SurfaceTreatment(props) {
         },
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
-        console.log('Success', res)
         props.closeDrawer('')
       }))
     }

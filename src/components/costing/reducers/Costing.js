@@ -40,6 +40,7 @@ import {
   SET_PACKAGE_AND_FREIGHT_TAB_DATA,
   SET_TOOL_TAB_DATA,
   SET_OTHER_DISCOUNT_TAB_DATA,
+  SET_COMPONENT_ITEM_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -354,6 +355,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         costingBulkUploadList: action.payload
+      }
+    case SET_COMPONENT_ITEM_DATA:
+      return {
+        ...state,
+        loading: false,
+        ComponentItemData: action.payload
       }
     default:
       return state

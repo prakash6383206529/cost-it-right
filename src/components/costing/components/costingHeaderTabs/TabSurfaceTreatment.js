@@ -533,13 +533,6 @@ function TabSurfaceTreatment(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              {/* <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{""}</h2>
-                  </div>
-                </Col>
-              </Row> */}
 
               <Row className="m-0">
                 <Col md="12" className="px-3 py-4 costing-border-x border-bottom-0">
@@ -594,6 +587,7 @@ function TabSurfaceTreatment(props) {
                                     setPartDetails={setPartDetails}
                                     setSurfaceCost={setSurfaceCost}
                                     setTransportationCost={setTransportationCost}
+                                    isIncludeSurfaceTreatment={isIncludeSurfaceTreatment}
                                   />
                                 </>
                               )
@@ -605,6 +599,7 @@ function TabSurfaceTreatment(props) {
                                     index={index}
                                     item={item}
                                     children={item.CostingChildPartDetails}
+                                    isIncludeSurfaceTreatment={isIncludeSurfaceTreatment}
                                     toggleAssembly={toggleAssembly}
                                     setPartDetails={setPartDetails}
                                     setSurfaceCost={setSurfaceCost}

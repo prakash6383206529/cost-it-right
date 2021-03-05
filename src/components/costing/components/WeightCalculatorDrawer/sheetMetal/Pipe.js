@@ -28,8 +28,6 @@ function Pipe(props) {
   const { rmRowData } = props
 
   const costData = useContext(costingInfoContext)
-  console.log(costData, "DATA");
-
 
   const defaultValues = {
 

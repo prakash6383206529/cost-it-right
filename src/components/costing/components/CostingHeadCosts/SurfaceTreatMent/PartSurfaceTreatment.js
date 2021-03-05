@@ -105,6 +105,7 @@ function PartSurfaceTreatment(props) {
         ID={''}
         anchor={'right'}
         item={item}
+        isIncludeSurfaceTreatment={props.isIncludeSurfaceTreatment}
         surfaceData={item.CostingPartDetails.SurfaceTreatmentDetails}
         transportationData={item.CostingPartDetails.TransportationDetails}
         setSurfaceCost={props.setSurfaceCost}

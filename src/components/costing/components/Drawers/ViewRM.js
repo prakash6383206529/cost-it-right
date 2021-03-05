@@ -74,7 +74,7 @@ function ViewRM(props) {
                     mandatory={false}
                     handleChange={() => { }}
                     //defaultValue={`${viewRM[0].RMName}`}
-                    defaultValue={viewRM.RMName}
+                    defaultValue={viewRM.RMName ? viewRM.RMName : '-'}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -90,7 +90,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.RMRate}
+                    defaultValue={viewRM.RMRate ? viewRM.RMRate : '-'}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -119,7 +119,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.GrossWeight}
+                    defaultValue={viewRM.GrossWeight ? viewRM.GrossWeight : ""}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -135,7 +135,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.FinishWeight}
+                    defaultValue={viewRM.FinishWeight ? viewRM.FinishWeight : ""}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -151,7 +151,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.NetLandedCost}
+                    defaultValue={viewRM.NetLandedCost ? viewRM.NetLandedCost : "-"}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}

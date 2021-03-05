@@ -40,10 +40,12 @@ import {
   SET_OVERHEAD_PROFIT_TAB_DATA,
   SET_PACKAGE_AND_FREIGHT_TAB_DATA,
   SET_TOOL_TAB_DATA,
+  SET_COMPONENT_ITEM_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import { toastr } from 'react-redux-toastr'
+import { lowerFirst } from 'lodash'
 
 const headers = {
   'Content-Type': 'application/json',
@@ -149,6 +151,7 @@ export function checkPartWithTechnology(data, callback) {
         }
       })
       .catch((error) => {
+        console.log(error, "fron check parts with technology");
         callback(error.response)
         dispatch({ type: API_FAILURE })
         apiErrors(error)
@@ -491,6 +494,20 @@ export function setRMCCData(TabData, callback) {
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentItemData
+ * @description SET COMPONENT ITEM DATA  
+ */
+export function setComponentItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_ITEM_DATA,
       payload: TabData,
     });
     callback();
@@ -1722,17 +1739,22 @@ export function getSingleCostingDetails(costingId, callback) {
     )
     request
       .then((response) => {
+        console.log(response, "fron single costing detail");
         if (response.data.Data) {
+          console.log("if");
           dispatch({
             type: GET_COSTING_DETAILS_BY_COSTING_ID,
             payload: response.data.Data,
           })
           callback(response)
         } else {
+          console.log("else");
+          console.log(MESSAGES.SOME_ERROR, "fron single costing detail");
           toastr.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
+        console.log(error, "fron single costing detail");
         dispatch({ type: API_FAILURE })
         apiErrors(error)
       })
@@ -1745,7 +1767,6 @@ export const setCostingViewData = (data) => (dispatch) => {
   data.map((val) => {
     temp.push(val)
   })
-  console.log('temp: ', temp)
   dispatch({
     type: SET_COSTING_VIEW_DATA,
     payload: temp,
@@ -1775,7 +1796,6 @@ export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
     )
     request
       .then((response) => {
-        console.log(response, 'Response from costing summary')
         callback(response)
         if (response.data.Result) {
           dispatch({
@@ -1785,6 +1805,7 @@ export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
         }
       })
       .catch((error) => {
+        console.log(error, "error from summary api");
         dispatch({ type: API_FAILURE })
         callback(error)
         apiErrors(error)
@@ -1818,41 +1839,28 @@ export const setCostingApprovalData = (data) => (dispatch) => {
   data.map((val) => {
     temp.push(val)
   })
-  console.log('temp: ', temp)
   dispatch({
     type: SET_COSTING_APPROVAL_DATA,
     payload: temp,
   })
 }
 
-export function getCostingByVendorAndVendorPlant(
-  partNo,
-  VendorId,
-  VendorPlantId,
-  callback,
-) {
+export function getCostingByVendorAndVendorPlant(partNo, VendorId, VendorPlantId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        console.log(response, 'Response from costing summary')
-        callback(response)
-        if (response.data.Result) {
-          dispatch({
-            type: GET_COSTING_BY_VENDOR_VENDOR_PLANT,
-            payload: response.data.Result,
-          })
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`, headers,)
+    request.then((response) => {
+      callback(response)
+      if (response.data.Result) {
+        dispatch({
+          type: GET_COSTING_BY_VENDOR_VENDOR_PLANT,
+          payload: response.data.Result,
+        })
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1864,20 +1872,18 @@ export function getCostingStatusSelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getCostingStatus}`, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          dispatch({
-            type: GET_COSTING_STATUS,
-            payload: response.data.SelectList,
-          })
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_COSTING_STATUS,
+          payload: response.data.SelectList,
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 

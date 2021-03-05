@@ -371,15 +371,8 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
-                        }}
+                        mandatory={false}
+                        rules={{}}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
@@ -398,15 +391,8 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.'
-                          },
-                          // maxLength: 4,
-                        }}
+                        mandatory={false}
+                        rules={{}}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
@@ -481,15 +467,8 @@ function TabDiscountOther(props) {
                             Controller={Controller}
                             control={control}
                             register={register}
-                            mandatory={true}
-                            rules={{
-                              required: true,
-                              // pattern: {
-                              //   value: /^[0-9]*$/i,
-                              //   message: 'Invalid Number.'
-                              // },
-                              // maxLength: 4,
-                            }}
+                            mandatory={false}
+                            rules={{}}
                             handleChange={() => { }}
                             defaultValue={""}
                             className=""
@@ -505,7 +484,7 @@ function TabDiscountOther(props) {
                   <Row>
                     <Col md="12">
                       <div className="bottom-border mb-0 mt-3">
-                        {'Remarks & Attachments'}
+                        {'Remarks & Attachments:'}
                       </div>
                     </Col>
 
@@ -518,16 +497,7 @@ function TabDiscountOther(props) {
                         register={register}
                         rows={6}
                         mandatory={false}
-                        rules={
-                          {
-                            //required: true,
-                            // pattern: {
-                            //   value: /^[0-9]*$/i,
-                            //   message: 'Invalid Number.'
-                            // },
-                            // maxLength: 4,
-                          }
-                        }
+                        rules={{}}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
@@ -563,8 +533,8 @@ function TabDiscountOther(props) {
                                       Drag and Drop or{" "}
                                       <span className="text-primary">Browse</span>
                                       <br />
-                                file to upload
-                              </span>
+                                        file to upload
+                                    </span>
                                   </div>
                                 )
                             }
@@ -591,13 +561,6 @@ function TabDiscountOther(props) {
                                 <a href={fileURL} target="_blank">
                                   {f.OriginalFileName}
                                 </a>
-                                {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
-
                                 <img
                                   alt={""}
                                   className="float-right"
@@ -610,7 +573,6 @@ function TabDiscountOther(props) {
                       </div>
                     </Col>
                   </Row>
-
 
                   <div className="col-sm-12 text-right bluefooter-butn mt-3">
                     <button

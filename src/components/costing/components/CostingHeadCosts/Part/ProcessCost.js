@@ -75,12 +75,8 @@ function ProcessCost(props) {
     dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
-        console.log(data, "DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         tempData = { ...tempData, WeightCalculatorRequest: data, }
-        console.log('tempData: ', tempData);
-
         tempArr = Object.assign([...gridData], { [id]: tempData })
-        console.log('tempArr: ', tempArr);
         setTimeout(() => {
           setGridData(tempArr)
           setIsCalculator(true)

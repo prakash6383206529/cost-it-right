@@ -70,20 +70,20 @@ function Costing(props) {
               </NavItem> */}
           </Nav>
           <TabContent activeTab={activeTab}>
-            {activeTab === "1" && (
-              <TabPane tabId="1">
-                <CostingDetails />
-              </TabPane>
-            )}
-            {activeTab === "2" && (
-              <TabPane tabId="2">
-                <CostingSummary />
-                {
-                  // <CostingSummaryTable />
-                }
-                {partNumber !== "" && <CostingSummaryTable />}
-              </TabPane>
-            )}
+            {/* {activeTab === "1" && ( */}
+            <TabPane tabId="1">
+              <CostingDetails />
+            </TabPane>
+            {/* )} */}
+            {/* {activeTab === "2" && ( */}
+            <TabPane tabId="2">
+              <CostingSummary />
+              {
+                // <CostingSummaryTable />
+              }
+              {partNumber !== "" && <CostingSummaryTable />}
+            </TabPane>
+            {/* )} */}
             {/* {activeTab === "3" && <TabPane tabId="3">{"Insights"}</TabPane>} */}
           </TabContent>
         </div>

@@ -21,7 +21,6 @@ function RawMaterialCost(props) {
   })
 
   const costData = useContext(costingInfoContext)
-  console.log(costData, "DATA");
   // const technology = props.technology ? props.technology : 'Sheet Metal'
   // const technology = costData.TechnologyName
   const [isDrawerOpen, setDrawerOpen] = useState(false)
@@ -108,12 +107,8 @@ function RawMaterialCost(props) {
     dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
-        console.log(data, "DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         tempData = { ...tempData, WeightCalculatorRequest: data, }
-        console.log('tempData: ', tempData);
-
         tempArr = Object.assign([...gridData], { [index]: tempData })
-        console.log('tempArr: ', tempArr);
         setTimeout(() => {
           setGridData(tempArr)
           setWeightDrawerOpen(true)
@@ -145,12 +140,13 @@ function RawMaterialCost(props) {
     if (!isNaN(event.target.value)) {
       const GrossWeight = checkForNull(event.target.value)
       const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
-      if (!GrossWeight || !FinishWeight) {
-        return ''
-      }
-      const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
+      // if (!GrossWeight || !FinishWeight) {
+      //   return ''
+      // }
+      const NetLandedCost = GrossWeight * tempData.RMRate - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
       tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
+      setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
       setGridData(tempArr)
     } else {
       toastr.warning('Please enter valid weight.')
@@ -169,19 +165,23 @@ function RawMaterialCost(props) {
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
 
-      //if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
-      const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
-      tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      //} else {
-      // const NetLandedCost = 0;
-      // tempData = { ...tempData, FinishWeight: '', NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
-      // tempArr = Object.assign([...gridData], { [index]: tempData })
-      // setGridData(tempArr)
-      // setValue(`${rmGridFields}[${index}]FinishWeight`, '')
-      //   toastr.warning('Finish weight should not be greater then gross weight.')
-      // }
+      if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
+        const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+        tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
+        setGridData(tempArr)
+
+      } else {
+
+        const NetLandedCost = 0;
+        tempData = { ...tempData, FinishWeight: '', NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        setValue(`${rmGridFields}[${index}]FinishWeight`, '')
+        setGridData(tempArr)
+        toastr.warning('Finish weight should not be greater then gross weight.')
+
+      }
 
     } else {
       toastr.warning('Please enter valid weight.')
@@ -303,60 +303,58 @@ function RawMaterialCost(props) {
                               />
                             </td>
                             <td>
-                              {
-                                <TextFieldHookForm
-                                  label=""
-                                  name={`${rmGridFields}[${index}]GrossWeight`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.',
-                                    },
-                                  }}
-                                  defaultValue={item.GrossWeight}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleGrossWeightChange(e, index)
-                                  }}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                  disabled={false}
-                                />
-                              }
+                              <TextFieldHookForm
+                                label=""
+                                name={`${rmGridFields}[${index}]GrossWeight`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  //required: true,
+                                  pattern: {
+                                    value: /^[0-9]\d*(\.\d+)?$/i,
+                                    message: 'Invalid Number.',
+                                  },
+                                }}
+                                defaultValue={item.GrossWeight}
+                                className=""
+                                customClassName={'withBorder'}
+                                handleChange={(e) => {
+                                  e.preventDefault()
+                                  handleGrossWeightChange(e, index)
+                                }}
+                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                disabled={false}
+                              />
                             </td>
                             <td>
-                              {
-                                <TextFieldHookForm
-                                  label=""
-                                  name={`${rmGridFields}[${index}]FinishWeight`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.',
-                                    },
-                                  }}
-                                  defaultValue={item.FinishWeight}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleFinishWeightChange(e, index)
-                                  }}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                  disabled={false}
-                                />
-                              }
+                              {/* //TODO FINISH WEIGHT NOT GREATER THAN GROSS WEIGHT */}
+                              <TextFieldHookForm
+                                label=""
+                                name={`${rmGridFields}[${index}]FinishWeight`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  //required: true,
+                                  pattern: {
+                                    value: /^[0-9]\d*(\.\d+)?$/i,
+                                    message: 'Invalid Number.',
+                                  },
+                                  //validate: (value) => item.GrossWeight >= value ? value : 0
+                                }}
+                                defaultValue={item.FinishWeight}
+                                className=""
+                                customClassName={'withBorder'}
+                                handleChange={(e) => {
+                                  e.preventDefault()
+                                  handleFinishWeightChange(e, index)
+                                }}
+                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
+                                disabled={false}
+                              />
                             </td>
                             <td>
                               {item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, 2) : ''}

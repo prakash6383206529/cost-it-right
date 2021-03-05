@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers';
 import * as yup from "yup";
 
 const schema = yup.object().shape({
-    quantity: yup.string().matches(/^[0-9]*$/, 'Please enter valid number').required('this field is required'),
+    quantity: yup.string().matches(/^[1-9][0-9]*$/, 'Please enter valid number').required('this field is required'),
     //firstName: yup.string().matches(/^[A-Za-z ]*$/, 'Please enter valid name').required('this field is required'),
 });
 
@@ -39,7 +39,6 @@ export default function VishualAdDrawer(props) {
         console.log('errors', errors)
         props.closeDrawer(data.quantity)
     }
-    console.log('errors', errors)
 
     /**
     * @method render
@@ -54,7 +53,7 @@ export default function VishualAdDrawer(props) {
                         <Row className="drawer-heading">
                             <Col>
                                 <div className={'header-wrapper left'}>
-                                    <h3>{'Update Quantity1'}</h3>
+                                    <h3>{'Update Quantity'}</h3>
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer(e)}
@@ -65,7 +64,6 @@ export default function VishualAdDrawer(props) {
 
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
-
                                 <Col md="12">
                                     <TextFieldHookForm
                                         label="Quantity"
@@ -77,14 +75,10 @@ export default function VishualAdDrawer(props) {
                                             required: true,
                                             pattern: {
                                                 value: /^[1-9][0-9]*$/,
-                                                // value: /^[0-9]\d*(\.\d+)?$/i,
+                                                //value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            min: {
-                                                value: 1,
-                                                message: 'Min val 1' // JS only: <p>error message</p> TS only support string
-                                            }
-                                            // maxLength: 4,
+                                            min: 1,
                                         }}
                                         mandatory={true}
                                         handleChange={() => { }}

@@ -14,7 +14,6 @@ function Tool(props) {
 
   // const OverAllApplicability = data.OverAllApplicability;
   const ObjectForOverAllApplicability = data.CostingPartDetails && data.CostingPartDetails.CostingToolCostResponse && data.CostingPartDetails.CostingToolCostResponse[0];
-  console.log('ObjectForOverAllApplicability: ', ObjectForOverAllApplicability);
 
   // BELOW CODE NEED TO BE USED WHEN SEPERATE OBJECT NEED FOR OVERALL APPLICABILITY
   // const defaultValues = {
@@ -394,14 +393,7 @@ function Tool(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-                      rules={{
-                        //required: true,
-                        pattern: {
-                          value: /^[0-9]*$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                      }}
+                      rules={{}}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -410,7 +402,7 @@ function Tool(props) {
                         //handleRateChange(e)
                       }}
                       errors={errors && errors.NetToolCost}
-                      disabled={false}
+                      disabled={true}
                     />
                   </Col>
                 </>

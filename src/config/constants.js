@@ -494,7 +494,7 @@ export const API = {
   getAllPartSelectList: `${BASE_URL}/costing/get-part-select-list`,
   getPartInfo: `${BASE_URL}/masters-part/get-part-info`,
   checkPartWithTechnology: `${BASE_URL}/costing/check-part-with-technology`,
-  getCostingDetailsByCostingId: `${BASE_URL}/costing/get-zbc-view-costing`,
+  getCostingDetailsByCostingId: `${BASE_URL}/costing/get-view-costing`,
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
@@ -1125,10 +1125,10 @@ export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
 export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
 export const SET_OTHER_DISCOUNT_TAB_DATA = 'SET_OTHER_DISCOUNT_TAB_DATA';
+export const SET_COMPONENT_ITEM_DATA = 'SET_COMPONENT_ITEM_DATA';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
-
 
 //Login const
 export const AUTH_API_FAILURE = 'AUTH_API_FAILURE'

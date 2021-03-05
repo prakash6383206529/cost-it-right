@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, } from 'react';
+import React, { useEffect, useCallback, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -7,8 +7,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
-import CostingHeadTabs from './costingHeaderTabs/index'
-import { VBC, ZBC } from '../../../config/constants';
+import CostingHeadTabs from './CostingHeaderTabs/index'
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -139,7 +138,9 @@ function CostingDetailStepTwo(props) {
           data.NetTotalRMBOPCC +
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
-          tempData.NetPackagingAndFreight + data.NetToolsCost - checkForNull(tempData.DiscountsAndOtherCost)
+          tempData.NetPackagingAndFreight +
+          tempData.ToolCost -
+          checkForNull(tempData.DiscountsAndOtherCost)
       }
 
       tempData = {
@@ -148,7 +149,7 @@ function CostingDetailStepTwo(props) {
         NetBOPCost: data.NetBoughtOutPartCost,
         NetConversionCost: data.NetConversionCost,
         NetTotalRMBOPCC: data.NetTotalRMBOPCC,
-        ToolCost: data.NetToolsCost,
+        //ToolCost: data.ToolCost,
         TotalCost: OverAllCost,
       }
 
@@ -320,8 +321,10 @@ function CostingDetailStepTwo(props) {
     let OverAllCost = 0;
     if (tempData && tempData !== undefined) {
       //SUM OF ALL TAB EXCEPT DISCOUNT TAB
-      const SumOfTab = checkForNull(tempData.NetTotalRMBOPCC) + checkForNull(tempData.NetSurfaceTreatmentCost) +
-        checkForNull(tempData.NetOverheadAndProfitCost) + checkForNull(tempData.NetPackagingAndFreight) +
+      const SumOfTab = checkForNull(tempData.NetTotalRMBOPCC) +
+        checkForNull(tempData.NetSurfaceTreatmentCost) +
+        checkForNull(tempData.NetOverheadAndProfitCost) +
+        checkForNull(tempData.NetPackagingAndFreight) +
         checkForNull(tempData.ToolCost)
 
       const cost = SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage);

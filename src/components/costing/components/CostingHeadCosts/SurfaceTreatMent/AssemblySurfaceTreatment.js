@@ -156,6 +156,7 @@ function AssemblySurfaceTreatment(props) {
         transportationData={item.CostingPartDetails.TransportationDetails}
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+        isIncludeSurfaceTreatment={props.isIncludeSurfaceTreatment}
         IsAssemblyCalculation={true}
       />}
     </ >
