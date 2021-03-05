@@ -1,15 +1,7 @@
 import React, { Fragment, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import {
-  Row,
-  Col,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-  Container,
-} from 'reactstrap'
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Container, } from 'reactstrap'
+import { getRawMaterialCalculationByTechnology, saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import classnames from 'classnames'
 import Drawer from '@material-ui/core/Drawer'
 import Pipe from './Pipe'
@@ -18,12 +10,26 @@ import Bracket from './Bracket'
 import SectionL from './SectionL'
 import SectionC from './SectionC'
 import SectionZ from './SectionZ'
+import { toastr } from 'react-redux-toastr'
 
 function WeightCalculator(props) {
 
+  const dispatch = useDispatch()
   const { rmRowData } = props
-  const [activeTab, setActiveTab] = useState('1')
+  console.log(rmRowData, "RM");
+  const getTabno = (layout) => {
+    switch (layout) {
+      case 'Pipe':
+        return '1'
+      case 'Braket':
+        return '2'
+      default:
+        break;
+    }
+  }
 
+  const [activeTab, setActiveTab] = useState(rmRowData && rmRowData.WeightCalculatorRequest && rmRowData.WeightCalculatorRequest.LayoutType ? getTabno(rmRowData.WeightCalculatorRequest.LayoutType) : '1')
+  // const [activeTab, setActiveTab] = useState('1')
   /**
    * @method toggle
    * @description toggling the tabs
@@ -45,10 +51,10 @@ function WeightCalculator(props) {
     ) {
       return
     }
+
     props.toggleDrawer('', weightData)
   }
 
-  const dispatch = useDispatch()
 
   /**
    * @method render

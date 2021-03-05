@@ -7,7 +7,7 @@ import { yupResolver } from '@hookform/resolvers';
 import * as yup from "yup";
 
 const schema = yup.object().shape({
-    quantity: yup.string().matches(/^[0-9]*$/, 'Please enter valid number').required('this field is required'),
+    quantity: yup.string().matches(/^[1-9][0-9]*$/, 'Please enter valid number').required('this field is required'),
     //firstName: yup.string().matches(/^[A-Za-z ]*$/, 'Please enter valid name').required('this field is required'),
 });
 
@@ -39,7 +39,6 @@ export default function VishualAdDrawer(props) {
         console.log('errors', errors)
         props.closeDrawer(data.quantity)
     }
-    console.log('errors', errors)
 
     /**
     * @method render
@@ -72,6 +71,15 @@ export default function VishualAdDrawer(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^[1-9][0-9]*$/,
+                                                //value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.',
+                                            },
+                                            min: 1,
+                                        }}
                                         mandatory={true}
                                         handleChange={() => { }}
                                         defaultValue={props.updatedQuantity}

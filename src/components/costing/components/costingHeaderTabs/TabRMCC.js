@@ -3,26 +3,21 @@ import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
-import { getRMCCTabData, saveCostingRMCCTab, setRMCCData } from '../../actions/Costing';
+import { getRMCCTabData, saveCostingRMCCTab, setRMCCData, saveComponentCostingRMCCTab, } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
-import { LEVEL0, SUB_ASSEMBLY } from '../../../../helper/AllConastant';
+import { LEVEL0, LEVEL1, SUB_ASSEMBLY } from '../../../../helper/AllConastant';
 
 function TabRMCC(props) {
-  const { netPOPrice } = props.netPOPrice ? props.netPOPrice : ''
 
   const { handleSubmit } = useForm()
-
-  const [netProcessCost, setNetProcessCost] = useState('')
-  const [netOperationCost, setNetOperationCost] = useState('')
-  const [netToolsCost, setNetToolsCost] = useState(0)
-  const [tabData, setTabData] = useState([])
-  const [costingData, setCostingData] = useState({})
 
   const dispatch = useDispatch()
 
   const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
+  const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
+  console.log('ComponentItemData: ', ComponentItemData);
 
   const costData = useContext(costingInfoContext);
 
@@ -31,7 +26,6 @@ function TabRMCC(props) {
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
-        //PlantId: costData.PlantId,
       }
       dispatch(getRMCCTabData(data, true, (res) => { }))
     }
@@ -260,18 +254,6 @@ function TabRMCC(props) {
   const setRMCost = (rmGrid, params) => {
     let arr = setRMCostInDataList(rmGrid, params, RMCCTabData)
     dispatch(setRMCCData(arr, () => { }))
-    // let tempObj = tabData[index];
-    // let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(tempObj.TotalBoughtOutPartCost) + checkForNull(tempObj.TotalConversionCost)
-
-    // let tempArr = Object.assign([...tabData], {
-    //   [index]: Object.assign({}, tabData[index],
-    //     { GrandTotalCost: GrandTotalCost, TotalRawMaterialsCost: netRMCost(rmGrid), CostingRawMaterialsCost: rmGrid })
-    // })
-
-    // setTimeout(() => {
-    //   setTabData(tempArr)
-    // }, 200)
-
   }
 
   const setRMCostInDataList = (rmGrid, params, arr) => {
@@ -499,52 +481,6 @@ function TabRMCC(props) {
   }
 
   /**
-   * @method getGrandNetRMCost
-   * @description GET GRAND TOTAL RM COST
-   */
-  const getGrandNetRMCost = () => {
-    let NetCost = 0
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalRawMaterialsCost)
-    }, 0)
-    return NetCost
-  }
-
-  /**
-   * @method getGrandNetBOPCost
-   * @description GET GRAND TOTAL BOP COST
-   */
-  const getGrandNetBOPCost = () => {
-    let NetCost = 0
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalBoughtOutPartCost)
-    }, 0)
-    return NetCost
-  }
-
-  /**
-   * @method getGrandNetConversionCost
-   * @description GET GRAND TOTAL CONVERSION COST
-   */
-  const getGrandNetConversionCost = () => {
-    let NetCost = 0
-    NetCost = tabData && tabData.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.TotalConversionCost)
-    }, 0)
-    return NetCost
-  }
-
-  /**
-   * @method getTotalCost
-   * @description GET TOTAL COST
-   */
-  const getTotalCost = () => {
-    return (
-      getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost()
-    )
-  }
-
-  /**
   * @method toggleAssembly
   * @description SET PART DETAILS
   */
@@ -633,9 +569,7 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (BOMLevel, PartNumber, Data) => {
-    console.log('RMCCTabData: ', RMCCTabData);
     let arr = formatData(BOMLevel, PartNumber, Data, RMCCTabData)
-    console.log('arr: ', arr);
     dispatch(setRMCCData(arr, () => { }))
   }
 
@@ -649,7 +583,6 @@ function TabRMCC(props) {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
         if (i.IsAssemblyPart === true) {
-          console.log('BOMLevel, PartNumber, Data, iiiiiiiii', BOMLevel, PartNumber, Data, i)
           // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
           // getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.CostingConversionCost.NetConversionCost), params);
 
@@ -658,7 +591,6 @@ function TabRMCC(props) {
             getProcessTotalCost(i.CostingChildPartDetails, Data.TotalProcessCost, params) +
             getOperationTotalCost(i.CostingChildPartDetails, Data.TotalOperationCost, params);
 
-          console.log('i.CostingPartDetails.TotalConversionCost', i.CostingPartDetails.TotalConversionCost)
           //getOperationTotalCostForAssembly(i.CostingChildPartDetails, Data.TotalOperationCostPerAssembly, params) +
           //getToolTotalCostForAssembly(i.CostingChildPartDetails, Data.TotalToolCostPerAssembly, params);
           //checkForNull(i.CostingPartDetails.TotalConversionCost) +
@@ -701,8 +633,6 @@ function TabRMCC(props) {
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
-        console.log('OperationGrid: ', OperationGrid, params, i, IsGridChanged);
-
         if (i.IsAssemblyPart === true && i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
           let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) +
@@ -811,42 +741,100 @@ function TabRMCC(props) {
   */
   const saveCosting = () => {
     const data = {
-      NetRawMaterialsCost: getGrandNetRMCost(),
-      NetBoughtOutPartCost: getGrandNetBOPCost(),
-      NetConversionCost: getGrandNetConversionCost(),
-      NetOperationCost: netOperationCost,
-      NetProcessCost: netProcessCost,
-      NetToolsCost: netToolsCost,
-      NetTotalRMBOPCC: getGrandNetRMCost() + getGrandNetBOPCost() + getGrandNetConversionCost(),
-      NetSurfaceTreatmentCost: 0,
-      NetOverheadAndProfitCost: 0,
-      NetPackagingAndFreight: 0,
-      NetToolCost: netToolsCost,
-      DiscountsAndOtherCost: 0,
-      TotalCost: getTotalCost(),
-      NetPOPrice: netPOPrice,
-      LoggedInUserId: loggedInUserId(),
-      CostingId: costData.CostingId,
-      CostingNumber: costData.CostingNumber,
-      ShareOfBusinessPercent: costData.ShareOfBusinessPercent,
-      PartId: costData.PartId,
-      PartNumber: costData.PartNumber,
-      Version: costingData.Version,
-      CostingPartDetails: tabData,
+
     }
 
     dispatch(
-      saveCostingRMCCTab(data, (res) => {
-        console.log('saveCostingRMCCTab: ', res)
-      }),
+      saveCostingRMCCTab(data, (res) => { }),
     )
   }
+
+  useEffect(() => {
+
+    // return () => {
+    //   if (ComponentItemData !== undefined) {
+    //     let requestData = {
+    //       "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
+    //       "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
+    //       "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
+    //       "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
+    //       "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
+    //       "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
+    //       "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+    //       "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+    //       "LoggedInUserId": loggedInUserId(),
+
+    //       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+    //       "CostingId": ComponentItemData.CostingId,
+    //       "PartId": ComponentItemData.PartId,                              //ROOT ID
+    //       "CostingNumber": costData.CostingNumber,            //ROOT    
+    //       "PartNumber": ComponentItemData.PartNumber,                      //ROOT
+
+    //       "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+    //       "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+    //       "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+    //       "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+
+    //       "PlantId": costData.PlantId,
+    //       "VendorId": costData.VendorId,
+    //       "VendorCode": costData.VendorCode,
+    //       "VendorPlantId": costData.VendorPlantId,
+    //       "TechnologyId": ComponentItemData.TechnologyId,
+    //       "Technology": ComponentItemData.Technology,
+    //       "TypeOfCosting": costData.VendorType,
+    //       "PlantCode": costData.PlantCode,
+    //       "Version": ComponentItemData.Version,
+    //       "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+    //       CostingPartDetails: ComponentItemData.CostingPartDetails,
+    //     }
+    //     dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
+    //   }
+    // }
+
+  }, [props.activeTab])
 
   /**
    * @method onSubmit
    * @description Used to Submit the form
    */
-  const onSubmit = (values) => { }
+  const onSubmit = (values) => {
+
+    let requestData = {
+      "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
+      "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
+      "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
+      "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
+      "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
+      "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
+      "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+      "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+      "LoggedInUserId": loggedInUserId(),
+
+      "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+      "CostingId": ComponentItemData.CostingId,
+      "PartId": ComponentItemData.PartId,                              //ROOT ID
+      "CostingNumber": costData.CostingNumber,            //ROOT    
+      "PartNumber": ComponentItemData.PartNumber,                      //ROOT
+
+      "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+      "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+      "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+      "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+
+      "PlantId": costData.PlantId,
+      "VendorId": costData.VendorId,
+      "VendorCode": costData.VendorCode,
+      "VendorPlantId": costData.VendorPlantId,
+      "TechnologyId": ComponentItemData.TechnologyId,
+      "Technology": ComponentItemData.Technology,
+      "TypeOfCosting": costData.VendorType,
+      "PlantCode": costData.PlantCode,
+      "Version": ComponentItemData.Version,
+      "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+      CostingPartDetails: ComponentItemData.CostingPartDetails,
+    }
+    dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
+  }
 
   return (
     <>
@@ -942,7 +930,7 @@ function TabRMCC(props) {
                     {"Cancel"}
                   </button>
                   <button
-                    type={'button'}
+                    type={'submit'}
                     className="submit-button mr-3 save-btn"
                   >
                     <div className={'check-icon'}>

@@ -1208,7 +1208,6 @@ function CostingDetails() {
                         </div>
                       </Row>
                     )}
-
                   </>
                 )}
                 {stepTwo && (

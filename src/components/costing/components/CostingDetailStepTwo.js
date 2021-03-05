@@ -139,7 +139,8 @@ function CostingDetailStepTwo(props) {
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
           tempData.NetPackagingAndFreight +
-          tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
+          tempData.ToolCost -
+          checkForNull(tempData.DiscountsAndOtherCost)
       }
 
       tempData = {
@@ -148,7 +149,7 @@ function CostingDetailStepTwo(props) {
         NetBOPCost: data.NetBoughtOutPartCost,
         NetConversionCost: data.NetConversionCost,
         NetTotalRMBOPCC: data.NetTotalRMBOPCC,
-        ToolCost: data.ToolCost,
+        //ToolCost: data.ToolCost,
         TotalCost: OverAllCost,
       }
 

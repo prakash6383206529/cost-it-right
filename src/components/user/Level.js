@@ -410,7 +410,7 @@ class Level extends Component {
                         <Field
                           name="LevelId"
                           type="text"
-                          label="Highest Level"
+                          label="Highest Approval Level"
                           className="w-100"
                           component={searchableSelect}
                           options={this.searchableSelectType('level')}

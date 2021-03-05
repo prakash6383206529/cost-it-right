@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useWatch } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import Switch from "react-switch";
 import OperationCost from './OperationCost';
@@ -13,6 +13,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
+import { getProcessCalculation } from '../../../actions/CostWorking';
 
 function ProcessCost(props) {
   const { data } = props
@@ -39,7 +40,10 @@ function ProcessCost(props) {
   const [isCalculator, setIsCalculator] = useState(false)
   const [calculatorData, setCalculatorData] = useState({})
 
+  const dispatch = useDispatch()
+
   const costData = useContext(costingInfoContext);
+  // console.log(costData, "CD");
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({
@@ -57,42 +61,62 @@ function ProcessCost(props) {
     props.setProcessCost(tabData, Params)
   }, [tabData]);
 
+  /**
+   * @method toggleWeightCalculator
+   * @description For opening weight calculator
+  */
   const toggleWeightCalculator = (id) => {
     setCalciIndex(id)
-    const calciData = gridData[id]
-    setCalculatorData(calciData)
-    setIsCalculator(true)
+    let tempArr = []
+    let tempData = gridData[id]
+    // const calciData = gridData[id]
+    console.log(tempData, "TempData");
+    /****************************FOR SENDING CALCULATED VALUE IN CALCULATOR**************************/
+    dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
+      if (res && res.data && res.data.Data) {
+        const data = res.data.Data
+        tempData = { ...tempData, WeightCalculatorRequest: data, }
+        tempArr = Object.assign([...gridData], { [id]: tempData })
+        setTimeout(() => {
+          setGridData(tempArr)
+          setIsCalculator(true)
+        }, 100)
+      }
+    }))
+    // setCalculatorData(calciData)
+
   }
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
     setIsCalculator(false)
-
+    console.log(weightData, "WD");
     let tempData = gridData[calciIndex]
     let time
     let netCost
     let tempArray
     let tempArr2 = [];
-
-    if (value === '0.00' && tempData.Quantity !== '0.00') {
-      tempData = {
-        ...tempData,
-        WeightCalculatorRequest: weightData
-      }
-    } else {
-      if (tempData.UOM === 'Hours') {
-        time = value === '0.00' ? '0.00' : checkForDecimalAndNull(value / 60, 4)
-        netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
-      } else {
-        time = value === '0.00' ? '0.00' : value
-        netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
-      }
-      tempData = {
-        ...tempData,
-        Quantity: time,
-        ProcessCost: netCost,
-        WeightCalculatorRequest: weightData
-      }
+    //********************************THIS CALCULATION IS FOR MACHINING TECHNOLOGY ,WIIL BE USED LATER DEPEND ON REQUIREMENT******************************************* */
+    // if (value === '0.00' && tempData.Quantity !== '0.00') {
+    //   tempData = {
+    //     ...tempData,
+    //     WeightCalculatorRequest: weightData
+    //   }
+    // } else {
+    //   if (tempData.UOM === 'Hours') {
+    //     time = value === '0.00' ? '0.00' : checkForDecimalAndNull(value / 60, 4)
+    //     netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
+    //   } else {
+    //     time = value === '0.00' ? '0.00' : value
+    //     netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
+    //   }
+    tempData = {
+      ...tempData,
+      Quantity: weightData.Quantity,
+      ProcessCost: weightData.ProcessCost,
+      IsCalculatedEntry: true,
+      WeightCalculatorRequest: weightData
     }
+
 
     tempArray = Object.assign([...gridData], { [calciIndex]: tempData })
 
@@ -111,8 +135,8 @@ function ProcessCost(props) {
     setTimeout(() => {
       setTabData(tempArr2)
       setGridData(tempArray)
-      setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, time)
-      setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, netCost)
+      setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, weightData.Quantity)
+      setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, weightData.ProcessCost)
     }, 100)
   }
 
@@ -150,7 +174,11 @@ function ProcessCost(props) {
           ProcessDescription: el.Description,
           MachineName: el.MachineName,
           UOM: el.UnitOfMeasurement,
+          UnitOfMeasurementId: el.UnitOfMeasurementId,
+          MachineTonnage: el.MachineTonnage,
           ProcessCost: '',
+          UnitType: el.UnitType,
+          UnitTypeId: el.UnitTypeId
         }
       })
 
@@ -327,6 +355,7 @@ function ProcessCost(props) {
       tempData = {
         ...tempData,
         Quantity: parseInt(event.target.value),
+        IsCalculatedEntry: false,
         ProcessCost: ProcessCost,
       }
       let gridTempArr = Object.assign([...gridData], { [index]: tempData })
@@ -798,11 +827,8 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={'Machining'}
-          // technology={'Sheet Metal'}
-          // technology={'Plastic'}
-          calculatorData={calculatorData}
-          process={'End Mill'}
+          technology={costData.TechnologyName}
+          calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}

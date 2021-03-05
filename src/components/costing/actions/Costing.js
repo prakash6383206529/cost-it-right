@@ -40,6 +40,7 @@ import {
   SET_OVERHEAD_PROFIT_TAB_DATA,
   SET_PACKAGE_AND_FREIGHT_TAB_DATA,
   SET_TOOL_TAB_DATA,
+  SET_COMPONENT_ITEM_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -491,6 +492,20 @@ export function setRMCCData(TabData, callback) {
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentItemData
+ * @description SET COMPONENT ITEM DATA  
+ */
+export function setComponentItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_ITEM_DATA,
       payload: TabData,
     });
     callback();
@@ -1745,7 +1760,6 @@ export const setCostingViewData = (data) => (dispatch) => {
   data.map((val) => {
     temp.push(val)
   })
-  console.log('temp: ', temp)
   dispatch({
     type: SET_COSTING_VIEW_DATA,
     payload: temp,
@@ -1775,7 +1789,6 @@ export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
     )
     request
       .then((response) => {
-        console.log(response, 'Response from costing summary')
         callback(response)
         if (response.data.Result) {
           dispatch({
@@ -1818,41 +1831,28 @@ export const setCostingApprovalData = (data) => (dispatch) => {
   data.map((val) => {
     temp.push(val)
   })
-  console.log('temp: ', temp)
   dispatch({
     type: SET_COSTING_APPROVAL_DATA,
     payload: temp,
   })
 }
 
-export function getCostingByVendorAndVendorPlant(
-  partNo,
-  VendorId,
-  VendorPlantId,
-  callback,
-) {
+export function getCostingByVendorAndVendorPlant(partNo, VendorId, VendorPlantId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        console.log(response, 'Response from costing summary')
-        callback(response)
-        if (response.data.Result) {
-          dispatch({
-            type: GET_COSTING_BY_VENDOR_VENDOR_PLANT,
-            payload: response.data.Result,
-          })
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`, headers,)
+    request.then((response) => {
+      callback(response)
+      if (response.data.Result) {
+        dispatch({
+          type: GET_COSTING_BY_VENDOR_VENDOR_PLANT,
+          payload: response.data.Result,
+        })
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1864,20 +1864,18 @@ export function getCostingStatusSelectList(callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getCostingStatus}`, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          dispatch({
-            type: GET_COSTING_STATUS,
-            payload: response.data.SelectList,
-          })
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_COSTING_STATUS,
+          payload: response.data.SelectList,
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 

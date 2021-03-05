@@ -502,7 +502,12 @@ export const API = {
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
   UpdateCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/update-costing-weight-calculation`,
-  getRawMaterialCalculationByTechnology: `${BASE_URL}/get-raw-material-calculation-by-technology`,
+  getRawMaterialCalculationByTechnology: `${BASE_URL}/costing/get-raw-material-calculation-by-technology`,
+  saveRawMaterialCalciData: `${BASE_URL}/costing/save-raw-material-calculation-by-technology`,
+
+  // PROCESS COST CALCULATION
+  getProcessCalculation: `${BASE_URL}/costing/get-process-calculation-by-technology`,
+  saveProcessCostCalculation: `${BASE_URL}/costing/save-process-calculation-by-technology`,
 
   //COST WORKING API
   getCostingBySupplier: `${BASE_URL}/costing-sheet-metal/get-costings-by-supplier`,
@@ -542,8 +547,7 @@ export const API = {
   getCostingFreight: `${BASE_URL}/costing-sheet-metal/get-costing-freight`,
   copyCostingAPI: `${BASE_URL}/costing/copy-costing`,
 
-  // PROCESS COST CALCULATION
-  saveProcessCostCalculation: `${BASE_URL}/`,
+
 
   //LOGIN API
   login: `${BASE_URL}/user/login`,
@@ -1121,9 +1125,11 @@ export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
 export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
 export const SET_OTHER_DISCOUNT_TAB_DATA = 'SET_OTHER_DISCOUNT_TAB_DATA';
+export const SET_COMPONENT_ITEM_DATA = 'SET_COMPONENT_ITEM_DATA';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
+
 
 //Login const
 export const AUTH_API_FAILURE = 'AUTH_API_FAILURE'
@@ -1319,7 +1325,6 @@ export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 
-
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',
   costingName: '',
@@ -1361,3 +1366,10 @@ export const VIEW_COSTING_DATA = {
   attachment: 'Attachment',
   approvalButton: '',
 }
+
+//UOM ENUMS
+export const KG = "Kilogram"
+export const HOUR = "Hours"
+export const NO = "Number"
+export const STROKE = "Stroke"
+export const SHOTS = "SHOT"

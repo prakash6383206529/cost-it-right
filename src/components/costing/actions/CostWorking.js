@@ -734,10 +734,11 @@ export function saveCostingAsDraft(data, callback) {
  * @description Get raw materical calculator data by technology
 */
 
-export function getRawMaterialCalculationByTechnology(technologyName, layoutType, callback) {
+export function getRawMaterialCalculationByTechnology(costingId, rawMaterialId, weightCalculationId, technologyId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRawMaterialCalculationByTechnology}/${technologyName}/${layoutType}`, headers);
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "00000000-0000-0000-0000-000000000000"}&technologyId=${technologyId}`
+    const request = axios.get(`${API.getRawMaterialCalculationByTechnology}?${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -754,6 +755,26 @@ export function getRawMaterialCalculationByTechnology(technologyName, layoutType
       apiErrors(error);
     });
   };
+}
+
+
+export function saveRawMaterialCalciData(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalciData, data, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        // dispatch({
+        //   type: SAVE_COSTING_AS_DRAFT_SUCCESS,
+        // });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({
+        type: API_FAILURE
+      });
+      apiErrors(error);
+    });
+  }
 }
 
 /**
@@ -878,6 +899,55 @@ export function sendForApprovalFromBulkUpload(data, callback) {
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       //apiErrors(error);
+    });
+  };
+}
+
+
+/**
+ * @method saveProcessCostCalculationData
+ * @description Save Process Cost Calculation Data
+ */
+export function saveProcessCostCalculationData(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveProcessCostCalculation, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+/**
+ * @method getRawMaterialCalculationByTechnology
+ * @description Get raw materical calculator data by technology
+*/
+
+export function getProcessCalculation(costingId, processId, processCalculationId, technologyId, processType, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&processId=${processId}&processCalculationId=${processCalculationId ? processCalculationId : "00000000-0000-0000-0000-000000000000"}&technologyId=${technologyId}&processType=${processType}`
+    const request = axios.get(`${API.getProcessCalculation}?${queryParams}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        // dispatch({
+        //   type: GET_RAW_MATERIAL_CALCI_INFO,
+        //   payload: response.data.Data,
+        // });
+        callback(response);
+      } else {
+        toastr.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      // apiErrors(error);
     });
   };
 }

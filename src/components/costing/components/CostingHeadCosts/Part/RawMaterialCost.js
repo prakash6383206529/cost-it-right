@@ -11,7 +11,7 @@ import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
 import WeightCalculator from '../../WeightCalculatorDrawer'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
-import { getRawMaterialCalculationByTechnology } from '../../../actions/CostWorking'
+import { getRawMaterialCalculationByTechnology, saveRawMaterialCalciData } from '../../../actions/CostWorking'
 
 function RawMaterialCost(props) {
 
@@ -20,7 +20,9 @@ function RawMaterialCost(props) {
     reValidateMode: 'onChange',
   })
 
-  const technology = props.technology ? props.technology : 'Sheet Metal'
+  const costData = useContext(costingInfoContext)
+  // const technology = props.technology ? props.technology : 'Sheet Metal'
+  // const technology = costData.TechnologyName
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
@@ -31,21 +33,20 @@ function RawMaterialCost(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    switch (technology) {
+    switch (costData.TechnologyName) {
       case 'Sheet Metal':
         return setGridLength(0)
       case 'Plastic':
         return setGridLength(0)
       case 'Rubber':
         return setGridLength(3)
-      case 'Forging':
+      case 'Forgining':
         return setGridLength(0)
       default:
         return setGridLength(0)
     }
   }, [])
 
-  const costData = useContext(costingInfoContext)
 
   useEffect(() => {
     setTimeout(() => {
@@ -78,6 +79,7 @@ function RawMaterialCost(props) {
         MaterialType: rowData.MaterialType,
         Density: rowData.Density,
         UOM: rowData.UOM,
+        UOMId: rowData.UOMId,
         ScrapRate: rowData.ScrapRate,
         FinishWeight: '',
         GrossWeight: '',
@@ -98,19 +100,22 @@ function RawMaterialCost(props) {
     setEditIndex(index)
     let tempArr = []
     let tempData = gridData[index]
-    dispatch(getRawMaterialCalculationByTechnology(technology, 'default', res => {
+    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "") {
+      toastr.warning("Density is not avaliable for weight calculation.")
+      return false
+    }
+    dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
       if (res && res.data && res.data.Data) {
         const data = res.data.Data
         tempData = { ...tempData, WeightCalculatorRequest: data, }
-
-        tempArr = Object.assign([...gridData], { [editIndex]: tempData })
+        tempArr = Object.assign([...gridData], { [index]: tempData })
         setTimeout(() => {
           setGridData(tempArr)
+          setWeightDrawerOpen(true)
         }, 100)
       }
     }))
 
-    setWeightDrawerOpen(true)
   }
 
   /**
@@ -121,6 +126,7 @@ function RawMaterialCost(props) {
     setInputDiameter(weightData.Diameter)
     setWeight(weightData)
     setWeightDrawerOpen(false)
+
   }
 
   /**
@@ -134,12 +140,13 @@ function RawMaterialCost(props) {
     if (!isNaN(event.target.value)) {
       const GrossWeight = checkForNull(event.target.value)
       const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
-      if (!GrossWeight || !FinishWeight) {
-        return ''
-      }
-      const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
-      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
+      // if (!GrossWeight || !FinishWeight) {
+      //   return ''
+      // }
+      const NetLandedCost = GrossWeight * tempData.RMRate - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
+      setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
       setGridData(tempArr)
     } else {
       toastr.warning('Please enter valid weight.')
@@ -158,19 +165,23 @@ function RawMaterialCost(props) {
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
 
-      //if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
-      const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
-      tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setGridData(tempArr)
-      //} else {
-      // const NetLandedCost = 0;
-      // tempData = { ...tempData, FinishWeight: '', NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
-      // tempArr = Object.assign([...gridData], { [index]: tempData })
-      // setGridData(tempArr)
-      // setValue(`${rmGridFields}[${index}]FinishWeight`, '')
-      //   toastr.warning('Finish weight should not be greater then gross weight.')
-      // }
+      if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
+        const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+        tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
+        setGridData(tempArr)
+
+      } else {
+
+        const NetLandedCost = 0;
+        tempData = { ...tempData, FinishWeight: '', NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, }
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        setValue(`${rmGridFields}[${index}]FinishWeight`, '')
+        setGridData(tempArr)
+        toastr.warning('Finish weight should not be greater then gross weight.')
+
+      }
 
     } else {
       toastr.warning('Please enter valid weight.')
@@ -190,6 +201,7 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData) => {
+    console.log(weightData, "WC");
     let tempArr = []
     let tempData = gridData[editIndex]
 
@@ -198,7 +210,15 @@ function RawMaterialCost(props) {
       const GrossWeight = weightData.GrossWeight
       const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
 
-      tempData = { ...tempData, FinishWeight: FinishWeight, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: weightData, }
+      tempData = {
+        ...tempData,
+        FinishWeight: FinishWeight,
+        GrossWeight: GrossWeight,
+        NetLandedCost: NetLandedCost,
+        WeightCalculatorRequest: weightData,
+        WeightCalculationId: weightData.WeightCalculationId,
+        IsCalculatedEntry: true
+      }
 
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setTimeout(() => {
@@ -278,64 +298,63 @@ function RawMaterialCost(props) {
                               <button
                                 className="CalculatorIcon cr-cl-icon "
                                 type={'button'}
+                                // disabled={(item.Density === undefined || item.Density === "" || item.Density === null) ? true : false}
                                 onClick={() => toggleWeightCalculator(index)}
                               />
                             </td>
                             <td>
-                              {
-                                <TextFieldHookForm
-                                  label=""
-                                  name={`${rmGridFields}[${index}]GrossWeight`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.',
-                                    },
-                                  }}
-                                  defaultValue={item.GrossWeight}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleGrossWeightChange(e, index)
-                                  }}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                  disabled={false}
-                                />
-                              }
+                              <TextFieldHookForm
+                                label=""
+                                name={`${rmGridFields}[${index}]GrossWeight`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  //required: true,
+                                  pattern: {
+                                    value: /^[0-9]\d*(\.\d+)?$/i,
+                                    message: 'Invalid Number.',
+                                  },
+                                }}
+                                defaultValue={item.GrossWeight}
+                                className=""
+                                customClassName={'withBorder'}
+                                handleChange={(e) => {
+                                  e.preventDefault()
+                                  handleGrossWeightChange(e, index)
+                                }}
+                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
+                                disabled={false}
+                              />
                             </td>
                             <td>
-                              {
-                                <TextFieldHookForm
-                                  label=""
-                                  name={`${rmGridFields}[${index}]FinishWeight`}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
-                                      message: 'Invalid Number.',
-                                    },
-                                  }}
-                                  defaultValue={item.FinishWeight}
-                                  className=""
-                                  customClassName={'withBorder'}
-                                  handleChange={(e) => {
-                                    e.preventDefault()
-                                    handleFinishWeightChange(e, index)
-                                  }}
-                                  errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                  disabled={false}
-                                />
-                              }
+                              {/* //TODO FINISH WEIGHT NOT GREATER THAN GROSS WEIGHT */}
+                              <TextFieldHookForm
+                                label=""
+                                name={`${rmGridFields}[${index}]FinishWeight`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  //required: true,
+                                  pattern: {
+                                    value: /^[0-9]\d*(\.\d+)?$/i,
+                                    message: 'Invalid Number.',
+                                  },
+                                  //validate: (value) => item.GrossWeight >= value ? value : 0
+                                }}
+                                defaultValue={item.FinishWeight}
+                                className=""
+                                customClassName={'withBorder'}
+                                handleChange={(e) => {
+                                  e.preventDefault()
+                                  handleFinishWeightChange(e, index)
+                                }}
+                                errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
+                                disabled={false}
+                              />
                             </td>
                             <td>
                               {item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, 2) : ''}
@@ -380,7 +399,7 @@ function RawMaterialCost(props) {
           closeDrawer={closeWeightDrawer}
           isEditFlag={false}
           inputDiameter={inputDiameter}
-          technology={technology}
+          technology={costData.TechnologyName}
           ID={''}
           anchor={'right'}
           rmRowData={gridData[editIndex]}

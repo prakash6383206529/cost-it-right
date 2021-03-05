@@ -4,7 +4,7 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
-import { getRMCCTabData, saveComponentCostingRMCCTab } from '../../../actions/Costing';
+import { getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
 
@@ -27,7 +27,6 @@ function PartCompoment(props) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
           PartId: item.PartId,
-          //PlantId: costData.PlantId,
         }
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
@@ -40,7 +39,11 @@ function PartCompoment(props) {
   }
 
   useEffect(() => {
+    dispatch(setComponentItemData(item, () => { }))
+  }, [item])
 
+  useEffect(() => {
+    // OBJECT FOR SENDING OBJECT TO API
     if (IsOpen === false && Count > 0) {
       let requestData = {
         "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
