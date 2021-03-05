@@ -2674,12 +2674,59 @@ body {
 .costing-border-x{border-left: 1px solid #C2CBE8;border-right: 1px solid #C2CBE8;}
 .costing-border-y{border-top: 1px solid #C2CBE8;border-top: 1px solid #C2CBE8;}
 .overhead-profit-tab-costing{
+  .col-label{
+    margin-bottom: 0px !important;
+  }
+  .costing-border-inner-section{
+    border-bottom:  1px solid #C2CBE8;;
+      border-left: 1px solid #C2CBE8;
+      border-right: 1px solid #C2CBE8;
+    .col-md-3{
+      border-top: 1px solid #C2CBE8;
+      padding: 12px 15px;
+      .form-group.inputbox.withBorder{
+        margin-bottom: 0px;
+      }
+    }
+  }
+  .form-control[disabled]{
+    max-width: 280px;
+  }
   .form-group.inputbox.withBorder{
+    input.form-control{
+      max-width: 280px;
+    }
     label{
       display: none;
     }
   }
 }
+.overhead-profit-tab-costing.costing-border-with-labels{
+  .form-group.inputbox.withBorder{
+    label{
+      display: block;
+    }
+  }
+}
+
+.col-label{
+  color: #8A91AC;
+  padding: 10px;
+  padding-left: 0px;
+  font-size: 14px;
+}
+
+.costing-details-page{
+  .accordian-row{
+    > td{
+      padding: 22px 30px;
+    }
+  }
+}
+.mb-15{margin-bottom: 15px;}
+.pb-15{padding-bottom: 15px;}
+.mt-15{margin-top: 15px;}
+.pt-15{padding-top: 15px;}
 
 
 // responsive media query start

@@ -106,7 +106,7 @@ function AssemblyPart(props) {
   */
   return (
     <>
-      <tr className="costing-highlight-row">
+      <tr className="costing-highlight-row accordian-row">
         <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>

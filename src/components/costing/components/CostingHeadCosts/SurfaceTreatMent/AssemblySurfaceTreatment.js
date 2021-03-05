@@ -89,7 +89,7 @@ function AssemblySurfaceTreatment(props) {
   return (
     <>
       <tr>
-        <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, true)}>
+        <div className="accordian-row" style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, true)}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
               {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>

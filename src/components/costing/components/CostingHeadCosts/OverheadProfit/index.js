@@ -1014,7 +1014,7 @@ function OverheadProfit(props) {
               </Col>
             </Row>
 
-            <Row className="costing-border px-2 py-3 m-0 overhead-profit-tab-costing">
+            <Row className="costing-border px-2 py-4 m-0 overhead-profit-tab-costing">
 
               <Col md="3">
                 <SearchableSelectHookForm
@@ -1037,11 +1037,11 @@ function OverheadProfit(props) {
                 {''}
               </Col>
 
-              <Col md="3">
+              <Col md="3" className="pl-0">
                 <label>
                   {'Net Overhead & Profit'}
                 </label>
-                {checkForDecimalAndNull(data.CostingPartDetails.OverheadCost, initialConfiguration.NumberOfDecimalForTransaction) + checkForDecimalAndNull(data.CostingPartDetails.ProfitCost, initialConfiguration.NumberOfDecimalForTransaction)}
+                <input className="form-control" disabled value={checkForDecimalAndNull(data.CostingPartDetails.OverheadCost, initialConfiguration.NumberOfDecimalForTransaction) + checkForDecimalAndNull(data.CostingPartDetails.ProfitCost, initialConfiguration.NumberOfDecimalForTransaction)} />
               </Col>
 
               <Col md="12" className="">
@@ -1051,7 +1051,7 @@ function OverheadProfit(props) {
               </Col>
 
               <Col md="12">
-                <Row className="costing-border px-2 py-3 m-0 w-100">
+                <Row className="costing-border-inner-section m-0">
                   <Col md="3">
                     <label>
                       {'Overhead On'}
@@ -1078,7 +1078,7 @@ function OverheadProfit(props) {
                     overheadObj && overheadObj.IsOverheadFixedApplicable &&
                     <>
                       <Col md="3">
-                        <label>
+                        <label className="col-label">
                           {'Fixed'}
                         </label>
                       </Col>
@@ -1145,7 +1145,7 @@ function OverheadProfit(props) {
                     overheadObj && overheadObj.IsOverheadCombined &&
                     <>
                       <Col md="3">
-                        <label>
+                        <label className="col-label">
                           {`${overheadObj && overheadObj.OverheadApplicability ? '(' + overheadObj.OverheadApplicability + ')' : ''}`}
                         </label>
                       </Col>
@@ -1205,7 +1205,7 @@ function OverheadProfit(props) {
                     overheadObj && overheadObj.IsOverheadRMApplicable &&
                     <>
                       <Col md="3">
-                        <label>
+                        <label className="col-label">
                           {'RM'}
                         </label>
                       </Col>
@@ -1265,7 +1265,7 @@ function OverheadProfit(props) {
                     overheadObj && overheadObj.IsOverheadBOPApplicable &&
                     <>
                       <Col md="3">
-                        <label>
+                        <label className="col-label">
                           {'BOP'}
                         </label>
                       </Col>
@@ -1324,7 +1324,7 @@ function OverheadProfit(props) {
                     overheadObj && overheadObj.IsOverheadCCApplicable &&
                     <>
                       <Col md="3">
-                        <label>
+                        <label className="col-label">
                           {'CC'}
                         </label>
                       </Col>
@@ -1381,351 +1381,354 @@ function OverheadProfit(props) {
                 </Row>
               </Col>
 
-              <Col md="12" className="mt25">
+              {/* new section from below with heasing */}
+              <Col md="12" className="pt-3">
                 <div className="left-border">
                   {`Profits ${profitObj && profitObj.OverheadApplicability ? '(' + profitObj.OverheadApplicability + ')' : ''}`}
                 </div>
               </Col>
+              <Col md="12">
+                <Row className="costing-border-inner-section m-0">
+                  <Col md="3">
+                    <label>
+                      {'Profit On'}
+                    </label>
+                  </Col>
+                  <Col md="3">
+                    <label>
+                      {'Percentage (%)'}
+                    </label>
+                  </Col>
+                  <Col md="3">
+                    <label>
+                      {'Cost(Applicability)'}
+                    </label>
+                  </Col>
+                  <Col md="3">
+                    <label>
+                      {'Profit'}
+                    </label>
+                  </Col>
 
-              <Col md="3">
-                <label>
-                  {'Profit On'}
-                </label>
+
+                  {
+                    profitObj && profitObj.IsProfitFixedApplicable &&
+                    <>
+                      <Col md="3">
+                        <label className="col-label">
+                          {'Fixed'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitFixedPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{
+                            required: false,
+                            pattern: {
+                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              message: 'Invalid Number.'
+                            },
+                            // maxLength: 4,
+                          }}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitFixedPercentage}
+                          disabled={false}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitFixedCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitFixedCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitFixedTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitFixedTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+
+                    </>
+                  }
+
+                  {
+                    profitObj && profitObj.IsProfitCombined &&
+                    <>
+                      <Col md="3">
+                        <label className="col-label">
+                          {`${profitObj && profitObj.OverheadApplicability ? '(' + profitObj.OverheadApplicability + ')' : ''}`}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitCombinedCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitCombinedCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitCombinedTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitCombinedTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+
+                    </>
+                  }
+
+                  {
+                    profitObj && profitObj.IsProfitRMApplicable &&
+                    <>
+                      <Col md="3">
+                        <label className="col-label">
+                          {'RM'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitRMPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitRMPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitRMCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitRMCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitRMTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitRMTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+                    </>
+                  }
+
+                  {
+                    profitObj && profitObj.IsProfitBOPApplicable &&
+                    <>
+                      <Col md="3">
+                        <label className="col-label">
+                          {'BOP'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitBOPPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitBOPPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitBOPCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitBOPCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitBOPTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitBOPTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+                    </>
+                  }
+
+                  {
+                    profitObj && profitObj.IsProfitCCApplicable &&
+                    <>
+                      <Col md="3">
+                        <label className="col-label">
+                          {'CC'}
+                        </label>
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitCCPercentage'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitCCPercentage}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitCCCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitCCCost}
+                          disabled={true}
+                        />
+                      </Col>
+                      <Col md="3">
+                        <TextFieldHookForm
+                          label=""
+                          name={'ProfitCCTotalCost'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ProfitCCTotalCost}
+                          disabled={true}
+                        />
+                      </Col>
+                    </>
+                  }
+                </Row>
               </Col>
-              <Col md="3">
-                <label>
-                  {'Percentage (%)'}
-                </label>
-              </Col>
-              <Col md="3">
-                <label>
-                  {'Cost(Applicability)'}
-                </label>
-              </Col>
-              <Col md="3">
-                <label>
-                  {'Profit'}
-                </label>
-              </Col>
-
-
-              {
-                profitObj && profitObj.IsProfitFixedApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'Fixed'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitFixedPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                        pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.'
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitFixedPercentage}
-                      disabled={false}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitFixedCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitFixedCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitFixedTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitFixedTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-
-                </>
-              }
-
-              {
-                profitObj && profitObj.IsProfitCombined &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {`${profitObj && profitObj.OverheadApplicability ? '(' + profitObj.OverheadApplicability + ')' : ''}`}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitCombinedCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitCombinedCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitCombinedTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitCombinedTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-
-                </>
-              }
-
-              {
-                profitObj && profitObj.IsProfitRMApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'RM'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitRMPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitRMPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitRMCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitRMCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitRMTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitRMTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-                </>
-              }
-
-              {
-                profitObj && profitObj.IsProfitBOPApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'BOP'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitBOPPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitBOPPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitBOPCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitBOPCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitBOPTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitBOPTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-                </>
-              }
-
-              {
-                profitObj && profitObj.IsProfitCCApplicable &&
-                <>
-                  <Col md="3">
-                    <label>
-                      {'CC'}
-                    </label>
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitCCPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitCCPercentage}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitCCCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitCCCost}
-                      disabled={true}
-                    />
-                  </Col>
-                  <Col md="3">
-                    <TextFieldHookForm
-                      label=""
-                      name={'ProfitCCTotalCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.ProfitCCTotalCost}
-                      disabled={true}
-                    />
-                  </Col>
-                </>
-              }
-
             </Row>
 
 
 
-
             <Row>
-              <Col md="12" className="mt25">
+              <Col md="12" className="pt-3">
                 <div className="left-border">
                   {'Rejection:'}
                 </div>
               </Col>
-
+            </Row>
+            <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
               <Col md="3">
                 <SearchableSelectHookForm
                   label={'Applicability'}
@@ -1802,10 +1805,9 @@ function OverheadProfit(props) {
 
 
 
-            <Row>
-              <Col md="2" className="switch mb15">
+            <Row className="mt-15 pt-15">
+              <Col md="12" className="switch mb15">
                 <label className="switch-level">
-                  <div className={'left-title'}>{''}</div>
                   <Switch
                     onChange={onPressInventory}
                     checked={IsInventoryApplicable}
@@ -1823,11 +1825,9 @@ function OverheadProfit(props) {
                   <div className={'right-title'}>Inventory Carrying Cost</div>
                 </label>
               </Col>
-              <Col md="10">
-                {''}
-              </Col>
-
-              {IsInventoryApplicable &&
+            </Row>
+            {IsInventoryApplicable &&
+              <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
                 <>
                   <Col md="3">
                     <SearchableSelectHookForm
@@ -1893,16 +1893,17 @@ function OverheadProfit(props) {
                       disabled={true}
                     />
                   </Col>
-                </>}
-            </Row>
+                </>
+              </Row>
+            }
 
 
 
 
-            <Row>
-              <Col md="2" className="switch mb15">
+
+            <Row className="mt-15 pt-15">
+              <Col md="12" className="switch mb15">
                 <label className="switch-level">
-                  <div className={'left-title'}>{''}</div>
                   <Switch
                     onChange={onPressPaymentTerms}
                     checked={IsPaymentTermsApplicable}
@@ -1920,11 +1921,9 @@ function OverheadProfit(props) {
                   <div className={'right-title'}>Payment Terms</div>
                 </label>
               </Col>
-              <Col md="10">
-                {''}
-              </Col>
-
-              {IsPaymentTermsApplicable &&
+            </Row>
+            {IsPaymentTermsApplicable &&
+              <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing mb-4">
                 <>
                   <Col md="3">
                     <SearchableSelectHookForm
@@ -1990,8 +1989,10 @@ function OverheadProfit(props) {
                       disabled={true}
                     />
                   </Col>
-                </>}
-            </Row>
+                </>
+              </Row>
+            }
+
 
             <Row className="sf-btn-footer no-gutters justify-content-between mt25">
               <div className="col-sm-12 text-right bluefooter-butn">
