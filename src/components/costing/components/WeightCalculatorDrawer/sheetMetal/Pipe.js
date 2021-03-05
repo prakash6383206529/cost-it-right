@@ -401,415 +401,414 @@ function Pipe(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <Row>
-            <Col md="12" className={'mt25'}>
-              <HeaderTitle
-                title={'Raw Material'}
-                customClass={'underLine-title'}
-              />
-            </Col>
-          </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
-            <Row className={'mt15'}>
-              <Col md="3">
-                <SearchableSelectHookForm
-                  label={'UOM for Dimension'}
-                  name={'UOMDimension'}
-                  placeholder={'-Select-'}
-                  Controller={Controller}
-                  control={control}
-                  rules={{ required: true }}
-                  register={register}
-                  defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
-                  options={renderListing('UOM')}
-                  mandatory={true}
-                  handleChange={handleUOMChange}
-                  errors={errors.UOMDimension}
-                // disabled={!isEditFlag}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Outer Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
-                  name={'OuterDiameter'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={true}
-                  rules={{
-                    required: true,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.OuterDiameter}
-                  disabled={false}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Thickness${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
-                  name={'Thickness'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={true}
-                  rules={{
-                    required: true,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.Thickness}
-                  disabled={false}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Inner Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
-                  name={'InnerDiameter'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    // pattern: {
-                    //   value: /^[0-9]*$/i,
-                    //   message: 'Invalid Number.'
-                    // },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.InnerDiameter}
-                  disabled={true}
-                />
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Length of Sheet${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
-                  name={'SheetLength'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.SheetLength}
-                  disabled={false}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Length of Part${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
-                  name={'PartLength'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={true}
-                  rules={{
-                    required: true,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.PartLength}
-                  disabled={false}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label="No. of Parts/Sheet"
-                  name={'NumberOfPartsPerSheet'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.NumberOfPartsPerSheet}
-                  disabled={true}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Length of Scrap${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
-                  name={'ScrapLength'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.ScrapLength}
-                  disabled={true}
-                />
-              </Col>
-            </Row>
-
-            <Row className={'mt15'}>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Weight of Sheet(Gm)`}
-                  name={'WeightofSheet'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.WeightofSheet}
-                  disabled={true}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Weight of Part(Gm)`}
-                  name={'WeightofPart'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.WeightofPart}
-                  disabled={true}
-                />
-              </Col>
-              <Col md="3">
-                <TextFieldHookForm
-                  label={`Weight of Scrap(Gm)`}
-                  name={'WeightofScrap'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      //value: /^[0-9]*$/i,
-                      value: /^[0-9]\d*(\.\d+)?$/i,
-                      message: 'Invalid Number.',
-                    },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.WeightofScrap}
-                  disabled={true}
-                />
-              </Col>
-            </Row>
-
-            <Row className={'mt15'}>
-              <Col md="12">
-                <HeaderTitle
-                  title={'Surface Area'}
-                  customClass={'underLine-title'}
-                />
-              </Col>
-            </Row>
-
-            <Row className={'mt15'}>
-              <Col md="4" className="switch mb15">
-                <label className="switch-level">
-                  <div className={'left-title'}>{'One Side'}</div>
-                  <Switch
-                    onChange={onSideToggle}
-                    checked={isOneSide}
-                    id="normal-switch"
-                    disabled={false}
-                    background="#4DC771"
-                    onColor="#4DC771"
-                    onHandleColor="#ffffff"
-                    offColor="#4DC771"
-                    uncheckedIcon={false}
-                    checkedIcon={false}
-                    height={20}
-                    width={46}
+            <div className="costing-border border-top-0 px-4">
+              <Row>
+                <Col md="12" className={'mt25'}>
+                  <HeaderTitle className="border-bottom"
+                    title={'Raw Material'}
+                    customClass={'underLine-title'}
                   />
-                  <div className={'right-title'}>{'Both Side'}</div>
-                </label>
-              </Col>
+                </Col>
+              </Row>
+              <Row className={'mt15'}>
+                <Col md="3">
+                  <SearchableSelectHookForm
+                    label={'UOM for Dimension'}
+                    name={'UOMDimension'}
+                    placeholder={'-Select-'}
+                    Controller={Controller}
+                    control={control}
+                    rules={{ required: true }}
+                    register={register}
+                    defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
+                    options={renderListing('UOM')}
+                    mandatory={true}
+                    handleChange={handleUOMChange}
+                    errors={errors.UOMDimension}
+                  // disabled={!isEditFlag}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Outer Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    name={'OuterDiameter'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.OuterDiameter}
+                    disabled={false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Thickness${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    name={'Thickness'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.Thickness}
+                    disabled={false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Inner Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    name={'InnerDiameter'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      // pattern: {
+                      //   value: /^[0-9]*$/i,
+                      //   message: 'Invalid Number.'
+                      // },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.InnerDiameter}
+                    disabled={true}
+                  />
+                </Col>
+              </Row>
 
-              <hr />
-            </Row>
+              <Row>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Length of Sheet${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    name={'SheetLength'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.SheetLength}
+                    disabled={false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Length of Part${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    name={'PartLength'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.PartLength}
+                    disabled={false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label="No. of Parts/Sheet"
+                    name={'NumberOfPartsPerSheet'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.NumberOfPartsPerSheet}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Length of Scrap${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    name={'ScrapLength'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.ScrapLength}
+                    disabled={true}
+                  />
+                </Col>
+              </Row>
 
-            <Row>
-              <Col md="4">
-                <TextFieldHookForm
-                  label="Net Surface Area"
-                  name={'NetSurfaceArea'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    // pattern: {
-                    //   value: /^[0-9]*$/i,
-                    //   message: 'Invalid Number.'
-                    // },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.NetSurfaceArea}
-                  disabled={true}
-                />
-              </Col>
-              <Col md="4">
-                <TextFieldHookForm
-                  label="Gross Weight"
-                  name={'GrossWeight'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    // pattern: {
-                    //   value: /^[0-9]*$/i,
-                    //   message: 'Invalid Number.'
-                    // },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.GrossWeight}
-                  disabled={true}
-                />
-              </Col>
-              <Col md="4">
-                <TextFieldHookForm
-                  label="Finish Weight"
-                  name={'FinishWeight'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  rules={{
-                    required: false,
-                    // pattern: {
-                    //   value: /^[0-9]*$/i,
-                    //   message: 'Invalid Number.'
-                    // },
-                    // maxLength: 4,
-                  }}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.FinishWeight}
-                  disabled={true}
-                />
-              </Col>
-            </Row>
+              <Row className={'mt15'}>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Weight of Sheet(Gm)`}
+                    name={'WeightofSheet'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.WeightofSheet}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Weight of Part(Gm)`}
+                    name={'WeightofPart'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.WeightofPart}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Weight of Scrap(Gm)`}
+                    name={'WeightofScrap'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.WeightofScrap}
+                    disabled={true}
+                  />
+                </Col>
+              </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between mt25">
-              <div className="col-sm-12 text-right bluefooter-butn">
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button>
-                <button
-                  type={'submit'}
-                  className="submit-button mr5 save-btn">
-                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'Save'}
-                </button>
-              </div>
-            </Row>
+              <Row className={'mt15'}>
+                <Col md="12">
+                  <HeaderTitle className="border-bottom"
+                    title={'Surface Area'}
+                    customClass={'underLine-title'}
+                  />
+                </Col>
+              </Row>
+
+              <Row className={'mt15'}>
+                <Col md="4" className="switch">
+                  <label className="switch-level">
+                    <div className={'left-title'}>{'One Side'}</div>
+                    <Switch
+                      onChange={onSideToggle}
+                      checked={isOneSide}
+                      id="normal-switch"
+                      disabled={false}
+                      background="#4DC771"
+                      onColor="#4DC771"
+                      onHandleColor="#ffffff"
+                      offColor="#4DC771"
+                      uncheckedIcon={false}
+                      checkedIcon={false}
+                      height={20}
+                      width={46}
+                    />
+                    <div className={'right-title'}>{'Both Side'}</div>
+                  </label>
+                </Col>
+              </Row>
+              <hr className="mx-n4 w-auto" />
+              <Row>
+                <Col md="4">
+                  <TextFieldHookForm
+                    label="Net Surface Area"
+                    name={'NetSurfaceArea'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      // pattern: {
+                      //   value: /^[0-9]*$/i,
+                      //   message: 'Invalid Number.'
+                      // },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.NetSurfaceArea}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="4">
+                  <TextFieldHookForm
+                    label="Gross Weight"
+                    name={'GrossWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      // pattern: {
+                      //   value: /^[0-9]*$/i,
+                      //   message: 'Invalid Number.'
+                      // },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.GrossWeight}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="4">
+                  <TextFieldHookForm
+                    label="Finish Weight"
+                    name={'FinishWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      // pattern: {
+                      //   value: /^[0-9]*$/i,
+                      //   message: 'Invalid Number.'
+                      // },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.FinishWeight}
+                    disabled={true}
+                  />
+                </Col>
+              </Row>
+            </div>
+
+            <div className="col-sm-12 text-right px-0 mt-4">
+              <button
+                type={'button'}
+                className="reset mr15 cancel-btn"
+                onClick={cancel} >
+                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+              </button>
+              <button
+                type={'submit'}
+                className="submit-button save-btn">
+                <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                {'Save'}
+              </button>
+            </div>
+
           </form>
         </div>
       </div>

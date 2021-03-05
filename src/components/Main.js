@@ -108,7 +108,7 @@ class Main extends Component {
 
     return (
       <Suspense fallback={<Loader />}>
-        <div className="testting">
+        <div className="">
           {!this.state.visibelPageNotFound && isLogin && (
             <div className="sf-mainwrapper">
               <div className=" sf-mainheader">

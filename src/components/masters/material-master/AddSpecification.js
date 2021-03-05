@@ -420,7 +420,7 @@ class AddSpecification extends Component {
                         placeholder={"Enter"}
                         validate={[required]}
                         component={renderText}
-                        required={true}
+                        // required={true}
                         className=" "
                         disabled={true}
                         customClassName=" withBorder"

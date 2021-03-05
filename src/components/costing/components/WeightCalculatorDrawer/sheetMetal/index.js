@@ -64,7 +64,7 @@ function WeightCalculator(props) {
     <Fragment>
       <Row>
         <Col>
-          <Nav tabs className="subtabs">
+          <Nav tabs className="subtabs cr-subtabs-head ">
             <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === '1' })}

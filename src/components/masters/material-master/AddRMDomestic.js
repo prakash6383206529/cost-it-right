@@ -1179,7 +1179,7 @@ class AddRMDomestic extends Component {
                         <Row>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
-                              <h5>{"Vendor"}</h5>
+                              <h5>{"Vendor:"}</h5>
                             </div>
                           </Col>
                           <Col md="3">
@@ -1250,7 +1250,7 @@ class AddRMDomestic extends Component {
 
                         {!this.state.IsVendor && (
                           <Row>
-                            <Col md="4" className="mb15">
+                            <Col md="4">
                               <label
                                 className={`custom-checkbox ${this.state.IsVendor ? "disabled" : ""
                                   }`}
@@ -1272,45 +1272,47 @@ class AddRMDomestic extends Component {
                           </Row>
                         )}
 
-                        {(this.state.HasDifferentSource ||
-                          this.state.IsVendor) && (
-                            <Row>
-                              <Col md="3">
-                                <Field
-                                  label={`Source`}
-                                  name={"Source"}
-                                  type="text"
-                                  placeholder={"Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
-                                  component={renderText}
-                                  //required={true}
-                                  disabled={false}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <Field
-                                  name="SourceSupplierCityId"
-                                  type="text"
-                                  label="Source Location"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("SourceLocation")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
-                                  //required={true}
-                                  handleChangeDescription={
-                                    this.handleSourceSupplierCity
-                                  }
-                                  valueDescription={this.state.sourceLocation}
-                                />
-                              </Col>
-                            </Row>
-                          )}
+                        <Row className="mb-3">
+                          {(this.state.HasDifferentSource ||
+                            this.state.IsVendor) && (
+                              <>
+                                <Col md="3">
+                                  <Field
+                                    label={`Source`}
+                                    name={"Source"}
+                                    type="text"
+                                    placeholder={"Enter"}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                    component={renderText}
+                                    //required={true}
+                                    disabled={false}
+                                    className=" "
+                                    customClassName=" withBorder mb-0"
+                                  />
+                                </Col>
+                                <Col md="3">
+                                  <Field
+                                    name="SourceSupplierCityId"
+                                    type="text"
+                                    label="Source Location"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("SourceLocation")}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
+                                    //required={true}
+                                    handleChangeDescription={
+                                      this.handleSourceSupplierCity
+                                    }
+                                    valueDescription={this.state.sourceLocation}
+                                  />
+                                </Col>
+                              </>
+                            )}
+                        </Row>
 
                         <Row>
-                          <Col md="12" className="filter-block">
+                          <Col md="12" className="filter-block ">
                             <div className=" flex-fills mb-2 pl-0">
                               <h5>{"Cost:"}</h5>
                             </div>
@@ -1383,7 +1385,7 @@ class AddRMDomestic extends Component {
                               placeholder={""}
                               validate={[required]}
                               component={renderText}
-                              required={true}
+                              // required={true}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"
@@ -1420,7 +1422,7 @@ class AddRMDomestic extends Component {
                         <Row>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
-                              <h5>{"Remarks & Attachments"}</h5>
+                              <h5>{"Remarks & Attachments:"}</h5>
                             </div>
                           </Col>
                           <Col md="6">

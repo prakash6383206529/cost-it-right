@@ -1040,7 +1040,7 @@ class AddRMImport extends Component {
                         <Row>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
-                              <h5>{"Vendor"}</h5>
+                              <h5>{"Vendor:"}</h5>
                             </div>
                           </Col>
                           <Col md="3">
@@ -1274,10 +1274,10 @@ class AddRMImport extends Component {
                               placeholder={""}
                               validate={[required]}
                               component={renderText}
-                              required={true}
+                              // required={true}
                               disabled={true}
                               className=" "
-                              customClassName=" withBorder"
+                              customClassName=" withBorder mb-0"
                             />
                           </Col>
                           <Col md="3">
@@ -1311,7 +1311,7 @@ class AddRMImport extends Component {
                         <Row>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
-                              <h5>{"Remarks & Attachments"}</h5>
+                              <h5>{"Remarks & Attachments:"}</h5>
                             </div>
                           </Col>
                           <Col md="6">

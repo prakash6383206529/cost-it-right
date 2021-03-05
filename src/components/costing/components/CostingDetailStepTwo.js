@@ -411,47 +411,49 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Date Time:</span><span className="dark-blue pl-1"> {moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}</span></p></div></td>
                     </tbody>
                   </Table>
-                  <Table className="table cr-brdr-main mb-0" size="sm">
-                    <thead>
-                      <tr>
-                        <th style={{ width: '100px' }}>{``}</th>
-                        <th style={{ width: '100px' }}>{`Net RM Cost/Assembly`}</th>
-                        <th style={{ width: '150px' }}>{`Net BOP Cost/Assembly`}</th>
-                        <th style={{ width: '150px' }}>{`Net Conversion Cost/Assembly`}</th>
-                        <th style={{ width: '200px' }}>{`RM + CC Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Surface Treatment`}</th>
-                        <th style={{ width: '200px' }}>{`Overheads & Profits`}</th>
-                        <th style={{ width: '200px' }}>{`Packaging & Freight`}</th>
-                        <th style={{ width: '200px' }}>{`Tool Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Discount & Other Cost`}</th>
-                        <th style={{ width: '200px' }}>{`Total Cost`}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="cr-bg-tbl">
-                        {
-                          CostingDataList &&
-                          CostingDataList.map((item, index) => {
-                            return (
-                              <>
-                                <td><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netRMCostPerAssembly(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netBOPCostPerAssembly(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netConversionCostPerAssembly(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netRMCCcost(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netSurfaceTreatmentCost(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netOverheadProfitCost(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netPackagingFreightCost(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netToolCost(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netDiscountOtherCost(item)}</span></td>
-                                <td><span className="dark-blue fs1 font-weight-500">{netTotalCost(item)}</span></td>
-                              </>
-                            )
-                          }
-                          )}
-                      </tr>
-                    </tbody>
-                  </Table>
+                  <div class="table-responsive">
+                    <Table className="table cr-brdr-main mb-0" size="sm">
+                      <thead>
+                        <tr>
+                          <th style={{ width: '100px' }}>{``}</th>
+                          <th style={{ width: '100px' }}>{`Net RM Cost/Assembly`}</th>
+                          <th style={{ width: '120px' }}>{`Net BOP Cost/Assembly`}</th>
+                          <th style={{ width: '120px' }}>{`Net Conversion Cost/Assembly`}</th>
+                          <th style={{ width: '150px' }}>{`RM + CC Cost`}</th>
+                          <th style={{ width: '150px' }}>{`Surface Treatment`}</th>
+                          <th style={{ width: '150px' }}>{`Overheads & Profits`}</th>
+                          <th style={{ width: '150px' }}>{`Packaging & Freight`}</th>
+                          <th style={{ width: '150px' }}>{`Tool Cost`}</th>
+                          <th style={{ width: '150px' }}>{`Discount & Other Cost`}</th>
+                          <th style={{ width: '150px' }}>{`Total Cost`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="cr-bg-tbl">
+                          {
+                            CostingDataList &&
+                            CostingDataList.map((item, index) => {
+                              return (
+                                <>
+                                  <td><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netRMCostPerAssembly(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netBOPCostPerAssembly(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netConversionCostPerAssembly(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netRMCCcost(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netSurfaceTreatmentCost(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netOverheadProfitCost(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netPackagingFreightCost(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netToolCost(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netDiscountOtherCost(item)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{netTotalCost(item)}</span></td>
+                                </>
+                              )
+                            }
+                            )}
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </div>
                 </Col>
               </Row>
               <Row>

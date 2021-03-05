@@ -163,7 +163,7 @@ function SurfaceTreatmentCost(props) {
   */
   return (
     <>
-      <div className="user-page p-0">
+      <div className="user-page p-0 costing-page-drawer">
         <div>
           <Row>
             <Col md="10">
@@ -293,7 +293,7 @@ function SurfaceTreatmentCost(props) {
                   }
                   {gridData && gridData.length === 0 &&
                     <tr>
-                      <td colSpan={7}>
+                      <td colSpan={8}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />
                       </td>
                     </tr>

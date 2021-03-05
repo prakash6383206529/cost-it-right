@@ -163,7 +163,7 @@ function AddBOP(props) {
               </Col>
             </Row>
 
-            <Row>
+            <Row className="mx-0">
               <Col>
                 <BootstrapTable
                   data={tableData}
@@ -191,7 +191,7 @@ function AddBOP(props) {
               </Col>
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between">
+            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
               <div className="col-sm-12 text-left bluefooter-butn">
                 <button
                   type={'button'}
