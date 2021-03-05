@@ -140,7 +140,7 @@ class AddMaterialType extends Component {
                       component={renderText}
                       required={true}
                       className=" "
-                      customClassName=" withBorder"
+                      customClassName=" withBorder mb-0"
                       maxLength="80"
                     />
                   </Col>

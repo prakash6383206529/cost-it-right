@@ -105,7 +105,7 @@ function PartCompoment(props) {
         <td>{''}</td>
       </tr>
       {item.IsOpen && <tr>
-        <td colSpan={8} className="cr-innerwrap-td">
+        <td colSpan={8} className="cr-innerwrap-td pb-4">
           <div className="user-page p-0">
             <div>
               <RawMaterialCost

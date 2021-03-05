@@ -1053,24 +1053,24 @@ function OverheadProfit(props) {
               <Col md="12">
                 <Row className="costing-border-inner-section m-0">
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Overhead On'}
-                    </label>
+                    </span>
                   </Col>
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Percentage (%)'}
-                    </label>
+                    </span>
                   </Col>
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Cost(Applicability)'}
-                    </label>
+                    </span>
                   </Col>
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Overhead'}
-                    </label>
+                    </span>
                   </Col>
 
 
@@ -1390,24 +1390,24 @@ function OverheadProfit(props) {
               <Col md="12">
                 <Row className="costing-border-inner-section m-0">
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Profit On'}
-                    </label>
+                    </span>
                   </Col>
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Percentage (%)'}
-                    </label>
+                    </span>
                   </Col>
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Cost(Applicability)'}
-                    </label>
+                    </span>
                   </Col>
                   <Col md="3">
-                    <label>
+                    <span className="head-text">
                       {'Profit'}
-                    </label>
+                    </span>
                   </Col>
 
 
@@ -1994,7 +1994,7 @@ function OverheadProfit(props) {
             }
 
 
-            <Row className="sf-btn-footer no-gutters justify-content-between mt25">
+            <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
                 <button
                   type={'submit'}

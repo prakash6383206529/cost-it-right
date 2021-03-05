@@ -128,7 +128,7 @@ function TransportationCost(props) {
   */
   return (
     <>
-      <div className="user-page p-0">
+      <div className="user-page p-0 costing-page-drawer">
         <div>
 
           <Row>

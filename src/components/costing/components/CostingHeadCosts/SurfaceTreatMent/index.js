@@ -135,7 +135,7 @@ function SurfaceTreatment(props) {
                       }
                     </Row>
 
-                    <hr />
+                    {/* <hr /> */}
                     <div className="user-page p-0">
                       <div>
                         <SurfaceTreatmentCost
@@ -146,7 +146,7 @@ function SurfaceTreatment(props) {
                           IsAssemblyCalculation={props.IsAssemblyCalculation}
                           setAssemblySurfaceCost={props.setAssemblySurfaceCost}
                         />
-                        <hr />
+                        {/* <hr /> */}
 
                         <TransportationCost
                           index={props.index}

@@ -85,6 +85,7 @@ function OpenWeightCalculator(props) {
   return (
     <div>
       <Drawer
+        className="weight-drawer-costing"
         anchor={props.anchor}
         open={props.isOpen}
         onClose={(e) => toggleDrawer(e)}
@@ -102,12 +103,12 @@ function OpenWeightCalculator(props) {
                 ></div>
               </Col>
             </Row>
-            <Row>
-              <Col md="2">{`RM Name: ${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</Col>
-              <Col md="2">{`Material: ${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</Col>
-              <Col md="2">{`Density(g/cm2): ${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</Col>
-              <Col md="2">{`RM Rate: ${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</Col>
-              <Col md="2">{`Scrap Rate: ${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</Col>
+            <Row className="mt-4 mb-4 pb-2">
+              <Col md="2"><span className="grey-text d-block">RM Name:</span><span className="text-dark-blue">{`${rmRowData.RMName !== undefined ? rmRowData.RMName : ''}`}</span></Col>
+              <Col md="2"><span className="grey-text d-block">Material:</span><span className="text-dark-blue">{`${rmRowData.MaterialType !== undefined ? rmRowData.MaterialType : ''}`}</span></Col>
+              <Col md="2"><span className="grey-text d-block">Density(g/cm2):</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></Col>
+              <Col md="2"><span className="grey-text d-block">RM Rate:</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></Col>
+              <Col md="2"><span className="grey-text d-block">Scrap Rate:</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</span></Col>
             </Row>
             {openConditionalDrawer()}
           </div>

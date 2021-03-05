@@ -298,9 +298,9 @@ function TabDiscountOther(props) {
                     >
                       <thead>
                         <tr>
-                          <th className="fs1 font-weight-500" style={{ width: "33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500" style={{ width: "33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
@@ -313,7 +313,7 @@ function TabDiscountOther(props) {
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <Row>
-                    <Col md="4" className="border-right">
+                    <Col md="4" >
                       <TextFieldHookForm
                         label="Hundi/Other Discount(%)"
                         name={"HundiOrDiscountPercentage"}
@@ -340,7 +340,7 @@ function TabDiscountOther(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4" className="border-right">
+                    <Col md="4" >
                       <TextFieldHookForm
                         label="Other Cost Description"
                         name={"OtherCostDescription"}
@@ -391,7 +391,7 @@ function TabDiscountOther(props) {
                   </Row>
 
                   <Row>
-                    <Col md="4" className="border-right">
+                    <Col md="4" >
                       <TextFieldHookForm
                         label="Hundi/Discount Value"
                         name={'HundiOrDiscountValue'}
@@ -415,7 +415,7 @@ function TabDiscountOther(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="4" className="border-right">
+                    <Col md="4" >
                       <TextFieldHookForm
                         label="Any Other Cost"
                         name={"AnyOtherCost"}
@@ -612,20 +612,22 @@ function TabDiscountOther(props) {
                   </Row>
 
 
-                  <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                    <button
-                      type={"submit"}
-                      className="submit-button mr5 save-btn"
-                    >
-                      <div className={"check-icon"}>
-                        <img
-                          src={require("../../../../assests/images/check.png")}
-                          alt="check-icon.jpg"
-                        />{" "}
-                      </div>
-                      {"Save"}
-                    </button>
-                  </div>
+                  <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
+                    <div className="col-sm-12 text-right bluefooter-butn mt-3">
+                      <button
+                        type={"submit"}
+                        className="submit-button mr5 save-btn"
+                      >
+                        <div className={"check-icon"}>
+                          <img
+                            src={require("../../../../assests/images/check.png")}
+                            alt="check-icon.jpg"
+                          />{" "}
+                        </div>
+                        {"Save"}
+                      </button>
+                    </div>
+                  </Row>
 
                 </form>
               </div>
