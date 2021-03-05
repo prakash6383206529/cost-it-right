@@ -44,6 +44,7 @@ import {
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
 import { toastr } from 'react-redux-toastr'
+import { lowerFirst } from 'lodash'
 
 const headers = {
   'Content-Type': 'application/json',
@@ -149,6 +150,7 @@ export function checkPartWithTechnology(data, callback) {
         }
       })
       .catch((error) => {
+        console.log(error, "fron check parts with technology");
         callback(error.response)
         dispatch({ type: API_FAILURE })
         apiErrors(error)
@@ -1722,17 +1724,22 @@ export function getSingleCostingDetails(costingId, callback) {
     )
     request
       .then((response) => {
+        console.log(response, "fron single costing detail");
         if (response.data.Data) {
+          console.log("if");
           dispatch({
             type: GET_COSTING_DETAILS_BY_COSTING_ID,
             payload: response.data.Data,
           })
           callback(response)
         } else {
+          console.log("else");
+          console.log(MESSAGES.SOME_ERROR, "fron single costing detail");
           toastr.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
+        console.log(error, "fron single costing detail");
         dispatch({ type: API_FAILURE })
         apiErrors(error)
       })
@@ -1785,6 +1792,7 @@ export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
         }
       })
       .catch((error) => {
+        console.log(error, "error from summary api");
         dispatch({ type: API_FAILURE })
         callback(error)
         apiErrors(error)

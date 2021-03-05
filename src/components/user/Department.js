@@ -83,9 +83,7 @@ class Department extends Component {
 			let formReq = {
 				DepartmentId: DepartmentId,
 				IsActive: true,
-				CreatedDate: '',
-				DepartmentName: values.DepartmentName,
-				Description: values.Description,
+				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
 			}
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				if (res && res.data && res.data.Result) {
