@@ -16,7 +16,6 @@ function SurfaceTreatmentCost(props) {
   });
 
   const [gridData, setGridData] = useState(props.data)
-  console.log('gridData: ', gridData);
   const [OldGridData, setOldGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
