@@ -642,7 +642,7 @@ class AddProfit extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col md="3">
+                        <Col md="3" className="mb-3">
                           <Field
                             name="ModelType"
                             type="text"
@@ -666,7 +666,7 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <Col md="3">
+                          <Col md="3" className="mb-3">
                             <Field
                               name="vendorName"
                               type="text"
@@ -691,7 +691,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
-                          <Col md="3">
+                          <Col md="3" className="mb-3">
                             <Field
                               name="clientName"
                               type="text"
@@ -715,7 +715,7 @@ class AddProfit extends Component {
                         )}
                       </Row>
                       <Row>
-                        <Col md="3">
+                        <Col md="3" className="mb-3">
                           <Field
                             name="ProfitApplicabilityId"
                             type="text"
@@ -818,7 +818,7 @@ class AddProfit extends Component {
                       <Row>
                         <Col md="12">
                           <div className="left-border">
-                            {"Remarks & Attachments"}
+                            {"Remarks & Attachments:"}
                           </div>
                         </Col>
                         <Col md="6">

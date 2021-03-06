@@ -577,6 +577,7 @@ class UsersListing extends Component {
 						dataField="UserId"
 						export={false}
 						isKey={true}
+						dataAlign="right"
 						dataFormat={this.buttonFormatter}
 					>
 						Actions

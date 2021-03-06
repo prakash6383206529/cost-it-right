@@ -519,6 +519,7 @@ class ZBCPlantListing extends Component {
                         Status
               </TableHeaderColumn>
                     <TableHeaderColumn
+                        dataAlign="right"
                         className="action"
                         dataField="PlantId"
                         export={false}

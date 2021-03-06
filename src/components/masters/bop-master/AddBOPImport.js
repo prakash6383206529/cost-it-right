@@ -777,7 +777,7 @@ class AddBOPImport extends Component {
 
                         <Row>
                           <Col md="12">
-                            <div className="left-border">{"Vendor"}</div>
+                            <div className="left-border">{"Vendor:"}</div>
                           </Col>
                           <Col md="3">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -987,7 +987,7 @@ class AddBOPImport extends Component {
                         <Row>
                           <Col md="12">
                             <div className="left-border">
-                              {"Remarks & Attachments"}
+                              {"Remarks & Attachments:"}
                             </div>
                           </Col>
                           <Col md="6">

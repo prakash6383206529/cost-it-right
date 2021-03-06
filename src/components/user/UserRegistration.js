@@ -765,7 +765,7 @@ class UserRegistration extends Component {
     const { handleSubmit, initialConfiguration, loading } = this.props;
     const { isSubmitted } = this.state;
     return (
-      <div>
+      <div className="container-fluid">
         {loading && <Loader />}
         <div className="login-container signup-form">
           <div className="row">
@@ -1174,8 +1174,8 @@ class UserRegistration extends Component {
                             })
                           }
                         </tbody>
-                        {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                       </Table>
+                      {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                     </div>
                   </div>
 
@@ -1186,23 +1186,25 @@ class UserRegistration extends Component {
                       ///////////////////////////////////////////////// */}
 
 
-                  <div className="text-right btn-blue-block">
+                  <div className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                    <div className="col-sm-12 text-right bluefooter-butn">
 
-                    <button
-                      onClick={this.cancel}
-                      type="submit"
-                      value="CANCEL"
-                      className="reset mr15 cancel-btn">
-                      <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
+                      <button
+                        onClick={this.cancel}
+                        type="submit"
+                        value="CANCEL"
+                        className="reset mr15 cancel-btn">
+                        <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
                       CANCEL
                       </button>
 
-                    <button
-                      type="submit"
-                      disabled={isSubmitted ? true : false}
-                      className="btn-primary save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
-                      {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
-                    </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitted ? true : false}
+                        className="btn-primary save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
+                      </button>
+                    </div>
                   </div>
 
                 </form>

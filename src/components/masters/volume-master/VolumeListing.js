@@ -577,8 +577,7 @@ class VolumeListing extends Component {
         <div className="container-fluid">
           <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
             <Row>
-              <Col md="12"><h1>Volume Master</h1></Col>
-              <Col md="12"><hr className="m-0" /></Col>
+              <Col md="12"><h1 className="mb-0">Volume Master</h1></Col>
             </Row>
             <Row className="pt-4 blue-before">
               {this.state.shown && (
@@ -779,7 +778,7 @@ class VolumeListing extends Component {
             <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={true}         >              {'Part Name'}            </TableHeaderColumn>
             <TableHeaderColumn dataField="BudgetedQuantity" searchable={false} columnTitle={true} dataAlign="left" dataSort={true}            >              {'Budgeted Quantity'}            </TableHeaderColumn>
             <TableHeaderColumn dataField="ApprovedQuantity" columnTitle={true} searchable={false} dataAlign="left" dataSort={true}            >              {'Actual Quantity '}            </TableHeaderColumn>
-            <TableHeaderColumn width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}            >              Actions          </TableHeaderColumn>
+            <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}            >              Actions          </TableHeaderColumn>
           </BootstrapTable>
           {isActualBulkUpload && (
             <BulkUpload

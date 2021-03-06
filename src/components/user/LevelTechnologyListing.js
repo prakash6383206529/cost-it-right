@@ -93,7 +93,7 @@ class LevelTechnologyListing extends Component {
 		const { EditAccessibility, DeleteAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell)} />}
+				{EditAccessibility && <button type={'button'} className="Edit " onClick={() => this.editItemDetails(cell)} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
@@ -130,7 +130,7 @@ class LevelTechnologyListing extends Component {
 		return (
 			<>
 				{this.props.loading && <Loader />}
-				<Row>
+				<Row className="levellisting-page">
 					<Col md="6">
 						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
 					</Col>
@@ -158,7 +158,7 @@ class LevelTechnologyListing extends Component {
 							pagination>
 							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
 							<TableHeaderColumn dataField="Level" dataAlign="center" dataSort={true}>Highest Approval Level</TableHeaderColumn>
-							<TableHeaderColumn dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 						</BootstrapTable>
 					</Col>
 				</Row>

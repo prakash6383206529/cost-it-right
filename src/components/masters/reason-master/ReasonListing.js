@@ -258,7 +258,6 @@ class ReasonListing extends Component {
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}><h1>Reason Master</h1></Col>
-            <Col md={12}><hr className="mt-0" /></Col>
           </Row>
           <Row className="no-filter-row">
             <Col md={6} className="text-right filter-block"></Col>
@@ -301,6 +300,7 @@ class ReasonListing extends Component {
               Reason
           </TableHeaderColumn>
             <TableHeaderColumn
+              width={150}
               dataField="IsActive"
               export={false}
               dataAlign="center"
@@ -309,6 +309,7 @@ class ReasonListing extends Component {
               Status
           </TableHeaderColumn>
             <TableHeaderColumn
+              width={100}
               className="action"
               dataField="ReasonId"
               export={false}

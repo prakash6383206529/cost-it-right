@@ -193,14 +193,11 @@ class TaxListing extends Component {
         <div className="container-fluid">
           <Row>
             <Col md={12}>
-              <h1>{`Tax Details Master`}</h1>
-            </Col>
-            <Col md={12}>
-              <hr className="mt-0" />
+              <h1 className="mb-0">{`Tax Details Master`}</h1>
             </Col>
           </Row>
 
-          <Row className="no-filter-row">
+          <Row className="no-filter-row mt-4">
             {AddAccessibility && (
               <>
                 <Col md={6} className="filter-block"></Col>
@@ -236,11 +233,11 @@ class TaxListing extends Component {
                 trClassName={'userlisting-row'}
                 tableHeaderClass='my-custom-class'
                 pagination>
-                <TableHeaderColumn dataField="TaxName" dataAlign="center" dataSort={true}>Tax Name</TableHeaderColumn>
+                <TableHeaderColumn dataField="TaxName" dataSort={true}>Tax Name</TableHeaderColumn>
                 <TableHeaderColumn dataField="Country" dataSort={true}>Country</TableHeaderColumn>
                 <TableHeaderColumn dataField="Rate" dataSort={true}>Rate (%)</TableHeaderColumn>
                 <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataSort={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                <TableHeaderColumn dataAlign="right" searchable={false} dataField="TaxDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
               </BootstrapTable>
             </Col>

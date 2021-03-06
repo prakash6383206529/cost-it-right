@@ -490,7 +490,7 @@ function TabDiscountOther(props) {
 
                     <Col md="6">
                       <TextAreaHookForm
-                        label="Remarks & Attachments"
+                        label="Remarks & Attachments:"
                         name={"Remarks"}
                         Controller={Controller}
                         control={control}

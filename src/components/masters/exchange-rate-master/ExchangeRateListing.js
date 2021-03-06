@@ -295,8 +295,7 @@ class ExchangeRateListing extends Component {
                     {/* {this.props.loading && <Loader />} */}
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                         <Row>
-                            <Col md="12"><h1>Exchange Rate Master</h1></Col>
-                            <Col md="12"><hr className="m-0" /></Col>
+                            <Col md="12"><h1 className="mb-0">Exchange Rate Master</h1></Col>
                         </Row>
                         <Row className="pt-4 blue-before">
                             {this.state.shown && (
@@ -381,7 +380,7 @@ class ExchangeRateListing extends Component {
                         <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="center" >{'Custom Rate(INR)'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
                 </div>
             </ >

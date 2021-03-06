@@ -1873,7 +1873,7 @@ class AddMoreDetails extends Component {
                             title={'Loan & Interest:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="3">
+                        <Col md="4">
                           <Field
                             label={`Loan (%)`}
                             name={"LoanPercentage"}
@@ -1887,21 +1887,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Loan Value`}
-                            name={"LoanValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
+                        <Col md="4">
                           <Field
                             label={`Equity (%)`}
                             name={"EquityPercentage"}
@@ -1915,21 +1901,8 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Equity Value`}
-                            name={"EquityValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
+
+                        <Col md="4">
                           <Field
                             label={`Rate Of Interest (%)`}
                             name={"RateOfInterestPercentage"}
@@ -1943,7 +1916,37 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3">
+                        <Col md="4">
+                          <Field
+                            label={`Loan Value`}
+                            name={"LoanValue"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[number]}
+                            component={renderNumberInputField}
+                            //required={true}
+                            disabled={true}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+                        <Col md="4">
+                          <Field
+                            label={`Equity Value`}
+                            name={"EquityValue"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[number]}
+                            component={renderNumberInputField}
+                            //required={true}
+                            disabled={true}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+
+
+                        <Col md="4">
                           <Field
                             label={`Rate Of Interest Value`}
                             name={"RateOfInterestValue"}
@@ -2853,7 +2856,7 @@ class AddMoreDetails extends Component {
                       <Row>
                         <Col md="12" className="filter-block">
                           <div className="mb-2">
-                            <h5>{'Remarks & Attachment'}</h5>
+                            <h5>{'Remarks & Attachment:'}</h5>
                           </div>
                         </Col>
                         <Col md="6">

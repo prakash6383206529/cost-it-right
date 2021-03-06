@@ -557,9 +557,8 @@ class LabourListing extends Component {
           >
             <Row>
               <Col md="12">
-                <h1>Labour Master</h1>
+                <h1 className="mb-0">Labour Master</h1>
               </Col>
-              <Col md="12"><hr className="m-0" /></Col>
             </Row>
             <Row className="pt-4 filter-row-large blue-before">
               {this.state.shown && (
@@ -785,6 +784,7 @@ class LabourListing extends Component {
               {this.renderEffectiveDate()}
             </TableHeaderColumn>
             <TableHeaderColumn
+              dataAlign="right"
               className="action"
               searchable={false}
               dataField="LabourId"

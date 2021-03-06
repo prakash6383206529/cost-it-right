@@ -638,7 +638,7 @@ class AddFreight extends Component {
                                 {!isEditFlag && (
                                   <div
                                     onClick={this.vendorToggler}
-                                    className={"plus-icon-square mr15 right"}
+                                    className={"plus-icon-square right"}
                                   ></div>
                                 )}
                               </div>
@@ -720,7 +720,7 @@ class AddFreight extends Component {
                                 //required={true}
                                 disabled={false}
                                 className=""
-                                customClassName=" withBorder"
+                                customClassName=" withBorder mn-height-auto"
                               />
                             </Col>
                           )}
