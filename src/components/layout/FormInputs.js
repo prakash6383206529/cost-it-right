@@ -32,7 +32,7 @@ export function renderLoginTextInputField(field) {
           </span>
         </div>
       </div>
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -90,7 +90,7 @@ export function renderLoginPasswordInputField(field) {
           </span>
         </div>
       </div>
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -146,7 +146,7 @@ export function renderCheckboxInputFieldWithValidation(field) {
           {label}
         </label>
       </div>
-      <div className="text-help float-left ">{touched ? error : ""}</div>
+      <div className="text-help mb-2 float-left ">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -215,7 +215,7 @@ export function renderPasswordInputField(field) {
           </div>
         )}
       </div>
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -262,14 +262,14 @@ export function renderMultiSelectField(field) {
           placeholder={placeholder}
         />
       </div>
-      <div className="text-help">
+      <div className="text-help mb-2">
         {touched &&
           field.mendatory &&
           field.selection &&
           field.selection.length === 0
           ? "This field is required."
           : ""}
-        {/* <div className="text-help">{field.isEmpty ? 'This field is required.' : ""}</div> */}
+        {/* <div className="text-help mb-2">{field.isEmpty ? 'This field is required.' : ""}</div> */}
       </div>
     </div>
   );
@@ -322,7 +322,7 @@ export function renderEmailInputField(field) {
           </span>
         </div>
       </div>
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -370,7 +370,7 @@ export function renderTextInputField(field) {
           </div>
         )}
       </div>
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -418,7 +418,7 @@ export function renderSelectField(field) {
           })}
         </select>
       </div>
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -465,7 +465,7 @@ export function renderNumberInputField(field) {
           </span>
         </div> */}
       </div>
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -504,8 +504,8 @@ export function renderTextAreaField(field) {
           disabled={disabledLabel}
         />
       </div>
-      {/* <div className="text-help">{touched && field.input.value === '' ? 'This field is required' : ""}</div> */}
-      <div className="text-help">{touched ? error : ""}</div>
+      {/* <div className="text-help mb-2">{touched && field.input.value === '' ? 'This field is required' : ""}</div> */}
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -578,7 +578,7 @@ export function renderText(field) {
         className={InputClassName}
       />
 
-      <div className="text-help">{touched ? error : ""}</div>
+      <div className="text-help mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -614,7 +614,7 @@ export function renderDatePicker(field) {
         disabledKeyboardNavigation
         onChangeRaw={(e) => e.preventDefault()}
       />
-      {touched ? <div className="text-help mb-2">{error}</div> : ""}
+      {touched ? <div className="text-help mb-2 mb-2">{error}</div> : ""}
     </div>
   );
 }
@@ -650,7 +650,7 @@ export function renderDatePickerOneDayAgo(field) {
         selected={input.value ? new Date(input.value) : null}
         className={field.className}
       />
-      <div className="text-help mb-2">{touched ? error : ""}</div>
+      <div className="text-help mb-2 mb-2">{touched ? error : ""}</div>
     </div>
   );
 }
@@ -694,7 +694,7 @@ export const searchableSelect = ({
         placeholder={placeholder}
         className={"searchable"}
       />
-      <div className="text-help mb-2">{touched ? error : ""}</div>
+      <div className="text-help mb-2 mb-2">{touched ? error : ""}</div>
     </div>
   );
 };
@@ -872,7 +872,7 @@ export function renderYearPicker(field) {
         disabledKeyboardNavigation
         onChangeRaw={(e) => e.preventDefault()}
       />
-      {touched ? <div className="text-help mb-2">{error}</div> : ""}
+      {touched ? <div className="text-help mb-2 mb-2">{error}</div> : ""}
     </div>
   );
 }

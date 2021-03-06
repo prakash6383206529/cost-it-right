@@ -148,7 +148,7 @@ class DepartmentsListing extends Component {
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {EditAccessibility && <button type={'button'} className="Edit mr-2" onClick={() => this.editItemDetails(cell)} />}
+        {EditAccessibility && <button type={'button'} className="Edit" onClick={() => this.editItemDetails(cell)} />}
         {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />}
       </>
     )
@@ -176,17 +176,17 @@ class DepartmentsListing extends Component {
         <Row className="pt-4 no-filter-row">
           {AddAccessibility && (
             <>
-            <Col md="6" className="filter-block"></Col>
-            <Col md="6" className="text-right search-user-block pr-0">
-              <button
-                type={"button"}
-                className={"user-btn "}
-                onClick={this.openModel}
-              >
-                <div className={"plus"}></div>
-                {`ADD`}
-              </button>
-            </Col>
+              <Col md="6" className="filter-block"></Col>
+              <Col md="6" className="text-right search-user-block pr-0">
+                <button
+                  type={"button"}
+                  className={"user-btn "}
+                  onClick={this.openModel}
+                >
+                  <div className={"plus"}></div>
+                  {`ADD`}
+                </button>
+              </Col>
             </>
           )}
         </Row>

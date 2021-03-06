@@ -430,10 +430,7 @@ class VendorListing extends Component {
                 >
                     <Row>
                         <Col md="12">
-                            <h1>Vendor Master</h1>
-                        </Col>
-                        <Col md="12">
-                            <hr className="m-0" />
+                            <h1 className="mb-0">Vendor Master</h1>
                         </Col>
                     </Row>
                     <Row className="pt-4 px-15 blue-before">
@@ -561,7 +558,7 @@ class VendorListing extends Component {
                     <TableHeaderColumn dataField="State" dataAlign="left" dataSort={true}> State </TableHeaderColumn>
                     <TableHeaderColumn dataField="City" dataAlign="left" dataSort={true}>City</TableHeaderColumn>
                     <TableHeaderColumn dataField="IsActive" export={false} dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn>
-                    <TableHeaderColumn className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}> Actions </TableHeaderColumn>
+                    <TableHeaderColumn dataAlign="right" className="action" dataField="VendorId" export={false} isKey={true} dataFormat={this.buttonFormatter}> Actions </TableHeaderColumn>
                 </BootstrapTable>
                 {isBulkUpload && (
                     <BulkUpload

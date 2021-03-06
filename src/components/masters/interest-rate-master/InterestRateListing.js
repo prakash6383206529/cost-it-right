@@ -453,10 +453,7 @@ class InterestRateListing extends Component {
           >
             <Row>
               <Col md="12">
-                <h1>Interest Rate Master</h1>
-              </Col>
-              <Col md="12">
-                <hr className="m-0" />
+                <h1 className="mb-0">Interest Rate Master</h1>
               </Col>
             </Row>
             <Row className="pt-4 filter-row-large blue-before">
@@ -594,7 +591,7 @@ class InterestRateListing extends Component {
             <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{'Repayment Period (Days)'}</TableHeaderColumn>
             <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{'Payment Term Interest Rate (%) '}</TableHeaderColumn>
             <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-            <TableHeaderColumn searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+            <TableHeaderColumn dataAlign="right" searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
           </BootstrapTable>
           {
             isBulkUpload && <BulkUpload

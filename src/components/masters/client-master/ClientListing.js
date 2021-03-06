@@ -246,9 +246,8 @@ class ClientListing extends Component {
                 {/* {this.props.loading && <Loader />} */}
                 <div className="container-fluid">
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                        <h1>Client Master</h1>
-                        <hr />
-                        <Row className="pt-1 no-filter-row">
+                        <h1 className="mb-0">Client Master</h1>
+                        <Row className="pt-4 no-filter-row">
                             <Col md="10" className="filter-block"></Col>
                             <Col md="2" className="search-user-block">
                                 <div className="d-flex justify-content-end bd-highlight">
@@ -287,7 +286,7 @@ class ClientListing extends Component {
                         <TableHeaderColumn dataField="CountryName" dataAlign="left" >{'Country'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="StateName" dataAlign="left" >{'State'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="CityName" dataAlign="left" >{'City'}</TableHeaderColumn>
-                        <TableHeaderColumn className="action" searchable={false} dataField="ClientId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="ClientId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
                     {isOpenVendor && <AddClientDrawer
                         isOpen={isOpenVendor}

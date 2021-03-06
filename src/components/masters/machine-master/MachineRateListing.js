@@ -623,7 +623,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={150} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessName" width={130} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineRate" searchable={false} width={110} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={150} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataAlign="right" width={150} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

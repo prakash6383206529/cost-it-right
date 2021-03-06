@@ -112,7 +112,7 @@ class FuelListing extends Component {
         const { EditAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
+                {EditAccessibility && <button className="Edit " type={'button'} onClick={() => this.editItemDetails(cell, row)} />}
                 {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
             </>
         )
@@ -377,7 +377,7 @@ class FuelListing extends Component {
                             <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="center" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
                             <TableHeaderColumn width={180} columnTitle={true} dataAlign="center" dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={180} columnTitle={true} dataAlign="center" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} width={100} dataAlign="center" dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

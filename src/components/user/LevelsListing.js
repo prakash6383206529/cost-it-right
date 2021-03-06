@@ -343,7 +343,7 @@ class LevelsListing extends Component {
 		};
 		return (
 			<>
-				<form>
+				<form className="levellisting-page">
 					{this.props.loading && <Loader />}
 					<Row className="pt-4">
 						<Col md="12">

@@ -228,13 +228,10 @@ class UOMMaster extends Component {
           {/* {this.props.loading && <Loader />} */}
           <Row>
             <Col md={12}>
-              <h1>{`Unit of Measurement Master`}</h1>
-            </Col>
-            <Col md={12}>
-              <hr className="mt-0" />
+              <h1 className="mb-0">{`Unit of Measurement Master`}</h1>
             </Col>
           </Row>
-          <Row className="no-filter-row">
+          <Row className="no-filter-row mt-4">
             {AddAccessibility && (
               <>
                 <Col md={6} className="text-right filter-block"></Col>
@@ -289,6 +286,7 @@ class UOMMaster extends Component {
                   width={100}
                   dataField="Id"
                   isKey={true}
+                  dataAlign="right"
                   dataFormat={this.buttonFormatter}
                 >
                   Actions

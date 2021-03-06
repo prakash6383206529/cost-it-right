@@ -523,7 +523,7 @@ class BOPDomesticListing extends Component {
                             <TableHeaderColumn dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left"  >{'Basic Rate'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left"  >{'Net Landed Cost'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

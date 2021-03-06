@@ -694,9 +694,8 @@ class AddOperation extends Component {
                           />
                         </Col>
                       )}
-                    </Row>
 
-                    <Row>
+
                       <Col md="3">
                         <Field
                           name="UnitOfMeasurementId"
@@ -748,6 +747,8 @@ class AddOperation extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>
+
+
                     </Row>
 
                     <Row>
@@ -791,7 +792,7 @@ class AddOperation extends Component {
                     <Row>
                       <Col md="12">
                         <div className="left-border">
-                          {'Remarks & Attachments'}
+                          {'Remarks & Attachments:'}
                         </div>
                       </Col>
                       <Col md="6">

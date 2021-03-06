@@ -481,8 +481,7 @@ class OperationListing extends Component {
                 <div className="container-fluid">
                     <form>
                         <Row>
-                            <Col md="12"><h1>Operation Master</h1></Col>
-                            <Col md="12"><hr className="m-0" /></Col>
+                            <Col md="12"><h1 className="mb-0">Operation Master</h1></Col>
                         </Row>
                         <Row className="pt-4 filter-row-large blue-before">
                             {this.state.shown &&
@@ -632,7 +631,7 @@ class OperationListing extends Component {
                         <TableHeaderColumn searchable={false} dataField="UnitOfMeasurement" columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="Rate" width={100} columnTitle={true} dataAlign="left" >{'Rate'}</TableHeaderColumn>
                         {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
-                        <TableHeaderColumn searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
                     {isBulkUpload && <BulkUpload
                         isOpen={isBulkUpload}
