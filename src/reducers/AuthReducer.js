@@ -25,6 +25,8 @@ import {
     GET_MENU_BY_USER_DATA_SUCCESS,
     GET_LEFT_MENU_BY_MODULE_ID_AND_USER,
     LOGIN_PAGE_INIT_CONFIGURATION,
+    GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
+    GET_LEVEL_BY_TECHNOLOGY
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
@@ -231,6 +233,20 @@ export default function authReducer(state = initialState, action) {
                 error: true,
                 initialConfiguration: action.payload
             };
+        case GET_USERS_BY_TECHNOLOGY_AND_LEVEL:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                usersListByTechnologyAndLevel: action.payload
+            }
+        case GET_LEVEL_BY_TECHNOLOGY:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                levelSelectList: action.payload
+            }
         default:
             return state;
     }

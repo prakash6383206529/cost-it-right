@@ -152,8 +152,8 @@ class ViewUserDetails extends Component {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
     const { isTechnologyOpen } = this.state;
 
-    const address = registerUserData ? `${registerUserData.AddressLine1}, ${registerUserData.AddressLine2}, 
-    ${registerUserData.CityName},  ${registerUserData.ZipCode}` : '';
+    const address = registerUserData ? `${registerUserData.AddressLine1 ? registerUserData.AddressLine1 : "NA"}, ${registerUserData.AddressLine2 ? registerUserData.AddressLine2 : "NA"}, 
+    ${registerUserData.CityName ? registerUserData.CityName : "NA"},  ${registerUserData.ZipCode ? registerUserData.ZipCode : "NA"}` : '';
 
     return (
       <>

@@ -28,11 +28,11 @@ class AddBOPCategory extends Component {
         this.toggleDrawer('')
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, formData) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', formData)
     };
 
     /**
@@ -53,7 +53,7 @@ class AddBOPCategory extends Component {
             this.props.createBOPCategory(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.BOP_CATEGORY_ADD_SUCCESS);
-                    this.toggleDrawer('')
+                    this.toggleDrawer('', formData)
                 }
             });
         }
@@ -89,7 +89,7 @@ class AddBOPCategory extends Component {
                                 <Row className="pl-3">
                                     <Col md="12">
                                         <Field
-                                            label={`BOP Category`}
+                                            label={`Category`}
                                             name={"Category"}
                                             type="text"
                                             placeholder={''}

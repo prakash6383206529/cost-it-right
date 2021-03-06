@@ -16,7 +16,7 @@ import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
   updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
-  setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
+  setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
 } from "../../actions/auth/AuthActions";
 import { getAllCities } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -81,7 +81,7 @@ class UserRegistration extends Component {
     this.props.getAllDepartmentAPI(() => { })
     this.props.getAllCities(() => { })
     this.props.getAllTechnologyAPI(() => { })
-    this.props.getAllLevelAPI(() => { })
+    this.props.getLevelByTechnology('', () => { })
     this.getUserDetail(data);
   }
 
@@ -169,7 +169,7 @@ class UserRegistration extends Component {
   * @description Used show listing
   */
   searchableSelectType = (label) => {
-    const { roleList, departmentList, cityList, technologyList, levelList } = this.props;
+    const { roleList, departmentList, cityList, technologyList, levelSelectList } = this.props;
     const temp = [];
 
     if (label === 'role') {
@@ -205,9 +205,10 @@ class UserRegistration extends Component {
     }
 
     if (label === 'level') {
-      levelList && levelList.map(item =>
-        temp.push({ label: item.LevelName, value: item.LevelId })
-      );
+      levelSelectList && levelSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+      });
       return temp;
     }
   }
@@ -427,6 +428,7 @@ class UserRegistration extends Component {
   technologyHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ technology: newValue });
+      this.props.getLevelByTechnology(newValue.value, res => { })
     } else {
       this.setState({ technology: [] });
     }
@@ -527,7 +529,7 @@ class UserRegistration extends Component {
   editItemDetails = (index) => {
     const { TechnologyLevelGrid } = this.state;
     const tempData = TechnologyLevelGrid[index];
-
+    this.props.getLevelByTechnology(tempData.TechnologyId, res => { })
     this.setState({
       technologyLevelEditIndex: index,
       isEditIndex: true,
@@ -1251,7 +1253,7 @@ function validate(values) {
 */
 const mapStateToProps = ({ auth, comman }) => {
   const { roleList, departmentList, registerUserData, actionSelectList, technologyList,
-    levelList, initialConfiguration, loading, } = auth;
+    initialConfiguration, loading, levelSelectList } = auth;
   const { cityList } = comman;
 
   let initialValues = {};
@@ -1276,7 +1278,7 @@ const mapStateToProps = ({ auth, comman }) => {
 
   return {
     roleList, departmentList, cityList, registerUserData, actionSelectList,
-    initialValues, technologyList, levelList, initialConfiguration, loading,
+    initialValues, technologyList, initialConfiguration, loading, levelSelectList
   };
 };
 
@@ -1298,12 +1300,13 @@ export default connect(mapStateToProps, {
   setEmptyUserDataAPI,
   getRoleDataAPI,
   getAllTechnologyAPI,
-  getAllLevelAPI,
+
   getPermissionByUser,
   getUsersTechnologyLevelAPI,
   setUserAdditionalPermission,
   setUserTechnologyLevelForCosting,
   updateUserTechnologyLevelForCosting,
+  getLevelByTechnology
 })(reduxForm({
   validate,
   form: 'Signup',

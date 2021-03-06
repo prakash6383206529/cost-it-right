@@ -203,11 +203,11 @@ class AddSpecification extends Component {
     this.props.getRMSpecificationDataAPI('', res => { });
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, data) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', data)
   };
 
   rawMaterialToggler = (Id = '') => {
@@ -279,7 +279,7 @@ class AddSpecification extends Component {
       this.props.updateRMSpecificationAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
-          this.toggleDrawer('')
+          this.toggleDrawer('', '')
         }
       })
     } else {
@@ -293,7 +293,7 @@ class AddSpecification extends Component {
       this.props.createRMSpecificationAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);
-          this.toggleDrawer('')
+          this.toggleDrawer('', formData)
         }
       });
     }
@@ -349,11 +349,7 @@ class AddSpecification extends Component {
                           options={this.renderListing("RawMaterialName")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={
-                            this.state.RawMaterial == null ||
-                              this.state.RawMaterial.length === 0
-                              ? [required]
-                              : []
-                          }
+                            this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
                           required={true}
                           handleChangeDescription={this.handleRawMaterial}
                           valueDescription={this.state.RawMaterial}
@@ -367,9 +363,7 @@ class AddSpecification extends Component {
                               className="Edit drawer-edit mt-2"
                               type={"button"}
                               onClick={() =>
-                                this.rawMaterialToggler(
-                                  specificationData.RawMaterialId
-                                )
+                                this.rawMaterialToggler(specificationData.RawMaterialId)
                               }
                             />
                           )
@@ -393,16 +387,8 @@ class AddSpecification extends Component {
                           placeholder={"Select"}
                           options={this.renderListing("material")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.material == null ||
-                              this.state.material.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
-                          handleChangeDescription={
-                            this.handleMaterialChange
-                          }
+                          validate={this.state.material == null || this.state.material.length === 0 ? [required] : []} required={true}
+                          handleChangeDescription={this.handleMaterialChange}
                           valueDescription={this.state.material}
                         />
 
@@ -440,11 +426,7 @@ class AddSpecification extends Component {
                             options={this.renderListing("RMGrade")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
-                              this.state.RMGrade == null ||
-                                this.state.RMGrade.length === 0
-                                ? [required]
-                                : []
-                            }
+                              this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
                             required={true}
                             handleChangeDescription={this.handleGrade}
                             valueDescription={this.state.RMGrade}
@@ -464,9 +446,7 @@ class AddSpecification extends Component {
                           this.state.RawMaterial.length === 0) &&
                           AddAccessibilityRMANDGRADE ? (
                               <div
-                                className={
-                                  "plus-icon-square blurPlus-icon-square right mt30"
-                                }
+                                className={"plus-icon-square blurPlus-icon-square right mt30"}
                               ></div>
                             ) : (
                               AddAccessibilityRMANDGRADE && (
@@ -576,9 +556,7 @@ function mapStateToProps({ comman, material }) {
 
   let initialValues = {};
   if (specificationData && specificationData !== undefined) {
-    initialValues = {
-      Specification: specificationData.Specification,
-    }
+    initialValues = { Specification: specificationData.Specification, }
   }
 
   return {

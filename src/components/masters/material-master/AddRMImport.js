@@ -845,21 +845,14 @@ class AddRMImport extends Component {
                                 <Field
                                   name="RawMaterialId"
                                   type="text"
-                                  label="Raw Material"
+                                  label="Name"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("material")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.RawMaterial == null ||
-                                      this.state.RawMaterial.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleRMChange
-                                  }
+                                  handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -878,33 +871,26 @@ class AddRMImport extends Component {
                                 <Field
                                   name="RawMaterialGradeId"
                                   type="text"
-                                  label="RM Grade"
+                                  label="Grade"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("grade")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.RMGrade == null ||
-                                      this.state.RMGrade.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleGradeChange
-                                  }
+                                  handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {this.state.RawMaterial == null ||
-                                this.state.RawMaterial.length === 0 ? (
-                                  <div
-                                    className={
-                                      "plus-icon-square blurPlus-icon-square right"
-                                    }
-                                  ></div>
-                                ) : (
+                              {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
+                                <div
+                                  className={
+                                    "plus-icon-square blurPlus-icon-square right"
+                                  }
+                                ></div>
+                              ) : (
                                   !isEditFlag && (
                                     <div
                                       onClick={this.gradeToggler}
@@ -920,23 +906,14 @@ class AddRMImport extends Component {
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
-                                  label="RM Spec"
+                                  label="Specification"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "specification"
-                                  )}
+                                  options={this.renderListing("specification")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.RMSpec == null ||
-                                      this.state.RMSpec.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.RMSpec == null || this.state.RMSpec.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleSpecChange
-                                  }
+                                  handleChangeDescription={this.handleSpecChange}
                                   valueDescription={this.state.RMSpec}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -960,16 +937,9 @@ class AddRMImport extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("category")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.Category == null ||
-                                      this.state.Category.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.Category == null || this.state.Category.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleCategoryChange
-                                  }
+                                  handleChangeDescription={this.handleCategoryChange}
                                   valueDescription={this.state.Category}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -988,12 +958,9 @@ class AddRMImport extends Component {
                               placeholder={"Technology"}
                               options={this.renderListing("technology")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
                               required={true}
-                              handleChangeDescription={
-                                this.handleTechnologyChange
-                              }
+                              handleChangeDescription={this.handleTechnologyChange}
                               valueDescription={this.state.Technology}
                               disabled={isEditFlag ? true : false}
                             />
@@ -1005,33 +972,17 @@ class AddRMImport extends Component {
                                 name="SourceSupplierPlantId"
                                 placeholder={"Select"}
                                 selection={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? []
-                                    : this.state.selectedPlants
-                                }
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
-                                selectionChanged={
-                                  this.handleSourceSupplierPlant
-                                }
+                                selectionChanged={this.handleSourceSupplierPlant}
                                 validate={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                optionValue={(option) => option.Value}
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []} optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 required={true}
                                 className="multiselect-with-border"
-                                disabled={
-                                  this.state.IsVendor || isEditFlag
-                                    ? true
-                                    : false
-                                }
-                              />
+                                disabled={this.state.IsVendor || isEditFlag ? true : false} />
                             </Col>
                           )}
                         </Row>
@@ -1057,15 +1008,9 @@ class AddRMImport extends Component {
                                   )}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.vendorName == null ||
-                                      this.state.vendorName.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleVendorName
-                                  }
+                                  handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -1086,22 +1031,9 @@ class AddRMImport extends Component {
                                   name="DestinationSupplierPlantId"
                                   placeholder={"Select"}
                                   selection={
-                                    this.state.selectedVendorPlants ==
-                                      null ||
-                                      this.state.selectedVendorPlants
-                                        .length === 0
-                                      ? []
-                                      : this.state.selectedVendorPlants
-                                  }
-                                  options={this.renderListing(
-                                    "VendorPlant"
-                                  )}
-                                  validate={
-                                    this.state.selectedVendorPlants == null ||
-                                      this.state.selectedVendorPlants.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
+                                  options={this.renderListing("VendorPlant")}
+                                  validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
                                   selectionChanged={this.handleVendorPlant}
                                   optionValue={(option) => option.Value}
                                   optionLabel={(option) => option.Text}
@@ -1126,9 +1058,7 @@ class AddRMImport extends Component {
                                     <input
                                   type="checkbox"
                                   checked={this.state.HasDifferentSource}
-                                  disabled={
-                                    this.state.IsVendor ? true : false
-                                  }
+                                  disabled={this.state.IsVendor ? true : false}
                                 />
                                 <span
                                   className=" before-box"
@@ -1165,15 +1095,11 @@ class AddRMImport extends Component {
                                   label="Source Location"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "SourceLocation"
-                                  )}
+                                  options={this.renderListing("SourceLocation")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
                                   //required={true}
-                                  handleChangeDescription={
-                                    this.handleSourceSupplierCity
-                                  }
+                                  handleChangeDescription={this.handleSourceSupplierCity}
                                   valueDescription={this.state.sourceLocation}
                                 />
                               </Col>
@@ -1197,12 +1123,7 @@ class AddRMImport extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.UOM == null ||
-                                      this.state.UOM.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
@@ -1224,12 +1145,7 @@ class AddRMImport extends Component {
                               placeholder={"Select"}
                               options={this.renderListing("currency")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.currency == null ||
-                                  this.state.currency.length === 0
-                                  ? [required]
-                                  : []
-                              }
+                              validate={this.state.currency == null || this.state.currency.length === 0 ? [required] : []}
                               required={true}
                               handleChangeDescription={this.handleCurrency}
                               valueDescription={this.state.currency}
@@ -1274,7 +1190,7 @@ class AddRMImport extends Component {
                               placeholder={""}
                               validate={[required]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"
