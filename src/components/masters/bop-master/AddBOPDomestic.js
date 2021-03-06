@@ -3,19 +3,11 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, checkForNull, maxLength100, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric, maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces } from "../../../helper/validation";
-import {
-  renderText, searchableSelect,
-  renderMultiSelectField, renderTextAreaField, focusOnError
-} from "../../layout/FormInputs";
-import {
-  fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType,
-} from '../../../actions/Common';
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError } from "../../layout/FormInputs";
+import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
-import {
-  createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById,
-  fileUploadBOPDomestic, fileDeleteBOPDomestic,
-} from '../actions/BoughtOutParts';
+import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -258,9 +250,16 @@ class AddBOPDomestic extends Component {
     this.setState({ isCategoryDrawerOpen: true })
   }
 
-  closeCategoryDrawer = (e = '') => {
-    this.setState({ isCategoryDrawerOpen: false }, () => {
-      this.props.getBOPCategorySelectList(() => { })
+  closeCategoryDrawer = (e = '', formData = {}) => {
+    this.setState({ isCategoryDrawerOpen: false, }, () => {
+      this.props.getBOPCategorySelectList(() => {
+        const { bopCategorySelectList } = this.props;
+        if (Object.keys(formData).length > 0) {
+          let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Text === formData.Category)
+          this.setState({ BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [] })
+        }
+
+      })
     })
   }
 
@@ -604,7 +603,7 @@ class AddBOPDomestic extends Component {
                         <Row>
                           <Col md="3">
                             <Field
-                              label={`BOP Part No`}
+                              label={`Part No`}
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
@@ -619,7 +618,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`BOP Part Name`}
+                              label={`Part Name`}
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
@@ -637,23 +636,15 @@ class AddBOPDomestic extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="BOP Category"
+                                  label="Category"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "BOPCategory"
-                                  )}
+                                  options={this.renderListing("BOPCategory")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.BOPCategory == null ||
-                                      this.state.BOPCategory.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.BOPCategory == null || this.state.BOPCategory.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleCategoryChange
-                                  }
+                                  handleChangeDescription={this.handleCategoryChange}
                                   valueDescription={this.state.BOPCategory}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -672,11 +663,7 @@ class AddBOPDomestic extends Component {
                               name="PartAssemblyNo"
                               placeholder={"Select"}
                               selection={
-                                this.state.selectedPartAssembly == null ||
-                                  this.state.selectedPartAssembly.length === 0
-                                  ? []
-                                  : this.state.selectedPartAssembly
-                              }
+                                this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0 ? [] : this.state.selectedPartAssembly}
                               options={this.renderListing("PartAssembly")}
                               selectionChanged={this.handlePartAssembly}
                               optionValue={(option) => option.Value}
@@ -711,20 +698,10 @@ class AddBOPDomestic extends Component {
                               label="UOM"
                               component={searchableSelect}
                               placeholder={"Select"}
-                              options={this.renderListing(
-                                "uom"
-                              )}
+                              options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.UOM == null ||
-                                  this.state.UOM.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={
-                                this.handleUOM
-                              }
+                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []} required={true}
+                              handleChangeDescription={this.handleUOM}
                               valueDescription={this.state.UOM}
                               disabled={isEditFlag ? true : false}
                             />
@@ -736,20 +713,9 @@ class AddBOPDomestic extends Component {
                                 name="Plant"
                                 placeholder={"Select"}
                                 selection={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? []
-                                    : this.state.selectedPlants
-                                }
-                                options={this.renderListing("plant")}
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} options={this.renderListing("plant")}
                                 selectionChanged={this.handlePlant}
-                                validate={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                optionValue={(option) => option.Value}
+                                validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []} optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
                                 mendatory={true}
@@ -778,15 +744,9 @@ class AddBOPDomestic extends Component {
                                   )}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.vendorName == null ||
-                                      this.state.vendorName.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleVendorName
-                                  }
+                                  handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -804,26 +764,15 @@ class AddBOPDomestic extends Component {
                                 name="VendorPlant"
                                 placeholder={"Select"}
                                 selection={
-                                  this.state.selectedVendorPlants == null ||
-                                    this.state.selectedVendorPlants.length ===
-                                    0
-                                    ? []
-                                    : this.state.selectedVendorPlants
-                                }
+                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
                                 options={this.renderListing("VendorPlant")}
                                 selectionChanged={this.handleVendorPlant}
                                 validate={
-                                  this.state.selectedVendorPlants == null ||
-                                    this.state.selectedVendorPlants.length === 0
-                                    ? [required]
-                                    : []
-                                }
+                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
-                                mendatory={
-                                  this.state.IsVendor ? true : false
-                                }
+                                mendatory={this.state.IsVendor ? true : false}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />
@@ -859,11 +808,7 @@ class AddBOPDomestic extends Component {
                                 )}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={
-                                  this.state.sourceLocation == null ||
-                                    this.state.sourceLocation.length === 0
-                                    ? [required]
-                                    : []
-                                }
+                                  this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
                                 required={true}
                                 handleChangeDescription={
                                   this.handleSourceSupplierCity
@@ -912,9 +857,9 @@ class AddBOPDomestic extends Component {
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
-                              validate={[required, number]}
+                              validate={[number]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"

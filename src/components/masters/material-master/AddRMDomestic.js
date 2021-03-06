@@ -3,48 +3,13 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, maxLength100, getVendorCode, decimalLength2, maxLength2, positiveAndDecimalNumber, checkWhiteSpaces, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512 } from "../../../helper/validation";
-import {
-  renderText,
-  renderNumberInputField,
-  searchableSelect,
-  renderMultiSelectField,
-  renderTextAreaField,
-  focusOnError,
-} from '../../layout/FormInputs'
+import { renderText, renderNumberInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
-import {
-  getTechnologySelectList,
-  getRawMaterialCategory,
-  fetchGradeDataAPI,
-  fetchSpecificationDataAPI,
-  getCityBySupplier,
-  getPlantByCity,
-  getPlantByCityAndSupplier,
-  fetchRMGradeAPI,
-  getSupplierList,
-  getPlantBySupplier,
-  getUOMSelectList,
-  fetchSupplierCityDataAPI,
-  fetchPlantDataAPI,
-  getPlantSelectListByType
-} from '../../../actions/Common'
-import {
-  createRMDomestic,
-  getRawMaterialDetailsAPI,
-  updateRMDomesticAPI,
-  getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial,
-  getVendorListByVendorType,
-  fileUploadRMDomestic,
-  fileUpdateRMDomestic,
-  fileDeleteRMDomestic,
-} from '../actions/Material'
+import { getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity, getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType } from '../../../actions/Common'
+import { createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import {
-  loggedInUserId,
-  checkVendorPlantConfigurable,
-} from '../../../helper/auth'
+import { loggedInUserId, checkVendorPlantConfigurable, } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddSpecification from './AddSpecification'
 import AddGrade from './AddGrade'
@@ -321,10 +286,7 @@ class AddRMDomestic extends Component {
   getDetails = (data) => {
     if (data && data.isEditFlag) {
       this.setState({
-        isEditFlag: false,
-        isLoader: true,
-        isShowForm: true,
-        RawMaterialID: data.Id,
+        isEditFlag: false, isLoader: true, isShowForm: true, RawMaterialID: data.Id,
       })
       $('html, body').animate({ scrollTop: 0 }, 'slow')
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
@@ -337,31 +299,12 @@ class AddRMDomestic extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const {
-              gradeSelectList,
-              rmSpecification,
-              cityList,
-              categoryList,
-              rawMaterialNameSelectList,
-              UOMSelectList,
-              vendorListByVendorType,
-              technologySelectList
-            } = this.props
+            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList } = this.props
 
-            const materialNameObj =
-              rawMaterialNameSelectList &&
-              rawMaterialNameSelectList.find(
-                (item) => item.Value === Data.RawMaterial,
-              )
-            const gradeObj =
-              gradeSelectList &&
-              gradeSelectList.find((item) => item.Value === Data.RMGrade)
-            const specObj =
-              rmSpecification &&
-              rmSpecification.find((item) => item.Value === Data.RMSpec)
-            const categoryObj =
-              categoryList &&
-              categoryList.find((item) => item.Value === Data.Category)
+            const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
+            const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
+            const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
+            const categoryObj = categoryList && categoryList.find((item) => item.Value === Data.Category)
 
             const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId)
             let plantArray = []
@@ -450,7 +393,8 @@ class AddRMDomestic extends Component {
     this.setState({ isRMDrawerOpen: true })
   }
 
-  closeRMDrawer = (e = '') => {
+  closeRMDrawer = (e = '', data) => {
+    console.log(data, "RM");
     this.setState({ isRMDrawerOpen: false })
   }
 
@@ -536,20 +480,7 @@ class AddRMDomestic extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const {
-      gradeSelectList,
-      rmSpecification,
-      plantList,
-      filterPlantList,
-      cityList,
-      categoryList,
-      filterCityListBySupplier,
-      rawMaterialNameSelectList,
-      UOMSelectList,
-      vendorListByVendorType,
-      technologySelectList,
-      plantSelectList
-    } = this.props
+    const { gradeSelectList, rmSpecification, plantList, filterPlantList, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
     const temp = []
 
     if (label === 'material') {
@@ -803,45 +734,17 @@ class AddRMDomestic extends Component {
    */
   onSubmit = (values) => {
     const {
-      IsVendor,
-      RawMaterial,
-      RMGrade,
-      RMSpec,
-      Category,
-      Technology,
-      selectedPlants,
-      vendorName,
-      VendorCode,
-      selectedVendorPlants,
-      HasDifferentSource,
-      sourceLocation,
-      UOM,
-      remarks,
-      RawMaterialID,
-      isEditFlag,
-      files,
-      effectiveDate,
-    } = this.state
-
+      IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName, VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, } = this.state
     let plantArray = []
-    selectedPlants &&
-      selectedPlants.map((item) => {
-        plantArray.push({
-          PlantName: item.Text,
-          PlantId: item.Value,
-          PlantCode: '',
-        })
-        return plantArray
-      })
+    selectedPlants && selectedPlants.map((item) => {
+      plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+      return plantArray
+    })
 
     let vendorPlantArray = []
     selectedVendorPlants &&
       selectedVendorPlants.map((item) => {
-        vendorPlantArray.push({
-          PlantName: item.Text,
-          PlantId: item.Value,
-          PlantCode: '',
-        })
+        vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return vendorPlantArray
       })
 
@@ -916,16 +819,7 @@ class AddRMDomestic extends Component {
    */
   render() {
     const { handleSubmit } = this.props
-    const {
-      isRMDrawerOpen,
-      isOpenGrade,
-      isOpenSpecification,
-      isOpenCategory,
-      isOpenVendor,
-      isOpenUOM,
-      isEditFlag,
-      isVisible,
-    } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state
 
     return (
       <>
@@ -984,7 +878,7 @@ class AddRMDomestic extends Component {
                                 <Field
                                   name="RawMaterialId"
                                   type="text"
-                                  label="Raw Material"
+                                  label="Name"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("material")}
@@ -1016,33 +910,25 @@ class AddRMDomestic extends Component {
                                 <Field
                                   name="RawMaterialGradeId"
                                   type="text"
-                                  label="RM Grade"
+                                  label="Grade"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("grade")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.RMGrade == null ||
-                                      this.state.RMGrade.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleGradeChange
-                                  }
+                                  handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {this.state.RawMaterial == null ||
-                                this.state.RawMaterial.length === 0 ? (
-                                  <div
-                                    className={
-                                      "plus-icon-square blurPlus-icon-square right"
-                                    }
-                                  ></div>
-                                ) : (
+                              {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
+                                <div
+                                  className={
+                                    "plus-icon-square blurPlus-icon-square right"
+                                  }
+                                ></div>
+                              ) : (
                                   !isEditFlag && (
                                     <div
                                       onClick={this.gradeToggler}
@@ -1058,7 +944,7 @@ class AddRMDomestic extends Component {
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
-                                  label="RM Spec"
+                                  label="Specification"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("specification")}
@@ -1105,16 +991,9 @@ class AddRMDomestic extends Component {
                               placeholder={"Select"}
                               options={this.renderListing("category")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={
-                                this.state.Category == null ||
-                                  this.state.Category.length === 0
-                                  ? [required]
-                                  : []
-                              }
+                              validate={this.state.Category == null || this.state.Category.length === 0 ? [required] : []}
                               required={true}
-                              handleChangeDescription={
-                                this.handleCategoryChange
-                              }
+                              handleChangeDescription={this.handleCategoryChange}
                               valueDescription={this.state.Category}
                               disabled={isEditFlag ? true : false}
                             />
@@ -1150,26 +1029,16 @@ class AddRMDomestic extends Component {
                                 selection={
                                   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
-                                selectionChanged={
-                                  this.handleSourceSupplierPlant
-                                }
+                                selectionChanged={this.handleSourceSupplierPlant}
                                 validate={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? [required]
-                                    : []
-                                }
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                                 required={true}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                disabled={
-                                  this.state.IsVendor || isEditFlag
-                                    ? true
-                                    : false
-                                }
+                                disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>
 
@@ -1194,15 +1063,9 @@ class AddRMDomestic extends Component {
                                   options={this.renderListing("VendorNameList")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.vendorName == null ||
-                                      this.state.vendorName.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleVendorName
-                                  }
+                                  handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -1223,19 +1086,10 @@ class AddRMDomestic extends Component {
                                   name="DestinationSupplierPlantId"
                                   placeholder={"Select"}
                                   selection={
-                                    this.state.selectedVendorPlants == null ||
-                                      this.state.selectedVendorPlants.length === 0
-                                      ? []
-                                      : this.state.selectedVendorPlants
-                                  }
+                                    this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
                                   options={this.renderListing("VendorPlant")}
                                   selectionChanged={this.handleVendorPlant}
-                                  validate={
-                                    this.state.selectedVendorPlants == null ||
-                                      this.state.selectedVendorPlants.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
                                   required={true}
                                   optionValue={(option) => option.Value}
                                   optionLabel={(option) => option.Text}
@@ -1272,44 +1126,40 @@ class AddRMDomestic extends Component {
                           </Row>
                         )}
 
-                        <Row className="mb-3">
-                          {(this.state.HasDifferentSource ||
-                            this.state.IsVendor) && (
-                              <>
-                                <Col md="3">
-                                  <Field
-                                    label={`Source`}
-                                    name={"Source"}
-                                    type="text"
-                                    placeholder={"Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
-                                    component={renderText}
-                                    //required={true}
-                                    disabled={false}
-                                    className=" "
-                                    customClassName=" withBorder mb-0"
-                                  />
-                                </Col>
-                                <Col md="3">
-                                  <Field
-                                    name="SourceSupplierCityId"
-                                    type="text"
-                                    label="Source Location"
-                                    component={searchableSelect}
-                                    placeholder={"Select"}
-                                    options={this.renderListing("SourceLocation")}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
-                                    //required={true}
-                                    handleChangeDescription={
-                                      this.handleSourceSupplierCity
-                                    }
-                                    valueDescription={this.state.sourceLocation}
-                                  />
-                                </Col>
-                              </>
-                            )}
-                        </Row>
+                        {(this.state.HasDifferentSource ||
+                          this.state.IsVendor) && (
+                            <Row>
+                              <Col md="3">
+                                <Field
+                                  label={`Source`}
+                                  name={"Source"}
+                                  type="text"
+                                  placeholder={"Enter"}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                  component={renderText}
+                                  //required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  name="SourceSupplierCityId"
+                                  type="text"
+                                  label="Source Location"
+                                  component={searchableSelect}
+                                  placeholder={"Select"}
+                                  options={this.renderListing("SourceLocation")}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
+                                  //required={true}
+                                  handleChangeDescription={this.handleSourceSupplierCity}
+                                  valueDescription={this.state.sourceLocation}
+                                />
+                              </Col>
+                            </Row>
+                          )}
 
                         <Row>
                           <Col md="12" className="filter-block ">
@@ -1328,12 +1178,7 @@ class AddRMDomestic extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("uom")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.UOM == null ||
-                                      this.state.UOM.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleUOM}
                                   valueDescription={this.state.UOM}
@@ -1385,7 +1230,7 @@ class AddRMDomestic extends Component {
                               placeholder={""}
                               validate={[required]}
                               component={renderText}
-                              // required={true}
+                              required={false}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"
@@ -1566,9 +1411,7 @@ class AddRMDomestic extends Component {
               ID={""}
               anchor={"right"}
               AddAccessibilityRMANDGRADE={this.props.AddAccessibilityRMANDGRADE}
-              EditAccessibilityRMANDGRADE={
-                this.props.EditAccessibilityRMANDGRADE
-              }
+              EditAccessibilityRMANDGRADE={this.props.EditAccessibilityRMANDGRADE}
               RawMaterial={""}
               RMGrade={""}
               isRMDomesticSpec={true}
@@ -1632,7 +1475,7 @@ class AddRMDomestic extends Component {
             />
           )}
 
-          {isVisible && (
+          {/* {isVisible && (
             <ImageModel
               onOk={this.onOk}
               onCancel={this.onCancel}
@@ -1640,7 +1483,7 @@ class AddRMDomestic extends Component {
               imageURL={this.state.imageURL}
             //modelData={}
             />
-          )}
+          )} */}
         </div>
       </>
     );
@@ -1656,31 +1499,11 @@ function mapStateToProps(state) {
   const { comman, material } = state
   const fieldsObj = selector(state, 'BasicRate')
 
-  const {
-    rowMaterialList,
-    rmGradeList,
-    rmSpecification,
-    plantList,
-    supplierSelectList,
-    filterPlantList,
-    filterCityListBySupplier,
-    cityList,
-    technologyList,
-    categoryList,
-    filterPlantListByCity,
-    filterPlantListByCityAndSupplier,
-    UOMSelectList,
-    technologySelectList,
-    plantSelectList
-  } = comman
+  const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
+    cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
+    plantSelectList } = comman
 
-  const {
-    rawMaterialDetails,
-    rawMaterialDetailsData,
-    rawMaterialNameSelectList,
-    gradeSelectList,
-    vendorListByVendorType,
-  } = material
+  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, } = material
 
   let initialValues = {}
   if (rawMaterialDetails && rawMaterialDetails !== undefined) {
@@ -1694,28 +1517,11 @@ function mapStateToProps(state) {
   }
 
   return {
-    rowMaterialList,
-    rmGradeList,
-    rmSpecification,
-    plantList,
-    supplierSelectList,
-    cityList,
-    technologyList,
-    categoryList,
-    rawMaterialDetails,
-    filterPlantListByCity,
-    filterCityListBySupplier,
-    rawMaterialDetailsData,
-    initialValues,
-    fieldsObj,
-    filterPlantListByCityAndSupplier,
-    rawMaterialNameSelectList,
-    gradeSelectList,
-    filterPlantList,
-    UOMSelectList,
-    vendorListByVendorType,
-    technologySelectList,
-    plantSelectList
+    rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, cityList,
+    technologyList, categoryList, rawMaterialDetails, filterPlantListByCity,
+    filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
+    filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
+    filterPlantList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList
   }
 }
 

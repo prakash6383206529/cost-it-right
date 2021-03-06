@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { getAllLevelAPI, deleteUserLevelAPI, getLeftMenu, } from '../../actions/auth/AuthActions';
+import { getAllLevelAPI, deleteUserLevelAPI, getLeftMenu, getUsersByTechnologyAndLevel } from '../../actions/auth/AuthActions';
 import { toastr } from 'react-redux-toastr';
 import Switch from "react-switch";
 import { MESSAGES } from '../../config/message';
@@ -21,6 +21,8 @@ import { renderText } from '../layout/FormInputs';
 import { Field, reduxForm } from 'redux-form';
 import { focusOnError } from "../layout/FormInputs";
 import ImpactDrawer from './ImpactDrawer';
+
+/*************************************THIS FILE IS FOR SHOWING LEVEL LISTING ****************************************/
 
 class LevelsListing extends Component {
 	constructor(props) {
@@ -62,6 +64,7 @@ class LevelsListing extends Component {
 
 	componentDidMount() {
 		this.getLevelsListData();
+		this.props.getUsersByTechnologyAndLevel(() => { })
 		//this.props.onRef(this);
 	}
 
@@ -366,7 +369,7 @@ class LevelsListing extends Component {
 
 								<Col className="mt-0 level-table">
 									<BootstrapTable
-										data={this.state.tableData}
+										data={this.props.usersListByTechnologyAndLevel}
 										striped={false}
 										bordered={false}
 										hover={false}
@@ -378,8 +381,8 @@ class LevelsListing extends Component {
 										tableHeaderClass={'my-custom-header'}
 										pagination>
 										<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-										<TableHeaderColumn dataField="LevelName" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
-										<TableHeaderColumn dataField="Users" dataAlign="center">Users</TableHeaderColumn>
+										<TableHeaderColumn dataField="Level" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
+										<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="center">Users</TableHeaderColumn>
 										{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
 										<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
 
@@ -426,9 +429,9 @@ class LevelsListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { levelList, leftMenuData, loading } = auth;
+	const { levelList, leftMenuData, loading, usersListByTechnologyAndLevel } = auth;
 
-	return { levelList, leftMenuData, loading };
+	return { levelList, leftMenuData, loading, usersListByTechnologyAndLevel };
 }
 
 
@@ -437,6 +440,7 @@ export default connect(mapStateToProps,
 		getAllLevelAPI,
 		deleteUserLevelAPI,
 		getLeftMenu,
+		getUsersByTechnologyAndLevel
 	})(reduxForm({
 		form: 'LevelsListing',
 		onSubmitFail: errors => {

@@ -565,6 +565,9 @@ export const API = {
   setUserTechnologyLevelForCosting: `${BASE_URL}/user-level/assign-user-technology-levels-for-costing`,
   getUserTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-technology-levels`,
   updateUserTechnologyLevelForCosting: `${BASE_URL}/user-level/update-user-technology-levels`,
+  getSelectListOfLevel: `${BASE_URL}/configuration/select-list-get-level`,
+  getUserByTechnologyAndLevel: `${BASE_URL}/user/get-users-technology-wise-level`,
+  getLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-technology`,
 
   //ROLES API
   addRoleAPI: `${BASE_URL}/user-role/create-new`,
@@ -1141,6 +1144,8 @@ export const LOGIN_PAGE_INIT_CONFIGURATION = 'LOGIN_PAGE_INIT_CONFIGURATION'
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
 export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS'
+export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LEVEL'
+export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 
 //Role
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'

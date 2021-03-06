@@ -95,9 +95,12 @@ class Department extends Component {
 			})
 
 		} else {
+			let formReq = {
+				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+			}
 
 			// Add new department
-			this.props.addDepartmentAPI(values, (res) => {
+			this.props.addDepartmentAPI(formReq, (res) => {
 				if (res && res.data && res.data.Result) {
 					toastr.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
 				}

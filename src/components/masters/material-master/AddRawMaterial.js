@@ -122,7 +122,7 @@ class AddRawMaterial extends Component {
                 <Row className="pl-3">
                   <Col md="12">
                     <Field
-                      label={`Raw Material Name`}
+                      label={`Name`}
                       name={"RawMaterialName"}
                       type="text"
                       placeholder={""}
