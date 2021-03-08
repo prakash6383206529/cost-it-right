@@ -267,11 +267,19 @@ class AddBOPImport extends Component {
     this.setState({ isCategoryDrawerOpen: true })
   }
 
-  closeCategoryDrawer = (e = '') => {
-    this.setState({ isCategoryDrawerOpen: false }, () => {
-      this.props.getBOPCategorySelectList(() => { })
+  closeCategoryDrawer = (e = '', formData = {}) => {
+    this.setState({ isCategoryDrawerOpen: false, }, () => {
+      this.props.getBOPCategorySelectList(() => {
+        const { bopCategorySelectList } = this.props;
+        if (Object.keys(formData).length > 0) {
+          let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Text === formData.Category)
+          this.setState({ BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [] })
+        }
+
+      })
     })
   }
+
 
   /**
   * @method handlePartAssembly
@@ -618,7 +626,7 @@ class AddBOPImport extends Component {
                         <Row>
                           <Col md="3">
                             <Field
-                              label={`BOP Part No`}
+                              label={`Part No`}
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
@@ -632,7 +640,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`BOP Part Name`}
+                              label={`Part Name`}
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
@@ -650,7 +658,7 @@ class AddBOPImport extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="BOP Category"
+                                  label="Category"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing(
@@ -945,9 +953,9 @@ class AddBOPImport extends Component {
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
-                              validate={[required]}
+                              validate={[]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               disabled={true}
                               className=" "
                               customClassName=" withBorder"

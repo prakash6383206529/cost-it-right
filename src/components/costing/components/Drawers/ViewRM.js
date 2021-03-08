@@ -74,7 +74,7 @@ function ViewRM(props) {
                     mandatory={false}
                     handleChange={() => { }}
                     //defaultValue={`${viewRM[0].RMName}`}
-                    defaultValue={viewRM.RMName ? viewRM.RMName : '-'}
+                    defaultValue={viewRM && viewRM.RMName !== undefined ? viewRM.RMName : '-'}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -90,7 +90,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.RMRate ? viewRM.RMRate : '-'}
+                    defaultValue={viewRM && viewRM.RMRate !== undefined ? viewRM.RMRate : '-'}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -119,7 +119,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.GrossWeight ? viewRM.GrossWeight : ""}
+                    defaultValue={viewRM && viewRM.GrossWeight !== undefined ? viewRM.GrossWeight : ""}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -135,7 +135,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.FinishWeight ? viewRM.FinishWeight : ""}
+                    defaultValue={viewRM && viewRM.FinishWeight !== undefined ? viewRM.FinishWeight : ""}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -151,7 +151,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM.NetLandedCost ? viewRM.NetLandedCost : "-"}
+                    defaultValue={viewRM && viewRM.NetLandedCost !== undefined ? viewRM.NetLandedCost : "-"}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -162,7 +162,7 @@ function ViewRM(props) {
             </form>
             {weightCalculatorDrawer && (
               <WeightCalculator
-                rmRowData={viewRM}
+                rmRowData={viewRM !== undefined ? viewRM : {}}
                 anchor={`right`}
                 isEditFlag={false}
                 isOpen={weightCalculatorDrawer}

@@ -16,6 +16,7 @@ import { loggedInUserId } from "../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, } from 'reactstrap';
 
+/**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
   constructor(props) {
     super(props);
@@ -75,14 +76,14 @@ class Level extends Component {
           setTimeout(() => {
 
             let technologyObj = technologyList && technologyList.filter(item => item.Value === Data.TechnologyId)
-            let levelObj = levelList && levelList.filter(item => item.LevelId === Data.LevelId)
+            let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
             console.log(levelObj, "Object");
             this.setState({
               isEditMappingFlag: true,
               LevelId: LevelId,
               isShowTechnologyForm: true,
               technology: { label: technologyObj[0].Text, value: technologyObj[0].Value },
-              level: { label: levelObj[0].LevelName, value: levelObj[0].LevelId },
+              level: { label: levelObj[0].Text, value: levelObj[0].Value },
             })
           }, 500)
         }
@@ -111,12 +112,13 @@ class Level extends Component {
     if (label === 'level') {
       let level = 5
 
-      for (let i = 1; i <= level; i++) {
-        temp.push({ label: `L-${i}`, value: i })
-      }
-      // levelList && levelList.map(item =>
-      //   temp.push({ label: item.LevelName, value: item.LevelId })
-      // );
+      // for (let i = 1; i <= level; i++) {
+      //   temp.push({ label: `L-${i}`, value: i })
+      // }
+      levelList && levelList.map(item => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+      });
       return temp;
     }
 
@@ -387,7 +389,7 @@ class Level extends Component {
 
                     </div>}
 
-
+                  {/* *********************************THIS IS LEVEL MAPPING FORM*************************************************** */}
                   {this.props.isShowMappingForm &&
                     <div className="row pr-0">
                       <div className="input-group  form-group col-md-12 input-withouticon" >

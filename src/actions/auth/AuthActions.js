@@ -27,7 +27,9 @@ import {
     GET_MENU_BY_USER_DATA_SUCCESS,
     GET_LEFT_MENU_BY_MODULE_ID_AND_USER,
     LOGIN_PAGE_INIT_CONFIGURATION,
-    config
+    config,
+    GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
+    GET_LEVEL_BY_TECHNOLOGY
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -604,12 +606,13 @@ export function deleteDepartmentAPI(Id, callback) {
 export function getAllLevelAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllLevelAPI}`, headers);
+        // const request = axios.get(`${API.getAllLevelAPI}`, headers);
+        const request = axios.get(`${API.getSelectListOfLevel}`, headers);
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
                     type: GET_LEVEL_USER_SUCCESS,
-                    payload: response.data.DataList,
+                    payload: response.data.SelectList,
                 });
                 callback(response);
             }
@@ -1260,5 +1263,69 @@ export function getModuleIdByPathName(pathname, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
         });
+    };
+}
+
+/**
+ * @method getUsersByTechnologyAndLevel
+ * @description get user by technology and level
+ */
+export function getUsersByTechnologyAndLevel(callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getUserByTechnologyAndLevel}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
+                    payload: response.data.DataList,
+                });
+                callback(response);
+            } else {
+                toastr.error(MESSAGES.SOME_ERROR);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getLevelByTechnology
+ * @description GET LEVEL DROPDOWN BY TECHNOLOGY
+ * @param technologyId
+ */
+export function getLevelByTechnology(technologyId, callback) {
+    return (dispatch) => {
+        if (technologyId !== '') {
+
+            //dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getLevelByTechnology}/${technologyId}`, headers);
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_LEVEL_BY_TECHNOLOGY,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                } else {
+                    toastr.error(MESSAGES.SOME_ERROR);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+        } else {
+            dispatch({
+                type: GET_LEVEL_BY_TECHNOLOGY,
+                payload: [],
+            });
+            callback();
+
+        }
     };
 }

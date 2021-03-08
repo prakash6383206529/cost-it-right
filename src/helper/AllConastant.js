@@ -55,7 +55,7 @@ export const CONSTANT = {
   LOCATION: 'Location',
   FUEL: 'Fuel',
   PROCESS: 'Process',
-  EMPTY_DATA: 'No Records Found',
+  EMPTY_DATA: 'No Record Found',
   COSTING: 'Costing',
 };
 

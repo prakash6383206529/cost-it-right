@@ -4,14 +4,13 @@ import { Col, Row, Table } from 'reactstrap'
 import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
-import WeightCalculator from '../../WeightCalculatorDrawer'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
-import { getRawMaterialCalculationByTechnology, saveRawMaterialCalciData } from '../../../actions/CostWorking'
+import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 
 function RawMaterialCost(props) {
 
@@ -21,8 +20,6 @@ function RawMaterialCost(props) {
   })
 
   const costData = useContext(costingInfoContext)
-  // const technology = props.technology ? props.technology : 'Sheet Metal'
-  // const technology = costData.TechnologyName
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
@@ -46,7 +43,6 @@ function RawMaterialCost(props) {
         return setGridLength(0)
     }
   }, [])
-
 
   useEffect(() => {
     setTimeout(() => {
