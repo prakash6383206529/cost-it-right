@@ -170,7 +170,7 @@ function TabToolCost(props) {
               </Row> */}
 
               <Row className="m-0  costing-border ">
-                <Col md="9" className="px-3 py-4 ">
+                <Col md="9" className="px-30 py-4 ">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
@@ -197,7 +197,7 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="px-3 py-4 ">{"Net Tool Cost"}</Col>
+                <Col md="3" className="px-30 py-4 text-dark-blue">{"Net Tool Cost"}</Col>
               </Row>
 
               <form
@@ -218,9 +218,9 @@ function TabToolCost(props) {
                         {ToolTabData && ToolTabData.map((item, index) => {
                           return (
                             <>
-                              <tr key={index}>
-                                <td>
-                                  <span class="cr-prt-nm cr-prt-link">
+                              <tr className="accordian-row" key={index}>
+                                <td style={{ width: '75%' }}>
+                                  <span class="cr-prt-link1">
                                     {item.PartName}
                                   </span>
                                 </td>

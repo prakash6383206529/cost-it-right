@@ -1365,7 +1365,7 @@ class AddPower extends Component {
                                 </div>
                               </div>
                             </Col>
-                            <Col md="3">
+                            <Col md="2">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
@@ -1383,14 +1383,11 @@ class AddPower extends Component {
                                 </div>
                               </div>
                             </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                            <Col md="auto">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon date-filed">
                                 <div className="fullinput-icon">
                                   <div className="form-group">
-                                    <label>
-                                      Effective Date
-                                                                    {/* <span className="asterisk-required">*</span> */}
-                                    </label>
+                                    <label>Effective Date{/* <span className="asterisk-required">*</span> */}</label>
                                     <div className="inputbox date-section">
                                       <DatePicker
                                         name="EffectiveDate"
@@ -1413,50 +1410,48 @@ class AddPower extends Component {
                                 </div>
                               </div>
                             </Col>
-                            <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                                <div className="fullinput-icon">
-                                  <Field
-                                    label={`Power Contribution %`}
-                                    name={"SEBPowerContributaion"}
-                                    type="text"
-                                    placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
-                                    component={renderText}
-                                    required={true}
-                                    className=""
-                                    customClassName=" withBorder"
-                                    disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity ? true : false}
-                                  />
-                                </div>
+                            <Col md="auto" className="d-flex">
+
+                              <div className="machine-rate-filed pr-3">
+                                <Field
+                                  label={`Power Contribution %`}
+                                  name={"SEBPowerContributaion"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  required={true}
+                                  className=""
+                                  customClassName=" withBorder"
+                                  disabled={this.state.isAddedSEB ? true : isEditFlagForStateElectricity ? true : false}
+                                />
                               </div>
-                            </Col>
-                            <Col md="3">
-                              <div>
+                              <div className="btn-mr-rate pr-0 col-auto">
                                 {this.state.isEditSEBIndex ?
                                   <>
                                     <button
                                       type="button"
-                                      className={`btn ${checkPowerContribution ? 'btn-primary button-disabled' : 'btn-primary'} mb-5 pull-left mr5`}
+                                      className={`btn ${checkPowerContribution ? 'btn-primary button-disabled' : 'btn-primary'}  pull-left mr5`}
                                       onClick={this.updateSEBGrid}
                                       disabled={checkPowerContribution ? true : false}
                                     >Update</button>
                                     <button
                                       type="button"
-                                      className={'reset-btn mb-5 pull-left'}
+                                      className={'reset-btn  pull-left'}
                                       onClick={() => this.setState({ isEditSEBIndex: false })}
                                     >Cancel</button>
                                   </>
                                   :
                                   <button
                                     type="button"
-                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'} mb-5 pull-left`}
+                                    className={`${(checkPowerContribution || this.state.isAddedSEB) ? 'btn-secondary' : 'btn-primary'}  pull-left`}
                                     disabled={(checkPowerContribution || this.state.isAddedSEB) ? true : false}
                                     onClick={() => this.powerSEBTableHandler(false)}>
                                     <div className={'plus'}></div>ADD</button>
                                 }
 
                               </div>
+
                             </Col>
                           </Row>
 

@@ -678,74 +678,74 @@ class AddLabour extends Component {
                       </Col>
                       {this.state.IsEmployeContractual && (
                         <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
-                              <Field
-                                name="VendorName"
-                                type="text"
-                                label="Vendor Name"
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing("VendorNameList")}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.vendorName == null ||
-                                    this.state.vendorName.length === 0
-                                    ? [required]
-                                    : []
-                                }
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleVendorName
-                                }
-                                valueDescription={this.state.vendorName}
-                                disabled={isEditFlag ? true : isDisable ? true : false}
-                              />
-                            </div>
+                          <div className="form-group">
+                            <Field
+                              name="VendorName"
+                              type="text"
+                              label="Vendor Name"
+                              component={searchableSelect}
+                              placeholder={"Select"}
+                              options={this.renderListing("VendorNameList")}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={
+                                this.state.vendorName == null ||
+                                  this.state.vendorName.length === 0
+                                  ? [required]
+                                  : []
+                              }
+                              required={true}
+                              handleChangeDescription={
+                                this.handleVendorName
+                              }
+                              valueDescription={this.state.vendorName}
+                              disabled={isEditFlag ? true : isDisable ? true : false}
+                            />
                           </div>
                         </Col>
                       )}
                       <Col md="3">
-                        <Field
-                          name="state"
-                          type="text"
-                          label="State"
-                          component={searchableSelect}
-                          placeholder={"Select"}
-                          options={this.renderListing("state")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.StateName == null ||
-                              this.state.StateName.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
-                          handleChangeDescription={this.handleState}
-                          valueDescription={this.state.StateName}
-                          disabled={isEditFlag ? true : isDisable ? true : false}
-                        />
+                        <div className="form-group">
+                          <Field
+                            name="state"
+                            type="text"
+                            label="State"
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("state")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.StateName == null ||
+                                this.state.StateName.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handleState}
+                            valueDescription={this.state.StateName}
+                            disabled={isEditFlag ? true : isDisable ? true : false}
+                          /></div>
                       </Col>
                       <Col md="3">
-                        <Field
-                          name="Plant"
-                          type="text"
-                          label="Plant"
-                          component={searchableSelect}
-                          placeholder={"Select"}
-                          options={this.renderListing("plant")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.selectedPlants == null ||
-                              this.state.selectedPlants.length === 0
-                              ? [required]
-                              : []
-                          }
-                          required={true}
-                          handleChangeDescription={this.handlePlants}
-                          valueDescription={this.state.selectedPlants}
-                          disabled={isEditFlag ? true : isDisable ? true : false}
-                        />
+                        <div className="form-group">
+                          <Field
+                            name="Plant"
+                            type="text"
+                            label="Plant"
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("plant")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.selectedPlants == null ||
+                                this.state.selectedPlants.length === 0
+                                ? [required]
+                                : []
+                            }
+                            required={true}
+                            handleChangeDescription={this.handlePlants}
+                            valueDescription={this.state.selectedPlants}
+                            disabled={isEditFlag ? true : isDisable ? true : false}
+                          /></div>
                       </Col>
                     </Row>
 
@@ -757,7 +757,7 @@ class AddLabour extends Component {
                       </Col>
 
                       <Col md="3" className="col">
-                        <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                        <div className="d-flex justify-space-between align-items-center inputwith-icon form-group">
                           <div className="fullinput-icon">
                             <Field
                               name="MachineType"
@@ -782,37 +782,40 @@ class AddLabour extends Component {
                           )}
                         </div>
                       </Col>
-                      <Col md="3" className="col">
-                        <Field
-                          name="LabourTypeIds"
-                          type="text"
-                          label="Labour Type"
-                          component={searchableSelect}
-                          placeholder={"Select"}
-                          options={this.renderListing("labourList")}
-                          //onKeyUp={(e) => this.changeItemDesc(e)}
-                          //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
-                          required={true}
-                          handleChangeDescription={this.labourHandler}
-                          valueDescription={this.state.labourType}
-                        />
-                      </Col>
-                      <Col md="3" className="col">
-                        <Field
-                          label={`Rate Per Person/Annum (INR)`}
-                          name={"LabourRate"}
-                          type="text"
-                          placeholder={"Enter"}
-                          validate={[positiveAndDecimalNumber, maxLength10]}
-                          component={renderText}
-                          required={true}
-                          disabled={false}
-                          className=" "
-                          customClassName="withBorder"
-                        />
-                      </Col>
-                      <Col md="3" className="col">
+                      <Col md="2" className="col">
                         <div className="form-group">
+                          <Field
+                            name="LabourTypeIds"
+                            type="text"
+                            label="Labour Type"
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("labourList")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            //validate={(this.state.labourType == null || this.state.labourType.length == 0) ? [required] : []}
+                            required={true}
+                            handleChangeDescription={this.labourHandler}
+                            valueDescription={this.state.labourType}
+                          />
+                        </div>
+                      </Col>
+                      <Col md="auto">
+                        <div className="form-group">
+                          <Field
+                            label={`Rate Per Person/Annum (INR)`}
+                            name={"LabourRate"}
+                            type="text"
+                            placeholder={"Enter"}
+                            validate={[positiveAndDecimalNumber, maxLength10]}
+                            component={renderText}
+                            required={true}
+                            disabled={false}
+                            className=" "
+                            customClassName="withBorder"
+                          /></div>
+                      </Col>
+                      <Col md="auto" className="d-flex">
+                        <div className="form-group date-filed pr-3">
                           <label>
                             Effective Date
                               {/* <span className="asterisk-required">*</span> */}
@@ -836,14 +839,12 @@ class AddLabour extends Component {
                             />
                           </div>
                         </div>
-                      </Col>
-                      <Col md="3" className="col">
-                        <div>
+                        <div className="btn-mr-rate pr-0 col-auto">
                           {this.state.isEditIndex ? (
                             <>
                               <button type="button"
                                 className={
-                                  "btn btn-primary mb-4 pull-left mr5"
+                                  "btn btn-primary pull-left mr5"
                                 }
                                 onClick={this.updateGrid}
                               >
@@ -852,7 +853,7 @@ class AddLabour extends Component {
 
                               <button
                                 type="button"
-                                className={"reset-btn mb-4 pull-left"}
+                                className={"reset-btn pull-left"}
                                 onClick={this.resetGridData}
                               >
                                 Cancel
@@ -861,7 +862,7 @@ class AddLabour extends Component {
                           ) : (
                               <button
                                 type="button"
-                                className={"user-btn mb-4 pull-left"}
+                                className={"user-btn  pull-left"}
                                 onClick={this.gridHandler}
                               >
                                 <div className={"plus"}></div>ADD

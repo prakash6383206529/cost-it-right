@@ -108,40 +108,42 @@ function PackageCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table cr-brdr-main" size="sm">
-                <thead>
-                  <tr>
-                    <th>{`Packaging Description`}</th>
-                    <th>{`Packaging Cost`}</th>
-                    <th>{`Cost`}</th>
-                    <th>{`Action`}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    gridData && gridData.map((item, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{item.PackagingDescription}</td>
-                          <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
-                          <td>{item.PackagingCost}</td>
-                          <td>
-                            <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
-                            <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
-                          </td>
-                        </tr>
-                      )
-                    })
-                  }
-                  {gridData && gridData.length === 0 &&
+              <div className="costing-border p-3">
+                <Table className="table cr-brdr-main mb-0" size="sm">
+                  <thead>
                     <tr>
-                      <td colSpan={7}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                      </td>
+                      <th>{`Packaging Description`}</th>
+                      <th>{`Packaging Cost`}</th>
+                      <th>{`Cost`}</th>
+                      <th style={{ width: "130px" }} className="costing-border-right"  >{`Action`}</th>
                     </tr>
-                  }
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {
+                      gridData && gridData.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>{item.PackagingDescription}</td>
+                            <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
+                            <td>{item.PackagingCost}</td>
+                            <td>
+                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                            </td>
+                          </tr>
+                        )
+                      })
+                    }
+                    {gridData && gridData.length === 0 &&
+                      <tr>
+                        <td colSpan={7}>
+                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </Table>
+              </div>
             </Col>
           </Row>
 

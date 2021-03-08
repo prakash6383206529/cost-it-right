@@ -176,16 +176,16 @@ function TabPackagingFreight(props) {
                     <Table className="table cr-brdr-main mb-0 " size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: "100px" }}>{``}</th>
-                          <th style={{ width: "100px" }}>{`Net Packaging Cost`}</th>
-                          <th style={{ width: "150px" }}>{`Net Freight Cost`}</th>
+                          <th className="py-4 align-middle" style={{ width: "100px" }}>{``}</th>
+                          <th className="py-4 align-middle" style={{ width: "100px" }}>{`Net Packaging Cost`}</th>
+                          <th className="py-4 align-middle" style={{ width: "150px" }}>{`Net Freight Cost`}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {PackageAndFreightTabData && PackageAndFreightTabData.map((item, index) => {
                           return (
                             <>
-                              <tr key={index}>
+                              <tr class="accordian-row" key={index}>
                                 <td>{item.PartName}</td>
                                 <td>{item.CostingPartDetails.PackagingNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PackagingNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
                                 <td>{item.CostingPartDetails.FreightNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.FreightNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>

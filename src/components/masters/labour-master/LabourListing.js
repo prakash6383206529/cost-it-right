@@ -722,12 +722,12 @@ class LabourListing extends Component {
             pagination
           >
             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-            <TableHeaderColumn dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {'Employment Terms '}  </TableHeaderColumn>
+            <TableHeaderColumn width={150} dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {'Employment Terms '}  </TableHeaderColumn>
             <TableHeaderColumn
               dataField="Vendor"
               columnTitle={true}
+              width={150}
               dataAlign="left"
-              width={120}
               dataFormat={this.dashFormatter}
             >
               {'Vendor Name'}
@@ -744,7 +744,7 @@ class LabourListing extends Component {
               dataField="State"
               columnTitle={true}
               dataAlign="left"
-              width={100}
+              width={150}
             >
               {'State'}
             </TableHeaderColumn>

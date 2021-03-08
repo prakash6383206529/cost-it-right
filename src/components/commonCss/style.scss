@@ -1097,9 +1097,14 @@ button.add-btn {
   margin-right: 8px !important;
 }
 .switch-level{
-  display: flex;
+  display: inline-flex;
     align-items: center;
+    width: auto;
 }
+.px-30{
+  padding: 0 30px;
+}
+
 .fullinput-icon{
   width: 110%; 
 }
@@ -2228,8 +2233,8 @@ button:disabled{pointer-events: none;}
 //=============== costing details page only
 .costing-details-page{
   .sepration-box{
-    margin: 20px 0;
-    padding: 20px;
+    margin: 15px 0;
+    padding: 10px;
     position: relative;
     &::before{
       content: "";
@@ -2823,7 +2828,7 @@ body {
 .shadow-lgg.login-formg{
   .form{
       .left-border,.flex-fills{
-        margin-bottom: 8px;
+        margin-bottom: 10px;
       }
       .form-group,.inputwith-icon{
         min-height: 91px;
@@ -2861,6 +2866,35 @@ body {
 }
 .css-yt9ioa-option{
   word-break: break-word;
+}
+.date-filed{
+  width: 180px;
+}
+.mb27{
+  margin-bottom: 27px;
+}
+.hide-text-help-mb-0{
+  .form-group{
+    margin-bottom: 0px;
+  }
+  .text-help{
+    display: none;
+  }
+}
+.login-container.signup-form {
+  .nodate-section{
+    margin: 20px 0;
+    img{
+      width: 60px;
+    }
+    .my-2{
+      margin: 2px 0 !important;
+    }
+    h5{
+      font-size: 0.9rem;
+      color: #cdcfd1;
+    }
+  }
 }
 
 // responsive media query start

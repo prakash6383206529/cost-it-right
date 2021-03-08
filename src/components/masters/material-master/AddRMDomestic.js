@@ -1104,7 +1104,7 @@ class AddRMDomestic extends Component {
 
                         {!this.state.IsVendor && (
                           <Row>
-                            <Col md="4">
+                            <Col md="12" className="mb15">
                               <label
                                 className={`custom-checkbox ${this.state.IsVendor ? "disabled" : ""
                                   }`}
@@ -1123,43 +1123,44 @@ class AddRMDomestic extends Component {
                                 />
                               </label>
                             </Col>
+                            {(this.state.HasDifferentSource ||
+                              this.state.IsVendor) && (
+                                <>
+                                  <Col md="3">
+                                    <Field
+                                      label={`Source`}
+                                      name={"Source"}
+                                      type="text"
+                                      placeholder={"Enter"}
+                                      validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                      component={renderText}
+                                      //required={true}
+                                      disabled={false}
+                                      className=" "
+                                      customClassName=" withBorder"
+                                    />
+                                  </Col>
+                                  <Col md="3">
+                                    <Field
+                                      name="SourceSupplierCityId"
+                                      type="text"
+                                      label="Source Location"
+                                      component={searchableSelect}
+                                      placeholder={"Select"}
+                                      options={this.renderListing("SourceLocation")}
+                                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                                      //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
+                                      //required={true}
+                                      handleChangeDescription={this.handleSourceSupplierCity}
+                                      valueDescription={this.state.sourceLocation}
+                                    />
+                                  </Col>
+                                </>
+                              )}
                           </Row>
                         )}
 
-                        {(this.state.HasDifferentSource ||
-                          this.state.IsVendor) && (
-                            <Row>
-                              <Col md="3">
-                                <Field
-                                  label={`Source`}
-                                  name={"Source"}
-                                  type="text"
-                                  placeholder={"Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
-                                  component={renderText}
-                                  //required={true}
-                                  disabled={false}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <Field
-                                  name="SourceSupplierCityId"
-                                  type="text"
-                                  label="Source Location"
-                                  component={searchableSelect}
-                                  placeholder={"Select"}
-                                  options={this.renderListing("SourceLocation")}
-                                  //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
-                                  //required={true}
-                                  handleChangeDescription={this.handleSourceSupplierCity}
-                                  valueDescription={this.state.sourceLocation}
-                                />
-                              </Col>
-                            </Row>
-                          )}
+
 
                         <Row>
                           <Col md="12" className="filter-block ">

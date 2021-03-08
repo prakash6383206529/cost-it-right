@@ -12,7 +12,7 @@ function PackageAndFreight(props) {
   */
   return (
     <>
-      <div className="user-page p-0">
+      <div className="user-page p-0 pt-3">
         <div>
           <PackageCost
             index={props.index}
@@ -20,7 +20,6 @@ function PackageAndFreight(props) {
             data={item.CostingPartDetails.CostingPackagingDetail}
             setPackageCost={props.setPackageCost}
           />
-          <hr />
           <FreightCost
             index={props.index}
             item={item}

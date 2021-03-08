@@ -190,11 +190,9 @@ function AddPackaging(props) {
             </Row>
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
               <>
-                <Row>
-                  <Col md="12" className="switch mb15">
-                    <label className="switch-level">
-                      <div className={'left-title'}>{'Packaging Type'}</div>
-                    </label>
+                <Row className="ml-0">
+                  <Col md="12" className="switch">
+                    <label className={'left-title'}>{'Packaging Type'}</label>
                   </Col>
                   <Col md="12" className="switch mb15">
                     <label className="switch-level">
@@ -309,7 +307,7 @@ function AddPackaging(props) {
                   </Col>
                 </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between mt15">
+                <Row className="sf-btn-footer no-gutters justify-content-between ml-0">
                   <div className="col-sm-12 text-right bluefooter-butn">
                     <button
                       type={'button'}
@@ -320,7 +318,7 @@ function AddPackaging(props) {
 
                     <button
                       type={'submit'}
-                      className="submit-button mr5 save-btn"
+                      className="submit-button  save-btn"
                       onClick={addRow} >
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                       {'Save'}

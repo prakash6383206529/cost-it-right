@@ -152,6 +152,23 @@ class ExchangeRateListing extends Component {
     renderEffectiveDate = () => {
         return <> Effective Date </>
     }
+    renderExchangeRate = () => {
+        return <> Exchange <br /> Rate(INR) </>
+    }
+    renderBankRate = () => {
+        return <> Bank <br /> Rate(INR) </>
+    }
+
+    renderBankCommision = () => {
+        return <> Bank <br /> Commission % </>
+    }
+
+    renderCustomrate = () => {
+        return <> Custom <br /> Rate(INR)</>
+    }
+    renderDateOfModification = () => {
+        return <> Date of <br /> Modification</>
+    }
 
     /**
     * @method buttonFormatter
@@ -373,13 +390,13 @@ class ExchangeRateListing extends Component {
                         trClassName={'userlisting-row'}
                         tableHeaderClass='my-custom-header'
                         pagination>
-                        <TableHeaderColumn dataField="Currency" width={110} columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={150} columnTitle={true} dataAlign="center" >{'Exchange Rate(INR)'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankRate" width={150} columnTitle={true} dataAlign="center" >{'Bank Rate(INR)'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankCommissionPercentage" width={170} columnTitle={true} dataAlign="center" >{'Bank Commission %'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="center" >{'Custom Rate(INR)'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="DateOfModification" columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{'Date of Modification'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="Currency" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={160} columnTitle={true} dataAlign="center" >{this.renderExchangeRate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="center" >{this.renderBankRate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="center" >{this.renderBankCommision()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="center" >{this.renderCustomrate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="EffectiveDate" width={160} columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="DateOfModification" width={160} columnTitle={true} dataAlign="center" dataFormat={this.effectiveDateFormatter} >{this.renderDateOfModification()}</TableHeaderColumn>
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
                 </div>

@@ -778,46 +778,47 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
+                          {this.state.IsVendor && (
+                            <>
+                              <Col md="3">
+                                <Field
+                                  label={`Source`}
+                                  name={"Source"}
+                                  type="text"
+                                  placeholder={"Enter"}
+                                  validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                                  component={renderText}
+                                  required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  name="SourceLocation"
+                                  type="text"
+                                  label="Source Location"
+                                  component={searchableSelect}
+                                  placeholder={"Select"}
+                                  options={this.renderListing(
+                                    "SourceLocation"
+                                  )}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={
+                                    this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleSourceSupplierCity
+                                  }
+                                  valueDescription={this.state.sourceLocation}
+                                />
+                              </Col>
+                            </>
+                          )}
                         </Row>
 
-                        {this.state.IsVendor && (
-                          <Row>
-                            <Col md="3">
-                              <Field
-                                label={`Source`}
-                                name={"Source"}
-                                type="text"
-                                placeholder={"Enter"}
-                                validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
-                                component={renderText}
-                                required={true}
-                                disabled={false}
-                                className=" "
-                                customClassName=" withBorder"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                name="SourceLocation"
-                                type="text"
-                                label="Source Location"
-                                component={searchableSelect}
-                                placeholder={"Select"}
-                                options={this.renderListing(
-                                  "SourceLocation"
-                                )}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleSourceSupplierCity
-                                }
-                                valueDescription={this.state.sourceLocation}
-                              />
-                            </Col>
-                          </Row>
-                        )}
+
 
                         <Row>
                           <Col md="12">

@@ -513,6 +513,7 @@ class ZBCPlantListing extends Component {
               </TableHeaderColumn>
                     <TableHeaderColumn
                         dataField="IsActive"
+                        dataAlign="center"
                         export={false}
                         dataFormat={this.statusButtonFormatter}
                     >

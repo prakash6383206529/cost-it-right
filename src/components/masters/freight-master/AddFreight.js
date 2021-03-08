@@ -687,8 +687,8 @@ class AddFreight extends Component {
                             />
                           </Col>
                         </Row>
-                        <Row>
-                          <Col md="4" className="mb15">
+                        <Row className="mb27">
+                          <Col md="12">
                             <label
                               className={`custom-checkbox`}
                               onChange={this.onPressLoadUnload}
@@ -706,10 +706,8 @@ class AddFreight extends Component {
                               />
                             </label>
                           </Col>
-                        </Row>
-                        <Row>
                           {this.state.IsLoadingUnloadingApplicable && (
-                            <Col md="3" className="hide-label-inside">
+                            <Col md="3" className="hide-label-inside hide-text-help-mb-0">
                               <Field
                                 label={``}
                                 name={"LoadingUnloadingCharges"}

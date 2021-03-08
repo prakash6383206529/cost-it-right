@@ -538,7 +538,7 @@ function TabSurfaceTreatment(props) {
             <div className="shadow-lgg login-formg">
 
               <Row className="m-0">
-                <Col md="12" className="px-3 py-4 costing-border-x border-bottom-0">
+                <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                   <label
                     className={`custom-checkbox`}
                     onChange={onPressIncludeSurfaceTreatment}

@@ -78,7 +78,7 @@ function FreightCost(props) {
   */
   return (
     <>
-      <div className="user-page p-0">
+      <div className="user-page p-0 pt-4 mt-1">
         <div>
           <Row>
             <Col md="10">
@@ -98,46 +98,48 @@ function FreightCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table cr-brdr-main" size="sm">
-                <thead>
-                  <tr>
-                    <th>{`Freight Type`}</th>
-                    <th>{`Capacity`}</th>
-                    <th>{`Criteria`}</th>
-                    <th>{`Rate`}</th>
-                    <th>{`Quantity`}</th>
-                    <th>{`Cost`}</th>
-                    <th>{`Action`}</th>
-                  </tr>
-                </thead>
-                <tbody >
-                  {
-                    gridData && gridData.map((item, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{item.IsPartTruckLoad ? 'PTL' : 'FTL'}</td>
-                          <td>{item.Capacity}</td>
-                          <td>{item.Criteria}</td>
-                          <td>{item.Rate}</td>
-                          <td>{item.Quantity}</td>
-                          <td>{item.FreightCost}</td>
-                          <td>
-                            <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
-                            <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
-                          </td>
-                        </tr>
-                      )
-                    })
-                  }
-                  {gridData && gridData.length === 0 &&
+              <div className="costing-border p-3">
+                <Table className="table cr-brdr-main mb-0" size="sm">
+                  <thead>
                     <tr>
-                      <td colSpan={7}>
-                        <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                      </td>
+                      <th>{`Freight Type`}</th>
+                      <th>{`Capacity`}</th>
+                      <th>{`Criteria`}</th>
+                      <th>{`Rate`}</th>
+                      <th>{`Quantity`}</th>
+                      <th>{`Cost`}</th>
+                      <th style={{ width: "130px" }}>{`Action`}</th>
                     </tr>
-                  }
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody >
+                    {
+                      gridData && gridData.map((item, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>{item.IsPartTruckLoad ? 'PTL' : 'FTL'}</td>
+                            <td>{item.Capacity}</td>
+                            <td>{item.Criteria}</td>
+                            <td>{item.Rate}</td>
+                            <td>{item.Quantity}</td>
+                            <td>{item.FreightCost}</td>
+                            <td>
+                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
+                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                            </td>
+                          </tr>
+                        )
+                      })
+                    }
+                    {gridData && gridData.length === 0 &&
+                      <tr>
+                        <td colSpan={7}>
+                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </Table>
+              </div>
             </Col>
           </Row>
 

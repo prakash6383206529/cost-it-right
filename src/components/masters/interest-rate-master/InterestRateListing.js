@@ -584,12 +584,12 @@ class InterestRateListing extends Component {
             tableHeaderClass='my-custom-header'
             pagination>
             <TableHeaderColumn dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{'ICC Applicability'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{'Annual ICC (%)'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{'Payment Term Applicability'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{'Repayment Period (Days)'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{'Payment Term Interest Rate (%) '}</TableHeaderColumn>
+            <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{this.renderIccApp()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="ICCPercent" columnTitle={true} dataAlign="center" >{this.renderAnnualIcc()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{this.renderPaymentTerm()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{this.renderRepayment()}</TableHeaderColumn>
+            <TableHeaderColumn dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{this.renderInterestRate()}</TableHeaderColumn>
             <TableHeaderColumn dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
             <TableHeaderColumn dataAlign="right" searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
           </BootstrapTable>
