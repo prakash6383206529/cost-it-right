@@ -2836,6 +2836,15 @@ body {
     }
   }
 }
+.costing-details-page{
+  .shadow-lgg.login-formg{
+    .form{
+      .form-group,.inputwith-icon{
+        min-height: unset;
+      }
+    }
+  }
+}
 .mn-height-auto{
   min-height: auto;
 }
@@ -2843,6 +2852,15 @@ body {
   .react-bs-container-body{
     min-height: auto !important;
   }
+}
+.machine-rate-filed{
+  width: 100%;
+}
+.btn-mr-rate{
+  margin-top: 28px;  
+}
+.css-yt9ioa-option{
+  word-break: break-word;
 }
 
 // responsive media query start

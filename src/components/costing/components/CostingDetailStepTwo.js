@@ -7,7 +7,7 @@ import {
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
-import CostingHeadTabs from './CostingHeaderTabs/index'
+import CostingHeadTabs from './costingHeaderTabs/index'
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()

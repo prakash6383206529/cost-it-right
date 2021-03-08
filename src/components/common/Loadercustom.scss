@@ -3,6 +3,12 @@
         .react-bs-table{
             .react-bs-container-body{
                 min-height: calc(100vh - 485px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .react-bs-table-no-data{
+                    border: none;
+                }
             }
         }
     }

@@ -2746,7 +2746,7 @@ class AddMoreDetails extends Component {
                             disabled={false}
                           />
                         </Col>
-                        <Col md="2">
+                        <Col md="1">
                           <Field
                             label={`Output/Hr`}
                             name={"OutputPerHours"}
@@ -2760,7 +2760,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="2">
+                        <Col md="1">
                           <Field
                             label={`Output/Yr`}
                             name={"OutputPerYear"}
@@ -2774,45 +2774,43 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Machine Rate/Hr (INR)`}
-                            name={"MachineRate"}
-                            type="text"
-                            placeholder={''}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            onChange={this.handleMachineRate}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName=" withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <div>
+                        <Col className="d-flex col-auto">
+                          <div className="machine-rate-filed pr-3">
+                            <Field
+                              label={`Machine Rate/Hr (INR)`}
+                              name={"MachineRate"}
+                              type="text"
+                              placeholder={''}
+                              validate={[positiveAndDecimalNumber, maxLength10]}
+                              component={renderText}
+                              onChange={this.handleMachineRate}
+                              //required={true}
+                              disabled={true}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </div>
+                          <div className="btn-mr-rate pr-0 col-auto">
                             {this.state.isEditIndex ?
                               <>
                                 <button
                                   type="button"
-                                  className={'btn btn-primary mb-5 pull-left mr5'}
+                                  className={'btn btn-primary pull-left mr5'}
                                   onClick={this.updateProcessGrid}
                                 >Update</button>
 
                                 <button
                                   type="button"
-                                  className={'reset-btn mb-5 pull-left'}
+                                  className={'reset-btn pull-left'}
                                   onClick={this.resetProcessGridData}
                                 >Cancel</button>
                               </>
                               :
                               <button
                                 type="button"
-                                className={'user-btn mb-5 pull-left'}
+                                className={'user-btn pull-left'}
                                 onClick={this.processTableHandler}>
                                 <div className={'plus'}></div>ADD</button>}
-
-
                           </div>
                         </Col>
                         <Col md="12">
