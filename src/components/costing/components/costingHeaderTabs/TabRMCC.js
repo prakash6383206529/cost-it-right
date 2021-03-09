@@ -537,6 +537,7 @@ function TabRMCC(props) {
           i.IsOpen = !i.IsOpen;
 
         } else {
+          i.CostingPartDetails.TempRMAfterQuantity = CostingPartDetails.TotalCalculatedRMBOPCCCost * CostingPartDetails.Quantity;
           setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
         }
         return i;
@@ -753,42 +754,43 @@ function TabRMCC(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
+    if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false) {
+      let requestData = {
+        "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
+        "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
+        "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
+        "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
+        "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
+        "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
+        "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "LoggedInUserId": loggedInUserId(),
 
-    let requestData = {
-      "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
-      "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
-      "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
-      "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
-      "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
-      "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
-      "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-      "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-      "LoggedInUserId": loggedInUserId(),
+        "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+        "CostingId": ComponentItemData.CostingId,
+        "PartId": ComponentItemData.PartId,                              //ROOT ID
+        "CostingNumber": costData.CostingNumber,            //ROOT    
+        "PartNumber": ComponentItemData.PartNumber,                      //ROOT
 
-      "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-      "CostingId": ComponentItemData.CostingId,
-      "PartId": ComponentItemData.PartId,                              //ROOT ID
-      "CostingNumber": costData.CostingNumber,            //ROOT    
-      "PartNumber": ComponentItemData.PartNumber,                      //ROOT
+        "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
 
-      "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-      "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-      "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-      "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-
-      "PlantId": costData.PlantId,
-      "VendorId": costData.VendorId,
-      "VendorCode": costData.VendorCode,
-      "VendorPlantId": costData.VendorPlantId,
-      "TechnologyId": ComponentItemData.TechnologyId,
-      "Technology": ComponentItemData.Technology,
-      "TypeOfCosting": costData.VendorType,
-      "PlantCode": costData.PlantCode,
-      "Version": ComponentItemData.Version,
-      "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
-      CostingPartDetails: ComponentItemData.CostingPartDetails,
+        "PlantId": costData.PlantId,
+        "VendorId": costData.VendorId,
+        "VendorCode": costData.VendorCode,
+        "VendorPlantId": costData.VendorPlantId,
+        "TechnologyId": ComponentItemData.TechnologyId,
+        "Technology": ComponentItemData.Technology,
+        "TypeOfCosting": costData.VendorType,
+        "PlantCode": costData.PlantCode,
+        "Version": ComponentItemData.Version,
+        "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+        CostingPartDetails: ComponentItemData.CostingPartDetails,
+      }
+      dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
     }
-    dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
   }
 
   return (
@@ -808,6 +810,7 @@ function TabRMCC(props) {
                       <thead>
                         <tr>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: '150px' }}>{`BOP Cost`}</th>
