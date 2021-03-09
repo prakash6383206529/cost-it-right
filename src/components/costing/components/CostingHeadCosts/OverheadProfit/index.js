@@ -3,10 +3,8 @@ import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { CONSTANT } from '../../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectList, getPaymentTermsAppliSelectList } from '../../../../../actions/Common';
+import { calculatePercentage, checkForDecimalAndNull, } from '../../../../../helper';
+import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { netHeadCostContext } from '../../CostingDetailStepTwo';
@@ -19,43 +17,6 @@ function OverheadProfit(props) {
   const PaymentTermDetail = CostingInterestRateDetail && CostingInterestRateDetail.PaymentTermDetail !== null ? CostingInterestRateDetail.PaymentTermDetail : {}
 
   const defaultValues = {
-
-    // //OVERHEAD FIXED FIELDS
-    // OverheadFixedPercentage: CostingOverheadDetail && CostingOverheadDetail.IsOverheadFixedApplicable ? CostingOverheadDetail.OverheadFixedPercentage : '',
-    // OverheadFixedCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadFixedApplicable ? CostingOverheadDetail.OverheadFixedCost : '',
-    // OverheadFixedTotalCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadFixedApplicable ? CostingOverheadDetail.OverheadFixedTotalCost : '',
-
-    // //OVERHEAD COMBINED FIELDS
-    // OverheadPercentage: CostingOverheadDetail && CostingOverheadDetail.IsOverheadCombined ? CostingOverheadDetail.OverheadPercentage : '',
-    // OverheadCombinedCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadCombined ? CostingOverheadDetail.OverheadCombinedCost : '',
-    // OverheadCombinedTotalCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadCombined ? CostingOverheadDetail.OverheadCombinedTotalCost : '',
-
-    // //OVERHEAD RM 
-    //OverheadRMPercentage: CostingOverheadDetail && CostingOverheadDetail.IsOverheadRMApplicable ? CostingOverheadDetail.OverheadRMPercentage : '',
-    //OverheadRMCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadRMApplicable ? CostingOverheadDetail.OverheadRMCost : '',
-    //OverheadRMTotalCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadRMApplicable ? CostingOverheadDetail.OverheadRMTotalCost : '',
-
-
-    // //OVERHEAD CC
-    // OverheadCCPercentage: CostingOverheadDetail && CostingOverheadDetail.IsOverheadCCApplicable ? CostingOverheadDetail.OverheadCCPercentage : '',
-    // OverheadCCCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadCCApplicable ? CostingOverheadDetail.OverheadCCCost : '',
-    // OverheadCCTotalCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadCCApplicable ? CostingOverheadDetail.OverheadCCTotalCost : '',
-
-
-    // //OVERHEAD BOP
-    // OverheadBOPPercentage: CostingOverheadDetail && CostingOverheadDetail.IsOverheadBOPApplicable ? CostingOverheadDetail.OverheadBOPPercentage : '',
-    // OverheadBOPCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadBOPApplicable ? CostingOverheadDetail.OverheadBOPCost : '',
-    // OverheadBOPTotalCost: CostingOverheadDetail && CostingOverheadDetail.IsOverheadBOPApplicable ? CostingOverheadDetail.OverheadBOPTotalCost : '',
-
-    //PROFIT FIXED FIELDS
-
-    //PROFIT COMBINED FIELDS
-
-    //PROFIT RM 
-
-    //PROFIT CC
-
-    //PROFIT BOP
 
     //REJECTION FIELDS
     Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
@@ -76,7 +37,7 @@ function OverheadProfit(props) {
     RepaymentPeriodCost: PaymentTermDetail !== null ? PaymentTermDetail.NetCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -86,7 +47,6 @@ function OverheadProfit(props) {
   const headerCosts = useContext(netHeadCostContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-  const [dataObj, setDataObj] = useState({})
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
   const [rejectionObj, setRejectionObj] = useState(CostingRejectionDetail)
@@ -139,6 +99,11 @@ function OverheadProfit(props) {
   const overheadFieldValues = useWatch({
     control,
     name: ['OverheadFixedPercentage',],
+  });
+
+  const interestRateValues = useWatch({
+    control,
+    name: ['InterestRatePercentage',],
   });
 
   useEffect(() => {
@@ -266,6 +231,11 @@ function OverheadProfit(props) {
     name: ['RepaymentPeriodCost'],
   });
 
+  const PaymentTermsFixedFieldValues = useWatch({
+    control,
+    name: ['RepaymentPeriodDays'],
+  });
+
   useEffect(() => {
     let tempObj = {
       "InterestRateId": IsPaymentTermsApplicable ? PaymentTermInterestRateId : '',
@@ -282,13 +252,17 @@ function OverheadProfit(props) {
     }, 500)
   }, [PaymentTermsFieldValues]);
 
+  //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
+  useEffect(() => {
+    setValue('RepaymentPeriodCost', getValues('RepaymentPeriodDays'))
+  }, [PaymentTermsFixedFieldValues])
+
   useEffect(() => {
     dispatch(fetchModelTypeAPI('--Model Types--', (res) => { }))
     dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
-    dispatch(getICCAppliSelectList((res) => { }))
-    dispatch(getPaymentTermsAppliSelectList((res) => { }))
+    dispatch(getICCAppliSelectListKeyValue((res) => { }))
+    dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
   }, []);
-
 
   //EFFECT CALLED WHEN OVERHEAD OR PROFIT VALUES CHANGED
   useEffect(() => {
@@ -337,7 +311,7 @@ function OverheadProfit(props) {
     const { OverheadPercentage } = overheadObj;
 
     switch (OverheadCombinedText) {
-      case 'RM + BOP + CC':
+      case 'RM + CC + BOP':
         setValue('OverheadPercentage', OverheadPercentage)
         setValue('OverheadCombinedCost', headerCosts.NetTotalRMBOPCC)
         setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(OverheadPercentage), 2))
@@ -443,7 +417,7 @@ function OverheadProfit(props) {
     const { ProfitPercentage } = profitObj;
 
     switch (ProfitCombinedText) {
-      case 'RM + BOP + CC':
+      case 'RM + CC + BOP':
         setValue('ProfitPercentage', ProfitPercentage)
         setValue('ProfitCombinedCost', headerCosts.NetTotalRMBOPCC)
         setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(ProfitPercentage), 2))
@@ -851,6 +825,13 @@ function OverheadProfit(props) {
       setICCapplicability([])
     }
   }
+
+  /**
+    * @description SET VALUE IN NetICCTotal WHEN FIXED AND ENABLED 'InterestRatePercentage'
+    */
+  useEffect(() => {
+    setValue('NetICCTotal', getValues('InterestRatePercentage'))
+  }, [interestRateValues])
 
   /**
     * @method checkInventoryApplicability
@@ -1747,7 +1728,7 @@ function OverheadProfit(props) {
               </Col>
               <Col md="3">
                 <TextFieldHookForm
-                  label="Rejection (%)"
+                  label={`Rejection ${applicability.label !== 'Fixed' ? '(%)' : ''}`}
                   name={'RejectionPercentage'}
                   Controller={Controller}
                   control={control}
@@ -1769,7 +1750,7 @@ function OverheadProfit(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                {applicability.label !== 'Fixed' && <TextFieldHookForm
                   label="Cost(Applicability)"
                   name={'RejectionCost'}
                   Controller={Controller}
@@ -1782,7 +1763,7 @@ function OverheadProfit(props) {
                   customClassName={'withBorder'}
                   errors={errors.RejectionCost}
                   disabled={true}
-                />
+                />}
               </Col>
               <Col md="3">
                 <TextFieldHookForm
@@ -1847,7 +1828,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
-                      label="Interest Rate(%)"
+                      label={`Interest Rate ${ICCapplicability.label !== 'Fixed' ? '(%)' : ''}`}
                       name={'InterestRatePercentage'}
                       Controller={Controller}
                       control={control}
@@ -1858,11 +1839,11 @@ function OverheadProfit(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.InterestRatePercentage}
-                      disabled={true}
+                      disabled={ICCapplicability.label !== 'Fixed' ? true : false}
                     />
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
+                    {ICCapplicability.label !== 'Fixed' && <TextFieldHookForm
                       label="Cost(Applicability)"
                       name={'InterestRateCost'}
                       Controller={Controller}
@@ -1875,7 +1856,7 @@ function OverheadProfit(props) {
                       customClassName={'withBorder'}
                       errors={errors.InterestRateCost}
                       disabled={true}
-                    />
+                    />}
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
@@ -1954,11 +1935,11 @@ function OverheadProfit(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.RepaymentPeriodDays}
-                      disabled={true}
+                      disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
                     />
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
+                    {paymentTermsApplicability.label !== 'Fixed' && <TextFieldHookForm
                       label="Interest Rate(%)"
                       name={'RepaymentPeriodPercentage'}
                       Controller={Controller}
@@ -1971,7 +1952,7 @@ function OverheadProfit(props) {
                       customClassName={'withBorder'}
                       errors={errors.RepaymentPeriodPercentage}
                       disabled={true}
-                    />
+                    />}
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm

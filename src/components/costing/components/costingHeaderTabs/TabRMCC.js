@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useContext, } from 'react';
+import React, { useEffect, useContext, } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import { getRMCCTabData, saveCostingRMCCTab, setRMCCData, saveComponentCostingRMCCTab, } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
+import { checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
-import { LEVEL0, LEVEL1, SUB_ASSEMBLY } from '../../../../helper/AllConastant';
+import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
 
 function TabRMCC(props) {
 
@@ -15,11 +15,8 @@ function TabRMCC(props) {
 
   const dispatch = useDispatch()
 
-  const [IsAPIHitOnTabSwitch, SetAPIHitOnTabSwitch] = useState(false)
-
   const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
-  console.log('ComponentItemData: ', ComponentItemData);
 
   const costData = useContext(costingInfoContext);
 
@@ -540,6 +537,7 @@ function TabRMCC(props) {
           i.IsOpen = !i.IsOpen;
 
         } else {
+          i.CostingPartDetails.TempRMAfterQuantity = CostingPartDetails.TotalCalculatedRMBOPCCCost * CostingPartDetails.Quantity;
           setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
         }
         return i;
@@ -751,102 +749,48 @@ function TabRMCC(props) {
     )
   }
 
-  const CheckForOneTimeAPIHit = () => {
-    console.log('Clicked', props.activeTab)
-    if (props.activeTab === '1') {
-      SetAPIHitOnTabSwitch(false)
-    }
-  }
-
-  useEffect(() => {
-    CheckForOneTimeAPIHit()
-    console.log('Outside')
-    return () => {
-      if (ComponentItemData !== undefined && !IsAPIHitOnTabSwitch) {
-        console.log('Inside')
-        let requestData = {
-          "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
-          "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
-          "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
-          "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
-          "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
-          "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
-          "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-          "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-          "LoggedInUserId": loggedInUserId(),
-
-          "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-          "CostingId": ComponentItemData.CostingId,
-          "PartId": ComponentItemData.PartId,                              //ROOT ID
-          "CostingNumber": costData.CostingNumber,            //ROOT    
-          "PartNumber": ComponentItemData.PartNumber,                      //ROOT
-
-          "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-          "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-          "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-          "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-
-          "PlantId": costData.PlantId,
-          "VendorId": costData.VendorId,
-          "VendorCode": costData.VendorCode,
-          "VendorPlantId": costData.VendorPlantId,
-          "TechnologyId": ComponentItemData.TechnologyId,
-          "Technology": ComponentItemData.Technology,
-          "TypeOfCosting": costData.VendorType,
-          "PlantCode": costData.PlantCode,
-          "Version": ComponentItemData.Version,
-          "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
-          CostingPartDetails: ComponentItemData.CostingPartDetails,
-        }
-        dispatch(saveComponentCostingRMCCTab(requestData, res => {
-          SetAPIHitOnTabSwitch(true)
-        }))
-      }
-    }
-
-  }, [props.activeTab])
-
   /**
    * @method onSubmit
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
+    if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false) {
+      let requestData = {
+        "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
+        "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
+        "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
+        "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
+        "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
+        "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
+        "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "LoggedInUserId": loggedInUserId(),
 
-    let requestData = {
-      "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
-      "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
-      "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
-      "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
-      "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
-      "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
-      "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-      "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
-      "LoggedInUserId": loggedInUserId(),
+        "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+        "CostingId": ComponentItemData.CostingId,
+        "PartId": ComponentItemData.PartId,                              //ROOT ID
+        "CostingNumber": costData.CostingNumber,            //ROOT    
+        "PartNumber": ComponentItemData.PartNumber,                      //ROOT
 
-      "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
-      "CostingId": ComponentItemData.CostingId,
-      "PartId": ComponentItemData.PartId,                              //ROOT ID
-      "CostingNumber": costData.CostingNumber,            //ROOT    
-      "PartNumber": ComponentItemData.PartNumber,                      //ROOT
+        "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
 
-      "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-      "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-      "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                               //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-      "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,                   //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
-
-      "PlantId": costData.PlantId,
-      "VendorId": costData.VendorId,
-      "VendorCode": costData.VendorCode,
-      "VendorPlantId": costData.VendorPlantId,
-      "TechnologyId": ComponentItemData.TechnologyId,
-      "Technology": ComponentItemData.Technology,
-      "TypeOfCosting": costData.VendorType,
-      "PlantCode": costData.PlantCode,
-      "Version": ComponentItemData.Version,
-      "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
-      CostingPartDetails: ComponentItemData.CostingPartDetails,
+        "PlantId": costData.PlantId,
+        "VendorId": costData.VendorId,
+        "VendorCode": costData.VendorCode,
+        "VendorPlantId": costData.VendorPlantId,
+        "TechnologyId": ComponentItemData.TechnologyId,
+        "Technology": ComponentItemData.Technology,
+        "TypeOfCosting": costData.VendorType,
+        "PlantCode": costData.PlantCode,
+        "Version": ComponentItemData.Version,
+        "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+        CostingPartDetails: ComponentItemData.CostingPartDetails,
+      }
+      dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
     }
-    dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
   }
 
   return (
@@ -855,13 +799,6 @@ function TabRMCC(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              {/* <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{''}</h2>
-                  </div>
-                </Col>
-              </Row> */}
               <form
                 noValidate
                 className="form"
@@ -872,14 +809,15 @@ function TabRMCC(props) {
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
-                          <th className="py-4 align-middle" style={{ width: '100px' }}>{``}</th>
-                          <th className="py-4 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-4 align-middle" style={{ width: '150px' }}>{`RM Cost`}</th>
-                          <th className="py-4 align-middle" style={{ width: '150px' }}>{`BOP Cost`}</th>
-                          <th className="py-4 align-middle" style={{ width: '200px' }}>{`Conversion Cost`}</th>
-                          <th className="py-4 align-middle" style={{ width: '200px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
-                          <th className="py-4 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
-                          <th className="py-4 align-middle" style={{ width: '100px' }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
+                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`BOP Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Conversion Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
+                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Part`}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
                         </tr>
                       </thead>
                       <tbody>

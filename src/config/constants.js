@@ -467,6 +467,8 @@ export const API = {
   saveAssemblyOverheadProfitTab: `${BASE_URL}/costing/save-assembly-costing-detail-for-overhead-and-profit`,
   getInventoryDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-icc-applicability`,
   getPaymentTermsDataByHeads: `${BASE_URL}/costing/get-zbc-costing-interest-rate-payment-term-applicability`,
+  getICCAppliSelectListKeyValue: `${BASE_URL}/costing/get-icc-applicability-list-keyvalue`,
+  getPaymentTermsAppliSelectListKeyValue: `${BASE_URL}/costing/get-payment-terms-applicability-list-keyvalue`,
 
   getPackageFreightTabData: `${BASE_URL}/costing/get-costing-detail-for-freight-and-packaging`,
   saveCostingPackageFreightTab: `${BASE_URL}/costing/save-costing-detail-for-freight-and-packaging`,
