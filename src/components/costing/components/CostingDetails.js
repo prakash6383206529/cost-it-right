@@ -174,7 +174,7 @@ function CostingDetails() {
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
-                  setEffectiveDate(moment(Data.EffectiveDate)._d)
+                  setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                 }),
               )
             } else {
@@ -411,16 +411,16 @@ function CostingDetails() {
     let NetZBCSOB = 0
     let NetVBCSOB = 0
 
-    // NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields !== undefined && zbcPlantGridFields.reduce((accummlator, el) => {
-    //   return accummlator + checkForNull(el.ShareOfBusinessPercent)
-    // }, 0)
+    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields !== undefined && zbcPlantGridFields.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.ShareOfBusinessPercent)
+    }, 0)
 
-    // NetVBCSOB = vbcGridFields && vbcGridFields !== undefined && vbcGridFields.reduce((accummlator, el) => {
-    //   return accummlator + checkForNull(el.ShareOfBusinessPercent)
-    // }, 0)
+    NetVBCSOB = vbcGridFields && vbcGridFields !== undefined && vbcGridFields.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.ShareOfBusinessPercent)
+    }, 0)
 
-    // return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
-    return true;
+    return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
+    //return true;
   }
 
 
@@ -666,6 +666,7 @@ function CostingDetails() {
    * @description MOVE TO COSTING DETAIL
    */
   const moveToCostingDetail = (index, type) => {
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -737,6 +738,7 @@ function CostingDetails() {
    * @description used to Reset form
    */
   const backToFirstStep = () => {
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
     setStepOne(true);
     setStepTwo(false);
     setZBCPlantGrid([])
@@ -749,9 +751,8 @@ function CostingDetails() {
       setValue("DrawingNumber", Data.DrawingNumber)
       setValue("RevisionNumber", Data.RevisionNumber)
       setValue("ShareOfBusiness", Data.Price)
-      setEffectiveDate(moment(Data.EffectiveDate)._d)
+      setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
     }))
-    dispatch(getZBCCostingByCostingId('', (res) => { }))
 
   }
 

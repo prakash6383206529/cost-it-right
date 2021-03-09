@@ -5,7 +5,7 @@ import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
 import { getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData } from '../../../actions/Costing';
-import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
 
 function PartCompoment(props) {
@@ -102,8 +102,8 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        {/* <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td> */}
-        <td>{1}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
+        {/* <td>{1}</td> */}
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{''}</td>
       </tr>

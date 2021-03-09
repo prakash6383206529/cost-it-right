@@ -1,5 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { connect, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import TabRMCC from './TabRMCC';
@@ -10,13 +11,64 @@ import TabDiscountOther from './TabDiscountOther';
 import TabToolCost from './TabToolCost';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import BOMViewer from '../../../masters/part-master/BOMViewer';
+import { saveComponentCostingRMCCTab, } from '../../actions/Costing';
+import { loggedInUserId } from '../../../../helper';
+import { LEVEL1 } from '../../../../helper/AllConastant';
 
 function CostingHeaderTabs(props) {
+
+  const dispatch = useDispatch()
 
   const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
+  const [IsCalledAPI, setIsCalledAPI] = useState(true);
+
   const costData = useContext(costingInfoContext);
+
+  const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
+
+  useEffect(() => {
+    if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
+      let requestData = {
+        "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
+        "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
+        "NetConversionCost": ComponentItemData.CostingPartDetails.TotalConversionCost,
+        "NetOperationCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.OperationCostTotal : 0,
+        "NetProcessCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ProcessCostTotal : 0,
+        "NetToolsCost": ComponentItemData.CostingPartDetails.CostingConversionCost && ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal !== undefined ? ComponentItemData.CostingPartDetails.CostingConversionCost.ToolsCostTotal : 0,
+        "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
+        "LoggedInUserId": loggedInUserId(),
+
+        "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+        "CostingId": ComponentItemData.CostingId,
+        "PartId": ComponentItemData.PartId,          //ROOT ID
+        "CostingNumber": costData.CostingNumber,     //ROOT    
+        "PartNumber": ComponentItemData.PartNumber,  //ROOT
+
+        "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyCostingNumber": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingNumber : ComponentItemData.AssemblyCostingNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartId": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartId : ComponentItemData.AssemblyPartId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+        "AssemblyPartNumber": ComponentItemData.BOMLevel === LEVEL1 ? ComponentItemData.PartNumber : ComponentItemData.AssemblyPartNumber,      //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID
+
+        "PlantId": costData.PlantId,
+        "VendorId": costData.VendorId,
+        "VendorCode": costData.VendorCode,
+        "VendorPlantId": costData.VendorPlantId,
+        "TechnologyId": ComponentItemData.TechnologyId,
+        "Technology": ComponentItemData.Technology,
+        "TypeOfCosting": costData.VendorType,
+        "PlantCode": costData.PlantCode,
+        "Version": ComponentItemData.Version,
+        "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
+        CostingPartDetails: ComponentItemData.CostingPartDetails,
+      }
+      dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        setIsCalledAPI(false)
+      }))
+    }
+  }, [activeTab])
 
   /**
   * @method toggle
@@ -25,6 +77,11 @@ function CostingHeaderTabs(props) {
   const toggle = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
+
+      if (tab === '1') {
+        setIsCalledAPI(true)
+      }
+
     }
   }
 
