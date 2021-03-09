@@ -1817,7 +1817,12 @@ html {
 			width: auto;
 			padding: 8px 12px;
 			min-width: 96px;
-		}
+    }
+    .sf-btn-footer,.MuiPaper-root{
+      .save-btn,.cancel-btn{
+        vertical-align: middle;
+      }
+    }
 	}
 }
 .MuiDrawer-root.MuiDrawer-modal {
@@ -2088,9 +2093,7 @@ html {
 .w-180{
   min-width: 180px;
 }
-.cross-icon, .check-icon{
-  margin-top: -3px;
-}
+
 
 .w-100px{
   .form-control{width: 100px;}
@@ -2473,7 +2476,7 @@ button:disabled{pointer-events: none;}
   }
 }
 
-.disabled-button {
+.disabled-button,button:disabled {
   background: #f2f2f2 !important;
   border: 1px solid #dee3f3 !important;
   color: #bfc3c7 !important;
@@ -2753,6 +2756,10 @@ body {
       background-color: #fff;
     }
   }
+  .px-3.sf-btn-footer{
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
 }
 
 .head-text{
@@ -2830,15 +2837,19 @@ body {
       .left-border,.flex-fills{
         margin-bottom: 10px;
       }
-      .form-group,.inputwith-icon{
+      .form-group,.inputwith-icon,.form-group-searchable-select{
         min-height: 91px;
+        margin-bottom: 15px;
+      }
+      .inputwith-icon {
+        .form-group-searchable-select{margin-bottom: 0px;}
       }
       .mn-height-auto{
         min-height: auto;
       }
       .inputwith-icon{
         margin-bottom: 15px;
-    }
+      }
   }
 }
 .costing-details-page{
@@ -2881,6 +2892,11 @@ body {
     display: none;
   }
 }
+body{
+    .css-1fhf3k1-control{
+    background-color: #e6e6e6;
+  }
+}
 .login-container.signup-form {
   .nodate-section{
     margin: 20px 0;
@@ -2896,6 +2912,11 @@ body {
     }
   }
 }
+
+
+
+
+
 
 // responsive media query start
 @media(max-width:1600px){

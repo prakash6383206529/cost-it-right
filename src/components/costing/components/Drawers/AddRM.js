@@ -107,6 +107,21 @@ function AddRM(props) {
   const renderBasicRate = () => {
     return <>Basic Rate <br />INR/UOM </>
   }
+  const renderRmType = () => {
+    return <>RM <br />Type</>
+  }
+  const renderRmName = () => {
+    return <>RM <br />Name</>
+  }
+  const renderRmGrade = () => {
+    return <>RM <br />Grade</>
+  }
+  const renderRmSpec = () => {
+    return <>RM <br />Spec</>
+  }
+  const renderVendorLocation = () => {
+    return <>Vendor<br /> Location</>
+  }
 
   const renderScrapRate = () => {
     return <>Scrap Rate <br /> INR/UOM </>
@@ -154,7 +169,7 @@ function AddRM(props) {
   return (
     <div>
       <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-        <Container>
+        <Container className="costing-rm-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 
             <Row className="drawer-heading">
@@ -186,13 +201,13 @@ function AddRM(props) {
                   pagination>
                   <TableHeaderColumn dataField="RawMaterialId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                   {/* <TableHeaderColumn dataField="" width={100} dataAlign="center" searchable={false} dataFormat={checkBoxFormatter} >{''}</TableHeaderColumn> */}
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{'RM Type'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{'RM Name'}</TableHeaderColumn>
-                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="RMGrade" >{'RM Grade'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{'RM Spec'}</TableHeaderColumn>
+                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
+                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>
+                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMGrade" >{renderRmGrade()}</TableHeaderColumn>
+                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{renderRmSpec()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
                   {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >Vendor Location</TableHeaderColumn>}
+                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={150} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >{renderVendorLocation()}</TableHeaderColumn>}
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Currency" searchable={false} >Currency</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRatePerUOM" searchable={false} >{renderBasicRate()}</TableHeaderColumn>

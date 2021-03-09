@@ -872,7 +872,7 @@ class AddRMDomestic extends Component {
                               <h5>{"Raw Material:"}</h5>
                             </div>
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -904,7 +904,7 @@ class AddRMDomestic extends Component {
                               )}
                             </div>
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -938,7 +938,7 @@ class AddRMDomestic extends Component {
                                 )}
                             </div>
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -982,7 +982,7 @@ class AddRMDomestic extends Component {
                                 )}
                             </div>
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               name="CategoryId"
                               type="text"
@@ -998,10 +998,7 @@ class AddRMDomestic extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-
-                        </Row>
-                        <Row>
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label="Technology"
                               type="text"
@@ -1021,7 +1018,7 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           {!this.state.IsVendor && (
-                            <Col md="3">
+                            <Col md="4">
                               <Field
                                 label="Plant"
                                 name="SourceSupplierPlantId"
@@ -1041,17 +1038,36 @@ class AddRMDomestic extends Component {
                                 disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>
-
                           )}
+
                         </Row>
 
                         <Row>
                           <Col md="12" className="filter-block">
-                            <div className=" flex-fills mb-2 pl-0">
+                            <div className=" flex-fills mb-2 pl-0 d-flex justify-content-between align-items-center">
                               <h5>{"Vendor:"}</h5>
+                              {!this.state.IsVendor && (
+                                <label
+                                  className={`custom-checkbox w-auto mb-0 ${this.state.IsVendor ? "disabled" : ""
+                                    }`}
+                                  onChange={this.onPressDifferentSource}
+                                >
+                                  Has Difference Source?
+                                  <input
+                                    type="checkbox"
+                                    checked={this.state.HasDifferentSource}
+                                    disabled={this.state.IsVendor ? true : false}
+                                  />
+                                  <span
+                                    className=" before-box p-0"
+                                    checked={this.state.HasDifferentSource}
+                                    onChange={this.onPressDifferentSource}
+                                  />
+                                </label>
+                              )}
                             </div>
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1080,7 +1096,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           {checkVendorPlantConfigurable() &&
                             this.state.IsVendor && (
-                              <Col md="3">
+                              <Col md="4">
                                 <Field
                                   label="Vendor Plant"
                                   name="DestinationSupplierPlantId"
@@ -1100,66 +1116,41 @@ class AddRMDomestic extends Component {
                                 />
                               </Col>
                             )}
+                          {(this.state.HasDifferentSource ||
+                            this.state.IsVendor) && (
+                              <>
+                                <Col md="4">
+                                  <Field
+                                    label={`Source`}
+                                    name={"Source"}
+                                    type="text"
+                                    placeholder={"Enter"}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                    component={renderText}
+                                    //required={true}
+                                    disabled={false}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </Col>
+                                <Col md="4">
+                                  <Field
+                                    name="SourceSupplierCityId"
+                                    type="text"
+                                    label="Source Location"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("SourceLocation")}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
+                                    //required={true}
+                                    handleChangeDescription={this.handleSourceSupplierCity}
+                                    valueDescription={this.state.sourceLocation}
+                                  />
+                                </Col>
+                              </>
+                            )}
                         </Row>
-
-                        {!this.state.IsVendor && (
-                          <Row>
-                            <Col md="12" className="mb15">
-                              <label
-                                className={`custom-checkbox ${this.state.IsVendor ? "disabled" : ""
-                                  }`}
-                                onChange={this.onPressDifferentSource}
-                              >
-                                Has Difference Source?
-                                <input
-                                  type="checkbox"
-                                  checked={this.state.HasDifferentSource}
-                                  disabled={this.state.IsVendor ? true : false}
-                                />
-                                <span
-                                  className=" before-box"
-                                  checked={this.state.HasDifferentSource}
-                                  onChange={this.onPressDifferentSource}
-                                />
-                              </label>
-                            </Col>
-                            {(this.state.HasDifferentSource ||
-                              this.state.IsVendor) && (
-                                <>
-                                  <Col md="3">
-                                    <Field
-                                      label={`Source`}
-                                      name={"Source"}
-                                      type="text"
-                                      placeholder={"Enter"}
-                                      validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
-                                      component={renderText}
-                                      //required={true}
-                                      disabled={false}
-                                      className=" "
-                                      customClassName=" withBorder"
-                                    />
-                                  </Col>
-                                  <Col md="3">
-                                    <Field
-                                      name="SourceSupplierCityId"
-                                      type="text"
-                                      label="Source Location"
-                                      component={searchableSelect}
-                                      placeholder={"Select"}
-                                      options={this.renderListing("SourceLocation")}
-                                      //onKeyUp={(e) => this.changeItemDesc(e)}
-                                      //validate={(this.state.sourceLocation == null || this.state.sourceLocation.length == 0) ? [required] : []}
-                                      //required={true}
-                                      handleChangeDescription={this.handleSourceSupplierCity}
-                                      valueDescription={this.state.sourceLocation}
-                                    />
-                                  </Col>
-                                </>
-                              )}
-                          </Row>
-                        )}
-
 
 
                         <Row>
@@ -1168,7 +1159,7 @@ class AddRMDomestic extends Component {
                               <h5>{"Cost:"}</h5>
                             </div>
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
                                 <Field
@@ -1193,7 +1184,7 @@ class AddRMDomestic extends Component {
                                                     </div>} */}
                             </div>
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Basic Rate/UOM (INR)`}
                               name={"BasicRate"}
@@ -1209,7 +1200,7 @@ class AddRMDomestic extends Component {
                               maxLength={'15'}
                             />
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Scrap Rate (INR)`}
                               name={"ScrapRate"}
@@ -1223,7 +1214,7 @@ class AddRMDomestic extends Component {
                               maxLength="15"
                             />
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Net Landed Cost (INR/UOM)`}
                               name={"NetLandedCost"}
@@ -1237,7 +1228,7 @@ class AddRMDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="3">
+                          <Col md="4">
                             <div className="form-group">
                               <label>
                                 Effective Date
