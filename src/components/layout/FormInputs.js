@@ -673,7 +673,7 @@ export const searchableSelect = ({
   let isDisable = disabled && disabled === true ? true : false;
   //let isClear = (isClearable === undefined) ? true : false;
   return (
-    <div className="w-100">
+    <div className="w-100 form-group-searchable-select">
       {label && (
         <label>
           {label}

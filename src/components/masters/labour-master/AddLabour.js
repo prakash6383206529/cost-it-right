@@ -677,7 +677,7 @@ class AddLabour extends Component {
                         </div>
                       </Col>
                       {this.state.IsEmployeContractual && (
-                        <Col md="3">
+                        <Col md="4">
                           <div className="form-group">
                             <Field
                               name="VendorName"
@@ -703,7 +703,7 @@ class AddLabour extends Component {
                           </div>
                         </Col>
                       )}
-                      <Col md="3">
+                      <Col md="4">
                         <div className="form-group">
                           <Field
                             name="state"
@@ -725,7 +725,7 @@ class AddLabour extends Component {
                             disabled={isEditFlag ? true : isDisable ? true : false}
                           /></div>
                       </Col>
-                      <Col md="3">
+                      <Col md="4">
                         <div className="form-group">
                           <Field
                             name="Plant"

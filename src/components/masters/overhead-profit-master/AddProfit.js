@@ -597,7 +597,7 @@ class AddProfit extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label sm={2} className={"pl0 pr0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -611,7 +611,7 @@ class AddProfit extends Component {
                             />{" "}
                                 Zero Based
                               </Label>
-                          <Label sm={2} className={"pl0 pr0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -625,7 +625,7 @@ class AddProfit extends Component {
                             />{" "}
                                 Vendor Based
                               </Label>
-                          <Label sm={2} className={"pl0 pr0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -642,7 +642,7 @@ class AddProfit extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col md="3" className="mb-3">
+                        <Col md="4" >
                           <Field
                             name="ModelType"
                             type="text"
@@ -666,7 +666,7 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <Col md="3" className="mb-3">
+                          <Col md="4">
                             <Field
                               name="vendorName"
                               type="text"
@@ -691,7 +691,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
-                          <Col md="3" className="mb-3">
+                          <Col md="4">
                             <Field
                               name="clientName"
                               type="text"
@@ -713,9 +713,8 @@ class AddProfit extends Component {
                             />
                           </Col>
                         )}
-                      </Row>
-                      <Row>
-                        <Col md="3" className="mb-3">
+
+                        <Col md="4" >
                           <Field
                             name="ProfitApplicabilityId"
                             type="text"
@@ -741,7 +740,7 @@ class AddProfit extends Component {
                           />
                         </Col>
                         {!isHideOverhead && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Profit (%)`}
                               name={"ProfitPercentage"}
@@ -763,7 +762,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideRM && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Profit on RM (%)`}
                               name={"ProfitRMPercentage"}
@@ -780,7 +779,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideCC && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Profit on CC (Machining) (%)`}
                               name={"ProfitMachiningCCPercentage"}
@@ -797,7 +796,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         {!isHideBOP && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Profit on BOP (%)`}
                               name={"ProfitBOPPercentage"}
