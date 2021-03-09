@@ -12,7 +12,7 @@ function PackageAndFreight(props) {
   */
   return (
     <>
-      <div className="user-page p-0 pt-3">
+      <div className="user-page p-0 pb-3">
         <div>
           <PackageCost
             index={props.index}

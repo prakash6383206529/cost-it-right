@@ -80,7 +80,7 @@ function FreightCost(props) {
     <>
       <div className="user-page p-0 pt-4 mt-1">
         <div>
-          <Row>
+          <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
                 {'Surface Treatment Cost:'}

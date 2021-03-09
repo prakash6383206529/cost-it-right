@@ -191,7 +191,7 @@ function TabPackagingFreight(props) {
                                 <td>{item.CostingPartDetails.FreightNetCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.FreightNetCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
                               </tr>
                               <tr>
-                                <td colSpan={3}>
+                                <td colSpan={3} className="cr-innerwrap-td ">
                                   <div>
                                     <PackageAndFreight
                                       index={index}

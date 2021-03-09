@@ -482,7 +482,7 @@ function TabOverheadProfit(props) {
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
-                      <div className={"left-title"}><b>{" Assembly Level"}</b></div>
+                      <div className={"left-title"}>{" Assembly Level"}</div>
                       <span className="cr-sw-level">
                         <span className="cr-switch-icon">
                           <Switch

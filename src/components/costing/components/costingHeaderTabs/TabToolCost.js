@@ -169,7 +169,7 @@ function TabToolCost(props) {
                 </Col>
               </Row> */}
 
-              <Row className="m-0  costing-border ">
+              <Row className="m-0  costing-border border-bottom-0 align-items-center ">
                 <Col md="9" className="px-30 py-4 ">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                   <div className="switch d-inline-flex">
@@ -227,7 +227,7 @@ function TabToolCost(props) {
                                 <td>{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
                               </tr>
                               <tr>
-                                <td colSpan={2}>
+                                <td colSpan={2} className="cr-innerwrap-td pb-3">
                                   <div>
                                     <Tool
                                       index={index}

@@ -131,7 +131,7 @@ function SurfaceTreatment(props) {
                     </Row>
 
                     {/* <hr /> */}
-                    <div className="user-page p-0">
+                    <div className="user-page px-3 pb-3">
                       <div>
                         <SurfaceTreatmentCost
                           index={props.index}

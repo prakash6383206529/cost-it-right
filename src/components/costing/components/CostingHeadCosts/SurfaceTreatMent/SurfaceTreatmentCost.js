@@ -164,7 +164,7 @@ function SurfaceTreatmentCost(props) {
     <>
       <div className="user-page p-0 costing-page-drawer">
         <div>
-          <Row>
+          <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
                 {'Surface Treatment Cost:'}

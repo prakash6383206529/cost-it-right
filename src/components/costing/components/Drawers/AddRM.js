@@ -70,7 +70,11 @@ function AddRM(props) {
     clearSearch: true,
     noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
     paginationShowsTotal: renderPaginationShowsTotal(),
-    paginationSize: 5,
+    prePage: <span className="prev-page-pg"></span>, // Previous page button text
+    nextPage: <span className="next-page-pg"></span>, // Next page button text
+    firstPage: <span className="first-page-pg"></span>, // First page button text
+    lastPage: <span className="last-page-pg"></span>,
+    paginationSize: 2,
   };
 
   const onRowSelect = (row, isSelected, e) => {
@@ -128,7 +132,7 @@ function AddRM(props) {
   }
 
   const renderNetLandedRate = () => {
-    return <>Net Landed Cost <br /> INR/UOM</>
+    return <>Net Landed <br />Cost INR/UOM</>
   }
 
   /**
@@ -184,7 +188,7 @@ function AddRM(props) {
               </Col>
             </Row>
 
-            <Row>
+            <Row className="mx-0">
               <Col>
                 <BootstrapTable
                   data={tableData}
@@ -203,12 +207,12 @@ function AddRM(props) {
                   {/* <TableHeaderColumn dataField="" width={100} dataAlign="center" searchable={false} dataFormat={checkBoxFormatter} >{''}</TableHeaderColumn> */}
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMGrade" >{renderRmGrade()}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{renderRmSpec()}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={150} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >{renderVendorLocation()}</TableHeaderColumn>}
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Currency" searchable={false} >Currency</TableHeaderColumn>
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMGrade" >{renderRmGrade()}</TableHeaderColumn>
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMSpec" >{renderRmSpec()}</TableHeaderColumn>
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
+                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
+                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >{renderVendorLocation()}</TableHeaderColumn>}
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" searchable={false} >Currency</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRatePerUOM" searchable={false} >{renderBasicRate()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" searchable={false} >{renderScrapRate()}</TableHeaderColumn>
@@ -217,7 +221,7 @@ function AddRM(props) {
               </Col>
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between">
+            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
               <div className="col-sm-12 text-left bluefooter-butn">
                 <button
                   type={'button'}
