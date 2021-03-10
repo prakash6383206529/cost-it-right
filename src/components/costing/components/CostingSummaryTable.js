@@ -257,7 +257,7 @@ const CostingSummaryTable = (props) => {
           obj.variance =
             viewCostingData[index].oldPoPrice != 0
               ? parseInt(viewCostingData[index].oldPoPrice) -
-                parseInt(viewCostingData[index].nPOPrice)
+              parseInt(viewCostingData[index].nPOPrice)
               : ''
           obj.consumptionQty = ''
           obj.remainingQty = ''
@@ -284,7 +284,7 @@ const CostingSummaryTable = (props) => {
     }
   }
 
-  useEffect(() => {}, [viewCostingData])
+  useEffect(() => { }, [viewCostingData])
 
   // useEffect(() => {
   //   console.log('multipleCostings: ', multipleCostings);
@@ -342,27 +342,14 @@ const CostingSummaryTable = (props) => {
                             <div class="custom-check d-inline-block">
                               <input
                                 type="checkbox"
-                                id="check1"
+                                id={`check${index}`}
                                 onClick={(e) => {
-                                  handleMultipleCostings(
-                                    e.target.checked,
-                                    index,
-                                  )
+                                  handleMultipleCostings(e.target.checked, index)
                                 }}
                                 value={
-                                  multipleCostings.length == 0
-                                    ? false
-                                    : multipleCostings.includes(
-                                        data.costingName,
-                                      )
-                                    ? true
-                                    : false
-                                }
-                              />
+                                  multipleCostings.length === 0 ? false : multipleCostings.includes(data.costingName,) ? true : false} />
                               {
-                                !viewMode && (
-                                  <label for="check1"></label>
-                                ) /*dont remove it is for check box*/
+                                !viewMode && (<label for={`check${index}`}></label>) /*dont remove it is for check box*/
                               }
                             </div>
                             <span>{data.zbc}</span>
@@ -805,7 +792,7 @@ const CostingSummaryTable = (props) => {
                               return (
                                 <div
                                   className={'image-viwer'}
-                                  onClick={() => {}}
+                                  onClick={() => { }}
                                 >
                                   <img
                                     src={fileURL}
@@ -817,18 +804,18 @@ const CostingSummaryTable = (props) => {
                               )
                             })
                           ) : (
-                            // <img
-                            //   src={require('../../../assests/images/times.png')}
-                            //   alt="cancel-icon.jpg"
-                            // />
-                            <button
-                              onClick={() => {
-                                setAttachment(true)
-                              }}
-                            >
-                              View Attachment
-                            </button>
-                          )}
+                                // <img
+                                //   src={require('../../../assests/images/times.png')}
+                                //   alt="cancel-icon.jpg"
+                                // />
+                                <button
+                                  onClick={() => {
+                                    setAttachment(true)
+                                  }}
+                                >
+                                  View Attachment
+                                </button>
+                              )}
                         </td>
                       )
                     })}
