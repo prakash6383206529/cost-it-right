@@ -1105,16 +1105,17 @@ class AddMoreDetails extends Component {
 
     // const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
     const OutputPerHours = fieldsObj.OutputPerHours
-    const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
-    const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
+    // const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
+    // const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
+    const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+    const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
     if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
       return false;
     }
 
-    // const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
-    // const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+
 
     const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
     const MachineRate = TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear);
