@@ -576,6 +576,7 @@ class VendorListing extends Component {
                         isOpen={isOpenVendor}
                         closeDrawer={this.closeVendorDrawer}
                         isEditFlag={isEditFlag}
+                        isRM={false}
                         ID={this.state.ID}
                         anchor={"right"}
                     />

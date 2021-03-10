@@ -10,6 +10,10 @@ import { storePartNumber } from '../actions/Costing';
 function Costing(props) {
 
   const [activeTab, setActiveTab] = useState('1');
+  const [hideRow, setHideRow] = useState(false)
+  const [partInfoStepTwo, setPartInfo] = useState({});
+  const [costingData, setCostingData] = useState({});
+
   const partNumber = useSelector(state => state.costing.partNo);
 
   /**
@@ -26,6 +30,13 @@ function Costing(props) {
   useEffect(() => {
     dispatch(storePartNumber(''))
   }, [])
+
+  const showDetail = (partInfo, costingInfo) => {
+    console.log(partInfo, "PART", costingInfo);
+    setPartInfo(partInfo)
+    setCostingData(costingInfo)
+    toggle("1");
+  }
 
   /**
   * @method render
@@ -72,16 +83,16 @@ function Costing(props) {
           <TabContent activeTab={activeTab}>
             {/* {activeTab === "1" && ( */}
             <TabPane tabId="1">
-              <CostingDetails />
+              <CostingDetails partInfoStepTwo={partInfoStepTwo} costingData={costingData} />
             </TabPane>
             {/* )} */}
             {/* {activeTab === "2" && ( */}
             <TabPane tabId="2">
-              <CostingSummary />
+              <CostingSummary showDetail={showDetail} />
               {
                 // <CostingSummaryTable />
               }
-              {partNumber !== "" && <CostingSummaryTable />}
+              {/* {partNumber !== "" && <CostingSummaryTable hideUpperRow={(value) => hideUpperRow(value)} />} */}
             </TabPane>
             {/* )} */}
             {/* {activeTab === "3" && <TabPane tabId="3">{"Insights"}</TabPane>} */}

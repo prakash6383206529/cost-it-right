@@ -2,19 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, upper, email, minLength7, maxLength70, alphaNumeric, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, minLength10, maxLength6, checkWhiteSpaces } from "../../../helper/validation";
-import {
-    renderText, renderEmailInputField, renderMultiSelectField,
-    searchableSelect
-} from "../../layout/FormInputs";
-import {
-    createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType,
-    getVendorTypesSelectList,
-} from '../actions/Supplier';
-import {
-    fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList,
-    getAllCities, getCityByCountry,
-} from '../../../actions/Common';
+import { required, upper, email, minLength7, maxLength70, alphaNumeric, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces } from "../../../helper/validation";
+import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
+import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, checkVendorPlantConfigurable } from "../../../helper/auth";
@@ -40,7 +31,8 @@ class AddVendorDrawer extends Component {
             isOpenVendorPlant: false,
             VendorId: '',
 
-            isVisible: false
+            isVisible: false,
+            vendor: ''
         }
     }
 
@@ -290,18 +282,18 @@ class AddVendorDrawer extends Component {
         }
     }
 
-    toggleDrawer = (event) => {
+    toggleDrawer = (event, formData) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', formData)
     };
 
     /**
     * @method cancel
     * @description used to Reset form
     */
-    cancel = () => {
+    cancel = (formData = {}) => {
         const { reset } = this.props;
         reset();
         this.setState({
@@ -314,7 +306,7 @@ class AddVendorDrawer extends Component {
             isEditFlag: false,
         })
         this.props.getSupplierByIdAPI('', false, () => { })
-        this.toggleDrawer('')
+        this.toggleDrawer('', formData)
     }
 
     /**
@@ -324,6 +316,7 @@ class AddVendorDrawer extends Component {
     onSubmit = (values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId } = this.state;
         const { supplierData, vendorPlantSelectList } = this.props;
+
 
         let vendorArray = [];
         selectedVendorType && selectedVendorType.map((item) => {
@@ -385,7 +378,7 @@ class AddVendorDrawer extends Component {
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
-                    this.cancel()
+                    this.cancel(formData)
                 }
             });
         } else {/** Add new detail for creating supplier master **/
@@ -409,7 +402,7 @@ class AddVendorDrawer extends Component {
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
-                    this.cancel();
+                    this.cancel(formData);
                 }
             });
         }

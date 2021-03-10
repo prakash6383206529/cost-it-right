@@ -403,9 +403,18 @@ class AddMachineRate extends Component {
     this.setState({ isOpenMachineType: true })
   }
 
-  closeMachineTypeDrawer = (e = '') => {
+  closeMachineTypeDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenMachineType: false }, () => {
-      this.props.getMachineTypeSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => {
+        const { machineTypeSelectList } = this.props;
+        /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(formData).length > 0) {
+          const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Text === formData.MachineType)
+          this.setState({
+            machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+          })
+        }
+      })
     })
   }
 
@@ -444,9 +453,19 @@ class AddMachineRate extends Component {
     this.setState({ isOpenProcessDrawer: true })
   }
 
-  closeProcessDrawer = (e = '') => {
+  closeProcessDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenProcessDrawer: false }, () => {
-      this.props.getProcessesSelectList(() => { })
+      this.props.getProcessesSelectList(() => {
+        const { processSelectList } = this.props;
+        /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(formData).length > 0) {
+          const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
+          console.log(processObj, "PROCESS");
+          this.setState({
+            processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
+          })
+        }
+      })
     })
   }
 
@@ -1011,9 +1030,9 @@ class AddMachineRate extends Component {
                             name={"MachineNumber"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required]}
+                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required]}
                             component={renderText}
-                            required={true}
+                            required={initialConfiguration.IsMachineNumberConfigure ? false : true}
                             onBlur={this.checkUniqNumber}
                             disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : this.state.isViewFlag ? true : false}
                             className=" "

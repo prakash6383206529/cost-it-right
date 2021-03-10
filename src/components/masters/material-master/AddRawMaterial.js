@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { alphaNumeric, alphabetsOnlyForName, required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
-import {
-  createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName
-} from '../actions/Material';
+import { createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -45,11 +43,11 @@ class AddRawMaterial extends Component {
     this.toggleDrawer('')
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, formData) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', formData)
   };
 
   /**
@@ -69,7 +67,7 @@ class AddRawMaterial extends Component {
       this.props.updateRawMaterialChildName(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-          this.toggleDrawer('')
+          this.toggleDrawer('', values)
         }
       })
 
@@ -78,7 +76,7 @@ class AddRawMaterial extends Component {
       this.props.createRawMaterialNameChild(values, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-          this.toggleDrawer('')
+          this.toggleDrawer('', values)
         }
       });
     }

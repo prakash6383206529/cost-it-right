@@ -37,6 +37,7 @@ import EfficiencyDrawer from './EfficiencyDrawer';
 import moment from 'moment';
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
+import { Fragment } from 'react';
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -88,7 +89,8 @@ class AddMoreDetails extends Component {
 
       manufactureYear: new Date(),
 
-      machineFullValue: {}
+      machineFullValue: {},
+      isLoanOpen: false
     }
   }
 
@@ -385,9 +387,18 @@ class AddMoreDetails extends Component {
     this.setState({ isOpenMachineType: true })
   }
 
-  closeMachineTypeDrawer = (e = '') => {
+  closeMachineTypeDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenMachineType: false }, () => {
-      this.props.getMachineTypeSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => {
+        const { machineTypeSelectList } = this.props;
+        /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(formData).length > 0) {
+          const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Text === formData.MachineType)
+          this.setState({
+            machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+          })
+        }
+      })
     })
   }
 
@@ -480,10 +491,19 @@ class AddMoreDetails extends Component {
     this.setState({ isOpenProcessDrawer: true })
   }
 
-  closeProcessDrawer = (e = '') => {
+  closeProcessDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenProcessDrawer: false }, () => {
-      //this.props.getMachineTypeSelectList(() => { })
-      this.props.getProcessesSelectList(() => { })
+      this.props.getProcessesSelectList(() => {
+        const { processSelectList } = this.props;
+        /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(formData).length > 0) {
+          const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
+          console.log(processObj, "PROCESS");
+          this.setState({
+            processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
+          })
+        }
+      })
     })
   }
 
@@ -1550,17 +1570,12 @@ class AddMoreDetails extends Component {
     this.setState({
       manufactureYear: year
     })
-    // console.log(e.target.value, "Value");
-    // const value = e.target.value
-    // if (value && (/^[0-9 ]*$/i).test(value)) {
-    //   //errors.YearOfManufacturing.message = 'Invalid year.'
-    //   setTimeout(() => {
-    //     setYearMsg('Invalid year.')
-    //   }, 500);
-
-    //   return false
-    // }
-    // console.log(errors.YearOfManufacturing.message, "Message");
+  }
+  loanToggle = () => {
+    const { isLoanOpen } = this.state
+    this.setState({
+      isLoanOpen: !isLoanOpen
+    })
   }
 
   /**
@@ -1569,7 +1584,7 @@ class AddMoreDetails extends Component {
   */
   render() {
     const { handleSubmit, loading, initialConfiguration } = this.props;
-    const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear } = this.state;
+    const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear, isLoanOpen } = this.state;
 
     return (
       <>
@@ -1599,7 +1614,9 @@ class AddMoreDetails extends Component {
                             title={'Machine:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="3" className="switch mb15">
+                        {/* WILL BE USED LATER */}
+
+                        {/* <Col md="3" className="switch mb15">
                           <label>Ownership</label>
                           <label className="switch-level">
                             <div className={'left-title'}>Purchased</div>
@@ -1619,7 +1636,7 @@ class AddMoreDetails extends Component {
                             />
                             <div className={'right-title'}>Leased</div>
                           </label>
-                        </Col>
+                        </Col> */}
 
                         <Col md="3">
                           <Field
@@ -1643,9 +1660,9 @@ class AddMoreDetails extends Component {
                             name={"MachineNumber"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required]}
+                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required]}
                             component={renderText}
-                            required={true}
+                            required={initialConfiguration.IsMachineNumberConfigure ? false : true}
                             disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1866,107 +1883,130 @@ class AddMoreDetails extends Component {
                           />
                         </Col>
                       </Row>
+                      {/*  LOAN AND INTREST VALUE */}
+
+
 
                       <Row>
-                        <Col md="12">
+                        <Col md="6">
                           <HeaderTitle
                             title={'Loan & Interest:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Loan (%)`}
-                            name={"LoanPercentage"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.loanToggle}
+                              className={`${isLoanOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div>
                         </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Equity (%)`}
-                            name={"EquityPercentage"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                        {
+                          isLoanOpen &&
+                          <Fragment>
+                            <Col md="4">
+                              <Field
+                                label={`Loan (%)`}
+                                name={"LoanPercentage"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Equity (%)`}
+                                name={"EquityPercentage"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
 
-                        <Col md="4">
-                          <Field
-                            label={`Rate Of Interest (%)`}
-                            name={"RateOfInterestPercentage"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Loan Value`}
-                            name={"LoanValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Equity Value`}
-                            name={"EquityValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Rate Of Interest (%)`}
+                                name={"RateOfInterestPercentage"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Loan Value`}
+                                name={"LoanValue"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[number]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Equity Value`}
+                                name={"EquityValue"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[number]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
 
 
-                        <Col md="4">
-                          <Field
-                            label={`Rate Of Interest Value`}
-                            name={"RateOfInterestValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Rate Of Interest Value`}
+                                name={"RateOfInterestValue"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[number]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+
+                          </Fragment>
+                        }
                       </Row>
-
+                      {/* WORKING HOURS */}
                       <Row>
-                        <Col md="12">
+                        <Col md="6">
                           <HeaderTitle
                             title={'Working Hours:'}
                             customClass={'Personal-Details'} />
+                        </Col>
+                        <Col md="6">
+                          {/* <div className={'right-details'}>
+                            <a
+                              onClick={this.workingHourOpen}
+                              className={`${isWorkingOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div> */}
                         </Col>
                         <Col md="3">
                           <Field
