@@ -70,7 +70,11 @@ function AddRM(props) {
     clearSearch: true,
     noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
     paginationShowsTotal: renderPaginationShowsTotal(),
-    paginationSize: 5,
+    prePage: <span className="prev-page-pg"></span>, // Previous page button text
+    nextPage: <span className="next-page-pg"></span>, // Next page button text
+    firstPage: <span className="first-page-pg"></span>, // First page button text
+    lastPage: <span className="last-page-pg"></span>,
+    paginationSize: 2,
   };
 
   const onRowSelect = (row, isSelected, e) => {
@@ -107,13 +111,28 @@ function AddRM(props) {
   const renderBasicRate = () => {
     return <>Basic Rate <br />INR/UOM </>
   }
+  const renderRmType = () => {
+    return <>RM <br />Type</>
+  }
+  const renderRmName = () => {
+    return <>RM <br />Name</>
+  }
+  const renderRmGrade = () => {
+    return <>RM <br />Grade</>
+  }
+  const renderRmSpec = () => {
+    return <>RM <br />Spec</>
+  }
+  const renderVendorLocation = () => {
+    return <>Vendor<br /> Location</>
+  }
 
   const renderScrapRate = () => {
     return <>Scrap Rate <br /> INR/UOM </>
   }
 
   const renderNetLandedRate = () => {
-    return <>Net Landed Cost <br /> INR/UOM</>
+    return <>Net Landed <br />Cost INR/UOM</>
   }
 
   /**
@@ -154,7 +173,7 @@ function AddRM(props) {
   return (
     <div>
       <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-        <Container>
+        <Container className="costing-rm-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 
             <Row className="drawer-heading">
@@ -169,7 +188,7 @@ function AddRM(props) {
               </Col>
             </Row>
 
-            <Row>
+            <Row className="mx-0">
               <Col>
                 <BootstrapTable
                   data={tableData}
@@ -186,14 +205,14 @@ function AddRM(props) {
                   pagination>
                   <TableHeaderColumn dataField="RawMaterialId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                   {/* <TableHeaderColumn dataField="" width={100} dataAlign="center" searchable={false} dataFormat={checkBoxFormatter} >{''}</TableHeaderColumn> */}
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{'RM Type'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{'RM Name'}</TableHeaderColumn>
-                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="RMGrade" >{'RM Grade'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RMSpec" >{'RM Spec'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
-                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >Vendor Location</TableHeaderColumn>}
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Currency" searchable={false} >Currency</TableHeaderColumn>
+                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
+                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMGrade" >{renderRmGrade()}</TableHeaderColumn>
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMSpec" >{renderRmSpec()}</TableHeaderColumn>
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
+                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
+                  {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >{renderVendorLocation()}</TableHeaderColumn>}
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" searchable={false} >Currency</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRatePerUOM" searchable={false} >{renderBasicRate()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" searchable={false} >{renderScrapRate()}</TableHeaderColumn>
@@ -202,7 +221,7 @@ function AddRM(props) {
               </Col>
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between">
+            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
               <div className="col-sm-12 text-left bluefooter-butn">
                 <button
                   type={'button'}

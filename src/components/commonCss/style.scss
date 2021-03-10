@@ -811,11 +811,13 @@ button.add-btn {
 .switch .left-title {
   display: inline-block;
   margin-right: 10px;
+  font-weight: 500;
 }
 
 .switch .right-title {
   display: inline-block;
   margin-left: 10px;
+  font-weight: 500;
 }
 
 .Add {
@@ -1022,7 +1024,7 @@ button.add-btn {
   background: transparent url("../../assests/images/add-icons.png") 0% 0% no-repeat padding-box;
   opacity: 1;
   cursor: pointer;
-  margin-top: 8px;
+  margin-top: 4px;
   background-position: center right;
 }
 
@@ -1811,13 +1813,20 @@ html {
 		.save-btn {
 			width: auto;
 			padding: 8px 12px;
-			min-width: 96px;
+      min-width: 96px;
+      vertical-align: middle;
 		}
 		.cancel-btn {
 			width: auto;
 			padding: 8px 12px;
-			min-width: 96px;
-		}
+      min-width: 96px;
+      vertical-align: middle;
+    }
+    .sf-btn-footer,.MuiPaper-root{
+      .save-btn,.cancel-btn{
+        vertical-align: middle;
+      }
+    }
 	}
 }
 .MuiDrawer-root.MuiDrawer-modal {
@@ -1881,6 +1890,14 @@ html {
 
 .react-bs-table-container {
 	.react-bs-table-pagination {
+    .row{
+      >.col-md-6{
+        >span{
+          color: #95A5BA;
+          font-size: 14px;
+        }
+      }
+    }
     .react-bs-table-sizePerPage-dropdown{
       .dropdown-toggle{
         box-shadow: none;
@@ -1976,6 +1993,9 @@ html {
 }
 .content-page {
 	.filter-block {
+    .css-1gtu0rj-indicatorContainer{
+      padding: 4px 8px;
+    }
 		.flex-fill {
 			width: 20%;
 			&:last-child {
@@ -1986,7 +2006,10 @@ html {
 				min-width: 120px;
 				width: auto;
 			}
-		}
+    }
+    .flex-fill.sliderange{
+      min-width: 195px;
+    }
 		.flex-fills {
 			width: 20%;
 			&:last-child {
@@ -2088,9 +2111,7 @@ html {
 .w-180{
   min-width: 180px;
 }
-.cross-icon, .check-icon{
-  margin-top: -3px;
-}
+
 
 .w-100px{
   .form-control{width: 100px;}
@@ -2473,7 +2494,7 @@ button:disabled{pointer-events: none;}
   }
 }
 
-.disabled-button {
+.disabled-button,button:disabled {
   background: #f2f2f2 !important;
   border: 1px solid #dee3f3 !important;
   color: #bfc3c7 !important;
@@ -2681,11 +2702,20 @@ button:disabled{pointer-events: none;}
     background-color: #F8FCFF;
     >div{
       >td{
-        padding: 22px 30px;
+        padding: 15px 30px;
       }
     }
   }
+  .costing-highlight-row.accordian-row{
+    > td{
+      padding: 10px 30px;
+    }
+  }
 }
+.cr-prt-nm1.cr-prt-link1.L1{
+  margin-left: 0px;
+}
+
 body {
   .btn-lg{
     height: auto;
@@ -2753,6 +2783,10 @@ body {
       background-color: #fff;
     }
   }
+  .px-3.sf-btn-footer{
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
 }
 
 .head-text{
@@ -2791,7 +2825,7 @@ body {
 .costing-details-page{
   .accordian-row{
     > td{
-      padding: 22px 30px;
+      padding: 15px 30px;
     }
   }
 }
@@ -2830,15 +2864,19 @@ body {
       .left-border,.flex-fills{
         margin-bottom: 10px;
       }
-      .form-group,.inputwith-icon{
+      .form-group,.inputwith-icon,.form-group-searchable-select{
         min-height: 91px;
+        margin-bottom: 15px;
+      }
+      .inputwith-icon {
+        .form-group-searchable-select{margin-bottom: 0px;}
       }
       .mn-height-auto{
         min-height: auto;
       }
       .inputwith-icon{
         margin-bottom: 15px;
-    }
+      }
   }
 }
 .costing-details-page{
@@ -2846,6 +2884,13 @@ body {
     .form{
       .form-group,.inputwith-icon{
         min-height: unset;
+      }
+      .costing-table-next{
+        .cr-select-height{
+          .form-group{
+            margin-bottom: 0px;
+          }
+        }
       }
     }
   }
@@ -2881,6 +2926,11 @@ body {
     display: none;
   }
 }
+body{
+    .css-1fhf3k1-control{
+    background-color: #e6e6e6;
+  }
+}
 .login-container.signup-form {
   .nodate-section{
     margin: 20px 0;
@@ -2896,17 +2946,32 @@ body {
     }
   }
 }
+.costing-rm-drawer{
+  max-width: 1320px;
+  .drawer-1500px{
+    min-width: 1280px;
+    table{
+      td,th{
+        padding: 0.71rem 0.35rem;
+      }
+    }
+  }
+}
+
+
+
+
 
 // responsive media query start
 @media(max-width:1600px){
-  .input-range {
-    .input-range__track--background{
-        &:before {
-          width: 60px;
-          top: -39px;
-        }// before
-      }// input-range__track--background
-    }// input-range
+  // .input-range {
+  //   .input-range__track--background{
+  //       &:before {
+  //         width: 60px;
+  //         top: -39px;
+  //       }// before
+  //     }// input-range__track--background
+  //   }// input-range
 }// 1600px media query end
 
 @media(max-width:1366px){

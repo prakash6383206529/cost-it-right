@@ -90,7 +90,7 @@ function PackageCost(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <Row>
+          <Row className="align-items-center">
             <Col md="8">
               <div className="left-border">
                 {'Packaging:'}

@@ -596,7 +596,7 @@ class AddOverhead extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label sm={2} className={"pl0 pr0 pt-0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -610,7 +610,7 @@ class AddOverhead extends Component {
                             />{" "}
                                 Zero Based
                               </Label>
-                          <Label sm={2} className={"pl0 pr0 pt-0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -624,7 +624,7 @@ class AddOverhead extends Component {
                             />{" "}
                                 Vendor Based
                               </Label>
-                          <Label sm={2} className={"pl0 pr0 pt-0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -641,7 +641,7 @@ class AddOverhead extends Component {
                         </Col>
                       </Row>
                       <Row>
-                        <Col md="3" className="mb-3">
+                        <Col md="4" >
                           <Field
                             name="ModelType"
                             type="text"
@@ -665,7 +665,7 @@ class AddOverhead extends Component {
                           />
                         </Col>
                         {this.state.IsVendor && costingHead === "vendor" && (
-                          <Col md="3" className="mb-3">
+                          <Col md="4" >
                             <Field
                               name="vendorName"
                               type="text"
@@ -690,7 +690,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {this.state.IsVendor && costingHead === "client" && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               name="clientName"
                               type="text"
@@ -712,10 +712,8 @@ class AddOverhead extends Component {
                             />
                           </Col>
                         )}
-                      </Row>
 
-                      <Row>
-                        <Col md="3" className="mb-3">
+                        <Col md="4" >
                           <Field
                             name="OverheadApplicability"
                             type="text"
@@ -741,7 +739,7 @@ class AddOverhead extends Component {
                           />
                         </Col>
                         {!isHideOverhead && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Overhead (%)`}
                               name={"OverheadPercentage"}
@@ -764,7 +762,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideRM && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Overhead on RM (%)`}
                               name={"OverheadRMPercentage"}
@@ -781,7 +779,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideCC && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Overhead on CC (Machining) (%)`}
                               name={"OverheadMachiningCCPercentage"}
@@ -798,7 +796,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         {!isHideBOP && (
-                          <Col md="3">
+                          <Col md="4">
                             <Field
                               label={`Overhead on BOP (%)`}
                               name={"OverheadBOPPercentage"}

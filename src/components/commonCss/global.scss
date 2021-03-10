@@ -294,6 +294,8 @@ a:hover {
   margin-bottom: 8px;
   img {
     width: 13px;
+    height: auto;
+    object-fit: contain;
   }
 }
 .mt30.cancel-btn{margin-top: 30px;}
@@ -351,8 +353,11 @@ a:hover {
   font-size: 17px;
   font-weight: 300;
   margin-right: 0 !important;
-  height: 32px !important;
-  line-height: 32px !important;
+  height: 17px !important;
+  line-height: 17px !important;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .check-icon {
@@ -366,10 +371,6 @@ a:hover {
   font-size: 14px;
   padding-left: 15px;
   padding-right: 15px;
-
-  .plus {
-    top: -1px;
-  }
 }
 
 .plus-icon {

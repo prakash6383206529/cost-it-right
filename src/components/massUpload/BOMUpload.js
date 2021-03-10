@@ -173,7 +173,7 @@ class BOMUpload extends Component {
     return (
       <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
         <Container>
-          <div className={'drawer-wrapper WIDTH-400'}>
+          <div className={'drawer-wrapper WIDTH-400 yhi-h'}>
             <form
               noValidate
               className="form"
@@ -191,7 +191,7 @@ class BOMUpload extends Component {
                 </Col>
               </Row>
 
-              <Row>
+              <Row className="ml-0">
                 <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                   <DownloadUploadBOMxls
                     fileName={fileName}
@@ -213,7 +213,7 @@ class BOMUpload extends Component {
                 </div>
 
               </Row>
-              <Row className=" justify-content-between">
+              <Row className=" justify-content-between ml-0">
                 <div className="col-sm-12  bluefooter-butn1 text-right">
                   <button
                     type={'button'}
@@ -223,7 +223,7 @@ class BOMUpload extends Component {
                   </button>
                   <button
                     type="submit"
-                    className="submit-button mr5 save-btn" >
+                    className="submit-button save-btn" >
                     <div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img>
                     </div> {isEditFlag ? 'Update' : 'Save'}
                   </button>

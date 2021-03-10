@@ -690,7 +690,7 @@ class AddFreight extends Component {
                         <Row className="mb27">
                           <Col md="12">
                             <label
-                              className={`custom-checkbox`}
+                              className={`custom-checkbox w-auto`}
                               onChange={this.onPressLoadUnload}
                             >
                               Loading/Unloading Charges
@@ -790,7 +790,7 @@ class AddFreight extends Component {
                             <Field
                               name="RateCriteria"
                               type="text"
-                              label="Rate Criteria"
+                              label="Criteria"
                               component={searchableSelect}
                               placeholder={"Select"}
                               options={this.renderListing(
@@ -883,7 +883,7 @@ class AddFreight extends Component {
                               <thead>
                                 <tr>
                                   <th>{`Capacity`}</th>
-                                  <th>{`Rate Criteria`}</th>
+                                  <th>{`Criteria`}</th>
                                   <th>{`Rate`}</th>
                                   <th>{`Effective Date`}</th>
                                   <th>{`Action`}</th>
