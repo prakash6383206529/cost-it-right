@@ -1117,6 +1117,8 @@ class AddMoreDetails extends Component {
 
 
 
+
+
     const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
     const MachineRate = TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear);
 
