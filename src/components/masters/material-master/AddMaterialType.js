@@ -44,11 +44,11 @@ class AddMaterialType extends Component {
     this.toggleDrawer('')
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, formData) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', formData)
   };
 
   /**
@@ -72,7 +72,7 @@ class AddMaterialType extends Component {
           toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
-          this.toggleDrawer('')
+          this.toggleDrawer('', updateData)
         }
       })
 
@@ -89,7 +89,7 @@ class AddMaterialType extends Component {
           toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
           this.props.getMaterialTypeDataAPI('', res => { });
           reset();
-          this.toggleDrawer('')
+          this.toggleDrawer('', formData)
         }
       });
     }

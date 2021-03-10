@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { alphaNumeric, alphabetsOnlyForName, number, required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, maxLength80 } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
   createRMSpecificationAPI, updateRMSpecificationAPI, getRMSpecificationDataAPI,
@@ -218,10 +218,20 @@ class AddSpecification extends Component {
   * @method closeGradeDrawer
   * @description  used to toggle RM Drawer Popup/Drawer
   */
-  closeRMDrawer = (e = '') => {
+  closeRMDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenRMDrawer: false, Id: '' }, () => {
       this.getDetails()
-      this.props.getRawMaterialNameChild(() => { })
+      this.props.getRawMaterialNameChild(() => {
+        /*FOR SHOWING DEFAULT VALUE FROM SELECTED FROM DRAWER*/
+        const { rawMaterialNameSelectList } = this.props;
+        if (Object.keys(formData).length > 0) {
+          let tempObj1 = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Text === formData.RawMaterialName)
+          this.setState({
+            RawMaterial: tempObj1 && tempObj1 !== undefined ? { label: tempObj1.Text, value: tempObj1.Value } : [],
+          })
+
+        }
+      })
     })
   }
 
@@ -233,11 +243,21 @@ class AddSpecification extends Component {
   * @method closeGradeDrawer
   * @description  used to toggle grade Popup/Drawer
   */
-  closeGradeDrawer = (e = '') => {
+  closeGradeDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenGrade: false, Id: '' }, () => {
       this.getDetails()
       const { RawMaterial } = this.state;
-      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => { });
+      this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, res => {
+        /* FOR SHOWING DEFAULT VALUE SELECTED FROM DRAWER*/
+        const { gradeSelectList } = this.props;
+        if (Object.keys(formData).length > 0) {
+          let tempObj3 = gradeSelectList && gradeSelectList.find(item => item.Text === formData.Grade)
+          this.setState({
+            RMGrade: tempObj3 && tempObj3 !== undefined ? { label: tempObj3.Text, value: tempObj3.Value } : [],
+          })
+        }
+      });
+
     })
   }
 
@@ -249,9 +269,19 @@ class AddSpecification extends Component {
   * @method closeMaterialDrawer
   * @description  used to toggle Material Popup/Drawer
   */
-  closeMaterialDrawer = (e = '') => {
+  closeMaterialDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenMaterialDrawer: false }, () => {
-      this.props.getMaterialTypeSelectList(() => { })
+      this.props.getMaterialTypeSelectList(() => {
+        /*THIS IS FOR SELECTING DEFAULT VALUE OF MATERIAL  FROM DRAWER*/
+        const { MaterialSelectList } = this.props;
+        if (Object.keys(formData).length > 0) {
+          let tempObj2 = MaterialSelectList && MaterialSelectList.find(item => item.Text === formData.MaterialType)
+          this.setState({
+            material: tempObj2 && tempObj2 !== undefined ? { label: tempObj2.Text, value: tempObj2.Value } : [],
+          })
+          this.props.change('Density', formData.CalculatedDensityValue)
+        }
+      })
     })
   }
 

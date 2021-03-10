@@ -27,11 +27,11 @@ class AddMachineTypeDrawer extends Component {
     this.props.getLabourTypeSelectList(() => { })
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, formData) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', formData)
   };
 
   /**
@@ -101,7 +101,7 @@ class AddMachineTypeDrawer extends Component {
       this.props.createMachineType(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);
-          this.toggleDrawer('')
+          this.toggleDrawer('', formData)
         }
       });
     }
@@ -163,11 +163,7 @@ class AddMachineTypeDrawer extends Component {
                       name="LabourTypeIds"
                       placeholder="Select"
                       selection={
-                        this.state.labourType == null ||
-                          this.state.labourType.length === 0
-                          ? []
-                          : this.state.labourType
-                      }
+                        this.state.labourType == null || this.state.labourType.length === 0 ? [] : this.state.labourType}
                       options={this.renderListing("labourList")}
                       selectionChanged={this.labourHandler}
                       optionValue={(option) => option.Value}

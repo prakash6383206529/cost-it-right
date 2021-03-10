@@ -15,26 +15,18 @@ import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { VBC, ZBC } from '../../../config/constants';
 import {
-  getCostingTechnologySelectList,
-  getAllPartSelectList,
-  getPartInfo,
-  checkPartWithTechnology,
-  createZBCCosting,
-  createVBCCosting,
-  getZBCExistingCosting,
-  getVBCExistingCosting,
-  updateZBCSOBDetail,
-  updateVBCSOBDetail,
-  storePartNumber,
-  getZBCCostingByCostingId,
+  getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 
-function CostingDetails() {
+function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+
+
 
   const [technology, setTechnology] = useState([]);
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
@@ -51,8 +43,9 @@ function CostingDetails() {
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
 
-  const [stepOne, setStepOne] = useState(true);
-  const [stepTwo, setStepTwo] = useState(false);
+
+  const [stepOne, setStepOne] = useState(Object.keys(props.costingData).length > 0 ? false : true);
+  const [stepTwo, setStepTwo] = useState(Object.keys(props.costingData).length > 0 ? true : false);
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
 
@@ -76,6 +69,11 @@ function CostingDetails() {
     dispatch(getPartInfo('', () => { }))
   }, [])
 
+  useEffect(() => {
+    setStepOne(Object.keys(props.costingData).length > 0 ? false : true);
+    setStepTwo(Object.keys(props.costingData).length > 0 ? true : false);
+  }, [props.costingData])
+
   const technologySelectList = useSelector(
     (state) => state.costing.technologySelectList,
   )
@@ -84,6 +82,7 @@ function CostingDetails() {
   const initialConfiguration = useSelector(
     (state) => state.auth.initialConfiguration,
   )
+  const partNumber = useSelector(state => state.costing.partNo);
 
   /**
    * @method renderListing
@@ -743,8 +742,10 @@ function CostingDetails() {
     setStepTwo(false);
     setZBCPlantGrid([])
     nextToggle()
-    dispatch(getPartInfo(part.value, (res) => {
+    // console.log(partNu);
+    dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
+
       setValue('PartName', Data.PartName)
       setValue("Description", Data.Description)
       setValue("ECNNumber", Data.ECNNumber)
@@ -1214,8 +1215,8 @@ function CostingDetails() {
                 {stepTwo && (
                   <CostingDetailStepTwo
                     backBtn={backToFirstStep}
-                    partInfo={partInfoStepTwo}
-                    costingInfo={costingData}
+                    partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                    costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
                   />
                 )}
               </form>

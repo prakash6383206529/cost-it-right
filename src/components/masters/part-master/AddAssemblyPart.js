@@ -674,7 +674,7 @@ class AddAssemblyPart extends Component {
                       </Row>
 
                       <Row>
-                        <Col md="3">
+                        {/* <Col md="3">
                           <Field
                             label="Plant"
                             name="Plant"
@@ -689,7 +689,7 @@ class AddAssemblyPart extends Component {
                             className="multiselect-with-border"
                             disabled={isEditFlag ? true : false}
                           />
-                        </Col>
+                        </Col> */}
                         <Col md="3">
                           <div className="form-group">
                             <label>

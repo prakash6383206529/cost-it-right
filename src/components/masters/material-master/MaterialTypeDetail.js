@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Row, Col, Table, Button } from 'reactstrap';
 import { getMaterialDetailAPI, deleteMaterialTypeAPI } from '../../actions/Material';
-import { Loader } from '../../../../common/Loader';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { convertISOToUtcDate } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';

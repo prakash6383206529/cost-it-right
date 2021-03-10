@@ -1460,7 +1460,7 @@ export function getGradeFilterByVendorSelectList(ID, callback) {
  * @method getMaterialTypeSelectList
  * @description material type list
  */
-export function getMaterialTypeSelectList() {
+export function getMaterialTypeSelectList(callback) {
     return (dispatch) => {
         const request = axios.get(API.getMaterialTypeSelectList, headers);
         request.then((response) => {
@@ -1468,6 +1468,7 @@ export function getMaterialTypeSelectList() {
                 type: GET_MATERIAL_DATA_SELECTLIST_SUCCESS,
                 payload: response.data.SelectList,
             });
+            callback()
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);

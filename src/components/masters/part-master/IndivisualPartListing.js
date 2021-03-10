@@ -283,7 +283,7 @@ class IndivisualPartListing extends Component {
                     pagination>
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn>
+                    {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
                     <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>

@@ -2,11 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number, decimalLength2, maxLength2, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512 } from "../../../helper/validation";
-import {
-  renderText, renderNumberInputField, searchableSelect,
-  renderMultiSelectField, renderTextAreaField
-} from "../../layout/FormInputs";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512 } from "../../../helper/validation";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
@@ -104,6 +101,7 @@ class AddRMImport extends Component {
     this.props.fetchSupplierCityDataAPI(res => { });
     this.props.getVendorListByVendorType(false, () => { })
     this.props.getTechnologySelectList(() => { })
+    this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
   }
 
@@ -397,8 +395,28 @@ class AddRMImport extends Component {
     this.setState({ isRMDrawerOpen: true })
   }
 
-  closeRMDrawer = (e = '') => {
-    this.setState({ isRMDrawerOpen: false })
+  closeRMDrawer = (e = '', data = {}) => {
+    this.setState({ isRMDrawerOpen: false }, () => {
+      /* FOR SHOWING RM ,GRADE AND SPECIFICATION SELECTED IN RM SPECIFICATION DRAWER*/
+      this.props.getRawMaterialNameChild(() => {
+        if (Object.keys(data).length > 0) {
+          this.props.getRMGradeSelectListByRawMaterial(data.RawMaterialId, (res) => {
+            this.props.fetchSpecificationDataAPI(data.GradeId, (res) => {
+              const { rawMaterialNameSelectList, gradeSelectList, rmSpecification } = this.props
+              const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === data.RawMaterialId,)
+              const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === data.GradeId)
+              const specObj = rmSpecification && rmSpecification.find((item) => item.Text === data.Specification)
+              console.log(specObj, "SPEC OBJ");
+              this.setState({
+                RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
+                RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+                RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+              })
+            })
+          })
+        }
+      })
+    })
   }
 
   gradeToggler = () => {
@@ -439,10 +457,18 @@ class AddRMImport extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '') => {
-    this.setState({ isOpenVendor: false })
+  closeVendorDrawer = (e = '', formData) => {
+    this.setState({ isOpenVendor: false }, () => {
+      const { IsVendor } = this.state
+      this.props.getVendorListByVendorType(IsVendor, () => {
+        const { vendorListByVendorType } = this.props
+        if (Object.keys(formData).length > 0) {
+          const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
+          this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
+        }
+      })
+    })
   }
-
   uomToggler = () => {
     this.setState({ isOpenUOM: true })
   }
@@ -603,6 +629,7 @@ class AddRMImport extends Component {
       IsVendor: false,
     })
     this.props.getRMImportDataById('', false, res => { })
+    this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.hideForm()
   }
 
@@ -884,7 +911,7 @@ class AddRMImport extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
+                              {/* {this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? (
                                 <div
                                   className={
                                     "plus-icon-square blurPlus-icon-square right"
@@ -897,7 +924,7 @@ class AddRMImport extends Component {
                                       className={"plus-icon-square right"}
                                     ></div>
                                   )
-                                )}
+                                )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -918,12 +945,12 @@ class AddRMImport extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </div>
-                              {!isEditFlag && (
+                              {/* {!isEditFlag && (
                                 <div
                                   onClick={this.specificationToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
-                              )}
+                              )} */}
                             </div>
                           </Col>
                           <Col md="4">
@@ -1019,12 +1046,9 @@ class AddRMImport extends Component {
                                   label="Vendor Name"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "VendorNameList"
-                                  )}
+                                  options={this.renderListing("VendorNameList")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
+                                  validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}

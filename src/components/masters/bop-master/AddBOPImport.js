@@ -2,13 +2,12 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, checkForNull, maxLength100, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength } from "../../../helper/validation";
 import {
-  renderText, searchableSelect, renderMultiSelectField, renderTextAreaField
-} from "../../layout/FormInputs";
-import {
-  fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType,
-} from '../../../actions/Common';
+  required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric, postiveNumber, maxLength10,
+  positiveAndDecimalNumber, maxLength512, maxLength
+} from "../../../helper/validation";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField } from "../../layout/FormInputs";
+import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, fileDeleteBOPDomestic,
@@ -626,7 +625,7 @@ class AddBOPImport extends Component {
                         <Row>
                           <Col md="3">
                             <Field
-                              label={`Part No`}
+                              label={`BOP Part No`}
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
@@ -640,7 +639,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Part Name`}
+                              label={`BOP Part Name`}
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
@@ -666,11 +665,7 @@ class AddBOPImport extends Component {
                                   )}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.BOPCategory == null ||
-                                      this.state.BOPCategory.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.BOPCategory == null || this.state.BOPCategory.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={
                                     this.handleCategoryChange

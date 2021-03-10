@@ -37,6 +37,7 @@ import EfficiencyDrawer from './EfficiencyDrawer';
 import moment from 'moment';
 import { Loader } from '../../common/Loader';
 import { AcceptableMachineUOM } from '../../../config/masterData'
+import { Fragment } from 'react';
 const selector = formValueSelector('AddMoreDetails');
 
 class AddMoreDetails extends Component {
@@ -88,7 +89,14 @@ class AddMoreDetails extends Component {
 
       manufactureYear: new Date(),
 
-      machineFullValue: {}
+      machineFullValue: {},
+      isLoanOpen: false,
+      isWorkingOpen: false,
+      isDepreciationOpen: false,
+      isVariableCostOpen: false,
+      isPowerOpen: false,
+      isLabourOpen: false,
+      isProcessOpen: false
     }
   }
 
@@ -385,9 +393,18 @@ class AddMoreDetails extends Component {
     this.setState({ isOpenMachineType: true })
   }
 
-  closeMachineTypeDrawer = (e = '') => {
+  closeMachineTypeDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenMachineType: false }, () => {
-      this.props.getMachineTypeSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => {
+        const { machineTypeSelectList } = this.props;
+        /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(formData).length > 0) {
+          const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Text === formData.MachineType)
+          this.setState({
+            machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+          })
+        }
+      })
     })
   }
 
@@ -480,10 +497,19 @@ class AddMoreDetails extends Component {
     this.setState({ isOpenProcessDrawer: true })
   }
 
-  closeProcessDrawer = (e = '') => {
+  closeProcessDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenProcessDrawer: false }, () => {
-      //this.props.getMachineTypeSelectList(() => { })
-      this.props.getProcessesSelectList(() => { })
+      this.props.getProcessesSelectList(() => {
+        const { processSelectList } = this.props;
+        /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(formData).length > 0) {
+          const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
+          console.log(processObj, "PROCESS");
+          this.setState({
+            processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
+          })
+        }
+      })
     })
   }
 
@@ -1079,16 +1105,19 @@ class AddMoreDetails extends Component {
 
     // const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
     const OutputPerHours = fieldsObj.OutputPerHours
-    const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
-    const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
+    // const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
+    // const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
+    const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
+    const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
     if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
       return false;
     }
 
-    // const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
-    // const TotalMachineCostPerAnnum = fieldsObj && fieldsObj.TotalMachineCostPerAnnum !== undefined ? checkForNull(fieldsObj.TotalMachineCostPerAnnum) : 0;
+
+
+
 
     const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
     const MachineRate = TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear);
@@ -1550,17 +1579,48 @@ class AddMoreDetails extends Component {
     this.setState({
       manufactureYear: year
     })
-    // console.log(e.target.value, "Value");
-    // const value = e.target.value
-    // if (value && (/^[0-9 ]*$/i).test(value)) {
-    //   //errors.YearOfManufacturing.message = 'Invalid year.'
-    //   setTimeout(() => {
-    //     setYearMsg('Invalid year.')
-    //   }, 500);
+  }
 
-    //   return false
-    // }
-    // console.log(errors.YearOfManufacturing.message, "Message");
+  loanToggle = () => {
+    const { isLoanOpen } = this.state
+    this.setState({
+      isLoanOpen: !isLoanOpen
+    })
+  }
+
+  workingHourToggle = () => {
+    const { isWorkingOpen } = this.state
+    this.setState({ isWorkingOpen: !isWorkingOpen })
+  }
+
+  depreciationToogle = () => {
+    const { isDepreciationOpen } = this.state
+    this.setState({ isDepreciationOpen: !isDepreciationOpen })
+  }
+
+  variableCostToggle = () => {
+    const { isVariableCostOpen } = this.state
+    this.setState({ isVariableCostOpen: !isVariableCostOpen })
+  }
+
+  powerToggle = () => {
+    const { isPowerOpen } = this.state
+    this.setState({ isPowerOpen: !isPowerOpen })
+  }
+
+  powerToggle = () => {
+    const { isPowerOpen } = this.state
+    this.setState({ isPowerOpen: !isPowerOpen })
+  }
+
+  labourToggle = () => {
+    const { isLabourOpen } = this.state
+    this.setState({ isLabourOpen: !isLabourOpen })
+  }
+
+  processToggle = () => {
+    const { isProcessOpen } = this.state
+    this.setState({ isProcessOpen: !isProcessOpen })
   }
 
   /**
@@ -1569,7 +1629,8 @@ class AddMoreDetails extends Component {
   */
   render() {
     const { handleSubmit, loading, initialConfiguration } = this.props;
-    const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear } = this.state;
+    const { isLoader, isOpenAvailability, isEditFlag, isOpenMachineType, isOpenProcessDrawer, manufactureYear,
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, isPowerOpen, isLabourOpen, isProcessOpen } = this.state;
 
     return (
       <>
@@ -1599,7 +1660,9 @@ class AddMoreDetails extends Component {
                             title={'Machine:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="3" className="switch mb15">
+                        {/* WILL BE USED LATER */}
+
+                        {/* <Col md="3" className="switch mb15">
                           <label>Ownership</label>
                           <label className="switch-level">
                             <div className={'left-title'}>Purchased</div>
@@ -1619,7 +1682,7 @@ class AddMoreDetails extends Component {
                             />
                             <div className={'right-title'}>Leased</div>
                           </label>
-                        </Col>
+                        </Col> */}
 
                         <Col md="3">
                           <Field
@@ -1643,9 +1706,9 @@ class AddMoreDetails extends Component {
                             name={"MachineNumber"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required]}
+                            validate={initialConfiguration.IsMachineNumberConfigure ? [] : [required]}
                             component={renderText}
-                            required={true}
+                            required={initialConfiguration.IsMachineNumberConfigure ? false : true}
                             disabled={(isEditFlag || initialConfiguration.IsMachineNumberConfigure) ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1841,9 +1904,9 @@ class AddMoreDetails extends Component {
                             name={"TotalCost"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required]}
+                            validate={[]}
                             component={renderNumberInputField}
-                            required={true}
+                            required={false}
                             disabled={true}
                             className=" "
                             customClassName="withBorder"
@@ -1866,583 +1929,541 @@ class AddMoreDetails extends Component {
                           />
                         </Col>
                       </Row>
-
+                      {/*  LOAN AND INTREST VALUE */}
                       <Row>
-                        <Col md="12">
+                        <Col md="6">
                           <HeaderTitle
                             title={'Loan & Interest:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Loan (%)`}
-                            name={"LoanPercentage"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.loanToggle}
+                              className={`${isLoanOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div>
                         </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Equity (%)`}
-                            name={"EquityPercentage"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                        {
+                          isLoanOpen &&
+                          <Fragment>
+                            <Col md="4">
+                              <Field
+                                label={`Loan (%)`}
+                                name={"LoanPercentage"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Equity (%)`}
+                                name={"EquityPercentage"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
 
-                        <Col md="4">
-                          <Field
-                            label={`Rate Of Interest (%)`}
-                            name={"RateOfInterestPercentage"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Loan Value`}
-                            name={"LoanValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="4">
-                          <Field
-                            label={`Equity Value`}
-                            name={"EquityValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Rate Of Interest (%)`}
+                                name={"RateOfInterestPercentage"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Loan Value`}
+                                name={"LoanValue"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[number]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Equity Value`}
+                                name={"EquityValue"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[number]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
 
 
-                        <Col md="4">
-                          <Field
-                            label={`Rate Of Interest Value`}
-                            name={"RateOfInterestValue"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                            <Col md="4">
+                              <Field
+                                label={`Rate Of Interest Value`}
+                                name={"RateOfInterestValue"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[number]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+
+                          </Fragment>
+                        }
                       </Row>
-
+                      {/* WORKING HOURS */}
                       <Row>
-                        <Col md="12">
+                        <Col md="6">
                           <HeaderTitle
                             title={'Working Hours:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="3">
-                          <Field
-                            name="WorkingShift"
-                            type="text"
-                            label="No. Of Shifts"
-                            component={searchableSelect}
-                            placeholder={'--select--'}
-                            options={this.renderListing('ShiftType')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [required] : []}
-                            required={true}
-                            handleChangeDescription={this.handleShiftType}
-                            valueDescription={this.state.shiftType}
-                            disabled={false}
-                          />
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.workingHourToggle}
+                              className={`${isWorkingOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div>
                         </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Working Hr/Shift`}
-                            name={"WorkingHoursPerShift"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[required, positiveAndDecimalNumber, maxLength3]}
-                            component={renderText}
-                            required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            label={`No. Of Working days/Annum`}
-                            name={"NumberOfWorkingDaysPerYear"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[required, positiveAndDecimalNumber, maxLength3]}
-                            component={renderText}
-                            required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
+                        {
+                          isWorkingOpen &&
+                          <Fragment>
+                            <Col md="3">
                               <Field
-                                label={`Availability (%)`}
-                                name={"EfficiencyPercentage"}
+                                name="WorkingShift"
+                                type="text"
+                                label="No. Of Shifts"
+                                component={searchableSelect}
+                                placeholder={'--select--'}
+                                options={this.renderListing('ShiftType')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleShiftType}
+                                valueDescription={this.state.shiftType}
+                                disabled={false}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Working Hr/Shift`}
+                                name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                validate={[required, positiveAndDecimalNumber, maxLength3]}
                                 component={renderText}
                                 required={true}
                                 disabled={false}
                                 className=" "
                                 customClassName="withBorder"
                               />
-                            </div>
-                            <div
-                              onClick={this.efficiencyCalculationToggler}
-                              className={'calculate-icon mt-0 mb-1 right'}>
-                            </div>
-                          </div>
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            label={`No. Of Working Hrs/Annum`}
-                            name={"NumberOfWorkingHoursPerYear"}
-                            type="text"
-                            placeholder={'Enter'}
-                            // validate={[required]}
-                            component={renderNumberInputField}
-                            // required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`No. Of Working days/Annum`}
+                                name={"NumberOfWorkingDaysPerYear"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[required, positiveAndDecimalNumber, maxLength3]}
+                                component={renderText}
+                                required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    label={`Availability (%)`}
+                                    name={"EfficiencyPercentage"}
+                                    type="text"
+                                    placeholder={'Enter'}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                    component={renderText}
+                                    required={true}
+                                    disabled={false}
+                                    className=" "
+                                    customClassName="withBorder"
+                                  />
+                                </div>
+                                <div
+                                  onClick={this.efficiencyCalculationToggler}
+                                  className={'calculate-icon mt-0 mb-1 right'}>
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`No. Of Working Hrs/Annum`}
+                                name={"NumberOfWorkingHoursPerYear"}
+                                type="text"
+                                placeholder={'Enter'}
+                                // validate={[required]}
+                                component={renderNumberInputField}
+                                // required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                          </Fragment>
+                        }
                       </Row>
 
+                      {/* DEPRICIATION  */}
                       <Row>
-                        <Col md="12">
+                        <Col md="6">
                           <HeaderTitle
                             title={'Depreciation:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="3">
-                          <Field
-                            name="DepreciationTypeId"
-                            type="text"
-                            label="Depreciation Type"
-                            component={searchableSelect}
-                            placeholder={'--select--'}
-                            options={this.renderListing('DepreciationType')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.depreciationType == null || this.state.depreciationType.length === 0) ? [required] : []}
-                            required={true}
-                            handleChangeDescription={this.handleDereciationType}
-                            valueDescription={this.state.depreciationType}
-                            disabled={false}
-                          />
-                        </Col>
-                        {
-                          this.state.depreciationType &&
-                          this.state.depreciationType.value !== SLM &&
-                          <Col md="3">
-                            <Field
-                              label={`Depreciation Rate (%)`}
-                              name={"DepreciationRatePercentage"}
-                              type="text"
-                              placeholder={'Enter'}
-                              validate={this.state.depreciationType.value === WDM ? [required, positiveAndDecimalNumber, maxLength10] : []}
-                              component={renderText}
-                              required={this.state.depreciationType.value === WDM ? true : false}
-                              disabled={false}
-                              className=" "
-                              customClassName="withBorder"
-                            />
-                          </Col>
-                        }
-
-                        {this.state.depreciationType && this.state.depreciationType.value === SLM &&
-                          <Col md="3">
-                            <Field
-                              label={`Life Of Asset (Years)`}
-                              name={"LifeOfAssetPerYear"}
-                              type="text"
-                              placeholder={'Enter'}
-                              validate={[required, positiveAndDecimalNumber]}
-                              component={renderNumberInputField}
-                              required={true}
-                              disabled={false}
-                              className=" "
-                              customClassName="withBorder"
-                            />
-                          </Col>}
-                        <Col md="3">
-                          <Field
-                            label={`Cost Of Scrap (INR)`}
-                            name={"CastOfScrap"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <div className="form-group">
-                            <label>
-                              Date of Purchase
-                                                    {/* <span className="asterisk-required">*</span> */}
-                            </label>
-                            <div className="inputbox date-section">
-                              <DatePicker
-                                name="DateOfPurchase"
-                                selected={this.state.DateOfPurchase}
-                                onChange={this.handleDateOfPurchase}
-                                showMonthDropdown
-                                showYearDropdown
-                                dateFormat="dd/MM/yyyy"
-                                //maxDate={new Date()}
-                                dropdownMode="select"
-                                placeholderText="Select date"
-                                className="withBorder"
-                                autoComplete={'off'}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                disabled={false}
-                              />
-                            </div>
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.depreciationToogle}
+                              className={`${isDepreciationOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                           </div>
                         </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Depreciation Amount (INR)`}
-                            name={"DepreciationAmount"}
-                            type="text"
-                            placeholder={'Enter'}
-                            // validate={[required]}
-                            component={renderText}
-                            // required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+                        {
+                          isDepreciationOpen &&
+                          <Fragment>
+                            <Col md="3">
+                              <Field
+                                name="DepreciationTypeId"
+                                type="text"
+                                label="Depreciation Type"
+                                component={searchableSelect}
+                                placeholder={'--select--'}
+                                options={this.renderListing('DepreciationType')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={(this.state.depreciationType == null || this.state.depreciationType.length === 0) ? [required] : []}
+                                required={true}
+                                handleChangeDescription={this.handleDereciationType}
+                                valueDescription={this.state.depreciationType}
+                                disabled={false}
+                              />
+                            </Col>
+                            {
+                              this.state.depreciationType &&
+                              this.state.depreciationType.value !== SLM &&
+                              <Col md="3">
+                                <Field
+                                  label={`Depreciation Rate (%)`}
+                                  name={"DepreciationRatePercentage"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={this.state.depreciationType.value === WDM ? [required, positiveAndDecimalNumber, maxLength10] : []}
+                                  component={renderText}
+                                  required={this.state.depreciationType.value === WDM ? true : false}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                            }
+                            {this.state.depreciationType && this.state.depreciationType.value === SLM &&
+                              <Col md="3">
+                                <Field
+                                  label={`Life Of Asset (Years)`}
+                                  name={"LifeOfAssetPerYear"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required, positiveAndDecimalNumber]}
+                                  component={renderNumberInputField}
+                                  required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>}
+                            <Col md="3">
+                              <Field
+                                label={`Cost Of Scrap (INR)`}
+                                name={"CastOfScrap"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <div className="form-group">
+                                <label>
+                                  Date of Purchase
+                                                    {/* <span className="asterisk-required">*</span> */}
+                                </label>
+                                <div className="inputbox date-section">
+                                  <DatePicker
+                                    name="DateOfPurchase"
+                                    selected={this.state.DateOfPurchase}
+                                    onChange={this.handleDateOfPurchase}
+                                    showMonthDropdown
+                                    showYearDropdown
+                                    dateFormat="dd/MM/yyyy"
+                                    //maxDate={new Date()}
+                                    dropdownMode="select"
+                                    placeholderText="Select date"
+                                    className="withBorder"
+                                    autoComplete={'off'}
+                                    disabledKeyboardNavigation
+                                    onChangeRaw={(e) => e.preventDefault()}
+                                    disabled={false}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Depreciation Amount (INR)`}
+                                name={"DepreciationAmount"}
+                                type="text"
+                                placeholder={'Enter'}
+                                // validate={[required]}
+                                component={renderText}
+                                // required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                          </Fragment>
+                        }
                       </Row>
 
+                      {/* VARIABLE COST */}
                       <Row>
-                        <Col md="12">
+                        <Col md="6">
                           <HeaderTitle
                             title={'Variable Cost:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md={`${this.state.IsAnnualMaintenanceFixed ? 2 : 3}`} className="switch mb15">
-                          <label>Annual Maintenance</label>
-                          <label className="switch-level">
-                            <div className={'left-title'}>Fixed</div>
-                            <Switch
-                              onChange={this.onPressAnnualMaintenance}
-                              checked={this.state.IsAnnualMaintenanceFixed}
-                              id="normal-switch"
-                              disabled={false}
-                              background="#4DC771"
-                              onColor="#4DC771"
-                              onHandleColor="#ffffff"
-                              offColor="#4DC771"
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              height={20}
-                              width={46}
-                            />
-                            <div className={'right-title'}>%</div>
-                          </label>
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.variableCostToggle}
+                              className={`${isVariableCostOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div>
                         </Col>
-                        {this.state.IsAnnualMaintenanceFixed &&
-                          <Col md="1">
-                            <Field
-                              label={``}
-                              name={"AnnualMaintancePercentage"}
-                              type="text"
-                              placeholder={'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderText}
-                              //required={true}
-                              disabled={false}
-                              className=" mt5"
-                              customClassName="withBorder"
-                            />
-                          </Col>}
-                        <Col md="3">
-                          <Field
-                            label={`Annual Maintenance Amount (INR)`}
-                            name={"AnnualMaintanceAmount"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={this.state.IsAnnualMaintenanceFixed ? true : false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md={`${this.state.IsAnnualConsumableFixed ? 2 : 3}`} className="switch mb15">
-                          <label>Annual Consumable</label>
-                          <label className="switch-level">
-                            <div className={'left-title'}>Fixed</div>
-                            <Switch
-                              onChange={this.onPressAnnualConsumable}
-                              checked={this.state.IsAnnualConsumableFixed}
-                              id="normal-switch"
-                              disabled={false}
-                              background="#4DC771"
-                              onColor="#4DC771"
-                              onHandleColor="#ffffff"
-                              offColor="#4DC771"
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              height={20}
-                              width={46}
-                            />
-                            <div className={'right-title'}>%</div>
-                          </label>
-                        </Col>
-                        {this.state.IsAnnualConsumableFixed &&
-                          <Col md="1">
-                            <Field
-                              label={``}
-                              name={"AnnualConsumablePercentage"}
-                              type="text"
-                              placeholder={'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderNumberInputField}
-                              //required={true}
-                              disabled={false}
-                              className=" mt5"
-                              customClassName="withBorder"
-                            />
-                          </Col>}
-                        <Col md="3">
-                          <Field
-                            label={`Annual Consumable Amount (INR)`}
-                            name={"AnnualConsumableAmount"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={this.state.IsAnnualConsumableFixed ? true : false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-
-                        <Col md={`${this.state.IsInsuranceFixed ? 2 : 3}`} className="switch mb15">
-                          <label>Insurance</label>
-                          <label className="switch-level">
-                            <div className={'left-title'}>Fixed</div>
-                            <Switch
-                              onChange={this.onPressInsurance}
-                              checked={this.state.IsInsuranceFixed}
-                              id="normal-switch"
-                              disabled={false}
-                              background="#4DC771"
-                              onColor="#4DC771"
-                              onHandleColor="#ffffff"
-                              offColor="#4DC771"
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              height={20}
-                              width={46}
-                            />
-                            <div className={'right-title'}>%</div>
-                          </label>
-                        </Col>
-                        {this.state.IsInsuranceFixed &&
-                          <Col md="1">
-                            <Field
-                              label={``}
-                              name={"AnnualInsurancePercentage"}
-                              type="text"
-                              placeholder={'Enter'}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderNumberInputField}
-                              //required={true}
-                              disabled={false}
-                              className=" mt5"
-                              customClassName="withBorder"
-                            />
-                          </Col>}
-                        <Col md="3">
-                          <Field
-                            label={`Insurance Amount (INR)`}
-                            name={"AnnualInsuranceAmount"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={this.state.IsInsuranceFixed ? true : false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Building Cost/Sq Ft`}
-                            name={"BuildingCostPerSquareFeet"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number, positiveAndDecimalNumber]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Machine Floor Area (Sq Ft)`}
-                            name={"MachineFloorAreaPerSquareFeet"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number, positiveAndDecimalNumber]}
-                            component={renderText}
-                            //required={true}
-                            disabled={isEditFlag ? true : false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Annual Area Cost (INR)`}
-                            name={"AnnualAreaCost"}
-                            type="text"
-                            placeholder={'Enter'}
-                            // validate={[number, postiveNumber]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Other Yearly Cost (INR)`}
-                            name={"OtherYearlyCost"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Total Machine Cost/Annum (INR)`}
-                            name={"TotalMachineCostPerAnnum"}
-                            type="text"
-                            placeholder={'Enter'}
-                            //validate={[required]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                      </Row>
-
-                      <Row>
-                        <Col md="12">
-                          <HeaderTitle
-                            title={'Power:'}
-                            customClass={'Personal-Details'} />
-                        </Col>
-                        <Col md={`3`} className="switch mb15">
-                          <label>Uses Fuel</label>
-                          <label className="switch-level">
-                            <div className={'left-title'}>No</div>
-                            <Switch
-                              onChange={this.onPressUsesFuel}
-                              checked={this.state.IsUsesFuel}
-                              id="normal-switch"
-                              disabled={isEditFlag ? true : false}
-                              background="#4DC771"
-                              onColor="#4DC771"
-                              onHandleColor="#ffffff"
-                              offColor="#4DC771"
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              height={20}
-                              width={46}
-                            />
-                            <div className={'right-title'}>Yes</div>
-                          </label>
-                        </Col>
-                        {this.state.IsUsesFuel &&
-                          <>
+                        {
+                          isVariableCostOpen && <Fragment>
+                            <Col md={`${this.state.IsAnnualMaintenanceFixed ? 2 : 3}`} className="switch mb15">
+                              <label>Annual Maintenance</label>
+                              <label className="switch-level">
+                                <div className={'left-title'}>Fixed</div>
+                                <Switch
+                                  onChange={this.onPressAnnualMaintenance}
+                                  checked={this.state.IsAnnualMaintenanceFixed}
+                                  id="normal-switch"
+                                  disabled={false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
+                                />
+                                <div className={'right-title'}>%</div>
+                              </label>
+                            </Col>
+                            {this.state.IsAnnualMaintenanceFixed &&
+                              <Col md="1">
+                                <Field
+                                  label={``}
+                                  name={"AnnualMaintancePercentage"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  //required={true}
+                                  disabled={false}
+                                  className=" mt5"
+                                  customClassName="withBorder"
+                                />
+                              </Col>}
                             <Col md="3">
                               <Field
-                                name="FuelTypeId"
+                                label={`Annual Maintenance Amount (INR)`}
+                                name={"AnnualMaintanceAmount"}
                                 type="text"
-                                label="Fuel"
-                                component={searchableSelect}
-                                placeholder={'--select--'}
-                                options={this.renderListing('fuel')}
-                                //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.fuelType == null || this.state.fuelType.length === 0) ? [required] : []}
-                                required={true}
-                                handleChangeDescription={this.handleFuelType}
-                                valueDescription={this.state.fuelType}
-                                disabled={isEditFlag ? true : false}
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={this.state.IsAnnualMaintenanceFixed ? true : false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md={`${this.state.IsAnnualConsumableFixed ? 2 : 3}`} className="switch mb15">
+                              <label>Annual Consumable</label>
+                              <label className="switch-level">
+                                <div className={'left-title'}>Fixed</div>
+                                <Switch
+                                  onChange={this.onPressAnnualConsumable}
+                                  checked={this.state.IsAnnualConsumableFixed}
+                                  id="normal-switch"
+                                  disabled={false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
+                                />
+                                <div className={'right-title'}>%</div>
+                              </label>
+                            </Col>
+                            {this.state.IsAnnualConsumableFixed &&
+                              <Col md="1">
+                                <Field
+                                  label={``}
+                                  name={"AnnualConsumablePercentage"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  disabled={false}
+                                  className=" mt5"
+                                  customClassName="withBorder"
+                                />
+                              </Col>}
+                            <Col md="3">
+                              <Field
+                                label={`Annual Consumable Amount (INR)`}
+                                name={"AnnualConsumableAmount"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={this.state.IsAnnualConsumableFixed ? true : false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+
+                            <Col md={`${this.state.IsInsuranceFixed ? 2 : 3}`} className="switch mb15">
+                              <label>Insurance</label>
+                              <label className="switch-level">
+                                <div className={'left-title'}>Fixed</div>
+                                <Switch
+                                  onChange={this.onPressInsurance}
+                                  checked={this.state.IsInsuranceFixed}
+                                  id="normal-switch"
+                                  disabled={false}
+                                  background="#4DC771"
+                                  onColor="#4DC771"
+                                  onHandleColor="#ffffff"
+                                  offColor="#4DC771"
+                                  uncheckedIcon={false}
+                                  checkedIcon={false}
+                                  height={20}
+                                  width={46}
+                                />
+                                <div className={'right-title'}>%</div>
+                              </label>
+                            </Col>
+                            {this.state.IsInsuranceFixed &&
+                              <Col md="1">
+                                <Field
+                                  label={``}
+                                  name={"AnnualInsurancePercentage"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  disabled={false}
+                                  className=" mt5"
+                                  customClassName="withBorder"
+                                />
+                              </Col>}
+                            <Col md="3">
+                              <Field
+                                label={`Insurance Amount (INR)`}
+                                name={"AnnualInsuranceAmount"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={this.state.IsInsuranceFixed ? true : false}
+                                className=" "
+                                customClassName="withBorder"
                               />
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Fuel Cost/UOM`}
-                                name={"FuelCostPerUnit"}
+                                label={`Building Cost/Sq Ft`}
+                                name={"BuildingCostPerSquareFeet"}
                                 type="text"
                                 placeholder={'Enter'}
-                                //validate={[required]}
+                                validate={[number, positiveAndDecimalNumber]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Machine Floor Area (Sq Ft)`}
+                                name={"MachineFloorAreaPerSquareFeet"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[number, positiveAndDecimalNumber]}
+                                component={renderText}
+                                //required={true}
+                                disabled={isEditFlag ? true : false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Annual Area Cost (INR)`}
+                                name={"AnnualAreaCost"}
+                                type="text"
+                                placeholder={'Enter'}
+                                // validate={[number, postiveNumber]}
                                 component={renderNumberInputField}
                                 //required={true}
                                 disabled={true}
@@ -2452,8 +2473,8 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Consumption/Annum`}
-                                name={"ConsumptionPerYear"}
+                                label={`Other Yearly Cost (INR)`}
+                                name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={'Enter'}
                                 validate={[positiveAndDecimalNumber, maxLength10]}
@@ -2466,8 +2487,271 @@ class AddMoreDetails extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={`Total Power Cost/Annum (INR)`}
-                                name={"TotalFuelCostPerYear"}
+                                label={`Total Machine Cost/Annum (INR)`}
+                                name={"TotalMachineCostPerAnnum"}
+                                type="text"
+                                placeholder={'Enter'}
+                                //validate={[required]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                          </Fragment>
+                        }
+                      </Row>
+
+                      {/* POWER */}
+                      <Row>
+                        <Col md="6">
+                          <HeaderTitle
+                            title={'Power:'}
+                            customClass={'Personal-Details'} />
+                        </Col>
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.powerToggle}
+                              className={`${isPowerOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div>
+                        </Col>
+                        {isPowerOpen && <Fragment>
+
+
+                          <Col md={`3`} className="switch mb15">
+                            <label>Uses Fuel</label>
+                            <label className="switch-level">
+                              <div className={'left-title'}>No</div>
+                              <Switch
+                                onChange={this.onPressUsesFuel}
+                                checked={this.state.IsUsesFuel}
+                                id="normal-switch"
+                                disabled={isEditFlag ? true : false}
+                                background="#4DC771"
+                                onColor="#4DC771"
+                                onHandleColor="#ffffff"
+                                offColor="#4DC771"
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                height={20}
+                                width={46}
+                              />
+                              <div className={'right-title'}>Yes</div>
+                            </label>
+                          </Col>
+                          {this.state.IsUsesFuel &&
+                            <>
+                              <Col md="3">
+                                <Field
+                                  name="FuelTypeId"
+                                  type="text"
+                                  label="Fuel"
+                                  component={searchableSelect}
+                                  placeholder={'--select--'}
+                                  options={this.renderListing('fuel')}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  validate={(this.state.fuelType == null || this.state.fuelType.length === 0) ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={this.handleFuelType}
+                                  valueDescription={this.state.fuelType}
+                                  disabled={isEditFlag ? true : false}
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Fuel Cost/UOM`}
+                                  name={"FuelCostPerUnit"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  //validate={[required]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Consumption/Annum`}
+                                  name={"ConsumptionPerYear"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  //required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Total Power Cost/Annum (INR)`}
+                                  name={"TotalFuelCostPerYear"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[number, postiveNumber]}
+                                  component={renderText}
+                                  //required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                            </>}
+
+                          {!this.state.IsUsesFuel &&
+                            <>
+                              <Col md="3">
+                                <Field
+                                  label={`Utilization (%)`}
+                                  name={"UtilizationFactorPercentage"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  //required={true}
+                                  disabled={false}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Power Rating (Kw)`}
+                                  name={"PowerRatingPerKW"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  //required={true}
+                                  disabled={isEditFlag ? true : false}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                              <Col md={`3`} className="switch mb15">
+                                <label>Uses Solar Power</label>
+                                <label className="switch-level">
+                                  <div className={'left-title'}>No</div>
+                                  <Switch
+                                    onChange={this.onPressUsesSolarPower}
+                                    checked={this.state.IsUsesSolarPower}
+                                    id="normal-switch"
+                                    disabled={isEditFlag ? true : false}
+                                    background="#4DC771"
+                                    onColor="#4DC771"
+                                    onHandleColor="#ffffff"
+                                    offColor="#4DC771"
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    height={20}
+                                    width={46}
+                                  />
+                                  <div className={'right-title'}>Yes</div>
+                                </label>
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Cost/Unit`}
+                                  name={"PowerCostPerUnit"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  //validate={[required]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  label={`Total Power Cost/Annum (INR)`}
+                                  name={"TotalPowerCostPerYear"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  //validate={[required]}
+                                  component={renderNumberInputField}
+                                  //required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName="withBorder"
+                                />
+                              </Col>
+                            </>}
+                        </Fragment>
+                        }
+                      </Row>
+
+                      {/* LABOUR */}
+                      <Row>
+                        <Col md="6">
+                          <HeaderTitle
+                            title={'Labour:'}
+                            customClass={'Personal-Details'} />
+                        </Col>
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.labourToggle}
+                              className={`${isLabourOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div>
+                        </Col>
+                        {
+                          isLabourOpen && <Fragment>
+                            <Col md="3">
+                              <Field
+                                name="LabourTypeIds"
+                                type="text"
+                                label="Labour Type"
+                                component={searchableSelect}
+                                placeholder={'Select Labour'}
+                                options={this.renderListing('labourList')}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                //validate={(this.state.labourType == null || this.state.labourType.length === 0) ? [required] : []}
+                                //required={true}
+                                handleChangeDescription={this.labourHandler}
+                                valueDescription={this.state.labourType}
+                              />
+                            </Col>
+                            <Col md="2">
+                              <Field
+                                label={`Cost/Annum (INR)`}
+                                name={"LabourCostPerAnnum"}
+                                type="text"
+                                placeholder={'Enter'}
+                                //validate={[required]}
+                                component={renderNumberInputField}
+                                //onChange={this.handleLabourCalculation}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="2">
+                              <Field
+                                label={`No. Of People`}
+                                name={"NumberOfLabour"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[maxLength10]}
+                                component={renderNumberInputField}
+                                //onChange={this.handleLabourCalculation}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="2">
+                              <Field
+                                label={`Total Cost (INR)`}
+                                name={"LabourCost"}
                                 type="text"
                                 placeholder={'Enter'}
                                 validate={[number, postiveNumber]}
@@ -2478,377 +2762,242 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                          </>}
+                            <Col md="3">
+                              {this.state.isEditLabourIndex ?
+                                <>
+                                  <button
+                                    type="button"
+                                    className={'btn btn-primary mt30 pull-left mr5'}
+                                    onClick={this.updateLabourGrid}
+                                  >Update</button>
 
-                        {!this.state.IsUsesFuel &&
-                          <>
-                            <Col md="3">
-                              <Field
-                                label={`Utilization (%)`}
-                                name={"UtilizationFactorPercentage"}
-                                type="text"
-                                placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
-                                component={renderText}
-                                //required={true}
-                                disabled={false}
-                                className=" "
-                                customClassName="withBorder"
-                              />
+                                  <button
+                                    type="button"
+                                    className={'reset-btn mt30 pull-left'}
+                                    onClick={this.resetLabourGridData}
+                                  >Cancel</button>
+                                </>
+                                :
+                                <>
+                                  <button
+                                    type="button"
+                                    className={'user-btn mt30 pull-left mr5'}
+                                    onClick={this.labourTableHandler}>
+                                    <div className={'plus'}></div>ADD</button>
+                                  <button
+                                    type="button"
+                                    className={'btn reset-btn mt30 pull-left'}
+                                    onClick={this.resetLabourGridData}
+                                  >Reset</button>
+                                </>}
                             </Col>
-                            <Col md="3">
-                              <Field
-                                label={`Power Rating (Kw)`}
-                                name={"PowerRatingPerKW"}
-                                type="text"
-                                placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
-                                component={renderText}
-                                //required={true}
-                                disabled={isEditFlag ? true : false}
-                                className=" "
-                                customClassName="withBorder"
-                              />
-                            </Col>
-                            <Col md={`3`} className="switch mb15">
-                              <label>Uses Solar Power</label>
-                              <label className="switch-level">
-                                <div className={'left-title'}>No</div>
-                                <Switch
-                                  onChange={this.onPressUsesSolarPower}
-                                  checked={this.state.IsUsesSolarPower}
-                                  id="normal-switch"
-                                  disabled={isEditFlag ? true : false}
-                                  background="#4DC771"
-                                  onColor="#4DC771"
-                                  onHandleColor="#ffffff"
-                                  offColor="#4DC771"
-                                  uncheckedIcon={false}
-                                  checkedIcon={false}
-                                  height={20}
-                                  width={46}
-                                />
-                                <div className={'right-title'}>Yes</div>
-                              </label>
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label={`Cost/Unit`}
-                                name={"PowerCostPerUnit"}
-                                type="text"
-                                placeholder={'Enter'}
-                                //validate={[required]}
-                                component={renderNumberInputField}
-                                //required={true}
-                                disabled={true}
-                                className=" "
-                                customClassName="withBorder"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label={`Total Power Cost/Annum (INR)`}
-                                name={"TotalPowerCostPerYear"}
-                                type="text"
-                                placeholder={'Enter'}
-                                //validate={[required]}
-                                component={renderNumberInputField}
-                                //required={true}
-                                disabled={true}
-                                className=" "
-                                customClassName="withBorder"
-                              />
-                            </Col>
-                          </>}
-                      </Row>
-
-                      <Row>
-                        <Col md="12">
-                          <HeaderTitle
-                            title={'Labour:'}
-                            customClass={'Personal-Details'} />
-                        </Col>
-                        <Col md="3">
-                          <Field
-                            name="LabourTypeIds"
-                            type="text"
-                            label="Labour Type"
-                            component={searchableSelect}
-                            placeholder={'Select Labour'}
-                            options={this.renderListing('labourList')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            //validate={(this.state.labourType == null || this.state.labourType.length === 0) ? [required] : []}
-                            //required={true}
-                            handleChangeDescription={this.labourHandler}
-                            valueDescription={this.state.labourType}
-                          />
-                        </Col>
-                        <Col md="2">
-                          <Field
-                            label={`Cost/Annum (INR)`}
-                            name={"LabourCostPerAnnum"}
-                            type="text"
-                            placeholder={'Enter'}
-                            //validate={[required]}
-                            component={renderNumberInputField}
-                            //onChange={this.handleLabourCalculation}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="2">
-                          <Field
-                            label={`No. Of People`}
-                            name={"NumberOfLabour"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[maxLength10]}
-                            component={renderNumberInputField}
-                            //onChange={this.handleLabourCalculation}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="2">
-                          <Field
-                            label={`Total Cost (INR)`}
-                            name={"LabourCost"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[number, postiveNumber]}
-                            component={renderText}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="3">
-                          {this.state.isEditLabourIndex ?
-                            <>
-                              <button
-                                type="button"
-                                className={'btn btn-primary mt30 pull-left mr5'}
-                                onClick={this.updateLabourGrid}
-                              >Update</button>
-
-                              <button
-                                type="button"
-                                className={'reset-btn mt30 pull-left'}
-                                onClick={this.resetLabourGridData}
-                              >Cancel</button>
-                            </>
-                            :
-                            <>
-                              <button
-                                type="button"
-                                className={'user-btn mt30 pull-left mr5'}
-                                onClick={this.labourTableHandler}>
-                                <div className={'plus'}></div>ADD</button>
-                              <button
-                                type="button"
-                                className={'btn reset-btn mt30 pull-left'}
-                                onClick={this.resetLabourGridData}
-                              >Reset</button>
-                            </>}
-                        </Col>
-                        <Col md="12">
-                          <Table className="table" size="sm" >
-                            <thead>
-                              <tr>
-                                <th>{`Labour Type`}</th>
-                                <th>{`Cost/Annum (INR)`}</th>
-                                <th>{`No. Of People`}</th>
-                                <th>{`Total Cost (INR)`}</th>
-                                <th>{`Action`}</th>
-                              </tr>
-                            </thead>
-                            <tbody >
-                              {
-                                this.state.labourGrid &&
-                                this.state.labourGrid.map((item, index) => {
-                                  return (
-                                    <tr key={index}>
-                                      <td>{item.labourTypeName}</td>
-                                      <td>{item.LabourCostPerAnnum}</td>
-                                      <td>{item.NumberOfLabour}</td>
-                                      <td>{item.LabourCost}</td>
-                                      <td>
-                                        <button className="Edit mr-2" type={'button'} onClick={() => this.editLabourItemDetails(index)} />
-                                        <button className="Delete" type={'button'} onClick={() => this.deleteLabourItem(index)} />
-                                      </td>
+                            <Col md="12">
+                              <Table className="table" size="sm" >
+                                <thead>
+                                  <tr>
+                                    <th>{`Labour Type`}</th>
+                                    <th>{`Cost/Annum (INR)`}</th>
+                                    <th>{`No. Of People`}</th>
+                                    <th>{`Total Cost (INR)`}</th>
+                                    <th>{`Action`}</th>
+                                  </tr>
+                                </thead>
+                                <tbody >
+                                  {
+                                    this.state.labourGrid &&
+                                    this.state.labourGrid.map((item, index) => {
+                                      return (
+                                        <tr key={index}>
+                                          <td>{item.labourTypeName}</td>
+                                          <td>{item.LabourCostPerAnnum}</td>
+                                          <td>{item.NumberOfLabour}</td>
+                                          <td>{item.LabourCost}</td>
+                                          <td>
+                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editLabourItemDetails(index)} />
+                                            <button className="Delete" type={'button'} onClick={() => this.deleteLabourItem(index)} />
+                                          </td>
+                                        </tr>
+                                      )
+                                    })
+                                  }
+                                  {this.state.labourGrid.length > 0 &&
+                                    <tr>
+                                      <td>{''}</td>
+                                      <td>{''}</td>
+                                      <td>{'Total Labour Cost/Annum (INR):'}</td>
+                                      <td>{this.calculateTotalLabourCost()}</td>
+                                      <td>{''}</td>
                                     </tr>
-                                  )
-                                })
-                              }
-                              {this.state.labourGrid.length > 0 &&
-                                <tr>
-                                  <td>{''}</td>
-                                  <td>{''}</td>
-                                  <td>{'Total Labour Cost/Annum (INR):'}</td>
-                                  <td>{this.calculateTotalLabourCost()}</td>
-                                  <td>{''}</td>
-                                </tr>
-                              }
-                            </tbody>
-                          </Table>
-                          {this.state.labourGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </Col>
+                                  }
+                                </tbody>
+                              </Table>
+                              {this.state.labourGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </Col>
+                          </Fragment>
+                        }
                       </Row>
 
+                      {/* PROCEES */}
+
                       <Row>
-                        <Col md="12">
+                        <Col md="6">
                           <HeaderTitle
                             title={'Process:'}
                             customClass={'Personal-Details'} />
                         </Col>
-                        <Col md="3">
-                          <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                            <div className="fullinput-icon">
+                        <Col md="6">
+                          <div className={'right-details'}>
+                            <a
+                              onClick={this.processToggle}
+                              className={`${isProcessOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
+                          </div>
+                        </Col>
+                        {
+                          isProcessOpen && <Fragment>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="ProcessName"
+                                    type="text"
+                                    label="Process Name"
+                                    component={searchableSelect}
+                                    placeholder={'--select--'}
+                                    options={this.renderListing('ProcessNameList')}
+                                    //onKeyUp={(e) => this.changeItemDesc(e)}
+                                    //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
+                                    //required={true}
+                                    handleChangeDescription={this.handleProcessName}
+                                    valueDescription={this.state.processName}
+                                    disabled={false}
+                                  />
+                                </div>
+                                {!isEditFlag && <div
+                                  onClick={this.processToggler}
+                                  className={'plus-icon-square right'}>
+                                </div>}
+                              </div>
+                            </Col>
+                            <Col md="2">
                               <Field
-                                name="ProcessName"
+                                name="UOM"
                                 type="text"
-                                label="Process Name"
+                                label="UOM"
                                 component={searchableSelect}
                                 placeholder={'--select--'}
-                                options={this.renderListing('ProcessNameList')}
+                                options={this.renderListing('UOM')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
+                                //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
                                 //required={true}
-                                handleChangeDescription={this.handleProcessName}
-                                valueDescription={this.state.processName}
+                                handleChangeDescription={this.handleUOM}
+                                valueDescription={this.state.UOM}
                                 disabled={false}
                               />
-                            </div>
-                            {!isEditFlag && <div
-                              onClick={this.processToggler}
-                              className={'plus-icon-square right'}>
-                            </div>}
-                          </div>
-                        </Col>
-                        <Col md="2">
-                          <Field
-                            name="UOM"
-                            type="text"
-                            label="UOM"
-                            component={searchableSelect}
-                            placeholder={'--select--'}
-                            options={this.renderListing('UOM')}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
-                            //required={true}
-                            handleChangeDescription={this.handleUOM}
-                            valueDescription={this.state.UOM}
-                            disabled={false}
-                          />
-                        </Col>
-                        <Col md="1">
-                          <Field
-                            label={`Output/Hr`}
-                            name={"OutputPerHours"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
-                            component={renderText}
-                            //required={true}
-                            disabled={false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col md="1">
-                          <Field
-                            label={`Output/Yr`}
-                            name={"OutputPerYear"}
-                            type="text"
-                            placeholder={'Enter'}
-                            //validate={[required]}
-                            component={renderNumberInputField}
-                            //required={true}
-                            disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                        <Col className="d-flex col-auto">
-                          <div className="machine-rate-filed pr-3">
-                            <Field
-                              label={`Machine Rate/Hr (INR)`}
-                              name={"MachineRate"}
-                              type="text"
-                              placeholder={''}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
-                              component={renderText}
-                              onChange={this.handleMachineRate}
-                              //required={true}
-                              disabled={true}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </div>
-                          <div className="btn-mr-rate pr-0 col-auto">
-                            {this.state.isEditIndex ?
-                              <>
-                                <button
-                                  type="button"
-                                  className={'btn btn-primary pull-left mr5'}
-                                  onClick={this.updateProcessGrid}
-                                >Update</button>
+                            </Col>
+                            <Col md="1">
+                              <Field
+                                label={`Output/Hr`}
+                                name={"OutputPerHours"}
+                                type="text"
+                                placeholder={'Enter'}
+                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                component={renderText}
+                                //required={true}
+                                disabled={false}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col md="1">
+                              <Field
+                                label={`Output/Yr`}
+                                name={"OutputPerYear"}
+                                type="text"
+                                placeholder={'Enter'}
+                                //validate={[required]}
+                                component={renderNumberInputField}
+                                //required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName="withBorder"
+                              />
+                            </Col>
+                            <Col className="d-flex col-auto">
+                              <div className="machine-rate-filed pr-3">
+                                <Field
+                                  label={`Machine Rate/Hr (INR)`}
+                                  name={"MachineRate"}
+                                  type="text"
+                                  placeholder={''}
+                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  component={renderText}
+                                  onChange={this.handleMachineRate}
+                                  //required={true}
+                                  disabled={true}
+                                  className=" "
+                                  customClassName=" withBorder"
+                                />
+                              </div>
+                              <div className="btn-mr-rate pr-0 col-auto">
+                                {this.state.isEditIndex ?
+                                  <>
+                                    <button
+                                      type="button"
+                                      className={'btn btn-primary pull-left mr5'}
+                                      onClick={this.updateProcessGrid}
+                                    >Update</button>
 
-                                <button
-                                  type="button"
-                                  className={'reset-btn pull-left'}
-                                  onClick={this.resetProcessGridData}
-                                >Cancel</button>
-                              </>
-                              :
-                              <button
-                                type="button"
-                                className={'user-btn pull-left'}
-                                onClick={this.processTableHandler}>
-                                <div className={'plus'}></div>ADD</button>}
-                          </div>
-                        </Col>
-                        <Col md="12">
-                          <Table className="table" size="sm" >
-                            <thead>
-                              <tr>
-                                <th>{`Process Name`}</th>
-                                <th>{`UOM`}</th>
-                                <th>{`Output/Hr`}</th>
-                                <th>{`Output/Annum`}</th>
-                                <th>{`Machine Rate/Hr (INR)`}</th>
-                                <th>{`Action`}</th>
-                              </tr>
-                            </thead>
-                            <tbody >
-                              {
-                                this.state.processGrid &&
-                                this.state.processGrid.map((item, index) => {
-                                  return (
-                                    <tr key={index}>
-                                      <td>{item.processName}</td>
-                                      <td>{item.UnitOfMeasurement}</td>
-                                      <td>{item.OutputPerHours}</td>
-                                      <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                                      <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                      <td>
-                                        <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
-                                        <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
-                                      </td>
-                                    </tr>
-                                  )
-                                })
-                              }
-                            </tbody>
-                          </Table>
-                          {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
-                        </Col>
-
+                                    <button
+                                      type="button"
+                                      className={'reset-btn pull-left'}
+                                      onClick={this.resetProcessGridData}
+                                    >Cancel</button>
+                                  </>
+                                  :
+                                  <button
+                                    type="button"
+                                    className={'user-btn pull-left'}
+                                    onClick={this.processTableHandler}>
+                                    <div className={'plus'}></div>ADD</button>}
+                              </div>
+                            </Col>
+                            <Col md="12">
+                              <Table className="table" size="sm" >
+                                <thead>
+                                  <tr>
+                                    <th>{`Process Name`}</th>
+                                    <th>{`UOM`}</th>
+                                    <th>{`Output/Hr`}</th>
+                                    <th>{`Output/Annum`}</th>
+                                    <th>{`Machine Rate/Hr (INR)`}</th>
+                                    <th>{`Action`}</th>
+                                  </tr>
+                                </thead>
+                                <tbody >
+                                  {
+                                    this.state.processGrid &&
+                                    this.state.processGrid.map((item, index) => {
+                                      return (
+                                        <tr key={index}>
+                                          <td>{item.processName}</td>
+                                          <td>{item.UnitOfMeasurement}</td>
+                                          <td>{item.OutputPerHours}</td>
+                                          <td>{checkForDecimalAndNull(item.OutputPerYear, initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                                          <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                          <td>
+                                            <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index)} />
+                                            <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
+                                          </td>
+                                        </tr>
+                                      )
+                                    })
+                                  }
+                                </tbody>
+                              </Table>
+                              {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
+                            </Col>
+                          </Fragment>
+                        }
                       </Row>
 
                       <Row>

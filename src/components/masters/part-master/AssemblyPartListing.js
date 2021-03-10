@@ -311,8 +311,8 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="BOMNumber" width={'100'}>BOM NO.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" width={'100'}>Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
-                    <TableHeaderColumn dataField="Plants" searchable={false} width={'100'} >Plant</TableHeaderColumn>
-                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="Plants" searchable={false} width={'100'} >Plant</TableHeaderColumn> */}
+                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'120'}>{this.renderNumberOfParts()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'120'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'}>ECN No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'100'} >Drawing No.</TableHeaderColumn>

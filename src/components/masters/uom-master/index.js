@@ -194,9 +194,9 @@ class UOMMaster extends Component {
     this.props.activeInactiveUOM(data, res => {
       if (res && res.data && res.data.Result) {
         if (cell === true) {
-          toastr.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
-        } else {
           toastr.success(MESSAGES.UOM_INACTIVE_SUCCESSFULLY)
+        } else {
+          toastr.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
         }
         this.getUOMDataList()
       }
