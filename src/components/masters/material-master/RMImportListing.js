@@ -438,7 +438,7 @@ class RMImportListing extends Component {
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 filter-row-large">
             {this.state.shown && (
-              <Col lg="9" md="12" className="filter-block ">
+              <Col lg="11" md="12" className="filter-block ">
                 <div className="d-inline-flex justify-content-start align-items-top w100">
                   <div className="flex-fills">
                     <h5>{`Filter By:`}</h5>
