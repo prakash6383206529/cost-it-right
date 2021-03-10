@@ -57,8 +57,8 @@ const SendForApproval = (props) => {
   const userData = userDetails()
 
   useEffect(() => {
-    dispatch(getReasonSelectList((res) => {}))
-    dispatch(getAllApprovalDepartment((res) => {}))
+    dispatch(getReasonSelectList((res) => { }))
+    dispatch(getAllApprovalDepartment((res) => { }))
   }, [])
 
   /**
@@ -210,7 +210,7 @@ const SendForApproval = (props) => {
           temp.annualImpact =
             temp.variance != ''
               ? (actualQty + (budgetedRemQty - actualRemQty)) *
-                parseInt(temp.variance)
+              parseInt(temp.variance)
               : ''
           temp.yearImpact =
             temp.variance != ''
@@ -321,7 +321,7 @@ const SendForApproval = (props) => {
     setSelectedApproverLevelId(data.levelId)
   }
 
-  useEffect(() => {}, [viewApprovalData])
+  useEffect(() => { }, [viewApprovalData])
 
   const toggleDrawer = (event) => {
     if (
@@ -340,22 +340,22 @@ const SendForApproval = (props) => {
         open={props.isOpen}
         onClose={(e) => toggleDrawer(e)}
       >
-        {viewApprovalData &&
-          viewApprovalData.map((data, index) => {
-            return (
-              <div className="pl-3 pr-3">
-                <div className={"drawer-wrapper drawer-md"}>
-                  <Row className="drawer-heading">
-                    <Col>
-                      <div className={"header-wrapper left"}>
-                        <h3>{"Send for Approval"}</h3>
-                      </div>
-                      <div
-                        onClick={(e) => toggleDrawer(e)}
-                        className={"close-button right"}
-                      ></div>
-                    </Col>
-                  </Row>
+        <div className={"drawer-wrapper drawer-md"}>
+          <Row className="drawer-heading">
+            <Col>
+              <div className={"header-wrapper left"}>
+                <h3>{"Send for Approval"}</h3>
+              </div>
+              <div
+                onClick={(e) => toggleDrawer(e)}
+                className={"close-button right"}
+              ></div>
+            </Col>
+          </Row>
+          {viewApprovalData &&
+            viewApprovalData.map((data, index) => {
+              return (
+                <div className="pl-3 pr-3">
                   <Row className="px-3">
                     <Col md="12">
                       <h6 className="left-border d-inline-block mr-3">
@@ -408,7 +408,7 @@ const SendForApproval = (props) => {
                             className=""
                             customClassName={"withBorder"}
                             errors={errors.encNumber}
-                            // disabled={true}
+                          // disabled={true}
                           />
                         </Col>
                         <Col md="4">
@@ -499,9 +499,9 @@ const SendForApproval = (props) => {
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+        </div>
         <div className="pl-3 pr-3">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Row className="px-3">
@@ -551,7 +551,7 @@ const SendForApproval = (props) => {
                   control={control}
                   register={register}
                   mandatory={false}
-                  handleChange={() => {}}
+                  handleChange={() => { }}
                   defaultValue={""}
                   className=""
                   customClassName={"withBorder"}
@@ -569,7 +569,7 @@ const SendForApproval = (props) => {
                   className="cancel-btn mr-2"
                   type={"button"}
                   onClick={toggleDrawer}
-                  // className="reset mr15 cancel-btn"
+                // className="reset mr15 cancel-btn"
                 >
                   <div className={"cross-icon"}>
                     <img
@@ -583,8 +583,8 @@ const SendForApproval = (props) => {
                 <button
                   className="btn btn-primary save-btn"
                   type="submit"
-                  // className="submit-button save-btn"
-                  // onClick={() => handleSubmit(onSubmit)}
+                // className="submit-button save-btn"
+                // onClick={() => handleSubmit(onSubmit)}
                 >
                   <div className={"check-icon"}>
                     <img

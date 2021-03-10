@@ -48,12 +48,14 @@ function BoughtOutPart(props) {
             {/* <div className={`${IsOpen ? 'Open' : 'Close'}`}></div> */}
           </span>
         </td>
+        <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
         <td>{''}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{''}</td>
         <td>{''}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{''}</td>
         <td>{''}</td>
       </tr>
     </ >
