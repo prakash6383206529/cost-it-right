@@ -42,11 +42,11 @@ class AddGrade extends Component {
     this.toggleDrawer('')
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, formData) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', formData)
   };
 
 
@@ -70,7 +70,7 @@ class AddGrade extends Component {
       this.props.updateRMGradeAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
-          this.toggleDrawer('')
+          this.toggleDrawer('', formData)
         }
       })
     } else {
@@ -81,7 +81,7 @@ class AddGrade extends Component {
       this.props.createRMGradeAPI(values, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.GRADE_ADD_SUCCESS);
-          this.toggleDrawer('')
+          this.toggleDrawer('', values)
         }
       });
     }

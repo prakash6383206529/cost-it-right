@@ -5,12 +5,7 @@ import { Container, Row, Col } from 'reactstrap'
 import { required } from '../../../helper/validation'
 import { renderText, renderMultiSelectField } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
-import {
-  getProcessCode,
-  createProcess,
-  updateProcess,
-  getProcessData,
-} from '../actions/Process'
+import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
 import { getPlantSelectList } from '../../../actions/Common'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
@@ -48,12 +43,8 @@ class AddProcessDrawer extends Component {
       this.props.getProcessData(ID, (res) => {
         let Data = res.data.Data
 
-        let PlantArray =
-          Data &&
-          Data.Plants.map((el) => ({ Text: el.PlantName, Value: el.PlantId }))
-        let MachineArray =
-          Data &&
-          Data.Machines.map((el) => ({ Text: el.Machine, Value: el.MachineId }))
+        let PlantArray = Data && Data.Plants.map((el) => ({ Text: el.PlantName, Value: el.PlantId }))
+        let MachineArray = Data && Data.Machines.map((el) => ({ Text: el.Machine, Value: el.MachineId }))
 
         this.setState({
           ProcessId: Data.ProcessId,
@@ -66,14 +57,14 @@ class AddProcessDrawer extends Component {
     }
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, formData) => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', formData)
   }
 
   checkProcessCode = (e) => {
@@ -110,21 +101,19 @@ class AddProcessDrawer extends Component {
     const { plantSelectList, machineSelectList } = this.props
     const temp = []
     if (label === 'machine') {
-      machineSelectList &&
-        machineSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ Text: item.Text, Value: item.Value })
-          return null
-        })
+      machineSelectList && machineSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ Text: item.Text, Value: item.Value })
+        return null
+      })
       return temp
     }
     if (label === 'plant') {
-      plantSelectList &&
-        plantSelectList.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ Text: item.Text, Value: item.Value })
-          return null
-        })
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ Text: item.Text, Value: item.Value })
+        return null
+      })
       return temp
     }
   }
@@ -149,17 +138,13 @@ class AddProcessDrawer extends Component {
     const { isEditFlag, isMachineShow, ID } = this.props
 
     let plantArray =
-      selectedPlants &&
-      selectedPlants.map((item) => ({
-        PlantName: item.Text,
-        PlantId: item.Value,
+      selectedPlants && selectedPlants.map((item) => ({
+        PlantName: item.Text, PlantId: item.Value,
       }))
 
     let machineArray =
-      selectedMachine &&
-      selectedMachine.map((item) => ({
-        Machine: item.Text,
-        MachineId: item.Value,
+      selectedMachine && selectedMachine.map((item) => ({
+        Machine: item.Text, MachineId: item.Value,
       }))
 
     /** Update existing detail of supplier master **/
@@ -176,7 +161,7 @@ class AddProcessDrawer extends Component {
       this.props.updateProcess(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
-          this.toggleDrawer('')
+          this.toggleDrawer('', formData)
         }
       })
     } else {
@@ -193,7 +178,7 @@ class AddProcessDrawer extends Component {
       this.props.createProcess(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.PROCESS_ADD_SUCCESS)
-          this.toggleDrawer('')
+          this.toggleDrawer('', formData)
         }
       })
     }
@@ -207,18 +192,10 @@ class AddProcessDrawer extends Component {
     const { handleSubmit, isEditFlag, isMachineShow } = this.props
     return (
       <div>
-        <Drawer
-          anchor={this.props.anchor}
-          open={this.props.isOpen}
-          onClose={(e) => this.toggleDrawer(e)}
-        >
+        <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
           <Container>
             <div className={'drawer-wrapper'}>
-              <form
-                noValidate
-                className="form"
-                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-              >
+              <form noValidate className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                 <Row className="drawer-heading">
                   <Col>
                     <div className={'header-wrapper left'}>
@@ -266,11 +243,7 @@ class AddProcessDrawer extends Component {
                       name="Plant"
                       placeholder="Select"
                       selection={
-                        this.state.selectedPlants == null ||
-                          this.state.selectedPlants.length === 0
-                          ? []
-                          : this.state.selectedPlants
-                      }
+                        this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                       options={this.renderListing('plant')}
                       selectionChanged={this.handlePlants}
                       optionValue={(option) => option.Value}
@@ -289,11 +262,7 @@ class AddProcessDrawer extends Component {
                         name="Machine"
                         placeholder="Select"
                         selection={
-                          this.state.selectedMachine == null ||
-                            this.state.selectedMachine.length === 0
-                            ? []
-                            : this.state.selectedMachine
-                        }
+                          this.state.selectedMachine == null || this.state.selectedMachine.length === 0 ? [] : this.state.selectedMachine}
                         options={this.renderListing('machine')}
                         selectionChanged={this.handleMachine}
                         optionValue={(option) => option.Value}

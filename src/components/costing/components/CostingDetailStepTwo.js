@@ -14,6 +14,7 @@ export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
+  console.log("INSTEP 2");
 
   const dispatch = useDispatch()
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)

@@ -3,14 +3,13 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import HeaderTitle from '../../common/HeaderTitle';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { round } from 'lodash';
 
 function ManageSOBDrawer(props) {
 

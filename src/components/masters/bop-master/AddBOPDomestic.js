@@ -2,7 +2,10 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, checkForNull, maxLength100, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric, maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces } from "../../../helper/validation";
+import {
+  required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
+  maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces
+} from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
@@ -254,11 +257,11 @@ class AddBOPDomestic extends Component {
     this.setState({ isCategoryDrawerOpen: false, }, () => {
       this.props.getBOPCategorySelectList(() => {
         const { bopCategorySelectList } = this.props;
+        /*TO SHOW CATEGORY VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(formData).length > 0) {
           let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Text === formData.Category)
           this.setState({ BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [] })
         }
-
       })
     })
   }
@@ -603,7 +606,7 @@ class AddBOPDomestic extends Component {
                         <Row>
                           <Col md="3">
                             <Field
-                              label={`Part No`}
+                              label={`BOP Part No`}
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
@@ -618,7 +621,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Part Name`}
+                              label={`BOP Part Name`}
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}

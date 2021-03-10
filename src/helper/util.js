@@ -661,6 +661,8 @@ export function formViewData(costingSummary) {
   obj.costingId = dataFromAPI.CostingId ? dataFromAPI.CostingId : '-'
   obj.oldPoPrice = dataFromAPI.OldPOPrice ? dataFromAPI.OldPOPrice : '-'
   obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
+  obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
+  obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
   console.log('obj: ', obj)
   temp.push(obj)
   return temp
