@@ -344,10 +344,8 @@ const CostingSummaryTable = (props) => {
       temp.push(viewCostingData[index].costingId)
       // setMultipleCostings(temp)
     } else {
-      const ind = multipleCostings.findIndex(
-        (data) => data == viewCostingData[index].costingId,
-      )
-      if (ind != -1) {
+      const ind = multipleCostings.findIndex((data) => data === viewCostingData[index].costingId,)
+      if (ind !== -1) {
         temp.splice(ind, 1)
       }
       // setMultipleCostings(temp)
@@ -384,11 +382,7 @@ const CostingSummaryTable = (props) => {
           // obj.oldPrice = viewCostingData[index].oldPrice;
           obj.oldPrice = viewCostingData[index].oldPoPrice
           obj.revisedPrice = viewCostingData[index].nPOPrice
-          obj.variance =
-            viewCostingData[index].oldPoPrice != 0
-              ? parseInt(viewCostingData[index].oldPoPrice) -
-              parseInt(viewCostingData[index].nPOPrice)
-              : ''
+          obj.variance = viewCostingData[index].oldPoPrice !== 0 ? parseInt(viewCostingData[index].oldPoPrice) - parseInt(viewCostingData[index].nPOPrice) : ''
           obj.consumptionQty = ''
           obj.remainingQty = ''
           obj.annualImpact = ''
@@ -403,7 +397,7 @@ const CostingSummaryTable = (props) => {
   }
 
   const checkCostings = () => {
-    if (multipleCostings.length == 0) {
+    if (multipleCostings.length === 0) {
       toastr.warning(
         'Please select at least one costing for sendig for approval',
       )
