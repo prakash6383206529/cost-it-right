@@ -14,6 +14,7 @@ import { MESSAGES } from "../../../config/message";
 import { } from 'reactstrap';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
+import ConfirmComponent from "../../../helper/ConfirmComponent";
 
 class Role extends Component {
 	constructor(props) {
@@ -184,7 +185,8 @@ class Role extends Component {
 				onOk: () => {
 					this.confirmUpdate(updateData)
 				},
-				onCancel: () => this.clearForm()
+				onCancel: () => this.clearForm(),
+				component: () => <ConfirmComponent />
 			};
 			return toastr.confirm(`${MESSAGES.ROLE_UPDATE_ALERT}`, toastrConfirmOptions);
 

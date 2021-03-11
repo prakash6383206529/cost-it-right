@@ -1930,7 +1930,7 @@ class AddMoreDetails extends Component {
                         </Col>
                       </Row>
                       {/*  LOAN AND INTREST VALUE */}
-                      <Row>
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Loan & Interest:'}
@@ -1945,7 +1945,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isLoanOpen &&
-                          <Fragment>
+                          <div className="accordian-content row mx-0 w-100">
                             <Col md="4">
                               <Field
                                 label={`Loan (%)`}
@@ -2034,11 +2034,11 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
 
-                          </Fragment>
+                          </div>
                         }
                       </Row>
                       {/* WORKING HOURS */}
-                      <Row>
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Working Hours:'}
@@ -2053,7 +2053,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isWorkingOpen &&
-                          <Fragment>
+                          <div className="accordian-content row mx-0 w-100">
                             <Col md="3">
                               <Field
                                 name="WorkingShift"
@@ -2099,7 +2099,7 @@ class AddMoreDetails extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="d-flex justify-space-between align-items-center filled-icon-inside">
                                 <div className="fullinput-icon">
                                   <Field
                                     label={`Availability (%)`}
@@ -2116,7 +2116,7 @@ class AddMoreDetails extends Component {
                                 </div>
                                 <div
                                   onClick={this.efficiencyCalculationToggler}
-                                  className={'calculate-icon mt-0 mb-1 right'}>
+                                  className={'calculate-icon mt-0 right'}>
                                 </div>
                               </div>
                             </Col>
@@ -2134,12 +2134,12 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                          </Fragment>
+                          </div>
                         }
                       </Row>
 
                       {/* DEPRICIATION  */}
-                      <Row>
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Depreciation:'}
@@ -2154,7 +2154,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         {
                           isDepreciationOpen &&
-                          <Fragment>
+                          <div className="accordian-content row mx-0 w-100">
                             <Col md="3">
                               <Field
                                 name="DepreciationTypeId"
@@ -2258,12 +2258,12 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                          </Fragment>
+                          </div>
                         }
                       </Row>
 
                       {/* VARIABLE COST */}
-                      <Row>
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Variable Cost:'}
@@ -2277,7 +2277,7 @@ class AddMoreDetails extends Component {
                           </div>
                         </Col>
                         {
-                          isVariableCostOpen && <Fragment>
+                          isVariableCostOpen && <div className="accordian-content row mx-0 w-100">
                             <Col md={`${this.state.IsAnnualMaintenanceFixed ? 2 : 3}`} className="switch mb15">
                               <label>Annual Maintenance</label>
                               <label className="switch-level">
@@ -2499,12 +2499,12 @@ class AddMoreDetails extends Component {
                                 customClassName="withBorder"
                               />
                             </Col>
-                          </Fragment>
+                          </div>
                         }
                       </Row>
 
                       {/* POWER */}
-                      <Row>
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Power:'}
@@ -2517,7 +2517,7 @@ class AddMoreDetails extends Component {
                               className={`${isPowerOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a>
                           </div>
                         </Col>
-                        {isPowerOpen && <Fragment>
+                        {isPowerOpen && <div className="accordian-content row mx-0 w-100">
 
 
                           <Col md={`3`} className="switch mb15">
@@ -2683,12 +2683,12 @@ class AddMoreDetails extends Component {
                                 />
                               </Col>
                             </>}
-                        </Fragment>
+                        </div>
                         }
                       </Row>
 
                       {/* LABOUR */}
-                      <Row>
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Labour:'}
@@ -2702,7 +2702,7 @@ class AddMoreDetails extends Component {
                           </div>
                         </Col>
                         {
-                          isLabourOpen && <Fragment>
+                          isLabourOpen && <div className="accordian-content row mx-0 w-100">
                             <Col md="3">
                               <Field
                                 name="LabourTypeIds"
@@ -2833,13 +2833,13 @@ class AddMoreDetails extends Component {
                               </Table>
                               {this.state.labourGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </Col>
-                          </Fragment>
+                          </div>
                         }
                       </Row>
 
                       {/* PROCEES */}
 
-                      <Row>
+                      <Row className="mb-3 accordian-container">
                         <Col md="6">
                           <HeaderTitle
                             title={'Process:'}
@@ -2853,7 +2853,7 @@ class AddMoreDetails extends Component {
                           </div>
                         </Col>
                         {
-                          isProcessOpen && <Fragment>
+                          isProcessOpen && <div className="accordian-content row mx-0 w-100">
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
@@ -2996,7 +2996,7 @@ class AddMoreDetails extends Component {
                               </Table>
                               {this.state.processGrid.length === 0 && <NoContentFound title={CONSTANT.EMPTY_DATA} />}
                             </Col>
-                          </Fragment>
+                          </div>
                         }
                       </Row>
 
