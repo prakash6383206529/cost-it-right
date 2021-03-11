@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, upper, email, minLength7, maxLength70, alphaNumeric, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces } from "../../../helper/validation";
+import {
+    required, upper, email, minLength7, maxLength70, alphaNumeric, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter,
+    maxLength15, postiveNumber, maxLength10, maxLength6, checkWhiteSpaces
+} from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, checkVendorPlantConfigurable } from "../../../helper/auth";
+import { loggedInUserId } from "../../../helper/auth";
 import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
@@ -648,8 +651,8 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row className="pl-3">
-                                    {/* THIS DROPDOWN WILL BE VISIBLE ONLY FOR PARTICULAR VENDOR TYPE AND IN EDIT MODE ONLY */}
+                                {/*  <Row className="pl-3"> 
+                                  
                                     {this.checkVendorSelection() && checkVendorPlantConfigurable() && this.props.isEditFlag &&
                                         <>
                                             <Col md="12">
@@ -678,7 +681,7 @@ class AddVendorDrawer extends Component {
                                                 </div>
                                             </Col>
                                         </>}
-                                </Row>
+                                </Row> */}
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
                                     <div className="col-sm-12 text-right px-3">
                                         <button

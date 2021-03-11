@@ -639,7 +639,7 @@ class AddBOPDomestic extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="Category"
+                                  label="BOP Category"
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("BOPCategory")}
@@ -662,26 +662,6 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label="Part/ Assembly No."
-                              name="PartAssemblyNo"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0 ? [] : this.state.selectedPartAssembly}
-                              options={this.renderListing("PartAssembly")}
-                              selectionChanged={this.handlePartAssembly}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                            />
-                          </Col>
-                        </Row>
-
-                        <Row>
-                          <Col md="3">
-                            <Field
                               label={`Specification`}
                               name={"Specification"}
                               type="text"
@@ -694,6 +674,11 @@ class AddBOPDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
+
+                        </Row>
+
+                        <Row>
+
                           <Col md="3">
                             <Field
                               name="UOM"
@@ -727,6 +712,23 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
+                          <Col md="3">
+                            <Field
+                              label="Part/ Assembly No."
+                              name="PartAssemblyNo"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0 ? [] : this.state.selectedPartAssembly}
+                              options={this.renderListing("PartAssembly")}
+                              selectionChanged={this.handlePartAssembly}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                            //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                            />
+                          </Col>
                         </Row>
 
                         <Row>

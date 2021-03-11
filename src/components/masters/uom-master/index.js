@@ -235,7 +235,7 @@ class UOMMaster extends Component {
             {AddAccessibility && (
               <>
                 <Col md={6} className="text-right filter-block"></Col>
-                <Col md={6} className="text-right search-user-block pr-0">
+                {/* <Col md={6} className="text-right search-user-block pr-0">
                   <button
                     type={"button"}
                     className={"user-btn"}
@@ -244,7 +244,7 @@ class UOMMaster extends Component {
                     <div className={"plus"}></div>
                     {`ADD`}
                   </button>
-                </Col>
+                </Col> */}
               </>
             )}
           </Row>
@@ -265,24 +265,15 @@ class UOMMaster extends Component {
                 tableHeaderClass="my-custom-class"
                 pagination
               >
-                <TableHeaderColumn
-                  dataField="Unit"
-                  dataAlign="left"
-                  dataSort={true}
-                  dataFormat={this.applySuperScriptFormatter}
-                >
-                  Unit
-                    </TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitType" dataSort={true}>
-                  Unit Type
-                    </TableHeaderColumn>
-                <TableHeaderColumn
+                <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}                >                  Unit                    </TableHeaderColumn>
+                <TableHeaderColumn dataField="UnitType" dataSort={true}>Unit Type</TableHeaderColumn>
+                {/* <TableHeaderColumn
                   dataField="IsActive"
                   dataFormat={this.statusButtonFormatter}
                 >
                   Status
-                    </TableHeaderColumn>
-                <TableHeaderColumn
+                    </TableHeaderColumn> */}
+                {/* <TableHeaderColumn
                   width={100}
                   dataField="Id"
                   isKey={true}
@@ -290,7 +281,7 @@ class UOMMaster extends Component {
                   dataFormat={this.buttonFormatter}
                 >
                   Actions
-                    </TableHeaderColumn>
+                    </TableHeaderColumn> */}
               </BootstrapTable>
             </Col>
           </Row>

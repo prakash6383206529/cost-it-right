@@ -312,7 +312,7 @@ class AddClientDrawer extends Component {
                                                     name={"PhoneNumber"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
                                                     // maxLength={12}
@@ -326,7 +326,7 @@ class AddClientDrawer extends Component {
                                                     name={"Extension"}
                                                     type="text"
                                                     placeholder={''}
-                                                    validate={[required, postiveNumber, maxLength3, checkWhiteSpaces]}
+                                                    validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
                                                     component={renderText}
                                                     // required={true}
                                                     maxLength={3}
@@ -347,7 +347,7 @@ class AddClientDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
+                                            validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                                             // required={true}
                                             maxLength={10}
                                             customClassName={'withBorder'}
@@ -408,7 +408,7 @@ class AddClientDrawer extends Component {
                                             name={"ZipCode"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, postiveNumber]}
+                                            validate={[postiveNumber]}
                                             component={renderText}
                                             // required={true}
                                             maxLength={6}

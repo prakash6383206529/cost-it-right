@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, renderMultiSelectField, renderTextAreaField, } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
@@ -327,7 +327,7 @@ class AddIndivisualPart extends Component {
                               customClassName={"withBorder"}
                             />
                           </Col>
-                          {initialConfiguration &&
+                          {/* {initialConfiguration &&
                             initialConfiguration.IsBOMNumberDisplay && (
                               <Col md="3">
                                 <Field
@@ -343,7 +343,7 @@ class AddIndivisualPart extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />
                               </Col>
-                            )}
+                            )} */}
                           <Col md="3">
                             <Field
                               label={`Part Description`}

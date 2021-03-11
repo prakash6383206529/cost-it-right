@@ -460,6 +460,7 @@ class LabourListing extends Component {
         this.props.getZBCPlantList(() => { })
         this.props.getStateSelectList(() => { })
         this.props.getMachineTypeSelectList(() => { })
+        this.props.getLabourTypeByPlantSelectList('', () => { })
         this.getTableListData()
       },
     )
@@ -578,11 +579,7 @@ class LabourListing extends Component {
                         options={this.renderListing("EmploymentTerms")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}
                         validate={
-                          this.state.EmploymentTerms == null ||
-                            this.state.EmploymentTerms.length === 0
-                            ? [required]
-                            : []
-                        }
+                          this.state.EmploymentTerms == null || this.state.EmploymentTerms.length === 0 ? [required] : []}
                         required={true}
                         handleChangeDescription={this.handleHeadChange}
                         valueDescription={this.state.EmploymentTerms}
