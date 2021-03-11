@@ -79,6 +79,7 @@ export default function VishualAdDrawer(props) {
                                                 message: 'Invalid Number.',
                                             },
                                             min: 1,
+
                                         }}
                                         mandatory={true}
                                         handleChange={() => { }}
