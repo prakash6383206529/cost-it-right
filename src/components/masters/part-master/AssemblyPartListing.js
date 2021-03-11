@@ -314,10 +314,10 @@ class AssemblyPartListing extends Component {
                     {/* <TableHeaderColumn dataField="Plants" searchable={false} width={'100'} >Plant</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'120'}>{this.renderNumberOfParts()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'120'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'100'}>ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'110'} >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'}>ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'100'} >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'120'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="PartId" searchable={false} width={'100'} dataFormat={this.visualAdFormatter}>BOM Viwer</TableHeaderColumn>
                     <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
