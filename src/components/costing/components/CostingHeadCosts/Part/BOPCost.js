@@ -216,7 +216,7 @@ function BOPCost(props) {
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="SaveIcon  mr5" type={'button'} onClick={() => SaveItem(index)} />
+                                <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />
                                 <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />
                               </td>
                             </tr>
@@ -229,7 +229,7 @@ function BOPCost(props) {
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="Edit  mr-2" type={'button'} onClick={() => editItem(index)} />
+                                <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />
                                 <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />
                               </td>
                             </tr>

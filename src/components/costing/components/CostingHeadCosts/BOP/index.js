@@ -44,7 +44,7 @@ function BoughtOutPart(props) {
       <tr>
         <td>
           <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
-            {item && item.PartNumber}-{item && item.BOMLevel}
+            {item && item.PartNumber}
             {/* <div className={`${IsOpen ? 'Open' : 'Close'}`}></div> */}
           </span>
         </td>
@@ -53,7 +53,7 @@ function BoughtOutPart(props) {
         <td>{''}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{''}</td>
-        <td>{''}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? item.CostingPartDetails.Quantity : 1}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{''}</td>
         <td>{''}</td>

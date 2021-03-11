@@ -329,7 +329,8 @@ export function getZBCCostingByCostingId(CostingId, callback) {
  * @method setCostingDataList
  * @description SET COSTING DATA LIST
  */
-export function setCostingDataList(CostingDataList, callback) {
+export function setCostingDataList(flag, CostingDataList, callback) {
+  console.log('CostingDataList: ', flag, CostingDataList);
   return (dispatch) => {
     dispatch({
       type: SET_COSTING_DATALIST_BY_COSTINGID,

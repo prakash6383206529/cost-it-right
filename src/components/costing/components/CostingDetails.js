@@ -666,17 +666,29 @@ function CostingDetails(props) {
    */
   const moveToCostingDetail = (index, type) => {
     dispatch(getZBCCostingByCostingId('', (res) => { }))
+
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      setStepTwo(true)
-      setStepOne(false)
+      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
+
+      setTimeout(() => {
+        setStepTwo(true)
+        setStepOne(false)
+      }, 500)
+
     }
+
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      setStepTwo(true)
-      setStepOne(false)
+      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
+
+      setTimeout(() => {
+        setStepTwo(true)
+        setStepOne(false)
+      }, 500)
+
     }
   }
 

@@ -1276,6 +1276,10 @@ label for[normal-switch]{
 {
   input{
     height: 32px;
+    &::placeholder{
+      color: #A4ABC5 ;
+      font-size: 14px;
+    }
 }
 }
 .pr0 {
@@ -1523,6 +1527,7 @@ $roboto: "Roboto", sans-serif;
 	}
 }
 .custom-check {
+  line-height: initial;
 	input {
 		padding: 0;
 		height: initial;
@@ -1542,7 +1547,7 @@ $roboto: "Roboto", sans-serif;
 						content: '';
 						display: block;
 						position: absolute;
-						top: 4px;
+						top: 2px;
 						left: 7px;
 						width: 6px;
 						height: 12px;
@@ -1557,7 +1562,9 @@ $roboto: "Roboto", sans-serif;
 	label {
 		position: relative;
 		cursor: pointer;
-		color: #3D4465;
+    color: #3D4465;
+    margin-bottom: 0 !important;
+    line-height: initial;
 		&:before {
 			content: '';
 			-webkit-appearance: none;
@@ -1574,6 +1581,7 @@ $roboto: "Roboto", sans-serif;
 		}
 	}
 }
+.checkbox-text{line-height: initial;}
 .small-grey-text {
 	font-size: 13px;
 	color: #8A91AC;
@@ -1982,6 +1990,21 @@ html {
 			width: 100% !important;
 		}
 	}
+}
+.select__value-container--has-value{
+  .css-1g6gooi,.css-b8ldur-Input{
+    width: 30px !important;
+  }
+}
+.basic-multi-select{
+  .select__control {
+    .select__indicators .select__indicator{
+      padding: 9px 5px;
+    }
+  }
+  .css-yk16xz-control{
+    min-height: 38px !important;
+  }
 }
 .fas.fa-eye-slash {
 	&:before {
@@ -2457,11 +2480,12 @@ button:disabled{pointer-events: none;}
   }
 }
 .css-1pahdxg-control{
-  :hover,:focus{
+  border:1px solid #256bd1 !important;
+  box-shadow: none !important;
+  &:hover,&:focus{
     border-color: #256bd1;
+    border: none;
   }
-  border:1px solid #256bd1;
-  box-shadow: none;
 }
 
 .filter-btn-top{
@@ -2495,13 +2519,17 @@ button:disabled{pointer-events: none;}
 }
 
 .disabled-button,button:disabled {
-  background: #f2f2f2 !important;
-  border: 1px solid #dee3f3 !important;
+  background-color: #e6e6e6 !important;
+  border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
   .plus{
     filter: brightness(0.8) !important;
   }
+}
+.Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled{
+border: none;
+opacity: 0.5;
 }
 // ============issues fixing end=============
 
@@ -2957,10 +2985,36 @@ body{
     }
   }
 }
-
-
-
-
+.react-bs-table .react-bs-container-footer>table>thead>tr>th, .react-bs-table .react-bs-container-header>table>thead>tr>th{vertical-align: bottom;}
+.react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range{background-color: #256bd1;}
+.react-datepicker__day--selected:hover, .react-datepicker__day--in-selecting-range:hover, .react-datepicker__day--in-range:hover, .react-datepicker__month-text--selected:hover, .react-datepicker__month-text--in-selecting-range:hover, .react-datepicker__month-text--in-range:hover, .react-datepicker__quarter-text--selected:hover, .react-datepicker__quarter-text--in-selecting-range:hover, .react-datepicker__quarter-text--in-range:hover, .react-datepicker__year-text--selected:hover, .react-datepicker__year-text--in-selecting-range:hover, .react-datepicker__year-text--in-range:hover{background-color: #2760b3;}
+.filled-icon-inside{
+  position: relative;
+  .calculate-icon{
+    position: absolute;
+    right: 10px;
+    margin-bottom: 11px;
+    height: 20px;
+    z-index: 2;
+  }
+}
+.accordian-container{
+  border: 1px solid #c2cbe8;
+  border-radius: 4px;
+  margin: 0;
+  padding: 15px 0;
+  .header-title{margin-bottom: 0;}
+  .accordian-content{
+    border-top: 1px solid #c2cbe8;
+    margin-top: 15px;
+    padding-top: 15px;
+  }
+  .right-details{
+    .pull-right{
+      margin: 2px;
+    }
+  }
+}
 
 // responsive media query start
 @media(max-width:1600px){

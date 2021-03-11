@@ -623,6 +623,9 @@ class AddBOPImport extends Component {
                         </Row>
 
                         <Row>
+                          <Col md="12">
+                            <div className="left-border">{"BOP:"}</div>
+                          </Col>
                           <Col md="3">
                             <Field
                               label={`BOP Part No`}

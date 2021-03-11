@@ -1083,7 +1083,8 @@ class AddMachineRate extends Component {
                             </div>
                             {!isEditFlag && <div
                               onClick={this.machineTypeToggler}
-                              className={'plus-icon-square mr5 right'}>
+                              className={this.state.isViewFlag ? 'blurPlus-icon-square mr5 mt-1 right' : 'plus-icon-square mr5 right'}>
+
                             </div>}
                           </div>
                         </Col>
@@ -1127,15 +1128,15 @@ class AddMachineRate extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
-                                    <div className={'edit_pencil_icon d-inline-block mr5'}></div>EDIT MORE DETAILS</button>
+                                    <div className={'edit_pencil_icon d-inline-block mr5'}></div>EDIT MORE MACHINE DETAILS</button>
                                   :
                                   AddAccessibility &&
                                   <button
                                     type="button"
-                                    className={this.state.isViewFlag ? 'disabled-button' : 'user-btn'}
+                                    className={this.state.isViewFlag ? 'disabled-button user-btn' : 'user-btn'}
                                     disabled={this.state.isViewFlag ? true : false}
                                     onClick={() => this.moreDetailsToggler(isEditFlag ? this.state.MachineID : '', false)}>
-                                    <div className={'plus'}></div>ADD MORE DETAILS</button>
+                                    <div className={'plus'}></div>ADD MORE MACHINE DETAILS</button>
                               }
 
                             </div>
@@ -1225,14 +1226,14 @@ class AddMachineRate extends Component {
                               <>
                                 <button
                                   type="button"
-                                  className={`${isViewFlag ? 'disabled-button' : 'user-btn'} mt30 pull-left mr5`}
+                                  className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} mt30 pull-left mr5`}
                                   disabled={this.state.isViewFlag ? true : false}
                                   onClick={this.processTableHandler}>
                                   <div className={'plus'}></div>ADD</button>
                                 <button
                                   type="button"
                                   disabled={this.state.isViewFlag ? true : false}
-                                  className={`${isViewFlag ? 'disabled-button' : 'reset-btn'}  mt30 pull-left`}
+                                  className={`${isViewFlag ? 'disabled-button reset-btn' : 'reset-btn'}  mt30 pull-left`}
                                   onClick={this.resetProcessGridData}
                                 >Reset</button>
                               </>

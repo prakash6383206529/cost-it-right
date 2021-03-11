@@ -138,7 +138,7 @@ class ReasonListing extends Component {
       <>
         {EditAccessibility && (
           <button
-            className="Edit mr5"
+            className="Edit"
             type={'button'}
             onClick={() => this.editItemDetails(cell)}
           />
@@ -300,7 +300,7 @@ class ReasonListing extends Component {
               Reason
           </TableHeaderColumn>
             <TableHeaderColumn
-              width={150}
+              width={100}
               dataField="IsActive"
               export={false}
               dataAlign="center"
@@ -309,7 +309,7 @@ class ReasonListing extends Component {
               Status
           </TableHeaderColumn>
             <TableHeaderColumn
-              width={100}
+              width={80}
               className="action"
               dataField="ReasonId"
               export={false}

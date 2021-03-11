@@ -467,7 +467,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <th scope="col">
-                              <div class="element w-50 d-inline-block">
+                              <div class="element w-50 d-inline-flex align-items-center">
                                 <div class="custom-check d-inline-block">
                                   <input
                                     type="checkbox"
@@ -481,19 +481,13 @@ const CostingSummaryTable = (props) => {
                                     !viewMode && (<label for={`check${index}`}></label>) /*dont remove it is for check box*/
                                   }
                                 </div>
-                                <span>{data.zbc}</span>
+                                <span className="checkbox-text">{data.zbc}</span>
                               </div>
                               {!viewMode && (
                                 <div class="action w-50 d-inline-block text-right">
-                                  <button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />
-                                  <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />
-                                  <button
-                                    type="button"
-                                    class="btn small-square-btn btn-link remove-btn"
-                                    onClick={() => deleteCostingFromView(index)}
-                                  >
-                                    <i class="fa fa-times"></i>
-                                  </button>
+                                  <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />
+                                  <button className="Add-file mr-2 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />
+                                  <button type="button" class="CancelIcon mb-0 align-middle" onClick={() => deleteCostingFromView(index)}></button>
                                 </div>
                               )}
                             </th>
