@@ -63,6 +63,7 @@ function TabDiscountOther(props) {
             const discountValues = {
               NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', 2),
               HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', 2),
+              AnyOtherCost: checkForDecimalAndNull(OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '', 2),
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -95,6 +96,26 @@ function TabDiscountOther(props) {
       let topHeaderData = {
         DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
         HundiOrDiscountPercentage: checkForNull(event.target.value),
+        AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+      }
+      props.setHeaderCost(topHeaderData)
+
+    } else {
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  /**
+  * @method handleAnyOtherCostChange
+  * @description HANDLE ANY OTHER COST CHANGE
+  */
+  const handleAnyOtherCostChange = (event) => {
+    if (!isNaN(event.target.value)) {
+
+      let topHeaderData = {
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        HundiOrDiscountPercentage: checkForNull(getValues('HundiOrDiscountPercentage')),
+        AnyOtherCost: checkForNull(event.target.value),
       }
       props.setHeaderCost(topHeaderData)
 
@@ -300,7 +321,7 @@ function TabDiscountOther(props) {
                         <tr>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue + DiscountTabData.AnyOtherCost : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
@@ -417,7 +438,10 @@ function TabDiscountOther(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => { }}
+                        handleChange={(e) => {
+                          e.preventDefault();
+                          handleAnyOtherCostChange(e);
+                        }}
                         defaultValue={""}
                         className=""
                         customClassName={"withBorder"}
