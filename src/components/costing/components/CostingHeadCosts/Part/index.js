@@ -40,7 +40,7 @@ function PartCompoment(props) {
 
   useEffect(() => {
     dispatch(setComponentItemData(item, () => { }))
-  }, [item])
+  }, [IsOpen])
 
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API

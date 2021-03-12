@@ -17,6 +17,7 @@ function TabRMCC(props) {
 
   const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
+  console.log('ComponentItemData Costing: ', ComponentItemData);
 
   const costData = useContext(costingInfoContext);
 
@@ -697,7 +698,7 @@ function TabRMCC(props) {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
         if (i.IsAssemblyPart === true) {
-
+          console.log('Data: Inside Assembly', params);
           // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
           // getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.CostingConversionCost.NetConversionCost), params);
 
@@ -870,6 +871,7 @@ function TabRMCC(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
+    console.log('values Costing: ', values);
     if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
