@@ -311,7 +311,7 @@ function TabDiscountOther(props) {
                 </Col>
               </Row> */}
 
-                <Row>
+                <Row className="mx-0">
                   <Col md="12" className="pt-2">
                     <Table
                       className="table cr-brdr-main cr-bg-tbl mt-1"
@@ -333,7 +333,7 @@ function TabDiscountOther(props) {
                   className="form"
                   onSubmit={handleSubmit(onSubmit)}
                 >
-                  <Row>
+                  <Row className="mx-0">
                     <Col md="4" >
                       <TextFieldHookForm
                         label="Hundi/Other Discount(%)"
@@ -404,7 +404,7 @@ function TabDiscountOther(props) {
                     </Col>
                   </Row>
 
-                  <Row>
+                  <Row className="mx-0">
                     <Col md="4" >
                       <TextFieldHookForm
                         label="Hundi/Discount Value"
@@ -505,9 +505,9 @@ function TabDiscountOther(props) {
                     </Col>
                   </Row>
 
-                  <Row>
+                  <Row className="mx-0">
                     <Col md="12">
-                      <div className="bottom-border mb-0 mt-3">
+                      <div className="bottom-border mb-2 mt-3">
                         {'Remarks & Attachments:'}
                       </div>
                     </Col>

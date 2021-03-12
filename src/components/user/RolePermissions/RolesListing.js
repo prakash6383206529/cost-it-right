@@ -151,7 +151,7 @@ class RolesListing extends Component {
       <>
         {this.props.loading && <Loader />}
         <Row className="pt-4 ">
-          <Col md="8" className="filter-block ">
+          <Col md="8" className="mb-2">
 
           </Col>
           <Col md="4" >

@@ -458,7 +458,7 @@ class InterestRateListing extends Component {
             </Row>
             <Row className="pt-4 filter-row-large blue-before">
               {this.state.shown &&
-                <Col lg="10" md="12" className="filter-block">
+                <Col lg="10" md="12" className="filter-block interest-rate-filter-block">
                   <div className="d-inline-flex justify-content-start align-items-top w100">
                     <div className="flex-fills">
                       <h5>{`Filter By:`}</h5>
@@ -583,14 +583,14 @@ class InterestRateListing extends Component {
             trClassName={'userlisting-row'}
             tableHeaderClass='my-custom-header'
             pagination>
-            <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataField="VendorName" columnTitle={true} dataAlign="center" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="ICCApplicability" columnTitle={true} dataAlign="center" >{this.renderIccApp()}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataField="ICCPercent" columnTitle={true} dataAlign="center" >{this.renderAnnualIcc()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="PaymentTermApplicability" columnTitle={true} dataAlign="center" >{this.renderPaymentTerm()}</TableHeaderColumn>
-            <TableHeaderColumn width={110} dataField="RepaymentPeriod" columnTitle={true} dataAlign="center" >{this.renderRepayment()}</TableHeaderColumn>
-            <TableHeaderColumn width={130} dataField="PaymentTermPercent" columnTitle={true} dataAlign="center" >{this.renderInterestRate()}</TableHeaderColumn>
-            <TableHeaderColumn width={120} dataField="EffectiveDate" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
+            <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+            <TableHeaderColumn width={100} dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
+            <TableHeaderColumn width={120} dataField="ICCApplicability" columnTitle={true} dataAlign="left" >{this.renderIccApp()}</TableHeaderColumn>
+            <TableHeaderColumn width={100} dataField="ICCPercent" columnTitle={true} dataAlign="left" >{this.renderAnnualIcc()}</TableHeaderColumn>
+            <TableHeaderColumn width={120} dataField="PaymentTermApplicability" columnTitle={true} dataAlign="left" >{this.renderPaymentTerm()}</TableHeaderColumn>
+            <TableHeaderColumn width={110} dataField="RepaymentPeriod" columnTitle={true} dataAlign="left" >{this.renderRepayment()}</TableHeaderColumn>
+            <TableHeaderColumn width={130} dataField="PaymentTermPercent" columnTitle={true} dataAlign="left" >{this.renderInterestRate()}</TableHeaderColumn>
+            <TableHeaderColumn width={120} dataField="EffectiveDate" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
             <TableHeaderColumn width={100} dataAlign="right" searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
           </BootstrapTable>
           {

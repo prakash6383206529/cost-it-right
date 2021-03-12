@@ -781,6 +781,12 @@ button.add-btn {
   }
 }
 
+// form-filled colors font size
+.css-1uccc91-singleValue{
+  font-size: 14px;
+}
+// form-filled colors font size end
+
 .form-control {
   // height: calc(2.85rem + 2px);
   padding: 12px !important;
@@ -1024,7 +1030,7 @@ button.add-btn {
   background: transparent url("../../assests/images/add-icons.png") 0% 0% no-repeat padding-box;
   opacity: 1;
   cursor: pointer;
-  margin-top: 4px;
+  margin-top: 5px;
   background-position: center right;
 }
 
@@ -1407,6 +1413,7 @@ button.user-btn.pull-right {
   display: none;
 }
 .download-btn{
+  img{margin-right: 8px;}
   span{
     width: 100%;
   }
@@ -1471,6 +1478,7 @@ button.user-btn.pull-right {
   }
 }
 .cr-prt-nm1.cr-prt-link1 {
+  white-space: nowrap;
   padding-left: 20px;
     .Close {
     position: absolute;
@@ -2017,7 +2025,8 @@ html {
 .content-page {
 	.filter-block {
     .css-1gtu0rj-indicatorContainer{
-      padding: 4px 8px;
+      padding: 4px 5px;
+      padding-left: 0px;
     }
 		.flex-fill {
 			width: 20%;
@@ -2532,7 +2541,21 @@ border: none;
 opacity: 0.5;
 }
 // ============issues fixing end=============
-
+.tooltip_custom_right{
+  float: right;
+  position: relative;
+  z-index: 2;
+  color: #256bd1;
+  opacity: 1;
+  cursor: pointer;
+}
+.tooltip-inner{
+  background-color: #D0D8E5;
+  color: #3D4465;
+}
+.bs-tooltip-auto[x-placement^=top] .arrow::before, .bs-tooltip-top .arrow::before{
+  border-top-color: #D0D8E5;
+}
 // ========tooltip css=============
 .tooltip-n {
   position: relative;
@@ -2651,6 +2674,9 @@ opacity: 0.5;
 }
 
 // =================costing details page =================
+.add-oprn-btn{
+  white-space: nowrap;
+}
 .dark-blue-text{
   color: #3D4465;
 }
@@ -2887,17 +2913,21 @@ body {
     }
   }
 }
-.shadow-lgg.login-formg{
-  .form{
+.shadow-lgg.login-formg,.drawer-wrapper{
+  .form,form{
       .left-border,.flex-fills{
         margin-bottom: 10px;
       }
       .form-group,.inputwith-icon,.form-group-searchable-select{
         min-height: 91px;
         margin-bottom: 15px;
+        position: relative;
+      }
+      .form-group{
+        .form-group-searchable-select,.form-group{margin-bottom: 0;min-height: unset;}
       }
       .inputwith-icon {
-        .form-group-searchable-select{margin-bottom: 0px;}
+        .form-group-searchable-select{margin-bottom: 0px;min-height: unset;}
       }
       .mn-height-auto{
         min-height: auto;
@@ -2907,16 +2937,72 @@ body {
       }
   }
 }
+.machine-rate-filter{
+  .flex-fill:nth-child(4){
+    min-width: 120px;
+  }
+}
+.overhead-filter-block{
+  .flex-fill:nth-child(4){
+    min-width: 180px;
+  }
+}
+.operation-filer-block{
+  .flex-fill:nth-child(4){
+    min-width: 145px;
+  }
+}
+.profit-filter-block{
+  .flex-fill:nth-child(4){
+    min-width: 160px;
+  }
+}
+.labour-filter-block{
+  .flex-fill:nth-child(6),.flex-fill:nth-child(2){
+    min-width: 126px;
+  }
+}
+.freight-filter-block{
+  .flex-fill:nth-child(5){
+    min-width: 140px;
+  }
+}
+.interest-rate-filter-block{
+  .flex-fill:nth-child(4){
+    min-width: 210px;
+  }
+}
+
+.left-side-menu + .content-page {
+  .react-bs-table-container{
+    td{
+      .Edit,.Delete,.View,.Copy{
+        margin-bottom: 0px;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+.css-26l3qy-menu{
+  font-size: 14px;
+}
 .costing-details-page{
   .shadow-lgg.login-formg{
+    table{
+      .form-group,.inputwith-icon,.form-group-searchable-select{
+        min-height: unset;
+      }
+    }
     .form{
       .form-group,.inputwith-icon{
         min-height: unset;
       }
       .costing-table-next{
         .cr-select-height{
-          .form-group{
+          .form-group-searchable-select,.form-group{
             margin-bottom: 0px;
+            min-height: unset;
           }
         }
       }
@@ -2959,7 +3045,7 @@ body{
     background-color: #e6e6e6;
   }
 }
-.login-container.signup-form {
+.login-container.signup-form,.drawer-wrapper{
   .nodate-section{
     margin: 20px 0;
     img{
@@ -2988,6 +3074,7 @@ body{
 .react-bs-table .react-bs-container-footer>table>thead>tr>th, .react-bs-table .react-bs-container-header>table>thead>tr>th{vertical-align: bottom;}
 .react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range{background-color: #256bd1;}
 .react-datepicker__day--selected:hover, .react-datepicker__day--in-selecting-range:hover, .react-datepicker__day--in-range:hover, .react-datepicker__month-text--selected:hover, .react-datepicker__month-text--in-selecting-range:hover, .react-datepicker__month-text--in-range:hover, .react-datepicker__quarter-text--selected:hover, .react-datepicker__quarter-text--in-selecting-range:hover, .react-datepicker__quarter-text--in-range:hover, .react-datepicker__year-text--selected:hover, .react-datepicker__year-text--in-selecting-range:hover, .react-datepicker__year-text--in-range:hover{background-color: #2760b3;}
+.react-datepicker__day--today, .react-datepicker__month-text--today, .react-datepicker__quarter-text--today, .react-datepicker__year-text--today{color:#256bd1;}
 .filled-icon-inside{
   position: relative;
   .calculate-icon{

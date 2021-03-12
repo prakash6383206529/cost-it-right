@@ -278,7 +278,7 @@ class ClientListing extends Component {
                         ref={'table'}
                         trClassName={'userlisting-row'}
                         tableHeaderClass='my-custom-header client-table'
-                        className={'client-table'}
+                        className={'client-table mr15 pr15'}
                         pagination>
                         <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Client Name'}</TableHeaderColumn>

@@ -381,7 +381,7 @@ class BOPDomesticListing extends Component {
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4 filter-row-large">
                         {this.state.shown && (
-                            <Col md="12" lg="9" className="filter-block">
+                            <Col md="12" lg="10" className="filter-block">
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
                                     <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                                     <div className="flex-fill">

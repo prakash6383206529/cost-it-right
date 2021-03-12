@@ -485,7 +485,7 @@ class OperationListing extends Component {
                         </Row>
                         <Row className="pt-4 filter-row-large blue-before">
                             {this.state.shown &&
-                                <Col md="12" lg="9" className="filter-block">
+                                <Col md="12" lg="10" className="filter-block operation-filer-block ">
                                     <div className="d-inline-flex justify-content-start align-items-top w100">
                                         <div className="flex-fills">
                                             <h5>{`Filter By:`}</h5>
