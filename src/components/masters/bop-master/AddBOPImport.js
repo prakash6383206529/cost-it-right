@@ -660,12 +660,10 @@ class AddBOPImport extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="Category"
+                                  label="BOP Category"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "BOPCategory"
-                                  )}
+                                  options={this.renderListing("BOPCategory")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
                                     this.state.BOPCategory == null || this.state.BOPCategory.length === 0 ? [required] : []}
@@ -685,30 +683,6 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label="Part/ Assembly No."
-                              name="PartAssemblyNo"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPartAssembly == null ||
-                                  this.state.selectedPartAssembly.length === 0
-                                  ? []
-                                  : this.state.selectedPartAssembly
-                              }
-                              options={this.renderListing("PartAssembly")}
-                              selectionChanged={this.handlePartAssembly}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                            />
-                          </Col>
-                        </Row>
-
-                        <Row>
-                          <Col md="3">
-                            <Field
                               label={`Specification`}
                               name={"Specification"}
                               type="text"
@@ -721,6 +695,11 @@ class AddBOPImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
+
+                        </Row>
+
+                        <Row>
+
                           <Col md="3">
                             <Field
                               name="UOM"
@@ -728,20 +707,12 @@ class AddBOPImport extends Component {
                               label="UOM"
                               component={searchableSelect}
                               placeholder={"Select"}
-                              options={this.renderListing(
-                                "uom"
-                              )}
+                              options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
-                                this.state.UOM == null ||
-                                  this.state.UOM.length === 0
-                                  ? [required]
-                                  : []
-                              }
+                                this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                               required={true}
-                              handleChangeDescription={
-                                this.handleUOM
-                              }
+                              handleChangeDescription={this.handleUOM}
                               valueDescription={this.state.UOM}
                               disabled={isEditFlag ? true : false}
                             />
@@ -753,21 +724,13 @@ class AddBOPImport extends Component {
                                 name="Plant"
                                 placeholder={"Select"}
                                 selection={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? []
-                                    : this.state.selectedPlants
-                                }
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                                 options={this.renderListing("plant")}
                                 selectionChanged={this.handlePlant}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 validate={
-                                  this.state.selectedPlants == null ||
-                                    this.state.selectedPlants.length === 0
-                                    ? [required]
-                                    : []
-                                }
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
@@ -779,6 +742,23 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           )}
+                          <Col md="3">
+                            <Field
+                              label="Part/ Assembly No."
+                              name="PartAssemblyNo"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0 ? [] : this.state.selectedPartAssembly}
+                              options={this.renderListing("PartAssembly")}
+                              selectionChanged={this.handlePartAssembly}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                            //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
+                            />
+                          </Col>
                         </Row>
 
                         <Row>

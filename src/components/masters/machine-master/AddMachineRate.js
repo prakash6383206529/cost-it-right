@@ -2,14 +2,12 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, maxLength100, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512 } from "../../../helper/validation";
 import {
-  renderText, renderNumberInputField, searchableSelect, renderTextAreaField,
-  renderMultiSelectField, focusOnError
-} from "../../layout/FormInputs";
-import {
-  getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList,
-} from '../../../actions/Common';
+  required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
+  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512
+} from "../../../helper/validation";
+import { renderText, searchableSelect, renderTextAreaField, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
+import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
@@ -28,8 +26,6 @@ import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { reactLocalStorage } from "reactjs-localstorage";
-import { ThemeProvider } from 'react-bootstrap';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 const selector = formValueSelector('AddMachineRate');
 
@@ -85,6 +81,7 @@ class AddMachineRate extends Component {
       })
     }
 
+    /*WHEN ADD MORE DETAIL FORM IS CANCELLED*/
     if (data.cancelFlag) {
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
@@ -453,6 +450,10 @@ class AddMachineRate extends Component {
     this.setState({ isOpenProcessDrawer: true })
   }
 
+  /**
+   * @method closeProcessDrawer
+   * @description FOR CLOSING PROCESS DRAWER
+  */
   closeProcessDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenProcessDrawer: false }, () => {
       this.props.getProcessesSelectList(() => {
@@ -485,7 +486,10 @@ class AddMachineRate extends Component {
     const value = e.target.value;
     this.setState({ machineRate: value })
   }
-
+  /**
+   * @method processTableHandler
+   * @description ADDIN PROCESS ROW IN TABLE GRID
+  */
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
     const { fieldsObj } = this.props;
@@ -608,7 +612,7 @@ class AddMachineRate extends Component {
 
   /**
   * @method deleteItem
-  * @description used to Reset form
+  * @description DELETE ROW ENTRY FROM TABLE 
   */
   deleteItem = (index) => {
     const { processGrid } = this.state;
@@ -845,8 +849,11 @@ class AddMachineRate extends Component {
     }
   }
 
+  /**
+   * @method showFormData
+   * @description SHOW FORM DATA ENTRY FROM ADD MORE DETAIL FORM
+  */
   showFormData = () => {
-    console.log("Welcome");
     const { data } = this.props
     this.props.getVendorListByVendorType(data.IsVendor, () => { })
     if (data.IsVendor) {
@@ -1253,11 +1260,12 @@ class AddMachineRate extends Component {
                                       <td>{item.UnitOfMeasurement}</td>
                                       <td>{checkForDecimalAndNull(item.MachineRate, initialConfiguration.NoOfDecimalForPrice)}</td>
                                       <td>
-                                        {!this.state.IsDetailedEntry &&
-                                          <>
-                                            <button className="Edit mr-2" type={'button'} disabled={isViewFlag} onClick={() => this.editItemDetails(index)} />
-                                            <button className="Delete" type={'button'} disabled={isViewFlag} onClick={() => this.deleteItem(index)} />
-                                          </>}
+                                        {/* {!this.state.IsDetailedEntry && */}
+                                        <>
+                                          <button className="Edit mr-2" type={'button'} disabled={isViewFlag === true || this.state.IsDetailedEntry === true ? true : false} onClick={() => this.editItemDetails(index)} />
+                                          <button className="Delete" type={'button'} disabled={isViewFlag === true || this.state.IsDetailedEntry === true ? true : false} onClick={() => this.deleteItem(index)} />
+                                        </>
+                                        {/* } */}
                                       </td>
                                     </tr>
                                   )

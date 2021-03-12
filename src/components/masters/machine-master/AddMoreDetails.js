@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, number, trimTwoDecimalPlace, maxLength100, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3, maxLength512, checkPercentageValue } from "../../../helper/validation";
 import {
-  renderText, renderNumberInputField, searchableSelect, renderTextAreaField, renderYearPicker, focusOnError
-} from "../../layout/FormInputs";
-import {
-  getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList,
-  getShiftTypeSelectList, getDepreciationTypeSelectList,
-} from '../../../actions/Common';
+  required, checkForNull, number, trimTwoDecimalPlace, maxLength100, acceptAllExceptSingleSpecialCharacter, maxLength10,
+  maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
+  maxLength512, checkPercentageValue
+} from "../../../helper/validation";
+import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError } from "../../layout/FormInputs";
+import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
   createMachineDetails, updateMachineDetails, getMachineDetailsData, getMachineTypeSelectList, getProcessesSelectList,
@@ -389,9 +388,18 @@ class AddMoreDetails extends Component {
     }
   };
 
+  /**
+   * @method machineTypeToggler
+   * @description OPENING MACHINE TYPE DRAWER
+  */
   machineTypeToggler = () => {
     this.setState({ isOpenMachineType: true })
   }
+
+  /**
+   * @method closeMachineTypeDrawer
+   * @description CLOSING MACHINE TYPE DRAWER
+  */
 
   closeMachineTypeDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenMachineType: false }, () => {
@@ -420,10 +428,18 @@ class AddMoreDetails extends Component {
     }, 100);
   }
 
+  /**
+   * @method efficiencyCalculationToggler
+   * @description OPEN CALCULATOR DRAWER
+  */
   efficiencyCalculationToggler = () => {
     this.setState({ isOpenAvailability: true })
   }
 
+  /**
+   * @method closeAvailabilityDrawer
+   * @description CLOSING CALCULATOR DRAWER AND SHOWING PRE FILLED VALUE
+  */
   closeAvailabilityDrawer = (e = '', calculatedEfficiency) => {
     const { initialConfiguration } = this.props
     this.setState({ isOpenAvailability: false }, () => {
@@ -434,6 +450,10 @@ class AddMoreDetails extends Component {
 
   }
 
+  /**
+   * @method handleDereciationType
+   * @description HANDLE DEPRICIATION CHANGES
+  */
   handleDereciationType = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ depreciationType: newValue });
@@ -942,7 +962,7 @@ class AddMoreDetails extends Component {
 
   /**
   * @method labourTableHandler
-  * @description called
+  * @description ADDING VALUE IN LABOUR TABLE GRID
   */
   labourTableHandler = () => {
     const { labourType, labourGrid } = this.state;
@@ -983,6 +1003,10 @@ class AddMoreDetails extends Component {
     });
   }
 
+  /**
+   * @method updateLabourGrid
+   * @description UPDATE LABOUR GRID
+  */
   updateLabourGrid = () => {
     const { labourType, labourGrid, labourGridEditIndex } = this.state;
     const { fieldsObj } = this.props
@@ -1029,6 +1053,10 @@ class AddMoreDetails extends Component {
     });
   }
 
+  /**
+   * @method resetLabourGridData
+   * @description RESET LABOUR TABLE GRID
+  */
   resetLabourGridData = () => {
     this.setState({
       labourType: [],
@@ -1087,11 +1115,16 @@ class AddMoreDetails extends Component {
     return cost;
   }
 
+  /**
+   * @method processTableHandler
+   * @description ADDING PROCESS IN PROCESS TABLE 
+  */
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
     const { fieldsObj } = this.props
+    const OutputPerHours = fieldsObj.OutputPerHours
 
-    if (processName.length === 0 || UOM.length === 0) {
+    if (processName.length === 0 || UOM.length === 0 || fieldsObj.OutputPerHours === '') {
       toastr.warning('Fields should not be empty');
       return false;
     }
@@ -1104,7 +1137,6 @@ class AddMoreDetails extends Component {
     }
 
     // const OutputPerHours = fieldsObj && fieldsObj.OutputPerHours !== undefined ? fieldsObj.OutputPerHours : 0;
-    const OutputPerHours = fieldsObj.OutputPerHours
     // const NumberOfWorkingHoursPerYear = fieldsObj.NumberOfWorkingHoursPerYear
     // const TotalMachineCostPerAnnum = fieldsObj.TotalMachineCostPerAnnum
     const NumberOfWorkingHoursPerYear = fieldsObj && fieldsObj.NumberOfWorkingHoursPerYear !== undefined ? checkForNull(fieldsObj.NumberOfWorkingHoursPerYear) : 0;
@@ -1112,6 +1144,7 @@ class AddMoreDetails extends Component {
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
     if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
+      toastr.warning('Machine Rate can not be negative')
       return false;
     }
 
@@ -1177,6 +1210,7 @@ class AddMoreDetails extends Component {
 
     // CONDITION TO CHECK OUTPUT PER HOUR, NUMBER OF WORKING HOUR AND TOTAL MACHINE MACHINE COST IS NEGATIVE OR NOT A NUMBER
     if (OutputPerHours < 0 || isNaN(OutputPerHours) || NumberOfWorkingHoursPerYear < 0 || isNaN(NumberOfWorkingHoursPerYear) || TotalMachineCostPerAnnum < 0 || isNaN(TotalMachineCostPerAnnum)) {
+      toastr.warning('Machine rate can not be negative.')
       return false;
     }
 
@@ -1213,7 +1247,7 @@ class AddMoreDetails extends Component {
 
   /**
   * @method resetProcessGridData
-  * @description Used to handle setTechnologyLevel
+  * @description RESET PROCESS TABIE GRID
   */
   resetProcessGridData = () => {
     this.setState({
@@ -1581,6 +1615,10 @@ class AddMoreDetails extends Component {
     })
   }
 
+  /**
+   * @method loanToggle
+   * @description LOAN ROW OPEN  AND CLOSE
+  */
   loanToggle = () => {
     const { isLoanOpen } = this.state
     this.setState({
@@ -1588,36 +1626,60 @@ class AddMoreDetails extends Component {
     })
   }
 
+  /**
+  * @method workingHourToggle
+  * @description WORKING HOUR ROW OPEN  AND CLOSE
+ */
   workingHourToggle = () => {
     const { isWorkingOpen } = this.state
     this.setState({ isWorkingOpen: !isWorkingOpen })
   }
 
+  /**
+   * @method depreciationToogle
+   * @description depreciation ROW OPEN  AND CLOSE
+  */
   depreciationToogle = () => {
     const { isDepreciationOpen } = this.state
     this.setState({ isDepreciationOpen: !isDepreciationOpen })
   }
 
+  /**
+   * @method variableCostToggle
+   * @description VARIABLE COST ROW OPEN  AND CLOSE
+  */
   variableCostToggle = () => {
     const { isVariableCostOpen } = this.state
     this.setState({ isVariableCostOpen: !isVariableCostOpen })
   }
 
+  /**
+  * @method powerToggle
+  * @description POWER OPEN  AND CLOSE
+ */
   powerToggle = () => {
     const { isPowerOpen } = this.state
     this.setState({ isPowerOpen: !isPowerOpen })
   }
 
-  powerToggle = () => {
-    const { isPowerOpen } = this.state
-    this.setState({ isPowerOpen: !isPowerOpen })
-  }
+  // powerToggle = () => {
+  //   const { isPowerOpen } = this.state
+  //   this.setState({ isPowerOpen: !isPowerOpen })
+  // }
 
+  /**
+  * @method labourToggle
+  * @description lABOUR OPEN  AND CLOSE
+ */
   labourToggle = () => {
     const { isLabourOpen } = this.state
     this.setState({ isLabourOpen: !isLabourOpen })
   }
 
+  /**
+   * @method processToggle
+   * @description PROCESS OPEN  AND CLOSE
+  */
   processToggle = () => {
     const { isProcessOpen } = this.state
     this.setState({ isProcessOpen: !isProcessOpen })
@@ -2063,8 +2125,8 @@ class AddMoreDetails extends Component {
                                 placeholder={'--select--'}
                                 options={this.renderListing('ShiftType')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [required] : []}
-                                required={true}
+                                validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [] : []}
+                                required={false}
                                 handleChangeDescription={this.handleShiftType}
                                 valueDescription={this.state.shiftType}
                                 disabled={false}
@@ -2076,9 +2138,9 @@ class AddMoreDetails extends Component {
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[required, positiveAndDecimalNumber, maxLength3]}
+                                validate={[positiveAndDecimalNumber, maxLength3]}
                                 component={renderText}
-                                required={true}
+                                required={false}
                                 disabled={false}
                                 className=" "
                                 customClassName="withBorder"
@@ -2090,9 +2152,9 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfWorkingDaysPerYear"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[required, positiveAndDecimalNumber, maxLength3]}
+                                validate={[positiveAndDecimalNumber, maxLength3]}
                                 component={renderText}
-                                required={true}
+                                required={false}
                                 disabled={false}
                                 className=" "
                                 customClassName="withBorder"
@@ -2106,9 +2168,9 @@ class AddMoreDetails extends Component {
                                     name={"EfficiencyPercentage"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                    validate={[positiveAndDecimalNumber, maxLength10]}
                                     component={renderText}
-                                    required={true}
+                                    required={false}
                                     disabled={false}
                                     className=" "
                                     customClassName="withBorder"
@@ -2164,8 +2226,8 @@ class AddMoreDetails extends Component {
                                 placeholder={'--select--'}
                                 options={this.renderListing('DepreciationType')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.depreciationType == null || this.state.depreciationType.length === 0) ? [required] : []}
-                                required={true}
+                                validate={(this.state.depreciationType == null || this.state.depreciationType.length === 0) ? [] : []}
+                                required={false}
                                 handleChangeDescription={this.handleDereciationType}
                                 valueDescription={this.state.depreciationType}
                                 disabled={false}

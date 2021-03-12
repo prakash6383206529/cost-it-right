@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter, maxLength80, maxLength20, postiveNumber, maxLength10, maxLength3, checkWhiteSpaces } from "../../../helper/validation";
 import {
-    renderText, renderEmailInputField, searchableSelect,
-} from "../../layout/FormInputs";
+    required, number, email, minLength7, maxLength70, minLength10, acceptAllExceptSingleSpecialCharacter,
+    maxLength80, maxLength20, postiveNumber, maxLength10, maxLength3, checkWhiteSpaces
+} from "../../../helper/validation";
+import { renderText, renderEmailInputField, searchableSelect, } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';

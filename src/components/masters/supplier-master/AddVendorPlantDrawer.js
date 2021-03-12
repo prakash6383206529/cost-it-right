@@ -32,11 +32,11 @@ class AddVendorPlantDrawer extends Component {
     this.props.fetchCountryDataAPI(() => { })
   }
 
-  toggleDrawer = (event) => {
+  toggleDrawer = (event, formData) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('')
+    this.props.closeDrawer('', formData)
   };
 
   /**
@@ -208,13 +208,13 @@ class AddVendorPlantDrawer extends Component {
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
+          this.toggleDrawer('', formData)
           reset();
           this.setState({
             country: [],
             state: [],
             city: [],
           })
-          this.toggleDrawer('')
         }
       });
     }

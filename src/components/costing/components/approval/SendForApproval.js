@@ -244,7 +244,7 @@ const SendForApproval = (props) => {
       ApproverDepartmentId: selectedDepartment.value,
       ApproverDepartmentName: selectedDepartment.label,
       ApproverLevelId: selectedApproverLevelId,
-      ApproverId: selectedApprover.value,
+      ApproverId: selectedApprover,
       // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
       // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
       SenderLevelId: userData.LoggedInLevelId,
@@ -317,6 +317,7 @@ const SendForApproval = (props) => {
   }
 
   const handleApproverChange = (data) => {
+    console.log(data, "DATAAAAAAAAAAA");
     setSelectedApprover(data.value)
     setSelectedApproverLevelId(data.levelId)
   }
@@ -527,21 +528,21 @@ const SendForApproval = (props) => {
                 />
               </Col>
               <Col md="6">
-                {
-                  <SearchableSelectHookForm
-                    label={"Approver"}
-                    name={"approver"}
-                    placeholder={"-Select-"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    defaultValue={""}
-                    options={approvalDropDown}
-                    mandatory={false}
-                    handleChange={handleApproverChange}
-                    errors={errors.approver}
-                  />
-                }
+
+                <SearchableSelectHookForm
+                  label={"Approver"}
+                  name={"approver"}
+                  placeholder={"-Select-"}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  defaultValue={""}
+                  options={approvalDropDown}
+                  mandatory={false}
+                  handleChange={handleApproverChange}
+                  errors={errors.approver}
+                />
+
               </Col>
               <Col md="12">
                 <TextAreaHookForm

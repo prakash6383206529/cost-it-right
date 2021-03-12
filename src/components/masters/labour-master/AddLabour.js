@@ -2,24 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { Row, Col, Table } from 'reactstrap'
-import {
-  required,
-  number,
-  decimalLength2,
-  checkForNull,
-  positiveAndDecimalNumber,
-  maxLength10,
-  checkForDecimalAndNull,
-} from '../../../helper/validation'
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, } from '../../../helper/validation'
 import { renderText, searchableSelect } from '../../layout/FormInputs'
 import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
-import {
-  createLabour,
-  getLabourData,
-  updateLabour,
-  labourTypeVendorSelectList,
-  getLabourTypeByMachineTypeSelectList,
-} from '../actions/Labour'
+import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
 import { getMachineTypeSelectList } from '../actions/MachineMaster'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
@@ -32,6 +18,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
 import moment from 'moment'
+
 const selector = formValueSelector('AddLabour')
 
 class AddLabour extends Component {
@@ -307,9 +294,18 @@ class AddLabour extends Component {
     this.setState({ isOpenMachineType: true })
   }
 
-  closeMachineTypeDrawer = (e = '') => {
+  closeMachineTypeDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenMachineType: false }, () => {
-      this.props.getMachineTypeSelectList(() => { })
+      this.props.getMachineTypeSelectList(() => {
+        const { machineTypeSelectList } = this.props
+        /*TO SHOW MACHINE TYPE VALUE PRE FILLED FROM DRAWER*/
+        if (Object.keys(formData).length > 0) {
+          const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Text === formData.MachineType)
+          this.setState({
+            machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
+          })
+        }
+      })
     })
   }
 
@@ -337,7 +333,8 @@ class AddLabour extends Component {
 
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, isDisable, } = this.state
-    const { fieldsObj } = this.props
+    const { fieldsObj, error } = this.props
+    console.log(error, "ERROR");
 
     if (machineType.length === 0 || labourType.length === 0) {
       toastr.warning('Fields should not be empty')
@@ -456,7 +453,7 @@ class AddLabour extends Component {
         gridEditIndex: '',
         isEditIndex: false,
       },
-      () => this.props.change('LabourRate', 0),
+      () => this.props.change('LabourRate', 0), this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     )
   }
 
@@ -527,6 +524,7 @@ class AddLabour extends Component {
       IsEmployeContractual: true,
     })
     this.props.getLabourData('', () => { })
+
     this.props.hideForm()
   }
 
@@ -688,15 +686,8 @@ class AddLabour extends Component {
                               options={this.renderListing("VendorNameList")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={
-                                this.state.vendorName == null ||
-                                  this.state.vendorName.length === 0
-                                  ? [required]
-                                  : []
-                              }
-                              required={true}
-                              handleChangeDescription={
-                                this.handleVendorName
-                              }
+                                this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []} required={true}
+                              handleChangeDescription={this.handleVendorName}
                               valueDescription={this.state.vendorName}
                               disabled={isEditFlag ? true : isDisable ? true : false}
                             />
@@ -714,11 +705,7 @@ class AddLabour extends Component {
                             options={this.renderListing("state")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
-                              this.state.StateName == null ||
-                                this.state.StateName.length === 0
-                                ? [required]
-                                : []
-                            }
+                              this.state.StateName == null || this.state.StateName.length === 0 ? [required] : []}
                             required={true}
                             handleChangeDescription={this.handleState}
                             valueDescription={this.state.StateName}
@@ -736,11 +723,7 @@ class AddLabour extends Component {
                             options={this.renderListing("plant")}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
                             validate={
-                              this.state.selectedPlants == null ||
-                                this.state.selectedPlants.length === 0
-                                ? [required]
-                                : []
-                            }
+                              this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
                             required={true}
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
@@ -1019,6 +1002,9 @@ export default connect(mapStateToProps, {
 })(
   reduxForm({
     form: 'AddLabour',
+    // onSubmitFail: errors => {
+    //   focusOnError(errors);
+    // },
     enableReinitialize: true,
   })(AddLabour),
 )
