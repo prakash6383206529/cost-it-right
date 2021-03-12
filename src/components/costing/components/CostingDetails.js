@@ -1109,7 +1109,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td>{item.VendorName}</td>
-                                      <td className="w-100px">
+                                      <td className="w-100px cr-select-height">
                                         <TextFieldHookForm
                                           label=""
                                           name={`${vbcGridFields}[${index}]ShareOfBusinessPercent`}
@@ -1140,7 +1140,7 @@ function CostingDetails(props) {
                                           disabled={isSOBEnabled ? true : false}
                                         />
                                       </td>
-                                      <td>
+                                      <td className="cr-select-height w-100px">
                                         <SearchableSelectHookForm
                                           label={""}
                                           name={`${vbcGridFields}[${index}]CostingVersion`}

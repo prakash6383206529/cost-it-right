@@ -569,7 +569,7 @@ class AddOperation extends Component {
                           name={"OperationName"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[alphaNumeric, maxLength80, checkWhiteSpaces]}
+                          validate={[required, alphaNumeric, maxLength80, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           disabled={isEditFlag ? true : false}

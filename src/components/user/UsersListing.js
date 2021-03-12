@@ -540,15 +540,15 @@ class UsersListing extends Component {
 					<TableHeaderColumn
 						dataField="EmailAddress"
 						columnTitle
-						width={"200"}
+						width={"220"}
 						dataSort={true}
 					>
 						Email Id
           </TableHeaderColumn>
-					<TableHeaderColumn dataField="Mobile" width={"140"} dataSort={false}>
+					<TableHeaderColumn dataField="Mobile" width={"110"} dataSort={false}>
 						Mobile No.
           </TableHeaderColumn>
-					<TableHeaderColumn dataField="PhoneNumber" dataSort={false}>
+					<TableHeaderColumn dataField="PhoneNumber" width={"110"} dataSort={false}>
 						Phone No.
           </TableHeaderColumn>
 
@@ -568,11 +568,12 @@ class UsersListing extends Component {
 						dataField="IsActive"
 						export={false}
 						dataFormat={this.statusButtonFormatter}
+						width={80}
 					>
 						Status
           </TableHeaderColumn>
 					<TableHeaderColumn
-						width={100}
+						width={80}
 						className="action"
 						dataField="UserId"
 						export={false}

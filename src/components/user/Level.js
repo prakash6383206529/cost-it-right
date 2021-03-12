@@ -408,7 +408,7 @@ class Level extends Component {
                           valueDescription={this.state.technology}
                         />
                       </div>
-                      <div className="input-group col-md-12  form-group input-withouticon mb-0" >
+                      <div className="input-group col-md-12  form-group input-withouticon" >
                         <Field
                           name="LevelId"
                           type="text"

@@ -675,7 +675,7 @@ a:hover {
 
       .custom-checkbox {
         color: $lightblue;
-        font-size: $font-16;
+        font-size: 14px;
         font-weight: $font-regular;
         margin-bottom: 0 !important;
 
@@ -1298,6 +1298,7 @@ p {
 
     .css-tlfecz-indicatorContainer {
       padding: 5px;
+      padding-left: 0px;
     }
 
     .css-1hwfws3 {
@@ -1365,6 +1366,12 @@ button .fas {
         height: calc(2.25rem + 2px);
         width: 100%;
         border: 1px solid #c2cbe8;
+        font-family: 'IBM Plex Sans', sans-serif !important;
+        font-weight: 400 !important;
+        &::placeholder{
+          color: #A4ABC5 ;
+          font-size: 13px;
+        }
       }
     }
   }
@@ -2165,8 +2172,9 @@ input:disabled,
 }
 td {
   .Draft,
-  .PendingApproval,
+  [class^="Pending"],
   .Approved,
+  .Rejected,
   .History {
     background-color: #fc5774;
     min-width: 90px;
@@ -2179,7 +2187,7 @@ td {
     line-height: 30px;
     padding: 0 1.5rem;
   }
-  .PendingApproval {
+  [class^="Pending"]{
     background-color: #f8a000;
   }
   .Approved {
@@ -2187,6 +2195,9 @@ td {
   }
   .History {
     background-color: #c2cbe8;
+  }
+  .Rejected{
+    background-color: #c3344d;
   }
 }
 .table.cr-brdr-main{

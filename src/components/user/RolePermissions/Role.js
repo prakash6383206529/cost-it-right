@@ -237,12 +237,12 @@ class Role extends Component {
 								</div>
 								<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 									<div className="add-min-height">
-										<div className="row form-group role-form mb-0">
+										<div className="row role-form mb-0">
 											<div className="col-md-6 ">
-												<div className="row">
-													<div className="col-md-3">
-														<div class="header-title  Personal-Details"><h5>Role Name:</h5></div>
-													</div>
+												<div className="d-flex">
+
+													<div class="header-title  Personal-Details pr-3"><h5>Role Name:</h5></div>
+
 													<Field
 														name={"RoleName"}
 														type="text"
@@ -251,7 +251,7 @@ class Role extends Component {
 														component={renderText}
 														required={true}
 														maxLength={26}
-														customClassName={'withBorder col-md-5 mb-0'}
+														customClassName={'withBorder mb-0 mn-height-auto'}
 													/>
 												</div>
 											</div>

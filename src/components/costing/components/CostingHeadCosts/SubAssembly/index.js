@@ -138,7 +138,7 @@ function AssemblyPart(props) {
         <td>
           <button
             type="button"
-            className={'user-btn'}
+            className={'user-btn add-oprn-btn'}
             onClick={DrawerToggle}>
             <div className={'plus'}></div>Add Operation</button>
         </td>
