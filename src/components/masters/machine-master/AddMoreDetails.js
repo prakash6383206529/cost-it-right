@@ -174,7 +174,6 @@ class AddMoreDetails extends Component {
   * @description Used to get Details
   */
   getDetails = () => {
-    console.log("Coming in getDetail ? ");
     const { editDetails } = this.props;
     console.log(editDetails, "Edit Detail");
     if (editDetails && editDetails.isEditFlag) {
@@ -1389,7 +1388,7 @@ class AddMoreDetails extends Component {
   * @description used to Reset form
   */
   cancel = () => {
-    const { reset } = this.props;
+    const { reset, editDetails } = this.props;
     reset();
     this.setState({
       remarks: '',
@@ -1397,7 +1396,16 @@ class AddMoreDetails extends Component {
     const data = {}
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
-    this.props.hideMoreDetailsForm(data)
+    /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
+    if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
+      console.log("ENTERED IN HIDE DETAIL");
+      data.Id = this.state.MachineID ? this.state.MachineID : editDetails.Id
+      data.isEditFlag = true
+      this.props.hideMoreDetailsForm({}, data)
+    } else {
+      /*IF CANCEL IS CLICK AND MACHINE IS IN ADD FORM*/
+      this.props.hideMoreDetailsForm(data)
+    }
     //this.props.getRawMaterialDetailsAPI('', false, res => { })
   }
 
@@ -1759,7 +1767,8 @@ class AddMoreDetails extends Component {
                             required={true}
                             handleChangeDescription={this.handlePlants}
                             valueDescription={this.state.selectedPlants}
-                            disabled={isEditFlag ? true : false}
+                            // disabled={isEditFlag ? true : false}
+                            disabled={false}
                           />
                         </Col>
                         <Col md="3">

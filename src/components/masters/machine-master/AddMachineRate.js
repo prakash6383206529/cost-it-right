@@ -81,12 +81,15 @@ class AddMachineRate extends Component {
       })
     }
 
-    /*WHEN ADD MORE DETAIL FORM IS CANCELLED*/
+    /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
+      console.log(data, "DATA IN MACHINE RATE");
+
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
+
       return true
     }
 

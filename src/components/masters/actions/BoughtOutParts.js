@@ -70,7 +70,7 @@ export function getBOPDomesticDataList(data, callback) {
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
         const request = axios.get(`${API.getBOPDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
 
                 dispatch({
                     type: GET_BOP_DOMESTIC_DATA_LIST,
@@ -96,7 +96,7 @@ export function getBOPImportDataList(data, callback) {
         const queryParams = `bop_for=${data.bop_for}&category_id=${data.category_id}&vendor_id=${data.vendor_id}&plant_id=${data.plant_id}`
         const request = axios.get(`${API.getBOPImportDataList}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_BOP_IMPORT_DATA_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList
@@ -478,7 +478,7 @@ export function getManageBOPSOBDataList(data, callback) {
         const queryParams = `boughtOutPartNumber=${data.boughtOutPartNumber}`
         const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_SOB_LISTING,
                     payload: response.status === 204 ? [] : response.data.DataList

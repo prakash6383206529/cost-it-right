@@ -21,6 +21,7 @@ import { checkPermission } from '../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { GridTotalFormate } from '../common/TableGridFunctions';
 import ConfirmComponent from "../../helper/ConfirmComponent";
+import LoaderCustom from '../common/LoaderCustom';
 function enumFormatter(cell, row, enumObject) {
 	return enumObject[cell];
 }
@@ -404,7 +405,7 @@ class UsersListing extends Component {
 		const { EditAccessibility, departmentType, roleType, AddAccessibility } = this.state;
 		const options = {
 			clearSearch: true,
-			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+			noDataText: (this.props.userDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
 			// defaultSortName: 'FullName',  // default sort column name
 			// defaultSortOrder: 'desc', // default sort order
 			//exportCSVText: 'Download Excel',
@@ -489,8 +490,8 @@ class UsersListing extends Component {
 											<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
 												<img src={require("../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
 										) : (
-												<button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-											)}
+											<button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+										)}
 										<button
 											type="button"
 											className={"user-btn"}
@@ -505,7 +506,7 @@ class UsersListing extends Component {
 					</Row>
 				</form>
 				<BootstrapTable
-					data={this.state.userData}
+					data={this.props.userDataList}
 					striped={false}
 					bordered={false}
 					hover={false}

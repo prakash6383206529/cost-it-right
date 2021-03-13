@@ -17,6 +17,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -229,7 +230,7 @@ class ClientListing extends Component {
         const { isOpenVendor, isEditFlag, AddAccessibility, } = this.state;
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: (this.props.clientDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -267,7 +268,7 @@ class ClientListing extends Component {
                     </form>
 
                     <BootstrapTable
-                        data={this.state.tableData}
+                        data={this.props.clientDataList}
                         striped={false}
                         hover={false}
                         bordered={false}

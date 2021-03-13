@@ -381,7 +381,7 @@ export function getRMSpecificationDataList(data, callback) {
         const queryParams = `raw_material_id=${data.MaterialId}&grade_id=${data.GradeId}`
         const request = axios.get(`${API.getRMSpecificationDataList}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_MANAGE_SPECIFICATION,
                     payload: response.status === 204 ? [] : response.data.DataList
@@ -1103,7 +1103,7 @@ export function getRMImportDataList(data, callback) {
         const queryParams = `material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
         request.then((response) => {
-            if (response.data.Result) {
+            if (response.data.Result || response.status === 204) {
                 dispatch({
                     type: GET_RM_IMPORT_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList

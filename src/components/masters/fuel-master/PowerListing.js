@@ -20,6 +20,7 @@ import Switch from "react-switch";
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class PowerListing extends Component {
   constructor(props) {
@@ -353,7 +354,7 @@ class PowerListing extends Component {
     const { isEditFlag, } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: (this.props.powerDataList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -364,7 +365,7 @@ class PowerListing extends Component {
 
     return (
       <div>
-        {this.props.loading && <Loader />}
+        {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4">
             <Col md="4" className="switch mb15">
@@ -510,8 +511,8 @@ class PowerListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                     ) : (
-                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                      )}
+                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    )}
                     {AddAccessibility && (
                       <button
                         type="button"

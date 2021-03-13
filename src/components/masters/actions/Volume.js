@@ -97,11 +97,13 @@ export function getVolumeDataList(filterData, callback) {
     axios
       .get(`${API.getVolumeDataList}?${QueryParams}`, { headers })
       .then((response) => {
-        dispatch({
-          type: GET_VOLUME_DATA_LIST,
-          payload: response.data.DataList
-        })
-        callback(response)
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: GET_VOLUME_DATA_LIST,
+            payload: response.status === 204 ? [] : response.data.DataList
+          })
+          callback(response.status === 204 ? [] : response)
+        }
       })
       .catch((error) => {
         dispatch({ type: API_FAILURE })

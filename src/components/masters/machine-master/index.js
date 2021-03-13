@@ -132,12 +132,13 @@ class MachineMaster extends Component {
     * @method hideMoreDetailsForm
     * @description HIDE MORE DETAILS FORM(save and cancel button(more confirmation from Tanmay sir))
     */
-    hideMoreDetailsForm = (data = {}) => {
+    hideMoreDetailsForm = (data = {}, editDetails = {}) => {
+        console.log(editDetails, "eeeeeeeeeeeeeeeeeeeeeeeeeee");
         this.setState({
             isAddMoreDetails: false,
             isMachineRateForm: true,
             data: data,
-            editDetails: {},
+            editDetails: editDetails,
         })
     }
 
@@ -170,56 +171,56 @@ class MachineMaster extends Component {
 
         return (
             <>
-            <div className="container-fluid">
-                <Row>
-                    <Col sm="4">
-                        <h1>{`Machine Master`}</h1>
-                    </Col>
-                </Row>
+                <div className="container-fluid">
+                    <Row>
+                        <Col sm="4">
+                            <h1>{`Machine Master`}</h1>
+                        </Col>
+                    </Row>
 
-                <Row>
-                    <Col>
-                        <div>
-                            <Nav tabs className="subtabs mt-0">
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                        Machine Rate
+                    <Row>
+                        <Col>
+                            <div>
+                                <Nav tabs className="subtabs mt-0">
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                            Machine Rate
                                 </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                        Manage Process
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                            Manage Process
                                 </NavLink>
-                                </NavItem>
-                            </Nav>
+                                    </NavItem>
+                                </Nav>
 
-                            <TabContent activeTab={this.state.activeTab}>
+                                <TabContent activeTab={this.state.activeTab}>
 
-                                {this.state.activeTab == 1 &&
-                                    <TabPane tabId="1">
-                                        <MachineRateListing
-                                            displayForm={this.displayForm}
-                                            getDetails={this.getDetails}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                        />
-                                    </TabPane>}
+                                    {this.state.activeTab == 1 &&
+                                        <TabPane tabId="1">
+                                            <MachineRateListing
+                                                displayForm={this.displayForm}
+                                                getDetails={this.getDetails}
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
+                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
+                                            />
+                                        </TabPane>}
 
-                                {this.state.activeTab == 2 &&
-                                    <TabPane tabId="2">
-                                        <ProcessListing
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                        />
-                                    </TabPane>}
-                            </TabContent>
-                        </div>
-                    </Col>
-                </Row>
-            </div>
+                                    {this.state.activeTab == 2 &&
+                                        <TabPane tabId="2">
+                                            <ProcessListing
+                                                AddAccessibility={this.state.AddAccessibility}
+                                                EditAccessibility={this.state.EditAccessibility}
+                                                DeleteAccessibility={this.state.DeleteAccessibility}
+                                            />
+                                        </TabPane>}
+                                </TabContent>
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
             </>
         );
     }
