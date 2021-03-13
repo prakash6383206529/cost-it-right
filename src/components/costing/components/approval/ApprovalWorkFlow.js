@@ -22,7 +22,7 @@ function ApprovalWorkFlow(props) {
                   </div>
                   <div className="right">
                     <span className="">Approved By:</span>
-                    <p className="">Carolkelly</p>
+                    <p className="">{item.Name}</p>
                   </div>
                 </div>
                 {/* top */}
@@ -43,39 +43,39 @@ function ApprovalWorkFlow(props) {
         })}
     </div> /*row*/
   ) : (
-    <div className="row process workflow-row justify-content-between">
-      <div className="col-lg-3 col-md-6 col-sm-12 d-flex">
-        <div className="card-border card-green">
-          <div className="top d-flex">
-            <div className="left text-center">
-              <b>2</b>
-              <span className="d-block">Level</span>
+      <div className="row process workflow-row justify-content-between">
+        <div className="col-lg-3 col-md-6 col-sm-12 d-flex">
+          <div className="card-border card-green">
+            <div className="top d-flex">
+              <div className="left text-center">
+                <b>2</b>
+                <span className="d-block">Level</span>
+              </div>
+              <div className="right">
+                <span className="">Approved By:</span>
+                <p className="">Carolkelly</p>
+              </div>
             </div>
-            <div className="right">
-              <span className="">Approved By:</span>
-              <p className="">Carolkelly</p>
-            </div>
-          </div>
-          {/* top */}
-          <div className="bottom">
-            <div className="d-flex mb-3">
-              <span className="small-grey-text left">Date:</span>
-              <span className=" right">18/04/2020</span>
-            </div>
-            <div className="d-flex">
-              <span className="small-grey-text left">Remark:</span>
-              <span className=" right">
-                Lorem Ipsum Dolor Sit Amet, Conseetur Adipiscing Elit, Sed Do
-                Eiusmod.
+            {/* top */}
+            <div className="bottom">
+              <div className="d-flex mb-3">
+                <span className="small-grey-text left">Date:</span>
+                <span className=" right">18/04/2020</span>
+              </div>
+              <div className="d-flex">
+                <span className="small-grey-text left">Remark:</span>
+                <span className=" right">
+                  Lorem Ipsum Dolor Sit Amet, Conseetur Adipiscing Elit, Sed Do
+                  Eiusmod.
               </span>
+              </div>
             </div>
+            {/* bottom */}
           </div>
-          {/* bottom */}
+          {/*card green*/}
         </div>
-        {/*card green*/}
       </div>
-    </div>
-  )
+    )
 }
 
 export default ApprovalWorkFlow

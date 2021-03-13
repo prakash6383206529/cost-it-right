@@ -67,7 +67,11 @@ const handleHTTPStatus = (response) => {
       return toastr.error(
         'You are not allowed to access this resource. Please contact your IT Team',
       )
-    case 406:
+    case 406: const errMsg406 =
+      response && response.data && response.data.Message
+        ? response.data.Message
+        : 'Something is not right. Please contact your IT Team.'
+      return toastr.error(errMsg406)
     case 409:
     case 411:
     case 414:

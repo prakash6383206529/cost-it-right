@@ -174,10 +174,10 @@ export function getMachineDataList(data, callback) {
         const queryParams = `costing_head=${data.costing_head}&technology_id=${data.technology_id}&vendor_id=${data.vendor_id}&machine_type_id=${data.machine_type_id}&process_id=${data.process_id}&plant_id=${data.plant_id}`
         axios.get(`${API.getMachineDataList}?${queryParams}`, { headers })
             .then((response) => {
-                if (response.data.Result === true) {
+                if (response.data.Result === true || response.status === 204) {
                     dispatch({
                         type: GET_MACHINE_DATALIST_SUCCESS,
-                        payload: response.data.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     });
                     callback(response);
                 }
@@ -339,8 +339,8 @@ export function getProcessesSelectList(callback) {
 export function getMachineSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const id = '802da383-4745-420d-9186-2dbe42f00f5b';
-        // const id = "00000000-0000-0000-0000-000000000000" uncomment it when code is deployed.
+        // const id = '802da383-4745-420d-9186-2dbe42f00f5b';
+        const id = "00000000-0000-0000-0000-000000000000" //uncomment it when code is deployed.
         const request = axios.get(`${API.getMachineSelectList}/${id}`, headers);
         request.then((response) => {
             if (response.data.Result) {

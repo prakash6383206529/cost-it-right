@@ -45,6 +45,7 @@ class Login extends Component {
   onSubmit(values) {
 
     this.props.loginUserAPI(values, (res) => {
+      console.log(res, "RESPONSE");
       if (res && res.data && res.data.Result) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data);
@@ -54,10 +55,13 @@ class Login extends Component {
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
-      } else {
-        toastr.error('Entered email id or password is incorrect. Try again')
+      }
+      else {
+        // toastr.error('Entered email id or password is incorrect. Try again')
+        // console.log(res, "RES", res.Result);
+        // toastr.error(res.Message)
 
-      } 
+      }
     });
   }
 
@@ -85,7 +89,7 @@ class Login extends Component {
                   <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
                   </a>
                 </div>
-                <h3 className="text-center">Welcome Back,<br/> Please login to your account</h3>
+                <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
                 <form
                   noValidate
@@ -100,7 +104,7 @@ class Login extends Component {
                         component={renderEmailInputField}
                         isDisabled={false}
                         placeholder={"Email"}
-                        validate={[required, email,maxLength70]}
+                        validate={[required, email, maxLength70]}
                         required={true}
                         maxLength={71}
                       />
@@ -110,7 +114,7 @@ class Login extends Component {
                         name={"UserName"}
                         type="text"
                         placeholder={'User Name'}
-                        validate={[required,maxLength70]}
+                        validate={[required, maxLength70]}
                         component={renderText}
                         required={true}
                         maxLength={26}

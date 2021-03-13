@@ -797,7 +797,7 @@ class UserRegistration extends Component {
                           name={"FirstName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength80, alphabetsOnlyForName, checkWhiteSpaces]}
+                          validate={[required, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                           component={renderText}
                           required={true}
                           // maxLength={26}
@@ -811,9 +811,9 @@ class UserRegistration extends Component {
                           name={"LastName"}
                           type="text"
                           placeholder={'Enter'}
-                          validate={[required, minLength3, maxLength80, alphabetsOnlyForName, checkWhiteSpaces]}
+                          validate={[minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                           component={renderText}
-                          required={true}
+                          required={false}
                           // maxLength={26}
                           customClassName={'withBorder'}
                         />
@@ -826,8 +826,8 @@ class UserRegistration extends Component {
                           placeholder={'Enter'}
                           component={renderText}
                           isDisabled={false}
-                          validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
-                          required={true}
+                          validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                          required={false}
                           // maxLength={10}
                           customClassName={'withBorder'}
                         />

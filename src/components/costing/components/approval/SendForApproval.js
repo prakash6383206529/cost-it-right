@@ -187,7 +187,7 @@ const SendForApproval = (props) => {
     dispatch(
       getVolumeDataByPartAndYear(partNo.label, year, (res) => {
         //getVolumeDataByPartAndYear('WISHER', year, (res) => {
-        if (res.data.Result === true) {
+        if (res.data.Result === true || res.status === 202) {
           let approvedQtyArr = res.data.Data.VolumeApprovedDetails
           let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
           let actualQty = 0
@@ -220,6 +220,7 @@ const SendForApproval = (props) => {
           viewDataTemp[index] = temp
           dispatch(setCostingApprovalData(viewDataTemp))
         }
+
       }),
     )
   }

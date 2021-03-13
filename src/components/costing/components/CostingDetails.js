@@ -410,11 +410,11 @@ function CostingDetails(props) {
     let NetZBCSOB = 0
     let NetVBCSOB = 0
 
-    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields !== undefined && zbcPlantGridFields.reduce((accummlator, el) => {
+    NetZBCSOB = zbcPlantGridFields && zbcPlantGridFields.length > 0 && zbcPlantGridFields.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ShareOfBusinessPercent)
     }, 0)
 
-    NetVBCSOB = vbcGridFields && vbcGridFields !== undefined && vbcGridFields.reduce((accummlator, el) => {
+    NetVBCSOB = vbcGridFields && vbcGridFields.length > 0 && vbcGridFields.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ShareOfBusinessPercent)
     }, 0)
 
@@ -1096,8 +1096,8 @@ function CostingDetails(props) {
                                 <div className={"plus"}></div>ADD VENDOR
                               </button>
                             ) : (
-                                ""
-                              )}
+                              ""
+                            )}
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>

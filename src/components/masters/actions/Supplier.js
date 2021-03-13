@@ -62,10 +62,12 @@ export function getSupplierDataList(filterData, callback) {
         const QueryParams = `vendor_type=${filterData.vendor_type}&vendor_name=${filterData.vendor_name}&country=${filterData.country}`
         const request = axios.get(`${API.getAllSupplierAPI}?${QueryParams}`, headers);
         request.then((response) => {
-            dispatch({
-                type: GET_SUPPLIER_DATALIST_SUCCESS,
-                payload: response.data.DataList,
-            });
+            if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_SUPPLIER_DATALIST_SUCCESS,
+                    payload: response.status === 204 ? [] : response.data.DataList,
+                });
+            }
             callback(response)
         }).catch((error) => {
             dispatch({

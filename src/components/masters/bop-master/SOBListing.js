@@ -16,6 +16,7 @@ import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class SOBListing extends Component {
   constructor(props) {
@@ -224,7 +225,7 @@ class SOBListing extends Component {
     const { isOpen, isEditFlag } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: (this.props.bopDomesticList === undefined ? <Loader /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.bopDomesticList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -287,8 +288,8 @@ class SOBListing extends Component {
                   <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
                     <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                 ) : (
-                    <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                  )}
+                  <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                )}
               </div>
             </Col>
           </Row>

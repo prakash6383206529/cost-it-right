@@ -15,6 +15,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -254,10 +255,10 @@ class AssemblyPartListing extends Component {
     */
     render() {
         const { isOpenVisualDrawer, isBulkUpload } = this.state;
-        const { AddAccessibility, } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility } = this.props;
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: (this.props.partsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -280,11 +281,11 @@ class AssemblyPartListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                <button
+                                {BulkUploadAccessibility && <button
                                     type="button"
                                     className={'user-btn mr5'}
                                     onClick={this.bulkToggle}>
-                                    <div className={'upload'}></div>Upload BOM</button>
+                                    <div className={'upload'}></div>Upload BOM</button>}
                                 {AddAccessibility && <button
                                     type="button"
                                     className={'user-btn'}

@@ -14,6 +14,7 @@ import { loggedInUserId } from '../../../helper/auth';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -229,7 +230,7 @@ class IndivisualPartListing extends Component {
         const { AddAccessibility, BulkUploadAccessibility } = this.props
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: (this.props.newPartsListing === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -252,12 +253,12 @@ class IndivisualPartListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                {AddAccessibility && <button
+                                {BulkUploadAccessibility && <button
                                     type="button"
                                     className={'user-btn mr5'}
                                     onClick={this.bulkToggle}>
                                     <div className={'upload'}></div>Bulk Upload</button>}
-                                {BulkUploadAccessibility && <button
+                                {AddAccessibility && <button
                                     type="button"
                                     className={'user-btn'}
                                     onClick={this.formToggle}>
