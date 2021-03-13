@@ -420,6 +420,7 @@ function CostingDetails(props) {
 
     return checkForNull(NetZBCSOB) + checkForNull(NetVBCSOB) > 100 ? false : true
     // return true;
+
   }
 
 
