@@ -342,7 +342,7 @@ const SendForApproval = (props) => {
         onClose={(e) => toggleDrawer(e)}
       >
         <div className={"drawer-wrapper drawer-md"}>
-          <Row className="drawer-heading">
+          <Row className="drawer-heading mx-0">
             <Col>
               <div className={"header-wrapper left"}>
                 <h3>{"Send for Approval"}</h3>

@@ -229,7 +229,7 @@ function VariableMhrDrawer(props) {
                   <span>{calculatorData.UOM}</span>
                 </span>
               </Col>
-              <div className="w-100">
+              <div className="w-100 px-3">
                 {getProcessComponent(technology)}
               </div>
             </Row>

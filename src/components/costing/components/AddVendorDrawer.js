@@ -203,7 +203,7 @@ function AddVendorDrawer(props) {
                 )}
               </Row>
 
-              <Row className="justify-content-between my-3">
+              <Row className="justify-content-between">
                 <div className="col-sm-12 text-right">
                   <button
                     type={"button"}

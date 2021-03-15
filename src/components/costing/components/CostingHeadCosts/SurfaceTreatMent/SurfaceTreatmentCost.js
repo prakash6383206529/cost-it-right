@@ -165,12 +165,12 @@ function SurfaceTreatmentCost(props) {
       <div className="user-page p-0 costing-page-drawer">
         <div>
           <Row className="align-items-center">
-            <Col md="10">
+            <Col md="8">
               <div className="left-border">
                 {'Surface Treatment Cost:'}
               </div>
             </Col>
-            <Col col={'2'}>
+            <Col md="4">
               <button
                 type="button"
                 className={'user-btn'}

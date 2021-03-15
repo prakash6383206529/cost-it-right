@@ -148,7 +148,7 @@ function AddBOP(props) {
   return (
     <div>
       <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-        <Container>
+        <Container className="add-bop-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 
             <Row className="drawer-heading">

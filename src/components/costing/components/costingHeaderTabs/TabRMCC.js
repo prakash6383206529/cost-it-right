@@ -923,7 +923,7 @@ function TabRMCC(props) {
                 onSubmit={handleSubmit(onSubmit)}
               >
                 <Row>
-                  <Col md="12">
+                  <Col md="12" className="table-responsive">
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>

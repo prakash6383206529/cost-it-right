@@ -532,7 +532,7 @@ function TabDiscountOther(props) {
                     </Col>
 
                     <Col md="3" className="height152-label">
-                      <label>Upload Attachment ( upload up to 4 files )</label>
+                      <label>Upload Attachment (upload up to 4 files)</label>
                       {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
                           Max file uploaded.

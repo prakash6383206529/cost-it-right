@@ -805,7 +805,7 @@ class AddFreight extends Component {
                           </Col>
                           <Col md="2">
                             <Field
-                              label={`Rate(INR)`}
+                              label={`Rate (INR)`}
                               name={"Rate"}
                               type="text"
                               placeholder={"Enter"}

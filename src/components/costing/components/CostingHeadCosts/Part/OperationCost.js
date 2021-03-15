@@ -200,7 +200,7 @@ function OperationCost(props) {
                     <th style={{ width: "220px" }}>{`Labour Rate`}</th>
                     <th style={{ width: "220px" }}>{`Labour Quantity`}</th>
                     <th style={{ width: "220px" }}>{`Net Cost`}</th>
-                    <th style={{ width: "145px" }}>{`Action`}</th>
+                    <th style={{ minWidth: "145px" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
