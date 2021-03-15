@@ -116,7 +116,7 @@ function AssemblySurfaceTreatment(props) {
           {(item.CostingPartDetails.SurfaceTreatmentDetails || item.CostingPartDetails.TransportationDetails) ?
             <button
               type="button"
-              className={'user-btn'}
+              className={'user-btn surface-treatment-btn'}
               //onClick={DrawerToggle}
               onClick={() => {
                 toggle(item.BOMLevel, item.PartNumber, false)
@@ -127,7 +127,7 @@ function AssemblySurfaceTreatment(props) {
             :
             <button
               type="button"
-              className={'user-btn'}
+              className={'user-btn surface-treatment-btn'}
               //onClick={DrawerToggle}
               onClick={() => {
                 toggle(item.BOMLevel, item.PartNumber, false)

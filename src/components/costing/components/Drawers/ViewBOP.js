@@ -46,7 +46,7 @@ function ViewBOP(props) {
               </Col>
             </Row>
 
-            <Row>
+            <Row className="mx-0">
               <Col md="12">
                 <Row>
                   <Col md="12">
@@ -79,9 +79,9 @@ function ViewBOP(props) {
                             <td>
                               {item.NetBoughtOutPartCost !== undefined
                                 ? checkForDecimalAndNull(
-                                    item.NetBoughtOutPartCost,
-                                    2,
-                                  )
+                                  item.NetBoughtOutPartCost,
+                                  2,
+                                )
                                 : 0}
                             </td>
                           </tr>

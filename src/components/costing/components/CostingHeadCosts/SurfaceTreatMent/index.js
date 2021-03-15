@@ -111,7 +111,7 @@ function SurfaceTreatment(props) {
 
             <Row className="mb-3 pt-3">
               <Col>
-                <div className="user-page p-0">
+                <div className="user-page p-0 px-3">
                   <div className="cr-process-costwrap">
                     <Row className="cr-innertool-cost">
                       {

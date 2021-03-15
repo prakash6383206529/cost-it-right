@@ -414,6 +414,20 @@ class LabourListing extends Component {
   renderEmploymentTerm = () => {
     return <> Employment <br />Terms </>
   }
+  renderVendorName = () => {
+    return <> Vendor <br />Name</>
+  }
+
+  renderMachineType = () => {
+    return <> Machine <br />Type</>
+  }
+  renderRatePerPerson = () => {
+    return <>Rate Per <br />Person/Annum</>
+  }
+
+  renderLabourType = () => {
+    return <>Labour <br />Type</>
+  }
 
   onExportToCSV = (row) => {
     // ...
@@ -720,15 +734,15 @@ class LabourListing extends Component {
             pagination
           >
             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-            <TableHeaderColumn width={150} dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {'Employment Terms '}  </TableHeaderColumn>
+            <TableHeaderColumn width={110} dataField="IsContractBase" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}  >  {this.renderEmploymentTerm()}  </TableHeaderColumn>
             <TableHeaderColumn
               dataField="Vendor"
               columnTitle={true}
-              width={150}
+              width={110}
               dataAlign="left"
               dataFormat={this.dashFormatter}
             >
-              {'Vendor Name'}
+              {this.renderVendorName()}
             </TableHeaderColumn>
             <TableHeaderColumn
               dataField="Plant"
@@ -750,25 +764,25 @@ class LabourListing extends Component {
               dataField="MachineType"
               columnTitle={true}
               dataAlign="left"
-              width={120}
+              width={100}
             >
-              {'Machine Type'}
+              {this.renderMachineType()}
             </TableHeaderColumn>
             <TableHeaderColumn
               dataField="LabourType"
               columnTitle={true}
               dataAlign="left"
-              width={120}
+              width={100}
             >
-              {'Labour Type'}
+              {this.renderLabourType()}
             </TableHeaderColumn>
             <TableHeaderColumn
               dataField="LabourRate"
               columnTitle={true}
-              width={200}
+              width={120}
               dataAlign="left"
             >
-              {'Rate Per Person/Annum'}
+              {this.renderRatePerPerson()}
             </TableHeaderColumn>
             <TableHeaderColumn
               dataField="EffectiveDate"

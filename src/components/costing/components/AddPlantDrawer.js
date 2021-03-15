@@ -132,7 +132,7 @@ function AddPlantDrawer(props) {
                 </Col>
               </Row>
 
-              <Row className="justify-content-between row my-3">
+              <Row className="justify-content-between row">
                 <div className="col-sm-12 text-right">
                   <button
                     type={"button"}
