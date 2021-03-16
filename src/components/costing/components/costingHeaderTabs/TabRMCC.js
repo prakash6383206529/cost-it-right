@@ -923,70 +923,72 @@ function TabRMCC(props) {
                 onSubmit={handleSubmit(onSubmit)}
               >
                 <Row>
-                  <Col md="12" className="table-responsive">
-                    <Table className="table cr-brdr-main mb-0" size="sm">
-                      <thead>
-                        <tr>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`BOP Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Conversion Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Pc`}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Assembly`}</th>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {
-                          RMCCTabData && RMCCTabData.map((item, index) => {
-                            if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
+                  <Col md="12">
+                    <div className="table-responsive">
+                      <Table className="table cr-brdr-main mb-0" size="sm">
+                        <thead>
+                          <tr>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                            <th className="py-3 align-middle" style={{ width: '70px' }}>{`Level`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`RM Cost`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`BOP Cost`}</th>
+                            <th className="py-3 align-middle" style={{ width: '150px' }}>{`Conversion Cost`}</th>
+                            <th className="py-3 align-middle" style={{ width: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
+                            <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM + CC Cost/Pc`}</th>
+                            <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Assembly`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            RMCCTabData && RMCCTabData.map((item, index) => {
+                              if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
 
-                              return (
-                                < >
-                                  <PartCompoment
-                                    index={index}
-                                    item={item}
-                                    rmData={item.CostingPartDetails.CostingRawMaterialsCost}
-                                    bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
-                                    ccData={item.CostingPartDetails.CostingConversionCost}
-                                    setPartDetails={setPartDetails}
-                                    setRMCost={setRMCost}
-                                    setBOPCost={setBOPCost}
-                                    setProcessCost={setProcessCost}
-                                    setOperationCost={setOperationCost}
-                                    setToolCost={setToolCost}
-                                  />
-                                </>
-                              )
+                                return (
+                                  < >
+                                    <PartCompoment
+                                      index={index}
+                                      item={item}
+                                      rmData={item.CostingPartDetails.CostingRawMaterialsCost}
+                                      bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
+                                      ccData={item.CostingPartDetails.CostingConversionCost}
+                                      setPartDetails={setPartDetails}
+                                      setRMCost={setRMCost}
+                                      setBOPCost={setBOPCost}
+                                      setProcessCost={setProcessCost}
+                                      setOperationCost={setOperationCost}
+                                      setToolCost={setToolCost}
+                                    />
+                                  </>
+                                )
 
-                            } else {
-                              return (
-                                < >
-                                  <AssemblyPart
-                                    index={index}
-                                    item={item}
-                                    children={item.CostingChildPartDetails}
-                                    setPartDetails={setPartDetails}
-                                    toggleAssembly={toggleAssembly}
-                                    setRMCost={setRMCost}
-                                    setBOPCost={setBOPCost}
-                                    setProcessCost={setProcessCost}
-                                    setOperationCost={setOperationCost}
-                                    setToolCost={setToolCost}
-                                    setAssemblyOperationCost={setAssemblyOperationCost}
-                                    setAssemblyToolCost={setAssemblyToolCost}
-                                  />
-                                </>
-                              )
-                            }
-                          })
-                        }
+                              } else {
+                                return (
+                                  < >
+                                    <AssemblyPart
+                                      index={index}
+                                      item={item}
+                                      children={item.CostingChildPartDetails}
+                                      setPartDetails={setPartDetails}
+                                      toggleAssembly={toggleAssembly}
+                                      setRMCost={setRMCost}
+                                      setBOPCost={setBOPCost}
+                                      setProcessCost={setProcessCost}
+                                      setOperationCost={setOperationCost}
+                                      setToolCost={setToolCost}
+                                      setAssemblyOperationCost={setAssemblyOperationCost}
+                                      setAssemblyToolCost={setAssemblyToolCost}
+                                    />
+                                  </>
+                                )
+                              }
+                            })
+                          }
 
-                      </tbody>
-                    </Table>
+                        </tbody>
+                      </Table>
+                    </div>
                   </Col>
                 </Row>
                 <div className="col-sm-12 text-right bluefooter-butn">

@@ -173,8 +173,8 @@ function OperationCost(props) {
         <div>
           <Row className="align-items-center">
             <Col md="8">
-              <div className="bottom-border">
-                {'Operation Cost ( Without Labour Cost)'}
+              <div className="left-border">
+                {'Operation Cost:'}
               </div>
             </Col>
             <Col md={'4'}>
@@ -189,7 +189,7 @@ function OperationCost(props) {
             {/*OPERATION COST GRID */}
 
             <Col md="12">
-              <Table className="table cr-brdr-main" size="sm" >
+              <Table className="table cr-brdr-main costing-operation-cost-section" size="sm" >
                 <thead>
                   <tr>
                     <th>{`Operation Name`}</th>
@@ -200,7 +200,7 @@ function OperationCost(props) {
                     <th style={{ width: "220px" }}>{`Labour Rate`}</th>
                     <th style={{ width: "220px" }}>{`Labour Quantity`}</th>
                     <th style={{ width: "220px" }}>{`Net Cost`}</th>
-                    <th style={{ minWidth: "145px" }}>{`Action`}</th>
+                    <th style={{ width: "145px" }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >

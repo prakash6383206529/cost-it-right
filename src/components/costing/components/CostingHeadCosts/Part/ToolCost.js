@@ -97,7 +97,7 @@ function ToolCost(props) {
     <>
       <div className="user-page p-0">
         <div>
-          <Row>
+          <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
                 {'Tool Cost:'}
@@ -116,7 +116,7 @@ function ToolCost(props) {
             {/*TOOL COST GRID */}
 
             <Col md="12">
-              <Table className="table" size="sm" >
+              <Table className="table cr-brdr-main costing-tool-cost-section" size="sm" >
                 <thead>
                   <tr>
                     <th>{`Process/Operation`}</th>
@@ -126,7 +126,7 @@ function ToolCost(props) {
                     <th>{`Tool Cost`}</th>
                     <th>{`Life`}</th>
                     <th>{`Net Tool Cost`}</th>
-                    <th>{`Action`}</th>
+                    <th style={{ width: 145 }}>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >

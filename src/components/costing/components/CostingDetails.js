@@ -1097,8 +1097,8 @@ function CostingDetails(props) {
                                 <div className={"plus"}></div>ADD VENDOR
                               </button>
                             ) : (
-                              ""
-                            )}
+                                ""
+                              )}
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>

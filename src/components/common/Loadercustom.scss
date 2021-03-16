@@ -7,19 +7,27 @@
         }
     }
   }
-
+.react-bs-table-container {
+    .react-bs-table{
+        position: relative;
+        .table-header-wrapper{
+            position: relative;
+            z-index: 10;
+        }
+    }
+}
 .loader_container{
     position: absolute;
-    left: 15px;
-    right: 15px;
-    top: 18%;
+    left: -1px;
+    right: -1px;
+    top: 0px;
     bottom: 0px;
     width: auto;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     display: flex;
-    z-index: 99999;
+    z-index: 9;
     background: rgba(255, 255, 255,0.9);
 
     .img_loader{
