@@ -26,9 +26,10 @@ import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, INR, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
+import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -73,6 +74,7 @@ class AddRMImport extends Component {
 
       isVisible: false,
       imageURL: '',
+      currencyValue: 1
 
     }
   }
@@ -252,6 +254,18 @@ class AddRMImport extends Component {
   handleCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ currency: newValue, })
+      const { fieldsObj } = this.props
+      if (newValue.label === INR) {
+        this.setState({ currencyValue: 1 }, () => {
+
+          this.props.change('NetLandedCost', (fieldsObj.BasicRate * this.state.currencyValue))
+        })
+      } else {
+        this.props.getExchangeRateByCurrency(newValue.label, res => {
+          this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+          this.setState({ currencyValue: res.data.Data.CurrencyExchangeRate })
+        })
+      }
     } else {
       this.setState({ currency: [] })
     }
@@ -262,7 +276,9 @@ class AddRMImport extends Component {
   * @description Set value in NetLandedCost
   */
   handleBasicRate = (e) => {
-    this.props.change('NetLandedCost', e.target.value)
+
+    const { currencyValue } = this.state
+    this.props.change('NetLandedCost', (e.target.value * currencyValue))
   }
 
   /**
@@ -1172,7 +1188,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Basic Rate/UOM (INR)`}
+                              label={`Basic Rate/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1188,7 +1204,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Scrap Rate (INR)`}
+                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1202,7 +1218,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Landed Cost (INR/UOM)`}
+                              label={`Net Landed Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1273,43 +1289,43 @@ class AddRMImport extends Component {
                                 Max file uploaded.
                               </div>
                             ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                      "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                          <i className="text-primary fa fa-cloud-upload"></i>
-                                          <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                              Browse
+                              <Dropzone
+                                getUploadParams={this.getUploadParams}
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={3}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                          Browse
                                             </span>
-                                            <br />
+                                        <br />
                                             file to upload
                                           </span>
-                                        </div>
-                                      )
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
-                                />
-                              )}
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                              />
+                            )}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1465,7 +1481,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, } = state;
-  const fieldsObj = selector(state, 'BasicRate',);
+  const fieldsObj = selector(state, 'BasicRate', 'NetLandedCost');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
@@ -1524,7 +1540,8 @@ export default connect(mapStateToProps, {
   getCurrencySelectList,
   fetchPlantDataAPI,
   getTechnologySelectList,
-  getPlantSelectListByType
+  getPlantSelectListByType,
+  getExchangeRateByCurrency
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

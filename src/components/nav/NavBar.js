@@ -43,7 +43,9 @@ class SideBar extends Component {
         this.setState({ isLoader: false });
       });
     }
+
   }
+
 
   /**
    * @method componentDidMount
@@ -134,6 +136,7 @@ class SideBar extends Component {
   setLeftMenu = (ModuleId) => {
     reactLocalStorage.set("ModuleId", ModuleId);
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+      console.log(res, "RESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
       const { location } = this.props;
       this.setState({ isLeftMenuRendered: true });
       // if (location && location.state) {
@@ -186,6 +189,7 @@ class SideBar extends Component {
    */
   renderMaster = (module) => {
     const { menusData } = this.props
+    console.log(menusData, "MENU DATA")
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -196,11 +200,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/raw-material-master",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Masters",
-                    PageURL: "/raw-material-master",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
                 key={i}
@@ -237,11 +241,11 @@ class SideBar extends Component {
                 className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/reason-master",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Additional Masters",
-                    PageURL: "/reason-master",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -388,11 +392,11 @@ class SideBar extends Component {
               className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
               onClick={() => this.setLeftMenu(el.ModuleId)}
               to={{
-                pathname: "/users",
+                pathname: el.LandingPageURL,
                 state: {
                   ModuleId: el.ModuleId,
                   PageName: "Users",
-                  PageURL: "/users",
+                  PageURL: el.LandingPageURL,
                 },
               }}
             >
@@ -455,7 +459,7 @@ class SideBar extends Component {
     return (
       <nav>
         {isLoader && <Loader />}
-        {isLeftMenuRendered && (
+        {isLeftMenuRendered && leftMenuData[0] !== undefined && (
           <Redirect
             to={{
               pathname: leftMenuData[0].NavigationURL,
@@ -613,8 +617,8 @@ class SideBar extends Component {
                                 {userData.Name}
                               </>
                             ) : (
-                                "Login"
-                              )}
+                              "Login"
+                            )}
                           </DropdownToggle>
 
                           {/* <DropdownMenu>
@@ -648,8 +652,8 @@ class SideBar extends Component {
                       </a>
                     </li>
                   ) : (
-                      ""
-                    )}
+                    ""
+                  )}
                 </ul>
               </div>
             </nav>

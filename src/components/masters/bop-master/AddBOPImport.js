@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-  required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric, postiveNumber, maxLength10,
-  positiveAndDecimalNumber, maxLength512, maxLength
+  required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
+  postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
@@ -23,12 +23,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, ZBC, INR } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
 import { AcceptableRMUOM } from '../../../config/masterData'
+import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
+
 const selector = formValueSelector('AddBOPImport');
 
 class AddBOPImport extends Component {
@@ -59,7 +61,8 @@ class AddBOPImport extends Component {
       effectiveDate: '',
       files: [],
 
-      netLandedcost: ''
+      netLandedcost: '',
+      currencyValue: 1
     }
   }
 
@@ -364,6 +367,18 @@ class AddBOPImport extends Component {
   */
   handleCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      if (newValue.label === INR) {
+        this.setState({ currencyValue: 1 }, () => {
+          this.handleCalculation()
+        })
+      } else {
+        this.props.getExchangeRateByCurrency(newValue.label, res => {
+          //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+          this.setState({ currencyValue: res.data.Data.CurrencyExchangeRate }, () => {
+            this.handleCalculation()
+          })
+        })
+      }
       this.setState({ currency: newValue, })
     } else {
       this.setState({ currency: [] })
@@ -374,7 +389,7 @@ class AddBOPImport extends Component {
     const { fieldsObj, initialConfiguration } = this.props
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull(BasicRate / NoOfPieces)
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
     this.setState({
       netLandedcost: NetLandedCost
     })
@@ -734,11 +749,7 @@ class AddBOPImport extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                disabled={
-                                  this.state.IsVendor || isEditFlag
-                                    ? true
-                                    : false
-                                }
+                                disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>
                           )}
@@ -774,20 +785,11 @@ class AddBOPImport extends Component {
                                   label="Vendor Name"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "VendorNameList"
-                                  )}
+                                  options={this.renderListing("VendorNameList")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.vendorName == null ||
-                                      this.state.vendorName.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                  validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleVendorName
-                                  }
+                                  handleChangeDescription={this.handleVendorName}
                                   valueDescription={this.state.vendorName}
                                   disabled={isEditFlag ? true : false}
                                 />
@@ -805,20 +807,11 @@ class AddBOPImport extends Component {
                                 name="VendorPlant"
                                 placeholder={"Select"}
                                 selection={
-                                  this.state.selectedVendorPlants == null ||
-                                    this.state.selectedVendorPlants.length ===
-                                    0
-                                    ? []
-                                    : this.state.selectedVendorPlants
-                                }
+                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
                                 options={this.renderListing("VendorPlant")}
                                 selectionChanged={this.handleVendorPlant}
                                 validate={
-                                  this.state.selectedVendorPlants == null ||
-                                    this.state.selectedVendorPlants.length === 0
-                                    ? [required]
-                                    : []
-                                }
+                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
                                 optionValue={(option) => option.Value}
                                 optionLabel={(option) => option.Text}
                                 component={renderMultiSelectField}
@@ -851,20 +844,12 @@ class AddBOPImport extends Component {
                                   label="Source Location"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing(
-                                    "SourceLocation"
-                                  )}
+                                  options={this.renderListing("SourceLocation")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
                                   validate={
-                                    this.state.sourceLocation == null ||
-                                      this.state.sourceLocation.length === 0
-                                      ? [required]
-                                      : []
-                                  }
+                                    this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
                                   required={true}
-                                  handleChangeDescription={
-                                    this.handleSourceSupplierCity
-                                  }
+                                  handleChangeDescription={this.handleSourceSupplierCity}
                                   valueDescription={this.state.sourceLocation}
                                 />
                               </Col>
@@ -914,7 +899,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Basic Rate (INR)`}
+                              label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -928,7 +913,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Landed Cost (INR)`}
+                              label={`Net Landed Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -996,47 +981,47 @@ class AddBOPImport extends Component {
                                 </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
-                                <div class="alert alert-danger" role="alert">
-                                  Max file uploaded.
-                                </div>
-                              ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                      "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                          <i className="text-primary fa fa-cloud-upload"></i>
-                                          <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                              Browse
+                              <div class="alert alert-danger" role="alert">
+                                Max file uploaded.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={this.getUploadParams}
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={3}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                          Browse
                                             </span>
-                                            <br />
+                                        <br />
                                             file to upload
                                           </span>
-                                        </div>
-                                      )
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
-                                />
-                              )}
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                              />
+                            )}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1202,6 +1187,7 @@ export default connect(mapStateToProps, {
   fileUploadBOPDomestic,
   fileDeleteBOPDomestic,
   getPlantSelectListByType,
+  getExchangeRateByCurrency
 })(reduxForm({
   form: 'AddBOPImport',
   enableReinitialize: true,

@@ -19,6 +19,7 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class ExchangeRateListing extends Component {
     constructor(props) {
@@ -294,7 +295,7 @@ class ExchangeRateListing extends Component {
         }
         const options = {
             clearSearch: true,
-            noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+            noDataText: (this.props.exchangeRateDataList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,
@@ -364,8 +365,8 @@ class ExchangeRateListing extends Component {
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                 <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                         ) : (
-                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                            )}
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
                                         {AddAccessibility && <button
                                             type="button"
                                             className={'user-btn'}
