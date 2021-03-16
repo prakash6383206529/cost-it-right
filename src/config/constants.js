@@ -643,6 +643,7 @@ export const API = {
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
 
 
+
   //REASON
   createReason: `${BASE_URL}/masters-reason/create`,
   getAllReasonAPI: `${BASE_URL}/masters-reason/get-all`,
