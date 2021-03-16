@@ -159,7 +159,7 @@ function SurfaceTreatment(props) {
               </Col>
             </Row>
 
-            <Row className="sf-btn-footer no-gutters justify-content-between">
+            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
               <div className="col-sm-12 text-right">
                 <button
                   type={'button'}

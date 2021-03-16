@@ -491,7 +491,7 @@ function ProcessCost(props) {
 
             {/*OPERATION COST GRID */}
             <Col md="12">
-              <Table className="table cr-brdr-main" size="sm">
+              <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
                 <thead>
                   <tr>
                     <th>{`Process Name`}</th>
@@ -796,7 +796,6 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          <hr />
           <OperationCost
             data={props.data && props.data.CostingOperationCostResponse}
             setOperationCost={setOperationCost}

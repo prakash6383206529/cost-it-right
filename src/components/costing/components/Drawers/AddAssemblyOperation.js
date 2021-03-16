@@ -124,7 +124,7 @@ function AddAssemblyOperation(props) {
   return (
     <div>
       <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
-        <div className="container-fluid">
+        <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 
             <Row className="drawer-heading sticky-top-0">
@@ -171,7 +171,7 @@ function AddAssemblyOperation(props) {
                       </Col>
                     </Row>
 
-                    <hr />
+
                     <OperationCost
                       data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingOperationCostResponse : []}
                       setAssemblyOperationCost={props.setAssemblyOperationCost}
@@ -179,13 +179,15 @@ function AddAssemblyOperation(props) {
                       IsAssemblyCalculation={true}
                     />
 
-                    <hr />
-                    {IsOpenTool && <ToolCost
-                      data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingToolCostResponse : []}
-                      setAssemblyToolCost={props.setAssemblyToolCost}
-                      item={props.item}
-                      IsAssemblyCalculation={true}
-                    />}
+
+                    {IsOpenTool && <>
+                      <div className="pt-2"></div>
+                      <ToolCost
+                        data={item.CostingPartDetails !== undefined ? item.CostingPartDetails.CostingToolCostResponse : []}
+                        setAssemblyToolCost={props.setAssemblyToolCost}
+                        item={props.item}
+                        IsAssemblyCalculation={true}
+                      /></>}
 
                   </div>
                 </div>

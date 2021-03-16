@@ -507,7 +507,7 @@ function TabDiscountOther(props) {
 
                   <Row className="mx-0">
                     <Col md="12">
-                      <div className="bottom-border mb-2 mt-3">
+                      <div className="left-border mt-3">
                         {'Remarks & Attachments:'}
                       </div>
                     </Col>
