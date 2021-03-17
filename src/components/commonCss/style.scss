@@ -1256,9 +1256,15 @@ label for[normal-switch]{
         background-color: #fff;
         &:before{display: none;}
       }
+      >.d-inline-flex{
+        position: relative;
+        z-index: 12;
+      }
     }
   }
   .blue-before{
+    position: relative;
+    z-index: 12;
     .filter-block {
       position: initial;
       height: 32px!important;
@@ -1880,7 +1886,7 @@ html {
 	}
 }
 .left-border {
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 
 // =================approval-summary=========================
@@ -2441,7 +2447,7 @@ button:disabled{pointer-events: none;}
 .search-user-block{
   position: absolute;
   bottom: -47px;
-  z-index: 1;
+  z-index: 2;
   right: 0;
 }
 .no-filter-row{
@@ -2953,11 +2959,12 @@ body {
 .pb-15{padding-bottom: 15px;}
 .mt-15{margin-top: 15px;}
 .pt-15{padding-top: 15px;}
+.pl10{padding-left: 10px !important;}
 
 .costing-page-drawer{
   .left-border{
-    margin-top: 15px;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 }
 .costing-disacount-other-cost-footer{
@@ -3073,6 +3080,11 @@ body {
         }
       }
     }
+  }
+}
+.add-operation-drawer{
+  .left-border{
+    margin-top: 10px;
   }
 }
 .mn-height-auto{
@@ -3194,6 +3206,119 @@ body{
 }// 1600px media query end
 
 @media(max-width:1366px){
+
+  .costing-raw-material-section{
+    thead{
+      tr{
+        th:nth-child(4){
+          width: 145px !important;
+        }
+        th:nth-child(5),th:nth-child(6){
+         width: 140px !important;
+       }
+       th:nth-child(7){
+         width: 120px !important;
+       } // th
+     } // tr
+    } // thead
+   }// costing-raw-material-section 
+
+   .costing-bop-cost-section{
+     thead{
+       tr{
+         th:nth-child(3){
+           width: 100px !important;
+         }
+         th:nth-child(4){
+          width: 150px !important;
+        }
+        th:nth-child(5){
+          width: 140px !important;
+        } // th
+        th:nth-child(6){
+         width: 120px !important;
+       } // th
+      } // tr
+     } // thead
+    }// costing-raw-material-section 
+
+    .costing-process-cost-section{
+     thead{
+       tr{
+         th:nth-child(4){
+           width: 120px !important;
+         }
+         th:nth-child(5){
+          width: 100px !important;
+        }
+        th:nth-child(6){
+          width: 160px !important;
+        } // th
+        th:nth-child(7){
+         width: 140px !important;
+       } // th
+      } // tr
+     } // thead
+    }// costing-raw-material-section 
+
+    .costing-operation-cost-section{
+     thead{
+       tr{
+         th:nth-child(5),th:nth-child(7){
+           width: 140px !important;
+         }
+         th:nth-child(6){
+          width: 110px !important;
+        }
+        th:nth-child(6){
+          width: 160px !important;
+        } // th
+        th:nth-child(8){
+         width: 110px !important;
+       } // th
+      } // tr
+     } // thead
+    }// costing-raw-material-section 
+
+  .costing-details-page{    
+    .table {
+      td,th{
+        padding: 0.71rem 15px;
+      }
+    }
+    .shadow-lgg {
+      .form  {
+        .tab-tool-cost-footer,.costing-overhead-profit-footer{
+          margin: 0 -16px -15px;
+        }
+      }
+    }
+
+    .costing-highlight-row{
+      background-color: #F8FCFF;
+      >div{
+        >td{
+          padding: 15px;
+        }
+      }
+    }
+    .costing-highlight-row.accordian-row{
+      > td{
+        padding: 10px 15px;
+      }
+    }
+  
+    .accordian-row{
+      > td{
+        padding: 15px;
+      }
+    }
+    .costing-border-x.px-30{
+      padding: 0 15px;
+    }
+}
+//=============== costing details page only end
+  
   html{
     label{font-size: 14px;}
   }

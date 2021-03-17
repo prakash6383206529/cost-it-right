@@ -269,7 +269,7 @@ function RawMaterialCost(props) {
               {/*RAW MATERIAL COST GRID */}
 
               <Col md="12">
-                <Table className="table cr-brdr-main" size="sm">
+                <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
                   <thead>
                     <tr>
                       <th>{`RM Name`}</th>

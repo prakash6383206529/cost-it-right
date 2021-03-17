@@ -1856,7 +1856,7 @@ function OverheadProfit(props) {
 
 
             <Row className="mt-15 pt-15">
-              <Col md="12" className="switch mb15">
+              <Col md="12" className="switch mb-2">
                 <label className="switch-level">
                   <Switch
                     onChange={onPressInventory}
@@ -1952,7 +1952,7 @@ function OverheadProfit(props) {
 
 
             <Row className="mt-15 pt-15">
-              <Col md="12" className="switch mb15">
+              <Col md="12" className="switch mb-2">
                 <label className="switch-level">
                   <Switch
                     onChange={onPressPaymentTerms}

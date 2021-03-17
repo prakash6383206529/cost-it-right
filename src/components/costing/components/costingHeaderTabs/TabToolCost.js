@@ -198,7 +198,7 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="px-30 py-4 text-dark-blue">{"Net Tool Cost"}</Col>
+                <Col md="3" className="px-30 py-4 text-dark-blue pl10">{"Net Tool Cost"}</Col>
               </Row>
 
               <form
@@ -225,7 +225,7 @@ function TabToolCost(props) {
                                     {item.PartName}
                                   </span>
                                 </td>
-                                <td>{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
+                                <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
                               </tr>
                               <tr>
                                 <td colSpan={2} className="cr-innerwrap-td pb-3">

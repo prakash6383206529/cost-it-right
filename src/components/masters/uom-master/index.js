@@ -266,7 +266,7 @@ class UOMMaster extends Component {
                 pagination
               >
                 <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}                >                  Unit                    </TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitType" dataSort={true}>Unit Type</TableHeaderColumn>
+                <TableHeaderColumn dataField="UnitType" dataAlign="right" dataSort={true}>Unit Type</TableHeaderColumn>
                 {/* <TableHeaderColumn
                   dataField="IsActive"
                   dataFormat={this.statusButtonFormatter}

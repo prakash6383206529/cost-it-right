@@ -1085,7 +1085,7 @@ class AddPower extends Component {
                       <Row>
                         {this.state.IsVendor &&
                           <>
-                            <Col md="3">
+                            <Col md="4">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
@@ -1110,7 +1110,7 @@ class AddPower extends Component {
                                 </div>}
                               </div>
                             </Col>
-                            <Col md="3">
+                            <Col md="4">
                               <Field
                                 label="Vendor Plant"
                                 name="VendorPlant"
@@ -1126,7 +1126,7 @@ class AddPower extends Component {
                                 disabled={false}
                               />
                             </Col>
-                            <Col md="3">
+                            <Col md="4">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field

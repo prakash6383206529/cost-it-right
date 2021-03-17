@@ -752,7 +752,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      <Col md="4" className="mb-4">
+                      <Col md="4" className="mb-4 pb-1">
                         <label
                           className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                             }`}
