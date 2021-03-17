@@ -1256,9 +1256,15 @@ label for[normal-switch]{
         background-color: #fff;
         &:before{display: none;}
       }
+      >.d-inline-flex{
+        position: relative;
+        z-index: 12;
+      }
     }
   }
   .blue-before{
+    position: relative;
+    z-index: 12;
     .filter-block {
       position: initial;
       height: 32px!important;
@@ -2441,7 +2447,7 @@ button:disabled{pointer-events: none;}
 .search-user-block{
   position: absolute;
   bottom: -47px;
-  z-index: 1;
+  z-index: 2;
   right: 0;
 }
 .no-filter-row{

@@ -369,7 +369,7 @@ class AddSpecification extends Component {
                 <div className="ml-3">
                   <Row>
                     <Col md="12">
-                      <div className="d-flex align-items-center">
+                      <div className="d-flex">
                         <Field
                           name="RawMaterialName"
                           type="text"
@@ -390,7 +390,7 @@ class AddSpecification extends Component {
                         {isEditFlag
                           ? EditAccessibilityRMANDGRADE && (
                             <button
-                              className="Edit drawer-edit mt-2"
+                              className="Edit drawer-edit mt30"
                               type={"button"}
                               onClick={() =>
                                 this.rawMaterialToggler(specificationData.RawMaterialId)
@@ -400,7 +400,7 @@ class AddSpecification extends Component {
                           : AddAccessibilityRMANDGRADE && (
                             <div
                               onClick={() => this.rawMaterialToggler("")}
-                              className={"plus-icon-square mt-2  right"}
+                              className={"plus-icon-square mt30  right"}
                             ></div>
                           )}
                       </div>
