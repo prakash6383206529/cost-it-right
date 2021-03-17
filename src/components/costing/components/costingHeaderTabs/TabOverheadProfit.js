@@ -19,10 +19,12 @@ function TabOverheadProfit(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  console.log(costData, "COST DATA");
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
+      console.log("COST DATA TIMES");
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
@@ -32,6 +34,8 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
+
+  console.log(OverheadProfitTabData, "OFTD");
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -93,6 +97,7 @@ function TabOverheadProfit(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
+    console.log("TOGGLE ASSEMBLY", Children);
     let arr = setAssembly(params, Children, OverheadProfitTabData)
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
@@ -274,9 +279,11 @@ function TabOverheadProfit(props) {
 * @description SET REJECTION DETAILS
 */
   const setRejectionDetail = (data, params) => {
+    console.log(params, "PARAMS REJECT", data);
     let arr = dispatchRejectionDetail(data, params, OverheadProfitTabData)
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
+
 
   /**
   * @method dispatchRejectionDetail
@@ -289,18 +296,19 @@ function TabOverheadProfit(props) {
       tempArr = arr && arr.map(i => {
 
         if (i.IsAssemblyPart === true) {
-
+          console.log("ENTERD REJECT");
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
 
           formatData(rejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
+          console.log("ENTERD REJECT2");
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
 
         } else {
+          console.log("ENTERD REJECT3");
           i.IsOpen = false;
           formatData(rejectionObj, params, i.CostingChildPartDetails)
         }
@@ -319,6 +327,7 @@ function TabOverheadProfit(props) {
 * @description SET ICC DETAILS
 */
   const setICCDetail = (data, params) => {
+    console.log(params, "PARAMS", data);
     let arr = dispatchICCDetail(data, params, OverheadProfitTabData)
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
@@ -328,7 +337,7 @@ function TabOverheadProfit(props) {
   * @description SET ICC DETAIL 
   */
   const dispatchICCDetail = (ICCObj, params, arr) => {
-
+    console.log(ICCObj, "ICC");
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -346,10 +355,11 @@ function TabOverheadProfit(props) {
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
+          let iccObj = { ...i.CostingPartDetails.CostingInterestRateDetail }
           i.CostingPartDetails.ICCCost = ICCObj ? ICCObj.NetCost : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
-            ...i.CostingPartDetails.CostingInterestRateDetail,
+            // ...i.CostingPartDetails.CostingInterestRateDetail,
+            ...iccObj,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj ? true : false,
             NetICC: ICCObj ? ICCObj.NetCost : 0,

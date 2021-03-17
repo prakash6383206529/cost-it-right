@@ -432,7 +432,7 @@ class InterestRateListing extends Component {
     }
     const options = {
       clearSearch: true,
-      noDataText: (this.props.interestRateDataList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.interestRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
       //paginationShowsTotal: true,

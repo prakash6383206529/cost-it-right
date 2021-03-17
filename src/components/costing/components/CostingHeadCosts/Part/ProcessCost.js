@@ -34,6 +34,7 @@ function ProcessCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const [Ids, setIds] = useState([])
+  console.log(Ids, "ID ARRAY");
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
   const [tabToolData, setTabToolData] = useState(props.data)
@@ -208,8 +209,11 @@ function ProcessCost(props) {
    * @description SELECTED IDS
    */
   const selectedIds = (tempArr) => {
+    console.log(tempArr, "TEMP")
     tempArr && tempArr.map((el) => {
+      console.log(el.MachineRateId, "MACHINE RATE", Ids.includes(el.MachineRateId))
       if (Ids.includes(el.MachineRateId) === false) {
+        console.log(Ids, "ID")
         let selectedIds = Ids
         selectedIds.push(el.MachineRateId)
         setIds(selectedIds)
@@ -225,6 +229,7 @@ function ProcessCost(props) {
       return true
     })
 
+
     let ProcessCostTotal = 0
     ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ProcessCost)
@@ -237,7 +242,9 @@ function ProcessCost(props) {
       CostingProcessCostResponse: tempArr,
     }
 
-    selectedIds(tempArr)
+    let id = []
+    tempArr.map(el => { id.push(el.MachineRateId) })
+    setIds(id)
     setTabData(tempArr2)
     setGridData(tempArr)
   }

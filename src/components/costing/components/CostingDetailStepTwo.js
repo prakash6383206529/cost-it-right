@@ -24,9 +24,11 @@ function CostingDetailStepTwo(props) {
   }, []);
 
   const costingData = useSelector(state => state.costing.costingData)
+  console.log(costingData, "COSTING DATA IN STEP 2");
   const CostingDataList = useSelector(state => state.costing.CostingDataList)
   const NetPOPrice = useSelector(state => state.costing.NetPOPrice)
   const RMCCBOPCost = useSelector(state => state.costing.RMCCBOPCost)
+  console.log(RMCCBOPCost, "RMCCBOPCost");
   const SurfaceCostData = useSelector(state => state.costing.SurfaceCostData)
   const OverheadProfitCostData = useSelector(state => state.costing.OverheadProfitCostData)
   const DiscountCostData = useSelector(state => state.costing.DiscountCostData)

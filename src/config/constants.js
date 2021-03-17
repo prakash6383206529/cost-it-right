@@ -436,7 +436,7 @@ export const API = {
   getZBCDetailByPlantId: `${BASE_URL}/costing/get-zbc-plant-by-id`,
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
-  updateVBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
+  updateVBCSOBDetail: `${BASE_URL}/costing/update-vbc-sob-detail`,
   getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,

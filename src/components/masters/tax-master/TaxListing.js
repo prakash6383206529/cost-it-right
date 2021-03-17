@@ -177,7 +177,7 @@ class TaxListing extends Component {
     const { isOpen, isEditFlag, AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: (this.props.taxDataList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.taxDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
       //paginationShowsTotal: true,

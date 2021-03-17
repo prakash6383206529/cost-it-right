@@ -16,10 +16,12 @@ function TabRMCC(props) {
   const dispatch = useDispatch()
 
   const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
+
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
   console.log('ComponentItemData Costing: ', ComponentItemData);
 
   const costData = useContext(costingInfoContext);
+
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -27,7 +29,7 @@ function TabRMCC(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
       }
-      dispatch(getRMCCTabData(data, true, (res) => { }))
+      dispatch(getRMCCTabData(data, true, (res) => { console.log(res, "RESP FOR RMCC"); }))
     }
   }, [costData])
 

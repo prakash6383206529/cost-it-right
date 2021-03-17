@@ -19,6 +19,7 @@ function TabToolCost(props) {
 
   const dispatch = useDispatch()
   const ToolTabData = useSelector(state => state.costing.ToolTabData)
+  console.log(ToolTabData, "TOOL TAB");
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const costData = useContext(costingInfoContext);

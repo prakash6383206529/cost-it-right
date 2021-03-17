@@ -295,7 +295,7 @@ class ExchangeRateListing extends Component {
         }
         const options = {
             clearSearch: true,
-            noDataText: (this.props.exchangeRateDataList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+            noDataText: (this.props.exchangeRateDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
             //exportCSVText: 'Download Excel',
             //onExportToCSV: this.onExportToCSV,
             //paginationShowsTotal: true,

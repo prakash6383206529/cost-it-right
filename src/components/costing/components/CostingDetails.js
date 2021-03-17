@@ -509,6 +509,8 @@ function CostingDetails(props) {
           if (res.data.Result) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
+            /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
+            dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
             setStepTwo(true)
             setStepOne(false)
           }
@@ -547,6 +549,7 @@ function CostingDetails(props) {
           if (res.data.Result) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
+            dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
             setStepTwo(true)
             setStepOne(false)
           }
@@ -637,6 +640,7 @@ function CostingDetails(props) {
       }
       dispatch(
         updateZBCSOBDetail(data, (res) => {
+          dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
           setStepTwo(true)
           setStepOne(false)
         }),
@@ -644,6 +648,7 @@ function CostingDetails(props) {
     }
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
+      console.log(tempData, "TEMP DATA VBC");
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       const data = {
         CostingId: tempData.SelectedCostingVersion.value,
@@ -651,9 +656,12 @@ function CostingDetails(props) {
         PartId: part.value,
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
         LoggedInUserId: loggedInUserId(),
+        VendorId: tempData.VendorId,
+        VendorPlantId: tempData.VendorPlantId
       }
       dispatch(
         updateVBCSOBDetail(data, (res) => {
+          dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
           setStepTwo(true)
           setStepOne(false)
         }),

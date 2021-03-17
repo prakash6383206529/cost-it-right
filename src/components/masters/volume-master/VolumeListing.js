@@ -554,7 +554,7 @@ class VolumeListing extends Component {
     } = this.state
     const options = {
       clearSearch: true,
-      noDataText: (this.props.volumeDataList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
       //paginationShowsTotal: true,
