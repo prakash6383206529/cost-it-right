@@ -458,6 +458,7 @@ function ProcessCost(props) {
 
             <Col md="3" className="switch cr-costlabel text-right">
               {/* DISABLED FOR FUTURE SCOPE 03-03-2021 */}
+
               <label className="switch-level d-inline-flex w-auto">
                 <div className={'left-title'}>{''}</div>
                 <Switch
