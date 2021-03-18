@@ -1,13 +1,13 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 
 function ViewPackagingAndFreight(props) {
-  console.log(props,"Props");
-  const { packagingData, freightData} = props.packagingAndFreightCost
-  console.log(packagingData,"Packaging", freightData);
+  console.log(props, "Props");
+  const { packagingData, freightData } = props.packagingAndFreightCost
+  console.log(packagingData, "Packaging", freightData);
   const [viewPackaging, setViewPackaging] = useState([])
   const [viewFrieght, setViewFrieght] = useState([])
 
@@ -15,10 +15,10 @@ function ViewPackagingAndFreight(props) {
     setViewPackaging(packagingData)
     setViewFrieght(freightData)
   }, [])
- /**
-   * @method toggleDrawer
-   * @description closing drawer
-   */
+  /**
+    * @method toggleDrawer
+    * @description closing drawer
+    */
   const toggleDrawer = (event) => {
     if (
       event.type === 'keydown' &&
@@ -67,7 +67,7 @@ function ViewPackagingAndFreight(props) {
                       <tr>
                         <th>{`Packaging Description`}</th>
                         <th>{`Packaging Cost`}</th>
-                        <th>{`Cost`}</th>
+                        <th className="costing-border-right">{`Cost`}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -121,7 +121,7 @@ function ViewPackagingAndFreight(props) {
                           <th>{`Criteria`}</th>
                           <th>{`Rate`}</th>
                           <th>{`Quantity`}</th>
-                          <th>{`Cost`}</th>
+                          <th className="costing-border-right">{`Cost`}</th>
                         </tr>
                       </thead>
                       <tbody>

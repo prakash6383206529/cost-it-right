@@ -597,7 +597,7 @@ class AddProfit extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -609,9 +609,9 @@ class AddProfit extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                                Zero Based
-                              </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
+                            <span>Zero Based</span>
+                          </Label>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -623,9 +623,9 @@ class AddProfit extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                                Vendor Based
-                              </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
+                            <span>Vendor Based</span>
+                          </Label>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -637,8 +637,8 @@ class AddProfit extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                                Client Based
-                              </Label>
+                            <span>Client Based</span>
+                          </Label>
                         </Col>
                       </Row>
                       <Row>

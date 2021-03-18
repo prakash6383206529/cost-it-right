@@ -61,7 +61,7 @@ function ViewBOP(props) {
                       <th>{`Currency`}</th>
                       <th>{`Landed Cost(INR)`}</th>
                       <th>{`Quantity`}</th>
-                      <th>{`Net BOP Cost`}</th>
+                      <th className="costing-border-right">{`Net BOP Cost`}</th>
                     </tr>
                   </thead>
                   <tbody>
