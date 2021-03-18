@@ -17,15 +17,15 @@ function ViewOverheadProfit(props) {
 
   const [viewOverheadData, setViewOverheadData] = useState({})
   const [viewProfitData, setViewProfitData] = useState({})
- 
+
   useEffect(() => {
     setViewOverheadData(overheadData)
     setViewProfitData(profitData)
   }, [])
-   /**
-   * @method toggleDrawer
-   * @description closing drawer
-   */
+  /**
+  * @method toggleDrawer
+  * @description closing drawer
+  */
   const toggleDrawer = (event) => {
     if (
       event.type === 'keydown' &&
@@ -64,7 +64,7 @@ function ViewOverheadProfit(props) {
                 control={control}
                 register={register}
                 mandatory={false}
-                handleChange={() => {}}
+                handleChange={() => { }}
                 //defaultValue={`${viewRM[0].RMName}`}
                 defaultValue={modelType}
                 className=""
@@ -318,7 +318,7 @@ function ViewOverheadProfit(props) {
                   {/*REJECTION RENDERING */}
 
                   <Col md="12">
-                    <Table className="table" size="sm">
+                    <Table className="table cr-brdr-main " size="sm">
                       <thead>
                         <tr>
                           <th>{` Applicability`}</th>

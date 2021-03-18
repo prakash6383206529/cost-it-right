@@ -1749,22 +1749,23 @@ function OverheadProfit(props) {
                   disabled={false}
                 />
               </Col>
-              <Col md="3">
-                {applicability.label !== 'Fixed' && <TextFieldHookForm
-                  label="Cost(Applicability)"
-                  name={'RejectionCost'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.RejectionCost}
-                  disabled={true}
-                />}
-              </Col>
+              {applicability.label !== 'Fixed' &&
+                <Col md="3">
+                  <TextFieldHookForm
+                    label="Cost(Applicability)"
+                    name={'RejectionCost'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.RejectionCost}
+                    disabled={true}
+                  />
+                </Col>}
               <Col md="3">
                 <TextFieldHookForm
                   label="Net Rejection"
@@ -1842,22 +1843,23 @@ function OverheadProfit(props) {
                       disabled={ICCapplicability.label !== 'Fixed' ? true : false}
                     />
                   </Col>
-                  <Col md="3">
-                    {ICCapplicability.label !== 'Fixed' && <TextFieldHookForm
-                      label="Cost(Applicability)"
-                      name={'InterestRateCost'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.InterestRateCost}
-                      disabled={true}
-                    />}
-                  </Col>
+                  {ICCapplicability.label !== 'Fixed' &&
+                    <Col md="3">
+                      <TextFieldHookForm
+                        label="Cost(Applicability)"
+                        name={'InterestRateCost'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.InterestRateCost}
+                        disabled={true}
+                      />
+                    </Col>}
                   <Col md="3">
                     <TextFieldHookForm
                       label="Net ICC"
@@ -1938,22 +1940,23 @@ function OverheadProfit(props) {
                       disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
                     />
                   </Col>
-                  <Col md="3">
-                    {paymentTermsApplicability.label !== 'Fixed' && <TextFieldHookForm
-                      label="Interest Rate(%)"
-                      name={'RepaymentPeriodPercentage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.RepaymentPeriodPercentage}
-                      disabled={true}
-                    />}
-                  </Col>
+                  {paymentTermsApplicability.label !== 'Fixed' &&
+                    <Col md="3">
+                      <TextFieldHookForm
+                        label="Interest Rate(%)"
+                        name={'RepaymentPeriodPercentage'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        defaultValue={''}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.RepaymentPeriodPercentage}
+                        disabled={true}
+                      />
+                    </Col>}
                   <Col md="3">
                     <TextFieldHookForm
                       label="Cost"

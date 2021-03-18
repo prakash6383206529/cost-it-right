@@ -388,34 +388,34 @@ class BulkUpload extends Component {
                             <Row className="pl-3">
                                 {isZBCVBCTemplate &&
                                     <Col md="12">
-                                        <Label sm={4} className={'pl0 pr0'} check>
+                                        <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                             <input
                                                 type="radio"
                                                 name="costingHead"
                                                 checked={costingHead === 'ZBC' ? true : false}
                                                 onClick={() => this.onPressHeads('ZBC')}
                                             />{' '}
-                                        Zero Based
-                                    </Label>
-                                        <Label sm={4} className={'pl0 pr0'} check>
+                                            <span>Zero Based</span>
+                                        </Label>
+                                        <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                             <input
                                                 type="radio"
                                                 name="costingHead"
                                                 checked={costingHead === 'VBC' ? true : false}
                                                 onClick={() => this.onPressHeads('VBC')}
                                             />{' '}
-                                        Vendor Based
-                                    </Label>
+                                            <span>Vendor Based</span>
+                                        </Label>
                                         {isMachineMoreTemplate &&
-                                            <Label sm={4} className={'pl0 pr0'} check>
+                                            <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
                                                     checked={costingHead === 'ZBC_MACHINE_MORE' ? true : false}
                                                     onClick={() => this.onPressHeads('ZBC_MACHINE_MORE')}
                                                 />{' '}
-                                        ZBC More Details
-                                        </Label>}
+                                                <span>ZBC More Details</span>
+                                            </Label>}
                                     </Col>}
 
                                 <div className="input-group mt25 col-md-12 input-withouticon download-btn" >

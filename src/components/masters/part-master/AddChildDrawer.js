@@ -95,33 +95,33 @@ class AddChildDrawer extends Component {
                                             customClass={'Personal-Details'} />
                                     </Col>
                                     <Col md="12">
-                                        <Label sm={4} className={'pl0 pr0'} check>
+                                        <Label sm={4} className={'pl0 pr0 radio-box'} check>
                                             <input
                                                 type="radio"
                                                 name="childType"
                                                 checked={childType === ASSEMBLY ? true : false}
                                                 onClick={() => this.checkRadio(ASSEMBLY)}
                                             />{' '}
-                                                Sub Assembly
-                                            </Label>
-                                        <Label sm={4} className={'pl0 pr0'} check>
+                                            <span>Sub Assembly</span>
+                                        </Label>
+                                        <Label sm={4} className={'pl0 pr0 radio-box'} check>
                                             <input
                                                 type="radio"
                                                 name="childType"
                                                 checked={childType === COMPONENT_PART ? true : false}
                                                 onClick={() => this.checkRadio(COMPONENT_PART)}
                                             />{' '}
-                                                Component
-                                            </Label>
-                                        <Label sm={4} className={'pl0 pr0'} check>
+                                            <span>Component</span>
+                                        </Label>
+                                        <Label sm={4} className={'pl0 pr0 radio-box'} check>
                                             <input
                                                 type="radio"
                                                 name="childType"
                                                 checked={childType === BOUGHTOUTPART ? true : false}
                                                 onClick={() => this.checkRadio(BOUGHTOUTPART)}
                                             />{' '}
-                                                Bought Out Part
-                                            </Label>
+                                            <span>Bought Out Part</span>
+                                        </Label>
                                     </Col>
                                 </Row>
 

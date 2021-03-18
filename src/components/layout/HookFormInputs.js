@@ -275,7 +275,7 @@ export const RadioHookForm = ({
             {dataArray.map((data, index) => {
               return (
                 <li className="p-3" key={index}>
-                  <label className="radio-button-wrapper">
+                  <label className="radio-button-wrapper radio-box">
                     <input
                       name={name}
                       type="radio"
@@ -288,9 +288,8 @@ export const RadioHookForm = ({
                       }
                     />
                     {" "}
-                    {data[label]}
                     {/* {data[labelElement] && data[labelElement]} */}
-                    <span className="radio-label"></span>
+                    <span className="radio-label">{data[label]}</span>
                   </label>
                 </li>)
             })

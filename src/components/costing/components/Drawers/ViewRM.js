@@ -97,7 +97,7 @@ function ViewRM(props) {
                     disabled={true}
                   />
                 </div>
-                <div className="input-group form-group col-md-12 input-withouticon">
+                <div className="input-group form-group col-md-12 input-withouticon mn-height-auto">
                   <h5>
                     Calculator
                       <br />
