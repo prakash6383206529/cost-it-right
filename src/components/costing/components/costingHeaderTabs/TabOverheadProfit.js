@@ -323,11 +323,10 @@ function TabOverheadProfit(props) {
   }
 
   /**
-* @method setICCDetail
-* @description SET ICC DETAILS
-*/
+  * @method setICCDetail
+  * @description SET ICC DETAILS
+  */
   const setICCDetail = (data, params) => {
-    console.log(params, "PARAMS", data);
     let arr = dispatchICCDetail(data, params, OverheadProfitTabData)
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
@@ -337,7 +336,7 @@ function TabOverheadProfit(props) {
   * @description SET ICC DETAIL 
   */
   const dispatchICCDetail = (ICCObj, params, arr) => {
-    console.log(ICCObj, "ICC");
+
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -355,11 +354,10 @@ function TabOverheadProfit(props) {
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-          let iccObj = { ...i.CostingPartDetails.CostingInterestRateDetail }
+
           i.CostingPartDetails.ICCCost = ICCObj ? ICCObj.NetCost : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
-            // ...i.CostingPartDetails.CostingInterestRateDetail,
-            ...iccObj,
+            ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj ? true : false,
             NetICC: ICCObj ? ICCObj.NetCost : 0,
@@ -378,6 +376,7 @@ function TabOverheadProfit(props) {
     return tempArr;
 
   }
+
 
   /**
 * @method setPaymentTermsDetail
