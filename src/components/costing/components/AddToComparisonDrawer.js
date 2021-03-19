@@ -4,11 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 
-import {
-  getPlantSelectListByType,
-  getVendorWithVendorCodeSelectList,
-  getPlantBySupplier,
-} from '../../../actions/Common'
+import { getPlantSelectListByType, getVendorWithVendorCodeSelectList, getPlantBySupplier, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
 import {
   getCostingByVendorAndVendorPlant,
@@ -576,8 +572,8 @@ function AddToComparisonDrawer(props) {
                         />{" "}
                       </div>
                     ) : (
-                        <div class="plus"></div>
-                      )}{" "}
+                      <div class="plus"></div>
+                    )}{" "}
                     {isEditFlag ? "Edit" : "Add"}
                   </button>
                 </div>

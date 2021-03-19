@@ -1376,11 +1376,12 @@ export const VIEW_COSTING_DATA = {
 }
 
 
-//UOM ENUMS
+//UOM ENUMS (Need to change name)
 export const KG = "Kilogram"
 export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
-
 export const INR = "INR"
+export const G = "GRAMS"
+export const MG = "Milligram"
