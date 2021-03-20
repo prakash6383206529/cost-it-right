@@ -41,6 +41,8 @@ import {
   SET_TOOL_TAB_DATA,
   SET_OTHER_DISCOUNT_TAB_DATA,
   SET_COMPONENT_ITEM_DATA,
+  GET_RM_DRAWER_DATA_LIST,
+  GET_PROCESS_DRAWER_DATA_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -361,6 +363,18 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ComponentItemData: action.payload
+      }
+    case GET_RM_DRAWER_DATA_LIST:
+      return {
+        ...state,
+        loading: false,
+        rmDrawerList: action.payload
+      }
+    case GET_PROCESS_DRAWER_DATA_LIST:
+      return {
+        ...state,
+        loading: false,
+        processDrawerList: action.payload
       }
     default:
       return state

@@ -98,6 +98,7 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
+    console.log("Calculation for process cost");
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
     const rate = props.calculatorData.MHR
@@ -105,7 +106,8 @@ function SheetMetalBaicDrawer(props) {
     switch (props.calculatorData.UOM) {
       case KG:
         setDisabled(true)
-        cost = (1 / (efficiency * 100)) * (quantity * rate)
+        cost = (1 / (efficiency)) * (quantity * rate)
+        console.log(cost, "COST");
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
@@ -114,20 +116,20 @@ function SheetMetalBaicDrawer(props) {
         return;
       case STROKE:
         setDisabled(true)
-        cost = (1 / (efficiency * 100)) * (rate / quantity)
+        cost = (1 / (efficiency)) * (rate / quantity)
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
       case NO:
         setDisabled(true)
-        cost = (1 / (efficiency * 100)) * (quantity * rate)
+        cost = (1 / (efficiency)) * (quantity * rate)
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
       case SHOTS:
         // This need to be confirm
         setDisabled(true)
-        cost = (1 / (efficiency * 100)) * (quantity * rate)
+        cost = (1 / (efficiency)) * (quantity * rate)
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true

@@ -41,6 +41,8 @@ import {
   SET_PACKAGE_AND_FREIGHT_TAB_DATA,
   SET_TOOL_TAB_DATA,
   SET_COMPONENT_ITEM_DATA,
+  GET_RM_DRAWER_DATA_LIST,
+  GET_PROCESS_DRAWER_DATA_LIST,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -549,7 +551,11 @@ export function getRMDrawerDataList(data, callback) {
     )
     request
       .then((response) => {
-        if (response.data.Result) {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: GET_RM_DRAWER_DATA_LIST,
+            payload: response.status === 204 ? [] : response.data.DataList
+          })
           callback(response)
         }
       })
@@ -570,7 +576,11 @@ export function getRMDrawerVBCDataList(data, callback) {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getRMDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_RM_DRAWER_DATA_LIST,
+          payload: response.status === 204 ? [] : response.data.DataList
+        })
         callback(response);
       }
     }).catch((error) => {
@@ -684,7 +694,11 @@ export function getProcessDrawerDataList(data, callback) {
     )
     request
       .then((response) => {
-        if (response.data.Result) {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: GET_PROCESS_DRAWER_DATA_LIST,
+            payload: response.status === 204 ? [] : response.data.DataList
+          })
           callback(response)
         }
       })
@@ -705,7 +719,11 @@ export function getProcessDrawerVBCDataList(data, callback) {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getProcessDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_PROCESS_DRAWER_DATA_LIST,
+          payload: response.status === 204 ? [] : response.data.DataList
+        })
         callback(response);
       }
     }).catch((error) => {
