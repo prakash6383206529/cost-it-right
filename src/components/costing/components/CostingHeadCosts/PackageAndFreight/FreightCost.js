@@ -83,7 +83,7 @@ function FreightCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'Surface Treatment Cost:'}
+                {'Freight Cost:'}
               </div>
             </Col>
             <Col col={'2'}>
@@ -95,7 +95,7 @@ function FreightCost(props) {
             </Col>
           </Row>
           <Row>
-            {/*OPERATION COST GRID */}
+            {/*FREIGHT COST GRID */}
 
             <Col md="12">
               <div className="costing-border p-3">

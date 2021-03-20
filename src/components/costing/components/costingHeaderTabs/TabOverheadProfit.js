@@ -170,9 +170,17 @@ function TabOverheadProfit(props) {
       checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
 
+    if (overheadObj.IsOverheadFixedApplicable === true) {
+      OverheadCost = overheadObj.OverheadFixedTotalCost;
+    }
+
     let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
+
+    if (profitObj.IsProfitFixedApplicable === true) {
+      ProfitCost = profitObj.ProfitFixedTotalCost;
+    }
 
     let tempArr = [];
     try {
@@ -279,7 +287,6 @@ function TabOverheadProfit(props) {
 * @description SET REJECTION DETAILS
 */
   const setRejectionDetail = (data, params) => {
-    console.log(params, "PARAMS REJECT", data);
     let arr = dispatchRejectionDetail(data, params, OverheadProfitTabData)
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
@@ -296,19 +303,16 @@ function TabOverheadProfit(props) {
       tempArr = arr && arr.map(i => {
 
         if (i.IsAssemblyPart === true) {
-          console.log("ENTERD REJECT");
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
 
           formatData(rejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-          console.log("ENTERD REJECT2");
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
 
         } else {
-          console.log("ENTERD REJECT3");
           i.IsOpen = false;
           formatData(rejectionObj, params, i.CostingChildPartDetails)
         }
@@ -478,45 +482,39 @@ function TabOverheadProfit(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              {/* <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{""}</h2>
-                  </div>
-                </Col>
-              </Row> */}
 
-              <Row className="m-0">
-                <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
-                  <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
-                  <div className="switch d-inline-flex">
-                    <label className="switch-level d-inline-flex w-auto">
-                      <div className={"left-title"}>{" Assembly Level"}</div>
-                      <span className="cr-sw-level">
-                        <span className="cr-switch-icon">
-                          <Switch
-                            onChange={onPressApplicability}
-                            checked={IsApplicableForChildParts}
-                            id="normal-switch"
-                            disabled={costData.IsAssemblyPart ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#CCC"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
+              {costData.IsAssemblyPart &&
+                <Row className="m-0">
+                  <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
+                    <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
+                    <div className="switch d-inline-flex">
+                      <label className="switch-level d-inline-flex w-auto">
+                        <div className={"left-title"}>{" Assembly Level"}</div>
+                        <span className="cr-sw-level">
+                          <span className="cr-switch-icon">
+                            <Switch
+                              onChange={onPressApplicability}
+                              checked={IsApplicableForChildParts}
+                              id="normal-switch"
+                              disabled={costData.IsAssemblyPart ? true : false}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#CCC"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                          </span>
+                          <div className={"right-title"}>
+                            {"Sub Assembly Level"}
+                          </div>
                         </span>
-                        <div className={"right-title"}>
-                          {"Sub Assembly Level"}
-                        </div>
-                      </span>
-                    </label>
-                  </div>
-                </Col>
-              </Row>
+                      </label>
+                    </div>
+                  </Col>
+                </Row>}
 
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 <Row>
@@ -530,7 +528,7 @@ function TabOverheadProfit(props) {
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Rejection`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net ICC`}</th>
-                          <th className="py-3 align-middle" className="costing-border-right" style={{ width: "150px" }}>{`Payment Terms`}</th>
+                          <th className="py-3 align-middle costing-border-right" style={{ width: "150px" }}>{`Payment Terms`}</th>
                         </tr>
                       </thead>
                       <tbody>
