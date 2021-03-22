@@ -460,7 +460,7 @@ class AddRMDomestic extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '', formData) => {
+  closeVendorDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenVendor: false }, () => {
       const { IsVendor } = this.state
       this.props.getVendorListByVendorType(IsVendor, () => {
@@ -1302,43 +1302,43 @@ class AddRMDomestic extends Component {
                                 Max file uploaded.
                               </div>
                             ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                      "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                          <i className="text-primary fa fa-cloud-upload"></i>
-                                          <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                              Browse
+                              <Dropzone
+                                getUploadParams={this.getUploadParams}
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={3}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                          Browse
                                         </span>
-                                            <br />
+                                        <br />
                                         file to upload
                                       </span>
-                                        </div>
-                                      )
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
-                                />
-                              )}
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                              />
+                            )}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
