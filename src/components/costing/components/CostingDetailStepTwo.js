@@ -328,13 +328,13 @@ function CostingDetailStepTwo(props) {
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
                     <tbody>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
                       {/* <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td> */}
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
-                      {costingData.VendorName !== null && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
+                      <td><div className={'part-info-title'}><p><span className="">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="">Plant:</span><span className="dark-blue pl-1"> {`${costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
+                      {costingData.VendorName !== null && <td><div className={'part-info-title'}><p><span className="">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
                     </tbody>
                   </Table>
                   <div class="table-responsive">
@@ -342,16 +342,16 @@ function CostingDetailStepTwo(props) {
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '100px' }}>{`Net RM Cost/Assembly`}</th>
-                          <th style={{ width: '120px' }}>{`Net BOP Cost/Assembly`}</th>
-                          <th style={{ width: '120px' }}>{`Net Conversion Cost/Assembly`}</th>
-                          <th style={{ width: '150px' }}>{`RM + CC Cost`}</th>
-                          <th style={{ width: '150px' }}>{`Surface Treatment`}</th>
-                          <th style={{ width: '150px' }}>{`Overheads & Profits`}</th>
-                          <th style={{ width: '150px' }}>{`Packaging & Freight`}</th>
-                          <th style={{ width: '150px' }}>{`Tool Cost`}</th>
-                          <th style={{ width: '150px' }}>{`Discount & Other Cost`}</th>
-                          <th style={{ width: '150px' }}>{`Total Cost`}</th>
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`Net RM Cost/Assembly`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`Net BOP Cost/Assembly`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`Net Conversion Cost/Assembly`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`RM + CC Cost`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Discount & Other Cost`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost`}</span></th>
                         </tr>
                       </thead>
                       <tbody>
