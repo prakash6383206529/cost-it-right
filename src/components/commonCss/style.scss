@@ -3252,6 +3252,9 @@ body{
       background-color: #256bd1;
     }
   }
+  input:disabled ~ span{
+    &:before,&:after{opacity: 0.5;}
+  }
 }
 
 // @supports (-ms-ime-align:auto) {
