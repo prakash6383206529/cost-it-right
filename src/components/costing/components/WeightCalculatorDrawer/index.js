@@ -1,15 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch } from 'react-redux'
-import {
-  Row,
-  Col,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-  Container,
-} from 'reactstrap'
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, Container, } from 'reactstrap'
 import classnames from 'classnames'
 import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'

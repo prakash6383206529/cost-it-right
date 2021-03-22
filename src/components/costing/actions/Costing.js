@@ -43,6 +43,8 @@ import {
   SET_COMPONENT_ITEM_DATA,
   GET_RM_DRAWER_DATA_LIST,
   GET_PROCESS_DRAWER_DATA_LIST,
+  GET_PART_COSTING_PLANT_SELECTLIST,
+  GET_PART_COSTING_VENDOR_SELECT_LIST,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1808,27 +1810,30 @@ export function storePartNumber(partNo) {
 
 export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        callback(response)
-        if (response.data.Result) {
-          dispatch({
-            type: GET_COST_SUMMARY_BY_PART_PLANT,
-            payload: response.data.Result,
-          })
-        }
+    if (partNo !== '' && plantId != '') {
+      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}`, headers,)
+      request
+        .then((response) => {
+          if (response.data.Result || response.status === 204) {
+            dispatch({
+              type: GET_COST_SUMMARY_BY_PART_PLANT,
+              payload: response.status === 204 ? [] : response.data.Data.CostingOptions,
+            })
+            callback(response)
+          }
+        })
+        .catch((error) => {
+          console.log(error, "error from summary api");
+          dispatch({ type: API_FAILURE })
+          callback(error)
+          apiErrors(error)
+        })
+    } else {
+      dispatch({
+        type: GET_COST_SUMMARY_BY_PART_PLANT,
+        payload: [],
       })
-      .catch((error) => {
-        console.log(error, "error from summary api");
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    }
   }
 }
 
@@ -1866,20 +1871,26 @@ export const setCostingApprovalData = (data) => (dispatch) => {
 
 export function getCostingByVendorAndVendorPlant(partNo, VendorId, VendorPlantId, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`, headers,)
-    request.then((response) => {
-      callback(response)
-      if (response.data.Result) {
-        dispatch({
-          type: GET_COSTING_BY_VENDOR_VENDOR_PLANT,
-          payload: response.data.Result,
-        })
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
+    if (partNo !== '' && VendorId !== '' && VendorPlantId !== '') {
+      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`, headers,)
+      request.then((response) => {
+        callback(response)
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: GET_COST_SUMMARY_BY_PART_PLANT,
+            payload: response.status === 204 ? [] : response.data.DataList,
+          })
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+    } else {
+      dispatch({
+        type: GET_COST_SUMMARY_BY_PART_PLANT,
+        payload: [],
+      })
+    }
   }
 }
 
@@ -1919,3 +1930,41 @@ export function setItemData(item, callback) {
     callback();
   }
 };
+
+export function getPartCostingPlantSelectList(partNumber, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getPartCostingPlantSelectList}/${partNumber}`, headers)
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_PART_COSTING_PLANT_SELECTLIST,
+          payload: response.status === 204 ? [] : response.data.SelectList
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+    })
+  }
+}
+
+export function getPartCostingVendorSelectList(partNumber, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getPartCostingVendorSelectList}/${partNumber}`, headers)
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_PART_COSTING_VENDOR_SELECT_LIST,
+          payload: response.status === 204 ? [] : response.data.SelectList
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+    })
+  }
+}

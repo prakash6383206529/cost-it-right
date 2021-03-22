@@ -22,7 +22,7 @@ function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
   console.log(WeightCalculatorRequest, "WCCCCCCCCCCCCCCCCCCCCCCCCC");
-  const { rmRowData } = props
+  const { rmRowData, isEditFlag } = props
 
   const costData = useContext(costingInfoContext)
 

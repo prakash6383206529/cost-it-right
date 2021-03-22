@@ -16,15 +16,7 @@ import { formViewData } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 
 function CostingSummary(props) {
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -56,9 +48,7 @@ function CostingSummary(props) {
   const partSelectList = useSelector((state) => state.costing.partSelectList)
 
   const partInfo = useSelector((state) => state.costing.partInfo)
-  const viewCostingData = useSelector(
-    (state) => state.costing.viewCostingDetailData,
-  )
+  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
   /**
    * @method renderDropdownListing

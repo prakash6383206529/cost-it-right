@@ -837,6 +837,7 @@ function ProcessCost(props) {
           technology={costData.TechnologyName}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}
         />

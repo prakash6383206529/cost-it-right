@@ -42,7 +42,9 @@ import {
   SET_OTHER_DISCOUNT_TAB_DATA,
   SET_COMPONENT_ITEM_DATA,
   GET_RM_DRAWER_DATA_LIST,
-  GET_PROCESS_DRAWER_DATA_LIST
+  GET_PROCESS_DRAWER_DATA_LIST,
+  GET_PART_COSTING_VENDOR_SELECT_LIST,
+  GET_PART_COSTING_PLANT_SELECTLIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -302,7 +304,8 @@ export default function costingReducer(state = initialState, action) {
     case GET_COST_SUMMARY_BY_PART_PLANT:
       return {
         ...state,
-        costSummaryByPartAndPlant: action.payload,
+        loading: false,
+        costingSelectList: action.payload,
       }
     case GET_COSTING_BY_VENDOR_VENDOR_PLANT:
       return {
@@ -375,6 +378,18 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         processDrawerList: action.payload
+      }
+    case GET_PART_COSTING_VENDOR_SELECT_LIST:
+      return {
+        ...state,
+        loading: false,
+        costingVendorList: action.payload
+      }
+    case GET_PART_COSTING_PLANT_SELECTLIST:
+      return {
+        ...state,
+        loading: false,
+        costingPlantList: action.payload
       }
     default:
       return state

@@ -167,6 +167,7 @@ function VariableMhrDrawer(props) {
             <SheetMetalBaicDrawer
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
               calculatorData={calculatorData}
             />
           )

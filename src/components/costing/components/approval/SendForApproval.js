@@ -6,40 +6,19 @@ import DatePicker from 'react-datepicker'
 import { toastr } from 'react-redux-toastr'
 import { useHistory } from 'react-router-dom'
 import Drawer from '@material-ui/core/Drawer'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-  TextAreaHookForm,
-} from '../../../layout/HookFormInputs'
-import {
-  getReasonSelectList,
-  getAllApprovalDepartment,
-  getAllApprovalUserByDepartment,
-  getAllApprovalUserFilterByDepartment,
-  sendForApprovalBySender,
-} from '../../actions/Approval'
+import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, } from '../../../layout/HookFormInputs'
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, } from '../../actions/Approval'
 import { userDetails } from '../../../../helper/auth'
-import {
-  setCostingApprovalData,
-  setCostingViewData,
-  storePartNumber,
-} from '../../actions/Costing'
+import { setCostingApprovalData, setCostingViewData, storePartNumber, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 import 'react-datepicker/dist/react-datepicker.css'
+import { checkForNull } from '../../../../helper'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
   const history = useHistory()
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm()
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm()
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const usersList = useSelector((state) => state.approval.approvalUsersList)
@@ -116,7 +95,7 @@ const SendForApproval = (props) => {
           (res) => {
             res.data.DataList &&
               res.data.DataList.map((item) => {
-                //if (item.Value === '0') return false;
+                if (item.Value === '0') return false;
                 tempDropdownList.push({
                   label: item.Text,
                   value: item.Value,
@@ -205,17 +184,17 @@ const SendForApproval = (props) => {
               budgetedRemQty += parseInt(data.BudgetedQuantity)
             }
           })
-          temp.consumptionQty = actualQty
-          temp.remainingQty = budgetedRemQty - actualRemQty
+          temp.consumptionQty = checkForNull(actualQty)
+          temp.remainingQty = checkForNull(budgetedRemQty - actualRemQty)
           temp.annualImpact =
             temp.variance != ''
               ? (actualQty + (budgetedRemQty - actualRemQty)) *
               parseInt(temp.variance)
-              : ''
+              : 0
           temp.yearImpact =
             temp.variance != ''
               ? (budgetedRemQty - actualRemQty) * parseInt(temp.variance)
-              : ''
+              : 0
 
           viewDataTemp[index] = temp
           dispatch(setCostingApprovalData(viewDataTemp))
@@ -260,13 +239,13 @@ const SendForApproval = (props) => {
     viewApprovalData.map((data) => {
       tempObj.TypeOfCosting = data.typeOfCosting
       tempObj.PlantId =
-        data.typeOfCosting.toLowerCase() == 'zbc' ? data.plantId : ''
+        data.typeOfCosting == 0 ? data.plantId : ''
       tempObj.PlantNumber =
-        data.typeOfCosting.toLowerCase() == 'zbc' ? data.plantCode : ''
+        data.typeOfCosting == 0 ? data.plantCode : ''
       tempObj.PlantName =
-        data.typeOfCosting.toLowerCase() == 'zbc' ? data.plantName : ''
+        data.typeOfCosting == 0 ? data.plantName : ''
       tempObj.PlantCode =
-        data.typeOfCosting.toLowerCase() == 'zbc' ? data.plantCode : ''
+        data.typeOfCosting == 0 ? data.plantCode : ''
       tempObj.CostingId = data.costingId
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
@@ -289,17 +268,17 @@ const SendForApproval = (props) => {
       tempObj.AnnualImpact = data.annualImpact
       tempObj.ImpactOfTheYear = data.yearImpact
       tempObj.VendorId =
-        data.typeOfCosting.toLowerCase() == 'vbc' ? data.vendorId : ''
+        data.typeOfCosting == 1 ? data.vendorId : ''
       tempObj.VendorCode =
-        data.typeOfCosting.toLowerCase() == 'vbc' ? data.vendoreCode : ''
+        data.typeOfCosting == 1 ? data.vendoreCode : ''
       tempObj.VendorPlantId =
-        data.typeOfCosting.toLowerCase() == 'vbc' ? data.vendorePlantId : ''
+        data.typeOfCosting == 1 ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
-        data.typeOfCosting.toLowerCase() == 'vbc' ? data.vendorPlantCode : ''
+        data.typeOfCosting == 1 ? data.vendorPlantCode : ''
       tempObj.VendorName =
-        data.typeOfCosting.toLowerCase() == 'vbc' ? data.vendorName : ''
+        data.typeOfCosting == 1 ? data.vendorName : ''
       tempObj.VendorPlantName =
-        data.typeOfCosting.toLowerCase() == 'vbc' ? data.vendorPlantName : ''
+        data.typeOfCosting == 1 ? data.vendorPlantName : ''
       tempObj.IsFinalApproved = false
       temp.push(tempObj)
     })
@@ -361,11 +340,11 @@ const SendForApproval = (props) => {
                   <Row className="px-3">
                     <Col md="12">
                       <h6 className="left-border d-inline-block mr-3">
-                        {data.typeOfCosting}
+                        {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
                       </h6>
                       <div className="text-small d-inline-block mr-3">
-                        {`Plant Code:`}{" "}
-                        <span className="small-grey-text">{`${data.plantCode}`}</span>
+                        {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
+                        <span className="small-grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                       </div>
                       <div className="text-small d-inline-block">
                         {`Costing Id:`}{" "}
@@ -451,19 +430,19 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <label>Old/Current Price</label>
                           <label className="form-control bg-grey">
-                            {data.oldPrice ? data.oldPrice : "-"}
+                            {data.oldPrice ? data.oldPrice : 0}
                           </label>
                         </Col>
                         <Col md="4">
                           <label>Revised Price</label>
                           <label className="form-control bg-grey">
-                            {data.revisedPrice ? data.revisedPrice : "-"}
+                            {data.revisedPrice ? data.revisedPrice : 0}
                           </label>
                         </Col>
                         <Col md="4">
                           <label>Variance</label>
                           <label className="form-control bg-grey">
-                            {data.variance ? data.variance : "-"}
+                            {data.variance ? data.variance : 0}
                           </label>
                         </Col>
                       </Row>
@@ -472,7 +451,7 @@ const SendForApproval = (props) => {
                           <label>Consumpion Quantity</label>
                           <div className="d-flex align-items-center">
                             <label className="form-control bg-grey">
-                              {data.consumptionQty ? data.consumptionQty : "-"}
+                              {data.consumptionQty ? data.consumptionQty : 0}
                             </label>
                             <div class="plus-icon-square  right m-0 mb-1"></div>
                           </div>
@@ -480,13 +459,13 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <label>Remaining Quantity</label>
                           <label className="form-control bg-grey">
-                            {data.remainingQty !== "" ? data.remainingQty : "-"}
+                            {data.remainingQty !== "" ? data.remainingQty : 0}
                           </label>
                         </Col>
                         <Col md="4">
                           <label>Annual Impact</label>
                           <label className="form-control bg-grey">
-                            {data.annualImpact ? data.annualImpact : "-"}
+                            {data.annualImpact ? data.annualImpact : 0}
                           </label>
                         </Col>
                       </Row>
@@ -494,7 +473,7 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <label>Impact for the Year</label>
                           <label className="form-control bg-grey">
-                            {data.yearImpact ? data.yearImpact : "-"}
+                            {data.yearImpact ? data.yearImpact : 0}
                           </label>
                         </Col>
                       </Row>

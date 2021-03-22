@@ -548,7 +548,8 @@ export const API = {
   fetchFreightHeadsAPI: `${BASE_URL}/configuration/get-freight-heads`,
   getCostingFreight: `${BASE_URL}/costing-sheet-metal/get-costing-freight`,
   copyCostingAPI: `${BASE_URL}/costing/copy-costing`,
-
+  getPartCostingPlantSelectList: `${BASE_URL}/costing/get-part-costing-plant-select-list`,
+  getPartCostingVendorSelectList: `${BASE_URL}/costing/get-part-costing-vendor-select-list`,
 
 
   //LOGIN API
@@ -1139,6 +1140,10 @@ export const GET_PROCESS_DRAWER_DATA_LIST = 'GET_PROCESS_DRAWER_DATA_LIST';
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
 
+//COSTING SUMMARY
+export const GET_PART_COSTING_PLANT_SELECTLIST = 'GET_PART_COSTING_PLANT_SELECTLIST';
+export const GET_PART_COSTING_VENDOR_SELECT_LIST = 'GET_PART_COSTING_VENDOR_SELECT_LIST'
+
 //Login const
 export const AUTH_API_FAILURE = 'AUTH_API_FAILURE'
 export const AUTH_API_REQUEST = 'AUTH_API_REQUEST'
@@ -1387,3 +1392,14 @@ export const SHOTS = "SHOT"
 export const INR = "INR"
 export const G = "GRAMS"
 export const MG = "Milligram"
+
+// UOM TYPE ENUM
+export const MASS = 'Mass'
+export const VOLUMETYPE = 'Volume'
+export const PRESSURE = 'Pressure'
+export const DIMENSION = 'Dimension'
+export const TIME = 'Time'
+export const POWER = 'Power'
+export const DENSITY = 'Density'
+export const AREA = 'Area'
+export const DIMENSIONLESS = 'Dimensionless'

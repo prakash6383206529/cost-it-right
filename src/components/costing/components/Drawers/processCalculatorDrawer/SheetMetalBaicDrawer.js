@@ -6,12 +6,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkPercentageValue, loggedInUserId } from '../../../../../helper'
-import { HOUR, KG, NO, SHOTS, STROKE } from '../../../../../config/constants';
+import { DIMENSIONLESS, HOUR, KG, MASS, NO, SHOTS, STROKE, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking';
 import { toastr } from 'react-redux-toastr';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 function SheetMetalBaicDrawer(props) {
+
+  const { rmFinishWeight } = props
 
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
@@ -20,19 +22,19 @@ function SheetMetalBaicDrawer(props) {
   const defaultValues = {
     MachineTonnage: props.calculatorData ? props.calculatorData.MachineTonnage : '',
     CycleTime: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CycleTime !== undefined
+      WeightCalculatorRequest.CycleTime !== null
       ? WeightCalculatorRequest.CycleTime
       : '',
     Efficiency: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Efficiency !== undefined
+      WeightCalculatorRequest.Efficiency !== null
       ? WeightCalculatorRequest.Efficiency
       : 100,
     Cavity: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Cavity !== undefined
+      WeightCalculatorRequest.Cavity !== null
       ? WeightCalculatorRequest.Cavity
       : '',
-    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== undefined ? WeightCalculatorRequest.Quantity : " ",
-    ProcessCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " "
+    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== null ? WeightCalculatorRequest.Quantity : " ",
+    ProcessCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " "
   }
 
   const {
@@ -52,11 +54,21 @@ function SheetMetalBaicDrawer(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['Efficiency', 'Quantity'],
+    name: ['Efficiency'],
   })
   useEffect(() => {
     calculateProcessCost()
   }, [fieldValues])
+
+  useEffect(() => {
+
+    if (props.calculatorData.UnitType === MASS) {
+      console.log("ENETRING HERE");
+      setValue('Quantity', rmFinishWeight)
+    }
+
+
+  }, [])
 
   const onSubmit = (value) => {
     console.log('coming')
@@ -98,41 +110,41 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
-    console.log("Calculation for process cost");
+    console.log("Calculation for process cost", props.calculatorData.UnitType);
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
     const rate = props.calculatorData.MHR
     let cost
-    switch (props.calculatorData.UOM) {
-      case KG:
+    switch (props.calculatorData.UnitType) {
+      case MASS:
+        console.log(efficiency, "efficiency", quantity, "quantity", rate);
         setDisabled(true)
-        cost = (1 / (efficiency)) * (quantity * rate)
+        cost = (1 / efficiency) * quantity * rate
         console.log(cost, "COST");
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
-      case HOUR:
+      case TIME:
         //This need to be done later
         return;
-      case STROKE:
+      case DIMENSIONLESS:
         setDisabled(true)
-        cost = (1 / (efficiency)) * (rate / quantity)
+        cost = (1 / efficiency) * (rate / quantity)
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
-      case NO:
+      case VOLUMETYPE:
         setDisabled(true)
-        cost = (1 / (efficiency)) * (quantity * rate)
+        cost = (1 / efficiency) * (quantity * rate)
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
-      case SHOTS:
-        // This need to be confirm
-        setDisabled(true)
-        cost = (1 / (efficiency)) * (quantity * rate)
-        setProcessCost(cost)
-        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
-        return true
+      // case SHOTS:
+      //   setDisabled(true)
+      //   cost = (1 / efficiency) * (rate / quantity)
+      //   setProcessCost(cost)
+      //   setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
+      // return true
       default:
         break;
     }
@@ -263,7 +275,7 @@ function SheetMetalBaicDrawer(props) {
                     </Col>
                     <Col md="2">
                       <TextFieldHookForm
-                        label={props.calculatorData.UOM === KG ? `Finished Weight` : `Quantity`}
+                        label={props.calculatorData.UnitType === MASS ? `Finished Weight` : `Quantity`}
                         name={'Quantity'}
                         Controller={Controller}
                         control={control}
@@ -278,12 +290,12 @@ function SheetMetalBaicDrawer(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => { }}
+                        handleChange={calculateProcessCost}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.Quantity}
-                        disabled={false}
+                        disabled={props.calculatorData.UnitType === MASS ? true : false}
                       />
                     </Col>
                     <Col md="2">

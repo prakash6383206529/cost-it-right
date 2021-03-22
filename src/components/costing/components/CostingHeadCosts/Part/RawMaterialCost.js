@@ -393,7 +393,7 @@ function RawMaterialCost(props) {
         <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
           closeDrawer={closeWeightDrawer}
-          isEditFlag={false}
+          isEditFlag={true}
           inputDiameter={inputDiameter}
           technology={costData.TechnologyName}
           ID={''}
