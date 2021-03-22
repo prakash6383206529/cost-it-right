@@ -509,6 +509,7 @@ class AddOverhead extends Component {
         OverheadApplicabilityType: overheadAppli.label,
         ModelType: ModelType.label,
         IsVendor: IsVendor,
+        IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: values.OverheadPercentage,
         OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
         OverheadBOPPercentage: values.OverheadBOPPercentage,

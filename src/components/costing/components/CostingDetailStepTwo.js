@@ -24,11 +24,9 @@ function CostingDetailStepTwo(props) {
   }, []);
 
   const costingData = useSelector(state => state.costing.costingData)
-  console.log(costingData, "COSTING DATA IN STEP 2");
   const CostingDataList = useSelector(state => state.costing.CostingDataList)
   const NetPOPrice = useSelector(state => state.costing.NetPOPrice)
   const RMCCBOPCost = useSelector(state => state.costing.RMCCBOPCost)
-  console.log(RMCCBOPCost, "RMCCBOPCost");
   const SurfaceCostData = useSelector(state => state.costing.SurfaceCostData)
   const OverheadProfitCostData = useSelector(state => state.costing.OverheadProfitCostData)
   const DiscountCostData = useSelector(state => state.costing.DiscountCostData)
@@ -331,10 +329,10 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
                       {/* <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td> */}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
-                      {costingData.VendorName !== null && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
+                      {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
                     </tbody>
                   </Table>
                   <div class="table-responsive">

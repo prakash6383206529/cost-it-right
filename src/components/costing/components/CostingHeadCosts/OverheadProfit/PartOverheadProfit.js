@@ -50,9 +50,7 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   useEffect(() => {
-    if (item.IsOpen === false && Count > 1) {
-      console.log('Save API Call!!!!!!!!!')
-    }
+    if (item.IsOpen === false && Count > 1) { }
   }, [item.IsOpen])
 
   /**

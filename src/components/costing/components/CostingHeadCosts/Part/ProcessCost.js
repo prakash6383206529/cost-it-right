@@ -34,7 +34,6 @@ function ProcessCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const [Ids, setIds] = useState([])
-  console.log(Ids, "ID ARRAY");
   const [isOpen, setIsOpen] = useState(data && data.IsShowToolCost)
   const [tabData, setTabData] = useState(props.data)
   const [tabToolData, setTabToolData] = useState(props.data)
@@ -44,7 +43,6 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
-  // console.log(costData, "CD");
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({
@@ -71,7 +69,7 @@ function ProcessCost(props) {
     let tempArr = []
     let tempData = gridData[id]
     // const calciData = gridData[id]
-    console.log(tempData, "TempData");
+
     /****************************FOR SENDING CALCULATED VALUE IN CALCULATOR**************************/
     dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
       if (res && res.data && res.data.Data) {
@@ -90,7 +88,6 @@ function ProcessCost(props) {
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
     setIsCalculator(false)
-    console.log(weightData, "WD");
     let tempData = gridData[calciIndex]
     let time
     let netCost
@@ -209,11 +206,8 @@ function ProcessCost(props) {
    * @description SELECTED IDS
    */
   const selectedIds = (tempArr) => {
-    console.log(tempArr, "TEMP")
     tempArr && tempArr.map((el) => {
-      console.log(el.MachineRateId, "MACHINE RATE", Ids.includes(el.MachineRateId))
       if (Ids.includes(el.MachineRateId) === false) {
-        console.log(Ids, "ID")
         let selectedIds = Ids
         selectedIds.push(el.MachineRateId)
         setIds(selectedIds)
@@ -425,7 +419,6 @@ function ProcessCost(props) {
       ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NumberOfDecimalForTransaction),
       CostingToolsCostResponse: toolGrid,
     }
-    console.log('tempArr', tempArr)
     // setTabData(tempArr)
     const Params = {
       index: props.index,

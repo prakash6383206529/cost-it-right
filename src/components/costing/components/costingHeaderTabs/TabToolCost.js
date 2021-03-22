@@ -19,7 +19,6 @@ function TabToolCost(props) {
 
   const dispatch = useDispatch()
   const ToolTabData = useSelector(state => state.costing.ToolTabData)
-  console.log(ToolTabData, "TOOL TAB");
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const costData = useContext(costingInfoContext);
@@ -49,7 +48,6 @@ function TabToolCost(props) {
   */
   const setOverAllApplicabilityCost = (OverAllToolObj) => {
     let arr = dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
-    console.log('dispatchOverallApplicabilityCost Sunday: ', arr);
     //dispatch(setToolTabData(arr, () => { }))
   }
 
@@ -83,7 +81,6 @@ function TabToolCost(props) {
 */
   const setToolCost = (ToolGrid) => {
     let arr = dispatchToolCost(ToolGrid, ToolTabData)
-    console.log('dispatchToolCost Sunday: ', arr);
     dispatch(setToolTabData(arr, () => { }))
   }
 
@@ -144,9 +141,7 @@ function TabToolCost(props) {
       "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails
     }
 
-    dispatch(saveToolTab(data, res => {
-      console.log('saveCostingToolTab: ', res);
-    }))
+    dispatch(saveToolTab(data, res => { }))
 
   }
 

@@ -19,12 +19,10 @@ function TabOverheadProfit(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
-  console.log(costData, "COST DATA");
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
-      console.log("COST DATA TIMES");
       const data = {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
@@ -34,8 +32,6 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
-
-  console.log(OverheadProfitTabData, "OFTD");
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -97,7 +93,6 @@ function TabOverheadProfit(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
-    console.log("TOGGLE ASSEMBLY", Children);
     let arr = setAssembly(params, Children, OverheadProfitTabData)
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
@@ -174,12 +169,20 @@ function TabOverheadProfit(props) {
       OverheadCost = overheadObj.OverheadFixedTotalCost;
     }
 
+    if (overheadObj.IsOverheadCombined === true) {
+      OverheadCost = overheadObj.OverheadCombinedTotalCost;
+    }
+
     let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
 
     if (profitObj.IsProfitFixedApplicable === true) {
       ProfitCost = profitObj.ProfitFixedTotalCost;
+    }
+
+    if (profitObj.IsProfitCombined === true) {
+      ProfitCost = profitObj.ProfitCombinedTotalCost;
     }
 
     let tempArr = [];

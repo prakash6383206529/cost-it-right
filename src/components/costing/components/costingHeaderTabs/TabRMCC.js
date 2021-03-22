@@ -18,7 +18,6 @@ function TabRMCC(props) {
   const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
 
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
-  console.log('ComponentItemData Costing: ', ComponentItemData);
 
   const costData = useContext(costingInfoContext);
 
@@ -29,7 +28,7 @@ function TabRMCC(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
       }
-      dispatch(getRMCCTabData(data, true, (res) => { console.log(res, "RESP FOR RMCC"); }))
+      dispatch(getRMCCTabData(data, true, (res) => { }))
     }
   }, [costData])
 
@@ -700,7 +699,6 @@ function TabRMCC(props) {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
         if (i.IsAssemblyPart === true) {
-          console.log('Data: Inside Assembly', params);
           // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
           // getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.CostingConversionCost.NetConversionCost), params);
 
@@ -873,7 +871,6 @@ function TabRMCC(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
-    console.log('values Costing: ', values);
     if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
@@ -938,7 +935,7 @@ function TabRMCC(props) {
                             <th className="py-3 align-middle" style={{ width: '150px' }}>{`Conversion Cost`}</th>
                             <th className="py-3 align-middle" style={{ width: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
                             <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM + CC Cost/Pc`}</th>
-                            <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Assembly`}</th>
+                            {costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Assembly`}</th>}
                             <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
                           </tr>
                         </thead>
