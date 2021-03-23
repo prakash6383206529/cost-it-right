@@ -224,19 +224,25 @@ function OverheadProfit(props) {
   });
 
   useEffect(() => {
-    checkRejectionApplicability(applicability.label)
-    let tempObj = {
-      "RejectionApplicabilityId": applicability ? applicability.value : '',
-      "RejectionApplicability": applicability ? applicability.label : '',
-      "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
-      "RejectionCost": applicability ? getValues('RejectionCost') : '',
-      "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
-      "IsSurfaceTreatmentApplicable": true,
+    try {
+      checkRejectionApplicability(applicability.label)
+      let tempObj = {
+        "RejectionApplicabilityId": applicability ? applicability.value : '',
+        "RejectionApplicability": applicability ? applicability.label : '',
+        "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
+        "RejectionCost": applicability ? getValues('RejectionCost') : '',
+        "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
+        "IsSurfaceTreatmentApplicable": true,
+      }
+
+      setTimeout(() => {
+        props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      }, 200)
+
+    } catch (error) {
+      console.log('error: setRejectionDetail', error);
     }
 
-    setTimeout(() => {
-      props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-    }, 200)
   }, [rejectionFieldValues]);
 
   /***********changes done on 17-03********************/

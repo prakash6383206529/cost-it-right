@@ -1377,6 +1377,7 @@ export const VIEW_COSTING_DATA = {
   approvalButton: '',
 }
 
+
 //UOM ENUMS
 export const KG = "Kilogram"
 export const HOUR = "Hours"
