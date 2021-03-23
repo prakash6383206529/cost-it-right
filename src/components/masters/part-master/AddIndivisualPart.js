@@ -225,8 +225,10 @@ class AddIndivisualPart extends Component {
         GroupCode: values.GroupCode,
         Remark: values.Remark,
         EffectiveDate: effectiveDate,
+        Plants: [],
         Attachements: updatedFiles
       }
+
 
       this.props.updatePart(updateData, (res) => {
         if (res.data.Result) {
@@ -239,6 +241,7 @@ class AddIndivisualPart extends Component {
 
       let formData = {
         LoggedInUserId: loggedInUserId(),
+        BOMNumber: "",
         BOMLevel: 0,
         Quantity: 1,
         Remark: values.Remark,
@@ -250,8 +253,10 @@ class AddIndivisualPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
+        Plants: [],
         Attachements: files
       }
+
 
       this.props.createPart(formData, (res) => {
         if (res.data.Result === true) {

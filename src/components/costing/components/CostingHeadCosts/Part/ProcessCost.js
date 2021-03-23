@@ -115,6 +115,7 @@ function ProcessCost(props) {
       Quantity: weightData.Quantity,
       ProcessCost: weightData.ProcessCost,
       IsCalculatedEntry: true,
+      ProcessCalculationId: weightData.ProcessCalculationId,
       WeightCalculatorRequest: weightData
     }
 
@@ -178,8 +179,8 @@ function ProcessCost(props) {
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           MachineTonnage: el.MachineTonnage,
           ProcessCost: '',
-          UnitType: el.UnitType,
-          UnitTypeId: el.UnitTypeId
+          UOMType: el.UnitType,
+          UOMTypeId: el.UnitTypeId
         }
       })
 

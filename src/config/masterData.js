@@ -539,6 +539,20 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'Remark': 'Remark Text',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         'UOM': 'Kilogram'
+    },
+    {
+        'BOPPartNumber': 'BOP1',
+        'BOPPartName': 'BOP Name',
+        'BOPCategory': 'Category 1',
+        'PartNumber': 'P1',
+        'Specification': 'BOP Specification',
+        'Plant': 'Plant1',
+        'VendorName': 'Vendor Name123',
+        'NoOfPcs': '1',
+        'BasicRate': '100',
+        'Remark': 'Remark Text',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'UOM': 'Kilogram'
     }
 ]
 

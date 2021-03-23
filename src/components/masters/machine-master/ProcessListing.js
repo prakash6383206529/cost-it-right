@@ -542,7 +542,7 @@ class ProcessListing extends Component {
               >
                 {'Plant'}
               </TableHeaderColumn>
-              <TableHeaderColumn
+              {/* <TableHeaderColumn
                 dataField="Machines"
                 width={100}
                 columnTitle={true}
@@ -550,7 +550,7 @@ class ProcessListing extends Component {
                 dataSort={true}
               >
                 {'Machine'}
-              </TableHeaderColumn>
+              </TableHeaderColumn> */}
               <TableHeaderColumn
                 width={100}
                 dataAlign="right"

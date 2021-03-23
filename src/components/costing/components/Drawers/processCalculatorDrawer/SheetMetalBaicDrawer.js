@@ -50,7 +50,7 @@ function SheetMetalBaicDrawer(props) {
   const [processCost, setProcessCost] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '')
   const [disable, setDisabled] = useState(false)
 
-  const tempProcessObj = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : ''
+  const tempProcessObj = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : ''
 
   const fieldValues = useWatch({
     control,
@@ -62,7 +62,7 @@ function SheetMetalBaicDrawer(props) {
 
   useEffect(() => {
 
-    if (props.calculatorData.UnitType === MASS) {
+    if (props.calculatorData.UOMType === MASS) {
       console.log("ENETRING HERE");
       setValue('Quantity', rmFinishWeight)
     }
@@ -72,11 +72,11 @@ function SheetMetalBaicDrawer(props) {
 
   const onSubmit = (value) => {
     console.log('coming')
-    console.log(value, 'Handle Value in Facing')
+    console.log(value, 'Handle Value in Sheet', tempProcessObj)
     let obj = {}
     obj.ProcessCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCalculationId ? WeightCalculatorRequest.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
-    obj.IsChangeApplied = tempProcessObj === value.processCost ? false : true
+    obj.IsChangeApplied = tempProcessObj === value.ProcessCost ? false : true
     obj.TechnologyId = costData.TechnologyId
     obj.CostingId = costData.CostingId
     obj.TechnologyName = costData.TechnologyName
@@ -97,6 +97,7 @@ function SheetMetalBaicDrawer(props) {
     obj.Quantity = value.Quantity
     obj.ProcessCost = processCost
     obj.LoggedInUserId = loggedInUserId()
+    console.log(obj, "WHAT IS OBJECT");
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
@@ -110,12 +111,12 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
-    console.log("Calculation for process cost", props.calculatorData.UnitType);
+    console.log("Calculation for process cost", props.calculatorData.UOMType);
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
     const rate = props.calculatorData.MHR
     let cost
-    switch (props.calculatorData.UnitType) {
+    switch (props.calculatorData.UOMType) {
       case MASS:
         console.log(efficiency, "efficiency", quantity, "quantity", rate);
         setDisabled(true)
@@ -275,7 +276,7 @@ function SheetMetalBaicDrawer(props) {
                     </Col>
                     <Col md="2">
                       <TextFieldHookForm
-                        label={props.calculatorData.UnitType === MASS ? `Finished Weight` : `Quantity`}
+                        label={props.calculatorData.UOMType === MASS ? `Finished Weight` : `Quantity`}
                         name={'Quantity'}
                         Controller={Controller}
                         control={control}
@@ -295,7 +296,7 @@ function SheetMetalBaicDrawer(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.Quantity}
-                        disabled={props.calculatorData.UnitType === MASS ? true : false}
+                        disabled={props.calculatorData.UOMType === MASS ? true : false}
                       />
                     </Col>
                     <Col md="2">
