@@ -612,7 +612,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: headerCosts.NetRawMaterialsCost,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
@@ -626,7 +626,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: headerCosts.NetBoughtOutPartCost,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
@@ -640,7 +640,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: headerCosts.NetConversionCost,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
@@ -654,7 +654,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: headerCosts.NetTotalRMBOPCC,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
@@ -668,7 +668,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: RMBOP,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(RMBOP * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
@@ -682,7 +682,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: RMCC,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(RMCC * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
@@ -696,7 +696,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: BOPCC,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(BOPCC * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
@@ -710,7 +710,7 @@ function OverheadProfit(props) {
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
             RejectionCost: headerCosts.NetTotalRMBOPCC,
-            RejectionTotalCost: getValues('RejectionTotalCost')
+            RejectionTotalCost: checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RejectionPercentage), 2)
           })
           break;
 
