@@ -511,6 +511,7 @@ class AddProfit extends Component {
         ProfitApplicabilityType: overheadAppli.label,
         ModelType: ModelType.label,
         IsVendor: IsVendor,
+        IsCombinedEntry: !isOverheadPercent ? true : false,
         ProfitPercentage: values.ProfitPercentage,
         ProfitMachiningCCPercentage: values.ProfitMachiningCCPercentage,
         ProfitBOPPercentage: values.ProfitBOPPercentage,

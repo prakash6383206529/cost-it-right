@@ -55,7 +55,7 @@ function BoughtOutPart(props) {
         <td>{''}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? item.CostingPartDetails.Quantity : 1}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{''}</td>
+        {costData.IsAssemblyPart && <td>{''}</td>}
         <td>{''}</td>
       </tr>
     </ >

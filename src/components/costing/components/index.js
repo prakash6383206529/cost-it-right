@@ -32,7 +32,6 @@ function Costing(props) {
   }, [])
 
   const showDetail = (partInfo, costingInfo) => {
-    console.log(partInfo, "PART", costingInfo);
     setPartInfo(partInfo)
     setCostingData(costingInfo)
     toggle("1");

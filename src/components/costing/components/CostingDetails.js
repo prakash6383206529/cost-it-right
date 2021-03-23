@@ -648,7 +648,6 @@ function CostingDetails(props) {
     }
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
-      console.log(tempData, "TEMP DATA VBC");
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       const data = {
         CostingId: tempData.SelectedCostingVersion.value,

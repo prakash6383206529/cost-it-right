@@ -68,7 +68,8 @@ function PartSurfaceTreatment(props) {
         <div className="accordian-row" style={{ display: 'contents' }}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
-              {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
+              {item && item.PartNumber}-{item && item.BOMLevel}
+              {/* <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div> */}
             </span>
           </td>
           <td>{item && item.PartType}</td>

@@ -38,7 +38,6 @@ function Tool(props) {
   });
 
   const [gridData, setGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse)
-  console.log(gridData, "GD");
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')

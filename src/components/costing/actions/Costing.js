@@ -330,7 +330,6 @@ export function getZBCCostingByCostingId(CostingId, callback) {
  * @description SET COSTING DATA LIST
  */
 export function setCostingDataList(flag, CostingDataList, callback) {
-  console.log('CostingDataList: ', flag, CostingDataList);
   return (dispatch) => {
     dispatch({
       type: SET_COSTING_DATALIST_BY_COSTINGID,
@@ -936,10 +935,10 @@ export function setOverheadProfitData(TabData, callback) {
  * @method getOverheadProfitDataByModelType
  * @description GET OVERHEAD & PROFIT DATA BY MODEL TYPE
  */
-export function getOverheadProfitDataByModelType(ModelTypeId, callback) {
+export function getOverheadProfitDataByModelType(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${ModelTypeId}`, headers,)
+    const request = axios.get(`${API.getOverheadProfitDataByModelType}/${data.ModelTypeId}/${data.VendorId}/${data.IsVendor}`, headers,)
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -1011,10 +1010,10 @@ export function saveComponentOverheadProfitTab(data, callback) {
  * @method getInventoryDataByHeads
  * @description GET INVENTORY DETAIL BY COSTING HEADS
  */
-export function getInventoryDataByHeads(Id, callback) {
+export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getInventoryDataByHeads}/${Id}`, headers)
+    const request = axios.get(`${API.getInventoryDataByHeads}/${data.Id}/${data.VendorId}/${data.IsVendor}`, headers)
     request
       .then((response) => {
         callback(response)
@@ -1031,22 +1030,17 @@ export function getInventoryDataByHeads(Id, callback) {
  * @method getPaymentTermsDataByHeads
  * @description GET PAYMENT TERM DETAIL BY COSTING HEADS
  */
-export function getPaymentTermsDataByHeads(Id, callback) {
+export function getPaymentTermsDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getPaymentTermsDataByHeads}/${Id}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        callback(response)
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.Id}/${data.VendorId}/${data.IsVendor}`, headers,)
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 

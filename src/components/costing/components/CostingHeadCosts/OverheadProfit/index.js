@@ -7,7 +7,8 @@ import { calculatePercentage, checkForDecimalAndNull, } from '../../../../../hel
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, } from '../../../actions/Costing';
 import Switch from "react-switch";
-import { netHeadCostContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
+import { EMPTY_GUID } from '../../../../../config/constants';
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -47,6 +48,7 @@ function OverheadProfit(props) {
 
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
+  const costData = useContext(costingInfoContext);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -74,15 +76,7 @@ function OverheadProfit(props) {
 
   //INITIAL CALLED EFFECT TO SET VALUES
   useEffect(() => {
-    checkIsOverheadCombined()
-    checkIsOverheadRMApplicable()
-    checkIsOverheadBOPApplicable()
-    checkIsOverheadCCApplicable()
-
-    checkIsProfitCombined()
-    checkIsProfitRMApplicable()
-    checkIsProfitBOPApplicable()
-    checkIsProfitCCApplicable()
+    UpdateForm()
 
     if (data.CostingPartDetails && data.CostingPartDetails.ModelTypeId !== null) {
       handleModelTypeChange({ label: data.CostingPartDetails.ModelType, value: data.CostingPartDetails.ModelTypeId })
@@ -112,6 +106,30 @@ function OverheadProfit(props) {
 
   }, []);
 
+  /**
+  * @method UpdateForm
+  * @description UPDATE FORM ON EACH INITIAL RENDER
+  */
+  const UpdateForm = () => {
+    checkIsOverheadCombined()
+    checkIsOverheadRMApplicable()
+    checkIsOverheadBOPApplicable()
+    checkIsOverheadCCApplicable()
+
+    checkIsProfitCombined()
+    checkIsProfitRMApplicable()
+    checkIsProfitBOPApplicable()
+    checkIsProfitCCApplicable()
+  }
+
+  /**
+  * @method useEffect
+  * @description USED TO UPDATE WHEN MODEL TYPE CHANGE
+  */
+  useEffect(() => {
+    UpdateForm()
+  }, [overheadObj, profitObj])
+
   const overheadFieldValues = useWatch({
     control,
     name: ['OverheadFixedPercentage',],
@@ -125,67 +143,67 @@ function OverheadProfit(props) {
   useEffect(() => {
     setTimeout(() => {
       let tempObj = {
-        "OverheadId": overheadObj.OverheadId,
-        "OverheadApplicabilityId": overheadObj.OverheadApplicabilityId,
-        "OverheadApplicability": overheadObj.OverheadApplicability,
+        "OverheadId": overheadObj && overheadObj.OverheadId,
+        "OverheadApplicabilityId": overheadObj && overheadObj.OverheadApplicabilityId,
+        "OverheadApplicability": overheadObj && overheadObj.OverheadApplicability,
 
-        "IsOverheadCombined": overheadObj.IsOverheadCombined,
-        "OverheadPercentage": overheadObj.IsOverheadCombined ? getValues('OverheadPercentage') : '',
-        "OverheadCombinedCost": overheadObj.IsOverheadCombined ? getValues('OverheadCombinedCost') : '',
-        "OverheadCombinedTotalCost": overheadObj.IsOverheadCombined ? getValues('OverheadCombinedTotalCost') : '',
+        "IsOverheadCombined": overheadObj && overheadObj.IsOverheadCombined,
+        "OverheadPercentage": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadPercentage') : '',
+        "OverheadCombinedCost": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadCombinedCost') : '',
+        "OverheadCombinedTotalCost": overheadObj && overheadObj.IsOverheadCombined ? getValues('OverheadCombinedTotalCost') : '',
 
-        "IsOverheadCCApplicable": overheadObj.IsOverheadCCApplicable,
-        "OverheadCCPercentage": overheadObj.IsOverheadCCApplicable ? getValues('OverheadCCPercentage') : '',
-        "OverheadCCCost": overheadObj.IsOverheadCCApplicable ? getValues('OverheadCCCost') : '',
-        "OverheadCCTotalCost": overheadObj.IsOverheadCCApplicable ? getValues('OverheadCCTotalCost') : '',
+        "IsOverheadCCApplicable": overheadObj && overheadObj.IsOverheadCCApplicable,
+        "OverheadCCPercentage": overheadObj && overheadObj.IsOverheadCCApplicable ? getValues('OverheadCCPercentage') : '',
+        "OverheadCCCost": overheadObj && overheadObj.IsOverheadCCApplicable ? getValues('OverheadCCCost') : '',
+        "OverheadCCTotalCost": overheadObj && overheadObj.IsOverheadCCApplicable ? getValues('OverheadCCTotalCost') : '',
 
-        "IsOverheadBOPApplicable": overheadObj.IsOverheadBOPApplicable,
-        "OverheadBOPPercentage": overheadObj.IsOverheadBOPApplicable ? getValues('OverheadBOPPercentage') : '',
-        "OverheadBOPCost": overheadObj.IsOverheadBOPApplicable ? getValues('OverheadBOPCost') : '',
-        "OverheadBOPTotalCost": overheadObj.IsOverheadBOPApplicable ? getValues('OverheadBOPTotalCost') : '',
+        "IsOverheadBOPApplicable": overheadObj && overheadObj.IsOverheadBOPApplicable,
+        "OverheadBOPPercentage": overheadObj && overheadObj.IsOverheadBOPApplicable ? getValues('OverheadBOPPercentage') : '',
+        "OverheadBOPCost": overheadObj && overheadObj.IsOverheadBOPApplicable ? getValues('OverheadBOPCost') : '',
+        "OverheadBOPTotalCost": overheadObj && overheadObj.IsOverheadBOPApplicable ? getValues('OverheadBOPTotalCost') : '',
 
-        "IsOverheadRMApplicable": overheadObj.IsOverheadRMApplicable,
-        "OverheadRMPercentage": overheadObj.IsOverheadRMApplicable ? getValues('OverheadRMPercentage') : '',
-        "OverheadRMCost": overheadObj.IsOverheadRMApplicable ? getValues('OverheadRMCost') : '',
-        "OverheadRMTotalCost": overheadObj.IsOverheadRMApplicable ? getValues('OverheadRMTotalCost') : '',
+        "IsOverheadRMApplicable": overheadObj && overheadObj.IsOverheadRMApplicable,
+        "OverheadRMPercentage": overheadObj && overheadObj.IsOverheadRMApplicable ? getValues('OverheadRMPercentage') : '',
+        "OverheadRMCost": overheadObj && overheadObj.IsOverheadRMApplicable ? getValues('OverheadRMCost') : '',
+        "OverheadRMTotalCost": overheadObj && overheadObj.IsOverheadRMApplicable ? getValues('OverheadRMTotalCost') : '',
 
-        "IsOverheadFixedApplicable": overheadObj.IsOverheadFixedApplicable,
-        "OverheadFixedPercentage": overheadObj.IsOverheadFixedApplicable ? getValues('OverheadFixedPercentage') : '',
-        "OverheadFixedCost": overheadObj.IsOverheadFixedApplicable ? getValues('OverheadFixedCost') : '',
-        "OverheadFixedTotalCost": overheadObj.IsOverheadFixedApplicable ? getValues('OverheadFixedTotalCost') : '',
+        "IsOverheadFixedApplicable": overheadObj && overheadObj.IsOverheadFixedApplicable,
+        "OverheadFixedPercentage": overheadObj && overheadObj.IsOverheadFixedApplicable ? getValues('OverheadFixedPercentage') : '',
+        "OverheadFixedCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? getValues('OverheadFixedCost') : '',
+        "OverheadFixedTotalCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? getValues('OverheadFixedTotalCost') : '',
 
         "IsSurfaceTreatmentApplicable": true
       }
 
       let profitTempObj = {
-        "ProfitId": profitObj.ProfitId,
-        "ProfitApplicabilityId": profitObj.ProfitApplicabilityId,
-        "ProfitApplicability": profitObj.ProfitApplicability,
+        "ProfitId": profitObj && profitObj.ProfitId,
+        "ProfitApplicabilityId": profitObj && profitObj.ProfitApplicabilityId,
+        "ProfitApplicability": profitObj && profitObj.ProfitApplicability,
 
-        "IsProfitCombined": profitObj.IsProfitCombined,
-        "ProfitPercentage": profitObj.IsProfitCombined ? getValues('ProfitPercentage') : '',
-        "ProfitCombinedCost": profitObj.IsProfitCombined ? getValues('ProfitCombinedCost') : '',
-        "ProfitCombinedTotalCost": profitObj.IsProfitCombined ? getValues('ProfitCombinedTotalCost') : '',
+        "IsProfitCombined": profitObj && profitObj.IsProfitCombined,
+        "ProfitPercentage": profitObj && profitObj.IsProfitCombined ? getValues('ProfitPercentage') : '',
+        "ProfitCombinedCost": profitObj && profitObj.IsProfitCombined ? getValues('ProfitCombinedCost') : '',
+        "ProfitCombinedTotalCost": profitObj && profitObj.IsProfitCombined ? getValues('ProfitCombinedTotalCost') : '',
 
-        "IsProfitCCApplicable": profitObj.IsProfitCCApplicable,
-        "ProfitCCPercentage": profitObj.IsProfitCCApplicable ? getValues('ProfitCCPercentage') : '',
-        "ProfitCCCost": profitObj.IsProfitCCApplicable ? getValues('ProfitCCCost') : '',
-        "ProfitCCTotalCost": profitObj.IsProfitCCApplicable ? getValues('ProfitCCTotalCost') : '',
+        "IsProfitCCApplicable": profitObj && profitObj.IsProfitCCApplicable,
+        "ProfitCCPercentage": profitObj && profitObj.IsProfitCCApplicable ? getValues('ProfitCCPercentage') : '',
+        "ProfitCCCost": profitObj && profitObj.IsProfitCCApplicable ? getValues('ProfitCCCost') : '',
+        "ProfitCCTotalCost": profitObj && profitObj.IsProfitCCApplicable ? getValues('ProfitCCTotalCost') : '',
 
-        "IsProfitBOPApplicable": profitObj.IsProfitBOPApplicable,
-        "ProfitBOPPercentage": profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPPercentage') : '',
-        "ProfitBOPCost": profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPCost') : '',
-        "ProfitBOPTotalCost": profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPTotalCost') : '',
+        "IsProfitBOPApplicable": profitObj && profitObj.IsProfitBOPApplicable,
+        "ProfitBOPPercentage": profitObj && profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPPercentage') : '',
+        "ProfitBOPCost": profitObj && profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPCost') : '',
+        "ProfitBOPTotalCost": profitObj && profitObj.IsProfitBOPApplicable ? getValues('ProfitBOPTotalCost') : '',
 
-        "IsProfitRMApplicable": profitObj.IsProfitRMApplicable,
-        "ProfitRMPercentage": profitObj.IsProfitRMApplicable ? getValues('ProfitRMPercentage') : '',
-        "ProfitRMCost": profitObj.IsProfitRMApplicable ? getValues('ProfitRMCost') : '',
-        "ProfitRMTotalCost": profitObj.IsProfitRMApplicable ? getValues('ProfitRMTotalCost') : '',
+        "IsProfitRMApplicable": profitObj && profitObj.IsProfitRMApplicable,
+        "ProfitRMPercentage": profitObj && profitObj.IsProfitRMApplicable ? getValues('ProfitRMPercentage') : '',
+        "ProfitRMCost": profitObj && profitObj.IsProfitRMApplicable ? getValues('ProfitRMCost') : '',
+        "ProfitRMTotalCost": profitObj && profitObj.IsProfitRMApplicable ? getValues('ProfitRMTotalCost') : '',
 
-        "IsProfitFixedApplicable": profitObj.IsProfitFixedApplicable,
-        "ProfitFixedPercentage": profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedPercentage') : '',
-        "ProfitFixedCost": profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedCost') : '',
-        "ProfitFixedTotalCost": profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedTotalCost') : '',
+        "IsProfitFixedApplicable": profitObj && profitObj.IsProfitFixedApplicable,
+        "ProfitFixedPercentage": profitObj && profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedPercentage') : '',
+        "ProfitFixedCost": profitObj && profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedCost') : '',
+        "ProfitFixedTotalCost": profitObj && profitObj.IsProfitFixedApplicable ? getValues('ProfitFixedTotalCost') : '',
 
         "IsSurfaceTreatmentApplicable": true
       }
@@ -256,7 +274,7 @@ function OverheadProfit(props) {
         "EffectiveDate": "",
       }
 
-      props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      props.setICCDetail(ICCInterestRateId !== null ? tempObj : {}, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
     }, 200)
   }, [ICCFieldValues]);
 
@@ -299,7 +317,7 @@ function OverheadProfit(props) {
         "EffectiveDate": ""
       }
 
-      props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      props.setPaymentTermsDetail(PaymentTermInterestRateId !== null ? tempObj : null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
     }, 200)
   }, [PaymentTermsFieldValues]);
 
@@ -353,11 +371,10 @@ function OverheadProfit(props) {
   * @description CALCULATE OVERHEAD FIXED TOTAL COST
   */
   const calculateOverheadFixedTotalCost = () => {
-    const { IsOverheadFixedApplicable } = overheadObj;
     const { OverheadFixedPercentage } = overheadFieldValues;
     const { NetTotalRMBOPCC } = headerCosts;
 
-    if (headerCosts !== undefined && OverheadFixedPercentage !== undefined && IsOverheadFixedApplicable) {
+    if (headerCosts !== undefined && OverheadFixedPercentage !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
       setValue('OverheadFixedCost', NetTotalRMBOPCC)
       setValue('OverheadFixedTotalCost', checkForDecimalAndNull(NetTotalRMBOPCC * calculatePercentage(OverheadFixedPercentage), 2))
       setOverheadObj({
@@ -375,9 +392,9 @@ function OverheadProfit(props) {
   * @description OVERHEAD COMBINED CALCULATION
   */
   const checkIsOverheadCombined = () => {
-    const { IsOverheadCombined } = overheadObj;
-    if (headerCosts !== undefined && IsOverheadCombined) {
-      const OverheadCombinedText = 'RM + CC + BOP';
+    if (headerCosts !== undefined && overheadObj && overheadObj.IsOverheadCombined) {
+      const { OverheadApplicability } = overheadObj;
+      const OverheadCombinedText = OverheadApplicability;
       calculateOverheadCombinedCost(OverheadCombinedText)
     }
   }
@@ -427,24 +444,25 @@ function OverheadProfit(props) {
   * @description OVERHEAD RM APPLICABILITY CALCULATION
   */
   const checkIsOverheadRMApplicable = () => {
-    const { IsOverheadRMApplicable, OverheadRMPercentage } = overheadObj;
-    if (headerCosts !== undefined && IsOverheadRMApplicable) {
+    if (headerCosts !== undefined && overheadObj && overheadObj.IsOverheadRMApplicable) {
+      const { OverheadRMPercentage } = overheadObj;
       setValue('OverheadRMPercentage', OverheadRMPercentage)
       setValue('OverheadRMCost', headerCosts.NetRawMaterialsCost)
       setValue('OverheadRMTotalCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost * calculatePercentage(OverheadRMPercentage), 2))
     }
   }
 
+
   /**
   * @method checkIsOverheadBOPApplicable
   * @description OVERHEAD BOP APPLICABILITY CALCULATION
   */
   const checkIsOverheadBOPApplicable = () => {
-    const { IsProfitBOPApplicable, ProfitBOPPercentage } = overheadObj;
-    if (headerCosts !== undefined && IsProfitBOPApplicable) {
-      setValue('ProfitBOPPercentage', ProfitBOPPercentage)
-      setValue('ProfitBOPCost', headerCosts.NetBoughtOutPartCost)
-      setValue('ProfitBOPTotalCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost * calculatePercentage(ProfitBOPPercentage), 2))
+    if (headerCosts !== undefined && overheadObj && overheadObj.IsOverheadBOPApplicable) {
+      const { OverheadBOPPercentage } = overheadObj;
+      setValue('OverheadBOPPercentage', OverheadBOPPercentage)
+      setValue('OverheadBOPCost', headerCosts.NetBoughtOutPartCost)
+      setValue('OverheadBOPTotalCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost * calculatePercentage(OverheadBOPPercentage), 2))
     }
   }
 
@@ -453,8 +471,8 @@ function OverheadProfit(props) {
   * @description OVERHEAD CC APPLICABILITY CALCULATION
   */
   const checkIsOverheadCCApplicable = () => {
-    const { IsOverheadCCApplicable, OverheadCCPercentage } = overheadObj;
-    if (headerCosts !== undefined && IsOverheadCCApplicable) {
+    if (headerCosts !== undefined && overheadObj && overheadObj.IsOverheadCCApplicable) {
+      const { OverheadCCPercentage } = overheadObj;
       setValue('OverheadCCPercentage', OverheadCCPercentage)
       setValue('OverheadCCCost', headerCosts.NetConversionCost)
       setValue('OverheadCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(OverheadCCPercentage), 2))
@@ -466,10 +484,9 @@ function OverheadProfit(props) {
   * @description CALCULATE PROFIT FIXED TOTAL COST
   */
   const calculateProfitFixedTotalCost = () => {
-    const { IsProfitFixedApplicable } = profitObj;
     const { ProfitFixedPercentage } = profitFieldValues;
 
-    if (headerCosts !== undefined && ProfitFixedPercentage !== undefined && IsProfitFixedApplicable) {
+    if (headerCosts !== undefined && ProfitFixedPercentage !== undefined && profitObj && profitObj.IsProfitFixedApplicable) {
       setValue('ProfitFixedCost', headerCosts.NetTotalRMBOPCC)
       setValue('ProfitFixedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(ProfitFixedPercentage), 2))
       setProfitObj({
@@ -486,9 +503,9 @@ function OverheadProfit(props) {
   * @description PROFIT COMBINED CALCULATION
   */
   const checkIsProfitCombined = () => {
-    const { IsProfitCombined } = profitObj;
-    if (headerCosts !== undefined && IsProfitCombined) {
-      const ProfitCombinedText = 'RM + CC + BOP';
+    if (headerCosts !== undefined && profitObj && profitObj.IsProfitCombined) {
+      const { ProfitApplicability } = profitObj;
+      const ProfitCombinedText = ProfitApplicability;
       calculateProfitCombinedCost(ProfitCombinedText)
     }
   }
@@ -538,8 +555,8 @@ function OverheadProfit(props) {
   * @description PROFIT RM APPLICABILITY CALCULATION
   */
   const checkIsProfitRMApplicable = () => {
-    const { IsProfitRMApplicable, ProfitRMPercentage } = profitObj;
-    if (headerCosts !== undefined && IsProfitRMApplicable) {
+    if (headerCosts !== undefined && profitObj && profitObj.IsProfitRMApplicable) {
+      const { ProfitRMPercentage } = profitObj;
       setValue('ProfitRMPercentage', ProfitRMPercentage)
       setValue('ProfitRMCost', headerCosts.NetRawMaterialsCost)
       setValue('ProfitRMTotalCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost * calculatePercentage(ProfitRMPercentage), 2))
@@ -547,15 +564,15 @@ function OverheadProfit(props) {
   }
 
   /**
-    * @method checkIsProfitBOPApplicable
-    * @description PROFIT BOP APPLICABILITY CALCULATION
-    */
+  * @method checkIsProfitBOPApplicable
+  * @description OVERHEAD BOP APPLICABILITY CALCULATION
+  */
   const checkIsProfitBOPApplicable = () => {
-    const { IsOverheadBOPApplicable, OverheadBOPPercentage } = profitObj;
-    if (headerCosts !== undefined && IsOverheadBOPApplicable) {
-      setValue('OverheadBOPPercentage', OverheadBOPPercentage)
-      setValue('OverheadBOPCost', headerCosts.NetBoughtOutPartCost)
-      setValue('OverheadBOPTotalCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost * calculatePercentage(OverheadBOPPercentage), 2))
+    if (headerCosts !== undefined && profitObj && profitObj.IsProfitBOPApplicable) {
+      const { ProfitBOPPercentage } = profitObj;
+      setValue('ProfitBOPPercentage', ProfitBOPPercentage)
+      setValue('ProfitBOPCost', headerCosts.NetBoughtOutPartCost)
+      setValue('ProfitBOPTotalCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost * calculatePercentage(ProfitBOPPercentage), 2))
     }
   }
 
@@ -564,8 +581,8 @@ function OverheadProfit(props) {
     * @description PROFIT CC APPLICABILITY CALCULATION
     */
   const checkIsProfitCCApplicable = () => {
-    const { IsProfitCCApplicable, ProfitCCPercentage } = profitObj;
-    if (headerCosts !== undefined && IsProfitCCApplicable) {
+    if (headerCosts !== undefined && profitObj && profitObj.IsProfitCCApplicable) {
+      const { ProfitCCPercentage } = profitObj;
       setValue('ProfitCCPercentage', ProfitCCPercentage)
       setValue('ProfitCCCost', headerCosts.NetConversionCost)
       setValue('ProfitCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(ProfitCCPercentage), 2))
@@ -577,7 +594,6 @@ function OverheadProfit(props) {
     * @description REJECTION APPLICABILITY CALCULATION
     */
   const checkRejectionApplicability = (Text) => {
-    const { RejectionApplicability, RejectionPercentage } = rejectionObj;
     if (headerCosts && Text !== '') {
 
       const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
@@ -759,7 +775,12 @@ function OverheadProfit(props) {
   const handleModelTypeChange = (newValue) => {
     if (newValue && newValue !== '') {
       setModelType(newValue)
-      dispatch(getOverheadProfitDataByModelType(newValue.value, res => {
+      const reqParams = {
+        ModelTypeId: newValue.value,
+        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+        IsVendor: costData.IsVendor
+      }
+      dispatch(getOverheadProfitDataByModelType(reqParams, res => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
           setOverheadObj(Data.CostingOverheadDetail)
@@ -789,18 +810,17 @@ function OverheadProfit(props) {
   /**
   * @method setOverheadValues
   * @description  SET OVERHEAD VALUES IN FIXED, COMBINED, RM, CC AND BOP
-  * @description IsAPIResponse, USED TO SET FIXED VALUE IN GET API CALL
+  * @description IsAPIResponse, USED TO SET FIXED VALUE IN GET ON INITIAL LOAD API CALL
   */
   const setOverheadValues = (dataObj, IsAPIResponse) => {
 
     if (dataObj.IsOverheadFixedApplicable && IsAPIResponse === false) {
-      console.log('Called from overhead 22222222', dataObj);
       setValue('OverheadFixedPercentage', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
       setValue('OverheadFixedCost', headerCosts && headerCosts.NetTotalRMBOPCC)
       setValue('OverheadFixedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(dataObj.OverheadFixedPercentage), 2))
     }
 
-    if (dataObj.IsOverheadCombined) {
+    if (dataObj.IsOverheadCombined && IsAPIResponse === false) {
       setValue('OverheadCombinedPercentage', dataObj.IsOverheadCombined ? dataObj.OverheadCombinedPercentage : '')
       setValue('OverheadCombinedCost', headerCosts && headerCosts.NetTotalRMBOPCC)
       setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(dataObj.OverheadCombinedPercentage), 2))
@@ -892,7 +912,12 @@ function OverheadProfit(props) {
   const handleICCApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setICCapplicability(newValue)
-      dispatch(getInventoryDataByHeads(newValue.value, res => {
+      const reqParams = {
+        Id: newValue.value,
+        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+        IsVendor: costData.IsVendor
+      }
+      dispatch(getInventoryDataByHeads(reqParams, res => {
         if (res && res.status === 204) {
           setValue('InterestRatePercentage', '')
           setValue('InterestRateCost', '')
@@ -902,7 +927,7 @@ function OverheadProfit(props) {
           if (res && res.data && res.data.Result) {
             let Data = res.data.Data;
             setValue('InterestRatePercentage', Data.InterestRate)
-            setICCInterestRateId(Data.InterestRateId)
+            setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
             checkInventoryApplicability(newValue.label)
           }
         }
@@ -927,7 +952,6 @@ function OverheadProfit(props) {
     * @description INVENTORY APPLICABILITY CALCULATION
     */
   const checkInventoryApplicability = (Text) => {
-    const { IsInventoryApplicable, } = InventoryObj;
     if (headerCosts !== undefined && Text !== '') {
 
       const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
@@ -991,7 +1015,12 @@ function OverheadProfit(props) {
   const handlePaymentTermsApplicabilityChange = (newValue) => {
     if (newValue && newValue !== '') {
       setPaymentTermsApplicability(newValue)
-      dispatch(getPaymentTermsDataByHeads(newValue.value, res => {
+      const reqParams = {
+        Id: newValue.value,
+        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+        IsVendor: costData.IsVendor
+      }
+      dispatch(getPaymentTermsDataByHeads(reqParams, res => {
         if (res.status === 204) {
           setValue('RepaymentPeriodDays', '')
           setValue('RepaymentPeriodPercentage', '')
@@ -1001,7 +1030,7 @@ function OverheadProfit(props) {
           let Data = res.data.Data;
           setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
           setValue('RepaymentPeriodPercentage', Data.InterestRate)
-          setPaymentTermInterestRateId(Data.InterestRateId)
+          setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
           checkPaymentTermApplicability(newValue.label)
         }
       }))
@@ -1016,41 +1045,41 @@ function OverheadProfit(props) {
     * @description PAYMENT TERMS APPLICABILITY CALCULATION
     */
   const checkPaymentTermApplicability = (Text) => {
-    const { IsInventoryApplicable, } = PaymentTermObj;
     if (headerCosts !== undefined && Text !== '') {
 
       const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
       const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
       const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
       const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
+      const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
 
       switch (Text) {
         case 'RM':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost * calculatePercentage(RepaymentPeriodPercentage), 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost * RepaymentCost, 2))
           break;
 
         case 'RM + CC':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(RMCC * calculatePercentage(RepaymentPeriodPercentage), 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(RMCC * RepaymentCost, 2))
           break;
 
         case 'RM + BOP':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(RMBOP * calculatePercentage(RepaymentPeriodPercentage), 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(RMBOP * RepaymentCost, 2))
           break;
 
         case 'RM + CC + BOP':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RepaymentPeriodPercentage), 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, 2))
           break;
 
         case 'Fixed':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RepaymentPeriodPercentage), 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, 2))
           break;
 
         case 'Annual ICC (%)':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RepaymentPeriodPercentage), 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, 2))
           break;
 
         case 'Net Cost':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RepaymentPeriodPercentage), 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, 2))
           break;
 
         default:
@@ -1058,7 +1087,6 @@ function OverheadProfit(props) {
       }
     }
   }
-
 
   /**
     * @method onSubmit
@@ -1112,7 +1140,7 @@ function OverheadProfit(props) {
                 <label>
                   {'Net Overhead & Profit'}
                 </label>
-                <input className="form-control" disabled value={checkForDecimalAndNull(data.CostingPartDetails.OverheadCost, initialConfiguration.NumberOfDecimalForTransaction) + checkForDecimalAndNull(data.CostingPartDetails.ProfitCost, initialConfiguration.NumberOfDecimalForTransaction)} />
+                <input className="form-control" disabled value={checkForDecimalAndNull(data.CostingPartDetails.OverheadCost, initialConfiguration.NoOfDecimalForPrice) + checkForDecimalAndNull(data.CostingPartDetails.ProfitCost, initialConfiguration.NoOfDecimalForPrice)} />
               </Col>
 
               <Col md="12" className="">
