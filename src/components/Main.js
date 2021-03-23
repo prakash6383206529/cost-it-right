@@ -31,7 +31,6 @@ import TaxListing from './masters/tax-master/TaxListing'
 import LeftMenu from './nav/Leftsidemenu'
 import Breadcrumb from './nav/Breadcrumb'
 import CostingRoutes from './costing/Routes'
-import Costing from './costing/components'
 import { showUserData } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import { BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION, OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR, SHEET_METAL, REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD } from '../config/constants'
@@ -196,7 +195,6 @@ class Main extends Component {
 
                     <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
 
-                    {/* <Route path="/costing" component={AuthMiddleware(Costing, SHEET_METAL)} /> */}
                     <Route path="/costing" component={CostingRoutes} />
 
                     {/*Temporary  */}

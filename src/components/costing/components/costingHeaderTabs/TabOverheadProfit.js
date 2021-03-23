@@ -350,24 +350,24 @@ function TabOverheadProfit(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.ICCCost = ICCObj ? ICCObj.NetCost : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj ? true : false,
-            NetICC: ICCObj ? ICCObj.NetCost : 0,
+            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          i.CostingPartDetails.ICCCost = ICCObj ? ICCObj.NetCost : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj ? true : false,
-            NetICC: ICCObj ? ICCObj.NetCost : 0,
+            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 
         } else {
@@ -406,24 +406,24 @@ function TabOverheadProfit(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.PaymentTermCost = PaymentTermObj ? PaymentTermObj.NetCost : 0;
+          i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
             IsPaymentTerms: PaymentTermObj ? true : false,
-            NetPaymentTermCost: PaymentTermObj ? PaymentTermObj.NetCost : 0,
+            NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
 
           formatData(PaymentTermObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          i.CostingPartDetails.PaymentTermCost = PaymentTermObj ? PaymentTermObj.NetCost : 0;
+          i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
             IsPaymentTerms: PaymentTermObj ? true : false,
-            NetPaymentTermCost: PaymentTermObj ? PaymentTermObj.NetCost : 0,
+            NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
 
         } else {
