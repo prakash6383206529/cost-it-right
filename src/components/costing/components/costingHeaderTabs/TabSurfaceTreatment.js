@@ -565,7 +565,7 @@ function TabSurfaceTreatment(props) {
               >
                 <Row>
                   <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm">
+                    <Table className="table cr-brdr-main surfacetreatment-main-headings" size="sm">
                       <thead>
                         <tr>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>

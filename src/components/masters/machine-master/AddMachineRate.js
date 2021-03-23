@@ -1049,9 +1049,22 @@ class AddMachineRate extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      </Row>
 
-                      <Row>
+                        <Col md="3">
+                          <Field
+                            label={`Description`}
+                            name={"Description"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            component={renderText}
+                            // required={true}
+                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+
                         <Col md="3">
                           <Field
                             label={`Machine Name`}
@@ -1105,20 +1118,7 @@ class AddMachineRate extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                        <Col md="3">
-                          <Field
-                            label={`Description`}
-                            name={"Description"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-                            component={renderText}
-                            // required={true}
-                            disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
+
 
                         {!this.state.IsVendor &&
                           <Col md="12">
@@ -1309,7 +1309,7 @@ class AddMachineRate extends Component {
                           <label>Upload Files (upload up to 3 files)</label>
                           {this.state.files.length >= 3 ? (
                             <div class="alert alert-danger" role="alert">
-                              Max file uploaded.
+                              Maximum file upload limit has been reached.
                             </div>
                           ) :
                             <Dropzone

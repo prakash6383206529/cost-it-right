@@ -535,7 +535,7 @@ function TabDiscountOther(props) {
                       <label>Upload Attachment (upload up to 4 files)</label>
                       {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
-                          Max file uploaded.
+                          Maximum file upload limit has been reached.
                         </div>
                       ) : (
                           <Dropzone

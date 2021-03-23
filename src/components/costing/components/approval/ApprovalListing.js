@@ -190,7 +190,7 @@ function ApprovalListing() {
     //onExportToCSV: this.onExportToCSV,
     //paginationShowsTotal: true,
     //paginationShowsTotal: this.renderPaginationShowsTotal,
-    paginationSize: 5,
+
   }
 
   return (

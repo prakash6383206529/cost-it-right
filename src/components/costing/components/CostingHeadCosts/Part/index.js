@@ -94,7 +94,7 @@ function PartCompoment(props) {
     <>
       <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
         <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1`}>
+          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>

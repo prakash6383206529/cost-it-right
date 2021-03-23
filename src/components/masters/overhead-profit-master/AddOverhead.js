@@ -841,7 +841,7 @@ class AddOverhead extends Component {
                           {this.state.files &&
                             this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
-                                Max file uploaded.
+                                Maximum file upload limit has been reached.
                               </div>
                             ) : (
                               <Dropzone

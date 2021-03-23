@@ -86,7 +86,7 @@ function AddOperation(props) {
     nextPage: <span className="next-page-pg"></span>, // Next page button text
     firstPage: <span className="first-page-pg"></span>, // First page button text
     lastPage: <span className="last-page-pg"></span>,
-    paginationSize: 2,
+
   };
 
   const onRowSelect = (row, isSelected, e) => {

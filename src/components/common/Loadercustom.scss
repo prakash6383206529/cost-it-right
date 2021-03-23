@@ -749,3 +749,32 @@
 .container-fluid{
     position: relative;
 }
+
+@media(max-width:1600px){
+    :not(.login-container.signup-form) {
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: inline-block;
+                        width: 1270px;
+                    }
+                }
+            }
+        }
+      }
+}
+
+@media(max-width:1366px){
+    :not(.login-container.signup-form) {
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        width: 1040px;
+                    }
+                }
+            }
+        }
+      }
+}

@@ -604,6 +604,20 @@ class AddVendorDrawer extends Component {
                                             />
                                         </div>
                                     </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label="ZipCode"
+                                            name={"ZipCode"}
+                                            type="text"
+                                            placeholder={''}
+                                            validate={[required, postiveNumber, maxLength6]}
+                                            component={renderText}
+                                            required={true}
+                                            maxLength={26}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                        />
+                                    </Col>
                                 </Row>
                                 <Row className="pl-3">
                                     <Col md="6">
@@ -635,22 +649,7 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-                                <Row className="pl-3">
-                                    <Col md="6">
-                                        <Field
-                                            label="ZipCode"
-                                            name={"ZipCode"}
-                                            type="text"
-                                            placeholder={''}
-                                            validate={[required, postiveNumber, maxLength6]}
-                                            component={renderText}
-                                            required={true}
-                                            maxLength={26}
-                                            className=" "
-                                            customClassName=" withBorder"
-                                        />
-                                    </Col>
-                                </Row>
+
                                 {/*  <Row className="pl-3"> 
                                   
                                     {this.checkVendorSelection() && checkVendorPlantConfigurable() && this.props.isEditFlag &&

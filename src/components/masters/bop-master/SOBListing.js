@@ -231,7 +231,7 @@ class SOBListing extends Component {
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
       lastPage: <span className="last-page-pg"></span>,
-      paginationSize: 5,
+
     };
 
     return (
@@ -288,8 +288,8 @@ class SOBListing extends Component {
                   <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
                     <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                 ) : (
-                  <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                )}
+                    <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                  )}
               </div>
             </Col>
           </Row>

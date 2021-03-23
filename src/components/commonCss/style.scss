@@ -1805,12 +1805,12 @@ body {
 	.cr-brdr-main {
 		tbody {
 			td {
-				font-size: 14px;
+				font-size: 15px;
 			}
 		}
 		tr {
 			th {
-				font-size: 14px;
+				font-size: 15px;
 			}
 		}
 	}
@@ -2719,9 +2719,19 @@ opacity: 0.5;
 .css-6q0nyr-Svg{color: #959CB6;}
 .add-volume-table{
   td{
-    .edit-text.form-control{
+    .form-control{
       border: 1px solid #c2cbe8;
       max-width: 250px;
+      line-height: initial;
+      font-size: 14px;
+      font-weight: 400;
+      height: 40px;
+      padding: 12px;
+    border-radius: 4px;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     }
   }
 }
@@ -2820,9 +2830,9 @@ opacity: 0.5;
     }
   }
 }
-.cr-prt-nm1.cr-prt-link1.L1{
-  margin-left: 0px;
-}
+// .cr-prt-nm1.cr-prt-link1.L1{
+//   margin-left: 0px;
+// }
 
 body {
   .btn-lg{
@@ -3285,18 +3295,83 @@ body{
 
 // responsive media query start
 @media(max-width:1600px){
-  // .input-range {
-  //   .input-range__track--background{
-  //       &:before {
-  //         width: 60px;
-  //         top: -39px;
-  //       }// before
-  //     }// input-range__track--background
-  //   }// input-range
+  // costing details page only
+  .table.cr-brdr-main{font-size: 14px;}
+  .table-responsive{
+    .cr-brdr-main {
+      tbody{
+        th,td{font-size: 14px;}
+      }
+    }
+  }
+  .costing-details-page{    
+    .table {
+      td,th{
+        padding: 0.71rem 15px;
+      }
+    }
+    .shadow-lgg {
+      .form  {
+        .tab-tool-cost-footer,.costing-overhead-profit-footer{
+          margin: 0 -16px -15px;
+        }
+      }
+    }
+
+    .costing-highlight-row{
+      background-color: #F8FCFF;
+      >div{
+        >td{
+          padding: 15px;
+        }
+      }
+    }
+    .costing-highlight-row.accordian-row{
+      > td{
+        padding: 10px 15px;
+      }
+    }
+  
+    .accordian-row{
+      > td{
+        padding: 15px;
+      }
+    }
+    .costing-border-x.px-30{
+      padding: 0 15px;
+    }
+    .rmcc-main-headings{
+      >thead{
+        >tr{
+          >th:nth-child(6){
+            width: 120px !important;
+          }
+          >th:nth-child(9){
+            width: 165px !important;
+          }
+        }
+      }
+    }
+    
+    .surfacetreatment-main-headings{
+      >thead{
+        >tr{
+          >th:nth-child(3){
+            width: 120px !important;
+          }
+          >th:nth-child(5){
+            width: 130px !important;
+          }
+        }
+      }
+    }
+
+    
+  }
+  // costing details page only end
 }// 1600px media query end
 
 @media(max-width:1366px){
-
   .costing-raw-material-section{
     thead{
       tr{
@@ -3370,7 +3445,22 @@ body{
      } // thead
     }// costing-raw-material-section 
 
-  .costing-details-page{    
+  .costing-details-page{
+    .rmcc-main-headings{
+      >thead{
+        >tr{
+          >th:nth-child(3){
+            width: 115px !important;
+          }
+          >th:nth-child(6){
+            width: 106px !important;
+          }
+          >th:nth-child(9){
+            width: 135px !important;
+          }
+        }
+      }
+    }    
     .table {
       td,th{
         padding: 0.71rem 15px;

@@ -2090,6 +2090,10 @@ input:disabled,
       color: #256bd1;
       font-size: 16px;
       line-height: 21px;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .flowpoint-header-level {
       height: 26px;
@@ -2146,6 +2150,11 @@ input:disabled,
   p {
     font-size: 12px;
     color: #8a91ac;
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
     strong {
       font-size: 14px;
       color: #3d4465;
