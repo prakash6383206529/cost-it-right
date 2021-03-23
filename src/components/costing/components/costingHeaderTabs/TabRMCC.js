@@ -927,7 +927,7 @@ function TabRMCC(props) {
                 <Row>
                   <Col md="12">
                     <div className="table-responsive">
-                      <Table className="table cr-brdr-main mb-0" size="sm">
+                      <Table className="table cr-brdr-main mb-0 rmcc-main-headings" size="sm">
                         <thead>
                           <tr>
                             <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
@@ -1005,7 +1005,7 @@ function TabRMCC(props) {
                   </button>
                   <button
                     type={'submit'}
-                    className="submit-button mr-3 save-btn"
+                    className="submit-button mr5 save-btn"
                   >
                     <div className={'check-icon'}>
                       <img

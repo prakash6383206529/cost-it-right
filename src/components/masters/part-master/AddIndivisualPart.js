@@ -357,6 +357,24 @@ class AddIndivisualPart extends Component {
                               customClassName={"withBorder"}
                             />
                           </Col>
+
+                          {initialConfiguration &&
+                            initialConfiguration.IsGroupCodeDisplay && (
+                              <Col md="3">
+                                <Field
+                                  label={`Group Code`}
+                                  name={"GroupCode"}
+                                  type="text"
+                                  placeholder={""}
+                                  validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                  component={renderText}
+                                  //required={true}
+                                  className=""
+                                  customClassName={"withBorder"}
+                                />
+                              </Col>
+                            )}
+
                         </Row>
 
                         <Row>
@@ -399,46 +417,6 @@ class AddIndivisualPart extends Component {
                               customClassName={"withBorder"}
                             />
                           </Col>
-                          {initialConfiguration &&
-                            initialConfiguration.IsGroupCodeDisplay && (
-                              <Col md="3">
-                                <Field
-                                  label={`Group Code`}
-                                  name={"GroupCode"}
-                                  type="text"
-                                  placeholder={""}
-                                  validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
-                                  component={renderText}
-                                  //required={true}
-                                  className=""
-                                  customClassName={"withBorder"}
-                                />
-                              </Col>
-                            )}
-                        </Row>
-
-                        <Row>
-                          {/* <Col md="3">
-                            <Field
-                              label="Plant"
-                              name="Plant"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPlants == null ||
-                                  this.state.selectedPlants.length === 0
-                                  ? []
-                                  : this.state.selectedPlants
-                              }
-                              options={this.renderListing("plant")}
-                              selectionChanged={this.handlePlant}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              //mendatory={true}
-                              className="multiselect-with-border"
-                            //disabled={isEditFlag ? true : false}
-                            />
-                          </Col> */}
 
                           <Col md="3">
                             <div className="form-group">
@@ -466,6 +444,33 @@ class AddIndivisualPart extends Component {
                               </div>
                             </div>
                           </Col>
+
+                        </Row>
+
+                        <Row>
+                          {/* <Col md="3">
+                            <Field
+                              label="Plant"
+                              name="Plant"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.selectedPlants == null ||
+                                  this.state.selectedPlants.length === 0
+                                  ? []
+                                  : this.state.selectedPlants
+                              }
+                              options={this.renderListing("plant")}
+                              selectionChanged={this.handlePlant}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              //mendatory={true}
+                              className="multiselect-with-border"
+                            //disabled={isEditFlag ? true : false}
+                            />
+                          </Col> */}
+
+
                         </Row>
 
                         <Row>
@@ -494,7 +499,7 @@ class AddIndivisualPart extends Component {
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
                                 <div class="alert alert-danger" role="alert">
-                                  Max file uploaded.
+                                  Maximum file upload limit has been reached.
                                 </div>
                               ) : (
                                 <Dropzone

@@ -452,7 +452,7 @@ class Level extends Component {
                           className="btn-primary save-btn"
                         >	<div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
                           </div>
-                          {this.state.isEditFlag ? 'Update' : 'Save'}
+                          {isEditFlag ? 'Update' : 'Save'}
                         </button>
                       </div>
                     </div>}
