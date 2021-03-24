@@ -245,24 +245,6 @@ function OverheadProfit(props) {
 
   }, [rejectionFieldValues]);
 
-  /***********changes done on 17-03********************/
-  const handleRejection = () => {
-
-    checkRejectionApplicability(applicability.label)
-    let tempObj = {
-      "RejectionApplicabilityId": applicability ? applicability.value : '',
-      "RejectionApplicability": applicability ? applicability.label : '',
-      "RejectionPercentage": applicability ? getValues('RejectionPercentage') : '',
-      "RejectionCost": applicability ? getValues('RejectionCost') : '',
-      "RejectionTotalCost": applicability ? getValues('RejectionTotalCost') : '',
-      "IsSurfaceTreatmentApplicable": true,
-    }
-
-    setTimeout(() => {
-      props.setRejectionDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-    }, 200)
-  }
-
   const ICCFieldValues = useWatch({
     control,
     name: ['ICCApplicability'],
@@ -283,23 +265,6 @@ function OverheadProfit(props) {
       props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
     }, 200)
   }, [ICCFieldValues, interestRateValues]);
-
-  /***********changes done on 17-03********************/
-  const handleICCDetail = () => {
-    let tempObj = {
-      "InterestRateId": ICCApplicabilityDetail ? ICCInterestRateId : '',
-      "IccDetailId": ICCApplicabilityDetail ? ICCApplicabilityDetail.IccDetailId : '',
-      "ICCApplicability": IsInventoryApplicable ? ICCapplicability.label : '',
-      "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
-      "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
-      "NetCost": IsInventoryApplicable ? getValues('NetICCTotal') : '',
-      "EffectiveDate": "",
-    }
-
-    setTimeout(() => {
-      props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-    }, 500)
-  }
 
   const PaymentTermsFieldValues = useWatch({
     control,
@@ -327,23 +292,6 @@ function OverheadProfit(props) {
     }, 200)
   }, [PaymentTermsFieldValues]);
 
-  /***********changes done on 17-03********************/
-  const handlePaymentTermsDetails = () => {
-    let tempObj = {
-      "InterestRateId": IsPaymentTermsApplicable ? PaymentTermInterestRateId : '',
-      "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
-      "PaymentTermApplicability": IsPaymentTermsApplicable ? paymentTermsApplicability.label : '',
-      "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
-      "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
-      "NetCost": IsPaymentTermsApplicable ? getValues('RepaymentPeriodCost') : '',
-      "EffectiveDate": ""
-    }
-
-    setTimeout(() => {
-      props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-    }, 500)
-  }
-
   // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
   useEffect(() => {
     if (paymentTermsApplicability && paymentTermsApplicability.label === 'Fixed') {
@@ -356,9 +304,6 @@ function OverheadProfit(props) {
     dispatch(fetchCostingHeadsAPI('--Costing Heads--', (res) => { }))
     dispatch(getICCAppliSelectListKeyValue((res) => { }))
     dispatch(getPaymentTermsAppliSelectListKeyValue((res) => { }))
-    // handleRejection()
-    // handleICCDetail()
-    // handlePaymentTermsDetails()
   }, []);
 
   //EFFECT CALLED WHEN OVERHEAD OR PROFIT VALUES CHANGED
@@ -378,7 +323,6 @@ function OverheadProfit(props) {
   */
   const calculateOverheadFixedTotalCost = () => {
     const { OverheadFixedPercentage } = overheadFieldValues;
-    const { NetTotalRMBOPCC } = headerCosts;
 
     if (headerCosts !== undefined && OverheadFixedPercentage !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
       setValue('OverheadFixedCost', '-')
@@ -647,7 +591,7 @@ function OverheadProfit(props) {
           })
           break;
 
-        case 'RM + BOP + CC':
+        case 'RM + CC + BOP':
           setValue('RejectionCost', headerCosts.NetTotalRMBOPCC)
           setValue('RejectionTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -892,7 +836,6 @@ function OverheadProfit(props) {
       setApplicability([])
       checkRejectionApplicability('')
     }
-    // handleRejection()
   }
 
   /**
@@ -933,7 +876,6 @@ function OverheadProfit(props) {
     } else {
       setICCapplicability([])
     }
-    // handleICCDetail()
   }
 
   /**
@@ -1035,7 +977,6 @@ function OverheadProfit(props) {
     } else {
       setPaymentTermsApplicability([])
     }
-    // handlePaymentTermsDetails()
   }
 
   /**
@@ -1069,7 +1010,6 @@ function OverheadProfit(props) {
           break;
 
         case 'Fixed':
-          // setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, 2))
           setValue('RepaymentPeriodCost', checkForDecimalAndNull(RepaymentPeriodPercentage, 2))
           break;
 
@@ -1088,9 +1028,9 @@ function OverheadProfit(props) {
   }
 
   /**
-    * @method onSubmit
-    * @description Used to Submit the form
-    */
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
   const onSubmit = (values) => {
     props.saveCosting(values)
   }

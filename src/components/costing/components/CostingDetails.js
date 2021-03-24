@@ -26,8 +26,6 @@ function CostingDetails(props) {
     reValidateMode: 'onChange',
   });
 
-
-
   const [technology, setTechnology] = useState([]);
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
@@ -43,9 +41,9 @@ function CostingDetails(props) {
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
 
-
   const [stepOne, setStepOne] = useState(Object.keys(props.costingData).length > 0 ? false : true);
   const [stepTwo, setStepTwo] = useState(Object.keys(props.costingData).length > 0 ? true : false);
+  const [IsShowNextBtn, setShowNextBtn] = useState(false);
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
 
@@ -141,6 +139,7 @@ function CostingDetails(props) {
       setIsOpenVendorSOBDetails(false)
       dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
+      setShowNextBtn(false)
       reset({
         Part: '',
       })
@@ -157,36 +156,36 @@ function CostingDetails(props) {
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
         const data = { TechnologyId: technology.value, PartId: newValue.value }
-        dispatch(
-          checkPartWithTechnology(data, (response) => {
-            setPart(newValue)
-            setZBCPlantGrid([])
-            setVBCVendorGrid([])
-            setIsOpenVendorSOBDetails(false)
-            if (response.data.Result) {
-              dispatch(
-                getPartInfo(newValue.value, (res) => {
-                  let Data = res.data.Data
-                  setValue('PartName', Data.PartName)
-                  setValue('Description', Data.Description)
-                  setValue('ECNNumber', Data.ECNNumber)
-                  setValue('DrawingNumber', Data.DrawingNumber)
-                  setValue('RevisionNumber', Data.RevisionNumber)
-                  setValue('ShareOfBusiness', Data.Price)
-                  setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
-                }),
-              )
-            } else {
-              dispatch(getPartInfo('', () => { }))
-              setValue('PartName', '')
-              setValue('Description', '')
-              setValue('ECNNumber', '')
-              setValue('DrawingNumber', '')
-              setValue('RevisionNumber', '')
-              setValue('ShareOfBusiness', '')
-              setEffectiveDate('')
-            }
-          }),
+        dispatch(checkPartWithTechnology(data, (response) => {
+          setPart(newValue)
+          setZBCPlantGrid([])
+          setVBCVendorGrid([])
+          setIsOpenVendorSOBDetails(false)
+          if (response.data.Result) {
+            dispatch(getPartInfo(newValue.value, (res) => {
+              let Data = res.data.Data
+              setValue('PartName', Data.PartName)
+              setValue('Description', Data.Description)
+              setValue('ECNNumber', Data.ECNNumber)
+              setValue('DrawingNumber', Data.DrawingNumber)
+              setValue('RevisionNumber', Data.RevisionNumber)
+              setValue('ShareOfBusiness', Data.Price)
+              setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+              setShowNextBtn(true)
+            }),
+            )
+          } else {
+            dispatch(getPartInfo('', () => { }))
+            setValue('PartName', '')
+            setValue('Description', '')
+            setValue('ECNNumber', '')
+            setValue('DrawingNumber', '')
+            setValue('RevisionNumber', '')
+            setValue('ShareOfBusiness', '')
+            setEffectiveDate('')
+            setShowNextBtn(false)
+          }
+        }),
         )
       }
     } else {
@@ -194,6 +193,7 @@ function CostingDetails(props) {
       dispatch(getPartInfo('', () => { }))
     }
   }
+
   /**
    * @method handleEffectiveDateChange
    * @description Handle Effective Date
@@ -745,6 +745,7 @@ function CostingDetails(props) {
   const cancel = () => {
     setTechnology([])
     setPart([])
+    setShowNextBtn(false)
     dispatch(getPartInfo('', () => { }))
     reset({
       Technology: '',
@@ -808,9 +809,7 @@ function CostingDetails(props) {
                           control={control}
                           rules={{ required: true }}
                           register={register}
-                          defaultValue={
-                            technology.length !== 0 ? technology : ""
-                          }
+                          defaultValue={technology.length !== 0 ? technology : ""}
                           options={renderListing("Technology")}
                           mandatory={true}
                           handleChange={handleTechnologyChange}
@@ -1206,18 +1205,19 @@ function CostingDetails(props) {
                         </Row>
                       </>
                     )}
-                    {!IsOpenVendorSOBDetails && (
-                      <Row className="justify-content-between">
-                        <div className="col-sm-12 text-right">
-                          <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel} >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
-                            {"Clear"}
-                          </button>
+
+                    <Row className="justify-content-between">
+                      <div className="col-sm-12 text-right">
+                        <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel} >
+                          <div className={"cross-icon"}>
+                            <img
+                              src={require("../../../assests/images/times.png")}
+                              alt="cancel-icon.jpg"
+                            />
+                          </div>{" "}
+                          {"Clear"}
+                        </button>
+                        {IsShowNextBtn &&
                           <button type="button" className="submit-button save-btn" onClick={nextToggle} >
                             {"Next"}
                             <div className={"check-icon ml-1"}>
@@ -1226,10 +1226,10 @@ function CostingDetails(props) {
                                 alt="check-icon.jpg"
                               />{" "}
                             </div>
-                          </button>
-                        </div>
-                      </Row>
-                    )}
+                          </button>}
+                      </div>
+                    </Row>
+
                   </>
                 )}
                 {stepTwo && (
