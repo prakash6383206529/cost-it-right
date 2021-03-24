@@ -30,6 +30,7 @@ function TabDiscountOther(props) {
 
   const costData = useContext(costingInfoContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
+  const DiscountCostData = useSelector(state => state.costing.DiscountCostData)
 
   const fieldValues = useWatch({
     control,
@@ -321,7 +322,7 @@ function TabDiscountOther(props) {
                         <tr>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue + DiscountTabData.AnyOtherCost : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? DiscountTabData.NetPOPriceINR : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>

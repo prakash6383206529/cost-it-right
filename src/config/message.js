@@ -1,12 +1,10 @@
 export const MESSAGES = {
-  INVALID_EMAIL_PASSWORD:
-    'Either email or password is invalid or your account is inactive',
+  INVALID_EMAIL_PASSWORD: 'Either email or password is invalid or your account is inactive',
   SOME_ERROR: 'Opps! Something went wrong. Please try again later',
   //LOGIN_SUCCESS: 'You are successfully logged in', --- Remove Toaster at this step
   //LOGOUT_SUCCESS: 'You are successfully logged out', --- Remove Toaster at this step
   UPDATE_PASSWORD_SUCCESS: 'Your password has been successfully updated',
-  NOT_VERIFIED_USER:
-    'Your account is pending for verification. Please verify your account for login',
+  NOT_VERIFIED_USER: 'Your account is pending for verification. Please verify your account for login',
 
   //PART MASTERS
   PART_ADD_SUCCESS: 'Part added successfully',
@@ -46,19 +44,14 @@ export const MESSAGES = {
 
   //OTHER OPERATION
   OTHER_OPERATION_ADD_SUCCESS: 'Other operation added successfully',
-  OTHER_OPERATION_DELETE_ALERT:
-    'Are you sure you want to delete other operation?',
-  DELETE_OTHER_OPERATION_SUCCESS:
-    'Other operation has been deleted successfully',
+  OTHER_OPERATION_DELETE_ALERT: 'Are you sure you want to delete other operation?',
+  DELETE_OTHER_OPERATION_SUCCESS: 'Other operation has been deleted successfully',
 
   //CED OTHER OPERATION
   CED_OTHER_OPERATION_ADD_SUCCESS: 'CED other operation added successfully',
-  CED_OTHER_OPERATION_DELETE_ALERT:
-    'Are you sure you want to delete this CED other operation?',
-  DELETE_CED_OTHER_OPERATION_SUCCESS:
-    'CED other operation has been deleted successfully',
-  CED_OTHER_OPERATION_UPDATE_SUCCESS:
-    'CED other operation has been updated successfully',
+  CED_OTHER_OPERATION_DELETE_ALERT: 'Are you sure you want to delete this CED other operation?',
+  DELETE_CED_OTHER_OPERATION_SUCCESS: 'CED other operation has been deleted successfully',
+  CED_OTHER_OPERATION_UPDATE_SUCCESS: 'CED other operation has been updated successfully',
 
   //OPERATION
   OPERATION_ADD_SUCCESS: 'Operation added successfully',
@@ -68,15 +61,11 @@ export const MESSAGES = {
 
   //RAW MATERIAL
   MATERIAL_ADD_SUCCESS: 'Raw material details added successfully',
-  MATERIAL_TYPE_DELETE_ALERT:
-    'Are you sure you want to delete this material type?',
+  MATERIAL_TYPE_DELETE_ALERT: 'Are you sure you want to delete this material type?',
   DELETE_MATERIAL_TYPE_SUCCESS: 'Material type has been deleted successfully',
-  RAW_MATERIAL_DETAIL_DELETE_ALERT:
-    'Are you sure you want to delete this raw material detail?',
-  DELETE_RAW_MATERIAL_SUCCESS:
-    'Raw Material details has been deleted successfully',
-  RAW_MATERIAL_DETAILS_UPDATE_SUCCESS:
-    'Raw material details has been updated successfully',
+  RAW_MATERIAL_DETAIL_DELETE_ALERT: 'Are you sure you want to delete this raw material detail?',
+  DELETE_RAW_MATERIAL_SUCCESS: 'Raw Material details has been deleted successfully',
+  RAW_MATERIAL_DETAILS_UPDATE_SUCCESS: 'Raw material details has been updated successfully',
 
   //RM GRADE
   GRADE_ADD_SUCCESS: 'RM grade added successfully',
@@ -86,19 +75,15 @@ export const MESSAGES = {
 
   //RM SPECIFICATION
   SPECIFICATION_ADD_SUCCESS: 'RM specification added successfully',
-  SPECIFICATION_DELETE_ALERT:
-    'Are you sure you want to delete this RM specification?',
-  DELETE_SPECIFICATION_SUCCESS:
-    'RM specification has been deleted successfully',
-  SPECIFICATION_UPDATE_SUCCESS:
-    'RM specification has been updated successfully',
+  SPECIFICATION_DELETE_ALERT: 'Are you sure you want to delete this RM specification?',
+  DELETE_SPECIFICATION_SUCCESS: 'RM specification has been deleted successfully',
+  SPECIFICATION_UPDATE_SUCCESS: 'RM specification has been updated successfully',
 
   //RAW MATERIAL
   MATERIAL_ADDED_SUCCESS: 'Material added successfully',
   MATERIAL_UPDATE_SUCCESS: 'Material updated successfully',
   MATERIAL_DELETE_ALERT: 'Are you sure you want to delete this Raw material?',
   DELETE_MATERIAL_SUCCESS: 'Raw material has been deleted successfully',
-
   FREIGHT_ADDED_SUCCESS: 'Freight added successfully',
 
   //OVERHEAD AND PROFIT
@@ -106,8 +91,7 @@ export const MESSAGES = {
   PROFIT_ADDED_SUCCESS: 'Profit has been added successfully',
   OVERHEAD_UPDATE_SUCCESS: 'Overhead has been updated successfully',
   PROFIT_UPDATE_SUCCESS: 'Profit has been updated successfully',
-  OVERHEAD_DELETE_ALERT:
-    'Are you sure you want to delete this Overhead Detail?',
+  OVERHEAD_DELETE_ALERT: 'Are you sure you want to delete this Overhead Detail?',
   PROFIT_DELETE_ALERT: 'Are you sure you want to delete this Profit Detail?',
   DELETE_OVERHEAD_SUCCESS: 'Overhead deleted successfully',
   DELETE_PROFIT_SUCCESS: 'Profit deleted successfully',
@@ -118,8 +102,7 @@ export const MESSAGES = {
 
   //DEPRECIATION
   DEPRECIATION_ADD_SUCCESS: 'Depreciation added successfully',
-  DEPRECIATION_DELETE_ALERT:
-    'Are you sure you want to delete this depreciation?',
+  DEPRECIATION_DELETE_ALERT: 'Are you sure you want to delete this depreciation?',
   DEPRECIATION_DELETE_SUCCESS: 'Depreciation deleted successfully',
   DEPRECIATION_UPDATE_SUCCESS: 'Depreciation has been updated successfully',
 
@@ -180,8 +163,7 @@ export const MESSAGES = {
 
   POWER_ADD_SUCCESS: 'Power added successfully',
   UPDATE_POWER_DETAIL_SUCESS: 'Power detail updated successfully',
-  POWER_DETAIL_DELETE_ALERT:
-    'Are you sure you want to delete this power detail?',
+  POWER_DETAIL_DELETE_ALERT: 'Are you sure you want to delete this power detail?',
   DELETE_POWER_SUCCESS: 'Power detail deleted successfully',
 
   //INTEREST
@@ -198,8 +180,7 @@ export const MESSAGES = {
   SAVE_PROCESS_COSTING_SUCCESS: 'Process costing saved successfully',
   SAVE_BOP_COSTING_SUCCESS: 'Bought Out Part costing saved successfully',
   UPDATE_COSTING_OTHER_OPERATION_SUCCESS: 'Other Operation has been updated',
-  COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY:
-    'Costing has been drafted successfully',
+  COSTING_HAS_BEEN_DRAFTED_SUCCESSFULLY: 'Costing has been drafted successfully',
   SELECT_PART_FOR_ZBC_COSTING: 'Please select part for zbc costing',
   CANCEL_COSTING_ALERT: 'Are you sure you want to cancel this costing?',
 
@@ -214,11 +195,9 @@ export const MESSAGES = {
   UPDATE_MACHINE_TYPE_SUCESS: 'Machine class has been updated successfully',
   MACHINE_ADD_SUCCESS: 'Machine has been added successfully',
   DELETE_MACHINE_TYPE_SUCCESS: 'Machine type has been deleted successfully',
-  MACHINE_TYPE_DELETE_ALERT:
-    'Are you sure you want to delete this machine type?',
+  MACHINE_TYPE_DELETE_ALERT: 'Are you sure you want to delete this machine type?',
   MACHINE_DETAILS_ADD_SUCCESS: 'Machine details has been added successfully',
-  UPDATE_MACHINE_DETAILS_SUCCESS:
-    'Machine details has been updated successfully',
+  UPDATE_MACHINE_DETAILS_SUCCESS: 'Machine details has been updated successfully',
 
   //REASON MASTER
   REASON_ADD_SUCCESS: 'Reason has been added successfully',
@@ -237,16 +216,14 @@ export const MESSAGES = {
   USER_ACTIVE_ALERT: 'Are you sure you want to activate?',
   USER_DELETE_ALERT: 'Are you sure you want to delete this User?',
   UPDATE_USER_SUCCESSFULLY: 'User has been updated successfully',
-  COSTING_REJECT_ALERT:
-    "All costing's which are pending for approval and whose approval are awaited will get rejected. Do you want to continue?",
+  COSTING_REJECT_ALERT: "All costing's which are pending for approval and whose approval are awaited will get rejected. Do you want to continue?",
 
   //ROLE
   ADD_ROLE_SUCCESSFULLY: 'Role has been added successfully',
   UPDATE_ROLE_SUCCESSFULLY: 'Role has been updated successfully',
   DELETE_ROLE_SUCCESSFULLY: 'Role has been deleted successfully',
   ROLE_DELETE_ALERT: 'Are you sure you want to delete this role?',
-  ROLE_UPDATE_ALERT:
-    'This will change the permissions for all the users associated with this role. Do you want to continue?',
+  ROLE_UPDATE_ALERT: 'This will change the permissions for all the users associated with this role. Do you want to continue?',
 
   //DEPARTMENT
   ADD_DEPARTMENT_SUCCESSFULLY: 'Department has been added successfully',
@@ -262,10 +239,8 @@ export const MESSAGES = {
   ADD_LEVEL_USER_SUCCESSFULLY: 'Level of users has been added successfully',
 
   //LEVEL FOR TECHNOLOGY
-  ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY:
-    'Level of technology added successfully',
-  UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY:
-    'Level of technology updated successfully',
+  ADD_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY: 'Level of technology added successfully',
+  UPDATE_LEVEL_TECHNOLOGY_USER_SUCCESSFULLY: 'Level of technology updated successfully',
 
   //FREIGHT
   ADD_FREIGHT_SUCCESSFULLY: 'Freight has been added successfully',
@@ -275,8 +250,7 @@ export const MESSAGES = {
 
   //ADDITIONAL FREIGHT
   ADDITIONAL_FREIGHT_ADD_SUCCESS: 'Packaging has been added successfully',
-  DELETE_ADDITIONAL_FREIGHT_SUCCESS:
-    'Additional Freight has been deleted successfully',
+  DELETE_ADDITIONAL_FREIGHT_SUCCESS: 'Additional Freight has been deleted successfully',
   WEIGHT_SPEC_UPDATE_SUCCESS: 'Weight specification updated successfully',
   WEIGHT_SPEC_ADDED_SUCCESS: 'Weight specification added successfully',
   SELECT_SUPPLIER_BEFORE_ADD_VALUE: 'Please add supplier before adding value',
@@ -290,12 +264,9 @@ export const MESSAGES = {
 
   //PRIVILEGE
   ADD_PRIVILEGE_PAGE_SUCCESSFULLY: 'Privilege page added successfully',
-  ADD_PRIVILEGE_PAGE_ROLEWISE_SUCCESSFULLY:
-    'Privilege page role wise added successfully',
-  ADD_PRIVILEGE_PAGE_USERWISE_SUCCESSFULLY:
-    'Privilege page user wise added successfully',
-  ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY:
-    'Additional permission has been added successfully',
+  ADD_PRIVILEGE_PAGE_ROLEWISE_SUCCESSFULLY: 'Privilege page role wise added successfully',
+  ADD_PRIVILEGE_PAGE_USERWISE_SUCCESSFULLY: 'Privilege page user wise added successfully',
+  ADDITIONAL_PERMISSION_ADDED_SUCCESSFULLY: 'Additional permission has been added successfully',
 
   //MHR
   MHR_DELETE_ALERT: 'Are you sure you want to delete this machine rate?',
@@ -332,4 +303,8 @@ export const MESSAGES = {
   TAX_UPDATE_SUCCESS: 'Tax Details has been updated successfully',
   TAX_DELETE_ALERT: 'Are you sure you want to delete this Tax Details?',
   DELETE_TAX_SUCCESS: 'Tax Details has been deleted successfully',
+
+  //MESSAGES FOR COSTING TABS SUCCESS
+  OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS: 'Overhead & Profit has been successfully saved.',
+
 }

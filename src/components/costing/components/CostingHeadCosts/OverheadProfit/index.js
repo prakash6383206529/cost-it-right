@@ -271,7 +271,7 @@ function OverheadProfit(props) {
   useEffect(() => {
     setTimeout(() => {
       let tempObj = {
-        "InterestRateId": ICCApplicabilityDetail ? ICCInterestRateId : '',
+        "InterestRateId": ICCapplicability.label !== 'Fixed' ? (ICCApplicabilityDetail ? ICCInterestRateId : '') : null,
         "IccDetailId": ICCApplicabilityDetail ? ICCApplicabilityDetail.IccDetailId : '',
         "ICCApplicability": IsInventoryApplicable ? ICCapplicability.label : '',
         "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
@@ -280,9 +280,9 @@ function OverheadProfit(props) {
         "EffectiveDate": "",
       }
 
-      props.setICCDetail(ICCInterestRateId !== null ? tempObj : {}, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      props.setICCDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
     }, 200)
-  }, [ICCFieldValues]);
+  }, [ICCFieldValues, interestRateValues]);
 
   /***********changes done on 17-03********************/
   const handleICCDetail = () => {
@@ -308,13 +308,13 @@ function OverheadProfit(props) {
 
   const PaymentTermsFixedFieldValues = useWatch({
     control,
-    name: ['RepaymentPeriodDays'],
+    name: ['RepaymentPeriodPercentage'],
   });
 
   useEffect(() => {
     setTimeout(() => {
       let tempObj = {
-        "InterestRateId": IsPaymentTermsApplicable ? PaymentTermInterestRateId : '',
+        "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
         "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
         "PaymentTermApplicability": IsPaymentTermsApplicable ? paymentTermsApplicability.label : '',
         "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
@@ -323,7 +323,7 @@ function OverheadProfit(props) {
         "EffectiveDate": ""
       }
 
-      props.setPaymentTermsDetail(PaymentTermInterestRateId !== null ? tempObj : null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+      props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
     }, 200)
   }, [PaymentTermsFieldValues]);
 
@@ -347,7 +347,7 @@ function OverheadProfit(props) {
   // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
   useEffect(() => {
     if (paymentTermsApplicability && paymentTermsApplicability.label === 'Fixed') {
-      setValue('RepaymentPeriodCost', getValues('RepaymentPeriodDays'))
+      setValue('RepaymentPeriodCost', getValues('RepaymentPeriodPercentage'))
     }
   }, [PaymentTermsFixedFieldValues])
 
@@ -381,13 +381,13 @@ function OverheadProfit(props) {
     const { NetTotalRMBOPCC } = headerCosts;
 
     if (headerCosts !== undefined && OverheadFixedPercentage !== undefined && overheadObj && overheadObj.IsOverheadFixedApplicable) {
-      setValue('OverheadFixedCost', NetTotalRMBOPCC)
-      setValue('OverheadFixedTotalCost', checkForDecimalAndNull(NetTotalRMBOPCC * calculatePercentage(OverheadFixedPercentage), 2))
+      setValue('OverheadFixedCost', '-')
+      setValue('OverheadFixedTotalCost', checkForDecimalAndNull(OverheadFixedPercentage, 2))
       setOverheadObj({
         ...overheadObj,
         OverheadFixedPercentage: OverheadFixedPercentage,
-        OverheadFixedCost: NetTotalRMBOPCC,
-        OverheadFixedTotalCost: checkForDecimalAndNull(NetTotalRMBOPCC * calculatePercentage(OverheadFixedPercentage), 2),
+        OverheadFixedCost: '-',
+        OverheadFixedTotalCost: checkForDecimalAndNull(OverheadFixedPercentage, 2),
       })
     }
 
@@ -493,13 +493,13 @@ function OverheadProfit(props) {
     const { ProfitFixedPercentage } = profitFieldValues;
 
     if (headerCosts !== undefined && ProfitFixedPercentage !== undefined && profitObj && profitObj.IsProfitFixedApplicable) {
-      setValue('ProfitFixedCost', headerCosts.NetTotalRMBOPCC)
-      setValue('ProfitFixedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(ProfitFixedPercentage), 2))
+      setValue('ProfitFixedCost', '-')
+      setValue('ProfitFixedTotalCost', checkForDecimalAndNull(ProfitFixedPercentage, 2))
       setProfitObj({
         ...profitObj,
         ProfitFixedPercentage: ProfitFixedPercentage,
-        ProfitFixedCost: headerCosts.NetTotalRMBOPCC,
-        ProfitFixedTotalCost: checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(ProfitFixedPercentage), 2),
+        ProfitFixedCost: '-',
+        ProfitFixedTotalCost: checkForDecimalAndNull(ProfitFixedPercentage, 2),
       })
     }
   }
@@ -609,7 +609,6 @@ function OverheadProfit(props) {
 
       switch (Text) {
         case 'RM':
-          //setValue('RejectionPercentage', RejectionPercentage)
           setValue('RejectionCost', headerCosts.NetRawMaterialsCost)
           setValue('RejectionTotalCost', checkForDecimalAndNull(headerCosts.NetRawMaterialsCost * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -623,7 +622,6 @@ function OverheadProfit(props) {
           break;
 
         case 'BOP':
-          //setValue('RejectionPercentage', RejectionPercentage)
           setValue('RejectionCost', headerCosts.NetBoughtOutPartCost)
           setValue('RejectionTotalCost', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -637,7 +635,6 @@ function OverheadProfit(props) {
           break;
 
         case 'CC':
-          //setValue('RejectionPercentage', RejectionPercentage)
           setValue('RejectionCost', headerCosts.NetConversionCost)
           setValue('RejectionTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -651,7 +648,6 @@ function OverheadProfit(props) {
           break;
 
         case 'RM + BOP + CC':
-          //setValue('RejectionPercentage', RejectionPercentage)
           setValue('RejectionCost', headerCosts.NetTotalRMBOPCC)
           setValue('RejectionTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -665,7 +661,6 @@ function OverheadProfit(props) {
           break;
 
         case 'RM + BOP':
-          //setValue('RejectionPercentage', RejectionPercentage)
           setValue('RejectionCost', RMBOP)
           setValue('RejectionTotalCost', checkForDecimalAndNull(RMBOP * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -679,7 +674,6 @@ function OverheadProfit(props) {
           break;
 
         case 'RM + CC':
-          //setValue('RejectionPercentage', RejectionPercentage)
           setValue('RejectionCost', RMCC)
           setValue('RejectionTotalCost', checkForDecimalAndNull(RMCC * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -693,7 +687,6 @@ function OverheadProfit(props) {
           break;
 
         case 'BOP + CC':
-          //setValue('RejectionPercentage', RejectionPercentage)
           setValue('RejectionCost', BOPCC)
           setValue('RejectionTotalCost', checkForDecimalAndNull(BOPCC * calculatePercentage(RejectionPercentage), 2))
           setRejectionObj({
@@ -707,16 +700,15 @@ function OverheadProfit(props) {
           break;
 
         case 'Fixed':
-          //setValue('RejectionPercentage', RejectionPercentage)
-          setValue('RejectionCost', headerCosts.NetTotalRMBOPCC)
-          setValue('RejectionTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RejectionPercentage), 2))
+          setValue('RejectionCost', '-')
+          setValue('RejectionTotalCost', checkForDecimalAndNull(RejectionPercentage, 2))
           setRejectionObj({
             ...rejectionObj,
             RejectionApplicabilityId: applicability.value,
             RejectionApplicability: applicability.label,
             RejectionPercentage: RejectionPercentage,
-            RejectionCost: headerCosts.NetTotalRMBOPCC,
-            RejectionTotalCost: checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(RejectionPercentage), 2)
+            RejectionCost: '-',
+            RejectionTotalCost: checkForDecimalAndNull(RejectionPercentage, 2)
           })
           break;
 
@@ -822,8 +814,8 @@ function OverheadProfit(props) {
 
     if (dataObj.IsOverheadFixedApplicable && IsAPIResponse === false) {
       setValue('OverheadFixedPercentage', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
-      setValue('OverheadFixedCost', headerCosts && headerCosts.NetTotalRMBOPCC)
-      setValue('OverheadFixedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(dataObj.OverheadFixedPercentage), 2))
+      setValue('OverheadFixedCost', '-')
+      setValue('OverheadFixedTotalCost', dataObj.IsOverheadFixedApplicable ? dataObj.OverheadFixedPercentage : '')
     }
 
     if (dataObj.IsOverheadCombined && IsAPIResponse === false) {
@@ -859,8 +851,8 @@ function OverheadProfit(props) {
 
     if (dataObj.IsProfitFixedApplicable && IsAPIResponse === false) {
       setValue('ProfitFixedPercentage', dataObj.IsProfitFixedApplicable ? dataObj.ProfitFixedPercentage : '')
-      setValue('ProfitFixedCost', headerCosts && headerCosts.NetTotalRMBOPCC)
-      setValue('ProfitFixedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(dataObj.ProfitFixedPercentage), 2))
+      setValue('ProfitFixedCost', '-')
+      setValue('ProfitFixedTotalCost', dataObj.IsProfitFixedApplicable ? dataObj.ProfitFixedPercentage : '')
     }
 
     if (dataObj.IsProfitCombined) {
@@ -986,8 +978,8 @@ function OverheadProfit(props) {
           break;
 
         case 'Fixed':
-          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
-          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), 2))
+          setValue('InterestRateCost', '-')
+          setValue('NetICCTotal', checkForDecimalAndNull(InterestRatePercentage, 2))
           break;
 
         case 'Annual ICC (%)':
@@ -1035,7 +1027,7 @@ function OverheadProfit(props) {
         } else if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-          setValue('RepaymentPeriodPercentage', Data.InterestRate)
+          setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
           setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
           checkPaymentTermApplicability(newValue.label)
         }
@@ -1077,7 +1069,8 @@ function OverheadProfit(props) {
           break;
 
         case 'Fixed':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, 2))
+          // setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, 2))
+          setValue('RepaymentPeriodCost', checkForDecimalAndNull(RepaymentPeriodPercentage, 2))
           break;
 
         case 'Annual ICC (%)':
@@ -2050,7 +2043,7 @@ function OverheadProfit(props) {
                       errors={errors.PaymentTermsApplicability}
                     />
                   </Col>
-                  <Col md="3">
+                  {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                     <TextFieldHookForm
                       label="Repayment Period(No. of Days)"
                       name={'RepaymentPeriodDays'}
@@ -2065,24 +2058,23 @@ function OverheadProfit(props) {
                       errors={errors.RepaymentPeriodDays}
                       disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
                     />
+                  </Col>}
+                  <Col md="3">
+                    <TextFieldHookForm
+                      label={`Interest Rate${paymentTermsApplicability.label !== 'Fixed' ? '(%)' : ''}`}
+                      name={'RepaymentPeriodPercentage'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.RepaymentPeriodPercentage}
+                      disabled={paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                    />
                   </Col>
-                  {paymentTermsApplicability.label !== 'Fixed' &&
-                    <Col md="3">
-                      <TextFieldHookForm
-                        label="Interest Rate(%)"
-                        name={'RepaymentPeriodPercentage'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RepaymentPeriodPercentage}
-                        disabled={true}
-                      />
-                    </Col>}
                   <Col md="3">
                     <TextFieldHookForm
                       label="Cost"
