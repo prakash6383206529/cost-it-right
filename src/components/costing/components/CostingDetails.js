@@ -745,6 +745,9 @@ function CostingDetails(props) {
   const cancel = () => {
     setTechnology([])
     setPart([])
+    setZBCPlantGrid([])
+    setVBCVendorGrid([])
+    setIsOpenVendorSOBDetails(false)
     setShowNextBtn(false)
     dispatch(getPartInfo('', () => { }))
     reset({
@@ -1206,29 +1209,30 @@ function CostingDetails(props) {
                       </>
                     )}
 
-                    <Row className="justify-content-between">
-                      <div className="col-sm-12 text-right">
-                        <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel} >
-                          <div className={"cross-icon"}>
-                            <img
-                              src={require("../../../assests/images/times.png")}
-                              alt="cancel-icon.jpg"
-                            />
-                          </div>{" "}
-                          {"Clear"}
-                        </button>
-                        {IsShowNextBtn &&
-                          <button type="button" className="submit-button save-btn" onClick={nextToggle} >
-                            {"Next"}
-                            <div className={"check-icon ml-1"}>
+                    {!IsOpenVendorSOBDetails &&
+                      <Row className="justify-content-between">
+                        <div className="col-sm-12 text-right">
+                          <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel} >
+                            <div className={"cross-icon"}>
                               <img
-                                src={require("../../../assests/images/right-arrow-white.svg")}
-                                alt="check-icon.jpg"
-                              />{" "}
-                            </div>
-                          </button>}
-                      </div>
-                    </Row>
+                                src={require("../../../assests/images/times.png")}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>{" "}
+                            {"Clear"}
+                          </button>
+                          {IsShowNextBtn &&
+                            <button type="button" className="submit-button save-btn" onClick={nextToggle} >
+                              {"Next"}
+                              <div className={"check-icon ml-1"}>
+                                <img
+                                  src={require("../../../assests/images/right-arrow-white.svg")}
+                                  alt="check-icon.jpg"
+                                />{" "}
+                              </div>
+                            </button>}
+                        </div>
+                      </Row>}
 
                   </>
                 )}

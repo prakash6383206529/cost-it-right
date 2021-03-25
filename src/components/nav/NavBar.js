@@ -27,7 +27,6 @@ class SideBar extends Component {
 
   UNSAFE_componentWillMount() {
     const { location } = this.props;
-    console.log(location, "Location");
     this.setState({ isLoader: true });
     if (location && location !== undefined) {
       this.props.getModuleIdByPathName(location.pathname, (res) => {
@@ -136,7 +135,6 @@ class SideBar extends Component {
   setLeftMenu = (ModuleId) => {
     reactLocalStorage.set("ModuleId", ModuleId);
     this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => {
-      console.log(res, "RESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
       const { location } = this.props;
       this.setState({ isLeftMenuRendered: true });
       // if (location && location.state) {
@@ -189,7 +187,6 @@ class SideBar extends Component {
    */
   renderMaster = (module) => {
     const { menusData } = this.props
-    console.log(menusData, "MENU DATA")
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -617,8 +614,8 @@ class SideBar extends Component {
                                 {userData.Name}
                               </>
                             ) : (
-                              "Login"
-                            )}
+                                "Login"
+                              )}
                           </DropdownToggle>
 
                           {/* <DropdownMenu>
@@ -652,8 +649,8 @@ class SideBar extends Component {
                       </a>
                     </li>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </ul>
               </div>
             </nav>

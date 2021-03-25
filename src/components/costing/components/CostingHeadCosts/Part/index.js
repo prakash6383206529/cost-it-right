@@ -7,6 +7,8 @@ import RawMaterialCost from './RawMaterialCost';
 import { getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../../config/message';
 
 function PartCompoment(props) {
   const { rmData, bopData, ccData, item } = props;
@@ -80,7 +82,9 @@ function PartCompoment(props) {
         CostingPartDetails: item.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
-        console.log('Success', res)
+        if (res.data.Result) {
+          toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+        }
       }))
     }
 

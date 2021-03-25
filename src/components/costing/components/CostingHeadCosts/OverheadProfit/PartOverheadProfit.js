@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { getOverheadProfitTabData, saveComponentOverheadProfitTab } from '../../../actions/Costing';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
@@ -65,6 +65,12 @@ function PartOverheadProfit(props) {
       "LoggedInUserId": loggedInUserId(),
       "IsSurfaceTreatmentApplicable": true,
       "IsApplicableForChildParts": false,
+      "CostingNumber": costData.CostingNumber,
+      "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
+        checkForNull(item.CostingPartDetails.ProfitCost) +
+        checkForNull(item.CostingPartDetails.RejectionCost) +
+        checkForNull(item.CostingPartDetails.ICCCost) +
+        checkForNull(item.CostingPartDetails.PaymentTermCost),
       "CostingPartDetails": item.CostingPartDetails
     }
     dispatch(saveComponentOverheadProfitTab(reqData, res => {

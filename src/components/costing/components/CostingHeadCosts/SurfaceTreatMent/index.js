@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { saveComponentCostingSurfaceTab } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
 import { Row, Col, } from 'reactstrap';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../../config/message';
+import { costingInfoContext } from '../../CostingDetailStepTwo';
 
 function SurfaceTreatment(props) {
 
   const { surfaceData, transportationData, item } = props;
 
   const dispatch = useDispatch()
+
+  const costData = useContext(costingInfoContext);
 
   /**
   * @method toggleDrawer
@@ -47,6 +52,8 @@ function SurfaceTreatment(props) {
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
+        "CostingNumber": costData.CostingNumber,
+        "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "IsAssemblyPart": true,
@@ -61,6 +68,9 @@ function SurfaceTreatment(props) {
         },
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+        }
         props.closeDrawer('')
       }))
 
@@ -72,6 +82,8 @@ function SurfaceTreatment(props) {
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
+        "CostingNumber": costData.CostingNumber,
+        "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
@@ -82,6 +94,9 @@ function SurfaceTreatment(props) {
         },
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+        }
         props.closeDrawer('')
       }))
     }
