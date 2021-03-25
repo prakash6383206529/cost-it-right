@@ -439,7 +439,10 @@ export const API = {
   updateVBCSOBDetail: `${BASE_URL}/costing/update-vbc-sob-detail`,
   getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
+  deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
+
+
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-raw-materials-detail`,
   getRMDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-raw-materials-detail`,
@@ -1377,7 +1380,6 @@ export const VIEW_COSTING_DATA = {
   approvalButton: '',
 }
 
-
 //UOM ENUMS
 export const KG = "Kilogram"
 export const HOUR = "Hours"
@@ -1386,3 +1388,8 @@ export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 
 export const INR = "INR"
+
+export const Fixed = 1;
+export const Percentage = 2;
+export const FullTruckLoad = 3;
+export const PartTruckLoad = 4;

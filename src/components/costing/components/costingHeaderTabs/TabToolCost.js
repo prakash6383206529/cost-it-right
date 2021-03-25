@@ -7,6 +7,8 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 function TabToolCost(props) {
 
@@ -14,8 +16,6 @@ function TabToolCost(props) {
 
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
   const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
-  const [tabData, setTabData] = useState([]);
-  const [toolCost, setNetToolCost] = useState('');
 
   const dispatch = useDispatch()
   const ToolTabData = useSelector(state => state.costing.ToolTabData)
@@ -138,10 +138,16 @@ function TabToolCost(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "LoggedInUserId": loggedInUserId(),
+      "CostingNumber": costData.CostingNumber,
+      "ToolCost": ToolTabData.TotalToolCost,
       "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails
     }
 
-    dispatch(saveToolTab(data, res => { }))
+    dispatch(saveToolTab(data, res => {
+      if (res.data.Result) {
+        toastr.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
+      }
+    }))
 
   }
 

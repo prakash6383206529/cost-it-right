@@ -97,7 +97,7 @@ export const SearchableSelectHookForm = (field) => {
             <Select
               name={name}
               placeholder={placeholder}
-              disabled={isDisable}
+              isDisabled={isDisable}
               onChange={(e) => {
                 handleChange(e);
                 onChange(e)

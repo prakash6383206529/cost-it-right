@@ -30,6 +30,7 @@ function PackageCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    setIsEditFlag(false)
     setDrawerOpen(true)
   }
 
@@ -155,7 +156,7 @@ function PackageCost(props) {
         isEditFlag={isEditFlag}
         ID={''}
         editIndex={editIndex}
-        rowObjData={rowObjData}
+        rowObjData={isEditFlag ? rowObjData : {}}
         anchor={'right'}
       />}
     </ >

@@ -1330,6 +1330,25 @@ export function fileDeleteCosting(data, callback) {
 }
 
 /**
+ * @method deleteDraftCosting
+ * @description DELETE COSTING FILES
+ */
+export function deleteDraftCosting(data, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    axios
+      .delete(`${API.deleteDraftCosting}/${data.Id}/${data.UserId}`, headers)
+      .then((response) => {
+        callback(response)
+      })
+      .catch((error) => {
+        apiErrors(error)
+        dispatch({ type: API_FAILURE })
+      })
+  }
+}
+
+/**
  * @method getExistingSupplierDetailByPartId
  * @description get Existing Supplier Detail By PartId
  */

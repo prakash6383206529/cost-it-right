@@ -8,6 +8,8 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 function TabRMCC(props) {
 
@@ -448,7 +450,11 @@ function TabRMCC(props) {
           i.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
           i.CostingPartDetails.TotalProcessCost = getProcessTotalCost(i.CostingChildPartDetails, checkForNull(conversionGrid.ProcessCostTotal), params);
           i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(conversionGrid.NetConversionCost), params);
+
+          // BELOW KEYS COST WITH QUANTITY
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getCCCostWithQuantity(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
+          //i.CostingPartDetails.TotalConversionCostWithQuantity = getCCCostWithQuantity(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
+
           setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -906,7 +912,11 @@ function TabRMCC(props) {
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
-      dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
+      dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+        }
+      }))
     }
   }
 
