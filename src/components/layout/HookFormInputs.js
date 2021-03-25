@@ -102,6 +102,7 @@ export const SearchableSelectHookForm = (field) => {
                 handleChange(e);
                 onChange(e)
               }}
+              menuPlacement="auto"
               options={options}
               onBlur={onBlur}
               //selected={value}

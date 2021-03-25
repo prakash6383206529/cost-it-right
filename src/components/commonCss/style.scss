@@ -2300,6 +2300,15 @@ input[type="number"].form-control {
       margin-bottom: -20px;
     }
   }
+  .bom-action-row{
+    position: relative;
+    z-index: 1;
+  }
+  .flowspace-row{
+    position: relative;
+    z-index: 0;
+    margin-top: -70px;
+  }
 }
 .react-bs-table-search-form {
   .btn-secondary:hover{background-color: #1d59af;
@@ -3364,14 +3373,276 @@ body{
           }
         }
       }
-    }
-
-    
+    }    
   }
   // costing details page only end
 }// 1600px media query end
 
 @media(max-width:1366px){
+  // ========= zoom whole website to 80% css start's here
+  body{font-size: calc(1rem * 80 / 100);}
+  .nav-link {
+    display: block;
+    padding: calc(0.5rem * 80 / 100) calc(0.75rem * 80 / 100);
+  }
+  .sf-mainheader{
+     .img-xs{
+      width: calc(30px * 80 / 100);
+      min-width: calc(30px * 80 / 100);
+      height: calc(30px * 80 / 100);
+      margin-right: calc(8px * 80 / 100);
+     }
+     .navbar{
+      .navbar-brand{
+        padding-top: calc(.3125rem * 80 / 100);
+        padding-bottom: calc(.3125rem * 80 / 100);
+        img{
+          height: calc(30px * 80 / 100);
+        }
+      }
+     }
+     .nav-link-user button{
+      height: calc(43px * 80 / 100);
+      font-size: calc(14px * 80 / 100);
+     }
+     .count{
+      width: calc(1rem * 80 / 100);
+      height: calc(1rem * 80 / 100);
+      line-height: calc(1rem * 80 / 100);
+     }
+     .cr-logout-btn {
+       .nav-link {
+        padding-top: calc(2px * 80 / 100);
+        padding-right: calc(2px * 80 / 100);
+        margin-left: calc(4px * 80 / 100);
+         img{
+          width: calc(19px * 80 / 100);
+          height: calc(19px * 80 / 100);
+         }
+        }
+      }
+      .nav-scroller{
+        nav{height: calc(50px * 80 / 100)}
+        a {
+          font-size: calc(1rem * 80 / 100);
+          margin-right: calc(25px * 80 / 100);
+          img{
+          margin-right: calc(12px * 80 / 100);
+          height: calc(19px * 80 / 100);
+          }
+        }
+      }
+      ul.bread-list.d-inline-flex li.active{
+        font-size: calc(14px * 80 / 100);
+        padding: calc(3px * 80 / 100) calc(13px * 80 / 100);
+      }
+    }
+    // .sf-mainheader
+    .breadcrumbs{
+      padding:calc(10px * 80 / 100) calc(15px * 80 / 100);
+      top: calc(95px * 80 / 100);
+      ul{
+        li a{
+          font-size: calc(14px * 80 / 100);
+          padding: 0 calc(13px * 80 / 100);
+        }
+      }
+    }// .breadcrumbs
+
+    // left side menu
+    .left-side-menu{
+      width: calc(205px * 80 / 100);
+      .mb5{
+        margin-bottom: calc(5px * 80 / 100);
+      }
+      ul{
+        li{
+          padding: calc(9px * 80 / 100) calc(8px * 80 / 100);
+          border-radius: calc(10px * 80 / 100) 0px 0px calc(10px * 80 / 100);
+          a{
+            font-size: calc(15px * 80 / 100);
+            &:after{
+              font-size: calc(14px * 80 / 100);
+              right:calc(4px * 80 / 100);
+              top: calc(3px * 80 / 100);
+            }
+          }
+        }
+      }
+    }
+    // left side menu
+
+    // right side .content-page
+    body{
+      .btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary{
+        font-size: calc(14px * 80 / 100);
+        padding-left: calc(15px * 80 / 100);
+        padding-right: calc(15px * 80 / 100);
+        line-height: calc(14px * 80 / 100);
+        height: calc(32px * 80 / 100);
+      }
+      .content-page{
+        width: calc(100% - (205px * 80 / 100));
+        padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100)
+      }
+      .text-help{
+        font-size: calc(12px * 80 / 100);
+        height: calc(1em * 80 / 100);
+      }
+      .content-page{
+        .filter-block {
+          h5{
+            font-size: calc(16px * 80 / 100);
+            padding:calc(7px * 80 / 100) calc(15px * 80 / 100) calc(7px * 80 / 100) calc(10px * 80 / 100) ;
+          }
+        }
+        h1,h2{
+        font-size: calc(26px * 80 / 100);
+        margin-bottom: calc(14px * 80 / 100);
+        }
+        .nav-item{
+          margin-right: calc(30px * 80 /100);
+        }
+        .nav-tabs{
+           a.nav-link{
+            font-size: calc(15px * 80 /100);
+            padding-bottom: calc(10px * 80 /100);
+            padding-left: calc(10px * 80 /100);
+            padding-right: calc(10px * 80 /100);
+           }
+        }
+      }
+      .form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm input{
+        height: calc(32px * 80 / 100);
+        padding:calc(6px * 80 / 100) calc(30px * 80 / 100) calc(6px * 80 / 100) calc(10px * 80 / 100) !important;
+      }
+      .form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm input::placeholder{font-size: calc(14px * 80 /100) !important;}
+      .search-user-block{
+        bottom: -42px;
+      }
+      .main-section .content-page .filter-block .css-yk16xz-control, .main-section .content-page .filter-block .css-1pahdxg-control{
+        min-height: calc(32px * 80 /100) !important;
+        height: calc(32px * 80 /100);
+      }
+      .css-g1d714-ValueContainer{
+        padding:calc(2px * 80 / 100) calc(8px * 80 /100)
+      }
+      .css-107lb6w-singleValue, .css-1wa3eu0-placeholder{
+        font-size:calc(13px * 80 /100) ;
+      }
+      .css-b8ldur-Input{
+        padding-top: calc(2px * 80 / 100);
+        padding-bottom: calc(2px * 80 / 100);
+      }
+      .content-page .filter-block .css-yk16xz-control, .content-page .filter-block .css-1pahdxg-control{
+        font-size: calc(14px * 80 /100);
+        height: calc(40px * 80 /100);
+      }
+      .content-page .filter-block .css-tlfecz-indicatorContainer{
+        padding:calc(5px * 80 / 100) ;
+        .css-6q0nyr-Svg{
+          height: calc(20px * 80 / 100);
+          width: calc(20px * 80 / 100);
+        }
+      }
+      .reset{
+        height: calc(32px * 80 / 100);
+        font-size: calc(14px * 80 / 100);
+      }
+      .filter-block .apply,.filter-block .reset{
+        padding-left: calc(15px * 80 / 100);
+        padding-right: calc(15px * 80 / 100);
+      }
+      .filter-btn-top{
+        width: calc(32px * 80 /100);
+        img{
+          width: calc(14px * 80 /100);
+          height: calc(14px * 80 /100);
+        }
+      }
+      .upload{
+        width: calc(14px * 80 /100);
+        height: calc(14px * 80 /100);
+        background-size: contain;
+      }
+      .plus{
+        width: calc(12px * 80 /100);
+        height: calc(12px * 80 /100);
+        background-size: contain;
+      }
+      .form-control, .manageuser .css-yk16xz-control{
+        font-size: calc(14px * 80 /100) !important;
+      }
+      .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:before{
+        width: calc(15px * 80 /100);
+        height: calc(12px * 80 /100);
+      }
+      .react-bs-table {
+        table{
+          th,td{
+            font-size: calc(14px * 80 /100);
+            padding:calc(0.71rem * 80 /100) calc(0.75rem * 80 /100);
+          }
+        }
+      }
+      
+      
+      .react-bs-table-container {
+        .react-bs-table-pagination {
+          p{
+            font-size: calc(14px * 80 /100);
+          }
+          span{
+            .btn-secondary{
+              font-size: calc(14px * 80 /100);
+              margin-right: calc(20px * 80 /100);
+              padding: 0;
+            }
+          }
+          .row{
+            >.col-md-6{
+              >span{
+                font-size: calc(14px * 80 /100);
+              }
+            }
+          }
+          .col-md-6 {
+            ul.pagination {
+              li {
+                .first-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+                .last-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+                .next-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+                .prev-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+              }
+            }
+          }
+        }
+      }
+    }// body
+
+  // // input range slider 'Net Landed Range (INR)' css 
+  .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}
+  .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span:after{top: -4px;}
+  // // input range slider 'Net Landed Range (INR)' css  end
+
+  // ========= zoom whole website to 80% css end's here 
+
   .costing-raw-material-section{
     thead{
       tr{

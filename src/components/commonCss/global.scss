@@ -2034,7 +2034,8 @@ input:disabled,
 }
 .sf-mainwrapper {
   position: relative;
-  z-index: 3;
+  // z-index: 3;
+  z-index: 11;
 }
 .blue-box {
   position: initial;

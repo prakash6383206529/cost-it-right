@@ -306,11 +306,10 @@ class BOMViewer extends Component {
                 className="form bom-drawer-form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
               >
-                <Row>
-                  <Col md="8"></Col>
+                <Row className="bom-action-row">
                   {(!isEditFlag || initialConfiguration.IsBOMEditable) &&
                     !isFromVishualAd && (
-                      <Col md="4">
+                      <Col md="12" >
                         {  flowpoints.length > 1 &&
                           <>
                             <button
@@ -363,7 +362,7 @@ class BOMViewer extends Component {
                       </Col>
                     )}
                 </Row>
-                <Row>
+                <Row className="flowspace-row">
                   <Flowspace
                     theme="#2196f3"
                     variant="outlined"
@@ -375,7 +374,7 @@ class BOMViewer extends Component {
                       width: "100%",
                       overflow: "auto",
                       maxWidth: "100vw",
-                      maxHeight: "calc(100vh - 210px)",
+                      maxHeight: "calc(100vh - 165px)",
                     }}
                     onClick={(e) => this.setState({ selected_point: null })}
                     selected={this.state.selected_point}
