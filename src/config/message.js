@@ -307,5 +307,6 @@ export const MESSAGES = {
   //MESSAGES FOR COSTING TABS SUCCESS
   OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS: 'Overhead & Profit has been successfully saved.',
   OTHER_DISCOUNT_COSTING_SAVE_SUCCESS: 'Discount & Other Cost has been successfully saved.',
+  PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS: 'Package & Freight Cost has been successfully saved.',
 
 }

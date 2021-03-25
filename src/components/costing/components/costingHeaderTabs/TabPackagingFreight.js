@@ -6,6 +6,8 @@ import { getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFr
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 function TabPackagingFreight(props) {
 
@@ -141,7 +143,9 @@ function TabPackagingFreight(props) {
     }
 
     dispatch(saveCostingPackageFreightTab(data, res => {
-      //console.log('saveCostingPackageFreightTab: ', res);
+      if (res.data.Result) {
+        toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+      }
     }))
 
   }
