@@ -122,13 +122,12 @@ function CostingDetailStepTwo(props) {
     let OverAllCost = 0;
 
     if (tempData && tempData !== undefined) {
-      const RMBOPCCCost = tempData && tempData.NetTotalRMBOPCC !== undefined ? checkForNull(tempData.NetTotalRMBOPCC) : 0;
-      const surfaceCost = tempData && tempData.NetSurfaceTreatmentCost !== undefined ? checkForNull(tempData.NetSurfaceTreatmentCost) : 0;
-      const PackageCost = tempData && tempData.NetPackagingAndFreight !== undefined ? checkForNull(tempData.NetPackagingAndFreight) : 0;
-      const toolCost = tempData && tempData.ToolCost !== undefined ? checkForNull(tempData.ToolCost) : 0;
-      const discountCost = tempData && tempData.DiscountsAndOtherCost !== undefined ? checkForNull(tempData.DiscountsAndOtherCost) : 0;
-
-      OverAllCost = RMBOPCCCost + surfaceCost + data.NetOverheadProfitCost + PackageCost + toolCost - discountCost
+      OverAllCost =
+        tempData.NetTotalRMBOPCC +
+        tempData.NetSurfaceTreatmentCost +
+        data.NetOverheadProfitCost +
+        tempData.NetPackagingAndFreight +
+        tempData.ToolCost - tempData.DiscountsAndOtherCost
     }
 
     tempData = {
@@ -187,34 +186,35 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM TOOL TAB 
    */
   const setHeaderCostToolTab = (data) => {
+    console.log('data: ', data);
     const headerIndex = 0;
 
-    //setTimeout(() => {
-    let DataList = CostingDataList;
-    let tempData = CostingDataList && CostingDataList[headerIndex];
+    setTimeout(() => {
+      let DataList = CostingDataList;
+      let tempData = CostingDataList && CostingDataList[headerIndex];
 
-    let OverAllCost = 0;
-    if (tempData && tempData !== undefined) {
-      OverAllCost =
-        tempData.NetTotalRMBOPCC +
-        tempData.NetSurfaceTreatmentCost +
-        tempData.NetOverheadAndProfitCost +
-        tempData.NetPackagingAndFreight +
-        checkForNull(data.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
-    }
+      let OverAllCost = 0;
+      if (tempData && tempData !== undefined) {
+        OverAllCost =
+          tempData.NetTotalRMBOPCC +
+          tempData.NetSurfaceTreatmentCost +
+          tempData.NetOverheadAndProfitCost +
+          tempData.NetPackagingAndFreight +
+          checkForNull(data.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+      }
 
-    tempData = {
-      ...tempData,
-      ToolCost: data.ToolCost,
-      TotalCost: OverAllCost,
-    }
-    let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+      tempData = {
+        ...tempData,
+        ToolCost: data.ToolCost,
+        TotalCost: OverAllCost,
+      }
+      let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-    dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
-    dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
-    //dispatch(setSurfaceCostData(data, () => { }))
+      dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
+      dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
+      //dispatch(setSurfaceCostData(data, () => { }))
 
-    //}, 500)
+    }, 300)
 
   }
 

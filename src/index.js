@@ -11,9 +11,11 @@ const createStoreWithMiddleware = applyMiddleware(ReduxThunk)(createStore);
 
 //Store initialization
 ReactDOM.render(
-  <Provider store={createStoreWithMiddleware(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())}>
-    <App />
-  </Provider>
+  <React.StrictMode>
+    <Provider store={createStoreWithMiddleware(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())}>
+      <App />
+    </Provider>
+  </React.StrictMode>
   , document.getElementById('root'));
 
 

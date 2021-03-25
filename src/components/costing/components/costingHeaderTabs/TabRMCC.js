@@ -8,6 +8,8 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 function TabRMCC(props) {
 
@@ -910,7 +912,11 @@ function TabRMCC(props) {
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
-      dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
+      dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+        }
+      }))
     }
   }
 
