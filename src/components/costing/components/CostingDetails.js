@@ -13,10 +13,10 @@ import { toastr } from 'react-redux-toastr';
 import { checkForNull, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { VBC, ZBC } from '../../../config/constants';
+import { APPROVED, DRAFT, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId,
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 
@@ -208,25 +208,21 @@ function CostingDetails(props) {
    */
   const nextToggle = () => {
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
-      dispatch(
-        getZBCExistingCosting(part.value, (res) => {
-          if (res.data.Result) {
-            let Data = res.data.DataList
-            setZBCPlantGrid(Data)
-            setzbcPlantOldArray(Data)
-          }
-        }),
-      )
+      dispatch(getZBCExistingCosting(part.value, (res) => {
+        if (res.data.Result) {
+          let Data = res.data.DataList
+          setZBCPlantGrid(Data)
+          setzbcPlantOldArray(Data)
+        }
+      }))
 
-      dispatch(
-        getVBCExistingCosting(part.value, (res) => {
-          if (res.data.Result) {
-            let Data = res.data.DataList
-            setVBCVendorGrid(Data)
-            setvbcVendorOldArray(Data)
-          }
-        }),
-      )
+      dispatch(getVBCExistingCosting(part.value, (res) => {
+        if (res.data.Result) {
+          let Data = res.data.DataList
+          setVBCVendorGrid(Data)
+          setvbcVendorOldArray(Data)
+        }
+      }))
 
       setIsOpenVendorSOBDetails(true)
     } else {
@@ -311,6 +307,7 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
+        CostingId: newValue.value,
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
       setZBCPlantGrid(tempArray)
@@ -325,6 +322,7 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
+        CostingId: newValue.value,
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
       setVBCVendorGrid(tempArray)
@@ -739,6 +737,17 @@ function CostingDetails(props) {
   }
 
   /**
+   * @method deleteCosting
+   * @description USED FOR DELETE 
+   */
+  const deleteCosting = (CostingId, type) => {
+    let reqData = { Id: CostingId, UserId: loggedInUserId() }
+    dispatch(deleteDraftCosting(reqData, () => {
+
+    }))
+  }
+
+  /**
    * @method cancel
    * @description used to Reset form
    */
@@ -1002,12 +1011,25 @@ function CostingDetails(props) {
                                   <th style={{}}>{`Plant Code`}</th>
                                   <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
-                                  <th style={{ minWidth: "225px" }}>{`Actions`}</th>
+                                  <th style={{ minWidth: "250px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {zbcPlantGrid &&
                                   zbcPlantGrid.map((item, index) => {
+
+                                    let displayCopyBtn = (item.Status === DRAFT ||
+                                      item.Status === PENDING ||
+                                      item.Status === WAITING_FOR_APPROVAL ||
+                                      item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+
+                                    let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
+
+                                    let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
+
+                                    //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
+                                    //AS OF NOW 25-03-2021
+
                                     return (
                                       <tr key={index}>
                                         <td>{item.PlantCode}</td>
@@ -1065,11 +1087,12 @@ function CostingDetails(props) {
                                             {item.Status}
                                           </div>
                                         </td>
-                                        <td style={{ width: "200px" }}>
+                                        <td style={{ width: "250px" }}>
                                           <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />
-                                          {!item.IsNewCosting && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
-                                          {!item.IsNewCosting && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
-                                          {!item.IsNewCosting && (<button className="Copy All my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
+                                          {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
+                                          {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
+                                          {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
+                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteCosting(item.CostingId, ZBC)} />)}
                                         </td>
                                       </tr>
                                     );
@@ -1123,11 +1146,24 @@ function CostingDetails(props) {
                                   <th style={{}}>{`SOB`}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{}}>{`Status`}</th>
-                                  <th style={{ minWidth: "225px" }}>{`Actions`}</th>
+                                  <th style={{ minWidth: "250px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
+
+                                  let displayCopyBtn = (item.Status === DRAFT ||
+                                    item.Status === PENDING ||
+                                    item.Status === WAITING_FOR_APPROVAL ||
+                                    item.Status === APPROVED || item.Status === REJECTED) ? true : false;
+
+                                  let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
+
+                                  let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
+
+                                  //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
+                                  //AS OF NOW 25-03-2021
+
                                   return (
                                     <tr key={index}>
                                       <td>{item.VendorName}</td>
@@ -1185,10 +1221,10 @@ function CostingDetails(props) {
                                       </td>
                                       <td>
                                         <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
-                                        {/* <button className="Copy All mr-2" type={'button'} title={'Edit Costing'} onClick={()=>{copyCosting(index,VBC)}} /> */}
-                                        {!item.IsNewCosting && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
-                                        {!item.IsNewCosting && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && (<button className="Copy All my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
+                                        {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
+                                        {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteCosting(item.CostingId, VBC)} />)}
                                       </td>
                                     </tr>
                                   );
