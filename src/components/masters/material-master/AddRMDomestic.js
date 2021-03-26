@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector,isValid,isInvalid } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, } from '../../layout/FormInputs'
@@ -66,9 +66,9 @@ class AddRMDomestic extends Component {
 
       isVisible: false,
       imageURL: '',
+      a: ''
     }
   }
-
   /**
    * @method componentWillMount
    * @description Called before render the component
@@ -258,7 +258,7 @@ class AddRMDomestic extends Component {
    * @description Set value in NetLandedCost
    */
   handleBasicRate = (e) => {
-    this.props.change('NetLandedCost', e.target.value)
+    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : e.target.value)
   }
 
   /**
@@ -795,11 +795,12 @@ class AddRMDomestic extends Component {
         EffectiveDate: effectiveDate,
         Attachements: updatedFiles,
       }
-
+      this.props.reset()
       this.props.updateRMDomesticAPI(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
           this.clearForm()
+          // this.cancel()
         }
       })
     } else {
@@ -830,14 +831,17 @@ class AddRMDomestic extends Component {
           : [],
         VendorCode: VendorCode,
         Attachements: files,
+        
       }
-
+      this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS)
           this.clearForm()
+          // this.cancel()
         }
       })
+
     }
   }
 
@@ -1203,11 +1207,11 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Basic Rate/UOM (INR)`}
+                              label={`Basic Rate/ ${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength15]}
+                              validate={[required, positiveAndDecimalNumber , maxLength15]}
                               component={renderText}
                               onChange={this.handleBasicRate}
                               required={true}

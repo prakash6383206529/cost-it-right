@@ -564,6 +564,7 @@ class AddLabour extends Component {
         ],
       }
 
+      this.props.reset()
       this.props.updateLabour(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_LABOUR_SUCCESS)
@@ -585,6 +586,7 @@ class AddLabour extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
+      this.props.reset()
       this.props.createLabour(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.LABOUR_ADDED_SUCCESS)

@@ -914,7 +914,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Basic Rate (INR)`}
+                              label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}

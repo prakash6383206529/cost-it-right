@@ -706,7 +706,7 @@ class AddMoreDetails extends Component {
         checkPercentageValue(AnnualInsurancePercentage, "Insurance percentage should not be more than 100") ? this.props.change('AnnualInsurancePercentage', AnnualInsurancePercentage) : this.props.change('AnnualInsurancePercentage', 0)
       }
       if (UtilizationFactorPercentage) {
-        checkPercentageValue(UtilizationFactorPercentage, "Utilization percentage should not be more than 100") ? this.props.change('UtilizationFactorPercentage', UtilizationFactorPercentage) : this.props.change('UtilizationFactorPercentage', 0)
+        checkPercentageValue(UtilizationFactorPercentage, "Utilization percentage should not be more than 100") ? this.props.change('UtilizationFactorPercentage', checkForNull(UtilizationFactorPercentage)) : this.props.change('UtilizationFactorPercentage', 0)
       }
     }
   }
@@ -894,7 +894,7 @@ class AddMoreDetails extends Component {
     })
 
     this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalMachineCostPerAnnum', checkForNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**

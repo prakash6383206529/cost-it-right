@@ -784,6 +784,7 @@ class AddMachineRate extends Component {
 
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
+        this.props.reset()
         this.props.updateMachineDetails(detailedRequestData, (res) => {
           if (res.data.Result) {
             toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
@@ -814,6 +815,7 @@ class AddMachineRate extends Component {
           Attachements: updatedFiles,
         }
 
+        this.props.reset()
         this.props.updateMachine(requestData, (res) => {
           if (res.data.Result) {
             toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
@@ -843,6 +845,7 @@ class AddMachineRate extends Component {
         Attachements: files,
       }
 
+      this.props.reset()
       this.props.createMachine(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MACHINE_ADD_SUCCESS);
@@ -1093,7 +1096,7 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Machine Capacity / Tonnage`}
+                            label={`Machine Specification`}
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={'Enter'}

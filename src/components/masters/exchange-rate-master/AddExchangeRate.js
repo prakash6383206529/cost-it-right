@@ -12,7 +12,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import moment from 'moment';
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
-const selector = formValueSelector('AddExchangeRate');
+const 
+selector = formValueSelector('AddExchangeRate');
 
 class AddExchangeRate extends Component {
   constructor(props) {
@@ -168,6 +169,7 @@ class AddExchangeRate extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
+      this.props.reset()
       this.props.updateExchangeRate(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
@@ -184,10 +186,11 @@ class AddExchangeRate extends Component {
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
         EffectiveDate: new Date(effectiveDate),
-        //EffectiveDate: (values.EffectiveDate),
+        // EffectiveDate: (values.EffectiveDate),
         LoggedInUserId: loggedInUserId(),
       }
       console.log(formData, "formData");
+      this.props.reset()
       this.props.createExchangeRate(formData, (res) => {
         if (res.data.Result) {
           console.log("Coming here for toaster");
@@ -227,7 +230,9 @@ class AddExchangeRate extends Component {
                 <form
                   noValidate
                   className="form"
-                  onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  
+                  onSubmit={handleSubmit((e) => this.onSubmit(e))}
+                  // onSubmit={handleSubmit(this.onSubmit.bind(this))}                  
                 >
                   <div className="add-min-height">
                     <Row>
@@ -263,7 +268,7 @@ class AddExchangeRate extends Component {
                           required={true}
                           disabled={false}
                           className=" "
-                          customClassName=" withBorder"
+                          customClassName="withBorder"
                         />
                       </Col>
                       <Col md="4">
@@ -312,12 +317,12 @@ class AddExchangeRate extends Component {
                       </Col>
                       <Col md="4">
                         <div className="form-group">
-                          {/* <label>
+                          <label>
                             Effective Date
                               <span className="asterisk-required">*</span>
-                          </label> */}
+                          </label>
                           <div className="inputbox date-section">
-                            {/* <DatePicker
+                            <DatePicker
                               name="EffectiveDate"
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
@@ -335,11 +340,11 @@ class AddExchangeRate extends Component {
                               required
                               disabled={false}
 
-                            /> */}
-                            <Field
+                            />
+                            {/* <Field
                               label="Effective Date"
                               name="EffectiveDate"
-                              selected={this.state.effectiveDate}
+                              // selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
                               type="text"
                               validate={[required]}
@@ -351,7 +356,7 @@ class AddExchangeRate extends Component {
                               component={renderDatePicker}
                               className="form-control"
                             //minDate={moment()}
-                            />
+                            /> */}
                           </div>
                         </div>
                       </Col>
@@ -402,7 +407,7 @@ class AddExchangeRate extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { exchangeRate, } = state;
+  const { exchangeRate, } = state;  //why not selector jere......from
   const filedObj = selector(state, 'OperationCode', 'EffectiveDate', 'BankCommissionPercentage');
   const { exchangeRateData, currencySelectList } = exchangeRate;
 
@@ -413,10 +418,13 @@ function mapStateToProps(state) {
       BankRate: exchangeRateData.BankRate ? exchangeRateData.BankRate : '',
       BankCommissionPercentage: exchangeRateData.BankCommissionPercentage ? exchangeRateData.BankCommissionPercentage : '',
       CustomRate: exchangeRateData.CustomRate ? exchangeRateData.CustomRate : '',
-      EffectiveDate: moment(exchangeRateData.EffectiveDate) ? moment(exchangeRateData.EffectiveDate) : ''
+      // EffectiveDate: exchangeRateData.EffectiveDate ? exchangeRateData.EffectiveDate : ''
+      EffectiveDate: moment(exchangeRateData.EffectiveDate).utc._isValid ? moment(exchangeRateData.EffectiveDate) : ''
+      // effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+
     }
   }
-
+ 
   return { exchangeRateData, currencySelectList, filedObj, initialValues }
 }
 
@@ -435,4 +443,3 @@ export default connect(mapStateToProps, {
   form: 'AddExchangeRate',
   enableReinitialize: true,
 })(AddExchangeRate));
-

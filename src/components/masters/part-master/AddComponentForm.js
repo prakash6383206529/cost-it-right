@@ -122,7 +122,7 @@ class AddComponentForm extends Component {
       PartId: part ? part.value : '',
       Input: Math.floor(100000 + Math.random() * 900000),
     }
-
+    this.props.reset()
     this.props.getDrawerComponentPartData('', res => { })
     if (isAddMore) {
       this.setState({

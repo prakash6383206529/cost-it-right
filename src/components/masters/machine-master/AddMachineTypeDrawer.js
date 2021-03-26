@@ -97,7 +97,7 @@ class AddMachineTypeDrawer extends Component {
         LoggedInUserId: loggedInUserId(),
         LabourTypeIds: labourTypeIds
       }
-
+      this.props.reset()
       this.props.createMachineType(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MACHINE_TYPE_ADD_SUCCESS);

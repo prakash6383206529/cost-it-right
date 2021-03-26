@@ -503,7 +503,7 @@ class AddBOPDomestic extends Component {
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
       }
-
+      this.props.reset()
       this.props.updateBOPDomestic(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -537,7 +537,7 @@ class AddBOPDomestic extends Component {
         VendorPlant: vendorPlantArray,
         Attachements: files,
       }
-
+      this.props.reset()
       this.props.createBOPDomestic(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.BOP_ADD_SUCCESS);
@@ -794,9 +794,9 @@ class AddBOPDomestic extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
-                                  required={true}
+                                  // required={true}
                                   disabled={false}
                                   className=" "
                                   customClassName=" withBorder"
@@ -813,9 +813,9 @@ class AddBOPDomestic extends Component {
                                     "SourceLocation"
                                   )}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
-                                  required={true}
+                                  // validate={
+                                  //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
+                                  // required={true}
                                   handleChangeDescription={
                                     this.handleSourceSupplierCity
                                   }
@@ -848,7 +848,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Basic Rate (INR)`}
+                              label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}

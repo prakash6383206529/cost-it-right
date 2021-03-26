@@ -157,6 +157,7 @@ class AddTaxDetails extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
+      this.props.reset()
       this.props.updateTaxDetails(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.TAX_UPDATE_SUCCESS);
@@ -173,6 +174,7 @@ class AddTaxDetails extends Component {
         EffectiveDate: effectiveDate,
         LoggedInUserId: loggedInUserId(),
       }
+      this.props.reset()
       this.props.createTaxDetails(reqData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.TAX_ADD_SUCCESS);

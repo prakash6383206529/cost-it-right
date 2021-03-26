@@ -98,6 +98,7 @@ class AddReason extends Component {
         CreatedBy: loggedInUserId(),
         CreatedDate: '',
       }
+      this.props.reset()
       this.props.updateReasonAPI(formData, (res) => {
         toastr.success(MESSAGES.UPDATE_REASON_SUCESS);
         this.cancel()
@@ -110,6 +111,7 @@ class AddReason extends Component {
       values.CreatedBy = loggedInUserId();
       values.CreatedDate = '';
 
+      this.props.reset()
       this.props.createReasonAPI(values, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.REASON_ADD_SUCCESS);

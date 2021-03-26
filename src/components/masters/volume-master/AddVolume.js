@@ -533,6 +533,7 @@ class AddVolume extends Component {
         VolumeBudgetedDetails: updateBudgetArray,
       }
 
+      this.props.reset()
       this.props.updateVolume(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
@@ -565,6 +566,7 @@ class AddVolume extends Component {
         IsActive: true,
       }
 
+      this.props.reset()
       this.props.createVolume(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.VOLUME_ADD_SUCCESS)

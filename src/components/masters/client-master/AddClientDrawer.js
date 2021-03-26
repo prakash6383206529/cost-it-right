@@ -204,6 +204,7 @@ class AddClientDrawer extends Component {
                 LoggedInUserId: loggedInUserId(),
             }
 
+            this.props.reset()
             this.props.updateClient(updateData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.CLIENT_UPDATE_SUCCESS);
@@ -224,6 +225,7 @@ class AddClientDrawer extends Component {
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
             }
+            this.props.reset()
             this.props.createClient(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.CLIENT_ADD_SUCCESS);

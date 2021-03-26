@@ -929,6 +929,7 @@ class AddPower extends Component {
           CreatedDate: '',
           LoggedInUserId: loggedInUserId(),
         }
+        this.props.reset()
         this.props.updateVendorPowerDetail(vendorDetailData, (res) => {
           if (res.data.Result) {
             toastr.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);
@@ -966,6 +967,7 @@ class AddPower extends Component {
           SGChargesDetails: selfGridDataArray,
           LoggedInUserId: loggedInUserId(),
         }
+        this.props.reset()
         this.props.updatePowerDetail(requestData, (res) => {
           if (res.data.Result) {
             toastr.success(MESSAGES.UPDATE_POWER_DETAIL_SUCESS);

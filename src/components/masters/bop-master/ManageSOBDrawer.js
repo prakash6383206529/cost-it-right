@@ -8,6 +8,8 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercent
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
+import { required } from "../../../helper/validation";
+
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 
@@ -87,17 +89,23 @@ function ManageSOBDrawer(props) {
     let tempArray = [];
     let tempData = GridData[index];
 
-    if (!isNaN(event.target.value)) {
+    if (!isNaN(event.target.value)) {//number ha...false..true
+      const a = checkPercentageValue(event.target.value);
+      console.log(a);
       tempData = {
         ...tempData,
-        //ShareOfBusinessPercentage: checkPercentageValue(event.target.value) ? Number(event.target.value) : 0,
-        ShareOfBusinessPercentage: checkForNull(event.target.value) ? Number(event.target.value) : 0,
-        //isSOBChanged: checkIsSOBChanged(event, index),
+        ShareOfBusinessPercentage: a ? Number(event.target.value) : 0,
+        // ShareOfBusinessPercentage: checkForNull(event.target.value) ? Number(event.target.value) : 0,
+        isSOBChanged: checkIsSOBChanged(event, index),
         WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(Number(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
+      setTimeout(() => {
+        if(a === false ) {
+        setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)    }
 
-
+        return false;
+      }, 200);
       setGridData(tempArray)
       // if (!checkPercentageValue(event.target.value)) {
       //   setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
@@ -126,7 +134,6 @@ function ManageSOBDrawer(props) {
     }
 
   }
-
 
   /**
   * @method warningMessageHandle
@@ -274,7 +281,7 @@ function ManageSOBDrawer(props) {
                                       message: "Should not be greater then 100"
                                     },
                                   }}
-
+                                  
                                   defaultValue={item.ShareOfBusinessPercentage}
                                   className=""
                                   customClassName={'withBorder'}

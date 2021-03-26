@@ -222,6 +222,7 @@ class AddZBCPlant extends Component {
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
       }
+      this.props.reset()
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_PLANT_SUCESS);
@@ -246,6 +247,7 @@ class AddZBCPlant extends Component {
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
       }
 
+      this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);

@@ -262,7 +262,7 @@ class AddRMImport extends Component {
   * @description Set value in NetLandedCost
   */
   handleBasicRate = (e) => {
-    this.props.change('NetLandedCost', e.target.value)
+    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : e.target.value)
   }
 
   /**
@@ -761,6 +761,7 @@ class AddRMImport extends Component {
         EffectiveDate: effectiveDate,
         Attachements: updatedFiles,
       }
+      this.props.reset()
       this.props.updateRMImportAPI(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
@@ -794,7 +795,7 @@ class AddRMImport extends Component {
         Currency: currency.label,
         EffectiveDate: effectiveDate,
       }
-
+      this.props.reset()
       this.props.createRMImport(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
@@ -1172,7 +1173,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Basic Rate/UOM (INR)`}
+                              label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1266,7 +1267,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <label>
-                              Upload Files (upload up to 3 files)
+                              Upload Files (Upload up to 3 files)
                                 </label>
                             {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
