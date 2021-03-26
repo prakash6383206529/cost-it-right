@@ -83,7 +83,11 @@ function AddProcess(props) {
     clearSearch: true,
     noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
     paginationShowsTotal: renderPaginationShowsTotal(),
-    paginationSize: 5,
+    prePage: <span className="prev-page-pg"></span>, // Previous page button text
+    nextPage: <span className="next-page-pg"></span>, // Next page button text
+    firstPage: <span className="first-page-pg"></span>, // First page button text
+    lastPage: <span className="last-page-pg"></span>,
+
   };
 
   const onRowSelect = (row, isSelected, e) => {

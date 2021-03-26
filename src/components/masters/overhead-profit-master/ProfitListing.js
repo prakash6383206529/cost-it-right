@@ -410,7 +410,7 @@ class ProfitListing extends Component {
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
-            paginationSize: 5,
+
         };
 
         return (
@@ -545,8 +545,8 @@ class ProfitListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                    )}
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -581,9 +581,9 @@ class ProfitListing extends Component {
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="left" >{this.renderModelType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProfitApplicabilityType" width={150} columnTitle={true} dataAlign="left" >{this.renderOverheadAppli()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="ProfitPercentage" width={150} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadAppliPercent()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="ProfitMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="ProfitRMPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="ProfitBOPPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="ProfitMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
                             {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                             <TableHeaderColumn dataAlign="right" width={100} searchable={false} dataField="ProfitId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>

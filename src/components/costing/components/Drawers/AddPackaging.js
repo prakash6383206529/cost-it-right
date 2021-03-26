@@ -103,7 +103,7 @@ function AddPackaging(props) {
     switch (Text) {
       case 'RM':
         if (!PackageType) {
-          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost, 2))
+          setValue('PackagingCost', '')
         } else {
           setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), 2))
         }
@@ -111,7 +111,7 @@ function AddPackaging(props) {
 
       case 'RM + CC':
         if (!PackageType) {
-          setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost + NetConversionCost, 2))
+          setValue('PackagingCost', '')
         } else {
           setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(PackagingCostPercentage), 2))
         }
@@ -119,7 +119,7 @@ function AddPackaging(props) {
 
       case 'CC':
         if (!PackageType) {
-          setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost, 2))
+          setValue('PackagingCost', '')
         } else {
           setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(PackagingCostPercentage), 2))
         }
@@ -291,24 +291,24 @@ function AddPackaging(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
+                        pattern: {
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.'
+                        },
                         // maxLength: 4,
                       }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
-                      errors={errors.PackingCost}
-                      disabled={true}
+                      errors={errors.PackagingCost}
+                      disabled={PackageType ? true : false}
                     />
                   </Col>
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between ml-0">
-                  <div className="col-sm-12 text-right bluefooter-butn">
+                  <div className="col-sm-12 text-right px-3">
                     <button
                       type={'button'}
                       className="reset mr15 cancel-btn"

@@ -162,7 +162,7 @@ function BOPCost(props) {
               {/*BOP COST GRID */}
 
               <Col md="12">
-                <Table className="table cr-brdr-main" size="sm" >
+                <Table className="table cr-brdr-main costing-bop-cost-section" size="sm" >
                   <thead>
                     <tr>
                       <th>{`BOP Part No.`}</th>

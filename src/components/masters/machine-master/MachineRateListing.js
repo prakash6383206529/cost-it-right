@@ -442,7 +442,7 @@ class MachineRateListing extends Component {
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
-            paginationSize: 5,
+
         };
 
         return (
@@ -583,8 +583,8 @@ class MachineRateListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                    )}
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -619,12 +619,12 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="Technologies" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.plantsFormatter} >{'Plant'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineNumber" searchable={true} width={150} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineNo()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineTypeName" width={120} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineType()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={150} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="ProcessName" width={130} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={110} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
-                            <TableHeaderColumn dataAlign="right" width={150} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineNumber" searchable={true} width={120} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineNo()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineTypeName" width={110} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineType()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="ProcessName" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataAlign="right" width={140} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
                 </Row>

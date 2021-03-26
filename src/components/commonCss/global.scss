@@ -215,7 +215,7 @@ a:hover {
   padding-right: 21px;
   font-size: $font-14;
   text-transform: uppercase;
-  font-weight: $font-medium;
+  font-weight: 400;
   color: #8a91ac;
   background: transparent;
   display: inline-flex;
@@ -2034,7 +2034,8 @@ input:disabled,
 }
 .sf-mainwrapper {
   position: relative;
-  z-index: 2;
+  // z-index: 3;
+  z-index: 11;
 }
 .blue-box {
   position: initial;
@@ -2090,6 +2091,10 @@ input:disabled,
       color: #256bd1;
       font-size: 16px;
       line-height: 21px;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     .flowpoint-header-level {
       height: 26px;
@@ -2146,6 +2151,11 @@ input:disabled,
   p {
     font-size: 12px;
     color: #8a91ac;
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
     strong {
       font-size: 14px;
       color: #3d4465;

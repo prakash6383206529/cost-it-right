@@ -7,6 +7,8 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 function TabToolCost(props) {
 
@@ -14,8 +16,6 @@ function TabToolCost(props) {
 
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
   const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
-  const [tabData, setTabData] = useState([]);
-  const [toolCost, setNetToolCost] = useState('');
 
   const dispatch = useDispatch()
   const ToolTabData = useSelector(state => state.costing.ToolTabData)
@@ -48,7 +48,6 @@ function TabToolCost(props) {
   */
   const setOverAllApplicabilityCost = (OverAllToolObj) => {
     let arr = dispatchOverallApplicabilityCost(OverAllToolObj, ToolTabData)
-    console.log('dispatchOverallApplicabilityCost Sunday: ', arr);
     //dispatch(setToolTabData(arr, () => { }))
   }
 
@@ -82,7 +81,6 @@ function TabToolCost(props) {
 */
   const setToolCost = (ToolGrid) => {
     let arr = dispatchToolCost(ToolGrid, ToolTabData)
-    console.log('dispatchToolCost Sunday: ', arr);
     dispatch(setToolTabData(arr, () => { }))
   }
 
@@ -140,11 +138,15 @@ function TabToolCost(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "LoggedInUserId": loggedInUserId(),
+      "CostingNumber": costData.CostingNumber,
+      "ToolCost": ToolTabData.TotalToolCost,
       "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails
     }
 
     dispatch(saveToolTab(data, res => {
-      console.log('saveCostingToolTab: ', res);
+      if (res.data.Result) {
+        toastr.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
+      }
     }))
 
   }
@@ -197,7 +199,7 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="px-30 py-4 text-dark-blue">{"Net Tool Cost"}</Col>
+                <Col md="3" className="px-30 py-4 text-dark-blue pl10">{"Net Tool Cost"}</Col>
               </Row>
 
               <form
@@ -224,7 +226,7 @@ function TabToolCost(props) {
                                     {item.PartName}
                                   </span>
                                 </td>
-                                <td>{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
+                                <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
                               </tr>
                               <tr>
                                 <td colSpan={2} className="cr-innerwrap-td pb-3">

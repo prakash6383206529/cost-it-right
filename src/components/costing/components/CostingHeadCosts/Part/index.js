@@ -7,6 +7,8 @@ import RawMaterialCost from './RawMaterialCost';
 import { getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../../config/message';
 
 function PartCompoment(props) {
   const { rmData, bopData, ccData, item } = props;
@@ -80,7 +82,9 @@ function PartCompoment(props) {
         CostingPartDetails: item.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
-        console.log('Success', res)
+        if (res.data.Result) {
+          toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+        }
       }))
     }
 
@@ -94,7 +98,7 @@ function PartCompoment(props) {
     <>
       <tr className="accordian-row" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
         <td>
-          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1`}>
+          <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
             {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>
         </td>
@@ -104,13 +108,12 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
-        {/* <td>{1}</td> */}
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        {costData.IsAssemblyPart && <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>}
         <td>{''}</td>
       </tr>
       {item.IsOpen && <tr>
-        <td colSpan={10} className="cr-innerwrap-td pb-4">
+        <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">
           <div className="user-page p-0">
             <div>
               <RawMaterialCost

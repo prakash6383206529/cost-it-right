@@ -23,6 +23,7 @@ import { loggedInUserId } from '../../../helper/auth'
 import { getLeftMenu } from '../../../actions/auth/AuthActions'
 import { GridTotalFormate } from '../../common/TableGridFunctions'
 import ConfirmComponent from '../../../helper/ConfirmComponent'
+import LoaderCustom from '../../common/LoaderCustom'
 const initialTableData = [
   {
     VolumeApprovedDetailId: 0,
@@ -553,7 +554,7 @@ class VolumeListing extends Component {
     } = this.state
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: (this.props.volumeDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
       //paginationShowsTotal: true,
@@ -562,7 +563,7 @@ class VolumeListing extends Component {
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
       lastPage: <span className="last-page-pg"></span>,
-      paginationSize: 5,
+
     }
 
     if (showVolumeForm) {

@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddFreight from '../../Drawers/AddFreight';
 
 function FreightCost(props) {
-
-  const { register, control, errors } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  });
 
   const [gridData, setGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})
@@ -83,7 +74,7 @@ function FreightCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'Surface Treatment Cost:'}
+                {'Freight:'}
               </div>
             </Col>
             <Col col={'2'}>
@@ -95,7 +86,7 @@ function FreightCost(props) {
             </Col>
           </Row>
           <Row>
-            {/*OPERATION COST GRID */}
+            {/*FREIGHT COST GRID */}
 
             <Col md="12">
               <div className="costing-border p-3">
@@ -104,8 +95,8 @@ function FreightCost(props) {
                     <tr>
                       <th>{`Freight Type`}</th>
                       <th>{`Capacity`}</th>
-                      <th>{`Criteria`}</th>
-                      <th>{`Rate`}</th>
+                      <th>{`Criteria/Applicability`}</th>
+                      <th>{`Rate/Percentage`}</th>
                       <th>{`Quantity`}</th>
                       <th>{`Cost`}</th>
                       <th style={{ width: "130px" }}>{`Action`}</th>
@@ -116,11 +107,11 @@ function FreightCost(props) {
                       gridData && gridData.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.IsPartTruckLoad ? 'PTL' : 'FTL'}</td>
-                            <td>{item.Capacity}</td>
-                            <td>{item.Criteria}</td>
-                            <td>{item.Rate}</td>
-                            <td>{item.Quantity}</td>
+                            <td>{item.IsPartTruckLoad}</td>
+                            <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Capacity}</td>
+                            <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Criteria : '-')}</td>
+                            <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Rate : '-')}</td>
+                            <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Quantity}</td>
                             <td>{item.FreightCost}</td>
                             <td>
                               <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />

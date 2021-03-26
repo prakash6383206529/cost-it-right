@@ -8,6 +8,8 @@ import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../config/message';
 
 function TabRMCC(props) {
 
@@ -16,10 +18,11 @@ function TabRMCC(props) {
   const dispatch = useDispatch()
 
   const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
+
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
-  console.log('ComponentItemData Costing: ', ComponentItemData);
 
   const costData = useContext(costingInfoContext);
+
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -447,7 +450,11 @@ function TabRMCC(props) {
           i.CostingPartDetails.TotalConversionCost = getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
           i.CostingPartDetails.TotalProcessCost = getProcessTotalCost(i.CostingChildPartDetails, checkForNull(conversionGrid.ProcessCostTotal), params);
           i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'CC', checkForNull(conversionGrid.NetConversionCost), params);
+
+          // BELOW KEYS COST WITH QUANTITY
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getCCCostWithQuantity(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
+          //i.CostingPartDetails.TotalConversionCostWithQuantity = getCCCostWithQuantity(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
+
           setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
@@ -698,7 +705,6 @@ function TabRMCC(props) {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
         const params = { BOMLevel: BOMLevel, PartNumber: PartNumber };
         if (i.IsAssemblyPart === true) {
-          console.log('Data: Inside Assembly', params);
           // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
           // getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.CostingConversionCost.NetConversionCost), params);
 
@@ -871,7 +877,6 @@ function TabRMCC(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
-    console.log('values Costing: ', values);
     if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
@@ -907,7 +912,11 @@ function TabRMCC(props) {
         "ShareOfBusinessPercent": ComponentItemData.ShareOfBusinessPercent,
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
-      dispatch(saveComponentCostingRMCCTab(requestData, res => { }))
+      dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+        }
+      }))
     }
   }
 
@@ -924,69 +933,71 @@ function TabRMCC(props) {
               >
                 <Row>
                   <Col md="12">
-                    <Table className="table cr-brdr-main mb-0" size="sm">
-                      <thead>
-                        <tr>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
-                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: '150px' }}>{`BOP Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Conversion Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Pc`}</th>
-                          <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Assembly`}</th>
-                          <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {
-                          RMCCTabData && RMCCTabData.map((item, index) => {
-                            if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
+                    <div className="table-responsive">
+                      <Table className="table cr-brdr-main mb-0 rmcc-main-headings" size="sm">
+                        <thead>
+                          <tr>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                            <th className="py-3 align-middle" style={{ width: '70px' }}>{`Level`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`RM Cost`}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`BOP Cost`}</th>
+                            <th className="py-3 align-middle" style={{ width: '150px' }}>{`Conversion Cost`}</th>
+                            <th className="py-3 align-middle" style={{ width: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
+                            <th className="py-3 align-middle" style={{ width: '150px' }}>{`RM + CC Cost/Pc`}</th>
+                            {costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ width: '200px' }}>{`RM + CC Cost/Assembly`}</th>}
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            RMCCTabData && RMCCTabData.map((item, index) => {
+                              if (item.CostingPartDetails && item.CostingPartDetails.PartType === 'Component') {
 
-                              return (
-                                < >
-                                  <PartCompoment
-                                    index={index}
-                                    item={item}
-                                    rmData={item.CostingPartDetails.CostingRawMaterialsCost}
-                                    bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
-                                    ccData={item.CostingPartDetails.CostingConversionCost}
-                                    setPartDetails={setPartDetails}
-                                    setRMCost={setRMCost}
-                                    setBOPCost={setBOPCost}
-                                    setProcessCost={setProcessCost}
-                                    setOperationCost={setOperationCost}
-                                    setToolCost={setToolCost}
-                                  />
-                                </>
-                              )
+                                return (
+                                  < >
+                                    <PartCompoment
+                                      index={index}
+                                      item={item}
+                                      rmData={item.CostingPartDetails.CostingRawMaterialsCost}
+                                      bopData={item.CostingPartDetails.CostingBoughtOutPartCost}
+                                      ccData={item.CostingPartDetails.CostingConversionCost}
+                                      setPartDetails={setPartDetails}
+                                      setRMCost={setRMCost}
+                                      setBOPCost={setBOPCost}
+                                      setProcessCost={setProcessCost}
+                                      setOperationCost={setOperationCost}
+                                      setToolCost={setToolCost}
+                                    />
+                                  </>
+                                )
 
-                            } else {
-                              return (
-                                < >
-                                  <AssemblyPart
-                                    index={index}
-                                    item={item}
-                                    children={item.CostingChildPartDetails}
-                                    setPartDetails={setPartDetails}
-                                    toggleAssembly={toggleAssembly}
-                                    setRMCost={setRMCost}
-                                    setBOPCost={setBOPCost}
-                                    setProcessCost={setProcessCost}
-                                    setOperationCost={setOperationCost}
-                                    setToolCost={setToolCost}
-                                    setAssemblyOperationCost={setAssemblyOperationCost}
-                                    setAssemblyToolCost={setAssemblyToolCost}
-                                  />
-                                </>
-                              )
-                            }
-                          })
-                        }
+                              } else {
+                                return (
+                                  < >
+                                    <AssemblyPart
+                                      index={index}
+                                      item={item}
+                                      children={item.CostingChildPartDetails}
+                                      setPartDetails={setPartDetails}
+                                      toggleAssembly={toggleAssembly}
+                                      setRMCost={setRMCost}
+                                      setBOPCost={setBOPCost}
+                                      setProcessCost={setProcessCost}
+                                      setOperationCost={setOperationCost}
+                                      setToolCost={setToolCost}
+                                      setAssemblyOperationCost={setAssemblyOperationCost}
+                                      setAssemblyToolCost={setAssemblyToolCost}
+                                    />
+                                  </>
+                                )
+                              }
+                            })
+                          }
 
-                      </tbody>
-                    </Table>
+                        </tbody>
+                      </Table>
+                    </div>
                   </Col>
                 </Row>
                 <div className="col-sm-12 text-right bluefooter-butn">
@@ -1001,7 +1012,7 @@ function TabRMCC(props) {
                   </button>
                   <button
                     type={'submit'}
-                    className="submit-button mr-3 save-btn"
+                    className="submit-button mr5 save-btn"
                   >
                     <div className={'check-icon'}>
                       <img

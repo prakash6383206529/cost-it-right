@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { getOverheadProfitTabData, saveComponentOverheadProfitTab } from '../../../actions/Costing';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
+import { toastr } from 'react-redux-toastr';
+import { MESSAGES } from '../../../../../config/message';
 
 function PartOverheadProfit(props) {
   const { item } = props;
@@ -50,9 +52,7 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   useEffect(() => {
-    if (item.IsOpen === false && Count > 1) {
-      console.log('Save API Call!!!!!!!!!')
-    }
+    if (item.IsOpen === false && Count > 1) { }
   }, [item.IsOpen])
 
   /**
@@ -65,9 +65,19 @@ function PartOverheadProfit(props) {
       "LoggedInUserId": loggedInUserId(),
       "IsSurfaceTreatmentApplicable": true,
       "IsApplicableForChildParts": false,
+      "CostingNumber": costData.CostingNumber,
+      "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
+        checkForNull(item.CostingPartDetails.ProfitCost) +
+        checkForNull(item.CostingPartDetails.RejectionCost) +
+        checkForNull(item.CostingPartDetails.ICCCost) +
+        checkForNull(item.CostingPartDetails.PaymentTermCost),
       "CostingPartDetails": item.CostingPartDetails
     }
-    dispatch(saveComponentOverheadProfitTab(reqData, res => { }))
+    dispatch(saveComponentOverheadProfitTab(reqData, res => {
+      if (res.data.Result) {
+        toastr.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+      }
+    }))
   }
 
   /**
@@ -83,11 +93,11 @@ function PartOverheadProfit(props) {
           </span>
         </td>
         <td>{item && item.PartType}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.OverheadCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.OverheadCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.ProfitCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ProfitCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.RejectionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.RejectionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.ICCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ICCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td className="costing-border-right">{item.CostingPartDetails && item.CostingPartDetails.PaymentTermCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PaymentTermCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.OverheadCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.OverheadCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.ProfitCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ProfitCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.RejectionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.RejectionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.ICCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.ICCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td className="costing-border-right">{item.CostingPartDetails && item.CostingPartDetails.PaymentTermCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.PaymentTermCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={8} className="cr-innerwrap-td">

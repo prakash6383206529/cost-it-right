@@ -754,7 +754,7 @@ class AddOperation extends Component {
                     </Row>
 
                     <Row>
-                      <Col md="4" className="mb-4">
+                      <Col md="4" className="mb-4 pb-1">
                         <label
                           className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                             }`}
@@ -816,7 +816,7 @@ class AddOperation extends Component {
                         <label>Upload Files (upload up to 3 files)</label>
                         {this.state.files.length >= 3 ? (
                           <div class="alert alert-danger" role="alert">
-                            Max file uploaded.
+                            Maximum file upload limit has been reached.
                           </div>
                         ) :
                           < Dropzone

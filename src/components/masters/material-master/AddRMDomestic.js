@@ -1303,7 +1303,7 @@ class AddRMDomestic extends Component {
                             <label>Upload Files (upload up to 3 files)</label>
                             {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
-                                Max file uploaded.
+                                Maximum file upload limit has been reached.
                               </div>
                             ) : (
                                 <Dropzone

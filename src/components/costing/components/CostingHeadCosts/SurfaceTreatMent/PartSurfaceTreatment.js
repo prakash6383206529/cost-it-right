@@ -68,7 +68,8 @@ function PartSurfaceTreatment(props) {
         <div className="accordian-row" style={{ display: 'contents' }}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
-              {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
+              {item && item.PartNumber}-{item && item.BOMLevel}
+              {/* <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div> */}
             </span>
           </td>
           <td>{item && item.PartType}</td>
@@ -81,7 +82,7 @@ function PartSurfaceTreatment(props) {
 
             <button
               type="button"
-              className={'user-btn'}
+              className={'user-btn surface-treatment-btn'}
               //onClick={DrawerToggle}
               onClick={() => toggle(item.BOMLevel, item.PartNumber)}
             >
@@ -89,7 +90,7 @@ function PartSurfaceTreatment(props) {
             :
             <button
               type="button"
-              className={'user-btn'}
+              className={'user-btn surface-treatment-btn'}
               //onClick={DrawerToggle}
               onClick={() => toggle(item.BOMLevel, item.PartNumber)}
             >

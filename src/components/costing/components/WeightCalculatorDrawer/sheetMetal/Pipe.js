@@ -695,7 +695,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={'mt15'}>
+              <Row className={''}>
                 <Col md="4" className="switch">
                   <label className="switch-level">
                     <div className={'left-title'}>{'One Side'}</div>

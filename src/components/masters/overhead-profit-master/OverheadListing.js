@@ -60,14 +60,14 @@ class OverheadListing extends Component {
             model_type_id: modelType,
         }
         this.props.getOverheadDataList(filterData, (res) => {
-            if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-            } else if (res && res.response && res.response.status === 412) {
-                this.setState({ tableData: [] })
-            } else {
-                this.setState({ tableData: [] })
-            }
+            // if (res && res.status === 200) {
+            //     let Data = res.data.DataList;
+            //     this.setState({ tableData: Data })
+            // } else if (res && res.response && res.response.status === 412) {
+            //     this.setState({ tableData: [] })
+            // } else {
+            //     this.setState({ tableData: [] })
+            // }
         })
     }
 
@@ -399,7 +399,7 @@ class OverheadListing extends Component {
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
-            paginationSize: 5,
+
         };
 
         return (
@@ -546,11 +546,11 @@ class OverheadListing extends Component {
                             <TableHeaderColumn dataField="VendorName" width={120} columnTitle={true} dataAlign="left" >{this.renderVendor()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ClientName" width={120} columnTitle={true} dataAlign="left" >{this.renderClient()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="left" >{this.renderModelType()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="OverheadApplicabilityType" width={160} columnTitle={true} dataAlign="left" >{this.renderOverheadAppli()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="OverheadPercentage" width={160} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter} >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="OverheadApplicabilityType" width={110} columnTitle={true} dataAlign="left" >{this.renderOverheadAppli()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadPercentage" width={130} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter} >{this.renderOverheadAppliPercent()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
+                            <TableHeaderColumn searchable={false} dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
                             {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                             <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>

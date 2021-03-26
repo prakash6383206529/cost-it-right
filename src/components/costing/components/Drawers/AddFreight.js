@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Container, Row, Col, } from 'reactstrap';
+import { Container, Row, Col, Label } from 'reactstrap';
 import { getFreigtFullTruckCapacitySelectList, getRateCriteriaByCapacitySelectList, getRateByCapacityCriteria } from '../../actions/Costing';
 import { netHeadCostContext } from '../CostingDetailStepTwo';
 import { toastr } from 'react-redux-toastr';
@@ -9,6 +9,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
 import Switch from "react-switch";
+import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
 
 function AddFreight(props) {
 
@@ -38,6 +39,17 @@ function AddFreight(props) {
   const [criteria, setCriteria] = useState([]);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
+  let tempText = '';
+  if (rowObjData.IsPartTruckLoad === 'Percentage') tempText = Percentage;
+  if (rowObjData.IsPartTruckLoad === 'Fixed') tempText = Fixed;
+
+  const [freightType, setfreightType] = useState(isEditFlag ? tempText : '');
+  const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
+
+  useEffect(() => {
+    setfreightType(isEditFlag ? tempText : '')
+  }, [rowObjData]);
+
   useEffect(() => {
     dispatch(getFreigtFullTruckCapacitySelectList())
   }, []);
@@ -47,11 +59,22 @@ function AddFreight(props) {
     name: ['PackagingPercentage'],
   });
 
+  const RateFieldValue = useWatch({
+    control,
+    name: ['Rate'],
+  });
+
   useEffect(() => {
     if (criteria) {
       calculateApplicabilityCost(criteria.value)
     }
   }, [fieldValues]);
+
+  useEffect(() => {
+    if (applicability) {
+      calculateCost(applicability.label)
+    }
+  }, [RateFieldValue]);
 
   const freightFullTruckCapacitySelectList = useSelector(state => state.freight.freightFullTruckCapacitySelectList)
   const rateCriteriaByCapacitySelectList = useSelector(state => state.costing.rateCriteriaByCapacitySelectList)
@@ -135,6 +158,46 @@ function AddFreight(props) {
     }
   }
 
+
+  /**
+  * @method handleApplicabilityChange
+  * @description  APPLICABILITY CHANGE HANDLE
+  */
+  const handleApplicabilityChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setApplicability(newValue)
+      calculateCost(newValue.value)
+    } else {
+      setApplicability([])
+    }
+  }
+
+  /**
+   * @method calculateCost
+   * @description APPLICABILITY CALCULATION
+   */
+  const calculateCost = (Text) => {
+    const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
+    const RateAsPercentage = getValues('Rate');
+
+    switch (Text) {
+      case 'RM':
+        setValue('FreightCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(RateAsPercentage), 2))
+        break;
+
+      case 'RM + CC':
+        setValue('FreightCost', checkForDecimalAndNull((NetRawMaterialsCost + NetConversionCost) * calculatePercentage(RateAsPercentage), 2))
+        break;
+
+      case 'CC':
+        setValue('FreightCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(RateAsPercentage), 2))
+        break;
+
+      default:
+        break;
+    }
+  }
+
   const handleQuantityChange = (event) => {
     if (!isNaN(event.target.value)) {
       const Rate = getValues('Rate')
@@ -166,6 +229,14 @@ function AddFreight(props) {
   }
 
   /**
+  * @method onPressHeads
+  * @description FREIGHT FLAG
+  */
+  const onPressHeads = (FreightFlag) => {
+    setfreightType(FreightFlag)
+  }
+
+  /**
   * @method cancel
   * @description used to Reset form
   */
@@ -175,14 +246,21 @@ function AddFreight(props) {
   }
 
   const onSubmit = data => {
+    let freightTypeText = '';
+
+    if (freightType === Fixed) freightTypeText = 'Fixed';
+    if (freightType === Percentage) freightTypeText = 'Percentage';
+    if (freightType === FullTruckLoad) freightTypeText = 'FTL';
+    if (freightType === PartTruckLoad) freightTypeText = 'PTL';
+
     let formData = {
       FreightDetailId: isEditFlag ? rowObjData.FreightDetailId : '',
       FreightId: isEditFlag ? rowObjData.FreightId : '',
-      IsPartTruckLoad: IsPartTruckLoad,
-      Capacity: !IsPartTruckLoad ? data.Capacity.value : '',
-      Criteria: data.Criteria.value,
-      Rate: data.Rate,
-      Quantity: data.Quantity,
+      IsPartTruckLoad: freightTypeText,
+      Capacity: freightType === Fixed || freightType === Percentage ? '' : (!IsPartTruckLoad ? data.Capacity.value : ''),
+      Criteria: freightType === Fixed ? '' : (freightType === Percentage ? applicability.label : data.Criteria.value),
+      Rate: freightType === Fixed ? '' : data.Rate,
+      Quantity: freightType === Fixed || freightType === Percentage ? '' : data.Quantity,
       FreightCost: data.FreightCost,
       Freight: '',
     }
@@ -197,7 +275,7 @@ function AddFreight(props) {
     <div>
       <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
         <Container>
-          <div className={'drawer-wrapper'}>
+          <div className={'drawer-wrapper drawer-md'}>
 
             <Row className="drawer-heading">
               <Col>
@@ -213,7 +291,7 @@ function AddFreight(props) {
             <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
               <>
                 <Row className="ml-0">
-                  <Col md="12" className="switch">
+                  {/* <Col md="12" className="switch">
                     <label className={'left-title'}>{'Freight Type'}</label>
                   </Col>
                   <Col md="12" className="switch mb15">
@@ -235,6 +313,50 @@ function AddFreight(props) {
                       />
                       <div className={'right-title'}>{'Part Truck Load'}</div>
                     </label>
+                  </Col> */}
+                  <Col md="12">
+                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                      <input
+                        type="radio"
+                        name="freightType"
+                        register={register}
+                        checked={freightType === FullTruckLoad ? true : false}
+                        onClick={() => onPressHeads(FullTruckLoad)}
+                        disabled
+                      />{' '}
+                      <span>Full Truck Load</span>
+                    </Label>
+                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                      <input
+                        type="radio"
+                        name="freightType"
+                        register={register}
+                        checked={freightType === PartTruckLoad ? true : false}
+                        onClick={() => onPressHeads(PartTruckLoad)}
+                        disabled
+                      />{' '}
+                      <span>Part Truck Load</span>
+                    </Label>
+                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                      <input
+                        type="radio"
+                        name="freightType"
+                        register={register}
+                        checked={freightType === Fixed ? true : false}
+                        onClick={() => onPressHeads(Fixed)}
+                      />{' '}
+                      <span>Fixed</span>
+                    </Label>
+                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                      <input
+                        type="radio"
+                        name="freightType"
+                        register={register}
+                        checked={freightType === Percentage ? true : false}
+                        onClick={() => onPressHeads(Percentage)}
+                      />{' '}
+                      <span>Percentage</span>
+                    </Label>
                   </Col>
                   <Col md="12">
                     <SearchableSelectHookForm
@@ -243,43 +365,60 @@ function AddFreight(props) {
                       placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
-                      rules={{ required: true }}
+                      rules={{ required: (freightType !== Fixed && freightType !== Percentage) ? true : false }}
                       register={register}
                       defaultValue={capacity.length !== 0 ? capacity : ''}
                       options={renderListing('Capacity')}
-                      mandatory={true}
+                      mandatory={freightType !== Fixed && freightType !== Percentage ? true : false}
                       handleChange={handleCapacityChange}
                       errors={errors.Capacity}
-                      disabled={isEditFlag ? true : false}
+                      disabled={(isEditFlag || freightType === Fixed || freightType === Percentage) ? true : false}
                     />
                   </Col>
                   <Col md="12">
-                    <SearchableSelectHookForm
-                      label={'Rate Criteria'}
-                      name={'Criteria'}
-                      placeholder={'-Select-'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={criteria.length !== 0 ? criteria : ''}
-                      options={renderListing('RateCriteria')}
-                      mandatory={true}
-                      handleChange={handleCriteriaChange}
-                      errors={errors.Criteria}
-                      disabled={isEditFlag ? true : false}
-                    />
+                    {freightType === Percentage ?
+                      <SearchableSelectHookForm
+                        label={'Applicability'}
+                        name={'Applicability'}
+                        placeholder={'-Select-'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={applicability.length !== 0 ? applicability : ''}
+                        options={renderListing('Applicability')}
+                        mandatory={true}
+                        handleChange={handleApplicabilityChange}
+                        errors={errors.Applicability}
+                        disabled={isEditFlag ? true : false}
+                      />
+                      :
+                      <SearchableSelectHookForm
+                        label={'Rate Criteria'}
+                        name={'Criteria'}
+                        placeholder={'-Select-'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: freightType !== Fixed ? true : false }}
+                        register={register}
+                        defaultValue={criteria.length !== 0 ? criteria : ''}
+                        options={renderListing('RateCriteria')}
+                        mandatory={freightType !== Fixed ? true : false}
+                        handleChange={handleCriteriaChange}
+                        errors={errors.Criteria}
+                        disabled={(isEditFlag || freightType === Fixed) ? true : false}
+                      />}
                   </Col>
                   <Col md="12">
                     <TextFieldHookForm
-                      label="Rate"
+                      label={`${freightType === Percentage ? 'Percentage' : 'Rate'}`}
                       name={'Rate'}
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
+                      mandatory={freightType !== Fixed ? true : false}
                       rules={{
-                        required: true,
+                        required: freightType !== Fixed ? true : false,
                         // pattern: {
                         //   value: /^[0-9]*$/i,
                         //   message: 'Invalid Number.'
@@ -291,7 +430,7 @@ function AddFreight(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Rate}
-                      disabled={true}
+                      disabled={freightType !== Percentage ? true : false}
                     />
                   </Col>
                   <Col md="12">
@@ -301,9 +440,9 @@ function AddFreight(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
+                      mandatory={freightType !== Fixed && freightType !== Percentage ? true : false}
                       rules={{
-                        required: true,
+                        required: freightType !== Fixed && freightType !== Percentage ? true : false,
                         pattern: {
                           value: /^[0-9]*$/i,
                           message: 'Invalid Number.',
@@ -318,11 +457,9 @@ function AddFreight(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Quantity}
-                      disabled={false}
+                      disabled={(freightType === Fixed || freightType === Percentage) ? true : false}
                     />
                   </Col>
-
-
 
                   <Col md="12">
                     <TextFieldHookForm
@@ -345,7 +482,7 @@ function AddFreight(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.FreightCost}
-                      disabled={true}
+                      disabled={freightType !== Fixed ? true : false}
                     />
                   </Col>
                 </Row>

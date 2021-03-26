@@ -165,9 +165,25 @@ function TabOverheadProfit(props) {
       checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
 
+    if (overheadObj.IsOverheadFixedApplicable === true) {
+      OverheadCost = overheadObj.OverheadFixedTotalCost;
+    }
+
+    if (overheadObj.IsOverheadCombined === true) {
+      OverheadCost = overheadObj.OverheadCombinedTotalCost;
+    }
+
     let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
       checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
+
+    if (profitObj.IsProfitFixedApplicable === true) {
+      ProfitCost = profitObj.ProfitFixedTotalCost;
+    }
+
+    if (profitObj.IsProfitCombined === true) {
+      ProfitCost = profitObj.ProfitCombinedTotalCost;
+    }
 
     let tempArr = [];
     try {
@@ -278,6 +294,7 @@ function TabOverheadProfit(props) {
     dispatch(setOverheadProfitData(arr, (res) => { }))
   }
 
+
   /**
   * @method dispatchRejectionDetail
   * @description SET REJECTION DETAIL 
@@ -289,14 +306,12 @@ function TabOverheadProfit(props) {
       tempArr = arr && arr.map(i => {
 
         if (i.IsAssemblyPart === true) {
-
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
 
           formatData(rejectionObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
-
           i.CostingPartDetails.CostingRejectionDetail = rejectionObj;
           i.CostingPartDetails.RejectionCost = rejectionObj.RejectionTotalCost;
 
@@ -315,9 +330,9 @@ function TabOverheadProfit(props) {
   }
 
   /**
-* @method setICCDetail
-* @description SET ICC DETAILS
-*/
+  * @method setICCDetail
+  * @description SET ICC DETAILS
+  */
   const setICCDetail = (data, params) => {
     let arr = dispatchICCDetail(data, params, OverheadProfitTabData)
     dispatch(setOverheadProfitData(arr, (res) => { }))
@@ -335,24 +350,24 @@ function TabOverheadProfit(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.ICCCost = ICCObj ? ICCObj.NetCost : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj ? true : false,
-            NetICC: ICCObj ? ICCObj.NetCost : 0,
+            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 
           formatData(ICCObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          i.CostingPartDetails.ICCCost = ICCObj ? ICCObj.NetCost : 0;
+          i.CostingPartDetails.ICCCost = ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
             IsInventoryCarringCost: ICCObj ? true : false,
-            NetICC: ICCObj ? ICCObj.NetCost : 0,
+            NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 
         } else {
@@ -368,6 +383,7 @@ function TabOverheadProfit(props) {
     return tempArr;
 
   }
+
 
   /**
 * @method setPaymentTermsDetail
@@ -390,24 +406,24 @@ function TabOverheadProfit(props) {
 
         if (i.IsAssemblyPart === true) {
 
-          i.CostingPartDetails.PaymentTermCost = PaymentTermObj ? PaymentTermObj.NetCost : 0;
+          i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
             IsPaymentTerms: PaymentTermObj ? true : false,
-            NetPaymentTermCost: PaymentTermObj ? PaymentTermObj.NetCost : 0,
+            NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
 
           formatData(PaymentTermObj, params, i.CostingChildPartDetails)
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
-          i.CostingPartDetails.PaymentTermCost = PaymentTermObj ? PaymentTermObj.NetCost : 0;
+          i.CostingPartDetails.PaymentTermCost = PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0;
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             PaymentTermDetail: PaymentTermObj,
             IsPaymentTerms: PaymentTermObj ? true : false,
-            NetPaymentTermCost: PaymentTermObj ? PaymentTermObj.NetCost : 0,
+            NetPaymentTermCost: PaymentTermObj && PaymentTermObj.NetCost ? checkForNull(PaymentTermObj.NetCost) : 0,
           };
 
         } else {
@@ -469,45 +485,39 @@ function TabOverheadProfit(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              {/* <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{""}</h2>
-                  </div>
-                </Col>
-              </Row> */}
 
-              <Row className="m-0">
-                <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
-                  <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
-                  <div className="switch d-inline-flex">
-                    <label className="switch-level d-inline-flex w-auto">
-                      <div className={"left-title"}>{" Assembly Level"}</div>
-                      <span className="cr-sw-level">
-                        <span className="cr-switch-icon">
-                          <Switch
-                            onChange={onPressApplicability}
-                            checked={IsApplicableForChildParts}
-                            id="normal-switch"
-                            disabled={costData.IsAssemblyPart ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#CCC"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
+              {costData.IsAssemblyPart &&
+                <Row className="m-0">
+                  <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
+                    <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
+                    <div className="switch d-inline-flex">
+                      <label className="switch-level d-inline-flex w-auto">
+                        <div className={"left-title"}>{" Assembly Level"}</div>
+                        <span className="cr-sw-level">
+                          <span className="cr-switch-icon">
+                            <Switch
+                              onChange={onPressApplicability}
+                              checked={IsApplicableForChildParts}
+                              id="normal-switch"
+                              disabled={costData.IsAssemblyPart ? true : false}
+                              background="#4DC771"
+                              onColor="#4DC771"
+                              onHandleColor="#ffffff"
+                              offColor="#CCC"
+                              uncheckedIcon={false}
+                              checkedIcon={false}
+                              height={20}
+                              width={46}
+                            />
+                          </span>
+                          <div className={"right-title"}>
+                            {"Sub Assembly Level"}
+                          </div>
                         </span>
-                        <div className={"right-title"}>
-                          {"Sub Assembly Level"}
-                        </div>
-                      </span>
-                    </label>
-                  </div>
-                </Col>
-              </Row>
+                      </label>
+                    </div>
+                  </Col>
+                </Row>}
 
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 <Row>
@@ -521,7 +531,7 @@ function TabOverheadProfit(props) {
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Rejection`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net ICC`}</th>
-                          <th className="py-3 align-middle" className="costing-border-right" style={{ width: "150px" }}>{`Payment Terms`}</th>
+                          <th className="py-3 align-middle costing-border-right" style={{ width: "150px" }}>{`Payment Terms`}</th>
                         </tr>
                       </thead>
                       <tbody>

@@ -540,7 +540,7 @@ function TabSurfaceTreatment(props) {
               <Row className="m-0">
                 <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                   <label
-                    className={`custom-checkbox`}
+                    className={`custom-checkbox mb-0`}
                     onChange={onPressIncludeSurfaceTreatment}
                   >
                     Include Surface Treatment Cost in Overhead & Profit
@@ -565,7 +565,7 @@ function TabSurfaceTreatment(props) {
               >
                 <Row>
                   <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm">
+                    <Table className="table cr-brdr-main surfacetreatment-main-headings" size="sm">
                       <thead>
                         <tr>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>

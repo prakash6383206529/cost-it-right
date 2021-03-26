@@ -16,6 +16,7 @@ import AddTaxDetails from './AddTaxDetails';
 import moment from 'moment';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class TaxListing extends Component {
   constructor(props) {
@@ -176,7 +177,7 @@ class TaxListing extends Component {
     const { isOpen, isEditFlag, AddAccessibility } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+      noDataText: (this.props.taxDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       //exportCSVText: 'Download Excel',
       //onExportToCSV: this.onExportToCSV,
       //paginationShowsTotal: true,
@@ -185,7 +186,7 @@ class TaxListing extends Component {
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
       lastPage: <span className="last-page-pg"></span>,
-      paginationSize: 5,
+
     };
     return (
       < >

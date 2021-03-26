@@ -136,10 +136,9 @@ function RawMaterialCost(props) {
     if (!isNaN(event.target.value)) {
       const GrossWeight = checkForNull(event.target.value)
       const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
-      // if (!GrossWeight || !FinishWeight) {
-      //   return ''
-      // }
-      const NetLandedCost = GrossWeight * tempData.RMRate - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+
+      const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+      const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
@@ -162,7 +161,8 @@ function RawMaterialCost(props) {
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
 
       if (IsFinishWeightValid(GrossWeight, FinishWeight)) {
-        const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
+        const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+        const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
         tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
         tempArr = Object.assign([...gridData], { [index]: tempData })
         setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
@@ -197,7 +197,6 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData) => {
-    console.log(weightData, "WC");
     let tempArr = []
     let tempData = gridData[editIndex]
 
@@ -269,7 +268,7 @@ function RawMaterialCost(props) {
               {/*RAW MATERIAL COST GRID */}
 
               <Col md="12">
-                <Table className="table cr-brdr-main" size="sm">
+                <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
                   <thead>
                     <tr>
                       <th>{`RM Name`}</th>

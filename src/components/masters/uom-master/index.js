@@ -220,7 +220,7 @@ class UOMMaster extends Component {
       nextPage: <span className="next-page-pg"></span>, // Next page button text
       firstPage: <span className="first-page-pg"></span>, // First page button text
       lastPage: <span className="last-page-pg"></span>,
-      paginationSize: 5,
+
     };
     return (
       <>
@@ -266,7 +266,7 @@ class UOMMaster extends Component {
                 pagination
               >
                 <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}                >                  Unit                    </TableHeaderColumn>
-                <TableHeaderColumn dataField="UnitType" dataSort={true}>Unit Type</TableHeaderColumn>
+                <TableHeaderColumn dataField="UnitType" dataAlign="right" dataSort={true}>Unit Type</TableHeaderColumn>
                 {/* <TableHeaderColumn
                   dataField="IsActive"
                   dataFormat={this.statusButtonFormatter}

@@ -10,6 +10,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { ZBC } from '../../../../config/constants';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddOperation(props) {
 
@@ -80,11 +81,12 @@ function AddOperation(props) {
 
   const options = {
     clearSearch: true,
+    noDataText: (tableData === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
     firstPage: <span className="first-page-pg"></span>, // First page button text
     lastPage: <span className="last-page-pg"></span>,
-    paginationSize: 2,
+
   };
 
   const onRowSelect = (row, isSelected, e) => {

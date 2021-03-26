@@ -1087,7 +1087,7 @@ class AddPower extends Component {
                       <Row>
                         {this.state.IsVendor &&
                           <>
-                            <Col md="3">
+                            <Col md="4">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
@@ -1112,7 +1112,7 @@ class AddPower extends Component {
                                 </div>}
                               </div>
                             </Col>
-                            <Col md="3">
+                            <Col md="4">
                               <Field
                                 label="Vendor Plant"
                                 name="VendorPlant"
@@ -1128,7 +1128,7 @@ class AddPower extends Component {
                                 disabled={false}
                               />
                             </Col>
-                            <Col md="3">
+                            <Col md="4">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
                                   <Field
@@ -1681,7 +1681,7 @@ class AddPower extends Component {
                                           <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                                           <td>{item.PowerContributionPercentage}</td>
                                           {/* Ask which value to use for trim */}
-                                          <th>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForInputOutput)}</th>
+                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForInputOutput)}</td>
                                           <td>
                                             <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                             <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />

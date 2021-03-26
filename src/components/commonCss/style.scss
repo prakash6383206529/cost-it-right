@@ -773,7 +773,7 @@ button.add-btn {
 }
 
 .table.cr-brdr-main thead th{color:#3D4465;}
-.withBorder .form-control {
+.withBorder .form-control,.form-control {
   border: 1px solid #c2cbe8;
   &::placeholder{
     color: #A4ABC5 ;
@@ -1256,9 +1256,15 @@ label for[normal-switch]{
         background-color: #fff;
         &:before{display: none;}
       }
+      >.d-inline-flex{
+        position: relative;
+        z-index: 12;
+      }
     }
   }
   .blue-before{
+    position: relative;
+    z-index: 12;
     .filter-block {
       position: initial;
       height: 32px!important;
@@ -1510,7 +1516,11 @@ $roboto: "Roboto", sans-serif;
 	.react-datepicker-wrapper {
 		.react-datepicker__input-container {
 			input {
-				min-height: 40px;
+        min-height: 40px;
+        &:disabled{
+          color: hsl(0,0%,60%);
+          font-size: 13px;
+        }
 			}
 		}
 	}
@@ -1795,12 +1805,12 @@ body {
 	.cr-brdr-main {
 		tbody {
 			td {
-				font-size: 14px;
+				font-size: 15px;
 			}
 		}
 		tr {
 			th {
-				font-size: 14px;
+				font-size: 15px;
 			}
 		}
 	}
@@ -1876,7 +1886,7 @@ html {
 	}
 }
 .left-border {
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 
 // =================approval-summary=========================
@@ -2062,7 +2072,17 @@ html {
   font-size: 13px;
   color: #A4ABC5 !important;
 }
+.css-107lb6w-singleValue,.css-1wa3eu0-placeholder{
+  font-size: 13px;
+  font-weight: 400;
+}
 
+.select--is-disabled{
+  .css-12jo7m5{
+    color: hsl(0,0%,60%);
+    font-size: 13px;
+  }
+}
 
 // input range
 .input-range__label.input-range__label--min {
@@ -2083,9 +2103,11 @@ html {
 	.apply {
 		padding-left: 15px;
 		padding-right: 15px;
-		width: auto;
+    width: auto;
 	}
 }
+
+// input range slider 'Net Landed Range (INR)' css 
 .input-range {
   .input-range__track--background
   {
@@ -2138,7 +2160,28 @@ html {
     font-family: $roboto;
 	}
 }
-// input range
+
+//fire-fox css
+@-moz-document url-prefix() {
+  // input range slider 'Net Landed Range (INR)' css 
+  .input-range {
+    .input-range__slider-container {
+      &:nth-child(2) {
+        .input-range__label--value {
+          span {
+            top: -4px;
+          }
+        }
+      }
+    }
+  }
+}
+.filter-block {
+  .apply{vertical-align: top;}
+}
+//fire-fox css
+
+// input range slider 'Net Landed Range (INR)' css  end
 
 .w-180{
   min-width: 180px;
@@ -2257,6 +2300,15 @@ input[type="number"].form-control {
       margin-bottom: -20px;
     }
   }
+  .bom-action-row{
+    position: relative;
+    z-index: 1;
+  }
+  .flowspace-row{
+    position: relative;
+    z-index: 0;
+    margin-top: -70px;
+  }
 }
 .react-bs-table-search-form {
   .btn-secondary:hover{background-color: #1d59af;
@@ -2282,6 +2334,16 @@ table{
   .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: 27px;}
 }
 button:disabled{pointer-events: none;}
+
+//fire-fox css
+@-moz-document url-prefix() {
+  .add-min-height {
+    .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{
+      margin-top: 29px;
+    }
+  }
+}
+  //fire-fox css
 
 //=============== costing details page only
 .costing-details-page{
@@ -2394,7 +2456,7 @@ button:disabled{pointer-events: none;}
 .search-user-block{
   position: absolute;
   bottom: -47px;
-  z-index: 1;
+  z-index: 2;
   right: 0;
 }
 .no-filter-row{
@@ -2666,9 +2728,19 @@ opacity: 0.5;
 .css-6q0nyr-Svg{color: #959CB6;}
 .add-volume-table{
   td{
-    .edit-text.form-control{
+    .form-control{
       border: 1px solid #c2cbe8;
       max-width: 250px;
+      line-height: initial;
+      font-size: 14px;
+      font-weight: 400;
+      height: 40px;
+      padding: 12px;
+    border-radius: 4px;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     }
   }
 }
@@ -2731,7 +2803,8 @@ opacity: 0.5;
           margin-bottom: 0px;
         }
         button{
-          margin: 2px 0;
+          margin-top:2px;
+          margin-bottom:2px;
         }
       }
     }
@@ -2766,9 +2839,9 @@ opacity: 0.5;
     }
   }
 }
-.cr-prt-nm1.cr-prt-link1.L1{
-  margin-left: 0px;
-}
+// .cr-prt-nm1.cr-prt-link1.L1{
+//   margin-left: 0px;
+// }
 
 body {
   .btn-lg{
@@ -2815,7 +2888,32 @@ body {
 .table-responsive{
   padding-bottom: 1px;
 }
+
+// drawer css
 .MuiDrawer-paper {
+  .sob-drawer{
+    .form{
+      .cr-select-height{
+        .form-group{
+          min-height: unset;
+          margin-bottom: 0;
+          label{
+            display: none;
+          }
+        }
+      }
+    }
+  }
+  .drawer-wrapper.WIDTH-400{
+    .form-check-label{
+      display: inline-flex;
+      align-items: center;
+      line-height: initial;
+      input{
+        margin-right: 5px;
+      }
+    }
+  }
   .cr-subtabs-head.nav-tabs {
     border-bottom: none;
     .nav-link{
@@ -2832,6 +2930,11 @@ body {
       border-left: none;
     }   
   }
+  form{
+    .justify-content-between.my-3.row{
+      margin-top: 0px !important;
+    }
+  }
   .sf-btn-footer{
     .bluefooter-butn{
       background-color: #fff;
@@ -2842,6 +2945,7 @@ body {
     padding-right: 15px !important;
   }
 }
+// drawer css End
 
 .head-text{
   color: #3d4465;
@@ -2887,11 +2991,12 @@ body {
 .pb-15{padding-bottom: 15px;}
 .mt-15{margin-top: 15px;}
 .pt-15{padding-top: 15px;}
+.pl10{padding-left: 10px !important;}
 
 .costing-page-drawer{
   .left-border{
-    margin-top: 15px;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 }
 .costing-disacount-other-cost-footer{
@@ -2995,7 +3100,7 @@ body {
       }
     }
     .form{
-      .form-group,.inputwith-icon{
+      .form-group,.inputwith-icon,.form-group-searchable-select{
         min-height: unset;
       }
       .costing-table-next{
@@ -3007,6 +3112,11 @@ body {
         }
       }
     }
+  }
+}
+.add-operation-drawer{
+  .left-border{
+    margin-top: 10px;
   }
 }
 .mn-height-auto{
@@ -3023,8 +3133,13 @@ body {
 .btn-mr-rate{
   margin-top: 28px;  
 }
-.css-yt9ioa-option{
+.css-1n7v3ny-option,.css-9gakcf-option,.css-yt9ioa-option{
   word-break: break-word;
+}
+.css-4ljt47-MenuList{
+  >div{
+    word-break: break-all;
+  }
 }
 .date-filed{
   width: 180px;
@@ -3060,6 +3175,13 @@ body{
     }
   }
 }
+.add-bop-drawer{
+  table{
+    td,th{
+      padding: 0.71rem 0.35rem;
+    }
+  }
+}
 .costing-rm-drawer{
   max-width: 1320px;
   .drawer-1500px{
@@ -3074,7 +3196,6 @@ body{
 .react-bs-table .react-bs-container-footer>table>thead>tr>th, .react-bs-table .react-bs-container-header>table>thead>tr>th{vertical-align: bottom;}
 .react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range{background-color: #256bd1;}
 .react-datepicker__day--selected:hover, .react-datepicker__day--in-selecting-range:hover, .react-datepicker__day--in-range:hover, .react-datepicker__month-text--selected:hover, .react-datepicker__month-text--in-selecting-range:hover, .react-datepicker__month-text--in-range:hover, .react-datepicker__quarter-text--selected:hover, .react-datepicker__quarter-text--in-selecting-range:hover, .react-datepicker__quarter-text--in-range:hover, .react-datepicker__year-text--selected:hover, .react-datepicker__year-text--in-selecting-range:hover, .react-datepicker__year-text--in-range:hover{background-color: #2760b3;}
-.react-datepicker__day--today, .react-datepicker__month-text--today, .react-datepicker__quarter-text--today, .react-datepicker__year-text--today{color:#256bd1;}
 .filled-icon-inside{
   position: relative;
   .calculate-icon{
@@ -3102,20 +3223,556 @@ body{
     }
   }
 }
+// radio-box standard radio buttons
+.radio-box{
+  position: relative;
+  input{
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    cursor: pointer;
+  }
+  > span{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    z-index: 1;
+    &:before{
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 1px solid #767676;
+      border-radius: 50px;
+      left: -18px;
+      top: 0;
+      bottom: 0;
+      margin:auto;
+    }
+    &:after{
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50px;
+      background-color: #fff;
+      left: -15px;
+      top: 0;
+      bottom: 0;
+      margin:auto;
+    }
+  }
+  input:checked ~ span{
+    &:before{
+      border-color: #256bd1;
+    }
+    &:after{
+      background-color: #256bd1;
+    }
+  }
+  input:disabled ~ span{
+    &:before,&:after{opacity: 0.5;}
+  }
+}
+
+// @supports (-ms-ime-align:auto) {
+//   .drawer-wrapper{
+//     input[type="radio"]{
+//       appearance: none;
+//       width: 14px;
+//       height: 14px;
+//       border: 1px solid #767676;
+//       border-radius: 20px;
+//       cursor: pointer;
+//     }
+//     input[type="radio"]:checked {
+//       background-color: #256bd1;
+//       border: 1px solid #fff;
+//       box-shadow: 0 0 0 1px #256bd1;
+//     }
+//   }
+// }
+// radio-box standard radio buttons end
+.view-conversion-cost-drawer{
+  .drawer-1500px{
+    min-width: 1110px;
+  }
+}
+.zindex-15{z-index: 15;}
+
 
 // responsive media query start
 @media(max-width:1600px){
-  // .input-range {
-  //   .input-range__track--background{
-  //       &:before {
-  //         width: 60px;
-  //         top: -39px;
-  //       }// before
-  //     }// input-range__track--background
-  //   }// input-range
+  // costing details page only
+  .table.cr-brdr-main{font-size: 14px;}
+  .table-responsive{
+    .cr-brdr-main {
+      tbody{
+        th,td{font-size: 14px;}
+      }
+    }
+  }
+  .costing-details-page{    
+    .table {
+      td,th{
+        padding: 0.71rem 15px;
+      }
+    }
+    .shadow-lgg {
+      .form  {
+        .tab-tool-cost-footer,.costing-overhead-profit-footer{
+          margin: 0 -16px -15px;
+        }
+      }
+    }
+
+    .costing-highlight-row{
+      background-color: #F8FCFF;
+      >div{
+        >td{
+          padding: 15px;
+        }
+      }
+    }
+    .costing-highlight-row.accordian-row{
+      > td{
+        padding: 10px 15px;
+      }
+    }
+  
+    .accordian-row{
+      > td{
+        padding: 15px;
+      }
+    }
+    .costing-border-x.px-30{
+      padding: 0 15px;
+    }
+    .rmcc-main-headings{
+      >thead{
+        >tr{
+          >th:nth-child(6){
+            width: 120px !important;
+          }
+          >th:nth-child(9){
+            width: 165px !important;
+          }
+        }
+      }
+    }
+    
+    .surfacetreatment-main-headings{
+      >thead{
+        >tr{
+          >th:nth-child(3){
+            width: 120px !important;
+          }
+          >th:nth-child(5){
+            width: 130px !important;
+          }
+        }
+      }
+    }    
+  }
+  // costing details page only end
 }// 1600px media query end
 
 @media(max-width:1366px){
+  // ========= zoom whole website to 80% css start's here
+  body{font-size: calc(1rem * 80 / 100);}
+  .nav-link {
+    display: block;
+    padding: calc(0.5rem * 80 / 100) calc(0.75rem * 80 / 100);
+  }
+  .sf-mainheader{
+     .img-xs{
+      width: calc(30px * 80 / 100);
+      min-width: calc(30px * 80 / 100);
+      height: calc(30px * 80 / 100);
+      margin-right: calc(8px * 80 / 100);
+     }
+     .navbar{
+      .navbar-brand{
+        padding-top: calc(.3125rem * 80 / 100);
+        padding-bottom: calc(.3125rem * 80 / 100);
+        img{
+          height: calc(30px * 80 / 100);
+        }
+      }
+     }
+     .nav-link-user button{
+      height: calc(43px * 80 / 100);
+      font-size: calc(14px * 80 / 100);
+     }
+     .count{
+      width: calc(1rem * 80 / 100);
+      height: calc(1rem * 80 / 100);
+      line-height: calc(1rem * 80 / 100);
+     }
+     .cr-logout-btn {
+       .nav-link {
+        padding-top: calc(2px * 80 / 100);
+        padding-right: calc(2px * 80 / 100);
+        margin-left: calc(4px * 80 / 100);
+         img{
+          width: calc(19px * 80 / 100);
+          height: calc(19px * 80 / 100);
+         }
+        }
+      }
+      .nav-scroller{
+        nav{height: calc(50px * 80 / 100)}
+        a {
+          font-size: calc(1rem * 80 / 100);
+          margin-right: calc(25px * 80 / 100);
+          img{
+          margin-right: calc(12px * 80 / 100);
+          height: calc(19px * 80 / 100);
+          }
+        }
+      }
+      ul.bread-list.d-inline-flex li.active{
+        font-size: calc(14px * 80 / 100);
+        padding: calc(3px * 80 / 100) calc(13px * 80 / 100);
+      }
+    }
+    // .sf-mainheader
+    .breadcrumbs{
+      padding:calc(10px * 80 / 100) calc(15px * 80 / 100);
+      top: calc(95px * 80 / 100);
+      ul{
+        li a{
+          font-size: calc(14px * 80 / 100);
+          padding: 0 calc(13px * 80 / 100);
+        }
+      }
+    }// .breadcrumbs
+
+    // left side menu
+    .left-side-menu{
+      width: calc(205px * 80 / 100);
+      .mb5{
+        margin-bottom: calc(5px * 80 / 100);
+      }
+      ul{
+        li{
+          padding: calc(9px * 80 / 100) calc(8px * 80 / 100);
+          border-radius: calc(10px * 80 / 100) 0px 0px calc(10px * 80 / 100);
+          a{
+            font-size: calc(15px * 80 / 100);
+            &:after{
+              font-size: calc(14px * 80 / 100);
+              right:calc(4px * 80 / 100);
+              top: calc(3px * 80 / 100);
+            }
+          }
+        }
+      }
+    }
+    // left side menu
+
+    // right side .content-page
+    body{
+      .btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary{
+        font-size: calc(14px * 80 / 100);
+        padding-left: calc(15px * 80 / 100);
+        padding-right: calc(15px * 80 / 100);
+        line-height: calc(14px * 80 / 100);
+        height: calc(32px * 80 / 100);
+      }
+      .content-page{
+        width: calc(100% - (205px * 80 / 100));
+        padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100)
+      }
+      .text-help{
+        font-size: calc(12px * 80 / 100);
+        height: calc(1em * 80 / 100);
+      }
+      .content-page{
+        .filter-block {
+          h5{
+            font-size: calc(16px * 80 / 100);
+            padding:calc(7px * 80 / 100) calc(15px * 80 / 100) calc(7px * 80 / 100) calc(10px * 80 / 100) ;
+          }
+        }
+        h1,h2{
+        font-size: calc(26px * 80 / 100);
+        margin-bottom: calc(14px * 80 / 100);
+        }
+        .nav-item{
+          margin-right: calc(30px * 80 /100);
+        }
+        .nav-tabs{
+           a.nav-link{
+            font-size: calc(15px * 80 /100);
+            padding-bottom: calc(10px * 80 /100);
+            padding-left: calc(10px * 80 /100);
+            padding-right: calc(10px * 80 /100);
+           }
+        }
+      }
+      .form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm input{
+        height: calc(32px * 80 / 100);
+        padding:calc(6px * 80 / 100) calc(30px * 80 / 100) calc(6px * 80 / 100) calc(10px * 80 / 100) !important;
+      }
+      .form-group.form-group-sm.react-bs-table-search-form.input-group.input-group-sm input::placeholder{font-size: calc(14px * 80 /100) !important;}
+      .search-user-block{
+        bottom: -42px;
+      }
+      .main-section .content-page .filter-block .css-yk16xz-control, .main-section .content-page .filter-block .css-1pahdxg-control{
+        min-height: calc(32px * 80 /100) !important;
+        height: calc(32px * 80 /100);
+      }
+      .css-g1d714-ValueContainer{
+        padding:calc(2px * 80 / 100) calc(8px * 80 /100)
+      }
+      .css-107lb6w-singleValue, .css-1wa3eu0-placeholder{
+        font-size:calc(13px * 80 /100) ;
+      }
+      .css-b8ldur-Input{
+        padding-top: calc(2px * 80 / 100);
+        padding-bottom: calc(2px * 80 / 100);
+      }
+      .content-page .filter-block .css-yk16xz-control, .content-page .filter-block .css-1pahdxg-control{
+        font-size: calc(14px * 80 /100);
+        height: calc(40px * 80 /100);
+      }
+      .content-page .filter-block .css-tlfecz-indicatorContainer{
+        padding:calc(5px * 80 / 100) ;
+        .css-6q0nyr-Svg{
+          height: calc(20px * 80 / 100);
+          width: calc(20px * 80 / 100);
+        }
+      }
+      .reset{
+        height: calc(32px * 80 / 100);
+        font-size: calc(14px * 80 / 100);
+      }
+      .filter-block .apply,.filter-block .reset{
+        padding-left: calc(15px * 80 / 100);
+        padding-right: calc(15px * 80 / 100);
+      }
+      .filter-btn-top{
+        width: calc(32px * 80 /100);
+        img{
+          width: calc(14px * 80 /100);
+          height: calc(14px * 80 /100);
+        }
+      }
+      .upload{
+        width: calc(14px * 80 /100);
+        height: calc(14px * 80 /100);
+        background-size: contain;
+      }
+      .plus{
+        width: calc(12px * 80 /100);
+        height: calc(12px * 80 /100);
+        background-size: contain;
+      }
+      .form-control, .manageuser .css-yk16xz-control{
+        font-size: calc(14px * 80 /100) !important;
+      }
+      .react-bs-table-container .react-bs-table-search-form .input-group-btn .react-bs-table-search-clear-btn:before{
+        width: calc(15px * 80 /100);
+        height: calc(12px * 80 /100);
+      }
+      .react-bs-table {
+        table{
+          th,td{
+            font-size: calc(14px * 80 /100);
+            padding:calc(0.71rem * 80 /100) calc(0.75rem * 80 /100);
+          }
+        }
+      }
+      
+      
+      .react-bs-table-container {
+        .react-bs-table-pagination {
+          p{
+            font-size: calc(14px * 80 /100);
+          }
+          span{
+            .btn-secondary{
+              font-size: calc(14px * 80 /100);
+              margin-right: calc(20px * 80 /100);
+              padding: 0;
+            }
+          }
+          .row{
+            >.col-md-6{
+              >span{
+                font-size: calc(14px * 80 /100);
+              }
+            }
+          }
+          .col-md-6 {
+            ul.pagination {
+              li {
+                .first-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+                .last-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+                .next-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+                .prev-page-pg {
+                  width: calc(14px * 80 /100);
+                  height: calc(14px * 80 /100);
+                  background-size: calc(12px * 80 /100);
+                }
+              }
+            }
+          }
+        }
+      }
+    }// body
+
+  // // input range slider 'Net Landed Range (INR)' css 
+  .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}
+  .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span:after{top: -4px;}
+  // // input range slider 'Net Landed Range (INR)' css  end
+
+  // ========= zoom whole website to 80% css end's here 
+
+  .costing-raw-material-section{
+    thead{
+      tr{
+        th:nth-child(4){
+          width: 145px !important;
+        }
+        th:nth-child(5),th:nth-child(6){
+         width: 140px !important;
+       }
+       th:nth-child(7){
+         width: 120px !important;
+       } // th
+     } // tr
+    } // thead
+   }// costing-raw-material-section 
+
+   .costing-bop-cost-section{
+     thead{
+       tr{
+         th:nth-child(3){
+           width: 100px !important;
+         }
+         th:nth-child(4){
+          width: 150px !important;
+        }
+        th:nth-child(5){
+          width: 140px !important;
+        } // th
+        th:nth-child(6){
+         width: 120px !important;
+       } // th
+      } // tr
+     } // thead
+    }// costing-raw-material-section 
+
+    .costing-process-cost-section{
+     thead{
+       tr{
+         th:nth-child(4){
+           width: 120px !important;
+         }
+         th:nth-child(5){
+          width: 100px !important;
+        }
+        th:nth-child(6){
+          width: 160px !important;
+        } // th
+        th:nth-child(7){
+         width: 140px !important;
+       } // th
+      } // tr
+     } // thead
+    }// costing-raw-material-section 
+
+    .costing-operation-cost-section{
+     thead{
+       tr{
+         th:nth-child(5),th:nth-child(7){
+           width: 140px !important;
+         }
+         th:nth-child(6){
+          width: 110px !important;
+        }
+        th:nth-child(6){
+          width: 160px !important;
+        } // th
+        th:nth-child(8){
+         width: 110px !important;
+       } // th
+      } // tr
+     } // thead
+    }// costing-raw-material-section 
+
+  .costing-details-page{
+    .rmcc-main-headings{
+      >thead{
+        >tr{
+          >th:nth-child(3){
+            width: 115px !important;
+          }
+          >th:nth-child(6){
+            width: 106px !important;
+          }
+          >th:nth-child(9){
+            width: 135px !important;
+          }
+        }
+      }
+    }    
+    .table {
+      td,th{
+        padding: 0.71rem 15px;
+      }
+    }
+    .shadow-lgg {
+      .form  {
+        .tab-tool-cost-footer,.costing-overhead-profit-footer{
+          margin: 0 -16px -15px;
+        }
+      }
+    }
+
+    .costing-highlight-row{
+      background-color: #F8FCFF;
+      >div{
+        >td{
+          padding: 15px;
+        }
+      }
+    }
+    .costing-highlight-row.accordian-row{
+      > td{
+        padding: 10px 15px;
+      }
+    }
+  
+    .accordian-row{
+      > td{
+        padding: 15px;
+      }
+    }
+    .costing-border-x.px-30{
+      padding: 0 15px;
+    }
+}
+//=============== costing details page only end
+  
+  html{
+    label{font-size: 14px;}
+  }
   .costing-table-next{
     thead{
       tr{
@@ -3130,6 +3787,15 @@ body{
     }// thead
   }// costing-table-next
 
+  .costing-details-page{
+    .table {
+      td,th{
+        font-size: 14px;
+      }
+    }
+  }
+
+
   .sticky-top-0{
     .table {
       td,th{
@@ -3137,6 +3803,20 @@ body{
       }
     }
   }
+
+  html{
+    .drawer-md {
+      .MuiDrawer-paperAnchorRight{
+        left: auto;
+        right: 0;
+        width: auto;
+      }
+    }
+  }
+  .surface-treatment-btn{
+    white-space: nowrap;
+  }
+  
 
 }// ==================================1366 END
 

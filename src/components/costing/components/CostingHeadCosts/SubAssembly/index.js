@@ -109,7 +109,7 @@ function AssemblyPart(props) {
       <tr className="costing-highlight-row accordian-row">
         <div style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
           <td>
-            <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1`}>
+            <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
               <div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>{item && item.PartNumber}
             </span>
           </td>
@@ -131,9 +131,8 @@ function AssemblyPart(props) {
             }
           </td>
           <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
-          {/* <td>{1}</td> */}
           <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-          <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+          {costData.IsAssemblyPart && <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         </div>
         <td>
           <button

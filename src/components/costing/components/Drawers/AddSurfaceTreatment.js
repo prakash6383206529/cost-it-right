@@ -81,7 +81,7 @@ function AddSurfaceTreatment(props) {
     clearSearch: true,
     noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
     paginationShowsTotal: renderPaginationShowsTotal(),
-    paginationSize: 5,
+
   };
 
   const onRowSelect = (row, isSelected, e) => {

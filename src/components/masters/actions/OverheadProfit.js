@@ -187,12 +187,13 @@ export function getOverheadDataList(data, callback) {
         const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}`
         axios.get(`${API.getOverheadDataList}?${queryParams}`, headers)
             .then((response) => {
-                if (response.data.Result || response.status === 204) {
-                    dispatch({
-                        type: GET_OVERHEAD_PROFIT_SUCCESS,
-                        payload: response.status === 204 ? [] : response.data.DataList,
-                    });
-                }
+                //if (response.data.Result || response.status === 204) {
+                dispatch({
+                    type: GET_OVERHEAD_PROFIT_SUCCESS,
+                    // payload: response.status === 204 ? [] : response.data.DataList,
+                    payload: response.data.DataList,
+                });
+                //}
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });

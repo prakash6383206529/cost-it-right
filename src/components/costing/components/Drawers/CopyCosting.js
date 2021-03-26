@@ -61,7 +61,7 @@ function CopyCosting(props) {
         })
       })
     setPlantDropDownList(ZbcTemp)
-      /*For vendor dropdown*/
+    /*For vendor dropdown*/
     vbcVendorGrid &&
       vbcVendorGrid.map((item) => {
         VbcTemp.push({
@@ -86,16 +86,16 @@ function CopyCosting(props) {
       fromPlant:
         type === ZBC
           ? {
-              label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`,
-              value: copyCostingData.PlantId,
-            }
+            label: `${copyCostingData.PlantName}(${copyCostingData.PlantCode})`,
+            value: copyCostingData.PlantId,
+          }
           : '',
       fromVendorName:
         type === VBC
           ? {
-              label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`,
-              value: copyCostingData.VendorId,
-            }
+            label: `${copyCostingData.VendorName}(${copyCostingData.VendorCode})`,
+            value: copyCostingData.VendorId,
+          }
           : '',
       // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
       fromcostingId: selectedCostingId.zbcCosting,
@@ -343,32 +343,30 @@ function CopyCosting(props) {
                 <Col md="6">
                   <div className="left-border">{"From:"}</div>
                 </Col>
-                <Col md="6">
-                  <div className="right-border">
-                    {
-                      <Col md="12" className="switch mb15 p-0">
-                        <label className="switch-level justify-content-end">
-                          <div className={"left-title"}>ZBC</div>
-                          <Switch
-                            onChange={() => {}}
-                            checked={fromtype}
-                            id="normal-switch"
-                            //disabled={isEditFlag ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#4DC771"
-                            uncheckedIcon={false}
-                            onChange={handleFromChange}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={"right-title"}>VBC</div>
-                        </label>
-                      </Col>
-                    }
-                  </div>
+                <Col md="6" className="text-right">
+                  {
+                    <div className="switch d-inline-block">
+                      <label className="switch-level justify-content-end">
+                        <div className={"left-title"}>ZBC</div>
+                        <Switch
+                          onChange={() => { }}
+                          checked={fromtype}
+                          id="normal-switch"
+                          //disabled={isEditFlag ? true : false}
+                          background="#4DC771"
+                          onColor="#4DC771"
+                          onHandleColor="#ffffff"
+                          offColor="#4DC771"
+                          uncheckedIcon={false}
+                          onChange={handleFromChange}
+                          checkedIcon={false}
+                          height={20}
+                          width={46}
+                        />
+                        <div className={"right-title"}>VBC</div>
+                      </label>
+                    </div>
+                  }
                 </Col>
               </Row>
               {/* From data for ZBC */}
@@ -402,7 +400,7 @@ function CopyCosting(props) {
                       //defaultValue={costingId.length !== 0 ? costingId : ''}
                       options={costingId}
                       mandatory={true}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       errors={errors.fromcostingId}
                     />
                   </div>
@@ -440,7 +438,7 @@ function CopyCosting(props) {
                         defaultValue={""}
                         options={vendorFromPlantDropdown}
                         mandatory={true}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         errors={errors.fromVendorPlant}
                       />
                     </div>
@@ -458,7 +456,7 @@ function CopyCosting(props) {
                       defaultValue={""}
                       options={vendorCostingId}
                       mandatory={true}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       errors={errors.fromVbccostingId}
                     />
                   </div>
@@ -470,31 +468,29 @@ function CopyCosting(props) {
                 <Col md="6">
                   <div className="left-border">{"To:"}</div>
                 </Col>
-                <Col md="6">
-                  <div className="right-border">
-                    {
-                      <Col md="12" className="switch mb15">
-                        <label className="switch-level justify-content-end">
-                          <div className={"left-title"}>ZBC</div>
-                          <Switch
-                            onChange={handleToSwitch}
-                            checked={toSwitch}
-                            id="normal-switch"
-                            //disabled={isEditFlag ? true : false}
-                            background="#4DC771"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#4DC771"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            height={20}
-                            width={46}
-                          />
-                          <div className={"right-title"}>VBC</div>
-                        </label>
-                      </Col>
-                    }
-                  </div>
+                <Col md="6" className="text-right">
+                  {
+                    <div className="switch d-inline-block">
+                      <label className="switch-level justify-content-end">
+                        <div className={"left-title"}>ZBC</div>
+                        <Switch
+                          onChange={handleToSwitch}
+                          checked={toSwitch}
+                          id="normal-switch"
+                          //disabled={isEditFlag ? true : false}
+                          background="#4DC771"
+                          onColor="#4DC771"
+                          onHandleColor="#ffffff"
+                          offColor="#4DC771"
+                          uncheckedIcon={false}
+                          checkedIcon={false}
+                          height={20}
+                          width={46}
+                        />
+                        <div className={"right-title"}>VBC</div>
+                      </label>
+                    </div>
+                  }
                 </Col>
               </Row>
               {/* To data for ZBC */}
@@ -512,7 +508,7 @@ function CopyCosting(props) {
                       //defaultValue={plant.length !== 0 ? plant : ''}
                       options={plantDropDownList}
                       mandatory={true}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       errors={errors.toPlant}
                     />
                   </div>
@@ -566,7 +562,7 @@ function CopyCosting(props) {
                         defaultValue={""}
                         options={vendorToPlantDropdown}
                         mandatory={true}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         errors={errors.toVendorPlant}
                       />
                     </div>
@@ -609,7 +605,7 @@ function CopyCosting(props) {
                   <button
                     type="submit"
                     className="submit-button save-btn"
-                    // onClick={addHandler}
+                  // onClick={addHandler}
                   >
                     <div className={"check-icon"}>
                       <img

@@ -436,10 +436,13 @@ export const API = {
   getZBCDetailByPlantId: `${BASE_URL}/costing/get-zbc-plant-by-id`,
   getVBCDetailByVendorId: `${BASE_URL}/costing/get-vbc-vendor-by-id`,
   updateZBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
-  updateVBCSOBDetail: `${BASE_URL}/costing/update-zbc-sob-detail`,
+  updateVBCSOBDetail: `${BASE_URL}/costing/update-vbc-sob-detail`,
   getZBCCostingByCostingId: `${BASE_URL}/costing/get-zbc-costing-detail-by-id`,
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
+  deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
+
+
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-raw-materials-detail`,
   getRMDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-raw-materials-detail`,
@@ -641,6 +644,8 @@ export const API = {
   getLeftMenu: `${BASE_URL}/app-privilege-permission/get-left-menu-module-by-user-and-module-click`,
   checkPageAuthorization: `${BASE_URL}/app-privilege-permission/check-authorization-for-access-page-url`,
   getModuleIdByPathName: `${BASE_URL}/app-privilege-permission/get-module-by-page-url`,
+
+
 
   //REASON
   createReason: `${BASE_URL}/masters-reason/create`,
@@ -1331,6 +1336,8 @@ export const APPROVAL_SUMMARY_PATH = '/approval-summary'
 export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 
+export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
+
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',
   costingName: '',
@@ -1373,10 +1380,16 @@ export const VIEW_COSTING_DATA = {
   approvalButton: '',
 }
 
-
 //UOM ENUMS
 export const KG = "Kilogram"
 export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
+
+export const INR = "INR"
+
+export const Fixed = 1;
+export const Percentage = 2;
+export const FullTruckLoad = 3;
+export const PartTruckLoad = 4;

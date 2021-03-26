@@ -43,7 +43,6 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
-  // console.log(costData, "CD");
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({
@@ -70,7 +69,7 @@ function ProcessCost(props) {
     let tempArr = []
     let tempData = gridData[id]
     // const calciData = gridData[id]
-    console.log(tempData, "TempData");
+
     /****************************FOR SENDING CALCULATED VALUE IN CALCULATOR**************************/
     dispatch(getProcessCalculation(costData.CostingId, tempData.ProcessId, tempData.ProcessCalculationId, costData.TechnologyId, 'default', res => {
       if (res && res.data && res.data.Data) {
@@ -89,7 +88,6 @@ function ProcessCost(props) {
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
     setIsCalculator(false)
-    console.log(weightData, "WD");
     let tempData = gridData[calciIndex]
     let time
     let netCost
@@ -225,6 +223,7 @@ function ProcessCost(props) {
       return true
     })
 
+
     let ProcessCostTotal = 0
     ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ProcessCost)
@@ -237,7 +236,9 @@ function ProcessCost(props) {
       CostingProcessCostResponse: tempArr,
     }
 
-    selectedIds(tempArr)
+    let id = []
+    tempArr.map(el => { id.push(el.MachineRateId) })
+    setIds(id)
     setTabData(tempArr2)
     setGridData(tempArr)
   }
@@ -418,7 +419,6 @@ function ProcessCost(props) {
       ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NumberOfDecimalForTransaction),
       CostingToolsCostResponse: toolGrid,
     }
-    console.log('tempArr', tempArr)
     // setTabData(tempArr)
     const Params = {
       index: props.index,
@@ -451,6 +451,7 @@ function ProcessCost(props) {
 
             <Col md="3" className="switch cr-costlabel text-right">
               {/* DISABLED FOR FUTURE SCOPE 03-03-2021 */}
+
               {/* <label className="switch-level d-inline-flex w-auto">
                 <div className={'left-title'}>{''}</div>
                 <Switch
@@ -491,7 +492,7 @@ function ProcessCost(props) {
 
             {/*OPERATION COST GRID */}
             <Col md="12">
-              <Table className="table cr-brdr-main" size="sm">
+              <Table className="table cr-brdr-main costing-process-cost-section" size="sm">
                 <thead>
                   <tr>
                     <th>{`Process Name`}</th>
@@ -796,7 +797,6 @@ function ProcessCost(props) {
             </Col>
           </Row>
 
-          <hr />
           <OperationCost
             data={props.data && props.data.CostingOperationCostResponse}
             setOperationCost={setOperationCost}

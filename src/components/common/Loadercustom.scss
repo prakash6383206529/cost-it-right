@@ -7,19 +7,27 @@
         }
     }
   }
-
+.react-bs-table-container {
+    .react-bs-table{
+        position: relative;
+        .table-header-wrapper{
+            position: relative;
+            z-index: 10;
+        }
+    }
+}
 .loader_container{
     position: absolute;
-    left: 15px;
-    right: 15px;
-    top: 18%;
+    left: -1px;
+    right: -1px;
+    top: 0px;
     bottom: 0px;
     width: auto;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     display: flex;
-    z-index: 99999;
+    z-index: 9;
     background: rgba(255, 255, 255,0.9);
 
     .img_loader{
@@ -740,4 +748,33 @@
 }
 .container-fluid{
     position: relative;
+}
+
+@media(max-width:1600px){
+    :not(.login-container.signup-form) {
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: inline-block;
+                        width: 1270px;
+                    }
+                }
+            }
+        }
+      }
+}
+
+@media(max-width:1366px){
+    :not(.login-container.signup-form) {
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        width: 1040px;
+                    }
+                }
+            }
+        }
+      }
 }

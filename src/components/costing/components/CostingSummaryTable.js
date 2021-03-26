@@ -450,7 +450,7 @@ const CostingSummaryTable = (props) => {
                   className={'user-btn mb-2'}
                   onClick={addComparisonDrawerToggle}
                 >
-                  <img src={require('../../../assests/images/compare.svg')}></img>{' '}
+                  <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
               Add To Comparison{' '}
                 </button>
               </Col>

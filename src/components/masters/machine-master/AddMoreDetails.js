@@ -1799,6 +1799,20 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Description`}
+                            name={"Description"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            component={renderText}
+                            // required={true}
+                            disabled={isEditFlag ? true : false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
                       </Row>
 
                       <Row>
@@ -1979,22 +1993,6 @@ class AddMoreDetails extends Component {
                             component={renderNumberInputField}
                             required={false}
                             disabled={true}
-                            className=" "
-                            customClassName="withBorder"
-                          />
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md="3">
-                          <Field
-                            label={`Description`}
-                            name={"Description"}
-                            type="text"
-                            placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
-                            component={renderText}
-                            // required={true}
-                            disabled={isEditFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
                           />

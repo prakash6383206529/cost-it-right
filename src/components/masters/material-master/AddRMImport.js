@@ -26,9 +26,10 @@ import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, ZBC } from '../../../config/constants';
+import { FILE_URL, INR, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
+import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -73,6 +74,7 @@ class AddRMImport extends Component {
 
       isVisible: false,
       imageURL: '',
+      currencyValue: 1
 
     }
   }
@@ -252,6 +254,18 @@ class AddRMImport extends Component {
   handleCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ currency: newValue, })
+      const { fieldsObj } = this.props
+      if (newValue.label === INR) {
+        this.setState({ currencyValue: 1 }, () => {
+
+          this.props.change('NetLandedCost', (fieldsObj.BasicRate * this.state.currencyValue))
+        })
+      } else {
+        this.props.getExchangeRateByCurrency(newValue.label, res => {
+          this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+          this.setState({ currencyValue: res.data.Data.CurrencyExchangeRate })
+        })
+      }
     } else {
       this.setState({ currency: [] })
     }
@@ -263,6 +277,9 @@ class AddRMImport extends Component {
   */
   handleBasicRate = (e) => {
     this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : e.target.value)
+
+    const { currencyValue } = this.state
+    this.props.change('NetLandedCost', (e.target.value * currencyValue))
   }
 
   /**
@@ -1173,7 +1190,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
+                              label={`Basic Rate/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1189,7 +1206,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Scrap Rate (INR)`}
+                              label={`Scrap Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1203,7 +1220,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Landed Cost (INR/UOM)`}
+                              label={`Net Landed Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1271,7 +1288,7 @@ class AddRMImport extends Component {
                                 </label>
                             {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
-                                Max file uploaded.
+                                Maximum file upload limit has been reached.
                               </div>
                             ) : (
                                 <Dropzone
@@ -1466,7 +1483,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, } = state;
-  const fieldsObj = selector(state, 'BasicRate',);
+  const fieldsObj = selector(state, 'BasicRate', 'NetLandedCost');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
@@ -1525,7 +1542,8 @@ export default connect(mapStateToProps, {
   getCurrencySelectList,
   fetchPlantDataAPI,
   getTechnologySelectList,
-  getPlantSelectListByType
+  getPlantSelectListByType,
+  getExchangeRateByCurrency
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

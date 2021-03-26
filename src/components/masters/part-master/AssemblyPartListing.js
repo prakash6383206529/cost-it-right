@@ -267,7 +267,7 @@ class AssemblyPartListing extends Component {
             nextPage: <span className="next-page-pg"></span>, // Next page button text
             firstPage: <span className="first-page-pg"></span>, // First page button text
             lastPage: <span className="last-page-pg"></span>,
-            paginationSize: 5,
+
         };
 
         return (
@@ -313,10 +313,10 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="PartNumber" width={'100'}>Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="Plants" searchable={false} width={'100'} >Plant</TableHeaderColumn> */}
-                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'120'}>{this.renderNumberOfParts()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'120'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'}>ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'100'} >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}

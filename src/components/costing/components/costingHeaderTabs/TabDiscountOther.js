@@ -14,6 +14,10 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL } from '../../../../config/constants';
 import { toastr } from 'react-redux-toastr';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { MESSAGES } from '../../../../config/message';
+import moment from 'moment';
 
 function TabDiscountOther(props) {
 
@@ -25,6 +29,7 @@ function TabDiscountOther(props) {
   const [files, setFiles] = useState([]);
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
+  const [effectiveDate, setEffectiveDate] = useState('');
 
   const dispatch = useDispatch()
 
@@ -58,6 +63,7 @@ function TabDiscountOther(props) {
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
+            setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -94,7 +100,7 @@ function TabDiscountOther(props) {
     if (!isNaN(event.target.value)) {
 
       let topHeaderData = {
-        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue')),
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
         HundiOrDiscountPercentage: checkForNull(event.target.value),
         AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
       }
@@ -148,6 +154,14 @@ function TabDiscountOther(props) {
     } else {
       setCurrency([])
     }
+  }
+
+  /**
+   * @method handleEffectiveDateChange
+   * @description Handle Effective Date
+   */
+  const handleEffectiveDateChange = (date) => {
+    setEffectiveDate(date)
   }
 
   /**
@@ -286,13 +300,16 @@ function TabDiscountOther(props) {
           "Currency": currency.label,
           "Remark": values.Remarks,
           "OtherCostDescription": values.OtherCostDescription,
+          "EffectiveDate": effectiveDate,
         }
       },
       "Attachements": updatedFiles
     }
 
     dispatch(saveDiscountOtherCostTab(data, res => {
-      console.log('saveDiscountOtherCostTab: ', res);
+      if (res.data.Result) {
+        toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+      }
     }))
   }
 
@@ -303,25 +320,15 @@ function TabDiscountOther(props) {
           <Row>
             <Col md="12">
               <div className="shadow-lgg login-formg">
-                {/* <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{""}</h2>
-                  </div>
-                </Col>
-              </Row> */}
 
                 <Row className="mx-0">
                   <Col md="12" className="pt-2">
-                    <Table
-                      className="table cr-brdr-main cr-bg-tbl mt-1"
-                      size="sm"
-                    >
+                    <Table className="table cr-brdr-main cr-bg-tbl mt-1" size="sm" >
                       <thead>
                         <tr>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.HundiOrDiscountValue !== undefined ? DiscountTabData.HundiOrDiscountValue + DiscountTabData.AnyOtherCost : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? DiscountTabData.NetPOPriceINR : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>
@@ -371,11 +378,6 @@ function TabDiscountOther(props) {
                         mandatory={true}
                         rules={{
                           required: true,
-                          // pattern: {
-                          //   value: /^[0-9]*$/i,
-                          //   message: 'Invalid Number.'
-                          // },
-                          // maxLength: 4,
                         }}
                         handleChange={() => { }}
                         defaultValue={""}
@@ -449,7 +451,11 @@ function TabDiscountOther(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="4">
+                    <Col md="4">{''}</Col>
+                  </Row>
+
+                  <Row className="mx-0">
+                    <Col md="3">
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
@@ -466,9 +472,33 @@ function TabDiscountOther(props) {
                           onChange={onPressChangeCurrency}
                         />
                       </label>
-
-                      {IsCurrencyChange && (
-                        <>
+                    </Col>
+                    {IsCurrencyChange && (
+                      <>
+                        <Col md="3">
+                          <div className="form-group">
+                            <label>Effective Date</label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={effectiveDate}
+                                onChange={handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dateFormat="dd/MM/yyyy"
+                                //maxDate={new Date()}
+                                dropdownMode="select"
+                                placeholderText="Select date"
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={false}
+                              />
+                            </div>
+                          </div>
+                        </Col>
+                        <Col md="3">
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
@@ -484,7 +514,8 @@ function TabDiscountOther(props) {
                             errors={errors.Currency}
                             disabled={false}
                           />
-
+                        </Col>
+                        <Col md="3">
                           <TextFieldHookForm
                             label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                             name={'NetPOPriceOtherCurrency'}
@@ -500,14 +531,14 @@ function TabDiscountOther(props) {
                             errors={errors.NetPOPriceOtherCurrency}
                             disabled={true}
                           />
-                        </>
-                      )}
-                    </Col>
+                        </Col>
+                      </>
+                    )}
                   </Row>
 
                   <Row className="mx-0">
                     <Col md="12">
-                      <div className="bottom-border mb-2 mt-3">
+                      <div className="left-border mt-3">
                         {'Remarks & Attachments:'}
                       </div>
                     </Col>
@@ -532,10 +563,10 @@ function TabDiscountOther(props) {
                     </Col>
 
                     <Col md="3" className="height152-label">
-                      <label>Upload Attachment ( upload up to 4 files )</label>
+                      <label>Upload Attachment (upload up to 4 files)</label>
                       {files && files.length >= 4 ? (
                         <div class="alert alert-danger" role="alert">
-                          Max file uploaded.
+                          Maximum file upload limit has been reached.
                         </div>
                       ) : (
                           <Dropzone

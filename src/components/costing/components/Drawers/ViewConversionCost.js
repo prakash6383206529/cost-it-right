@@ -6,7 +6,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
 
 function ViewConversionCost(props) {
-  
+
   /**
    * @method toggleDrawer
    * @description closing drawer
@@ -27,7 +27,7 @@ function ViewConversionCost(props) {
     CostingToolsCostResponse,
     IsShowToolCost,
   } = viewConversionCostData
-  
+
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [isShowToolCost, setIsShowToolCost] = useState(false)
@@ -47,7 +47,7 @@ function ViewConversionCost(props) {
         open={props.isOpen}
         onClose={(e) => toggleDrawer(e)}
       >
-        <Container>
+        <Container className="view-conversion-cost-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
@@ -86,7 +86,7 @@ function ViewConversionCost(props) {
                         <th>{`Efficiency`}</th>
                         <th>{`Cavity`}</th>
                         <th>{`Quantity`}</th>
-                        <th>{`Net Cost`}</th>
+                        <th className="costing-border-right">{`Net Cost`}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -153,7 +153,7 @@ function ViewConversionCost(props) {
                           <th>{`Quantity`}</th>
                           <th>{`Labour Rate`}</th>
                           <th>{`Labour Quantity`}</th>
-                          <th>{`Net Cost`}</th>
+                          <th className="costing-border-right">{`Net Cost`}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -235,18 +235,18 @@ function ViewConversionCost(props) {
                             costingToolsCost.map((item, index) => {
                               return (
                                 <tr key={index}>
-                                  <td>{item.ProcessOrOperation ? item.ProcessOrOperation: '-' }</td>
-                                  <td>{item.ToolCategory ? item.ToolCategory: '-' }</td>
-                                  <td>{item.ToolName ? item.ToolName: '-' }</td>
-                                  <td>{item.Quantity ? item.Quantity: '-' }</td>
-                                  <td>{item.ToolCost ? item.ToolCost: '-' }</td>
-                                  <td>{item.Life ? item.Life: '-' }</td>
+                                  <td>{item.ProcessOrOperation ? item.ProcessOrOperation : '-'}</td>
+                                  <td>{item.ToolCategory ? item.ToolCategory : '-'}</td>
+                                  <td>{item.ToolName ? item.ToolName : '-'}</td>
+                                  <td>{item.Quantity ? item.Quantity : '-'}</td>
+                                  <td>{item.ToolCost ? item.ToolCost : '-'}</td>
+                                  <td>{item.Life ? item.Life : '-'}</td>
                                   <td>
                                     {item.NetToolCost
                                       ? checkForDecimalAndNull(
-                                          item.NetToolCost,
-                                          2,
-                                        )
+                                        item.NetToolCost,
+                                        2,
+                                      )
                                       : 0}
                                   </td>
                                 </tr>

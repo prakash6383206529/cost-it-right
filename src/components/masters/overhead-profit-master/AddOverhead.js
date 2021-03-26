@@ -509,6 +509,7 @@ class AddOverhead extends Component {
         OverheadApplicabilityType: overheadAppli.label,
         ModelType: ModelType.label,
         IsVendor: IsVendor,
+        IsCombinedEntry: !isOverheadPercent ? true : false,
         OverheadPercentage: values.OverheadPercentage,
         OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
         OverheadBOPPercentage: values.OverheadBOPPercentage,
@@ -598,7 +599,7 @@ class AddOverhead extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -610,9 +611,9 @@ class AddOverhead extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                                Zero Based
-                              </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0"} check>
+                            <span>Zero Based</span>
+                          </Label>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -624,9 +625,9 @@ class AddOverhead extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                                Vendor Based
-                              </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0"} check>
+                            <span>Vendor Based</span>
+                          </Label>
+                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -638,8 +639,8 @@ class AddOverhead extends Component {
                               }
                               disabled={isEditFlag ? true : false}
                             />{" "}
-                                Client Based
-                              </Label>
+                            <span>Client Based</span>
+                          </Label>
                         </Col>
                       </Row>
                       <Row>
@@ -842,7 +843,7 @@ class AddOverhead extends Component {
                           {this.state.files &&
                             this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">
-                                Max file uploaded.
+                                Maximum file upload limit has been reached.
                               </div>
                             ) : (
                               <Dropzone
