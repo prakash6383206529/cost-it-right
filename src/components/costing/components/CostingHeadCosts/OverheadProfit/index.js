@@ -62,12 +62,12 @@ function OverheadProfit(props) {
 
   const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
 
-  const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost !== null ? true : false)
+  const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
   const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
 
   const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
 
-  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms !== null ? true : false)
+  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
   const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
   const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
 
@@ -846,6 +846,35 @@ function OverheadProfit(props) {
     setIsInventoryApplicable(!IsInventoryApplicable)
   }
 
+  useEffect(() => {
+    if (IsInventoryApplicable === true) {
+      const reqParams = {
+        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+        IsVendor: costData.IsVendor
+      }
+      dispatch(getInventoryDataByHeads(reqParams, res => {
+        if (res && res.status === 204) {
+          setValue('InterestRatePercentage', '')
+          setValue('InterestRateCost', '')
+          setValue('NetICCTotal', '')
+          checkInventoryApplicability('')
+          setICCapplicability([])
+        } else {
+          if (res && res.data && res.data.Result) {
+            let Data = res.data.Data;
+            setValue('InterestRatePercentage', Data.InterestRate)
+            setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
+            checkInventoryApplicability(Data.ICCApplicability)
+            setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
+          }
+        }
+      }))
+    } else {
+      setICCapplicability([])
+      props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+    }
+  }, [IsInventoryApplicable])
+
   /**
    * @method handleICCApplicabilityChange
    * @description  USED TO HANDLE ICC APPLICABILITY CHANGE
@@ -948,6 +977,34 @@ function OverheadProfit(props) {
     setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
   }
 
+  useEffect(() => {
+    if (IsPaymentTermsApplicable === true) {
+      const reqParams = {
+        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+        IsVendor: costData.IsVendor
+      }
+      dispatch(getPaymentTermsDataByHeads(reqParams, res => {
+        if (res.status === 204) {
+          setValue('RepaymentPeriodDays', '')
+          setValue('RepaymentPeriodPercentage', '')
+          setValue('RepaymentPeriodCost', '')
+          checkPaymentTermApplicability('')
+          setPaymentTermsApplicability([])
+        } else if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
+          setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+          setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
+          checkPaymentTermApplicability(Data.PaymentTermApplicability)
+          setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+        }
+      }))
+    } else {
+      setPaymentTermsApplicability([])
+      props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+    }
+  }, [IsPaymentTermsApplicable])
+
   /**
    * @method handlePaymentTermsApplicabilityChange
    * @description  USED TO HANDLE PAYMENT TERM APPLICABILITY CHANGE
@@ -956,7 +1013,7 @@ function OverheadProfit(props) {
     if (newValue && newValue !== '') {
       setPaymentTermsApplicability(newValue)
       const reqParams = {
-        Id: newValue.value,
+        //Id: newValue.value,
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
         IsVendor: costData.IsVendor
       }
@@ -1870,7 +1927,10 @@ function OverheadProfit(props) {
               <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
                 <>
                   <Col md="3">
-                    <SearchableSelectHookForm
+                    <label className="col-label">
+                      {ICCapplicability.label}
+                    </label>
+                    {/* <SearchableSelectHookForm
                       label={'ICC Applicability'}
                       name={'ICCApplicability'}
                       placeholder={'-Select-'}
@@ -1883,7 +1943,7 @@ function OverheadProfit(props) {
                       mandatory={true}
                       handleChange={handleICCApplicabilityChange}
                       errors={errors.ICCApplicability}
-                    />
+                    /> */}
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
@@ -1968,7 +2028,10 @@ function OverheadProfit(props) {
               <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing mb-4">
                 <>
                   <Col md="3">
-                    <SearchableSelectHookForm
+                    <label className="col-label">
+                      {paymentTermsApplicability.label}
+                    </label>
+                    {/* <SearchableSelectHookForm
                       label={'Payment Terms Applicability'}
                       name={'PaymentTermsApplicability'}
                       placeholder={'-Select-'}
@@ -1981,7 +2044,7 @@ function OverheadProfit(props) {
                       mandatory={true}
                       handleChange={handlePaymentTermsApplicabilityChange}
                       errors={errors.PaymentTermsApplicability}
-                    />
+                    /> */}
                   </Col>
                   {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                     <TextFieldHookForm

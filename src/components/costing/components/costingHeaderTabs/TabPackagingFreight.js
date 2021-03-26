@@ -140,7 +140,7 @@ function TabPackagingFreight(props) {
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "CostingNumber": costData.CostingNumber,
-      "NetPackagingAndFreight": PackageAndFreightTabData.NetPackagingAndFreight,
+      "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
 

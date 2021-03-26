@@ -20,7 +20,9 @@ function CostingDetailStepTwo(props) {
 
   useEffect(() => {
     const { costingInfo } = props;
-    //dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => { }))
+    // setTimeout(() => {
+    //   dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => { }))
+    // }, 500)
   }, []);
 
   const costingData = useSelector(state => state.costing.costingData)
@@ -36,6 +38,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM RM+CC TAB 
    */
   const setHeaderCostRMCCTab = (data) => {
+    console.log('setHeaderCostRMCCTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -49,8 +52,7 @@ function CostingDetailStepTwo(props) {
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        tempData.ToolCost -
-        checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
     }
 
     tempData = {
@@ -77,6 +79,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM SURFACE TAB 
    */
   const setHeaderCostSurfaceTab = (data) => {
+    console.log('setHeaderCostSurfaceTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -90,7 +93,7 @@ function CostingDetailStepTwo(props) {
         data.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        checkForNull(tempData.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
     }
 
     tempData = {
@@ -113,6 +116,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM OVERHEAD PROFIT TAB
    */
   const setHeaderOverheadProfitCostTab = (data) => {
+    console.log('setHeaderOverheadProfitCostTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -150,7 +154,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM PACKAGE AND FREIGHT
    */
   const setHeaderPackageFreightTab = (data) => {
-
+    console.log('setHeaderPackageFreightTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -164,7 +168,7 @@ function CostingDetailStepTwo(props) {
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         data.NetFreightPackagingCost +
-        checkForNull(tempData.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
     }
 
     tempData = {
@@ -177,7 +181,7 @@ function CostingDetailStepTwo(props) {
     dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => { }))
     dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
-    //}, 500)
+    //}, 300)
 
   }
 
@@ -186,7 +190,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM TOOL TAB 
    */
   const setHeaderCostToolTab = (data) => {
-    console.log('data: ', data);
+    console.log('setHeaderCostToolTab data: ', data);
     const headerIndex = 0;
 
     setTimeout(() => {
@@ -200,7 +204,7 @@ function CostingDetailStepTwo(props) {
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
           tempData.NetPackagingAndFreight +
-          checkForNull(data.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+          data.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
       }
 
       tempData = {
@@ -214,7 +218,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       //dispatch(setSurfaceCostData(data, () => { }))
 
-    }, 300)
+    }, 200)
 
   }
 
@@ -223,6 +227,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data) => {
+    console.log('setHeaderDiscountTab data: ', data);
     const headerIndex = 0;
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
@@ -241,6 +246,7 @@ function CostingDetailStepTwo(props) {
         NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, 2) + checkForDecimalAndNull(data.AnyOtherCost, 2),
         HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, 2),
         AnyOtherCost: checkForDecimalAndNull(data.AnyOtherCost, 2),
+        HundiOrDiscountPercentage: checkForDecimalAndNull(data.HundiOrDiscountPercentage, 2),
       }
       dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -357,6 +363,7 @@ function CostingDetailStepTwo(props) {
                           {
                             CostingDataList &&
                             CostingDataList.map((item, index) => {
+                              console.log('data: item: ', item);
                               return (
                                 <>
                                   <td><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>

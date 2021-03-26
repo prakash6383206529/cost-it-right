@@ -307,6 +307,7 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
+        DisplayStatus: selectedOptionObj.DisplayStatus,
         CostingId: newValue.value,
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
@@ -322,6 +323,7 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
+        DisplayStatus: selectedOptionObj.DisplayStatus,
         CostingId: newValue.value,
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
@@ -590,6 +592,7 @@ function CostingDetails(props) {
       moveToCostingDetail(index, type)
     }
   }
+
   /**
    * @method checkSOBChanged
    * @description CHECK SOB CHANGED FOR UPDATE COSTING AND TRIGGER CONFIRMATION FOR DRAFT ALL PENDING COSTINGS
@@ -636,12 +639,12 @@ function CostingDetails(props) {
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
         LoggedInUserId: loggedInUserId(),
       }
-      dispatch(
-        updateZBCSOBDetail(data, (res) => {
-          dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
+      dispatch(updateZBCSOBDetail(data, (res) => {
+        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
           setStepTwo(true)
           setStepOne(false)
-        }),
+        }))
+      }),
       )
     }
     if (type === VBC) {
@@ -656,12 +659,13 @@ function CostingDetails(props) {
         VendorId: tempData.VendorId,
         VendorPlantId: tempData.VendorPlantId
       }
-      dispatch(
-        updateVBCSOBDetail(data, (res) => {
-          dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
+      dispatch(updateVBCSOBDetail(data, (res) => {
+        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
           setStepTwo(true)
           setStepOne(false)
-        }),
+
+        }))
+      }),
       )
     }
   }
@@ -676,25 +680,23 @@ function CostingDetails(props) {
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
-
-      setTimeout(() => {
-        setStepTwo(true)
-        setStepOne(false)
-      }, 500)
-
+      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
     }
 
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
-
-      setTimeout(() => {
-        setStepTwo(true)
-        setStepOne(false)
-      }, 500)
-
+      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
     }
   }
 
@@ -1084,7 +1086,7 @@ function CostingDetails(props) {
                                         </td>
                                         <td className="text-center">
                                           <div className={item.Status}>
-                                            {item.Status}
+                                            {item.DisplayStatus}
                                           </div>
                                         </td>
                                         <td style={{ width: "250px" }}>
@@ -1216,7 +1218,7 @@ function CostingDetails(props) {
                                       </td>
                                       <td className="text-center">
                                         <div className={item.Status}>
-                                          {item.Status}
+                                          {item.DisplayStatus}
                                         </div>
                                       </td>
                                       <td>

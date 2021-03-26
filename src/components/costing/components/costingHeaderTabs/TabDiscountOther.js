@@ -8,7 +8,7 @@ import {
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -42,6 +42,20 @@ function TabDiscountOther(props) {
   });
 
   useEffect(() => {
+    if (props.activeTab !== '6') {
+      setValue('NetPOPriceINR', DiscountTabData !== undefined && (props.netPOPrice - props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
+      setValue('HundiOrDiscountValue', DiscountTabData !== undefined && (props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
+
+      let topHeaderData = {
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
+        HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
+        AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+      }
+      props.setHeaderCost(topHeaderData)
+    }
+  }, [props.netPOPrice])
+
+  useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: costData.CostingId,
@@ -70,6 +84,7 @@ function TabDiscountOther(props) {
               NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', 2),
               HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', 2),
               AnyOtherCost: checkForDecimalAndNull(OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '', 2),
+              HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '',
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -86,10 +101,8 @@ function TabDiscountOther(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     const { DiscountTabData } = props;
-    setTimeout(() => {
-      setValue('NetPOPriceINR', DiscountTabData && DiscountTabData.NetPOPriceINR)
-      setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
-    }, 500)
+    setValue('NetPOPriceINR', DiscountTabData && DiscountTabData.NetPOPriceINR)
+    setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
   }, [props]);
 
   /**
