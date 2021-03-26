@@ -11,8 +11,8 @@ import TabDiscountOther from './TabDiscountOther';
 import TabToolCost from './TabToolCost';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import BOMViewer from '../../../masters/part-master/BOMViewer';
-import { saveComponentCostingRMCCTab, } from '../../actions/Costing';
-import { loggedInUserId } from '../../../../helper';
+import { saveComponentCostingRMCCTab, saveComponentOverheadProfitTab, } from '../../actions/Costing';
+import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../helper/AllConastant';
 
 function CostingHeaderTabs(props) {
@@ -29,6 +29,8 @@ function CostingHeaderTabs(props) {
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
 
   useEffect(() => {
+
+    // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
     if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
@@ -68,6 +70,27 @@ function CostingHeaderTabs(props) {
         setIsCalledAPI(false)
       }))
     }
+
+    // USED FOR SURFACE TREATMENT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
+    if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false && activeTab !== '3' && IsCalledAPI) {
+      // let reqData = {
+      //   "CostingId": ComponentItemData.CostingId,
+      //   "LoggedInUserId": loggedInUserId(),
+      //   "IsSurfaceTreatmentApplicable": true,
+      //   "IsApplicableForChildParts": false,
+      //   "CostingNumber": costData.CostingNumber,
+      //   "NetOverheadAndProfitCost": checkForNull(ComponentItemData.CostingPartDetails.OverheadCost) +
+      //     checkForNull(ComponentItemData.CostingPartDetails.ProfitCost) +
+      //     checkForNull(ComponentItemData.CostingPartDetails.RejectionCost) +
+      //     checkForNull(ComponentItemData.CostingPartDetails.ICCCost) +
+      //     checkForNull(ComponentItemData.CostingPartDetails.PaymentTermCost),
+      //   "CostingPartDetails": ComponentItemData.CostingPartDetails
+      // }
+      // dispatch(saveComponentOverheadProfitTab(reqData, res => {
+      //   setIsCalledAPI(false)
+      // }))
+    }
+
   }, [activeTab])
 
   /**

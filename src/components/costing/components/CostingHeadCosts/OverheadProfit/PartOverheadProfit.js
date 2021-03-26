@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { getOverheadProfitTabData, saveComponentOverheadProfitTab } from '../../../actions/Costing';
+import { getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentItemData } from '../../../actions/Costing';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import { toastr } from 'react-redux-toastr';
@@ -11,6 +11,7 @@ function PartOverheadProfit(props) {
   const { item } = props;
 
   const [Count, setCount] = useState(0);
+  const [IsOpen, setIsOpen] = useState(false);
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -23,6 +24,7 @@ function PartOverheadProfit(props) {
       BOMLevel: BOMLevel,
       PartNumber: PartNumber,
     }
+    setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
       if (Object.keys(costData).length > 0) {
@@ -79,6 +81,10 @@ function PartOverheadProfit(props) {
       }
     }))
   }
+
+  useEffect(() => {
+    //dispatch(setComponentItemData(item, () => { }))
+  }, [IsOpen])
 
   /**
   * @method render
