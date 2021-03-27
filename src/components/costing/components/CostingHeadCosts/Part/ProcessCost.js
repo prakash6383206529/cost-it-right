@@ -352,10 +352,10 @@ function ProcessCost(props) {
     let tempData = gridData[index]
 
     if (!isNaN(event.target.value)) {
-      const ProcessCost = tempData.MHR * parseInt(event.target.value)
+      const ProcessCost = tempData.MHR * event.target.value
       tempData = {
         ...tempData,
-        Quantity: parseInt(event.target.value),
+        Quantity: event.target.value,
         IsCalculatedEntry: false,
         ProcessCost: ProcessCost,
       }

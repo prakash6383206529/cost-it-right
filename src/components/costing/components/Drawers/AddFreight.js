@@ -39,15 +39,13 @@ function AddFreight(props) {
   const [criteria, setCriteria] = useState([]);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
-  let tempText = '';
-  if (rowObjData.IsPartTruckLoad === 'Percentage') tempText = Percentage;
-  if (rowObjData.IsPartTruckLoad === 'Fixed') tempText = Fixed;
-
-  const [freightType, setfreightType] = useState(isEditFlag ? tempText : '');
+  const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : '');
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
 
   useEffect(() => {
-    setfreightType(isEditFlag ? tempText : '')
+    setTimeout(() => {
+      setfreightType(isEditFlag ? rowObjData.EFreightLoadType : '')
+    }, 200)
   }, [rowObjData]);
 
   useEffect(() => {
@@ -263,6 +261,7 @@ function AddFreight(props) {
       Quantity: freightType === Fixed || freightType === Percentage ? '' : data.Quantity,
       FreightCost: data.FreightCost,
       Freight: '',
+      EFreightLoadType: freightType,
     }
     toggleDrawer('', formData)
   }
@@ -444,8 +443,8 @@ function AddFreight(props) {
                       rules={{
                         required: freightType !== Fixed && freightType !== Percentage ? true : false,
                         pattern: {
-                          value: /^[0-9]*$/i,
-                          message: 'Invalid Number.',
+                          value: !isEditFlag ? /^[0-9]*$/i : '',
+                          message: !isEditFlag ? 'Invalid Number.' : '',
                         },
                         // maxLength: 4,
                       }}

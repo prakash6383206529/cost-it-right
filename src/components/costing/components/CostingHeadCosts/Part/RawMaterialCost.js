@@ -100,17 +100,17 @@ function RawMaterialCost(props) {
       toastr.warning("Density is not avaliable for weight calculation.")
       return false
     }
-    // dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
-    //   if (res && res.data && res.data.Data) {
-    //     const data = res.data.Data
-    //     tempData = { ...tempData, WeightCalculatorRequest: data, }
-    //     tempArr = Object.assign([...gridData], { [index]: tempData })
-    //     setTimeout(() => {
-    //       setGridData(tempArr)
-    setWeightDrawerOpen(true)
-    //     }, 100)
-    //   }
-    // }))
+    dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
+      if (res && res.data && res.data.Data) {
+        const data = res.data.Data
+        tempData = { ...tempData, WeightCalculatorRequest: data, }
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        setTimeout(() => {
+          setGridData(tempArr)
+          setWeightDrawerOpen(true)
+        }, 100)
+      }
+    }))
 
   }
 

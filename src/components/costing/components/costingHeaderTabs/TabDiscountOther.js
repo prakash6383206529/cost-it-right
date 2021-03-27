@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext } from '../CostingDetailStepTwo';
@@ -30,6 +30,7 @@ function TabDiscountOther(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
+  const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
 
   const dispatch = useDispatch()
 
@@ -56,6 +57,10 @@ function TabDiscountOther(props) {
   }, [props.netPOPrice])
 
   useEffect(() => {
+    dispatch(getCurrencySelectList(() => { }))
+  }, [])
+
+  useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
         CostingId: costData.CostingId,
@@ -68,7 +73,10 @@ function TabDiscountOther(props) {
             let OtherCostDetails = Data.CostingPartDetails.OtherCostDetails;
 
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
+            setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
+            setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
+
             setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
             setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
             setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '')
@@ -77,7 +85,6 @@ function TabDiscountOther(props) {
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
-            setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -93,10 +100,6 @@ function TabDiscountOther(props) {
       }))
     }
   }, [costData]);
-
-  useEffect(() => {
-    dispatch(getCurrencySelectList(() => { }))
-  }, [])
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
@@ -163,9 +166,11 @@ function TabDiscountOther(props) {
         let Data = res.data.Data;
         const NetPOPriceINR = getValues('NetPOPriceINR');
         setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+        setCurrencyExchangeRate(Data.CurrencyExchangeRate)
       }))
     } else {
       setCurrency([])
+      setCurrencyExchangeRate('')
     }
   }
 
@@ -313,6 +318,7 @@ function TabDiscountOther(props) {
           "Currency": currency.label,
           "Remark": values.Remarks,
           "OtherCostDescription": values.OtherCostDescription,
+          "CurrencyExchangeRate": CurrencyExchangeRate,
           "EffectiveDate": effectiveDate,
         }
       },

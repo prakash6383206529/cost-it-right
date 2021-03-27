@@ -1013,7 +1013,7 @@ function CostingDetails(props) {
                                   <th style={{}}>{`Plant Code`}</th>
                                   <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
-                                  <th style={{ minWidth: "250px" }}>{`Actions`}</th>
+                                  <th style={{ minWidth: "260px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1093,7 +1093,7 @@ function CostingDetails(props) {
                                           <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />
                                           {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
-                                          {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
+                                          {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteCosting(item.CostingId, ZBC)} />)}
                                         </td>
                                       </tr>
@@ -1148,7 +1148,7 @@ function CostingDetails(props) {
                                   <th style={{}}>{`SOB`}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{}}>{`Status`}</th>
-                                  <th style={{ minWidth: "250px" }}>{`Actions`}</th>
+                                  <th style={{ minWidth: "260px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1225,7 +1225,7 @@ function CostingDetails(props) {
                                         <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
                                         {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                         {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteCosting(item.CostingId, VBC)} />)}
                                       </td>
                                     </tr>

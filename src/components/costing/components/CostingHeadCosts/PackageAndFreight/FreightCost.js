@@ -3,6 +3,7 @@ import { Col, Row, Table } from 'reactstrap';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import AddFreight from '../../Drawers/AddFreight';
+import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 
 function FreightCost(props) {
 
@@ -105,9 +106,16 @@ function FreightCost(props) {
                   <tbody >
                     {
                       gridData && gridData.map((item, index) => {
+                        let EFreightLoadTypeText = '';
+
+                        if (item.EFreightLoadType === Fixed) EFreightLoadTypeText = 'Fixed';
+                        if (item.EFreightLoadType === Percentage) EFreightLoadTypeText = 'Percentage';
+                        if (item.EFreightLoadType === FullTruckLoad) EFreightLoadTypeText = 'FTL';
+                        if (item.EFreightLoadType === PartTruckLoad) EFreightLoadTypeText = 'PTL';
+
                         return (
                           <tr key={index}>
-                            <td>{item.IsPartTruckLoad}</td>
+                            <td>{EFreightLoadTypeText}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Capacity}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Criteria : '-')}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Rate : '-')}</td>
