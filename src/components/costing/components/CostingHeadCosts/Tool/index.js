@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -7,11 +8,12 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
+import { setComponentToolItemData } from '../../../actions/Costing';
 
 function Tool(props) {
 
   const { IsApplicableProcessWise, data } = props;
-
+  const dispatch = useDispatch();
   // const OverAllApplicability = data.OverAllApplicability;
   const ObjectForOverAllApplicability = data.CostingPartDetails && data.CostingPartDetails.CostingToolCostResponse && data.CostingPartDetails.CostingToolCostResponse[0];
 
@@ -46,6 +48,10 @@ function Tool(props) {
   useEffect(() => {
     props.setToolCost(gridData)
   }, [gridData]);
+
+  useEffect(() => {
+    dispatch(setComponentToolItemData(data, () => { }))
+  }, [data && data.CostingPartDetails.CostingToolCostResponse])
 
   /**
   * @method closeDrawer

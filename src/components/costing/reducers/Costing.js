@@ -41,9 +41,17 @@ import {
   SET_TOOL_TAB_DATA,
   SET_OTHER_DISCOUNT_TAB_DATA,
   SET_COMPONENT_ITEM_DATA,
+  SET_COMPONENT_OVERHEAD_ITEM_DATA,
+  SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA,
+  SET_COMPONENT_TOOL_ITEM_DATA,
+  SET_COMPONENT_DISCOUNT_ITEM_DATA,
 } from '../../../config/constants';
 
 const initialState = {
+  ComponentItemOverheadData: {},
+  ComponentItemPackageFreightData: {},
+  ComponentItemToolData: {},
+  ComponentItemDiscountData: {},
   costingData: {
     // supplierOne: {},
     // supplierTwo: {},
@@ -361,6 +369,30 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ComponentItemData: action.payload
+      }
+    case SET_COMPONENT_OVERHEAD_ITEM_DATA:
+      return {
+        ...state,
+        loading: false,
+        ComponentItemOverheadData: action.payload
+      }
+    case SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA:
+      return {
+        ...state,
+        loading: false,
+        ComponentItemPackageFreightData: action.payload
+      }
+    case SET_COMPONENT_TOOL_ITEM_DATA:
+      return {
+        ...state,
+        loading: false,
+        ComponentItemToolData: action.payload
+      }
+    case SET_COMPONENT_DISCOUNT_ITEM_DATA:
+      return {
+        ...state,
+        loading: false,
+        ComponentItemDiscountData: action.payload
       }
     default:
       return state

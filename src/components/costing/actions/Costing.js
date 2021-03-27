@@ -41,6 +41,10 @@ import {
   SET_PACKAGE_AND_FREIGHT_TAB_DATA,
   SET_TOOL_TAB_DATA,
   SET_COMPONENT_ITEM_DATA,
+  SET_COMPONENT_OVERHEAD_ITEM_DATA,
+  SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA,
+  SET_COMPONENT_TOOL_ITEM_DATA,
+  SET_COMPONENT_DISCOUNT_ITEM_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -508,6 +512,62 @@ export function setComponentItemData(TabData, callback) {
   return (dispatch) => {
     dispatch({
       type: SET_COMPONENT_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentOverheadItemData
+ * @description SET COMPONENT OVERHEAD ITEM DATA  
+ */
+export function setComponentOverheadItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_OVERHEAD_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentPackageFreightItemData
+ * @description SET COMPONENT PACKAGE FREIGHT ITEM DATA  
+ */
+export function setComponentPackageFreightItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentToolItemData
+ * @description SET COMPONENT TOOL ITEM DATA  
+ */
+export function setComponentToolItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_TOOL_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentDiscountOtherItemData
+ * @description SET COMPONENT DISCOUNT OTHER ITEM DATA  
+ */
+export function setComponentDiscountOtherItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_DISCOUNT_ITEM_DATA,
       payload: TabData,
     });
     callback();

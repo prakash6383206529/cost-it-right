@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect, } from 'react';
+import { useDispatch, } from 'react-redux';
 import PackageCost from './PackageCost';
 import FreightCost from './FreightCost';
+import { setComponentPackageFreightItemData } from '../../../actions/Costing';
 
 function PackageAndFreight(props) {
 
   const { item, } = props;
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(setComponentPackageFreightItemData(item, () => { }))
+  }, [item.CostingPartDetails.CostingPackagingDetail, item.CostingPartDetails.CostingFreightDetail])
 
   /**
   * @method render

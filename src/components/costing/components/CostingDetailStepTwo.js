@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, } from 'react';
+import React, { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -38,7 +38,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM RM+CC TAB 
    */
   const setHeaderCostRMCCTab = (data) => {
-    console.log('setHeaderCostRMCCTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -79,7 +78,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM SURFACE TAB 
    */
   const setHeaderCostSurfaceTab = (data) => {
-    console.log('setHeaderCostSurfaceTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -116,7 +114,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM OVERHEAD PROFIT TAB
    */
   const setHeaderOverheadProfitCostTab = (data) => {
-    console.log('setHeaderOverheadProfitCostTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -154,7 +151,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM PACKAGE AND FREIGHT
    */
   const setHeaderPackageFreightTab = (data) => {
-    console.log('setHeaderPackageFreightTab data: ', data);
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -190,7 +186,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM TOOL TAB 
    */
   const setHeaderCostToolTab = (data) => {
-    console.log('setHeaderCostToolTab data: ', data);
     const headerIndex = 0;
 
     setTimeout(() => {
@@ -227,8 +222,8 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data) => {
-    console.log('setHeaderDiscountTab data: ', data);
     const headerIndex = 0;
+
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -361,9 +356,7 @@ function CostingDetailStepTwo(props) {
                       <tbody>
                         <tr className="cr-bg-tbl">
                           {
-                            CostingDataList &&
-                            CostingDataList.map((item, index) => {
-                              console.log('data: item: ', item);
+                            CostingDataList && CostingDataList.map((item, index) => {
                               return (
                                 <>
                                   <td><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>
