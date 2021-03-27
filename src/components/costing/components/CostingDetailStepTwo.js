@@ -341,16 +341,16 @@ function CostingDetailStepTwo(props) {
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '100px' }}><span className="font-weight-500">{`Net RM Cost/Assembly`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`Net BOP Cost/Assembly`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`Net Conversion Cost/Assembly`}</span></th>
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net RM Cost/Assembly' : 'Net RM Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net BOP Cost/Assembly' : 'Net BOP Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net Conversion Cost/Assembly' : 'Net BOP Cost/Pc'}`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`RM + CC Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Discount & Other Cost`}</span></th>
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost(INR)`}</span></th>
                         </tr>
                       </thead>
                       <tbody>

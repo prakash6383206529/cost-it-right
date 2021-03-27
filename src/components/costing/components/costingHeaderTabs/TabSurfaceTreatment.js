@@ -8,6 +8,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../helper/AllConastant';
+import { ViewCostingContext } from '../CostingDetails';
 
 function TabSurfaceTreatment(props) {
 
@@ -22,6 +23,7 @@ function TabSurfaceTreatment(props) {
   //setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -547,7 +549,7 @@ function TabSurfaceTreatment(props) {
                     <input
                       type="checkbox"
                       checked={isIncludeSurfaceTreatment}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                     <span
                       className=" before-box"

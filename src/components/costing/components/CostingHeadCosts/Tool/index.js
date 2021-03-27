@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
@@ -9,6 +9,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 import { setComponentToolItemData } from '../../../actions/Costing';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function Tool(props) {
 
@@ -44,6 +45,8 @@ function Tool(props) {
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     props.setToolCost(gridData)
@@ -334,7 +337,7 @@ function Tool(props) {
                         handleToolMaintanenceChange(e)
                       }}
                       errors={errors && errors.ToolMaintenanceCost}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -361,7 +364,7 @@ function Tool(props) {
                         handleToolCostChange(e)
                       }}
                       errors={errors && errors.ToolCost}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -388,7 +391,7 @@ function Tool(props) {
                         handleToolLifeChange(e)
                       }}
                       errors={errors && errors.Life}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -419,12 +422,12 @@ function Tool(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between mt25 tab-tool-cost-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
 
-                <button
+                {!CostingViewMode && <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                   {'Save'}
-                </button>
+                </button>}
               </div>
             </Row>
           </form>

@@ -9,6 +9,7 @@ import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTe
 import Switch from "react-switch";
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -49,6 +50,7 @@ function OverheadProfit(props) {
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -1123,6 +1125,7 @@ function OverheadProfit(props) {
                   defaultValue={modelType.length !== 0 ? modelType : ''}
                   options={renderListing('ModelType')}
                   mandatory={true}
+                  disabled={CostingViewMode ? true : false}
                   handleChange={handleModelTypeChange}
                   errors={errors.ModelType}
                 />
@@ -1197,7 +1200,7 @@ function OverheadProfit(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedPercentage}
-                          disabled={false}
+                          disabled={CostingViewMode ? true : false}
                         />
                       </Col>
                       <Col md="3">
@@ -1535,7 +1538,7 @@ function OverheadProfit(props) {
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitFixedPercentage}
-                          disabled={false}
+                          disabled={CostingViewMode ? true : false}
                         />
                       </Col>
                       <Col md="3">
@@ -1836,6 +1839,7 @@ function OverheadProfit(props) {
                   defaultValue={applicability.length !== 0 ? applicability : ''}
                   options={renderListing('Applicability')}
                   mandatory={true}
+                  disabled={CostingViewMode ? true : false}
                   handleChange={handleApplicabilityChange}
                   errors={errors.Applicability}
                 />
@@ -1861,7 +1865,7 @@ function OverheadProfit(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.RejectionPercentage}
-                  disabled={false}
+                  disabled={CostingViewMode ? true : false}
                 />
               </Col>
               {applicability.label !== 'Fixed' &&
@@ -1909,7 +1913,7 @@ function OverheadProfit(props) {
                     onChange={onPressInventory}
                     checked={IsInventoryApplicable}
                     id="normal-switch"
-                    disabled={false}
+                    disabled={CostingViewMode ? true : false}
                     background="#4DC771"
                     onColor="#4DC771"
                     onHandleColor="#ffffff"
@@ -2010,7 +2014,7 @@ function OverheadProfit(props) {
                     onChange={onPressPaymentTerms}
                     checked={IsPaymentTermsApplicable}
                     id="normal-switch"
-                    disabled={false}
+                    disabled={CostingViewMode ? true : false}
                     background="#4DC771"
                     onColor="#4DC771"
                     onHandleColor="#ffffff"
@@ -2101,12 +2105,12 @@ function OverheadProfit(props) {
 
             <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
-                <button
+                {!CostingViewMode && <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                   {'Save'}
-                </button>
+                </button>}
               </div>
             </Row>
           </form>

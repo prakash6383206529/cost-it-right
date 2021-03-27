@@ -18,6 +18,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
+import { ViewCostingContext } from '../CostingDetails';
 
 function TabDiscountOther(props) {
 
@@ -35,6 +36,7 @@ function TabDiscountOther(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
   const fieldValues = useWatch({
@@ -60,6 +62,54 @@ function TabDiscountOther(props) {
     dispatch(getCurrencySelectList(() => { }))
   }, [])
 
+  //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
+  useEffect(() => {
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: costData.CostingId }
+    })
+    let data = {
+      "CostingId": costData.CostingId,
+      "PartId": costData.PartId,
+      "PartNumber": costData.PartNumber,
+      "NetPOPrice": props.netPOPrice,
+      "LoggedInUserId": loggedInUserId(),
+      "CostingPartDetails": {
+        "CostingDetailId": costData.CostingId,
+        "PartId": costData.PartId,
+        "PartTypeId": "00000000-0000-0000-0000-000000000000",
+        "Type": costData.VendorType,
+        "PartNumber": costData.PartNumber,
+        "PartName": costData.PartName,
+        "Quantity": 1,
+        "IsOpen": true,
+        "IsPrimary": true,
+        "Sequence": 0,
+        "TotalCost": getValues('NetPOPriceINR'),
+        "NetDiscountsAndOtherCost": getValues('HundiOrDiscountValue'),
+        "OtherCostDetails": {
+          "OtherCostDetailId": '',
+          "HundiOrDiscountPercentage": getValues('HundiOrDiscountValue'),
+          "HundiOrDiscountValue": getValues('HundiOrDiscountValue'),
+          "AnyOtherCost": getValues('AnyOtherCost'),
+          "OtherCostPercentage": getValues('OtherCostPercentage'),
+          "TotalOtherCost": getValues('TotalOtherCost'),
+          "TotalDiscount": getValues('TotalDiscount'),
+          "IsChangeCurrency": IsCurrencyChange,
+          "NetPOPriceINR": getValues('NetPOPriceINR'),
+          "NetPOPriceOtherCurrency": getValues('NetPOPriceOtherCurrency'),
+          "CurrencyId": currency.value,
+          "Currency": currency.label,
+          "Remark": getValues('Remarks'),
+          "OtherCostDescription": getValues('OtherCostDescription'),
+          "CurrencyExchangeRate": CurrencyExchangeRate,
+          "EffectiveDate": effectiveDate,
+        }
+      },
+      "Attachements": updatedFiles
+    }
+    dispatch(setComponentDiscountOtherItemData(data, () => { }))
+  }, [props])
+
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
@@ -76,6 +126,7 @@ function TabDiscountOther(props) {
             setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
             setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
+            setCurrency(OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
 
             setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
             setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
@@ -384,7 +435,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.HundiOrDiscountPercentage}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4" >
@@ -403,7 +454,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.OtherCostDescription}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -467,7 +518,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.AnyOtherCost}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">{''}</Col>
@@ -483,7 +534,7 @@ function TabDiscountOther(props) {
                       <input
                           type="checkbox"
                           checked={IsCurrencyChange}
-                          disabled={false}
+                          disabled={CostingViewMode ? true : false}
                         />
                         <span
                           className=" before-box"
@@ -512,7 +563,7 @@ function TabDiscountOther(props) {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
-                                disabled={false}
+                                disabled={CostingViewMode ? true : false}
                               />
                             </div>
                           </div>
@@ -531,7 +582,7 @@ function TabDiscountOther(props) {
                             mandatory={true}
                             handleChange={handleCurrencyChange}
                             errors={errors.Currency}
-                            disabled={false}
+                            disabled={CostingViewMode ? true : false}
                           />
                         </Col>
                         <Col md="3">
@@ -577,7 +628,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.Remarks}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
 
@@ -621,6 +672,7 @@ function TabDiscountOther(props) {
                                 extra.reject ? { color: "red" } : {},
                             }}
                             classNames="draper-drop"
+                            disabled={CostingViewMode ? true : false}
                           />
                         )}
                     </Col>
@@ -651,7 +703,7 @@ function TabDiscountOther(props) {
 
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                      <button
+                      {!CostingViewMode && <button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
                       >
@@ -662,7 +714,7 @@ function TabDiscountOther(props) {
                           />{" "}
                         </div>
                         {"Save"}
-                      </button>
+                      </button>}
                     </div>
                   </Row>
 

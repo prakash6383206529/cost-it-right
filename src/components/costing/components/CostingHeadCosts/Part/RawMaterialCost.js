@@ -11,6 +11,7 @@ import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
+import { ViewCostingContext } from '../../CostingDetails'
 
 function RawMaterialCost(props) {
 
@@ -20,6 +21,8 @@ function RawMaterialCost(props) {
   })
 
   const costData = useContext(costingInfoContext)
+  const CostingViewMode = useContext(ViewCostingContext);
+
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
@@ -252,7 +255,7 @@ function RawMaterialCost(props) {
               <div className="left-border">{'Raw Material Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {gridData && gridData.length <= gridLength && (
+              {!CostingViewMode && gridData && gridData.length <= gridLength &&
                 <button
                   type="button"
                   className={'user-btn'}
@@ -260,7 +263,7 @@ function RawMaterialCost(props) {
                 >
                   <div className={'plus'}></div>ADD RM
                 </button>
-              )}
+              }
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
@@ -320,7 +323,7 @@ function RawMaterialCost(props) {
                                   handleGrossWeightChange(e, index)
                                 }}
                                 errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                disabled={false}
+                                disabled={CostingViewMode ? true : false}
                               />
                             </td>
                             <td>
@@ -348,18 +351,18 @@ function RawMaterialCost(props) {
                                   handleFinishWeightChange(e, index)
                                 }}
                                 errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={false}
+                                disabled={CostingViewMode ? true : false}
                               />
                             </td>
                             <td>
                               {item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, 2) : ''}
                             </td>
                             <td>
-                              <button
+                              {!CostingViewMode && <button
                                 className="Delete "
                                 type={'button'}
                                 onClick={() => deleteItem(index)}
-                              />
+                              />}
                             </td>
                           </tr>
                         )

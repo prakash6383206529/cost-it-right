@@ -10,6 +10,7 @@ import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+import { ViewCostingContext } from '../CostingDetails';
 
 function TabRMCC(props) {
 
@@ -22,7 +23,7 @@ function TabRMCC(props) {
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
 
   const costData = useContext(costingInfoContext);
-
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -1000,29 +1001,31 @@ function TabRMCC(props) {
                     </div>
                   </Col>
                 </Row>
-                <div className="col-sm-12 text-right bluefooter-butn">
-                  <button type={"button"} className="reset mr15 cancel-btn">
-                    <div className={"cross-icon"}>
-                      <img
-                        src={require("../../../../assests/images/times.png")}
-                        alt="cancel-icon.jpg"
-                      />
-                    </div>{" "}
-                    {"Cancel"}
-                  </button>
-                  <button
-                    type={'submit'}
-                    className="submit-button mr5 save-btn"
-                  >
-                    <div className={'check-icon'}>
-                      <img
-                        src={require('../../../../assests/images/check.png')}
-                        alt="check-icon.jpg"
-                      />{' '}
-                    </div>
-                    {'Save'}
-                  </button>
-                </div>
+
+                {!CostingViewMode &&
+                  <div className="col-sm-12 text-right bluefooter-butn">
+                    <button type={"button"} className="reset mr15 cancel-btn">
+                      <div className={"cross-icon"}>
+                        <img
+                          src={require("../../../../assests/images/times.png")}
+                          alt="cancel-icon.jpg"
+                        />
+                      </div>{" "}
+                      {"Cancel"}
+                    </button>
+                    <button
+                      type={'submit'}
+                      className="submit-button mr5 save-btn"
+                    >
+                      <div className={'check-icon'}>
+                        <img
+                          src={require('../../../../assests/images/check.png')}
+                          alt="check-icon.jpg"
+                        />{' '}
+                      </div>
+                      {'Save'}
+                    </button>
+                  </div>}
 
               </form>
             </div>

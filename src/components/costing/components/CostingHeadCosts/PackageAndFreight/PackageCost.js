@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -7,6 +7,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function PackageCost(props) {
 
@@ -20,6 +21,8 @@ function PackageCost(props) {
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     props.setPackageCost(gridData, 0)
@@ -98,11 +101,11 @@ function PackageCost(props) {
               </div>
             </Col>
             <Col col={'4'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD PACKAGING</button>
+                <div className={'plus'}></div>ADD PACKAGING</button>}
             </Col>
           </Row>
           <Row>
@@ -128,8 +131,8 @@ function PackageCost(props) {
                             <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>
                             <td>{item.PackagingCost}</td>
                             <td>
-                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                              {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>
                           </tr>
                         )

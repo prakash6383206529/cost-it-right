@@ -8,6 +8,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+import { ViewCostingContext } from '../CostingDetails';
 
 function TabPackagingFreight(props) {
 
@@ -16,6 +17,7 @@ function TabPackagingFreight(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
   const PackageAndFreightTabData = useSelector(state => state.costing.PackageAndFreightTabData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -216,7 +218,7 @@ function TabPackagingFreight(props) {
                   </Col>
                 </Row>
                 <div className="col-sm-12 text-right bluefooter-butn">
-                  <button
+                  {!CostingViewMode && <button
                     type={"button"}
                     className="submit-button mr5 save-btn"
                     onClick={saveCosting}
@@ -228,7 +230,7 @@ function TabPackagingFreight(props) {
                       />{" "}
                     </div>
                     {"Save"}
-                  </button>
+                  </button>}
                 </div>
               </form>
             </div>

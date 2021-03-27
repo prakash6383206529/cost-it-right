@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
@@ -7,6 +7,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull } from '../../../../../helper';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function BOPCost(props) {
 
@@ -20,6 +21,8 @@ function BOPCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     setTimeout(() => {
@@ -150,11 +153,11 @@ function BOPCost(props) {
               </div>
             </Col>
             <Col md={'2'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD BOP</button>
+                <div className={'plus'}></div>ADD BOP</button>}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -210,14 +213,14 @@ function BOPCost(props) {
                                       handleQuantityChange(e, index)
                                     }}
                                     errors={errors && errors.bopGridFields && errors.bopGridFields[index] !== undefined ? errors.bopGridFields[index].Quantity : ''}
-                                    disabled={false}
+                                    disabled={CostingViewMode ? true : false}
                                   />
                                 }
                               </td>
                               <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />
-                                <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />
+                                {!CostingViewMode && <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />}
+                                {!CostingViewMode && <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />}
                               </td>
                             </tr>
                             :
@@ -229,8 +232,8 @@ function BOPCost(props) {
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
                               <td>
-                                <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />
-                                <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />
+                                {!CostingViewMode && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}
+                                {!CostingViewMode && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
                               </td>
                             </tr>
 
