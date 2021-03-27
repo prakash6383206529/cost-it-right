@@ -14,9 +14,11 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../helper/AllConastant';
+import { ViewCostingContext } from '../CostingDetails';
 
 function CostingHeaderTabs(props) {
 
@@ -28,16 +30,18 @@ function CostingHeaderTabs(props) {
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
   const ComponentItemOverheadData = useSelector(state => state.costing.ComponentItemOverheadData)
   const ComponentItemPackageFreightData = useSelector(state => state.costing.ComponentItemPackageFreightData)
   const ComponentItemToolData = useSelector(state => state.costing.ComponentItemToolData)
+  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
 
   useEffect(() => {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
-    if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
+    if (!CostingViewMode && ComponentItemData !== undefined && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -78,7 +82,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR SURFACE TREATMENT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
+    if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
         "LoggedInUserId": loggedInUserId(),
@@ -98,7 +102,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (Object.keys(ComponentItemPackageFreightData).length > 0 && activeTab !== '4') {
+    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && activeTab !== '4') {
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
@@ -115,7 +119,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (Object.keys(ComponentItemToolData).length > 0 && activeTab !== '5') {
+    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && activeTab !== '5') {
       const data = {
         "IsToolCostProcessWise": false,
         "CostingId": costData.CostingId,
@@ -127,6 +131,13 @@ function CostingHeaderTabs(props) {
       }
       dispatch(saveToolTab(data, res => {
         dispatch(setComponentToolItemData({}, () => { }))
+      }))
+    }
+
+    // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
+    if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && activeTab !== '6') {
+      dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
       }))
     }
 

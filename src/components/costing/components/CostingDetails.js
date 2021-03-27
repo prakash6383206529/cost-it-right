@@ -20,6 +20,8 @@ import {
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 
+export const ViewCostingContext = React.createContext()
+
 function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
@@ -47,13 +49,14 @@ function CostingDetails(props) {
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
 
-  // For copy costing
+  // FOR COPY COSTING
   const [copyCostingData, setCopyCostingData] = useState({})
   const [type, setType] = useState('')
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
-    ;
+  //FOR VIEW MODE COSTING
+  const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
 
   const fieldValues = useWatch({
     control,
@@ -549,6 +552,7 @@ function CostingDetails(props) {
             setCostingData({ costingId: res.data.Data.CostingId, type })
             /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
             dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+            setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
           }
@@ -588,6 +592,7 @@ function CostingDetails(props) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
             dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+            setIsCostingViewMode(false)
             setStepTwo(true)
             setStepOne(false)
           }
@@ -610,9 +615,11 @@ function CostingDetails(props) {
     } else if (!checkForError(index, type)) {
       warningMessageHandle('ERROR_WARNING')
     } else {
+      setIsCostingViewMode(true)
       moveToCostingDetail(index, type)
     }
   }
+
   /**
    * @method editCosting
    * @description EDIT COSTING DETAILS
@@ -627,6 +634,7 @@ function CostingDetails(props) {
     } else if (checkSOBChanged(index, type)) {
       editCostingAlert(index, type)
     } else {
+      setIsCostingViewMode(false)
       moveToCostingDetail(index, type)
     }
   }
@@ -756,6 +764,7 @@ function CostingDetails(props) {
 
     // }
     /*Copy Costing Drawer code here*/
+    setIsCostingViewMode(false)
     setIsCopyCostingDrawer(true)
 
     if (type === ZBC) {
@@ -780,10 +789,40 @@ function CostingDetails(props) {
    * @method deleteCosting
    * @description USED FOR DELETE 
    */
-  const deleteCosting = (CostingId, type) => {
-    let reqData = { Id: CostingId, UserId: loggedInUserId() }
+  const deleteCosting = (Item, index, type) => {
+    let reqData = { Id: Item.CostingId, UserId: loggedInUserId() }
     dispatch(deleteDraftCosting(reqData, () => {
+      setIsCostingViewMode(false)
 
+      let tempArray = []
+
+      if (type === ZBC) {
+        let tempData = zbcPlantGrid[index]
+        let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId)
+
+        tempData = {
+          ...tempData,
+          CostingOptions: selectedOptionObj,
+          CostingId: Item.CostingId,
+        }
+        tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
+        setZBCPlantGrid(tempArray)
+        setValue(`zbcPlantGridFields[${index}]CostingVersion`, '')
+      }
+
+      if (type === VBC) {
+        let tempData = vbcVendorGrid[index]
+        let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId,)
+
+        tempData = {
+          ...tempData,
+          CostingOptions: selectedOptionObj,
+          CostingId: Item.CostingId,
+        }
+        tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
+        setVBCVendorGrid(tempArray)
+        setValue(`vbcGridFields[${index}]CostingVersion`, '')
+      }
     }))
   }
 
@@ -1132,7 +1171,7 @@ function CostingDetails(props) {
                                           {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
-                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteCosting(item.CostingId, ZBC)} />)}
+                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteCosting(item, index, ZBC)} />)}
                                         </td>
                                       </tr>
                                     );
@@ -1169,8 +1208,8 @@ function CostingDetails(props) {
                                 <div className={"plus"}></div>ADD VENDOR
                               </button>
                             ) : (
-                              ""
-                            )}
+                                ""
+                              )}
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
@@ -1264,7 +1303,7 @@ function CostingDetails(props) {
                                         {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
                                         {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteCosting(item.CostingId, VBC)} />)}
+                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteCosting(item, index, VBC)} />)}
                                       </td>
                                     </tr>
                                   );
@@ -1313,11 +1352,13 @@ function CostingDetails(props) {
                   </>
                 )}
                 {stepTwo && (
-                  <CostingDetailStepTwo
-                    backBtn={backToFirstStep}
-                    partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                    costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                  />
+                  <ViewCostingContext.Provider value={IsCostingViewMode} >
+                    <CostingDetailStepTwo
+                      backBtn={backToFirstStep}
+                      partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                      costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                    />
+                  </ViewCostingContext.Provider>
                 )}
               </form>
             </div>

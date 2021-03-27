@@ -9,6 +9,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../.
 import { LEVEL1 } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function PartCompoment(props) {
   const { rmData, bopData, ccData, item } = props;
@@ -20,6 +21,7 @@ function PartCompoment(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   const toggle = (BOMLevel, PartNumber) => {
     setIsOpen(!IsOpen)
@@ -46,7 +48,7 @@ function PartCompoment(props) {
 
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
-    if (IsOpen === false && Count > 0) {
+    if (!CostingViewMode && IsOpen === false && Count > 0) {
       let requestData = {
         "NetRawMaterialsCost": item.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": item.CostingPartDetails.TotalBoughtOutPartCost,
@@ -104,12 +106,12 @@ function PartCompoment(props) {
         </td>
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalConversionCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>
-        {costData.IsAssemblyPart && <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NumberOfDecimalForTransaction) : 0}</td>}
+        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        {costData.IsAssemblyPart && <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         <td>{''}</td>
       </tr>
       {item.IsOpen && <tr>

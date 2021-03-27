@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function FreightCost(props) {
 
@@ -12,6 +13,8 @@ function FreightCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     props.setFreightCost(gridData, props.index)
@@ -79,11 +82,11 @@ function FreightCost(props) {
               </div>
             </Col>
             <Col col={'2'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD FREIGHT</button>
+                <div className={'plus'}></div>ADD FREIGHT</button>}
             </Col>
           </Row>
           <Row>
@@ -122,8 +125,8 @@ function FreightCost(props) {
                             <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Quantity}</td>
                             <td>{item.FreightCost}</td>
                             <td>
-                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                              {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>
                           </tr>
                         )

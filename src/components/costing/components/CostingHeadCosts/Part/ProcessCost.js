@@ -14,6 +14,7 @@ import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function ProcessCost(props) {
   const { data } = props
@@ -43,6 +44,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({
@@ -479,13 +481,13 @@ function ProcessCost(props) {
               <div className="left-border">{'Process Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}
               >
                 <div className={'plus'}></div>ADD PROCESS
-              </button>
+              </button>}
             </Col>
           </Row>
 
@@ -707,7 +709,7 @@ function ProcessCost(props) {
                                   }}
 
                                   // errors={}
-                                  disabled={false}
+                                  disabled={CostingViewMode ? true : false}
                                 />
                               }
                             </span>
@@ -777,11 +779,7 @@ function ProcessCost(props) {
                               type={"button"}
                               onClick={() => editItem(index)}
                             /> */}
-                            <button
-                              className="Delete"
-                              type={'button'}
-                              onClick={() => deleteItem(index)}
-                            />
+                            {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                           </td>
                         </tr>
                       )

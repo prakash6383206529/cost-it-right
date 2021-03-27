@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
@@ -7,6 +7,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function OperationCost(props) {
 
@@ -21,6 +22,8 @@ function OperationCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     const Params = {
@@ -178,11 +181,11 @@ function OperationCost(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OPERATION</button>
+                <div className={'plus'}></div>ADD OPERATION</button>}
             </Col>
           </Row>
           <Row>
@@ -239,7 +242,7 @@ function OperationCost(props) {
                                     handleQuantityChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
-                                  disabled={false}
+                                  disabled={CostingViewMode ? true : false}
                                 />
                               }
                             </td>
@@ -270,7 +273,7 @@ function OperationCost(props) {
                                       handleLabourQuantityChange(e, index)
                                     }}
                                     errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                    disabled={false}
+                                    disabled={CostingViewMode ? true : false}
                                   />
                                   :
                                   '-'
@@ -293,8 +296,8 @@ function OperationCost(props) {
                             <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
+                              {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
                             </td>
                           </tr>
                       )
