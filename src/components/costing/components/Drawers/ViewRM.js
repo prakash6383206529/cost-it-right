@@ -129,7 +129,7 @@ function ViewRM(props) {
                   />
                 </div>
                 {
-                  !viewRM.WeightCalculationId === '00000000-0000-0000-0000-000000000000' &&
+                  viewRM.WeightCalculationId !== '00000000-0000-0000-0000-000000000000' &&
 
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <h5>

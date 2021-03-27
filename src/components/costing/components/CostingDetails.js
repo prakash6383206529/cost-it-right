@@ -88,13 +88,14 @@ function CostingDetails(props) {
   useEffect(() => {
     if (Object.keys(partNumber).length > 0) {
       console.log("PN", partNumber);
+      setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
+      setPart({ label: partNumber.partName, value: partNumber.partId })
       setTimeout(() => {
-        setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
         setTechnology({ label: partNumber.technologyName, value: partNumber.technologyId })
         setValue('Part', { label: partNumber.partName, value: partNumber.partId })
-        setPart({ label: partNumber.partName, value: partNumber.partId })
         setIsTechnologySelected(true)
-        nextToggle()
+        setShowNextBtn(true)
+
         dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => {
           console.log(res, "res");
         }))
@@ -115,9 +116,11 @@ function CostingDetails(props) {
     }
   }, [partNumber])
 
-  // useEffect(() => {
-
-  // }, [part])
+  useEffect(() => {
+    if (Object.keys(technology).length > 0 && Object.keys(partNumber).length > 0) {
+      nextToggle()
+    }
+  }, [technology])
 
   /**
    * @method renderListing
