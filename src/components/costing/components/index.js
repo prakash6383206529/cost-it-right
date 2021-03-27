@@ -88,7 +88,7 @@ function Costing(props) {
             {/* )} */}
             {/* {activeTab === "2" && ( */}
             <TabPane tabId="2">
-              <CostingSummary showDetail={showDetail} />
+              <CostingSummary activeTab={activeTab} showDetail={showDetail} />
               {
                 // <CostingSummaryTable />
               }

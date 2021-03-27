@@ -20,6 +20,7 @@ import { saveProcessCostCalculationData } from '../../../actions/ProcessCost'
 import { toastr } from 'react-redux-toastr'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
+import { SHEETMETAL, RUBBER, PLASTIC, MACHINING } from '../../../../../config/masterData'
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
@@ -75,7 +76,7 @@ function VariableMhrDrawer(props) {
   }
   const getProcessComponent = (process) => {
     console.log('Entered in switch case')
-    if (technology === 'Machining') {
+    if (technology === MACHINING) {
       switch (process) {
         case 'Facing':
           return (
@@ -152,7 +153,7 @@ function VariableMhrDrawer(props) {
         default:
           break;
       }
-    } else if (technology === 'Sheet Metal') {
+    } else if (technology === SHEETMETAL) {
       switch (process) {
         case 'Facing':
           return (
@@ -172,7 +173,7 @@ function VariableMhrDrawer(props) {
             />
           )
       }
-    } else if (technology === 'Plastic') {
+    } else if (technology === PLASTIC) {
       switch (process) {
         case 'Injection Moulding':
           return (

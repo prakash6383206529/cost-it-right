@@ -835,7 +835,7 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={costData.TechnologyName}
+          technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
           rmFinishWeight={props.rmFinishWeight}

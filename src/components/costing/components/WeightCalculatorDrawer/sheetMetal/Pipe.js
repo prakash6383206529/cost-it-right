@@ -419,8 +419,8 @@ function Pipe(props) {
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
-          setValue('GrossWeight', grossWeight)
-          setValue('FinishWeight', finishWeight)
+          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
         }, 100);
         break;
       case G:
@@ -430,8 +430,8 @@ function Pipe(props) {
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
-          setValue('GrossWeight', grossWeight)
-          setValue('FinishWeight', finishWeight)
+          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
         }, 100);
         break;
       case MG:
@@ -441,8 +441,8 @@ function Pipe(props) {
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
-          setValue('GrossWeight', grossWeight)
-          setValue('FinishWeight', finishWeight)
+          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
         }, 100);
         break;
       default:
@@ -511,7 +511,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.OuterDiameter}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
@@ -536,7 +536,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.Thickness}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
@@ -588,7 +588,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.SheetLength}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
@@ -613,7 +613,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.PartLength}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
@@ -763,7 +763,7 @@ function Pipe(props) {
                       onChange={onSideToggle}
                       checked={isOneSide}
                       id="normal-switch"
-                      disabled={false}
+                      disabled={isEditFlag ? false : true}
                       background="#4DC771"
                       onColor="#4DC771"
                       onHandleColor="#ffffff"
@@ -791,7 +791,7 @@ function Pipe(props) {
                     mandatory={true}
                     handleChange={handleUnit}
                     errors={errors.UOMDimension}
-                  // disabled={!isEditFlag}
+                    disabled={isEditFlag ? false : true}
                   />
 
                 </Col>
@@ -872,21 +872,23 @@ function Pipe(props) {
                 </Col>
               </Row>
             </div>
-
-            <div className="col-sm-12 text-right px-0 mt-4">
-              <button
-                type={'button'}
-                className="reset mr15 cancel-btn"
-                onClick={cancel} >
-                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-              </button>
-              <button
-                type={'submit'}
-                className="submit-button save-btn">
-                <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                {'Save'}
-              </button>
-            </div>
+            {
+              isEditFlag &&
+              <div className="col-sm-12 text-right px-0 mt-4">
+                <button
+                  type={'button'}
+                  className="reset mr15 cancel-btn"
+                  onClick={cancel} >
+                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                </button>
+                <button
+                  type={'submit'}
+                  className="submit-button save-btn">
+                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  {'Save'}
+                </button>
+              </div>
+            }
 
           </form>
         </div>

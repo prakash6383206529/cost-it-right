@@ -500,6 +500,7 @@ export const API = {
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
+  getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
@@ -1086,6 +1087,7 @@ export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
 export const SET_OVERHEAD_PROFIT_COST_DATA = 'SET_OVERHEAD_PROFIT_COST_DATA';
 export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
+export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 
 //WEIGHT CALCULATION COSTING
 

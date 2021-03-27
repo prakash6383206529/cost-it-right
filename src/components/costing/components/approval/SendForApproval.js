@@ -22,9 +22,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const usersList = useSelector((state) => state.approval.approvalUsersList)
-  const viewApprovalData = useSelector(
-    (state) => state.costing.costingApprovalData,
-  )
+  const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
 
   const partNo = useSelector((state) => state.costing.partNo)
 
@@ -289,7 +287,7 @@ const SendForApproval = (props) => {
     dispatch(
       sendForApprovalBySender(obj, (res) => {
         toastr.success('Data is sent for approval!')
-        history.push('/costing')
+        props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
         dispatch(setCostingViewData([]))
       }),
@@ -312,7 +310,7 @@ const SendForApproval = (props) => {
       return
     }
     dispatch(setCostingApprovalData([]))
-    props.closeDrawer('')
+    props.closeDrawer('', 'Cancel')
   }
   return (
     <Fragment>
@@ -430,7 +428,7 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <label>Old/Current Price</label>
                           <label className="form-control bg-grey">
-                            {data.oldPrice ? data.oldPrice : 0}
+                            {data.oldPrice && data.oldPrice !== '-' ? data.oldPrice : 0}
                           </label>
                         </Col>
                         <Col md="4">

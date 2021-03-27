@@ -69,7 +69,8 @@ export const TextFieldHookForm = (field) => {
           }
           }
         />
-        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
       </div>
     </>
   )
@@ -97,7 +98,7 @@ export const SearchableSelectHookForm = (field) => {
             <Select
               name={name}
               placeholder={placeholder}
-              disabled={isDisable}
+              isDisabled={isDisable}
               onChange={(e) => {
                 handleChange(e);
                 onChange(e)

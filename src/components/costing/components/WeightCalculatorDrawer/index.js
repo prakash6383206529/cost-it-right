@@ -7,11 +7,14 @@ import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
 import Rubber from './Rubber'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGINING } from '../../../../config/masterData'
+
 
 function OpenWeightCalculator(props) {
   const { rmRowData, isEditFlag } = props
 
   const technology = props.technology;
+  console.log(technology, "TECH");
 
   /**
    * @method toggleDrawer
@@ -35,8 +38,8 @@ function OpenWeightCalculator(props) {
   //   }, [])
 
   const openConditionalDrawer = () => {
-    switch (technology) {
-      case 'Sheet Metal':
+    switch (Number(technology)) {
+      case SHEETMETAL:
         return (
           <WeightCalculator
             rmRowData={props.rmRowData}
@@ -44,7 +47,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
           />
         )
-      case 'Forgining':
+      case FORGINING:
         return (
           <ForgingCalculator
             rmRowData={props.rmRowData}
@@ -52,7 +55,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
           />
         )
-      case 'Plastic':
+      case PLASTIC:
         return (
           <Plastic
             rmRowData={props.rmRowData}
@@ -60,7 +63,7 @@ function OpenWeightCalculator(props) {
             toggleDrawer={toggleDrawer}
           />
         )
-      case 'Rubber':
+      case RUBBER:
         return <Rubber
           rmRowData={props.rmRowData}
           inputDiameter={props.inputDiameter}

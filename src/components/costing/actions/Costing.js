@@ -45,6 +45,7 @@ import {
   GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_PLANT_SELECTLIST,
   GET_PART_COSTING_VENDOR_SELECT_LIST,
+  GET_PART_SELECTLIST_BY_TECHNOLOGY,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1966,5 +1967,31 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
       dispatch({ type: API_FAILURE })
       callback(error)
     })
+  }
+}
+
+export function getPartSelectListByTechnology(technologyId, callback) {
+  return (dispatch) => {
+    if (technologyId !== '') {
+      dispatch({ type: API_REQUEST })
+      const request = axios.get(`${API.getPartByTechnologyId}/${technologyId}`, headers)
+      request.then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_PART_SELECTLIST_BY_TECHNOLOGY,
+            payload: response.data.SelectList
+          })
+          callback(response)
+        }
+      }).catch(error => {
+        dispatch({ type: API_FAILURE })
+        callback(error)
+      })
+    } else {
+      dispatch({
+        type: GET_PART_SELECTLIST_BY_TECHNOLOGY,
+        payload: []
+      })
+    }
   }
 }

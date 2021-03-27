@@ -1654,18 +1654,18 @@ export const CostingBulkUploadTempData = [
     }
 ]
 
-export const SHEET_METAL = '1'
-export const Forgining = '2'
-export const Non_Ferrous_LPDC = '3'
-export const Non_Ferrous_HPDC = '4'
-export const Non_Ferrous_GDC = '5'
-export const Ferrous_Casting = '6'
-export const Rubber = '7'
-export const Plastic = '8'
-export const Mechanical_Proprietary = '9'
-export const Electrical_Proprietary = '10'
-export const Spring = '11'
-export const Fastners = '12'
-export const Assembly = '13'
-export const Machining = '14'
-export const Fabrication = '15'
+export const SHEETMETAL = 1
+export const FORGINING = 2
+export const Non_Ferrous_LPDC = 3
+export const Non_Ferrous_HPDC = 4
+export const Non_Ferrous_GDC = 5
+export const Ferrous_Casting = 6
+export const RUBBER = 7
+export const PLASTIC = 8
+export const Mechanical_Proprietary = 9
+export const Electrical_Proprietary = 10
+export const SPRING = 11
+export const FASTNERS = 12
+export const ASSEMBLY = 13
+export const MACHINING = 14
+export const FABRICATION = 15

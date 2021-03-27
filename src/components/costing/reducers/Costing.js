@@ -44,7 +44,8 @@ import {
   GET_RM_DRAWER_DATA_LIST,
   GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_VENDOR_SELECT_LIST,
-  GET_PART_COSTING_PLANT_SELECTLIST
+  GET_PART_COSTING_PLANT_SELECTLIST,
+  GET_PART_SELECTLIST_BY_TECHNOLOGY
 } from '../../../config/constants';
 
 const initialState = {
@@ -390,6 +391,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         costingPlantList: action.payload
+      }
+    case GET_PART_SELECTLIST_BY_TECHNOLOGY:
+      return {
+        ...state,
+        loading: false,
+        partSelectListByTechnology: action.payload
       }
     default:
       return state
