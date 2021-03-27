@@ -66,6 +66,7 @@ function AddToComparisonDrawer(props) {
 
   /* For getting part no for costing dropdown */
   const partNo = useSelector((state) => state.costing.partNo)
+  console.log(partNo, "Part No");
 
   /* For getting default value of check box */
   useEffect(() => {
@@ -138,8 +139,6 @@ function AddToComparisonDrawer(props) {
     setValue('comparisonValue', value)
     if (value === 'ZBC') {
       dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => {
-        // dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => { }))
-
         if (plantId !== undefined && plantId !== '-') {
           dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
         }
