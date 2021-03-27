@@ -7,7 +7,7 @@ import { toastr } from 'react-redux-toastr'
 import moment from 'moment'
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology,
-  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails,
+  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -16,15 +16,7 @@ import { formViewData } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 
 function CostingSummary(props) {
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -37,28 +29,85 @@ function CostingSummary(props) {
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false)
   const [part, setPart] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
+  const [TechnologyId, setTechnologyId] = useState('')
+  const [disabled, setDisabled] = useState(false)
   const partNumber = useSelector(state => state.costing.partNo);
+
 
 
   const fieldValues = useWatch({ control })
 
   const dispatch = useDispatch()
 
+  const costingData = useSelector(state => state.costing.costingData)
+  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
+  console.log(costingData, "CDDDD");
+
   useEffect(() => {
+    console.log("ACTIVE Tab");
+  }, [props.activeTab])
+
+  useEffect(() => {
+    console.log("COSTING DATA RENDER 2")
     dispatch(getCostingTechnologySelectList(() => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
+    dispatch(getPartSelectListByTechnology('', () => { }))
+
+    // if (costingData.length > 0) {
+    //   console.log("COSTING DATA RENDER 3", costingData)
+    // }
   }, [])
 
-  const technologySelectList = useSelector(
-    (state) => state.costing.technologySelectList,
-  )
-  const partSelectList = useSelector((state) => state.costing.partSelectList)
+  useEffect(() => {
+    console.log("COSTING DATA RENDER 1", costingData);
+    if (Object.keys(costingData).length > 0) {
 
-  const partInfo = useSelector((state) => state.costing.partInfo)
-  const viewCostingData = useSelector(
-    (state) => state.costing.viewCostingDetailData,
-  )
+      setTimeout(() => {
+
+        setValue('Technology', costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
+        setTechnology(costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
+        setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartName, value: costingData.PartId } : [])
+        setDisabled(true)
+        dispatch(getPartSelectListByTechnology(costingData.TechnologyId, () => { }))
+        dispatch(getPartInfo(costingData.PartId, (res) => {
+          let newValue = {}
+          let Data = res.data.Data
+          setValue('PartName', Data.PartName)
+          setValue('Description', Data.Description)
+          setValue('ECNNumber', Data.ECNNumber)
+          setValue('DrawingNumber', Data.DrawingNumber)
+          setValue('RevisionNumber', Data.RevisionNumber)
+          setValue('ShareOfBusiness', Data.Price)
+          setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
+          setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+          newValue.revisionNumber = Data.RevisionNumber
+          newValue.technologyId = costingData.TechnologyId
+          newValue.technologyName = costingData.TechnologyName
+          newValue.partName = Data.PartName
+          newValue.partNumber = costingData.PartName
+          newValue.partId = costingData.PartId
+          console.log(newValue, "NEW VAL");
+          dispatch(storePartNumber(newValue))
+          dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
+            if (res.data.Data) {
+              let dataFromAPI = res.data.Data
+              const tempObj = formViewData(dataFromAPI)
+              dispatch(setCostingViewData(tempObj))
+            }
+          },
+          ))
+        }),
+        )
+      }, 200);
+    }
+  }, [costingData])
+
+  const technologySelectList = useSelector(state => state.costing.technologySelectList,)
+  const partSelectList = useSelector(state => state.costing.partSelectList)
+
+  const partInfo = useSelector(state => state.costing.partInfo)
+  const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
 
   /**
    * @method renderDropdownListing
@@ -78,8 +127,8 @@ function CostingSummary(props) {
     }
 
     if (label === 'PartList') {
-      partSelectList &&
-        partSelectList.map((item) => {
+      partSelectListByTechnology &&
+        partSelectListByTechnology.map((item) => {
           if (item.Value === '0') return false
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
@@ -95,6 +144,7 @@ function CostingSummary(props) {
   const handleTechnologyChange = (newValue) => {
     dispatch(storePartNumber(''))
     if (newValue && newValue !== '') {
+      dispatch(getPartSelectListByTechnology(newValue.value, () => { }))
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
@@ -109,7 +159,9 @@ function CostingSummary(props) {
       setIsTechnologySelected(false)
     }
   }
-
+  useEffect(() => {
+    console.log(disabled, "DIS");
+  }, [disabled])
   /**
    * @method handlePartChange
    * @description  USED TO HANDLE PART CHANGE
@@ -130,7 +182,9 @@ function CostingSummary(props) {
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
         const data = { TechnologyId: technology.value, PartId: newValue.value }
-
+        setTimeout(() => {
+          setDisabled(true)
+        }, 200);
         dispatch(
           checkPartWithTechnology(data, (response) => {
             setPart(newValue)
@@ -144,6 +198,7 @@ function CostingSummary(props) {
                   setValue('DrawingNumber', Data.DrawingNumber)
                   setValue('RevisionNumber', Data.RevisionNumber)
                   setValue('ShareOfBusiness', Data.Price)
+                  setTechnologyId(Data.ETechnologyType ? Data.ETechnologyType : 1)
                   setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
                   newValue.revisionNumber = Data.RevisionNumber
                   newValue.technologyId = technology.value
@@ -248,6 +303,20 @@ function CostingSummary(props) {
 
   // }
 
+  const resetData = () => {
+    reset()
+    setTechnology([])
+    setTimeout(() => {
+      getValues('Technology', [])
+    }, 200);
+    setDisabled(false)
+    dispatch(storePartNumber(''))
+    dispatch(setCostingViewData([]))
+    dispatch(getPartSelectListByTechnology('', () => { }))
+  }
+
+
+
   return (
     <>
       {/* {
@@ -277,13 +346,12 @@ function CostingSummary(props) {
                           control={control}
                           rules={{ required: true }}
                           register={register}
-                          defaultValue={
-                            technology.length !== 0 ? technology : ''
-                          }
+                          defaultValue={technology.length !== 0 ? technology : ''}
                           options={renderDropdownListing('Technology')}
                           mandatory={true}
                           handleChange={handleTechnologyChange}
                           errors={errors.Technology}
+                          disabled={disabled}
                         />
                       </Col>
 
@@ -301,6 +369,7 @@ function CostingSummary(props) {
                           mandatory={true}
                           handleChange={handlePartChange}
                           errors={errors.Part}
+                          disabled={disabled}
                         />
                       </Col>
 
@@ -431,6 +500,24 @@ function CostingSummary(props) {
                           </div>
                         </div>
                       </Col>
+
+                      <Col className="col-md-15">
+                        {/* <button
+                          type="button"
+                          // disabled={this.state.isViewFlag ? true : false}
+                          className={'reset-btn mt30 pull-left'}
+                          onClick={resetData}
+                        >Reset</button> */}
+                        <button
+                          type="button"
+                          //disabled={pristine || submitting}
+                          onClick={resetData}
+                          className="reset mr10 mt30 pull-left"
+                        >
+                          {'Reset'}
+                        </button>
+                      </Col>
+
                     </Row>
                   </>
                 }
@@ -439,7 +526,7 @@ function CostingSummary(props) {
           </Col>
         </Row>
       </div>
-      {partNumber !== "" && <CostingSummaryTable showDetail={props.showDetail} />}
+      {partNumber !== "" && <CostingSummaryTable resetData={resetData} showDetail={props.showDetail} technologyId={TechnologyId} />}
       {/* // } */}
     </>
   )

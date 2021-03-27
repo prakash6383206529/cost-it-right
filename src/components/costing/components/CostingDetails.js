@@ -16,7 +16,7 @@ import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 
@@ -53,6 +53,8 @@ function CostingDetails(props) {
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
+    ;
+
   const fieldValues = useWatch({
     control,
     name: ['zbcPlantGridFields', 'vbcGridFields', 'Technology'],
@@ -63,6 +65,7 @@ function CostingDetails(props) {
   useEffect(() => {
     dispatch(storePartNumber(''))
     dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
   }, [])
@@ -77,10 +80,44 @@ function CostingDetails(props) {
   )
   const partSelectList = useSelector((state) => state.costing.partSelectList)
   const partInfo = useSelector((state) => state.costing.partInfo)
-  const initialConfiguration = useSelector(
-    (state) => state.auth.initialConfiguration,
-  )
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
+  console.log(partNumber, "PN")
+
+  useEffect(() => {
+    if (Object.keys(partNumber).length > 0) {
+      console.log("PN", partNumber);
+      setTimeout(() => {
+        setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
+        setTechnology({ label: partNumber.technologyName, value: partNumber.technologyId })
+        setValue('Part', { label: partNumber.partName, value: partNumber.partId })
+        setPart({ label: partNumber.partName, value: partNumber.partId })
+        setIsTechnologySelected(true)
+        nextToggle()
+        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => {
+          console.log(res, "res");
+        }))
+        dispatch(
+          getPartInfo(partNumber.partId, (res) => {
+            let Data = res.data.Data
+            setValue('PartName', Data.PartName)
+            setValue('Description', Data.Description)
+            setValue('ECNNumber', Data.ECNNumber)
+            setValue('DrawingNumber', Data.DrawingNumber)
+            setValue('RevisionNumber', Data.RevisionNumber)
+            setValue('ShareOfBusiness', Data.Price)
+            setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+
+          }),
+        )
+      }, 300);
+    }
+  }, [partNumber])
+
+  // useEffect(() => {
+
+  // }, [part])
 
   /**
    * @method renderListing
@@ -99,7 +136,7 @@ function CostingDetails(props) {
     }
 
     if (label === 'PartList') {
-      partSelectList && partSelectList.map((item) => {
+      partSelectListByTechnology && partSelectListByTechnology.map((item) => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -131,6 +168,7 @@ function CostingDetails(props) {
   const handleTechnologyChange = (newValue) => {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
+      dispatch(getPartSelectListByTechnology(newValue.value, () => { }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
@@ -1131,8 +1169,8 @@ function CostingDetails(props) {
                                 <div className={"plus"}></div>ADD VENDOR
                               </button>
                             ) : (
-                                ""
-                              )}
+                              ""
+                            )}
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>

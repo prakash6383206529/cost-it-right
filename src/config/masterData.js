@@ -522,6 +522,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'BasicRate', value: 'BasicRate', },
     { label: 'Remark', value: 'Remark', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'UOM', value: 'UOM' }
 ]
 
 export const BOP_ZBC_DOMESTIC_TempData = [
@@ -537,6 +538,21 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'BasicRate': '100',
         'Remark': 'Remark Text',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'UOM': 'Kilogram'
+    },
+    {
+        'BOPPartNumber': 'BOP1',
+        'BOPPartName': 'BOP Name',
+        'BOPCategory': 'Category 1',
+        'PartNumber': 'P1',
+        'Specification': 'BOP Specification',
+        'Plant': 'Plant1',
+        'VendorName': 'Vendor Name123',
+        'NoOfPcs': '1',
+        'BasicRate': '100',
+        'Remark': 'Remark Text',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'UOM': 'Kilogram'
     }
 ]
 
@@ -559,6 +575,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'BasicRate', value: 'BasicRate', },
     { label: 'Remark', value: 'Remark', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'UOM', value: 'UOM' }
 ]
 
 export const BOP_VBC_DOMESTIC_TempData = [
@@ -578,6 +595,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BasicRate': '100',
         'Remark': 'Remark Text',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'UOM': 'Kilogram'
     }
 ]
 
@@ -597,6 +615,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'Currency', value: 'Currency', },
     { label: 'Remark', value: 'Remark', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'UOM', value: 'UOM' },
 ]
 
 export const BOP_ZBC_IMPORT_TempData = [
@@ -613,6 +632,7 @@ export const BOP_ZBC_IMPORT_TempData = [
         'Currency': 'INR',
         'Remark': 'Remark Text',
         'EffectiveDate': moment().format('DD-MM-YYYY'),
+        'UOM': 'Kilogram'
     }
 ]
 
@@ -636,6 +656,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'Currency', value: 'Currency', },
     { label: 'Remark', value: 'Remark', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'UOM', value: 'UOM' }
 ]
 
 export const BOP_VBC_IMPORT_TempData = [
@@ -656,6 +677,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'Currency': 'INR',
         'Remark': 'Remark Text',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'UOM': 'Kilogram'
     }
 ]
 
@@ -1052,7 +1074,6 @@ export const MachineVBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const PartComponent = [
-    { label: 'BOMNo', value: 'BOMNo', },
     { label: 'PartNo', value: 'PartNo', },
     { label: 'PartName', value: 'PartName', },
     { label: 'PartDescription', value: 'PartDescription', },
@@ -1060,14 +1081,12 @@ export const PartComponent = [
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
-    { label: 'Plant', value: 'Plant', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const PartComponentTempData = [
     {
-        'BOMNo': '123',
         'PartNo': 'Part1',
         'PartName': 'Part Name',
         'PartDescription': 'Part Description',
@@ -1075,7 +1094,6 @@ export const PartComponentTempData = [
         'ECNNumber': '1',
         'RevisionNo': '1',
         'DrawingNo': '1',
-        'Plant': 'Plant1',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
     }
@@ -1461,6 +1479,7 @@ export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
+export const AcceptableSheetMetalUOM = ['Kilogram', 'GRAMS', 'Milligram']
 
 
 export const CostingBulkUpload = [
@@ -1634,3 +1653,19 @@ export const CostingBulkUploadTempData = [
         "L3Total": "2000"
     }
 ]
+
+export const SHEETMETAL = 1
+export const FORGINING = 2
+export const Non_Ferrous_LPDC = 3
+export const Non_Ferrous_HPDC = 4
+export const Non_Ferrous_GDC = 5
+export const Ferrous_Casting = 6
+export const RUBBER = 7
+export const PLASTIC = 8
+export const Mechanical_Proprietary = 9
+export const Electrical_Proprietary = 10
+export const SPRING = 11
+export const FASTNERS = 12
+export const ASSEMBLY = 13
+export const MACHINING = 14
+export const FABRICATION = 15

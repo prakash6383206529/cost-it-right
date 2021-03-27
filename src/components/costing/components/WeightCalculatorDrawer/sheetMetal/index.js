@@ -129,7 +129,7 @@ function WeightCalculator(props) {
           <TabContent activeTab={activeTab}>
             {activeTab === '1' && (
               <TabPane tabId="1">
-                <Pipe rmRowData={props.rmRowData} toggleDrawer={toggleDrawer} />
+                <Pipe rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
               </TabPane>
             )}
             {activeTab === '2' && (

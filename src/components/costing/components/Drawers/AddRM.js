@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
@@ -10,6 +10,7 @@ import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { ZBC } from '../../../../config/constants';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddRM(props) {
 
@@ -19,6 +20,8 @@ function AddRM(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
+
+  const rmDrawerList = useSelector(state => state.costing.rmDrawerList)
 
   useEffect(() => {
     setSelectedRowData([])
@@ -70,7 +73,7 @@ function AddRM(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+    noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal(),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -193,7 +196,7 @@ function AddRM(props) {
             <Row className="mx-0">
               <Col>
                 <BootstrapTable
-                  data={tableData}
+                  data={rmDrawerList}
                   striped={false}
                   bordered={false}
                   hover={false}

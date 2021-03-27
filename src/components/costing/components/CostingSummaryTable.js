@@ -4,7 +4,7 @@ import { Row, Col, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
-import { setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting } from '../actions/Costing'
+import { setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId, storePartNumber } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import $ from 'jquery'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -16,12 +16,17 @@ import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { FILE_URL, VBC, ZBC } from '../../../config/constants'
+import { DRAFT, FILE_URL, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants'
 import CostingDetailStepTwo from './CostingDetailStepTwo'
 import CostingDetails from './CostingDetails'
+import { reactLocalStorage } from 'reactjs-localstorage'
+
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail } = props
+  const { viewMode, showDetail, technologyId } = props
+
+  const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
   const [isEditFlag, setIsEditFlag] = useState(false)
@@ -51,14 +56,11 @@ const CostingSummaryTable = (props) => {
   const [stepOne, setStepOne] = useState(true);
   const [stepTwo, setStepTwo] = useState(false);
   const [partInfoStepTwo, setPartInfo] = useState({});
-  const [costingData, setCostingData] = useState({});
+  const [index, setIndex] = useState('')
 
-  const viewCostingData = useSelector(
-    (state) => state.costing.viewCostingDetailData,
-  )
-  const viewApprovalData = useSelector(
-    (state) => state.costing.costingApprovalData,
-  )
+  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+
 
   const partInfo = useSelector((state) => state.costing.partInfo)
   console.log('partInfo: ', partInfo);
@@ -101,6 +103,7 @@ const CostingSummaryTable = (props) => {
     let data = viewCostingData[index].netRMCostView
 
     setIsViewRM(true)
+    setIndex(index)
     setViewRMData(data)
   }
   /**
@@ -168,6 +171,10 @@ const CostingSummaryTable = (props) => {
       CostingNumber: viewCostingData[index].costingName,
       index: index,
       typeOfCosting: viewCostingData[index].zbc,
+      VendorId: viewCostingData[index].vendorId,
+      vendorName: viewCostingData[index].vendorName,
+      vendorPlantName: viewCostingData[index].vendorPlantName,
+      vendorPlantId: viewCostingData[index].vendorPlantId
     }
     setIsEditFlag(true)
     setaddComparisonToggle(true)
@@ -180,9 +187,10 @@ const CostingSummaryTable = (props) => {
   */
 
   const addNewCosting = (index) => {
+    console.log("Entered in add new costing");
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
-    const type = viewCostingData[index].zbc
+    const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
       const data = {
         PartId: partNumber.partId,
@@ -206,13 +214,15 @@ const CostingSummaryTable = (props) => {
         Price: partInfo.Price,
         EffectiveDate: partInfo.EffectiveDate,
       }
-      dispatch(
-        createZBCCosting(data, (res) => {
-          if (res.data.Result) {
-            setPartInfo(res.data.Data)
-            showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
-          }
-        }),
+      console.log("Entered in add new costing");
+      dispatch(createZBCCosting(data, (res) => {
+        console.log("Created");
+        if (res.data.Result) {
+          setPartInfo(res.data.Data)
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
+        }
+      }),
       )
     } else if (type === VBC) {
       const data = {
@@ -244,6 +254,7 @@ const CostingSummaryTable = (props) => {
         createVBCCosting(data, (res) => {
           if (res.data.Result) {
             setPartInfo(res.data.Data)
+            dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
             showDetail(res.data.Data, { costingId: res.data.Data.CostingId, type })
           }
         }),
@@ -257,11 +268,13 @@ const CostingSummaryTable = (props) => {
  */
   const editCostingDetail = (index) => {
     let tempData = viewCostingData[index]
-    const type = viewCostingData[index].zbc
+    const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
     if (type === ZBC) {
+      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => { }))
       showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
     }
     if (type === VBC) {
+      dispatch(getZBCCostingByCostingId(tempData.costingId, (res) => { }))
       showDetail(partInfoStepTwo, { costingId: tempData.costingId, type })
     }
   }
@@ -326,8 +339,13 @@ const CostingSummaryTable = (props) => {
    * @method closeShowApproval
    * @description FOR CLOSING APPROVAL DRAWER
    */
-  const closeShowApproval = (e = '') => {
+  const closeShowApproval = (e = '', type) => {
     setShowApproval(false)
+    if (type === 'Submit') {
+
+      dispatch(storePartNumber(''))
+      props.resetData()
+    }
   }
   /**
    * @method closeShowApproval
@@ -382,7 +400,7 @@ const CostingSummaryTable = (props) => {
           // obj.oldPrice = viewCostingData[index].oldPrice;
           obj.oldPrice = viewCostingData[index].oldPoPrice
           obj.revisedPrice = viewCostingData[index].nPOPrice
-          obj.variance = viewCostingData[index].oldPoPrice !== 0 ? parseInt(viewCostingData[index].oldPoPrice) - parseInt(viewCostingData[index].nPOPrice) : ''
+          obj.variance = parseInt(viewCostingData[index].nPOPrice) - parseInt(viewCostingData[index].oldPoPrice)
           obj.consumptionQty = ''
           obj.remainingQty = ''
           obj.annualImpact = ''
@@ -468,20 +486,26 @@ const CostingSummaryTable = (props) => {
                           return (
                             <th scope="col">
                               <div class="element w-50 d-inline-flex align-items-center">
-                                <div class="custom-check d-inline-block">
-                                  <input
-                                    type="checkbox"
-                                    id={`check${index}`}
-                                    onClick={(e) => {
-                                      handleMultipleCostings(e.target.checked, index)
-                                    }}
-                                    value={
-                                      multipleCostings.length === 0 ? false : multipleCostings.includes(data.costingName,) ? true : false} />
-                                  {
-                                    !viewMode && (<label for={`check${index}`}></label>) /*dont remove it is for check box*/
-                                  }
-                                </div>
-                                <span className="checkbox-text">{data.zbc}</span>
+                                {
+                                  data.status === DRAFT &&
+                                  <div class="custom-check d-inline-block">
+
+                                    <input
+                                      type="checkbox"
+                                      id={`check${index}`}
+                                      // disabled={(data.status === DRAFT || data.status === WAITING_FOR_APPROVAL) ? false : true}
+                                      onClick={(e) => {
+                                        handleMultipleCostings(e.target.checked, index)
+                                      }}
+                                      value={
+                                        multipleCostings.length === 0 ? false : multipleCostings.includes(data.costingName,) ? true : false} />
+
+                                    {
+                                      !viewMode && (<label for={`check${index}`}></label>) /*dont remove it is for check box*/
+                                    }
+                                  </div>
+                                }
+                                <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName} ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                               </div>
                               {!viewMode && (
                                 <div class="action w-50 d-inline-block text-right">
@@ -858,10 +882,10 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
                     <tr class="background-light-blue">
-                      <th>Net Po PRice(INR)</th>
+                      <th>Net PO Price(INR)</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPriceWithCurrency}</td>
+                          return <td>{data.nPOPrice}</td>
                         })}
                     </tr>
                     <tr>
@@ -881,10 +905,10 @@ const CostingSummaryTable = (props) => {
                         })}
                     </tr>
                     <tr class="background-light-blue">
-                      <th>Net PO PRice</th>
+                      <th>Net PO Price</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPrice}</td>
+                          return <td>{data.nPOPriceWithCurrency}</td>
                         })}
                     </tr>
                     <tr>
@@ -917,43 +941,52 @@ const CostingSummaryTable = (props) => {
                                   )
                                 })
                               ) : (
-                                    // <img
-                                    //   src={require('../../../assests/images/times.png')}
-                                    //   alt="cancel-icon.jpg"
-                                    // />
-                                    <button
-                                      onClick={() => {
-                                        setAttachment(true)
-                                      }}
-                                    >
-                                      View Attachment
-                                    </button>
-                                  )}
+                                // <img
+                                //   src={require('../../../assests/images/times.png')}
+                                //   alt="cancel-icon.jpg"
+                                // />
+                                <button
+                                  onClick={() => {
+                                    setAttachment(true)
+                                  }}
+                                >
+                                  View Attachment
+                                </button>
+                              )}
                             </td>
                           )
                         })}
                     </tr>
+
                     {!viewMode && (
                       <tr class="background-light-blue">
                         <td className="text-center"></td>
+
                         {viewCostingData.map((data, index) => {
+
                           return (
+
                             <td class="text-center">
-                              <button
-                                class="user-btn"
-                                onClick={() => {
-                                  sendForApprovalData([data.costingId], index)
-                                  setShowApproval(true)
-                                }}
-                              >
-                                {' '}
-                                <img
-                                  class="mr-1"
-                                  src={require('../../../assests/images/send-for-approval.svg')}
-                                ></img>
+                              {
+                                data.status === DRAFT &&
+                                <button
+                                  class="user-btn"
+                                  //   disabled={(data.status === DRAFT || data.status === WAITING_FOR_APPROVAL) ? false : true}
+                                  onClick={() => {
+                                    sendForApprovalData([data.costingId], index)
+                                    setShowApproval(true)
+                                  }}
+                                >
+                                  {' '}
+                                  <img
+                                    class="mr-1"
+                                    src={require('../../../assests/images/send-for-approval.svg')}
+                                  ></img>
                             Send For Approval
                           </button>
+                              }
                             </td>
+
                           )
                         })}
                       </tr>
@@ -998,6 +1031,8 @@ const CostingSummaryTable = (props) => {
           viewRMData={viewRMData}
           closeDrawer={closeViewDrawer}
           anchor={'right'}
+          index={index}
+          technologyId={technologyId}
         />
       )}
       {isViewOverheadProfit && (

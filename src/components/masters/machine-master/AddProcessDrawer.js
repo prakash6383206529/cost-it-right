@@ -255,7 +255,7 @@ class AddProcessDrawer extends Component {
                       disabled={false}
                     />
                   </Col>
-                  {isMachineShow && (
+                  {/* {isMachineShow && (
                     <Col md="12">
                       <Field
                         label="Machine"
@@ -274,7 +274,7 @@ class AddProcessDrawer extends Component {
                         disabled={false}
                       />
                     </Col>
-                  )}
+                  )} */}
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between">

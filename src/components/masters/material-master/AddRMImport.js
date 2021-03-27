@@ -1455,6 +1455,7 @@ class AddRMImport extends Component {
               isOpen={isOpenVendor}
               closeDrawer={this.closeVendorDrawer}
               isEditFlag={false}
+              isRM={true}
               ID={""}
               anchor={"right"}
             />

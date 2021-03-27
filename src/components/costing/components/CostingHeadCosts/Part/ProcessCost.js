@@ -112,6 +112,7 @@ function ProcessCost(props) {
       Quantity: weightData.Quantity,
       ProcessCost: weightData.ProcessCost,
       IsCalculatedEntry: true,
+      ProcessCalculationId: weightData.ProcessCalculationId,
       WeightCalculatorRequest: weightData
     }
 
@@ -175,8 +176,8 @@ function ProcessCost(props) {
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           MachineTonnage: el.MachineTonnage,
           ProcessCost: '',
-          UnitType: el.UnitType,
-          UnitTypeId: el.UnitTypeId
+          UOMType: el.UnitType,
+          UOMTypeId: el.UnitTypeId
         }
       })
 
@@ -827,9 +828,10 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={costData.TechnologyName}
+          technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}
         />

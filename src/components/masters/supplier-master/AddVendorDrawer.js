@@ -212,9 +212,19 @@ class AddVendorDrawer extends Component {
             return temp;
         }
         if (label === 'vendorType') {
+            const { isRM } = this.props
+
             vendorTypeList && vendorTypeList.map((item, i) => {
                 if (item.Value === '0') return false;
-                temp.push({ Text: item.Text, Value: item.Value })
+                if (isRM === true) {
+                    if (item.Text === 'RAW MATERIAL') {
+                        temp.push({ Text: item.Text, Value: item.Value })
+                    } else {
+                        return null
+                    }
+                } else {
+                    temp.push({ Text: item.Text, Value: item.Value })
+                }
                 return null;
             });
             return temp;

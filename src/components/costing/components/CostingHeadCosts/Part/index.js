@@ -133,6 +133,7 @@ function PartCompoment(props) {
               <ProcessCost
                 index={props.index}
                 data={ccData}
+                rmFinishWeight={rmData.length > 0 && rmData[0].FinishWeight !== undefined ? rmData[0].FinishWeight : 0}
                 setProcessCost={props.setProcessCost}
                 setOperationCost={props.setOperationCost}
                 setToolCost={props.setToolCost}

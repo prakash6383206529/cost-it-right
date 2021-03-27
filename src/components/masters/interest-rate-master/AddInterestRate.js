@@ -148,7 +148,7 @@ class AddInterestRate extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: date, });
+    this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
   };
 
   /**

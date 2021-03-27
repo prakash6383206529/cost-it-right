@@ -515,53 +515,11 @@ class ProcessListing extends Component {
               ref={'table'}
               pagination
             >
-              <TableHeaderColumn
-                dataField="ProcessName"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Process Name'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="ProcessCode"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Process Code'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="Plants"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Plant'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="Machines"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Machine'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                width={100}
-                dataAlign="right"
-                searchable={false}
-                dataField="ProcessId"
-                export={false}
-                isKey={true}
-                dataFormat={this.buttonFormatter}
-              >
-                Actions
-              </TableHeaderColumn>
+              <TableHeaderColumn dataField="ProcessName" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="ProcessCode" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn>
+              {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
+              <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>

@@ -3,29 +3,26 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
-import { getRawMaterialCalculationByTechnology, saveRawMaterialCalciData } from '../../../actions/CostWorking'
+import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { RadioHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull,
-  checkForNull,
-  getWeightOfSheet,
-  getWeightOfPart,
-  getWeightOfScrap,
-  getNetSurfaceArea,
-  getNetSurfaceAreaBothSide,
-  loggedInUserId,
+  checkForDecimalAndNull, checkForNull, getWeightOfSheet, getWeightOfPart, getWeightOfScrap,
+  getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity,
 } from '../../../../../helper'
-import { getUOMListByUnitType } from '../../../../../actions/Common'
+import { getUOMListByUnitType, getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
+import { G, KG, MG } from '../../../../../config/constants'
+import { set } from 'lodash'
+import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
   console.log(WeightCalculatorRequest, "WCCCCCCCCCCCCCCCCCCCCCCCCC");
-  const { rmRowData } = props
+  const { rmRowData, isEditFlag } = props
 
   const costData = useContext(costingInfoContext)
 
@@ -48,18 +45,11 @@ function Pipe(props) {
   }
 
   const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-    defaultValues: defaultValues,
-  })
+    register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+      mode: 'onChange',
+      reValidateMode: 'onChange',
+      defaultValues: defaultValues,
+    })
 
 
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
@@ -73,9 +63,11 @@ function Pipe(props) {
       }
       : [],
   )
+  console.log(UOMDimension, "DIM");
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({})
   const [isChangeApplies, setIsChangeApplied] = useState(true)
+  const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G) //Need to change default value after getting it from API
   const tempOldObj = WeightCalculatorRequest
 
 
@@ -90,11 +82,24 @@ function Pipe(props) {
     //UNIT TYPE ID OF DIMENSIONS
     const UnitTypeId = '305e0874-0a2d-4eab-9781-4fe397b16fcc' // static
     dispatch(getUOMListByUnitType(UnitTypeId, (res) => { }))
+    dispatch(getUOMSelectList(res => {
+      const Data = res.data.Data
+      console.log(Data, "DATA");
+      const kgObj = Data.find(el => el.Text === G)
+      console.log(kgObj, "kgObj");
+      setTimeout(() => {
+        setValue('UOMDimension', { label: kgObj.Text, value: kgObj.Value })
+        setUOMDimension({ label: kgObj.Text, value: kgObj.Value })
+      }, 100);
+
+    }))
   }, [])
 
   const UOMSelectListByUnitType = useSelector(
     (state) => state.comman.UOMSelectListByUnitType,
   )
+
+  const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
 
   useEffect(() => {
     calculateInnerDiameter()
@@ -174,7 +179,8 @@ function Pipe(props) {
       SheetLength: getValues('SheetLength'),
       ExtraVariable: '',
     }
-    const SheetWeight = getWeightOfSheet(data)
+    // const SheetWeight = getWeightOfSheet(data)
+    const SheetWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.SheetLength)
     const updatedValue = dataToSend
     updatedValue.WeightofSheet = SheetWeight
     setDataToSend(updatedValue)
@@ -193,7 +199,8 @@ function Pipe(props) {
       PartLength: getValues('PartLength'),
       ExtraVariable: '',
     }
-    const PartWeight = getWeightOfPart(data)
+    // const PartWeight = getWeightOfPart(data)
+    const PartWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.PartLength)
     const updatedValue = dataToSend
     updatedValue.WeightofPart = PartWeight
     setDataToSend(updatedValue)
@@ -212,7 +219,8 @@ function Pipe(props) {
       ScrapLength: dataToSend.ScrapLength,
       ExtraVariable: '',
     }
-    const ScrapWeight = getWeightOfScrap(data)
+    // const ScrapWeight = getWeightOfScrap(data)
+    const ScrapWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.ScrapLength)
     const updatedValue = dataToSend
     updatedValue.WeightofScrap = ScrapWeight
     setDataToSend(updatedValue)
@@ -296,8 +304,10 @@ function Pipe(props) {
     const temp = []
 
     if (label === 'UOM') {
-      UOMSelectListByUnitType &&
-        UOMSelectListByUnitType.map((item) => {
+      UOMSelectList &&
+        UOMSelectList.map((item) => {
+          const accept = AcceptableSheetMetalUOM.includes(item.Text)
+          if (accept === false) return false
           if (item.Value === '0') return false
           temp.push({ label: item.Text, value: item.Value })
           return null
@@ -334,7 +344,7 @@ function Pipe(props) {
     console.log(tempOldObj, "temp");
     console.log('values >>>', values)
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
-      if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea) {
+      if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
         setIsChangeApplied(true)
       } else {
         setIsChangeApplied(false)
@@ -378,8 +388,8 @@ function Pipe(props) {
       IsOneSide: isOneSide,
       SurfaceAreaSide: isOneSide ? 'Both Side' : 'One  Side',
       NetSurfaceArea: dataToSend.NetSurfaceArea,
-      GrossWeight: dataToSend.GrossWeight,
-      FinishWeight: dataToSend.FinishWeight,
+      GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? dataToSend.GrossWeight : dataToSend.newGrossWeight,
+      FinishWeight: (dataToSend.newFinishWeight === undefined || dataToSend.newFinishWeight === 0) ? dataToSend.FinishWeight : dataToSend.newFinishWeight,
       LoggedInUserId: loggedInUserId()
     }
     console.log(data, "Data");
@@ -391,6 +401,56 @@ function Pipe(props) {
         props.toggleDrawer('', data)
       }
     }))
+  }
+
+  const handleUnit = (value) => {
+    setValue('UOMDimension', { label: value.label, value: value.value })
+    setUOMDimension(value)
+    let grossWeight = dataToSend.GrossWeight
+    let finishWeight = dataToSend.FinishWeight
+    // console.log(grossWeight, "Before conversion", finishWeight);
+    setUnit(value.label)
+    // console.log(value.label, "unit");
+    switch (value.label) {
+      case KG:
+        grossWeight = grossWeight / 1000
+        finishWeight = finishWeight / 1000
+        console.log(grossWeight, "GW inside Kg", finishWeight);
+        setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
+        setTimeout(() => {
+
+          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+        }, 100);
+        break;
+      case G:
+        grossWeight = grossWeight
+        finishWeight = finishWeight
+        console.log(grossWeight, "GW inside G", finishWeight);
+        setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
+        setTimeout(() => {
+
+          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+        }, 100);
+        break;
+      case MG:
+        grossWeight = grossWeight * 1000
+        finishWeight = finishWeight * 1000
+        console.log(grossWeight, "GW inside MG", finishWeight);
+        setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
+        setTimeout(() => {
+
+          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+        }, 100);
+        break;
+      default:
+        break;
+    }
+    console.log(grossWeight, "GW outside", finishWeight);
+
+
   }
 
   /**
@@ -412,7 +472,7 @@ function Pipe(props) {
                 </Col>
               </Row>
               <Row className={'mt15'}>
-                <Col md="3">
+                {/* <Col md="3">
                   <SearchableSelectHookForm
                     label={'UOM for Dimension'}
                     name={'UOMDimension'}
@@ -428,10 +488,10 @@ function Pipe(props) {
                     errors={errors.UOMDimension}
                   // disabled={!isEditFlag}
                   />
-                </Col>
+                </Col> */}
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Outer Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    label={`Outer Diameter(cm)`}
                     name={'OuterDiameter'}
                     Controller={Controller}
                     control={control}
@@ -451,12 +511,12 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.OuterDiameter}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Thickness${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    label={`Thickness(cm)`}
                     name={'Thickness'}
                     Controller={Controller}
                     control={control}
@@ -476,12 +536,12 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.Thickness}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Inner Diameter${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    label={`Inner Diameter(cm)`}
                     name={'InnerDiameter'}
                     Controller={Controller}
                     control={control}
@@ -508,7 +568,7 @@ function Pipe(props) {
               <Row>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Length of Sheet${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    label={`Length of Sheet(cm)`}
                     name={'SheetLength'}
                     Controller={Controller}
                     control={control}
@@ -528,12 +588,12 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.SheetLength}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Length of Part${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    label={`Length of Part(cm)`}
                     name={'PartLength'}
                     Controller={Controller}
                     control={control}
@@ -553,7 +613,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.PartLength}
-                    disabled={false}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
                 <Col md="3">
@@ -583,7 +643,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Length of Scrap${Object.keys(UOMDimension).length > 0 ? '(' + UOMDimension.label + ')' : ''}`}
+                    label={`Length of Scrap(cm)`}
                     name={'ScrapLength'}
                     Controller={Controller}
                     control={control}
@@ -695,7 +755,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={''}>
+              <Row className={'mt-15'}>
                 <Col md="4" className="switch">
                   <label className="switch-level">
                     <div className={'left-title'}>{'One Side'}</div>
@@ -703,7 +763,7 @@ function Pipe(props) {
                       onChange={onSideToggle}
                       checked={isOneSide}
                       id="normal-switch"
-                      disabled={false}
+                      disabled={isEditFlag ? false : true}
                       background="#4DC771"
                       onColor="#4DC771"
                       onHandleColor="#ffffff"
@@ -715,6 +775,25 @@ function Pipe(props) {
                     />
                     <div className={'right-title'}>{'Both Side'}</div>
                   </label>
+                </Col>
+                <Col md="4"></Col>
+                <Col md="4">
+                  <SearchableSelectHookForm
+                    label={'Weight Unit'}
+                    name={'UOMDimension'}
+                    placeholder={'-Select-'}
+                    Controller={Controller}
+                    control={control}
+                    rules={{ required: true }}
+                    register={register}
+                    defaultValue={UOMDimension.length !== 0 ? UOMDimension : ''}
+                    options={renderListing('UOM')}
+                    mandatory={true}
+                    handleChange={handleUnit}
+                    errors={errors.UOMDimension}
+                    disabled={isEditFlag ? false : true}
+                  />
+
                 </Col>
               </Row>
               <hr className="mx-n4 w-auto" />
@@ -745,7 +824,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="4">
                   <TextFieldHookForm
-                    label="Gross Weight"
+                    label={`Gross Weight(${unit})`}
                     name={'GrossWeight'}
                     Controller={Controller}
                     control={control}
@@ -769,7 +848,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="4">
                   <TextFieldHookForm
-                    label="Finish Weight"
+                    label={`Finish Weight(${unit})`}
                     name={'FinishWeight'}
                     Controller={Controller}
                     control={control}
@@ -793,21 +872,23 @@ function Pipe(props) {
                 </Col>
               </Row>
             </div>
-
-            <div className="col-sm-12 text-right px-0 mt-4">
-              <button
-                type={'button'}
-                className="reset mr15 cancel-btn"
-                onClick={cancel} >
-                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-              </button>
-              <button
-                type={'submit'}
-                className="submit-button save-btn">
-                <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                {'Save'}
-              </button>
-            </div>
+            {
+              isEditFlag &&
+              <div className="col-sm-12 text-right px-0 mt-4">
+                <button
+                  type={'button'}
+                  className="reset mr15 cancel-btn"
+                  onClick={cancel} >
+                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                </button>
+                <button
+                  type={'submit'}
+                  className="submit-button save-btn">
+                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  {'Save'}
+                </button>
+              </div>
+            }
 
           </form>
         </div>

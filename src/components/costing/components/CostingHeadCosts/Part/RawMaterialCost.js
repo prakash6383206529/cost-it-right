@@ -96,7 +96,8 @@ function RawMaterialCost(props) {
     setEditIndex(index)
     let tempArr = []
     let tempData = gridData[index]
-    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "") {
+    console.log(tempData, "temp");
+    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "" || Number(tempData.Density) === 0) {
       toastr.warning("Density is not avaliable for weight calculation.")
       return false
     }
@@ -111,7 +112,7 @@ function RawMaterialCost(props) {
         }, 100)
       }
     }))
-
+    setWeightDrawerOpen(true)
   }
 
   /**
@@ -392,9 +393,9 @@ function RawMaterialCost(props) {
         <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
           closeDrawer={closeWeightDrawer}
-          isEditFlag={false}
+          isEditFlag={true}
           inputDiameter={inputDiameter}
-          technology={costData.TechnologyName}
+          technology={costData.ETechnologyType}
           ID={''}
           anchor={'right'}
           rmRowData={gridData[editIndex]}

@@ -503,6 +503,7 @@ export const API = {
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
+  getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
@@ -551,7 +552,8 @@ export const API = {
   fetchFreightHeadsAPI: `${BASE_URL}/configuration/get-freight-heads`,
   getCostingFreight: `${BASE_URL}/costing-sheet-metal/get-costing-freight`,
   copyCostingAPI: `${BASE_URL}/costing/copy-costing`,
-
+  getPartCostingPlantSelectList: `${BASE_URL}/costing/get-part-costing-plant-select-list`,
+  getPartCostingVendorSelectList: `${BASE_URL}/costing/get-part-costing-vendor-select-list`,
 
 
   //LOGIN API
@@ -1088,6 +1090,7 @@ export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
 export const SET_OVERHEAD_PROFIT_COST_DATA = 'SET_OVERHEAD_PROFIT_COST_DATA';
 export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
+export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1140,9 +1143,15 @@ export const SET_COMPONENT_OVERHEAD_ITEM_DATA = 'SET_COMPONENT_OVERHEAD_ITEM_DAT
 export const SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA = 'SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA';
 export const SET_COMPONENT_TOOL_ITEM_DATA = 'SET_COMPONENT_TOOL_ITEM_DATA';
 export const SET_COMPONENT_DISCOUNT_ITEM_DATA = 'SET_COMPONENT_DISCOUNT_ITEM_DATA';
+export const GET_RM_DRAWER_DATA_LIST = 'GET_RM_DRAWER_DATA_LIST';
+export const GET_PROCESS_DRAWER_DATA_LIST = 'GET_PROCESS_DRAWER_DATA_LIST';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
+
+//COSTING SUMMARY
+export const GET_PART_COSTING_PLANT_SELECTLIST = 'GET_PART_COSTING_PLANT_SELECTLIST';
+export const GET_PART_COSTING_VENDOR_SELECT_LIST = 'GET_PART_COSTING_VENDOR_SELECT_LIST'
 
 //Login const
 export const AUTH_API_FAILURE = 'AUTH_API_FAILURE'
@@ -1385,16 +1394,30 @@ export const VIEW_COSTING_DATA = {
 }
 
 
-//UOM ENUMS
+//UOM ENUMS (Need to change name)
 export const KG = "Kilogram"
 export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 
-export const INR = "INR"
+// export const INR = "INR"
 
 export const Fixed = 1;
 export const Percentage = 2;
 export const FullTruckLoad = 3;
 export const PartTruckLoad = 4;
+export const INR = "INR"
+export const G = "GRAMS"
+export const MG = "Milligram"
+
+// UOM TYPE ENUM
+export const MASS = 'Mass'
+export const VOLUMETYPE = 'Volume'
+export const PRESSURE = 'Pressure'
+export const DIMENSION = 'Dimension'
+export const TIME = 'Time'
+export const POWER = 'Power'
+export const DENSITY = 'Density'
+export const AREA = 'Area'
+export const DIMENSIONLESS = 'Dimensionless'
