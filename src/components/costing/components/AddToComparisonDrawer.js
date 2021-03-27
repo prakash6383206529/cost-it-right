@@ -198,6 +198,7 @@ function AddToComparisonDrawer(props) {
     setVendorPlant(values.vendorPlant)
     setCbcValue(values.clientName)
     setCostingDropdown([])
+
     setValue('costings', '')
     let temp = []
     temp = viewCostingData
