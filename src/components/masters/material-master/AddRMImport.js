@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -75,7 +75,8 @@ class AddRMImport extends Component {
 
       isVisible: false,
       imageURL: '',
-      currencyValue: 1
+      currencyValue: 1,
+      showCurrency: false
 
     }
   }
@@ -252,19 +253,22 @@ class AddRMImport extends Component {
   * @method handleCurrency
   * @description called
   */
-  handleCurrency = (newValue, actionMeta) => {
+  handleCurrency = (newValue) => {
+    console.log(newValue, "NEW Value");
     if (newValue && newValue !== '') {
       this.setState({ currency: newValue, })
       const { fieldsObj } = this.props
       if (newValue.label === INR) {
-        this.setState({ currencyValue: 1 }, () => {
 
-          this.props.change('NetLandedCost', (fieldsObj.BasicRate * this.state.currencyValue))
+        this.setState({ currencyValue: 1, showCurrency: false }, () => {
+
+          this.props.change('NetLandedCost', checkForNull(fieldsObj.BasicRate * this.state.currencyValue))
         })
       } else {
         this.props.getExchangeRateByCurrency(newValue.label, res => {
-          this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
-          this.setState({ currencyValue: res.data.Data.CurrencyExchangeRate })
+          this.props.change('NetLandedCost', checkForNull(fieldsObj.BasicRate))
+          this.props.change('NetLandedCostCurrency', checkForNull(fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true })
         })
       }
     } else {
@@ -277,9 +281,12 @@ class AddRMImport extends Component {
   * @description Set value in NetLandedCost
   */
   handleBasicRate = (e) => {
-
     const { currencyValue } = this.state
-    this.props.change('NetLandedCost', (e.target.value * currencyValue))
+    // if (this.state.currency.label === INR) {
+    this.props.change('NetLandedCost', (checkForNull(e.target.value)))
+    // } else {
+    this.props.change('NetLandedCostCurrency', (checkForNull(e.target.value * currencyValue)))
+    // }
   }
 
   /**
@@ -328,14 +335,17 @@ class AddRMImport extends Component {
 
           setTimeout(() => {
             const { gradeSelectList, rmSpecification, cityList, categoryList,
-              rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, currencySelectList, } = this.props;
+              rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList } = this.props;
 
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find(item => item.Value === Data.Category)
-            // const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
+
+            console.log(currencyObj, "CURRENCY OBJ");
+            this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
 
             let plantArray = [];
             Data && Data.Plant.map((item) => {
@@ -364,7 +374,7 @@ class AddRMImport extends Component {
               RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
               RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              // Technology:technologyObj !==  undefined ? {label: technologyObj.Text, value: technologyObj.Value}:[], NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+              TechnologyId: technologyObj !== undefined ? technologyObj.Value : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
               selectedPlants: plantArray,
               vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
@@ -793,7 +803,7 @@ class AddRMImport extends Component {
         RMGrade: RMGrade.value,
         RMSpec: RMSpec.value,
         Category: Category.value,
-        // Technology: Technology.value, NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+        TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
         Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
@@ -1223,7 +1233,7 @@ class AddRMImport extends Component {
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
-                              validate={[required]}
+                              validate={[]}
                               component={renderText}
                               required={false}
                               disabled={true}
@@ -1231,6 +1241,24 @@ class AddRMImport extends Component {
                               customClassName=" withBorder mb-0"
                             />
                           </Col>
+                          {
+                            this.state.showCurrency &&
+                            <Col md="4">
+                              <Field
+                                label={`Net Landed Cost (INR/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                name={"NetLandedCostCurrency"}
+                                type="text"
+                                placeholder={""}
+                                validate={[]}
+                                component={renderText}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder mb-0"
+                              />
+                            </Col>
+                          }
+
                           <Col md="4">
                             <div className="form-group">
                               <label>
