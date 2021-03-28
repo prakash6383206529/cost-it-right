@@ -1120,11 +1120,11 @@ function OverheadProfit(props) {
                   placeholder={'-Select-'}
                   Controller={Controller}
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   register={register}
                   defaultValue={modelType.length !== 0 ? modelType : ''}
                   options={renderListing('ModelType')}
-                  mandatory={true}
+                  mandatory={false}
                   disabled={CostingViewMode ? true : false}
                   handleChange={handleModelTypeChange}
                   errors={errors.ModelType}
@@ -1834,11 +1834,11 @@ function OverheadProfit(props) {
                   placeholder={'-Select-'}
                   Controller={Controller}
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   register={register}
                   defaultValue={applicability.length !== 0 ? applicability : ''}
                   options={renderListing('Applicability')}
-                  mandatory={true}
+                  mandatory={false}
                   disabled={CostingViewMode ? true : false}
                   handleChange={handleApplicabilityChange}
                   errors={errors.Applicability}

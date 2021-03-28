@@ -112,7 +112,7 @@ function Tool(props) {
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(getValues('Life'))
 
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2))
+      setValue('NetToolCost', checkForDecimalAndNull((checkForNull(event.target.value) + (ToolCost / Life)), 2))
 
       // const OverAllApplicability = {
       //   ToolMaintenanceCost: checkForNull(event.target.value),
@@ -131,14 +131,16 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2),
+        "NetToolCost": checkForDecimalAndNull((checkForNull(event.target.value) + (ToolCost / Life)), 2),
         "TotalToolCost": null,
-        "ToolMaintenanceCost": ToolMaintenanceCost,
+        "ToolMaintenanceCost": checkForNull(event.target.value),
         "IsCostForPerAssembly": null
       }
       //if (editIndex !== '' && isEditFlag) {
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      setGridData(tempArr)
+      setTimeout(() => {
+        setGridData(tempArr)
+      }, 200)
       // } else {
       //   let tempArr = [...gridData, rowArray]
       //   setGridData(tempArr)

@@ -226,7 +226,6 @@ function ProcessCost(props) {
       return true
     })
 
-
     let ProcessCostTotal = 0
     ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.ProcessCost)

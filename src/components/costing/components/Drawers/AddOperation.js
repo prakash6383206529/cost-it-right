@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getOperationDrawerDataList, getOperationDrawerVBCDataList } from '../../actions/Costing';
@@ -20,6 +20,7 @@ function AddOperation(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   /**
   * @method toggleDrawer
@@ -192,7 +193,7 @@ function AddOperation(props) {
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Rate" searchable={false} >{'Rate'}</TableHeaderColumn>
                   {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Quantity" searchable={false} >{'Quantity'}</TableHeaderColumn> */}
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'Labour Rate'}</TableHeaderColumn>
+                  {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'Labour Rate'}</TableHeaderColumn>}
                   {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourQuantity" searchable={false} >{'Labour Quantity'}</TableHeaderColumn> */}
                 </BootstrapTable>
               </Col>

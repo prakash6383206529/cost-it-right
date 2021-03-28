@@ -80,7 +80,7 @@ function PartSurfaceTreatment(props) {
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, 2) : 0}</td>
         </div>
         <td>
-          {!CostingViewMode && ((item.CostingPartDetails.SurfaceTreatmentDetails || item.CostingPartDetails.TransportationDetails) ?
+          {!CostingViewMode && ((item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
 
             <button
               type="button"

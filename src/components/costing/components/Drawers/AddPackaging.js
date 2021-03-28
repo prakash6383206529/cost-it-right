@@ -245,9 +245,9 @@ function AddPackaging(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
+                      mandatory={PackageType ? true : false}
                       rules={{
-                        required: true,
+                        required: PackageType ? true : false,
                         pattern: {
                           value: PackageType ? /^[0-9]*$/i : '',
                           message: PackageType ? 'Invalid Number.' : '',
@@ -270,14 +270,14 @@ function AddPackaging(props) {
                       placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
-                      rules={{ required: true }}
+                      rules={{ required: PackageType ? true : false }}
                       register={register}
                       defaultValue={applicability.length !== 0 ? applicability : ''}
                       options={renderListing('Applicability')}
-                      mandatory={true}
+                      mandatory={PackageType ? true : false}
                       handleChange={handleApplicabilityChange}
                       errors={errors.Applicability}
-                      disabled={isEditFlag ? true : false}
+                      disabled={isEditFlag || !PackageType ? true : false}
                     />
                   </Col>
 

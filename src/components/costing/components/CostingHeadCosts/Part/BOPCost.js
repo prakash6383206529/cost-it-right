@@ -90,6 +90,11 @@ function BOPCost(props) {
       return true;
     })
     setGridData(tempArr)
+
+    let selectedIds = []
+    tempArr.map(el => { selectedIds.push(el.BoughtOutPartId) })
+    setIds(selectedIds)
+
   }
 
   const editItem = (index) => {

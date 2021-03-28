@@ -252,45 +252,42 @@ function OperationCost(props) {
                                 />
                               }
                             </td>
-                            <td>{
-                              initialConfiguration &&
-                                initialConfiguration.IsOperationLabourRateConfigure &&
-                                item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'
-                            }</td>
-                            <td style={{ width: 200 }}>
-                              {
-                                initialConfiguration &&
-                                  initialConfiguration.IsOperationLabourRateConfigure &&
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>}
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>
+                                {
+
                                   item.IsLabourRateExist ?
-                                  <TextFieldHookForm
-                                    label=""
-                                    name={`${OperationGridFields}[${index}]LabourQuantity`}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                      //required: true,
-                                      pattern: {
-                                        value: /^[0-9]*$/i,
-                                        //value: /^[0-9]\d*(\.\d+)?$/i,
-                                        message: 'Invalid Number.'
-                                      },
-                                    }}
-                                    defaultValue={item.LabourQuantity}
-                                    className=""
-                                    customClassName={'withBorder hide-label-inside mb-0'}
-                                    handleChange={(e) => {
-                                      e.preventDefault()
-                                      handleLabourQuantityChange(e, index)
-                                    }}
-                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                    disabled={CostingViewMode ? true : false}
-                                  />
-                                  :
-                                  '-'
-                              }
-                            </td>
+                                    <TextFieldHookForm
+                                      label=""
+                                      name={`${OperationGridFields}[${index}]LabourQuantity`}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      mandatory={false}
+                                      rules={{
+                                        //required: true,
+                                        pattern: {
+                                          value: /^[0-9]*$/i,
+                                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                                          message: 'Invalid Number.'
+                                        },
+                                      }}
+                                      defaultValue={item.LabourQuantity}
+                                      className=""
+                                      customClassName={'withBorder hide-label-inside mb-0'}
+                                      handleChange={(e) => {
+                                        e.preventDefault()
+                                        handleLabourQuantityChange(e, index)
+                                      }}
+                                      errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
+                                      disabled={CostingViewMode ? true : false}
+                                    />
+                                    :
+                                    '-'
+                                }
+                              </td>}
                             <td>{netCost(item)}</td>
                             <td>
                               <button className="SaveIcon mb-0 mr-2 align-middle" type={'button'} onClick={() => SaveItem(index)} />
@@ -304,16 +301,13 @@ function OperationCost(props) {
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
                             <td style={{ width: 200 }}>{item.Quantity}</td>
-                            <td style={{ width: 200 }}>{
-                              initialConfiguration &&
-                                initialConfiguration.IsOperationLabourRateConfigure &&
-                                item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'
-                            }</td>
-                            <td>{
-                              initialConfiguration &&
-                                initialConfiguration.IsOperationLabourRateConfigure &&
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>}
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure && <td>{
                                 item.IsLabourRateExist ? item.LabourQuantity : '-'
-                            }</td>
+                              }</td>}
                             <td>{netCost(item)}</td>
                             <td>
                               {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}

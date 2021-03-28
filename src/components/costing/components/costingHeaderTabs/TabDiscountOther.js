@@ -418,9 +418,9 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                           pattern: {
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.'
@@ -445,9 +445,9 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                         }}
                         handleChange={() => { }}
                         defaultValue={""}
@@ -639,42 +639,42 @@ function TabDiscountOther(props) {
                           Maximum file upload limit has been reached.
                         </div>
                       ) : (
-                          <Dropzone
-                            getUploadParams={getUploadParams}
-                            onChangeStatus={handleChangeStatus}
-                            PreviewComponent={Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                            initialFiles={initialFiles}
-                            maxFiles={4}
-                            maxSizeBytes={2000000}
-                            inputContent={(files, extra) =>
-                              extra.reject ? (
-                                "Image, audio and video files only"
-                              ) : (
-                                  <div className="text-center">
-                                    <i className="text-primary fa fa-cloud-upload"></i>
-                                    <span className="d-block">
-                                      Drag and Drop or{" "}
-                                      <span className="text-primary">Browse</span>
-                                      <br />
+                        <Dropzone
+                          getUploadParams={getUploadParams}
+                          onChangeStatus={handleChangeStatus}
+                          PreviewComponent={Preview}
+                          //onSubmit={this.handleSubmit}
+                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                          initialFiles={initialFiles}
+                          maxFiles={4}
+                          maxSizeBytes={2000000}
+                          inputContent={(files, extra) =>
+                            extra.reject ? (
+                              "Image, audio and video files only"
+                            ) : (
+                              <div className="text-center">
+                                <i className="text-primary fa fa-cloud-upload"></i>
+                                <span className="d-block">
+                                  Drag and Drop or{" "}
+                                  <span className="text-primary">Browse</span>
+                                  <br />
                                         file to upload
                                     </span>
-                                  </div>
-                                )
-                            }
-                            styles={{
-                              dropzoneReject: {
-                                borderColor: "red",
-                                backgroundColor: "#DAA",
-                              },
-                              inputLabel: (files, extra) =>
-                                extra.reject ? { color: "red" } : {},
-                            }}
-                            classNames="draper-drop"
-                            disabled={CostingViewMode ? true : false}
-                          />
-                        )}
+                              </div>
+                            )
+                          }
+                          styles={{
+                            dropzoneReject: {
+                              borderColor: "red",
+                              backgroundColor: "#DAA",
+                            },
+                            inputLabel: (files, extra) =>
+                              extra.reject ? { color: "red" } : {},
+                          }}
+                          classNames="draper-drop"
+                          disabled={CostingViewMode ? true : false}
+                        />
+                      )}
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
