@@ -13,7 +13,7 @@ import { getPartSelectList } from '../actions/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -765,7 +765,7 @@ class AddBOPDomestic extends Component {
                                                     </div>} */}
                             </div>
                           </Col>
-                          {this.state.IsVendor && (
+                          {checkVendorPlantConfigurable() && this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"

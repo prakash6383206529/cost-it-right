@@ -16,7 +16,7 @@ import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '
 import { getPartSelectList } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -62,7 +62,8 @@ class AddBOPImport extends Component {
       files: [],
 
       netLandedcost: '',
-      currencyValue: 1
+      currencyValue: 1,
+      showCurrency: false
     }
   }
 
@@ -162,6 +163,7 @@ class AddBOPImport extends Component {
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
+            this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
 
             this.setState({
               isEditFlag: true,
@@ -368,13 +370,13 @@ class AddBOPImport extends Component {
   handleCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       if (newValue.label === INR) {
-        this.setState({ currencyValue: 1 }, () => {
+        this.setState({ currencyValue: 1, showCurrency: false }, () => {
           this.handleCalculation()
         })
       } else {
         this.props.getExchangeRateByCurrency(newValue.label, res => {
           //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
-          this.setState({ currencyValue: res.data.Data.CurrencyExchangeRate }, () => {
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
             this.handleCalculation()
           })
         })
@@ -390,10 +392,9 @@ class AddBOPImport extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
-    this.setState({
-      netLandedcost: NetLandedCost
-    })
-    this.props.change('NetLandedCost', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
+    this.setState({ netLandedcost: (BasicRate / NoOfPieces) })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost), initialConfiguration.NoOfDecimalForPrice)
   }
 
   /**
@@ -800,7 +801,7 @@ class AddBOPImport extends Component {
                                                     </div> */}
                             </div>
                           </Col>
-                          {this.state.IsVendor && (
+                          {checkVendorPlantConfigurable() && this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"
@@ -925,9 +926,26 @@ class AddBOPImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                        </Row>
+                          {
+                            this.state.showCurrency &&
+                            <Col md="3">
+                              <Field
+                                label={`Net Landed Cost (INR)`}
+                                name={"NetLandedCostCurrency"}
+                                type="text"
+                                placeholder={""}
+                                validate={[]}
+                                component={renderText}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder mb-0"
+                              />
+                            </Col>
+                          }
+                          {/* </Row>
 
-                        <Row>
+                        <Row> */}
                           <Col md="3">
                             <div className="form-group">
                               <label>
