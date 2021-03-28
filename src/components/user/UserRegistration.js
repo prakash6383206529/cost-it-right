@@ -453,7 +453,7 @@ class UserRegistration extends Component {
   setTechnologyLevel = () => {
     const { technology, level, TechnologyLevelGrid } = this.state;
     const tempArray = [];
-    console.log(technology, level, TechnologyLevelGrid, "Tech");
+
     if (technology.length === 0 || level.length === 0) {
       toastr.warning('Please select technology and level')
       return false;
@@ -474,7 +474,7 @@ class UserRegistration extends Component {
       Level: level.label,
       LevelId: level.value,
     })
-    console.log(tempArray, "temp Array");
+
     this.setState({
       TechnologyLevelGrid: tempArray,
       level: [],
@@ -614,7 +614,7 @@ class UserRegistration extends Component {
    * @returns {{}}
    */
   onSubmit(values) {
-    console.log(values, "Values");
+
     const { reset, registerUserData, initialConfiguration } = this.props;
     const { department, role, city, isEditFlag, Modules, oldModules, TechnologyLevelGrid,
       oldTechnologyLevelGrid, UserId } = this.state;
@@ -698,7 +698,7 @@ class UserRegistration extends Component {
         isTechnologyUpdate = true;
       }
 
-      //console.log('checks', isDepartmentUpdate, isRoleUpdate, isPermissionUpdate, isTechnologyUpdate);
+      //
 
       if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
 

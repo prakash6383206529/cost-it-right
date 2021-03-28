@@ -69,7 +69,7 @@ class RMListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />
         };
         return toastr.confirm(`${MESSAGES.MATERIAL_DELETE_ALERT}`, toastrConfirmOptions);

@@ -18,7 +18,7 @@ import { CONSTANT } from '../../../../helper/AllConastant'
 
 function ApprovalListing() {
   const loggedUser = loggedInUserId()
-  console.log(loggedUser, 'user id')
+
   const [tableData, setTableData] = useState([])
   const [partNoDropdown, setPartNoDropdown] = useState([])
   const [createdByDropdown, setCreatedByDropdown] = useState([])
@@ -31,7 +31,7 @@ function ApprovalListing() {
   const statusSelectList = useSelector(
     (state) => state.costing.costingStatusSelectList,
   )
-  console.log(partSelectList, 'dropdown')
+
   const { register, handleSubmit, control, setValue, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -68,12 +68,12 @@ function ApprovalListing() {
 
     dispatch(
       getApprovalList(filterData, (res) => {
-        console.log(res, 'Response for Approval List')
+
         if (res.status === 204 && res.data === '') {
           setTableData([])
         } else if (res && res.data && res.data.DataList) {
           let Data = res.data.DataList
-          console.log(Data, 'Data')
+
           const key = Data.CreatedBy
           let tempcreatedBy = []
           const createdArray = uniqueFilter(Data, key)
@@ -118,7 +118,7 @@ function ApprovalListing() {
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
-      console.log(tempDropdownList, 'temp')
+
       return tempDropdownList
     }
 
@@ -129,7 +129,7 @@ function ApprovalListing() {
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
-      console.log(tempDropdownList, 'temp')
+
       return tempDropdownList
     }
   }
@@ -139,7 +139,7 @@ function ApprovalListing() {
    * @description filtering data on Apply button
    */
   const onSubmit = (values) => {
-    console.log(values)
+
     const tempPartNo = values.partNo.value
     const tempcreatedBy = values.createdBy.value
     const tempRequestedBy = values.requestedBy.value
@@ -165,7 +165,7 @@ function ApprovalListing() {
   }
 
   const viewDetails = (approvalNumber, approvalProcessId) => {
-    console.log(approvalProcessId, "VIEW DETAIL", approvalNumber);
+
     setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
     setShowApprovalSummary(true)
     return (

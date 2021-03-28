@@ -49,7 +49,7 @@ class MaterialTypeDetail extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => { }
         };
         return toastr.confirm(`${MESSAGES.MATERIAL_TYPE_DELETE_ALERT}`, toastrConfirmOptions);
     }

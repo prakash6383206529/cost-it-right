@@ -112,7 +112,7 @@ function AddAssemblyOperation(props) {
       }
     }
     dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
-      console.log('Success', res)
+
       props.closeDrawer('')
     }))
   }

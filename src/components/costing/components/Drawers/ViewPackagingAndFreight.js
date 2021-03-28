@@ -5,9 +5,9 @@ import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 
 function ViewPackagingAndFreight(props) {
-  console.log(props, "Props");
+
   const { packagingData, freightData } = props.packagingAndFreightCost
-  console.log(packagingData, "Packaging", freightData);
+
   const [viewPackaging, setViewPackaging] = useState([])
   const [viewFrieght, setViewFrieght] = useState([])
 

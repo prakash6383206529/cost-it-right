@@ -94,7 +94,7 @@ class RolesListing extends Component {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked'),
+      onCancel: () => { },
       component: () => <ConfirmComponent />
     };
     return toastr.confirm(`${MESSAGES.ROLE_DELETE_ALERT}`, toastrConfirmOptions);

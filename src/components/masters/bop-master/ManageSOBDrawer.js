@@ -32,7 +32,7 @@ function ManageSOBDrawer(props) {
   const [isDisable, setIsDisable] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  console.log(initialConfiguration, "INITIAL");
+
 
   const fieldValues = useWatch({
     control,
@@ -45,7 +45,7 @@ function ManageSOBDrawer(props) {
     dispatch(getManageBOPSOBById(ID, (res) => {
       if (res && res.data && res.data.Result) {
         let Data = res.data.Data;
-        console.log(Data, "DATA FOR SOB");
+
         if (Data.BoughtOutPartVendorList.length === 1) {
           setIsDisable(true)
         }
@@ -59,7 +59,7 @@ function ManageSOBDrawer(props) {
 
   // const VendorsBOPSOBData = useSelector(state => state.boughtOutparts.VendorsBOPSOBData)
   // if (VendorsBOPSOBData !== undefined) {
-  //   console.log('VendorsBOPSOBData: ', VendorsBOPSOBData);
+  //   
   // }
 
   useEffect(() => {
@@ -89,7 +89,7 @@ function ManageSOBDrawer(props) {
 
     if (!isNaN(event.target.value)) {
       const a = checkPercentageValue(event.target.value);
-      console.log(a);
+
 
       tempData = {
         ...tempData,
@@ -178,14 +178,14 @@ function ManageSOBDrawer(props) {
     * @description Used to Submit the form
     */
   const onSubmit = (values) => {
-    console.log('values >>>', values);
+
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
 
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
-      console.log(currentIndex, "INDEX", el.ShareOfBusinessPercentage);
+
       return accummlator + checkForNull(el.ShareOfBusinessPercentage)
     }, 0)
-    console.log(sum, "SUM");
+
     if (Number(sum) > 100) {
       toastr.warning('Total SOB% should be up to 100%')
       return false

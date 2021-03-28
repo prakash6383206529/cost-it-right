@@ -130,7 +130,7 @@ class AddMoreDetails extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.props.data) {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
-      console.log(selectedPlants, "Selected Plants");
+
       if (selectedPlants.length !== 0) {
         this.handlePlants(selectedPlants)
       }
@@ -175,9 +175,9 @@ class AddMoreDetails extends Component {
   */
   getDetails = () => {
     const { editDetails } = this.props;
-    console.log(editDetails, "Edit Detail");
+
     if (editDetails && editDetails.isEditFlag) {
-      console.log("entring in edit fLAG");
+
       this.setState({
         isEditFlag: false,
         isLoader: true,
@@ -223,7 +223,7 @@ class AddMoreDetails extends Component {
                 MachineRate: el.MachineRate,
               }
             })
-            console.log(moment(Data.DateOfPurchase), "MOMENT");
+
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -523,7 +523,7 @@ class AddMoreDetails extends Component {
         /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(formData).length > 0) {
           const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
-          console.log(processObj, "PROCESS");
+
           this.setState({
             processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
           })
@@ -684,7 +684,7 @@ class AddMoreDetails extends Component {
         checkPercentageValue(LoanPercentage, "Loan percentage should not be more than 100") ? this.props.change('LoanPercentage', LoanPercentage) : this.props.change('LoanPercentage', 0)
       }
       if (EquityPercentage) {
-        console.log("Equity");
+
         checkPercentageValue(EquityPercentage, "Equity percentage should not be more than 100") ? this.props.change('EquityPercentage', EquityPercentage) : this.props.change('EquityPercentage', 0)
       }
       if (RateOfInterestPercentage) {
@@ -871,19 +871,19 @@ class AddMoreDetails extends Component {
     const AnnualConsumableAmount = IsAnnualConsumableFixed ? machineFullValue.ConsumableCost : fieldsObj && fieldsObj.AnnualConsumableAmount !== undefined ? checkForNull(fieldsObj.AnnualConsumableAmount) : 0; //state
     const AnnualInsuranceAmount = IsInsuranceFixed ? machineFullValue.InsuranceCost : fieldsObj && fieldsObj.AnnualInsuranceAmount !== undefined ? checkForNull(fieldsObj.AnnualInsuranceAmount) : 0; //state
 
-    console.log(AnnualMaintanceAmount, "ANNUAL", AnnualConsumableAmount, "Annual", AnnualInsuranceAmount);
+
 
     // yearely cost add and annual spelling
     const OtherYearlyCost = fieldsObj && fieldsObj.OtherYearlyCost !== undefined ? checkForNull(fieldsObj.OtherYearlyCost) : 0;
     const annualAreaCost = BuildingCostPerSquareFeet * MachineFloorAreaPerSquareFeet;
 
-    console.log(annualAreaCost, "AREA COST");
+
 
     machineFullValue.annualAreaCost = annualAreaCost;
     const TotalMachineCostPerAnnum = DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost;
     machineFullValue.TotalMachineCostPerAnnum = TotalMachineCostPerAnnum
 
-    console.log(TotalMachineCostPerAnnum, "TOTAL MACHINE");
+
 
     this.setState({
       machineFullValue: {
@@ -906,7 +906,7 @@ class AddMoreDetails extends Component {
     const { IsUsesFuel, IsUsesSolarPower, machineFullValue } = this.state;
 
     if (IsUsesFuel) {
-      console.log("Come in if part");
+
       const FuelCostPerUnit = machineFullValue.FuelCostPerUnit !== undefined ? checkForNull(machineFullValue.FuelCostPerUnit) : 0;
       const ConsumptionPerYear = fieldsObj && fieldsObj.ConsumptionPerYear !== undefined ? checkForNull(fieldsObj.ConsumptionPerYear) : 0;
       machineFullValue.TotalFuelCostPerYear = FuelCostPerUnit * ConsumptionPerYear
@@ -914,7 +914,7 @@ class AddMoreDetails extends Component {
       this.props.change('TotalFuelCostPerYear', checkForDecimalAndNull(FuelCostPerUnit * ConsumptionPerYear, initialConfiguration.NoOfDecimalForPrice))
     } else {
 
-      console.log("Come in else part");
+
       // if (IsUsesSolarPower) {
       this.props.change('FuelCostPerUnit', 0)
       this.props.change('ConsumptionPerYear', 0)
@@ -1398,7 +1398,7 @@ class AddMoreDetails extends Component {
     data.cancelFlag = true
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
-      console.log("ENTERED IN HIDE DETAIL");
+
       data.Id = this.state.MachineID ? this.state.MachineID : editDetails.Id
       data.isEditFlag = true
       this.props.hideMoreDetailsForm({}, data)
@@ -1414,7 +1414,7 @@ class AddMoreDetails extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    console.log(values, "Values of form");
+
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid, machineFullValue } = this.state;
@@ -1603,7 +1603,7 @@ class AddMoreDetails extends Component {
         VendorPlant: [],
         Attachements: files
       }
-      console.log(formData, "FORM DATA");
+
       this.props.createMachineDetails(formData, (res) => {
         if (res.data.Result) {
           formData.isViewFlag = true
@@ -1617,7 +1617,7 @@ class AddMoreDetails extends Component {
   }
 
   handleYearChange = (year) => {
-    console.log(year, "Year");
+
     this.setState({
       manufactureYear: year
     })

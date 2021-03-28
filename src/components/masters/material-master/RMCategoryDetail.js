@@ -43,7 +43,7 @@ class RMCategoryDetail extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => { }
         };
         return toastr.confirm(`${MESSAGES.CATEGORY_DELETE_ALERT}`, toastrConfirmOptions);
     }

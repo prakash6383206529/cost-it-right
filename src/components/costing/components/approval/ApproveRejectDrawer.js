@@ -18,7 +18,7 @@ function ApproveRejectDrawer(props) {
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
-  console.log(partNo, 'Part')
+
   const { register, control, errors, handleSubmit } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -40,11 +40,11 @@ function ApproveRejectDrawer(props) {
     /* Problem here*/
     dispatch(
       getAllApprovalUserFilterByDepartment(obj, (res) => {
-        console.log(res.data.DataList, 'RESPONSE')
+
 
         res.data.DataList &&
           res.data.DataList.map((item) => {
-            console.log(item, 'Item')
+
             //if (item.Value === '0') return false;
             tempDropdownList.push({
               label: item.Text,
@@ -80,9 +80,9 @@ function ApproveRejectDrawer(props) {
     obj.ApprovalProcessSummaryId = approvalProcessId
 
     if (type === 'Approve') {
-      dispatch(approvalRequestByApprove, (obj, () => {}))
+      dispatch(approvalRequestByApprove, (obj, () => { }))
     } else {
-      dispatch(rejectRequestByApprove, (obj, () => {}))
+      dispatch(rejectRequestByApprove, (obj, () => { }))
     }
   }
   return (
@@ -121,7 +121,7 @@ function ApproveRejectDrawer(props) {
                       //defaultValue={isEditFlag ? plantName : ''}
                       options={approvalDropDown}
                       mandatory={true}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       errors={errors.approver}
                     />
                   </div>
@@ -134,7 +134,7 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={false}
-                    handleChange={() => {}}
+                    handleChange={() => { }}
                     //defaultValue={viewRM.RMRate}
                     className=""
                     customClassName={'withBorder'}
@@ -163,7 +163,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button mr5 save-btn"
-                    //onClick={() => setApproveDrawer(true)}
+                  //onClick={() => setApproveDrawer(true)}
                   >
                     <div className={'check-icon'}>
                       <img

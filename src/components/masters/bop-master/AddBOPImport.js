@@ -572,7 +572,6 @@ class AddBOPImport extends Component {
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
       }
-      console.log(formData, "Form");
       this.props.createBOPImport(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.BOP_ADD_SUCCESS);

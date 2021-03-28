@@ -109,7 +109,7 @@ function AddSurfaceTreatment(props) {
     clickToSelect: true,
     unselectable: selectedIds,
     // bgColor: function (row, isSelect) {
-    //   console.log('row, isSelect', row, isSelect)
+    //   
     //   const { OperationId } = row;
     //   if (OperationId === '6446d198-b95d-4e37-bbf0-98404ea57245') return 'blue';
     //   return null;

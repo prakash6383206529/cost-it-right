@@ -693,7 +693,7 @@ class AddRMDomestic extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-      console.log(data, "DATA");
+
       this.props.fileUploadRMDomestic(data, (res) => {
         let Data = res.data[0]
         const { files } = this.state

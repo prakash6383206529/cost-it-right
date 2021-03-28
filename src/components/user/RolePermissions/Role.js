@@ -193,9 +193,9 @@ class Role extends Component {
 
 		} else {
 			// Add new role
-			console.log(Modules, "MMMMMMMMMMMMMMMMM");
+
 			const isSelected = Modules.filter(el => el.IsChecked === true)
-			console.log('isSelected: ', isSelected);
+
 
 			if (isSelected.length < 1) {
 				toastr.warning("Please select atleast one module.")

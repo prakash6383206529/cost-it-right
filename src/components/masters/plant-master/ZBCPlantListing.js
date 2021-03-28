@@ -73,7 +73,7 @@ class ZBCPlantListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id);
             },
-            onCancel: () => console.log("CANCEL: clicked"),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
@@ -117,7 +117,7 @@ class ZBCPlantListing extends Component {
             onOk: () => {
                 this.confirmDeactivateItem(data, cell)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
@@ -447,8 +447,8 @@ class ZBCPlantListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -506,7 +506,7 @@ class ZBCPlantListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, auth, plant }) {
-    console.log(plant, "Plant");
+
     const { countryList, stateList, cityList } = comman;
     const { loading } = auth;
     const { plantDataList } = plant;

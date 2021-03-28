@@ -204,7 +204,7 @@ class LabourListing extends Component {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked'),
+      onCancel: () => { },
       component: () => <ConfirmComponent />
     };
     return toastr.confirm(MESSAGES.LABOUR_DELETE_ALERT, toastrConfirmOptions);
@@ -694,8 +694,8 @@ class LabourListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => this.setState({ shown: !this.state.shown })}>
                         <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                     ) : (
-                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                      )}
+                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    )}
                     {BulkUploadAccessibility && (
                       <button
                         type="button"

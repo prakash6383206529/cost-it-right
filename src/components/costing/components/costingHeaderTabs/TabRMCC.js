@@ -327,7 +327,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -399,7 +399,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -480,7 +480,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -544,7 +544,7 @@ function TabRMCC(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -581,7 +581,7 @@ function TabRMCC(props) {
 
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -655,7 +655,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -739,7 +739,7 @@ function TabRMCC(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -795,7 +795,7 @@ function TabRMCC(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -842,7 +842,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }

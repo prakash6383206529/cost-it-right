@@ -194,7 +194,7 @@ function Turning(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSubmit = (value) => {
-    console.log(value, 'Handle Value in Facing')
+
     let obj = {}
     obj.CutLength = value.cutLength
     obj.RemovedMaterial = value.removedMaterial

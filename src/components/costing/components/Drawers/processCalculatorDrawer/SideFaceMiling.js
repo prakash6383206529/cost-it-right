@@ -187,7 +187,7 @@ function SideFaceMiling(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSubmit = (value) => {
-    console.log(value, 'Handle Value in Facing')
+
     let obj = {}
     obj.CutLength = value.cutLength
     obj.Rpm = value.rpm

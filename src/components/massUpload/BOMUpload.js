@@ -71,7 +71,7 @@ class BOMUpload extends Component {
 
       ExcelRenderer(fileObj, (err, resp) => {
         if (err) {
-          console.log(err);
+
         } else {
 
           fileHeads = resp.rows[0];

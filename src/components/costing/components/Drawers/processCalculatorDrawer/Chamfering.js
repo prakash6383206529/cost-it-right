@@ -162,12 +162,12 @@ function Chamfering(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   // const onSubmit = (value) => {
-  //   console.log(value, 'Handle Value in Facing')
+  //   
   //   calculateMachineTime(totalMachiningTime, value)
   // }
   const onSubmit = (formValue) => {
-    console.log('coming')
-    console.log(formValue, 'Handle Value in Facing')
+
+
     let obj = {}
     obj.TurningDiameter = formValue.turningDiameter
     obj.FinishDiameter = formValue.finishDiameter

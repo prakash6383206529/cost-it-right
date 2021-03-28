@@ -242,7 +242,7 @@ function OverheadProfit(props) {
       }, 200)
 
     } catch (error) {
-      console.log('error: setRejectionDetail', error);
+
     }
 
   }, [rejectionFieldValues]);

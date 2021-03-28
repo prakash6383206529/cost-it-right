@@ -93,7 +93,7 @@ class OverheadListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />
         };
         return toastr.confirm(`${MESSAGES.OVERHEAD_DELETE_ALERT}`, toastrConfirmOptions);

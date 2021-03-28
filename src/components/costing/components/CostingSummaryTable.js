@@ -63,7 +63,7 @@ const CostingSummaryTable = (props) => {
 
 
   const partInfo = useSelector((state) => state.costing.partInfo)
-  console.log('partInfo: ', partInfo);
+
 
   const partNumber = useSelector(state => state.costing.partNo);
 
@@ -187,7 +187,7 @@ const CostingSummaryTable = (props) => {
   */
 
   const addNewCosting = (index) => {
-    console.log("Entered in add new costing");
+
     const userDetail = userDetails()
     let tempData = viewCostingData[index]
     const type = viewCostingData[index].zbc === 0 ? 'ZBC' : 'VBC'
@@ -214,9 +214,9 @@ const CostingSummaryTable = (props) => {
         Price: partInfo.Price,
         EffectiveDate: partInfo.EffectiveDate,
       }
-      console.log("Entered in add new costing");
+
       dispatch(createZBCCosting(data, (res) => {
-        console.log("Created");
+
         if (res.data.Result) {
           setPartInfo(res.data.Data)
           dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
@@ -407,7 +407,7 @@ const CostingSummaryTable = (props) => {
           obj.reason = ''
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
-          console.log(obj, "Obj");
+
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
@@ -429,10 +429,10 @@ const CostingSummaryTable = (props) => {
   useEffect(() => { }, [viewCostingData])
 
   // useEffect(() => {
-  //   console.log('multipleCostings: ', multipleCostings);
+  //   
   // }, [multipleCostings])
 
-  // console.log('multipleCostings: ', multipleCostings);
+  // 
   return (
     <Fragment>
       {

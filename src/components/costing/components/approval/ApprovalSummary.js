@@ -20,7 +20,7 @@ function ApprovalSummary(props) {
   const [rejectDrawer, setRejectDrawer] = useState(false)
   const [partDetail, setPartDetail] = useState({})
   const [approvalDetails, setApprovalDetails] = useState({})
-  console.log(approvalDetails, 'Approval Detail')
+
   const [costingSummary, setCostingSummary] = useState(false)
   const [approvalLevelStep, setApprovalLevelStep] = useState([])
   const [departmentsId, setDepartmentId] = useState('')
@@ -31,7 +31,7 @@ function ApprovalSummary(props) {
   useEffect(() => {
     dispatch(
       getApprovalSummary(tokenNo, approvalProcessId, loggedInUser, (res) => {
-        console.log(res.data.Data, 'Data for summary')
+
         const {
           PartDetails,
           CostingSummary,
@@ -41,7 +41,7 @@ function ApprovalSummary(props) {
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails)
         setApprovalLevelStep(ApprovalLevelStep)
-        console.log(CostingSummary, 'CCCCCCCCCCCCCCCCCccc')
+
         const departmentId = res.data.Data.DepartmentId
         const technology = res.data.Data.Technology
         const approvalProcessId = res.data.Data.ApprovalProcessId
@@ -69,9 +69,8 @@ function ApprovalSummary(props) {
         <Col md="8">
           <div className="left-border">
             {'Approval Workflow (Approval No. '}
-            {`${
-              departmentsId.approvalNumber ? departmentsId.approvalNumber : '-'
-            }) :`}
+            {`${departmentsId.approvalNumber ? departmentsId.approvalNumber : '-'
+              }) :`}
           </div>
         </Col>
         <Col md="4" className="text-right">
@@ -208,7 +207,7 @@ function ApprovalSummary(props) {
                 </td>
                 <td>
                   {approvalDetails.TypeOfCosting === 'VBC' &&
-                  approvalDetails.VendorName
+                    approvalDetails.VendorName
                     ? approvalDetails.VendorName
                     : '-'}
                 </td>
@@ -218,8 +217,8 @@ function ApprovalSummary(props) {
                       ? approvalDetails.VendorPlantCode
                       : '-'
                     : approvalDetails.PlantCode
-                    ? approvalDetails.PlantCode
-                    : '-'}
+                      ? approvalDetails.PlantCode
+                      : '-'}
                 </td>
                 <td>
                   {approvalDetails.ShareOfBusiness

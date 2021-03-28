@@ -161,7 +161,7 @@ class SpecificationListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />
         };
         return toastr.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
@@ -269,7 +269,7 @@ class SpecificationListing extends Component {
             onOk: () => {
                 this.confirmDensity()
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => { }
         };
         return toastr.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
@@ -376,8 +376,8 @@ class SpecificationListing extends Component {
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                     <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                             ) : (
-                                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                )}
+                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                            )}
                             {BulkUploadAccessibility && <button
                                 type="button"
                                 className={'user-btn mr5 '}

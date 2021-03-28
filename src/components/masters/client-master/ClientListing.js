@@ -109,7 +109,7 @@ class ClientListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(MESSAGES.CLIENT_DELETE_ALERT, toastrConfirmOptions);

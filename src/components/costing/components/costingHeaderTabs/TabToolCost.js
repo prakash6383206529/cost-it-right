@@ -71,7 +71,7 @@ function TabToolCost(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -104,7 +104,7 @@ function TabToolCost(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 

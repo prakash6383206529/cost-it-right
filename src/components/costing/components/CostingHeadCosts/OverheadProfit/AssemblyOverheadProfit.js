@@ -73,7 +73,7 @@ function AssemblyOverheadProfit(props) {
       "CostingPartDetails": item.CostingPartDetails,
     }
     dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
-      console.log('saveAssemblyOverheadProfitTab: ', res);
+
     }))
   }
 

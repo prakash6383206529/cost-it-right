@@ -81,7 +81,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -122,7 +122,7 @@ function TabOverheadProfit(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -219,7 +219,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -277,7 +277,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -321,7 +321,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -376,7 +376,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -432,7 +432,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 

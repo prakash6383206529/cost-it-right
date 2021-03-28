@@ -45,7 +45,7 @@ class Login extends Component {
   onSubmit(values) {
 
     this.props.loginUserAPI(values, (res) => {
-      console.log(res, "RESPONSE");
+
       if (res && res.data && res.data.Result) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data);
@@ -58,7 +58,7 @@ class Login extends Component {
       }
       else {
         // toastr.error('Entered email id or password is incorrect. Try again')
-        // console.log(res, "RES", res.Result);
+        // 
         // toastr.error(res.Message)
 
       }

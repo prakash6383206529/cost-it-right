@@ -94,7 +94,7 @@ class BOPDomesticListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id);
             },
-            onCancel: () => console.log("CANCEL: clicked"),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);

@@ -72,7 +72,7 @@ class AddMachineRate extends Component {
    */
   componentDidMount() {
     const { data, editDetails, initialConfiguration } = this.props;
-    console.log(data, "Data from more detail form");
+
 
     // For Showing form in view mode if data is added in add more detail form
     if (data.isViewFlag === true) {
@@ -83,7 +83,7 @@ class AddMachineRate extends Component {
 
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
-      console.log(data, "DATA IN MACHINE RATE");
+
 
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
@@ -154,7 +154,7 @@ class AddMachineRate extends Component {
   * @description USED TO SET OLD VALUES
   */
   setOldValue = (data) => {
-    console.log("Entered here", data);
+
     this.setState({
       selectedTechnology: data.selectedTechnology,
       selectedPlants: data.selectedPlants,
@@ -464,7 +464,7 @@ class AddMachineRate extends Component {
         /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(formData).length > 0) {
           const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
-          console.log(processObj, "PROCESS");
+
           this.setState({
             processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
           })

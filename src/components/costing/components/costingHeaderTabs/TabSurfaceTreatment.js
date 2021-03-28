@@ -114,7 +114,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}) => {
-    console.log('Params, Data: ', Params, Data);
+
     let arr = formatData(Params, Data, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -165,7 +165,7 @@ function TabSurfaceTreatment(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -218,7 +218,7 @@ function TabSurfaceTreatment(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -288,7 +288,7 @@ function TabSurfaceTreatment(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -369,7 +369,7 @@ function TabSurfaceTreatment(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -427,7 +427,7 @@ function TabSurfaceTreatment(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -482,7 +482,7 @@ function TabSurfaceTreatment(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -521,7 +521,7 @@ function TabSurfaceTreatment(props) {
     }
 
     // dispatch(saveCostingSurfaceTreatmentTab(data, res => {
-    //   console.log('saveCostingSurfaceTreatmentTab: ', res);
+    //   
     // }))
 
   }

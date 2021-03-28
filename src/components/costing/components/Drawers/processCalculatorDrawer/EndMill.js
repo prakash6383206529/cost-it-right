@@ -19,7 +19,7 @@ import {
 
 function EndMill(props) {
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
-  console.log(WeightCalculatorRequest, 'WeightCalculatorRequest');
+
   const defaultValues = {
     removedMaterial: WeightCalculatorRequest &&
       WeightCalculatorRequest.RemovedMaterial !== undefined
@@ -170,7 +170,7 @@ function EndMill(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSubmit = (value) => {
-    console.log(value, 'Handle Value in Facing')
+
     let obj = {}
     obj.RemovedMaterial = value.removedMaterial
     obj.Rpm = value.rpm

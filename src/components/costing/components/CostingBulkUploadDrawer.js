@@ -32,7 +32,7 @@ class CostingBulkUploadDrawer extends Component {
     }
     // called every time a file's `status` changes
     handleChangeStatus = ({ meta, file }, status) => {
-        console.log(file, "FILE");
+
         const { files } = this.state
 
         if (status === 'removed') {
@@ -46,7 +46,7 @@ class CostingBulkUploadDrawer extends Component {
         if (status === 'done') {
 
             this.setState({ fileName: file.name, fileData: file })
-            console.log("DATA", file);
+
 
         }
 
@@ -106,7 +106,7 @@ class CostingBulkUploadDrawer extends Component {
 
     onSubmit = () => {
         const { fileData } = this.state
-        console.log(fileData, "FD");
+
         let data = new FormData()
         data.append('file', fileData)
 
@@ -160,43 +160,43 @@ class CostingBulkUploadDrawer extends Component {
                                                 {this.state.fileName}
                                             </div>
                                         ) : (
-                                                <Dropzone
-                                                    getUploadParams={this.getUploadParams}
-                                                    onChangeStatus={this.handleChangeStatus}
-                                                    PreviewComponent={this.Preview}
-                                                    //onSubmit={this.handleSubmit}
-                                                    accept=".xlsx"
-                                                    initialFiles={this.state.initialFiles}
-                                                    maxFiles={1}
-                                                    maxSizeBytes={2000000}
-                                                    inputContent={(files, extra) =>
-                                                        extra.reject ? (
-                                                            "Image, audio and video files only"
-                                                        ) : (
-                                                                <div className="text-center">
-                                                                    <i className="text-primary fa fa-cloud-upload"></i>
-                                                                    <span className="d-block">
-                                                                        Drag and Drop or{" "}
-                                                                        <span className="text-primary">
-                                                                            Browse
+                                            <Dropzone
+                                                getUploadParams={this.getUploadParams}
+                                                onChangeStatus={this.handleChangeStatus}
+                                                PreviewComponent={this.Preview}
+                                                //onSubmit={this.handleSubmit}
+                                                accept=".xlsx"
+                                                initialFiles={this.state.initialFiles}
+                                                maxFiles={1}
+                                                maxSizeBytes={2000000}
+                                                inputContent={(files, extra) =>
+                                                    extra.reject ? (
+                                                        "Image, audio and video files only"
+                                                    ) : (
+                                                        <div className="text-center">
+                                                            <i className="text-primary fa fa-cloud-upload"></i>
+                                                            <span className="d-block">
+                                                                Drag and Drop or{" "}
+                                                                <span className="text-primary">
+                                                                    Browse
                                                                         </span>
-                                                                        <br />
+                                                                <br />
                                                                       file to upload
                                                                      </span>
-                                                                </div>
-                                                            )
-                                                    }
-                                                    styles={{
-                                                        dropzoneReject: {
-                                                            borderColor: "red",
-                                                            backgroundColor: "#DAA",
-                                                        },
-                                                        inputLabel: (files, extra) =>
-                                                            extra.reject ? { color: "red" } : {},
-                                                    }}
-                                                    classNames="draper-drop"
-                                                />
-                                            )}
+                                                        </div>
+                                                    )
+                                                }
+                                                styles={{
+                                                    dropzoneReject: {
+                                                        borderColor: "red",
+                                                        backgroundColor: "#DAA",
+                                                    },
+                                                    inputLabel: (files, extra) =>
+                                                        extra.reject ? { color: "red" } : {},
+                                                }}
+                                                classNames="draper-drop"
+                                            />
+                                        )}
                                     </Col>
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">

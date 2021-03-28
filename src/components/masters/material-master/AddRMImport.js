@@ -254,7 +254,6 @@ class AddRMImport extends Component {
   * @description called
   */
   handleCurrency = (newValue) => {
-    console.log(newValue, "NEW Value");
     if (newValue && newValue !== '') {
       this.setState({ currency: newValue, })
       const { fieldsObj } = this.props
@@ -344,7 +343,7 @@ class AddRMImport extends Component {
             const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
 
-            console.log(currencyObj, "CURRENCY OBJ");
+
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
 
             let plantArray = [];
@@ -433,7 +432,7 @@ class AddRMImport extends Component {
               const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === data.RawMaterialId,)
               const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === data.GradeId)
               const specObj = rmSpecification && rmSpecification.find((item) => item.Text === data.Specification)
-              console.log(specObj, "SPEC OBJ");
+
               this.setState({
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],

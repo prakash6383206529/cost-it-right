@@ -67,7 +67,7 @@ function TabPackagingFreight(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -112,7 +112,7 @@ function TabPackagingFreight(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 

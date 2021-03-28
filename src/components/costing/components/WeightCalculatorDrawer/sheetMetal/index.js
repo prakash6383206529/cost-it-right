@@ -16,7 +16,7 @@ function WeightCalculator(props) {
 
   const dispatch = useDispatch()
   const { rmRowData } = props
-  console.log(rmRowData, "RM");
+
   const getTabno = (layout) => {
     switch (layout) {
       case 'Pipe':

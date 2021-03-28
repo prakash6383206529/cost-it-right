@@ -38,7 +38,7 @@ class AddProcessDrawer extends Component {
    */
   getData = () => {
     const { isEditFlag, ID } = this.props
-    console.log(ID, 'ID')
+
     if (isEditFlag) {
       this.props.getProcessData(ID, (res) => {
         let Data = res.data.Data

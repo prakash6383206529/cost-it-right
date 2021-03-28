@@ -63,7 +63,7 @@ function SheetMetalBaicDrawer(props) {
   useEffect(() => {
 
     if (props.calculatorData.UOMType === MASS) {
-      console.log("ENETRING HERE");
+
       setValue('Quantity', rmFinishWeight)
     }
 
@@ -71,8 +71,8 @@ function SheetMetalBaicDrawer(props) {
   }, [])
 
   const onSubmit = (value) => {
-    console.log('coming')
-    console.log(value, 'Handle Value in Sheet', tempProcessObj)
+
+
     let obj = {}
     obj.ProcessCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCalculationId ? WeightCalculatorRequest.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
@@ -97,7 +97,7 @@ function SheetMetalBaicDrawer(props) {
     obj.Quantity = value.Quantity
     obj.ProcessCost = processCost
     obj.LoggedInUserId = loggedInUserId()
-    console.log(obj, "WHAT IS OBJECT");
+
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity
@@ -111,17 +111,17 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
-    console.log("Calculation for process cost", props.calculatorData.UOMType);
+
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
     const rate = props.calculatorData.MHR
     let cost
     switch (props.calculatorData.UOMType) {
       case MASS:
-        console.log(efficiency, "efficiency", quantity, "quantity", rate);
+
         setDisabled(true)
         cost = (1 / efficiency) * quantity * rate
-        console.log(cost, "COST");
+
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
