@@ -4,7 +4,7 @@ import "./formInputs.css";
 import DatePicker from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
-  console.log('input: ', input);
+
   const { register, rules, name, label, mandatory, errors, disabled, value, ...inputProps } = input;
   const isDisabled = disabled === true ? true : false;
   const className = `form-group inputbox ${input.customClassName ? input.customClassName : ""}`;

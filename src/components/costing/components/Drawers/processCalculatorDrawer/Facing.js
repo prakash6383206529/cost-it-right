@@ -114,7 +114,7 @@ function Facing(props) {
   const isEditFlag = WeightCalculatorRequest ? true : false
   const trimVal = getConfigurationKey()
   const trim = trimVal.NumberOfDecimalForWeightCalculation
-  console.log(trim, 'Trim')
+
 
   const fieldForProcess = () => { }
 
@@ -172,8 +172,8 @@ function Facing(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSubmit = (formValue) => {
-    console.log('coming')
-    console.log(formValue, 'Handle Value in Facing')
+
+
     let obj = {}
     obj.TurningDiameter = formValue.turningDiameter
     obj.FinishDiameter = formValue.finishDiameter

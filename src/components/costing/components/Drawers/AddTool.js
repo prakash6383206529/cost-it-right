@@ -40,7 +40,7 @@ function AddTool(props) {
     control,
     name: ['Quantity', 'ToolCost', 'Life'],
   });
-  console.log('fieldValues: ', fieldValues);
+
 
   useEffect(() => {
     getNetToolCost()

@@ -111,7 +111,7 @@ class UOMMaster extends Component {
       onOk: () => {
         this.confirmDeleteUOM(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked')
+      onCancel: () => { }
     };
     return toastr.confirm(`Are you sure you want to delete UOM?`, toastrConfirmOptions);
   }

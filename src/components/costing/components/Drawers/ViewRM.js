@@ -11,7 +11,7 @@ import { toastr } from 'react-redux-toastr';
 
 
 function ViewRM(props) {
-  console.log(props, "RM props");
+
   const { viewRMData } = props
   /*
   * @method toggleDrawer

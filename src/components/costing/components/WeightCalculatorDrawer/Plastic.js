@@ -13,7 +13,7 @@ function Plastic(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
-  console.log(WeightCalculatorRequest, "Weight Calci");
+
   const defaultValues = {
     netWeight: WeightCalculatorRequest &&
       WeightCalculatorRequest.NetWeight !== undefined
@@ -98,7 +98,7 @@ function Plastic(props) {
    * @description For Calculating gross weight
    */
   const calculateGrossWeight = () => {
-    console.log("Entered here gross");
+
     const netWeight = Number(getValues('netWeight'))
     const runnerWeight = Number(getValues('runnerWeight'))
     if (!netWeight || !runnerWeight) {
@@ -112,7 +112,7 @@ function Plastic(props) {
    * @description Calculating finished weight,scrap weight,RM cost, scrap cost,material cost
    */
   const calculateRemainingCalculation = (lostSum = 0) => {
-    console.log("Eneterd in remaining");
+
     setLostWeight(lostSum)
     const grossWeight = Number(getValues('grossWeight'))
     const netWeight = Number(getValues('netWeight'))
@@ -150,7 +150,7 @@ function Plastic(props) {
   }
 
   const tableData = (value = []) => {
-    console.log(value, "Value of table");
+
     setTableVal(value)
   }
   return (

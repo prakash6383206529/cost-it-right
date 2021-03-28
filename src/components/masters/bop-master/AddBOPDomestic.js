@@ -767,7 +767,7 @@ class AddBOPDomestic extends Component {
                                                     </div>} */}
                             </div>
                           </Col>
-                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
+                          {checkVendorPlantConfigurable() && this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"

@@ -24,11 +24,11 @@ import { SHEETMETAL, RUBBER, PLASTIC, MACHINING } from '../../../../../config/ma
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
-  console.log(calculatorData, 'Process')
+
   const tonnage = calculatorData.MachineTonnage ? calculatorData.MachineTonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
-    console.log('Form Value in drawer', time)
+
     //   let obj={}
     //    obj.TurningDiameter = formValue.turningDiameter,
     //    obj.FinishDiameter = formValue.finishDiameter,
@@ -75,7 +75,7 @@ function VariableMhrDrawer(props) {
     props.closeDrawer('', formValue, weightData)
   }
   const getProcessComponent = (process) => {
-    console.log('Entered in switch case')
+
     if (technology === MACHINING) {
       switch (process) {
         case 'Facing':

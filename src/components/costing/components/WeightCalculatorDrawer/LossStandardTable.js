@@ -41,7 +41,7 @@ function LossStandardTable(props) {
   }, [fieldValues])
 
   const { dropDownMenu } = props
-  console.log(props, "Proos");
+
   const [tableData, setTableData] = useState([])
   const [isEdit, setIsEdit] = useState(false)
   const [editIndex, setEditIndex] = useState('')
@@ -145,9 +145,9 @@ function LossStandardTable(props) {
    */
   const deleteRow = (index) => {
     const tempObj = tableData[index]
-    console.log(netWeight, "netWeight", tempObj.lossWeight)
+
     const weight = netWeight - tempObj.lossWeight //FIXME Calculation going wrong need to ask Harish sir.
-    console.log(weight, "Weight");
+
     setNetWeight(weight)
     props.calculation(weight)
     let tempData = tableData.filter((item, i) => {
@@ -264,14 +264,14 @@ function LossStandardTable(props) {
                   </button>
                 </>
               ) : (
-                  <button
-                    type="submit"
-                    className={'user-btn mt30 pull-left'}
-                    onClick={addRow}
-                  >
-                    <div className={'plus'}></div>ADD
-                  </button>
-                )}
+                <button
+                  type="submit"
+                  className={'user-btn mt30 pull-left'}
+                  onClick={addRow}
+                >
+                  <div className={'plus'}></div>ADD
+                </button>
+              )}
             </div>
           </Col>
 

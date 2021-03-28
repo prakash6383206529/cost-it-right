@@ -67,7 +67,7 @@ const SendForApproval = (props) => {
     }
     // if (label === 'Approver') {
     //     usersList && usersList.map(item => {
-    //         console.log(item,"Item");
+    //         
     //         // if (item.Value === '0') return false;
     //         tempDropdownList.push({ label: item.Text, value: item.Value })
     //         return null;
@@ -283,7 +283,7 @@ const SendForApproval = (props) => {
     })
 
     obj.CostingsList = temp
-    console.log('obj: ', obj)
+
 
     dispatch(
       sendForApprovalBySender(obj, (res) => {
@@ -296,7 +296,7 @@ const SendForApproval = (props) => {
   }
 
   const handleApproverChange = (data) => {
-    console.log(data, "DATAAAAAAAAAAA");
+
     setSelectedApprover(data.value)
     setSelectedApproverLevelId(data.levelId)
   }

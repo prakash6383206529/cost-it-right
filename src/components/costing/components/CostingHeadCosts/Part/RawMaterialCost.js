@@ -99,7 +99,7 @@ function RawMaterialCost(props) {
     setEditIndex(index)
     let tempArr = []
     let tempData = gridData[index]
-    console.log(tempData, "temp");
+
     if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "" || Number(tempData.Density) === 0) {
       toastr.warning("Density is not avaliable for weight calculation.")
       return false

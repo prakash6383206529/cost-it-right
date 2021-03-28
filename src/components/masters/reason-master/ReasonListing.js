@@ -111,7 +111,7 @@ class ReasonListing extends Component {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked'),
+      onCancel: () => { },
     }
     return toastr.confirm(MESSAGES.REASON_DELETE_ALERT, toastrConfirmOptions)
   }

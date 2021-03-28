@@ -83,7 +83,7 @@ class PermissionsTabIndex extends Component {
     * @description get updated tabs data after update success
     */
     updateTabs = (Data) => {
-        console.log(Data, "UPDATE TAb");
+
         let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
         let additionalMasterObj = Data && Data.filter(el => el.ModuleName === ADDITIONAL_MASTERS)
@@ -92,7 +92,7 @@ class PermissionsTabIndex extends Component {
         let reportAnalyticsObj = Data && Data.filter(el => el.ModuleName === REPORTS_AND_ANALYTICS)
         let usersObj = Data && Data.filter(el => el.ModuleName === USERS)
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
-        console.log(simulationObj, "UPDATE TAb 2", reportAnalyticsObj, dashboardObj);
+
         this.setState({
             actionData: Data,
             isLoader: false,
@@ -135,7 +135,7 @@ class PermissionsTabIndex extends Component {
 
     render() {
         const { isLoader, } = this.state;
-        console.log(this.state.simulation, "SIMUL");
+
         return (
             <div>
                 {isLoader && <Loader />}

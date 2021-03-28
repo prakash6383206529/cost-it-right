@@ -21,14 +21,14 @@ import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-  console.log(WeightCalculatorRequest, "WCCCCCCCCCCCCCCCCCCCCCCCCC");
+
   const { rmRowData, isEditFlag } = props
 
   const costData = useContext(costingInfoContext)
 
   const defaultValues = {
 
-    //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
+    //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== undefined ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId } : '',
     OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
     Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? WeightCalculatorRequest.Thickness : '',
     InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== undefined ? WeightCalculatorRequest.InnerDiameter : '',
@@ -55,15 +55,8 @@ function Pipe(props) {
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
-  const [UOMDimension, setUOMDimension] = useState(
-    WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId
-      ? {
-        label: WeightCalculatorRequest.UOMForDimension,
-        value: WeightCalculatorRequest.UOMForDimensionId,
-      }
-      : [],
-  )
-  console.log(UOMDimension, "DIM");
+  const [UOMDimension, setUOMDimension] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId } : [])
+
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({})
   const [isChangeApplies, setIsChangeApplied] = useState(true)
@@ -84,9 +77,9 @@ function Pipe(props) {
     dispatch(getUOMListByUnitType(UnitTypeId, (res) => { }))
     dispatch(getUOMSelectList(res => {
       const Data = res.data.Data
-      console.log(Data, "DATA");
+
       const kgObj = Data.find(el => el.Text === G)
-      console.log(kgObj, "kgObj");
+
       setTimeout(() => {
         setValue('UOMDimension', { label: kgObj.Text, value: kgObj.Value })
         setUOMDimension({ label: kgObj.Text, value: kgObj.Value })
@@ -274,6 +267,7 @@ function Pipe(props) {
     updatedValue.GrossWeight = WeightofPart
     setDataToSend(updatedValue)
     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
+    handleUnit(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G)
   }
 
   /**
@@ -286,6 +280,7 @@ function Pipe(props) {
     updatedValue.FinishWeight = FinishWeight
     setDataToSend(updatedValue)
     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, localStorage.NoOfDecimalForInputOutput))
+    handleUnit(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G)
   }
 
   /**
@@ -341,8 +336,8 @@ function Pipe(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
-    console.log(tempOldObj, "temp");
-    console.log('values >>>', values)
+
+
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
       if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
         setIsChangeApplied(true)
@@ -392,9 +387,9 @@ function Pipe(props) {
       FinishWeight: (dataToSend.newFinishWeight === undefined || dataToSend.newFinishWeight === 0) ? dataToSend.FinishWeight : dataToSend.newFinishWeight,
       LoggedInUserId: loggedInUserId()
     }
-    console.log(data, "Data");
+
     dispatch(saveRawMaterialCalciData(data, res => {
-      console.log(res, "RES");
+
       if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
         toastr.success("Calculation saved successfully")
@@ -408,14 +403,14 @@ function Pipe(props) {
     setUOMDimension(value)
     let grossWeight = dataToSend.GrossWeight
     let finishWeight = dataToSend.FinishWeight
-    // console.log(grossWeight, "Before conversion", finishWeight);
+    // 
     setUnit(value.label)
-    // console.log(value.label, "unit");
+    // 
     switch (value.label) {
       case KG:
         grossWeight = grossWeight / 1000
         finishWeight = finishWeight / 1000
-        console.log(grossWeight, "GW inside Kg", finishWeight);
+
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
@@ -426,7 +421,7 @@ function Pipe(props) {
       case G:
         grossWeight = grossWeight
         finishWeight = finishWeight
-        console.log(grossWeight, "GW inside G", finishWeight);
+
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
@@ -437,7 +432,7 @@ function Pipe(props) {
       case MG:
         grossWeight = grossWeight * 1000
         finishWeight = finishWeight * 1000
-        console.log(grossWeight, "GW inside MG", finishWeight);
+
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
@@ -448,7 +443,7 @@ function Pipe(props) {
       default:
         break;
     }
-    console.log(grossWeight, "GW outside", finishWeight);
+
 
 
   }
@@ -867,7 +862,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.FinishWeight}
-                    disabled={true}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
               </Row>

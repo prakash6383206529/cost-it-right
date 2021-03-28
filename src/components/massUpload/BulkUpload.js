@@ -104,11 +104,11 @@ class BulkUpload extends Component {
 
             ExcelRenderer(fileObj, (err, resp) => {
                 if (err) {
-                    console.log(err);
+
                 } else {
 
                     fileHeads = resp.rows[0];
-                    //console.log('resp.rows: ', resp.rows);
+                    //
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
@@ -134,7 +134,7 @@ class BulkUpload extends Component {
                             })
                             fileData.push(obj)
                             obj = {}
-                            console.log('fileData', fileData)
+
                         }
                         return null;
                     })

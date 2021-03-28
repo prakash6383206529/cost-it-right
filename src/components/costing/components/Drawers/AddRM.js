@@ -16,7 +16,7 @@ function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  // console.log(selectedRowData, "SELECTED ROW DATA");
+
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
@@ -114,7 +114,7 @@ function AddRM(props) {
   }
 
   const renderBasicRate = () => {
-    return <>Basic Rate <br />INR/UOM </>
+    return <>Basic Rate /<br />UOM </>
   }
   const renderRmType = () => {
     return <>RM <br />Type</>
@@ -133,7 +133,7 @@ function AddRM(props) {
   }
 
   const renderScrapRate = () => {
-    return <>Scrap Rate <br /> INR/UOM </>
+    return <>Scrap Rate /<br />UOM </>
   }
 
   const renderNetLandedRate = () => {

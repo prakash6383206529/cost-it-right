@@ -159,7 +159,7 @@ export function getFilteredPlantList(filterData, callback) {
         const qParams = `country_id=${filterData.country}&state_id=${filterData.state}&city_id=${filterData.city}&is_vendor=${filterData.is_vendor}`
         const request = axios.get(`${API.getFilteredPlantList}?${qParams}`, headers);
         request.then((response) => {
-            console.log(response, "RESPONSE");
+
             dispatch({
                 type: GET_PLANT_FILTER_LIST,
                 payload: response.data.DataList

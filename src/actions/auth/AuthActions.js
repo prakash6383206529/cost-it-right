@@ -54,7 +54,7 @@ export function loginUserAPI(requestData, callback) {
                 }
             })
             .catch((error) => {
-                console.log(error.Message, "message");
+
                 dispatch(getFailure(error));
                 apiErrors(error);
                 callback(error);

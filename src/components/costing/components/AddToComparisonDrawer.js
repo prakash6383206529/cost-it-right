@@ -18,7 +18,7 @@ function AddToComparisonDrawer(props) {
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const { editObject, isEditFlag } = props
-  console.log(editObject, 'Edit object')
+
   const { partId, plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName, vendorPlantName, vendorPlantId } = editObject
 
   const { register, handleSubmit, control, setValue, errors } = useForm({
@@ -66,7 +66,7 @@ function AddToComparisonDrawer(props) {
 
   /* For getting part no for costing dropdown */
   const partNo = useSelector((state) => state.costing.partNo)
-  console.log(partNo, "Part No");
+
 
   /* For getting default value of check box */
   useEffect(() => {
@@ -84,7 +84,7 @@ function AddToComparisonDrawer(props) {
     }
     if (isEditFlag) {
       if (typeOfCosting === 0) {
-        console.log("Coming ?");
+
         setTimeout(() => {
           setIsZbcSelected(true)
           setIsVbcSelected(false)
@@ -192,7 +192,7 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
    */
   const onSubmit = (values) => {
-    console.log(values, 'onsubmit')
+
     setPlantValue(values.plant)
     setVendorValue(values.vendor)
     setVendorPlant(values.vendorPlant)
@@ -327,15 +327,15 @@ function AddToComparisonDrawer(props) {
 
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
-            console.log(index, "COMING HERE INDEX");
+
             temp[index] = obj
           } else {
             const index = temp.findIndex(
               (data) => data.costingId == values.costings.value,
             )
-            console.log(index, "COMING HERE to find INDEX");
+
             if (index == -1) {
-              console.log(index, "COMING HERE in - INDEX");
+
               temp.push(obj)
             } else {
               toastr.warning('This costing is already present for comparison.')

@@ -41,10 +41,10 @@ function CostingSummary(props) {
 
   const costingData = useSelector(state => state.costing.costingData)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
-  console.log(costingData, "CDDDD");
+
 
   useEffect(() => {
-    console.log('ACTIVE Tab summary');
+
     if (Object.keys(costingData).length > 0) {
       dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
         if (res.data.Data) {
@@ -58,19 +58,19 @@ function CostingSummary(props) {
   }, [props.activeTab])
 
   useEffect(() => {
-    console.log("COSTING DATA RENDER 2")
+
     dispatch(getCostingTechnologySelectList(() => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
 
     // if (costingData.length > 0) {
-    //   console.log("COSTING DATA RENDER 3", costingData)
+    //   
     // }
   }, [])
 
   useEffect(() => {
-    console.log("COSTING DATA RENDER 1", costingData);
+
     if (Object.keys(costingData).length > 0) {
 
       setTimeout(() => {
@@ -97,7 +97,7 @@ function CostingSummary(props) {
           newValue.partName = Data.PartName
           newValue.partNumber = costingData.PartName
           newValue.partId = costingData.PartId
-          console.log(newValue, "NEW VAL");
+
           dispatch(storePartNumber(newValue))
           dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
             if (res.data.Data) {
@@ -170,7 +170,7 @@ function CostingSummary(props) {
     }
   }
   useEffect(() => {
-    console.log(disabled, "DIS");
+
   }, [disabled])
   /**
    * @method handlePartChange
@@ -180,11 +180,11 @@ function CostingSummary(props) {
     let temp = []
     temp = viewCostingData
     // if (viewCostingData.length == 0 || part.value == newValue.value || part.value != newValue.value) {
-    //   console.log("From iffff")
+    //   
     //   temp.push(VIEW_COSTING_DATA)
     // }
     // else if (viewCostingData.length >= 1) {
-    //   console.log("From elseeeee")
+    //   
     //   temp = viewCostingData
     // }
     // else if(part != newValue)

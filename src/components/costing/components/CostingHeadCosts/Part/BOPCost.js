@@ -140,7 +140,7 @@ function BOPCost(props) {
 * @description Used to Submit the form
 */
   const onSubmit = (values) => {
-    console.log('values >>>', values);
+
   }
 
   /**

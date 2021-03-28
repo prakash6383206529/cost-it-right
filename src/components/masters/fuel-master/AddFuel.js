@@ -167,7 +167,7 @@ class AddFuel extends Component {
 
     } else {
       if (StateName.length === 0 || effectiveDate === '') {
-        console.log("Enter in else ke if blck");
+
         toastr.warning('Fields should not be empty');
         return false;
       }

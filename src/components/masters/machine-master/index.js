@@ -113,7 +113,7 @@ class MachineMaster extends Component {
     }
 
     addMoreDetailsData = (data) => {
-        console.log(data);
+
     }
 
     /**
@@ -133,7 +133,7 @@ class MachineMaster extends Component {
     * @description HIDE MORE DETAILS FORM(save and cancel button(more confirmation from Tanmay sir))
     */
     hideMoreDetailsForm = (data = {}, editDetails = {}) => {
-        console.log(editDetails, "eeeeeeeeeeeeeeeeeeeeeeeeeee");
+
         this.setState({
             isAddMoreDetails: false,
             isMachineRateForm: true,

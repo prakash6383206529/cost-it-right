@@ -86,11 +86,11 @@ function CostingDetails(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
-  console.log(partNumber, "PN")
+
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0) {
-      console.log("PN", partNumber);
+
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partName, value: partNumber.partId })
       setTimeout(() => {
@@ -100,7 +100,7 @@ function CostingDetails(props) {
         setShowNextBtn(true)
 
         dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => {
-          console.log(res, "res");
+
         }))
         dispatch(
           getPartInfo(partNumber.partId, (res) => {
@@ -665,7 +665,7 @@ function CostingDetails(props) {
       onOk: () => {
         confirmUpdateCosting(index, type)
       },
-      onCancel: () => console.log('CANCEL: clicked'),
+      onCancel: () => { },
     }
     return toastr.confirm(
       `${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`,
@@ -762,7 +762,7 @@ function CostingDetails(props) {
     // } else if (!checkForError(index, type)) {
     //   warningMessageHandle('ERROR_WARNING')
     // } else {
-    //   console.log('Move to Copy Costing')
+    //   
     //
 
     // }
@@ -857,7 +857,7 @@ function CostingDetails(props) {
     setStepTwo(false);
     setZBCPlantGrid([])
     nextToggle()
-    // console.log(partNu);
+    // 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
 

@@ -1479,7 +1479,7 @@ export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
 export const AcceptablePowerUOM = ['Power']
-export const AcceptableSheetMetalUOM = ['Kilogram', 'GRAMS', 'Milligram']
+export const AcceptableSheetMetalUOM = ['Kilogram', 'Gram', 'Milligram']
 
 
 export const CostingBulkUpload = [

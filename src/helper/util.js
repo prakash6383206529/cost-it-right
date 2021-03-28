@@ -565,7 +565,7 @@ export function formViewData(costingSummary) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
-  console.log(dataFromAPI, "DATA FROM API");
+
   obj.zbc = dataFromAPI.TypeOfCosting
   obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
   obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
@@ -676,7 +676,7 @@ export function formViewData(costingSummary) {
   obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
   obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
   obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
-  console.log('obj: ', obj)
+
   temp.push(obj)
   return temp
 }

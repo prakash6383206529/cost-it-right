@@ -14,7 +14,7 @@ function OpenWeightCalculator(props) {
   const { rmRowData, isEditFlag } = props
 
   const technology = props.technology;
-  console.log(technology, "TECH");
+
 
   /**
    * @method toggleDrawer

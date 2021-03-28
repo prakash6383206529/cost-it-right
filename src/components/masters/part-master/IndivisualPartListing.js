@@ -83,7 +83,7 @@ class IndivisualPartListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id);
             },
-            onCancel: () => console.log("CANCEL: clicked"),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.CONFIRM_DELETE}`, toastrConfirmOptions);
