@@ -28,7 +28,7 @@ function Pipe(props) {
 
   const defaultValues = {
 
-    //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
+    //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== undefined ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId } : '',
     OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
     Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? WeightCalculatorRequest.Thickness : '',
     InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== undefined ? WeightCalculatorRequest.InnerDiameter : '',
@@ -55,14 +55,7 @@ function Pipe(props) {
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
-  const [UOMDimension, setUOMDimension] = useState(
-    WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId
-      ? {
-        label: WeightCalculatorRequest.UOMForDimension,
-        value: WeightCalculatorRequest.UOMForDimensionId,
-      }
-      : [],
-  )
+  const [UOMDimension, setUOMDimension] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId } : [])
 
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({})
@@ -274,6 +267,7 @@ function Pipe(props) {
     updatedValue.GrossWeight = WeightofPart
     setDataToSend(updatedValue)
     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
+    handleUnit(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G)
   }
 
   /**
@@ -286,6 +280,7 @@ function Pipe(props) {
     updatedValue.FinishWeight = FinishWeight
     setDataToSend(updatedValue)
     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, localStorage.NoOfDecimalForInputOutput))
+    handleUnit(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G)
   }
 
   /**
@@ -867,7 +862,7 @@ function Pipe(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.FinishWeight}
-                    disabled={true}
+                    disabled={isEditFlag ? false : true}
                   />
                 </Col>
               </Row>
