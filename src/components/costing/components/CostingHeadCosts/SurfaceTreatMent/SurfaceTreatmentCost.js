@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
@@ -21,6 +22,8 @@ function SurfaceTreatmentCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     setTimeout(() => {
@@ -189,16 +192,17 @@ function SurfaceTreatmentCost(props) {
                     <th>{`Surface Area`}</th>
                     <th>{`UOM`}</th>
                     <th>{`Rate/UOM`}</th>
-                    <th>{`Labour Rate/UOM`}</th>
-                    <th>{`Labour Quantity`}</th>
+                    {initialConfiguration &&
+                      initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Rate/UOM`}</th>}
+                    {initialConfiguration &&
+                      initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                     <th>{`Cost`}</th>
                     <th>{`Action`}</th>
                   </tr>
                 </thead>
                 <tbody >
                   {
-                    gridData &&
-                    gridData.map((item, index) => {
+                    gridData && gridData.map((item, index) => {
                       return (
                         editIndex === index ?
                           <tr key={index}>
@@ -234,10 +238,15 @@ function SurfaceTreatmentCost(props) {
                             </td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
-                            <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
+                            <td>{
+                              initialConfiguration &&
+                                initialConfiguration.IsOperationLabourRateConfigure &&
+                                item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
                             <td style={{ width: 200 }}>
                               {
-                                item.IsLabourRateExist ?
+                                initialConfiguration &&
+                                  initialConfiguration.IsOperationLabourRateConfigure &&
+                                  item.IsLabourRateExist ?
                                   <TextFieldHookForm
                                     label=""
                                     name={`${OperationGridFields}[${index}]LabourQuantity`}
@@ -279,8 +288,14 @@ function SurfaceTreatmentCost(props) {
                             <td style={{ width: 200 }}>{item.SurfaceArea}</td>
                             <td>{item.UOM}</td>
                             <td>{item.RatePerUOM}</td>
-                            <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
-                            <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
+                            <td style={{ width: 200 }}>{
+                              initialConfiguration &&
+                                initialConfiguration.IsOperationLabourRateConfigure &&
+                                item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
+                            <td>{
+                              initialConfiguration &&
+                                initialConfiguration.IsOperationLabourRateConfigure &&
+                                item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
                             <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, 2) : 0}</td>
                             <td>
                               <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />

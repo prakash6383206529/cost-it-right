@@ -13,7 +13,7 @@ import { getPartSelectList } from '../actions/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -478,6 +478,8 @@ class AddBOPDomestic extends Component {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
+    const { initialConfiguration } = this.props;
+
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -534,7 +536,7 @@ class AddBOPDomestic extends Component {
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         Plant: plantArray,
-        VendorPlant: vendorPlantArray,
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
       }
       this.props.reset()
@@ -552,7 +554,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
     return (
@@ -765,7 +767,7 @@ class AddBOPDomestic extends Component {
                                                     </div>} */}
                             </div>
                           </Col>
-                          {this.state.IsVendor && (
+                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength100, getVendorCode, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512 } from "../../../helper/validation";
+import { required, getVendorCode, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512 } from "../../../helper/validation";
 import {
   renderText, renderMultiSelectField, searchableSelect, renderTextAreaField
 } from "../../layout/FormInputs";
@@ -417,6 +417,7 @@ class AddOperation extends Component {
   onSubmit = (values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
       UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId } = this.state;
+    const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
     let technologyArray = [];
@@ -472,11 +473,11 @@ class AddOperation extends Component {
         IsSurfaceTreatmentOperation: isSurfaceTreatment,
         //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,
         Rate: values.Rate,
-        LabourRatePerUOM: values.LabourRatePerUOM,
+        LabourRatePerUOM: initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure ? values.LabourRatePerUOM : '',
         Technology: technologyArray,
         Remark: remarks,
         Plant: !IsVendor ? plantArray : [],
-        VendorPlant: vendorPlants,
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlants : []) : [],
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
       }
@@ -495,7 +496,7 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
     return (
       <div className="container-fluid">
@@ -615,12 +616,7 @@ class AddOperation extends Component {
                             label="Plant"
                             name="Plant"
                             placeholder="Select"
-                            selection={
-                              this.state.selectedPlants == null ||
-                                this.state.selectedPlants.length === 0
-                                ? []
-                                : this.state.selectedPlants
-                            }
+                            selection={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
                             options={this.renderListing("plant")}
                             selectionChanged={this.handlePlants}
                             optionValue={(option) => option.Value}
@@ -642,20 +638,11 @@ class AddOperation extends Component {
                                 label="Vendor Name"
                                 component={searchableSelect}
                                 placeholder={"Select"}
-                                options={this.renderListing(
-                                  "VendorNameList"
-                                )}
+                                options={this.renderListing("VendorNameList")}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={
-                                  this.state.vendorName == null ||
-                                    this.state.vendorName.length === 0
-                                    ? [required]
-                                    : []
-                                }
+                                validate={this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                 required={true}
-                                handleChangeDescription={
-                                  this.handleVendorName
-                                }
+                                handleChangeDescription={this.handleVendorName}
                                 valueDescription={this.state.vendorName}
                                 disabled={isEditFlag ? true : false}
                               />
@@ -671,18 +658,13 @@ class AddOperation extends Component {
                           </div>
                         </Col>
                       )}
-                      {this.state.IsVendor && (
+                      {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                         <Col md="3">
                           <Field
                             label="Vendor Plant"
                             name="VendorPlant"
                             placeholder="Select"
-                            selection={
-                              this.state.selectedVendorPlants == null ||
-                                this.state.selectedVendorPlants.length === 0
-                                ? []
-                                : this.state.selectedVendorPlants
-                            }
+                            selection={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
                             options={this.renderListing("VendorPlant")}
                             selectionChanged={this.handleVendorPlant}
                             optionValue={(option) => option.Value}
@@ -705,12 +687,7 @@ class AddOperation extends Component {
                           placeholder={"Select"}
                           options={this.renderListing("UOM")}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
-                          validate={
-                            this.state.UOM == null ||
-                              this.state.UOM.length === 0
-                              ? [required]
-                              : []
-                          }
+                          validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
                           required={true}
                           handleChangeDescription={this.handleUOM}
                           valueDescription={this.state.UOM}
@@ -732,7 +709,7 @@ class AddOperation extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>
-                      <Col md="3">
+                      {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <Col md="3">
                         <Field
                           label={`Labour Rate/UOM`}
                           name={"LabourRatePerUOM"}
@@ -746,7 +723,7 @@ class AddOperation extends Component {
                           className=" "
                           customClassName=" withBorder"
                         />
-                      </Col>
+                      </Col>}
 
 
                     </Row>
@@ -772,21 +749,21 @@ class AddOperation extends Component {
                         </label>
                       </Col>
                       {/* {this.state.isSurfaceTreatment &&
-                                            <Col md='3'>
-                                                <Field
-                                                    label={`Surface Treatment Charges`}
-                                                    name={"SurfaceTreatmentCharges"}
-                                                    type="text"
-                                                    placeholder={'Enter'}
-                                                    validate={[required]}
-                                                    component={renderNumberInputField}
-                                                    //onChange={this.handleBasicRate}
-                                                    required={true}
-                                                    disabled={isEditFlag ? true : false}
-                                                    className=" "
-                                                    customClassName=" withBorder"
-                                                />
-                                            </Col>} */}
+                          <Col md='3'>
+                              <Field
+                                  label={`Surface Treatment Charges`}
+                                  name={"SurfaceTreatmentCharges"}
+                                  type="text"
+                                  placeholder={'Enter'}
+                                  validate={[required]}
+                                  component={renderNumberInputField}
+                                  //onChange={this.handleBasicRate}
+                                  required={true}
+                                  disabled={isEditFlag ? true : false}
+                                  className=" "
+                                  customClassName=" withBorder"
+                              />
+                          </Col>} */}
                     </Row>
 
                     <Row>

@@ -762,8 +762,10 @@ class AddRMDomestic extends Component {
    * @description Used to Submit the form
    */
   onSubmit = (values) => {
-    const {
-      IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName, VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, } = this.state
+    const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
+      VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, } = this.state
+    const { initialConfiguration } = this.props
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -786,8 +788,7 @@ class AddRMDomestic extends Component {
         IsVendor: IsVendor,
         HasDifferentSource: HasDifferentSource,
         Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-        SourceLocation:
-          !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
+        SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
@@ -814,8 +815,7 @@ class AddRMDomestic extends Component {
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
         Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-        SourceLocation:
-          !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
+        SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
@@ -824,11 +824,7 @@ class AddRMDomestic extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: checkVendorPlantConfigurable()
-          ? IsVendor
-            ? vendorPlantArray
-            : []
-          : [],
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
       }
@@ -847,7 +843,7 @@ class AddRMDomestic extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit } = this.props
+    const { handleSubmit, initialConfiguration } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state
 
     return (
@@ -1111,28 +1107,26 @@ class AddRMDomestic extends Component {
                               )}
                             </div>
                           </Col>
-                          {checkVendorPlantConfigurable() &&
-                            this.state.IsVendor && (
-                              <Col md="4">
-                                <Field
-                                  label="Vendor Plant"
-                                  name="DestinationSupplierPlantId"
-                                  placeholder={"Select"}
-                                  selection={
-                                    this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                  options={this.renderListing("VendorPlant")}
-                                  selectionChanged={this.handleVendorPlant}
-                                  validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                  required={true}
-                                  optionValue={(option) => option.Value}
-                                  optionLabel={(option) => option.Text}
-                                  component={renderMultiSelectField}
-                                  mendatory={true}
-                                  className="multiselect-with-border"
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </Col>
-                            )}
+                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
+                            <Col md="4">
+                              <Field
+                                label="Vendor Plant"
+                                name="DestinationSupplierPlantId"
+                                placeholder={"Select"}
+                                selection={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
+                                options={this.renderListing("VendorPlant")}
+                                selectionChanged={this.handleVendorPlant}
+                                validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
+                                required={true}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          )}
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
                               <>
@@ -1507,12 +1501,14 @@ class AddRMDomestic extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const { comman, material } = state
+  const { comman, material, auth } = state
   const fieldsObj = selector(state, 'BasicRate')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
     plantSelectList } = comman
+
+  const { initialConfiguration } = auth;
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, } = material
 
@@ -1532,7 +1528,8 @@ function mapStateToProps(state) {
     technologyList, categoryList, rawMaterialDetails, filterPlantListByCity,
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList
+    filterPlantList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList,
+    initialConfiguration
   }
 }
 
