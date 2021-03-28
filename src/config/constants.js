@@ -1408,7 +1408,6 @@ export const INR = "INR"
 export const G = "Gram"
 export const MG = "Milligram"
 
-
 // UOM TYPE ENUM
 export const MASS = 'Mass'
 export const VOLUMETYPE = 'Volume'
