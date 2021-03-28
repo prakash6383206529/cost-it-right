@@ -767,7 +767,7 @@ class AddBOPImport extends Component {
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
-                              mendatory={true}
+                              // mendatory={true}
                               className="multiselect-with-border"
                             //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                             />

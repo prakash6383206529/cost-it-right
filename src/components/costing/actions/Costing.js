@@ -608,7 +608,7 @@ export function getRMDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getRMDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request

@@ -1791,9 +1791,9 @@ class AddMoreDetails extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            //required={true}
+                            required={true}
                             disabled={isEditFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1801,7 +1801,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Description`}
+                            label={`Machine Specification`}
                             name={"Description"}
                             type="text"
                             placeholder={'Enter'}
@@ -1827,8 +1827,8 @@ class AddMoreDetails extends Component {
                                 placeholder={'--select--'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
-                                required={true}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
+                                //  required={true}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={isEditFlag ? true : false}
@@ -1926,13 +1926,12 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Machine Capacity / Tonnage`}
+                            label={`Machine Tonnage(Ton)`}
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, checkWhiteSpaces, postiveNumber, maxLength10]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
-                            required={true}
                             disabled={isEditFlag ? true : false}
                             className=" "
                             customClassName="withBorder"

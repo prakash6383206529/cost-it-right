@@ -192,7 +192,7 @@ class RMListing extends Component {
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="MaterialType" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}>Density (g/cm3)</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}> Density(g/cm^3)</TableHeaderColumn>
                             <TableHeaderColumn dataField="MaterialTypeId" searchable={false} dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>

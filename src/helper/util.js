@@ -690,3 +690,14 @@ export function getWeightFromDensity(density, innerDiameter, outerDiameter, heig
   const value = density * getVolume(innerDiameter, outerDiameter, height)
   return value
 }
+
+export const applySuperScripts = (cell) => {
+  if (cell && cell !== '') {
+    const capIndex = cell && cell.indexOf('^');
+    const superNumber = cell.substring(capIndex + 1, capIndex + 2);
+    const capWithNumber = cell.substring(capIndex, capIndex + 2);
+    return cell.replace(capWithNumber, superNumber.sup());
+  } else {
+    return '';
+  }
+}
