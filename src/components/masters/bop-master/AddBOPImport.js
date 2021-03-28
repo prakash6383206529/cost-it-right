@@ -509,6 +509,8 @@ class AddBOPImport extends Component {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
+    const { initialConfiguration } = this.props;
+
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -567,7 +569,7 @@ class AddBOPImport extends Component {
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         Plant: plantArray,
-        VendorPlant: vendorPlantArray,
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
       }
@@ -586,7 +588,7 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
     return (
@@ -800,7 +802,7 @@ class AddBOPImport extends Component {
                                                     </div> */}
                             </div>
                           </Col>
-                          {this.state.IsVendor && (
+                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"

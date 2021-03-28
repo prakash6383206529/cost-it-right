@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, trimTwoDecimalPlace, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, postiveNumber, maxLength20, checkPercentageValue } from "../../../helper/validation";
+import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, maxLength20, checkPercentageValue } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderText, } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
@@ -216,7 +216,7 @@ class AddPower extends Component {
    * @description USED TO CALCULATE TOTAL POWER CONTRIBUTION SHOULD NOT BE GREATER THAN 100%
    */
   powerContributionCalculation = () => {
-    const { powerGrid, isEditIndex, isEditSEBIndex, powerGridEditIndex, power } = this.state;
+    const { powerGrid, isEditIndex, isEditSEBIndex, powerGridEditIndex, } = this.state;
     const { fieldsObj } = this.props;
 
     //POWER CONTIRBUTION FIELDS
@@ -894,7 +894,7 @@ class AddPower extends Component {
   onSubmit = (values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, selectedVendorPlants } = this.state;
-
+    const { initialConfiguration } = this.props;
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
     })
@@ -922,7 +922,7 @@ class AddPower extends Component {
           VendorId: vendorName.value,
           VendorName: vendorName.label,
           VendorCode: VendorCode,
-          VendorPlants: vendorPlantArray,
+          VendorPlants: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
           IsVendor: IsVendor,
           IsActive: true,
@@ -980,7 +980,7 @@ class AddPower extends Component {
 
         const vendorPowerData = {
           VendorId: vendorName.value,
-          VendorPlants: vendorPlantArray,
+          VendorPlants: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
           NetPowerCostPerUnit: values.NetPowerCostPerUnit,
           IsVendor: IsVendor,
           LoggedInUserId: loggedInUserId(),
@@ -1110,7 +1110,7 @@ class AddPower extends Component {
                                 </div>}
                               </div>
                             </Col>
-                            <Col md="4">
+                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <Col md="4">
                               <Field
                                 label="Vendor Plant"
                                 name="VendorPlant"
@@ -1125,7 +1125,7 @@ class AddPower extends Component {
                                 className="multiselect-with-border"
                                 disabled={false}
                               />
-                            </Col>
+                            </Col>}
                             <Col md="4">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
@@ -1777,7 +1777,7 @@ function mapStateToProps(state) {
   const { vendorWithVendorCodeSelectList } = supplier;
   const { fuelComboSelectList, plantSelectList, powerData } = fuel;
   const { initialConfiguration } = auth;
-  // console.log(init);
+
   let initialValues = {};
   if (powerData && powerData.SEBChargesDetails && powerData.SEBChargesDetails.length > 0) {
     initialValues = {

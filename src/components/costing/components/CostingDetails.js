@@ -10,7 +10,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
-import { checkForNull, loggedInUserId, userDetails } from '../../../helper';
+import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
@@ -570,7 +570,7 @@ function CostingDetails(props) {
         PartType: partInfo.PartType,
         TechnologyId: technology.value,
         VendorId: tempData.VendorId,
-        VendorPlantId: tempData.VendorPlantId,
+        VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',
         VendorPlantName: tempData.VendorPlantName,
         VendorPlantCode: tempData.VendorPlantCode,
         VendorName: tempData.VendorName,
@@ -1211,8 +1211,8 @@ function CostingDetails(props) {
                                 <div className={"plus"}></div>ADD VENDOR
                               </button>
                             ) : (
-                                ""
-                              )}
+                              ""
+                            )}
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -24,6 +25,7 @@ function OperationCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const CostingViewMode = useContext(ViewCostingContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     const Params = {
@@ -200,8 +202,12 @@ function OperationCost(props) {
                     <th>{`UOM`}</th>
                     <th>{`Rate`}</th>
                     <th style={{ width: "220px" }} >{`Quantity`}</th>
-                    <th style={{ width: "220px" }}>{`Labour Rate`}</th>
-                    <th style={{ width: "220px" }}>{`Labour Quantity`}</th>
+                    {initialConfiguration &&
+                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      <th style={{ width: "220px" }}>{`Labour Rate`}</th>}
+                    {initialConfiguration &&
+                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      <th style={{ width: "220px" }}>{`Labour Quantity`}</th>}
                     <th style={{ width: "220px" }}>{`Net Cost`}</th>
                     <th style={{ width: "145px" }}>{`Action`}</th>
                   </tr>
@@ -246,10 +252,16 @@ function OperationCost(props) {
                                 />
                               }
                             </td>
-                            <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
+                            <td>{
+                              initialConfiguration &&
+                                initialConfiguration.IsOperationLabourRateConfigure &&
+                                item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'
+                            }</td>
                             <td style={{ width: 200 }}>
                               {
-                                item.IsLabourRateExist ?
+                                initialConfiguration &&
+                                  initialConfiguration.IsOperationLabourRateConfigure &&
+                                  item.IsLabourRateExist ?
                                   <TextFieldHookForm
                                     label=""
                                     name={`${OperationGridFields}[${index}]LabourQuantity`}
@@ -292,8 +304,16 @@ function OperationCost(props) {
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
                             <td style={{ width: 200 }}>{item.Quantity}</td>
-                            <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
-                            <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
+                            <td style={{ width: 200 }}>{
+                              initialConfiguration &&
+                                initialConfiguration.IsOperationLabourRateConfigure &&
+                                item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'
+                            }</td>
+                            <td>{
+                              initialConfiguration &&
+                                initialConfiguration.IsOperationLabourRateConfigure &&
+                                item.IsLabourRateExist ? item.LabourQuantity : '-'
+                            }</td>
                             <td>{netCost(item)}</td>
                             <td>
                               {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}

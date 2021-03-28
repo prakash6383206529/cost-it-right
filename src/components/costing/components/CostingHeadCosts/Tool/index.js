@@ -112,7 +112,7 @@ function Tool(props) {
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(getValues('Life'))
 
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2))
 
       // const OverAllApplicability = {
       //   ToolMaintenanceCost: checkForNull(event.target.value),
@@ -131,7 +131,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
@@ -163,7 +163,7 @@ function Tool(props) {
       const ToolCost = checkForNull(event.target.value);
       const Life = checkForNull(getValues('Life'))
 
-      setValue('NetToolCost', checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2))
 
       // const OverAllApplicability = {
       //   ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
@@ -182,7 +182,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
@@ -207,7 +207,7 @@ function Tool(props) {
       const ToolMaintenanceCost = checkForNull(getValues('ToolMaintenanceCost'))
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(event.target.value)
-      setValue('NetToolCost', checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2))
 
       // const OverAllApplicability = {
       //   ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
@@ -226,7 +226,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + (ToolCost / Life)), 2),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
