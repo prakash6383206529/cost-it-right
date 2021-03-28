@@ -66,6 +66,7 @@ function AddToComparisonDrawer(props) {
 
   /* For getting part no for costing dropdown */
   const partNo = useSelector((state) => state.costing.partNo)
+  console.log(partNo, "Part No");
 
   /* For getting default value of check box */
   useEffect(() => {
@@ -138,8 +139,6 @@ function AddToComparisonDrawer(props) {
     setValue('comparisonValue', value)
     if (value === 'ZBC') {
       dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => {
-        // dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => { }))
-
         if (plantId !== undefined && plantId !== '-') {
           dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
         }
@@ -199,6 +198,7 @@ function AddToComparisonDrawer(props) {
     setVendorPlant(values.vendorPlant)
     setCbcValue(values.clientName)
     setCostingDropdown([])
+
     setValue('costings', '')
     let temp = []
     temp = viewCostingData
@@ -287,6 +287,7 @@ function AddToComparisonDrawer(props) {
             currencyValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.CurrencyExchangeRate ? dataFromAPI.CostingPartDetails.OtherCostDetails.CurrencyExchangeRate : '-',
           }
           obj.nPOPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceINR !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceINR : 0
+          obj.effectiveDate = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.EffectiveDate !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.EffectiveDate : ''
           // // // obj.attachment = "Attachment";
           obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : ''
           obj.approvalButton = ''

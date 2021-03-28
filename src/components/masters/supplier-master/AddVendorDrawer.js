@@ -473,7 +473,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, alphaNumeric, maxLength80, checkWhiteSpaces]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -552,8 +552,8 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
-                                            required={true}
+                                            validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                            // required={true}
                                             maxLength={12}
                                             customClassName={'withBorder'}
                                         />
@@ -636,9 +636,9 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
-                                            required={true}
+                                            //  required={true}
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"

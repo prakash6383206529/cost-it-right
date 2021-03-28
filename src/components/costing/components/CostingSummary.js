@@ -44,7 +44,17 @@ function CostingSummary(props) {
   console.log(costingData, "CDDDD");
 
   useEffect(() => {
-    console.log("ACTIVE Tab");
+    console.log('ACTIVE Tab summary');
+    if (Object.keys(costingData).length > 0) {
+      dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
+        if (res.data.Data) {
+          let dataFromAPI = res.data.Data
+          const tempObj = formViewData(dataFromAPI)
+          dispatch(setCostingViewData(tempObj))
+        }
+      },
+      ))
+    }
   }, [props.activeTab])
 
   useEffect(() => {

@@ -342,7 +342,6 @@ const CostingSummaryTable = (props) => {
   const closeShowApproval = (e = '', type) => {
     setShowApproval(false)
     if (type === 'Submit') {
-
       dispatch(storePartNumber(''))
       props.resetData()
     }
@@ -400,14 +399,15 @@ const CostingSummaryTable = (props) => {
           // obj.oldPrice = viewCostingData[index].oldPrice;
           obj.oldPrice = viewCostingData[index].oldPoPrice
           obj.revisedPrice = viewCostingData[index].nPOPrice
-          obj.variance = parseInt(viewCostingData[index].nPOPrice) - parseInt(viewCostingData[index].oldPoPrice)
+          obj.variance = Number(viewCostingData[index].nPOPrice && viewCostingData[index].nPOPrice !== '-' ? viewCostingData[index].nPOPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
           obj.consumptionQty = ''
           obj.remainingQty = ''
           obj.annualImpact = ''
           obj.yearImpact = ''
           obj.reason = ''
           obj.ecnNo = ''
-          obj.effectiveDate = ''
+          obj.effectiveDate = viewCostingData[index].effectiveDate
+          console.log(obj, "Obj");
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))

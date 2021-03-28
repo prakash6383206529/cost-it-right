@@ -13,6 +13,7 @@ import { setCostingApprovalData, setCostingViewData, storePartNumber, } from '..
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 import 'react-datepicker/dist/react-datepicker.css'
 import { checkForNull } from '../../../../helper'
+import moment from 'moment'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -399,7 +400,7 @@ const SendForApproval = (props) => {
                                   name="EffectiveDate"
                                   selected={
                                     data.effectiveDate != ""
-                                      ? data.effectiveDate
+                                      ? moment(data.effectiveDate)._isValid ? moment(data.effectiveDate)._d : ''
                                       : ""
                                   }
                                   onChange={(date) => {

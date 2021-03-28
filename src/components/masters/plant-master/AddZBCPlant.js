@@ -327,9 +327,9 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                           component={renderText}
-                          required={true}
+                          //  required={true}
                           maxLength={10}
                           className=""
                           customClassName={"withBorder"}
@@ -341,9 +341,9 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[required, postiveNumber, maxLength3, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
                           component={renderText}
-                          required={true}
+                          // required={true}
                           maxLength={3}
                           className=""
                           customClassName={"withBorder"}
@@ -357,9 +357,9 @@ class AddZBCPlant extends Component {
                       name={"AddressLine1"}
                       type="text"
                       placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
-                      required={true}
+                      // required={true}
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}

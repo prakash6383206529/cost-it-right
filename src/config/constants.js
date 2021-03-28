@@ -1408,7 +1408,7 @@ export const Percentage = 2;
 export const FullTruckLoad = 3;
 export const PartTruckLoad = 4;
 export const INR = "INR"
-export const G = "GRAMS"
+export const G = "Gram"
 export const MG = "Milligram"
 
 // UOM TYPE ENUM

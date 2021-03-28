@@ -83,6 +83,7 @@ class PermissionsTabIndex extends Component {
     * @description get updated tabs data after update success
     */
     updateTabs = (Data) => {
+        console.log(Data, "UPDATE TAb");
         let dashboardObj = Data && Data.filter(el => el.ModuleName === DASHBOARD_AND_AUDIT)
         let masterObj = Data && Data.filter(el => el.ModuleName === MASTERS)
         let additionalMasterObj = Data && Data.filter(el => el.ModuleName === ADDITIONAL_MASTERS)
@@ -91,19 +92,20 @@ class PermissionsTabIndex extends Component {
         let reportAnalyticsObj = Data && Data.filter(el => el.ModuleName === REPORTS_AND_ANALYTICS)
         let usersObj = Data && Data.filter(el => el.ModuleName === USERS)
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
-
+        console.log(simulationObj, "UPDATE TAb 2", reportAnalyticsObj, dashboardObj);
         this.setState({
             actionData: Data,
             isLoader: false,
-            dashoard: dashboardObj && dashboardObj !== undefined ? dashboardObj[0].Pages : [],
-            masters: masterObj && masterObj !== undefined ? masterObj[0].Pages : [],
-            additionalMasters: additionalMasterObj && additionalMasterObj !== undefined ? additionalMasterObj[0].Pages : [],
-            costing: costingObj && costingObj !== undefined ? costingObj[0].Pages : [],
-            simulation: simulationObj && simulationObj !== undefined ? simulationObj[0].Pages : [],
-            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj !== undefined ? reportAnalyticsObj[0].Pages : [],
-            user: usersObj && usersObj !== undefined ? usersObj[0].Pages : [],
-            audit: auditObj && auditObj !== undefined ? auditObj[0].Pages : [],
+            dashoard: dashboardObj && dashboardObj.length > 0 ? dashboardObj[0].Pages : [],
+            masters: masterObj && masterObj.length > 0 ? masterObj[0].Pages : [],
+            additionalMasters: additionalMasterObj && additionalMasterObj.length > 0 ? additionalMasterObj[0].Pages : [],
+            costing: costingObj && costingObj.length > 0 ? costingObj[0].Pages : [],
+            simulation: simulationObj && simulationObj.length > 0 ? simulationObj[0].Pages : [],
+            reportAnalytics: reportAnalyticsObj && reportAnalyticsObj.length > 0 ? reportAnalyticsObj[0].Pages : [],
+            user: usersObj && usersObj.length > 0 ? usersObj[0].Pages : [],
+            audit: auditObj && auditObj.length > 0 ? auditObj[0].Pages : [],
         }, () => {
+
             this.permissionHandler(this.state.dashoard, DASHBOARD_AND_AUDIT)
             this.permissionHandler(this.state.masters, MASTERS)
             this.permissionHandler(this.state.additionalMasters, ADDITIONAL_MASTERS)
@@ -133,7 +135,7 @@ class PermissionsTabIndex extends Component {
 
     render() {
         const { isLoader, } = this.state;
-
+        console.log(this.state.simulation, "SIMUL");
         return (
             <div>
                 {isLoader && <Loader />}
@@ -143,46 +145,70 @@ class PermissionsTabIndex extends Component {
                             <div className="shadow-lgg login-formg ">
 
                                 <Nav tabs className="subtabs">
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                            Dashboard
+                                    {
+                                        this.state.dashoard.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
+                                                Dashboard
               								</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                            Masters
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.masters.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
+                                                Masters
               								</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                            Additional Masters
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.additionalMasters.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                                                Additional Masters
               								</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
-                                            Costing
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.costing.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
+                                                Costing
               								</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
-                                            Simulation
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.simulation.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
+                                                Simulation
               								</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
-                                            Reports
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.reportAnalytics.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '6' })} onClick={() => { this.toggle('6'); }}>
+                                                Reports
               								</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
-                                            Users
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.user.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '7' })} onClick={() => { this.toggle('7'); }}>
+                                                Users
               								</NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
-                                            Audit
+                                        </NavItem>
+                                    }
+                                    {
+                                        this.state.audit.length > 0 &&
+                                        <NavItem>
+                                            <NavLink className={classnames({ active: this.state.activeTab === '8' })} onClick={() => { this.toggle('8'); }}>
+                                                Audit
               								</NavLink>
-                                    </NavItem>
+                                        </NavItem>
+                                    }
                                 </Nav>
                                 <TabContent activeTab={this.state.activeTab}>
 
