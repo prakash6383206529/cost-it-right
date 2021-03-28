@@ -751,7 +751,7 @@ export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getProcessDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getProcessDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
@@ -779,7 +779,7 @@ export function getProcessDrawerDataList(data, callback) {
 export function getProcessDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getProcessDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getProcessDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({

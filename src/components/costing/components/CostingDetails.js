@@ -922,6 +922,7 @@ function CostingDetails(props) {
                           defaultValue={part.length !== 0 ? part : ""}
                           options={renderListing("PartList")}
                           mandatory={true}
+                          isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
                         />

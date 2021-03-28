@@ -78,8 +78,9 @@ export const TextFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register } = field;
+    isClearable, control, errors, register, isLoading } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
+  let isLoader = (isLoading && isLoading === true) ? true : false;
 
   return (
     <div className="w-100 mb-15 form-group-searchable-select">
@@ -108,7 +109,7 @@ export const SearchableSelectHookForm = (field) => {
               onBlur={onBlur}
               //selected={value}
               value={value}
-            //isLoading={true}
+              isLoading={isLoader}
             />
           )
         }}
