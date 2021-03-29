@@ -11,6 +11,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { applySuperScripts } from '../../../helper';
 
 class RMListing extends Component {
     constructor(props) {
@@ -140,6 +141,17 @@ class RMListing extends Component {
         )
     }
 
+    renderDensity = (cell, row, enumObject, rowIndex) => {
+
+        // return (<>{`Density(g/cm${applySuperScripts(('^3'))})`}</>)
+        // console.log(applySuperScripts('^3'), "llllllllllllllll")
+        // return <>Density(g/cm)       </>
+        // return <>Vendor <br />Location </>
+        return (<>
+            Density(g/cm<sup>3</sup>)
+        </>)
+    }
+
     /**
     * @method render
     * @description Renders the component
@@ -192,7 +204,7 @@ class RMListing extends Component {
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="MaterialType" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}> Density(g/cm^3)</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}>{this.renderDensity()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MaterialTypeId" searchable={false} dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
