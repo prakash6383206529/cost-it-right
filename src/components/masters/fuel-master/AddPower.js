@@ -1247,7 +1247,7 @@ class AddPower extends Component {
                                     name={"MinMonthlyCharge"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={isCostPerUnitConfigurable ? [] : [required]}
+                                    validate={isCostPerUnitConfigurable ? [] : []}
                                     component={renderNumberInputField}
                                     required={!isCostPerUnitConfigurable ? true : false}
                                     className=""
@@ -1283,9 +1283,9 @@ class AddPower extends Component {
                                     name={"UnitConsumptionPerAnnum"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required]}
+                                    validate={[]}
                                     component={renderNumberInputField}
-                                    required={true}
+                                    required={false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}
@@ -1337,9 +1337,8 @@ class AddPower extends Component {
                                     name={"MeterRentAndOtherChargesPerAnnum"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                    validate={[positiveAndDecimalNumber, maxLength10]}
                                     component={renderText}
-                                    required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity ? true : false}
@@ -1355,9 +1354,8 @@ class AddPower extends Component {
                                     name={"DutyChargesAndFCA"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                    validate={[positiveAndDecimalNumber, maxLength10]}
                                     component={renderNumberInputField}
-                                    required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={isEditFlagForStateElectricity ? true : false}
@@ -1373,9 +1371,9 @@ class AddPower extends Component {
                                     name={"TotalUnitCharges"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
+                                    validate={[positiveAndDecimalNumber, maxLength10]}
                                     component={renderNumberInputField}
-                                    required={true}
+                                    required={false}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}
@@ -1603,9 +1601,7 @@ class AddPower extends Component {
                                     name={"SelfGeneratedCostPerUnit"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    //validate={[required]}
                                     component={renderNumberInputField}
-                                    //required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={true}
@@ -1621,9 +1617,9 @@ class AddPower extends Component {
                                     name={"SelfPowerContribution"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[positiveAndDecimalNumber, maxLength10]}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
                                     component={renderText}
-                                    //required={true}
+                                    required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={false}

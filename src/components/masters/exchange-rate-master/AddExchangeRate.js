@@ -272,9 +272,8 @@ class AddExchangeRate extends Component {
                           name={"BankRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          required={true}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"
@@ -286,9 +285,8 @@ class AddExchangeRate extends Component {
                           name={"BankCommissionPercentage"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          required={true}
                           max={100}
                           disabled={false}
                           className=" "
@@ -302,9 +300,8 @@ class AddExchangeRate extends Component {
                           name={"CustomRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          required={true}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"

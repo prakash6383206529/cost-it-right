@@ -279,13 +279,13 @@ class AddClientDrawer extends Component {
                                     </Col>
                                     <Col md="6">
                                         <Field
-                                            label={`Client Name`}
+                                            label={`Contact Name`}
                                             name={"ClientName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
                                             component={renderText}
-                                            required={true}
+                                            required={false}
                                             className=""
                                             customClassName={'withBorder'}
                                         />

@@ -28,6 +28,7 @@ function AddRM(props) {
     if (costData.VendorType === ZBC) {
 
       const data = {
+        TechnologyId: costData.TechnologyId,
         PlantId: costData.PlantId,
         TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,

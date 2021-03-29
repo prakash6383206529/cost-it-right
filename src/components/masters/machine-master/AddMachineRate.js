@@ -1052,7 +1052,7 @@ class AddMachineRate extends Component {
 
                         <Col md="3">
                           <Field
-                            label={`Description`}
+                            label={`Machine Specification`}
                             name={"Description"}
                             type="text"
                             placeholder={'Enter'}
@@ -1071,9 +1071,9 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            // required={true}
+                            required={true}
                             disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1090,8 +1090,8 @@ class AddMachineRate extends Component {
                                 placeholder={'Select'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
-                                required={true}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
+                                required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
@@ -1106,13 +1106,13 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Machine Capacity / Tonnage`}
+                            label={`Machine Tonnage(Ton)`}
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, checkWhiteSpaces, postiveNumber, maxLength10]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"

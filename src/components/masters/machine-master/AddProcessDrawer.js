@@ -170,7 +170,7 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        Plants: plantArray,
+        Plants: plantArray.length > 0 ? plantArray : [],
         Machines: isMachineShow ? machineArray : [],
         LoggedInUserId: loggedInUserId(),
       }
@@ -237,7 +237,7 @@ class AddProcessDrawer extends Component {
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
-                  <Col md="12">
+                  {/* <Col md="12">
                     <Field
                       label="Plant"
                       name="Plant"
@@ -254,7 +254,7 @@ class AddProcessDrawer extends Component {
                       className="multiselect-with-border"
                       disabled={false}
                     />
-                  </Col>
+                  </Col> */}
                   {/* {isMachineShow && (
                     <Col md="12">
                       <Field
