@@ -37,6 +37,7 @@ function AddOperation(props) {
     if (costData.VendorType === ZBC) {
       const data = {
         PlantId: costData.PlantId,
+        TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
       }
       dispatch(getOperationDrawerDataList(data, (res) => {
@@ -54,6 +55,7 @@ function AddOperation(props) {
 
       const data = {
         VendorId: costData.VendorId,
+        TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId,
         CostingId: costData.CostingId,
       }
