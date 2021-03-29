@@ -77,7 +77,8 @@ function CostingSummary(props) {
 
         setValue('Technology', costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
         setTechnology(costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
-        setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartName, value: costingData.PartId } : [])
+        setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
+        setPart(costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setDisabled(true)
         dispatch(getPartSelectListByTechnology(costingData.TechnologyId, () => { }))
         dispatch(getPartInfo(costingData.PartId, (res) => {
@@ -95,7 +96,7 @@ function CostingSummary(props) {
           newValue.technologyId = costingData.TechnologyId
           newValue.technologyName = costingData.TechnologyName
           newValue.partName = Data.PartName
-          newValue.partNumber = costingData.PartName
+          newValue.partNumber = costingData.PartNumber
           newValue.partId = costingData.PartId
 
           dispatch(storePartNumber(newValue))
@@ -316,8 +317,10 @@ function CostingSummary(props) {
   const resetData = () => {
     reset()
     setTechnology([])
+    setPart([])
     setTimeout(() => {
       getValues('Technology', [])
+      getValues('Part', [])
     }, 200);
     setDisabled(false)
     dispatch(storePartNumber(''))
@@ -379,7 +382,7 @@ function CostingSummary(props) {
                           mandatory={true}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={disabled}
+                          disabled={technology.length === 0 ? true : part.length === 0 ? false : true}
                         />
                       </Col>
 

@@ -14,9 +14,10 @@ import {
 import { getUOMListByUnitType, getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
-import { G, KG, MG } from '../../../../../config/constants'
+import { G, KG, MG, UOM } from '../../../../../config/constants'
 import { set } from 'lodash'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
+import { data } from 'jquery'
 
 function Pipe(props) {
 
@@ -28,20 +29,20 @@ function Pipe(props) {
 
   const defaultValues = {
 
-    //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== undefined ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId } : '',
-    OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
-    Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? WeightCalculatorRequest.Thickness : '',
-    InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== undefined ? WeightCalculatorRequest.InnerDiameter : '',
-    SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== undefined ? WeightCalculatorRequest.LengthOfSheet : '',
-    PartLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfPart !== undefined ? WeightCalculatorRequest.LengthOfPart : '',
-    NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== undefined ? WeightCalculatorRequest.NumberOfPartsPerSheet : '',
-    ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfScrap !== undefined ? WeightCalculatorRequest.LengthOfScrap : '',
-    WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== undefined ? WeightCalculatorRequest.WeightOfSheetInUOM : '',
-    WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfPartInUOM !== undefined ? WeightCalculatorRequest.WeightOfPartInUOM : '',
-    WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfScrapInUOM !== undefined ? WeightCalculatorRequest.WeightOfScrapInUOM : '',
-    NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== undefined ? WeightCalculatorRequest.NetSurfaceArea : '',
-    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
-    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
+    //UOMDimension: WeightCalculatorRequest && WeightCalculatorRequest.UOMDimension !== undefined ? WeightCalculatorRequest.UOMDimension : '',
+    OuterDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== null ? WeightCalculatorRequest.OuterDiameter : '',
+    Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
+    InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== null ? WeightCalculatorRequest.InnerDiameter : '',
+    SheetLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfSheet !== null ? WeightCalculatorRequest.LengthOfSheet : '',
+    PartLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfPart !== null ? WeightCalculatorRequest.LengthOfPart : '',
+    NumberOfPartsPerSheet: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfPartsPerSheet !== null ? WeightCalculatorRequest.NumberOfPartsPerSheet : '',
+    ScrapLength: WeightCalculatorRequest && WeightCalculatorRequest.LengthOfScrap !== null ? WeightCalculatorRequest.LengthOfScrap : '',
+    WeightofSheet: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfSheetInUOM !== null ? WeightCalculatorRequest.WeightOfSheetInUOM : '',
+    WeightofPart: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfPartInUOM !== null ? WeightCalculatorRequest.WeightOfPartInUOM : '',
+    WeightofScrap: WeightCalculatorRequest && WeightCalculatorRequest.WeightOfScrapInUOM !== null ? WeightCalculatorRequest.WeightOfScrapInUOM : '',
+    NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? WeightCalculatorRequest.NetSurfaceArea : '',
+    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
   }
 
   const {
@@ -55,12 +56,19 @@ function Pipe(props) {
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
-  const [UOMDimension, setUOMDimension] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId } : [])
-
+  const [UOMDimension, setUOMDimension] = useState(
+    WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+      ? {
+        label: WeightCalculatorRequest.UOMForDimension,
+        value: WeightCalculatorRequest.UOMForDimensionId,
+      }
+      : [],
+  )
+  console.log(UOMDimension, "DIM");
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({})
   const [isChangeApplies, setIsChangeApplied] = useState(true)
-  const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G) //Need to change default value after getting it from API
+  const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
   const tempOldObj = WeightCalculatorRequest
 
 
@@ -77,12 +85,21 @@ function Pipe(props) {
     dispatch(getUOMListByUnitType(UnitTypeId, (res) => { }))
     dispatch(getUOMSelectList(res => {
       const Data = res.data.Data
-
       const kgObj = Data.find(el => el.Text === G)
-
       setTimeout(() => {
-        setValue('UOMDimension', { label: kgObj.Text, value: kgObj.Value })
-        setUOMDimension({ label: kgObj.Text, value: kgObj.Value })
+        setValue('UOMDimension', WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+          ? {
+            label: WeightCalculatorRequest.UOMForDimension,
+            value: WeightCalculatorRequest.UOMForDimensionId,
+          }
+          : { label: kgObj.Text, value: kgObj.Value })
+        setUOMDimension(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+          ? {
+            label: WeightCalculatorRequest.UOMForDimension,
+            value: WeightCalculatorRequest.UOMForDimensionId,
+          }
+          : { label: kgObj.Text, value: kgObj.Value })
+        // setUnit()
       }, 100);
 
     }))
@@ -95,6 +112,8 @@ function Pipe(props) {
   const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
 
   useEffect(() => {
+    console.log(dataToSend, "Coming here ", WeightCalculatorRequest);
+    // if (WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight === null && dataToSend.changes === '') {
     calculateInnerDiameter()
     calculateNumberOfPartPerSheet()
     calculateLengthofScrap()
@@ -104,7 +123,15 @@ function Pipe(props) {
     calculateNetSurfaceArea()
     setGrossWeight()
     setFinishWeight()
+    // }
+    //setDataToSend({ ...dataToSend, changes: '' })
+    // handleUnit(UOMDimension)
   }, [fieldValues])
+
+  // useEffect(() => {
+  //   console.log("HOW MANY TIMES");
+  //   handleUnit(UOMDimension)
+  // }, [dataToSend.FinishWeight])
 
   useEffect(() => {
     if (isOneSide) {
@@ -262,12 +289,14 @@ function Pipe(props) {
    * @description SET GROSS WEIGHT
    */
   const setGrossWeight = () => {
+    //   if (WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight === null && dataToSend.changes === '') {
     const WeightofPart = dataToSend.WeightofPart
     const updatedValue = dataToSend
     updatedValue.GrossWeight = WeightofPart
     setDataToSend(updatedValue)
     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
-    handleUnit(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G)
+    // }
+    // handleUnit(UOMDimension)
   }
 
   /**
@@ -275,12 +304,14 @@ function Pipe(props) {
    * @description SET FINISH WEIGHT
    */
   const setFinishWeight = () => {
+    //if (WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight === null && dataToSend.changes === '') {
     const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofPart / dataToSend.NumberOfPartsPerSheet))
     const updatedValue = dataToSend
     updatedValue.FinishWeight = FinishWeight
     setDataToSend(updatedValue)
     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, localStorage.NoOfDecimalForInputOutput))
-    handleUnit(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension : G)
+
+    //handleUnit(UOMDimension)
   }
 
   /**
@@ -336,8 +367,8 @@ function Pipe(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
-
-
+    console.log(tempOldObj, "temp");
+    console.log('values >>>', values)
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
       if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
         setIsChangeApplied(true)
@@ -387,9 +418,9 @@ function Pipe(props) {
       FinishWeight: (dataToSend.newFinishWeight === undefined || dataToSend.newFinishWeight === 0) ? dataToSend.FinishWeight : dataToSend.newFinishWeight,
       LoggedInUserId: loggedInUserId()
     }
-
+    console.log(data, "Data");
     dispatch(saveRawMaterialCalciData(data, res => {
-
+      console.log(res, "RES");
       if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
         toastr.success("Calculation saved successfully")
@@ -403,47 +434,46 @@ function Pipe(props) {
     setUOMDimension(value)
     let grossWeight = dataToSend.GrossWeight
     let finishWeight = dataToSend.FinishWeight
-    // 
+    // console.log(grossWeight, "Before conversion", finishWeight);
     setUnit(value.label)
-    // 
+    // console.log(value.label, "unit");
     switch (value.label) {
       case KG:
         grossWeight = grossWeight / 1000
         finishWeight = finishWeight / 1000
-
+        console.log(grossWeight, "GW inside Kg", finishWeight);
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
-
-          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('GrossWeight', grossWeight)
+          setValue('FinishWeight', finishWeight)
         }, 100);
         break;
       case G:
         grossWeight = grossWeight
         finishWeight = finishWeight
-
+        console.log(grossWeight, "GW inside G", finishWeight);
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
-          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('GrossWeight', grossWeight)
+          setValue('FinishWeight', finishWeight)
         }, 100);
         break;
       case MG:
         grossWeight = grossWeight * 1000
         finishWeight = finishWeight * 1000
-
+        console.log(grossWeight, "GW inside MG", finishWeight);
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
         setTimeout(() => {
 
-          setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-          setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+          setValue('GrossWeight', grossWeight)
+          setValue('FinishWeight', finishWeight)
         }, 100);
         break;
       default:
         break;
     }
-
+    console.log(grossWeight, "GW outside", finishWeight);
 
 
   }
@@ -758,7 +788,7 @@ function Pipe(props) {
                       onChange={onSideToggle}
                       checked={isOneSide}
                       id="normal-switch"
-                      disabled={isEditFlag ? false : true}
+                      disabled={false}
                       background="#4DC771"
                       onColor="#4DC771"
                       onHandleColor="#ffffff"
@@ -819,7 +849,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="4">
                   <TextFieldHookForm
-                    label={`Gross Weight(${unit})`}
+                    label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
                     Controller={Controller}
                     control={control}
@@ -843,7 +873,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="4">
                   <TextFieldHookForm
-                    label={`Finish Weight(${unit})`}
+                    label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeight'}
                     Controller={Controller}
                     control={control}
@@ -867,23 +897,21 @@ function Pipe(props) {
                 </Col>
               </Row>
             </div>
-            {
-              isEditFlag &&
-              <div className="col-sm-12 text-right px-0 mt-4">
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button>
-                <button
-                  type={'submit'}
-                  className="submit-button save-btn">
-                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'Save'}
-                </button>
-              </div>
-            }
+
+            <div className="col-sm-12 text-right px-0 mt-4">
+              <button
+                type={'button'}
+                className="reset mr15 cancel-btn"
+                onClick={cancel} >
+                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+              </button>
+              <button
+                type={'submit'}
+                className="submit-button save-btn">
+                <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                {'Save'}
+              </button>
+            </div>
 
           </form>
         </div>

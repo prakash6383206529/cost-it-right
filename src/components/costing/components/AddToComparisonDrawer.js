@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { getPlantSelectListByType, getVendorWithVendorCodeSelectList, getPlantBySupplier, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
-import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, } from '../actions/Costing'
+import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
 import { ZBC, VBC, VIEW_COSTING_DATA } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
@@ -70,8 +70,8 @@ function AddToComparisonDrawer(props) {
 
   /* For getting default value of check box */
   useEffect(() => {
+    /******FIRST TIME RENDER ADD TO COMPARISION******/
     if (!isEditFlag) {
-
       const temp = []
       dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => {
         dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
@@ -82,9 +82,9 @@ function AddToComparisonDrawer(props) {
       }),
       )
     }
+    /******FIRST TIME RENDER EDIT TO COMPARISION******/
     if (isEditFlag) {
-      if (typeOfCosting === 0) {
-
+      if (typeOfCosting === 0) { //ZBC COSTING CONDITION
         setTimeout(() => {
           setIsZbcSelected(true)
           setIsVbcSelected(false)
@@ -93,14 +93,14 @@ function AddToComparisonDrawer(props) {
         dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => { }))
         dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
         dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
-      } else if (typeOfCosting === 1) {
+      } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
         setIsZbcSelected(false)
         setIsVbcSelected(true)
         setisCbcSelected(false)
         dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
         dispatch(getPlantBySupplier(VendorId, (res) => { }))
         dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, () => { }))
-      } else if (typeOfCosting === 2) {
+      } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
         setIsZbcSelected(false)
         setIsVbcSelected(false)
         setisCbcSelected(true)
@@ -179,6 +179,11 @@ function AddToComparisonDrawer(props) {
     setVendorId(value)
     if (loggedIn) {
       dispatch(getPlantBySupplier(value, (res) => { }),
+        dispatch(
+          getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, value, '00000000-0000-0000-0000-000000000000', (res) => {
+            setValue('costings', '')
+          }),
+        )
       )
     } else {
       handleVendorNameChange('')
@@ -199,14 +204,14 @@ function AddToComparisonDrawer(props) {
     setCbcValue(values.clientName)
     setCostingDropdown([])
 
+
+    partNo.isChanged = true
+    console.log(partNo, "part after updation");
+    dispatch(storePartNumber(partNo))
+
     setValue('costings', '')
     let temp = []
     temp = viewCostingData
-    // if (viewCostingData.length == 0) {
-    //   temp.push(VIEW_COSTING_DATA)
-    // }
-    // else if (viewCostingData.length >= 1) {
-    // }
     dispatch(
       // getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', (res) => {
       getSingleCostingDetails(values.costings.value, (res) => {
@@ -365,6 +370,11 @@ function AddToComparisonDrawer(props) {
     )
   }
 
+  /**
+   * @method handleVendorNameChange
+   * @description GETTING COSTING ON BASIS OF VENDOR NAME AND VENDOR PLANT
+  */
+
   const handleVendorNameChange = ({ value }) => {
     const temp = []
     if (value === '') {
@@ -379,6 +389,10 @@ function AddToComparisonDrawer(props) {
     )
   }
 
+  /**
+   * @method renderListing
+   * @description FOR SHOWING DROPDOWN MENU
+  */
   const renderListing = (label) => {
     const temp = []
     if (label === 'plant') {
@@ -468,10 +482,10 @@ function AddToComparisonDrawer(props) {
                       label: "VBC",
                       optionsValue: "VBC",
                     },
-                    {
-                      label: "CBC",
-                      optionsValue: "CBC",
-                    },
+                    // {
+                    //   label: "CBC",
+                    //   optionsValue: "CBC",
+                    // },
                   ]}
                 />
               </Row>
@@ -532,7 +546,7 @@ function AddToComparisonDrawer(props) {
                     )}
                   </>
                 )}
-                {isCbcSelected && (
+                {/* {isCbcSelected && (
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
@@ -551,7 +565,7 @@ function AddToComparisonDrawer(props) {
                       />
                     </Col>
                   </>
-                )}
+                )} */}
                 <Col md="12">
                   <SearchableSelectHookForm
                     label={"Costing Version"}
