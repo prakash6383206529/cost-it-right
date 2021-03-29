@@ -925,6 +925,7 @@ function CostingDetails(props) {
                           isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
+                          disabled={technology.length === 0 ? true : false}
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1361,6 +1362,7 @@ function CostingDetails(props) {
                       backBtn={backToFirstStep}
                       partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
                       costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                      toggle={props.toggle}
                     />
                   </ViewCostingContext.Provider>
                 )}

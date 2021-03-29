@@ -1004,7 +1004,7 @@ function TabRMCC(props) {
 
                 {!CostingViewMode &&
                   <div className="col-sm-12 text-right bluefooter-butn">
-                    <button type={"button"} className="reset mr15 cancel-btn">
+                    <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
                       <div className={"cross-icon"}>
                         <img
                           src={require("../../../../assests/images/times.png")}

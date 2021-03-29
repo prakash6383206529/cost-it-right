@@ -136,9 +136,9 @@ function CostingHeaderTabs(props) {
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && activeTab !== '6') {
-      dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-        //dispatch(setComponentDiscountOtherItemData({}, () => { }))
-      }))
+      // dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      //   dispatch(setComponentDiscountOtherItemData({}, () => { }))
+      // }))
     }
 
   }, [activeTab])
@@ -223,6 +223,7 @@ function CostingHeaderTabs(props) {
               <TabRMCC
                 netPOPrice={netPOPrice}
                 setHeaderCost={props.setHeaderCost}
+                backBtn={props.backBtn}
                 activeTab={activeTab}
               />
             </TabPane>
@@ -261,6 +262,7 @@ function CostingHeaderTabs(props) {
                 activeTab={activeTab}
                 setHeaderCost={props.setHeaderDiscountTab}
                 DiscountTabData={props.DiscountTabData}
+                toggle={props.toggle}
               />
             </TabPane>
           </TabContent>

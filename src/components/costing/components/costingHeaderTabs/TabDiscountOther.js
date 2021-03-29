@@ -35,6 +35,7 @@ function TabDiscountOther(props) {
   const [initialFiles, setInitialFiles] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
+  const [GoToNext, setGoToNext] = useState(false);
 
   const dispatch = useDispatch()
 
@@ -362,6 +363,9 @@ function TabDiscountOther(props) {
     dispatch(saveDiscountOtherCostTab(data, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+        if (GoToNext) {
+          props.toggle('2')
+        }
       }
     }))
   }
@@ -689,9 +693,11 @@ function TabDiscountOther(props) {
 
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
+
                       {!CostingViewMode && <button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
+                        onClick={() => setGoToNext(false)}
                       >
                         <div className={"check-icon"}>
                           <img
@@ -701,6 +707,21 @@ function TabDiscountOther(props) {
                         </div>
                         {"Save"}
                       </button>}
+
+                      {!CostingViewMode && <button
+                        type="submit"
+                        className="submit-button save-btn"
+                        onClick={() => setGoToNext(true)}
+                      >
+                        {"Next"}
+                        <div className={"check-icon ml-1"}>
+                          <img
+                            src={require("../../../../assests/images/right-arrow-white.svg")}
+                            alt="check-icon.jpg"
+                          />{" "}
+                        </div>
+                      </button>}
+
                     </div>
                   </Row>
 

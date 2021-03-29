@@ -411,6 +411,8 @@ function CostingDetailStepTwo(props) {
                         headCostRMCCBOPData={RMCCBOPCost}
                         headCostSurfaceData={SurfaceCostData}
                         headCostOverheadProfitData={OverheadProfitCostData}
+                        backBtn={props.backBtn}
+                        toggle={props.toggle}
                       />
                     </netHeadCostContext.Provider>
                   </costingInfoContext.Provider>
