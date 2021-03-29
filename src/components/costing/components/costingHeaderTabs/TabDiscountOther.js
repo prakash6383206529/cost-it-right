@@ -23,7 +23,10 @@ import { ViewCostingContext } from '../CostingDetails';
 function TabDiscountOther(props) {
 
   const { DiscountTabData } = props;
-  const { register, handleSubmit, setValue, getValues, errors, control } = useForm();
+  const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
 
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
@@ -38,11 +41,6 @@ function TabDiscountOther(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
-
-  const fieldValues = useWatch({
-    control,
-    name: ['HundiOrDiscountPercentage'],
-  });
 
   useEffect(() => {
     if (props.activeTab !== '6') {
@@ -283,21 +281,6 @@ function TabDiscountOther(props) {
     }
   }
 
-  const renderImages = () => {
-    files && files.map(f => {
-      const withOutTild = f.FileURL.replace('~', '')
-      const fileURL = `${FILE_URL}${withOutTild}`;
-      return (
-        <div className={'attachment-wrapper images'}>
-          <img src={fileURL} alt={''} />
-          <button
-            type="button"
-            onClick={() => deleteFile(f.FileId)}>X</button>
-        </div>
-      )
-    })
-  }
-
   const deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
       let deleteData = {
@@ -425,7 +408,10 @@ function TabDiscountOther(props) {
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.'
                           },
-                          // maxLength: 4,
+                          max: {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
+                          },
                         }}
                         handleChange={(e) => {
                           e.preventDefault();

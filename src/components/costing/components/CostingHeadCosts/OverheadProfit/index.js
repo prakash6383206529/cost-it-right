@@ -126,6 +126,16 @@ function OverheadProfit(props) {
 
   /**
   * @method useEffect
+  * @description TO CHANGE OVERHEADS VALUE WHEN RM BOP CC VALUES CHANGES FROM RMCC TAB
+  */
+  useEffect(() => {
+    handleModelTypeChange(modelType)
+    setApplicability(applicability)
+    checkRejectionApplicability(applicability.label)
+  }, [headerCosts.NetTotalRMBOPCC])
+
+  /**
+  * @method useEffect
   * @description USED TO UPDATE WHEN MODEL TYPE CHANGE
   */
   useEffect(() => {
@@ -1194,6 +1204,10 @@ function OverheadProfit(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.'
                             },
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
@@ -1531,7 +1545,10 @@ function OverheadProfit(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.'
                             },
-                            // maxLength: 4,
+                            max: {
+                              value: 100,
+                              message: 'Percentage cannot be greater than 100'
+                            },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
@@ -1858,6 +1875,10 @@ function OverheadProfit(props) {
                       value: /^[0-9]\d*(\.\d+)?$/i,
                       message: 'Invalid Number.'
                     },
+                    max: {
+                      value: 100,
+                      message: 'Percentage cannot be greater than 100'
+                    },
                   }}
                   // handleChange={handleRejection}
                   handleChange={() => { }}
@@ -1957,6 +1978,17 @@ function OverheadProfit(props) {
                       control={control}
                       register={register}
                       mandatory={false}
+                      rules={{
+                        required: false,
+                        pattern: {
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.'
+                        },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
+                        },
+                      }}
                       // handleChange={handleICCDetail}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -2074,6 +2106,17 @@ function OverheadProfit(props) {
                       control={control}
                       register={register}
                       mandatory={false}
+                      rules={{
+                        required: false,
+                        pattern: {
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.'
+                        },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
+                        },
+                      }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""

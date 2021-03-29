@@ -36,6 +36,7 @@ function AddSurfaceTreatment(props) {
     if (costData.VendorType === ZBC) {
       const data = {
         PlantId: costData.PlantId,
+        TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
       }
       dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {
@@ -52,6 +53,7 @@ function AddSurfaceTreatment(props) {
 
       const data = {
         VendorId: costData.VendorId,
+        TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId,
         CostingId: costData.CostingId,
       }

@@ -608,7 +608,7 @@ export function getRMDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getRMDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
@@ -636,7 +636,7 @@ export function getRMDrawerDataList(data, callback) {
 export function getRMDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRMDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getRMDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -706,7 +706,7 @@ export function getOperationDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getOperationDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getOperationDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
@@ -730,7 +730,7 @@ export function getOperationDrawerDataList(data, callback) {
 export function getOperationDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOperationDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getOperationDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -935,7 +935,7 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
@@ -959,7 +959,7 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
 export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
