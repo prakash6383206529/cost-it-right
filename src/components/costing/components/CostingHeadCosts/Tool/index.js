@@ -113,7 +113,6 @@ function Tool(props) {
       const Life = checkForNull(getValues('Life'))
 
       setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
-      console.log('checkForDecimalAndNull: ', ToolCost, Life, ToolMaintenanceCost, checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2));
 
       // const OverAllApplicability = {
       //   ToolMaintenanceCost: checkForNull(event.target.value),
