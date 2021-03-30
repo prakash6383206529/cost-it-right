@@ -109,7 +109,7 @@ export const number = value =>
         ? 'Please enter number only.' : undefined;
 
 export const postiveNumber = value =>
-    value && !/^\+?(0|[1-9]\d*)$/.test(value)
+    value && !/^\+?(0|[0-9]\d*)$/.test(value)
         ? 'This field is invalid.' : undefined;
 
 export const positiveAndDecimalNumber = value =>
