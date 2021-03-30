@@ -877,7 +877,7 @@ function CostingDetails(props) {
     // 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
-
+      setPart({ label: part.label, value: part.value })
       setValue('PartName', Data.PartName)
       setValue("Description", Data.Description)
       setValue("ECNNumber", Data.ECNNumber)

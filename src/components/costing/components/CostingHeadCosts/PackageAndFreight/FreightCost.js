@@ -26,6 +26,7 @@ function FreightCost(props) {
   */
   const DrawerToggle = () => {
     setDrawerOpen(true)
+    setIsEditFlag(false)
   }
 
   /**

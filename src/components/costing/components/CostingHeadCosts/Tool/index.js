@@ -35,7 +35,7 @@ function Tool(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: IsApplicableProcessWise === false ? defaultValues : {},
   });
@@ -324,10 +324,10 @@ function Tool(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
+                        required: false,
                         pattern: {
-                          value: /^[0-9]*$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                       }}
@@ -380,8 +380,8 @@ function Tool(props) {
                       rules={{
                         //required: true,
                         pattern: {
-                          value: /^[0-9]*$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                       }}

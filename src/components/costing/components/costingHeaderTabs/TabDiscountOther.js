@@ -24,7 +24,7 @@ function TabDiscountOther(props) {
 
   const { DiscountTabData } = props;
   const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 

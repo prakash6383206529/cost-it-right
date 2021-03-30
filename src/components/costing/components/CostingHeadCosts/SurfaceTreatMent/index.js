@@ -69,7 +69,7 @@ function SurfaceTreatment(props) {
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
         }
         props.closeDrawer('')
       }))
@@ -95,7 +95,7 @@ function SurfaceTreatment(props) {
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
-          toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
         }
         props.closeDrawer('')
       }))
