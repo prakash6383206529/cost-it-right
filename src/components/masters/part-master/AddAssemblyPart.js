@@ -250,7 +250,7 @@ class AddAssemblyPart extends Component {
     const { BOMViewerData, isEditFlag } = this.state;
 
     if (this.checkIsFormFilled() === false) {
-      toastr.warning("Fields with 'asterisk sign *' are mandatory.")
+      toastr.warning("Please fill the mandatory fields.")
       return false;
     }
 
