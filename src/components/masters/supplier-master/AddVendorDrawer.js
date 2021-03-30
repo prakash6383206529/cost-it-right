@@ -266,7 +266,7 @@ class AddVendorDrawer extends Component {
                         return null;
                     })
 
-                    Data && Data.VendorPlants.map((item) => {
+                    Data && Data.VendorPlants && Data.VendorPlants.map((item) => {
                         tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
                         return null;
                     })
@@ -288,7 +288,7 @@ class AddVendorDrawer extends Component {
                             existedVendorPlants: tempVendorPlant,
                             selectedVendorPlants: tempVendorPlant,
                         })
-                    }, 500)
+                    }, 1000)
 
                 }
             })
