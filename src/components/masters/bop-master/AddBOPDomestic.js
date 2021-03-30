@@ -528,7 +528,7 @@ class AddBOPDomestic extends Component {
         VendorLocation: '',
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.NetLandedCost,

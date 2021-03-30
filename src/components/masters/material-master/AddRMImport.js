@@ -30,6 +30,7 @@ import { FILE_URL, INR, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
+import moment from 'moment';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 const selector = formValueSelector('AddRMImport');
 
@@ -786,7 +787,7 @@ class AddRMImport extends Component {
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
       }
       this.props.updateRMImportAPI(requestData, (res) => {
@@ -820,7 +821,7 @@ class AddRMImport extends Component {
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       }
 
       this.props.createRMImport(formData, (res) => {

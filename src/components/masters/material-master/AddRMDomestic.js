@@ -22,6 +22,7 @@ import $ from 'jquery'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { FILE_URL, ZBC } from '../../../config/constants'
+import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 const selector = formValueSelector('AddRMDomestic')
 
@@ -794,7 +795,7 @@ class AddRMDomestic extends Component {
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
       }
 
@@ -820,7 +821,7 @@ class AddRMDomestic extends Component {
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],

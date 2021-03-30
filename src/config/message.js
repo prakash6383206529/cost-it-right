@@ -311,5 +311,6 @@ export const MESSAGES = {
   SURFACE_TREATMENT_COSTING_SAVE_SUCCESS: 'Surface Treatment Cost has been successfully saved.',
   TOOL_TAB_COSTING_SAVE_SUCCESS: 'Tool Cost has been successfully saved.',
   RMCC_TAB_COSTING_SAVE_SUCCESS: 'RM CC BOP Cost has been successfully saved.',
+  COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
 
 }

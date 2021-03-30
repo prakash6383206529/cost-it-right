@@ -19,6 +19,8 @@ import {
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { MESSAGES } from '../../../config/message';
 
 export const ViewCostingContext = React.createContext()
 
@@ -789,8 +791,23 @@ function CostingDetails(props) {
   }
 
   /**
+  * @method deleteItem
+  * @description CONFIRM DELETE COSTINGS
+  */
+  const deleteItem = (Item, index, type) => {
+    const toastrConfirmOptions = {
+      onOk: () => {
+        deleteCosting(Item, index, type);
+      },
+      onCancel: () => { },
+      component: () => <ConfirmComponent />,
+    };
+    return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
+  }
+
+  /**
    * @method deleteCosting
-   * @description USED FOR DELETE 
+   * @description USED FOR DELETE COSTING
    */
   const deleteCosting = (Item, index, type) => {
     let reqData = { Id: Item.CostingId, UserId: loggedInUserId() }
@@ -1178,7 +1195,7 @@ function CostingDetails(props) {
                                           {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
-                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteCosting(item, index, ZBC)} />)}
+                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
                                         </td>
                                       </tr>
                                     );
@@ -1312,7 +1329,7 @@ function CostingDetails(props) {
                                         {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
                                         {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteCosting(item, index, VBC)} />)}
+                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                       </td>
                                     </tr>
                                   );
