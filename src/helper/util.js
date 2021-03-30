@@ -682,7 +682,7 @@ export function formViewData(costingSummary) {
 }
 
 export function getVolume(innerDiameter, outerDiameter, height) {
-  const value = (Math.PI / 4) * (Math.pow((outerDiameter - innerDiameter), 2)) * height
+  const value = (Math.PI / 4) * (Math.pow(outerDiameter), 2 - Math.pow(innerDiameter), 2) * height
   return checkForNull(value)
 }
 

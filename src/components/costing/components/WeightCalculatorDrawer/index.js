@@ -20,11 +20,11 @@ function OpenWeightCalculator(props) {
    * @method toggleDrawer
    * @description TOGGLE DRAWER
    */
-  const toggleDrawer = (event, weightData = {}) => {
+  const toggleDrawer = (event, weightData = {}, originalWeight = {}) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
-    props.closeDrawer('', weightData)
+    props.closeDrawer('', weightData, originalWeight)
   }
 
   const dispatch = useDispatch()
@@ -103,6 +103,7 @@ function OpenWeightCalculator(props) {
               <Col md="2"><span className="grey-text d-block">Density(g/cm3):</span><span className="text-dark-blue">{`${rmRowData.Density !== undefined ? rmRowData.Density : ''}`}</span></Col>
               <Col md="2"><span className="grey-text d-block">RM Rate:</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></Col>
               <Col md="2"><span className="grey-text d-block">Scrap Rate:</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</span></Col>
+              <Col md="2"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.Category !== undefined ? rmRowData.Category : ''}`}</span></Col>
             </Row>
             {openConditionalDrawer()}
           </div>

@@ -21,19 +21,10 @@ function SheetMetalBaicDrawer(props) {
 
   const defaultValues = {
     MachineTonnage: props.calculatorData ? props.calculatorData.MachineTonnage : '',
-    CycleTime: WeightCalculatorRequest &&
-      WeightCalculatorRequest.CycleTime !== null
-      ? WeightCalculatorRequest.CycleTime
-      : '',
-    Efficiency: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Efficiency !== null
-      ? WeightCalculatorRequest.Efficiency
-      : 100,
-    Cavity: WeightCalculatorRequest &&
-      WeightCalculatorRequest.Cavity !== null
-      ? WeightCalculatorRequest.Cavity
-      : '',
-    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== null ? WeightCalculatorRequest.Quantity : " ",
+    CycleTime: WeightCalculatorRequest && WeightCalculatorRequest.CycleTime !== null ? WeightCalculatorRequest.CycleTime : '',
+    Efficiency: WeightCalculatorRequest && WeightCalculatorRequest.Efficiency !== null ? WeightCalculatorRequest.Efficiency : 100,
+    Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1,
+    Quantity: WeightCalculatorRequest && WeightCalculatorRequest.Quantity !== null ? WeightCalculatorRequest.Quantity : 1,
     ProcessCost: WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " "
   }
 
@@ -64,7 +55,8 @@ function SheetMetalBaicDrawer(props) {
 
     if (props.calculatorData.UOMType === MASS) {
 
-      setValue('Quantity', rmFinishWeight)
+      setValue('Quantity', rmFinishWeight ? rmFinishWeight : 1)
+      // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
     }
 
 
@@ -114,13 +106,14 @@ function SheetMetalBaicDrawer(props) {
 
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
+    const cavity = getValues('Cavity')
     const rate = props.calculatorData.MHR
     let cost
     switch (props.calculatorData.UOMType) {
       case MASS:
 
         setDisabled(true)
-        cost = (1 / efficiency) * quantity * rate
+        cost = (100 / efficiency) * quantity * rate
 
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
@@ -130,13 +123,13 @@ function SheetMetalBaicDrawer(props) {
         return;
       case DIMENSIONLESS:
         setDisabled(true)
-        cost = (1 / efficiency) * (rate / quantity)
+        cost = ((100 / efficiency) * (rate / quantity)) / cavity
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
       case VOLUMETYPE:
         setDisabled(true)
-        cost = (1 / efficiency) * (quantity * rate)
+        cost = (100 / efficiency) * (quantity * rate)
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
@@ -223,32 +216,34 @@ function SheetMetalBaicDrawer(props) {
                         disabled={disable}
                       />
                     </Col>
-
-                    <Col md="2">
-                      <TextFieldHookForm
-                        label={`Cavity`}
-                        name={'Cavity'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={!disable}
-                        rules={{
-                          required: !disable,
-                          pattern: {
-                            value: /^[0-9\b]+$/i,
-                            //value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.Cavity}
-                        disabled={disable}
-                      />
-                    </Col>
+                    {
+                      props.calculatorData.UOMType === DIMENSIONLESS &&
+                      <Col md="2">
+                        <TextFieldHookForm
+                          label={`Cavity`}
+                          name={'Cavity'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={!disable}
+                          rules={{
+                            required: !disable,
+                            pattern: {
+                              //  value: /^[0-9\b]+$/i,
+                              value: /^[0-9]\d*(\.\d+)?$/i,
+                              message: 'Invalid Number.',
+                            },
+                            // maxLength: 4,
+                          }}
+                          handleChange={calculateProcessCost}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.Cavity}
+                          disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
+                        />
+                      </Col>
+                    }
                     <Col md="2">
                       <TextFieldHookForm
                         label={`Efficiency`}

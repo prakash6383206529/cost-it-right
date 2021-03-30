@@ -14,7 +14,7 @@ import {
 import { getUOMListByUnitType, getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
-import { G, KG, MG, UOM } from '../../../../../config/constants'
+import { G, KG, MG, STD, UOM } from '../../../../../config/constants'
 import { set } from 'lodash'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 import { data } from 'jquery'
@@ -284,7 +284,12 @@ function Pipe(props) {
    * @description SET GROSS WEIGHT
    */
   const setGrossWeight = () => {
-    const WeightofPart = dataToSend.WeightofPart
+    let WeightofPart
+    if (rmRowData.Category === STD) {
+      WeightofPart = dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet)
+    } else {
+      WeightofPart = dataToSend.WeightofPart
+    }
     const updatedValue = dataToSend
     setGrossWeights(WeightofPart)
     switch (UOMDimension.label) {
@@ -442,13 +447,18 @@ function Pipe(props) {
       FinishWeight: (dataToSend.newFinishWeight === undefined || dataToSend.newFinishWeight === 0) ? dataToSend.FinishWeight : dataToSend.newFinishWeight,
       LoggedInUserId: loggedInUserId()
     }
-    console.log(data, "Data");
+
+    let obj = {
+      originalGrossWeight: GrossWeight,
+      originalFinishWeight: FinishWeight
+    }
+
     dispatch(saveRawMaterialCalciData(data, res => {
       console.log(res, "RES");
       if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
         toastr.success("Calculation saved successfully")
-        props.toggleDrawer('', data)
+        props.toggleDrawer('', data, obj)
       }
     }))
   }
@@ -710,7 +720,7 @@ function Pipe(props) {
               <Row className={'mt15'}>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Weight of Sheet(Gm)`}
+                    label={`Weight of Sheet(gm)`}
                     name={'WeightofSheet'}
                     Controller={Controller}
                     control={control}
@@ -735,7 +745,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Weight of Part(Gm)`}
+                    label={`Weight of Part(gm)`}
                     name={'WeightofPart'}
                     Controller={Controller}
                     control={control}
@@ -760,7 +770,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Weight of Scrap(Gm)`}
+                    label={`Weight of Scrap(gm)`}
                     name={'WeightofScrap'}
                     Controller={Controller}
                     control={control}
@@ -839,7 +849,7 @@ function Pipe(props) {
               <Row>
                 <Col md="4">
                   <TextFieldHookForm
-                    label="Net Surface Area"
+                    label="Net Surface Area(cm^2)"
                     name={'NetSurfaceArea'}
                     Controller={Controller}
                     control={control}

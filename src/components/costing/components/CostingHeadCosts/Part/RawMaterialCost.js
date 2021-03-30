@@ -12,6 +12,7 @@ import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
+import { G, KG, MG } from '../../../../../config/constants'
 
 function RawMaterialCost(props) {
 
@@ -71,6 +72,7 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+    console.log(rowData, "ROW DATA ");
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
         RMName: rowData.RawMaterial,
@@ -84,6 +86,7 @@ function RawMaterialCost(props) {
         GrossWeight: '',
         NetLandedCost: '',
         RawMaterialId: rowData.RawMaterialId,
+        Category: rowData.Category
       }
 
       setGridData([...gridData, tempObj])
@@ -122,9 +125,9 @@ function RawMaterialCost(props) {
    * @method closeWeightDrawer
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
-  const closeWeightDrawer = (e = '', weightData = {}) => {
+  const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
     setInputDiameter(weightData.Diameter)
-    setWeight(weightData)
+    setWeight(weightData, originalWeight)
     setWeightDrawerOpen(false)
 
   }
@@ -200,13 +203,27 @@ function RawMaterialCost(props) {
    * @method setWeight
    * @description SET WEIGHT IN RM
    */
-  const setWeight = (weightData) => {
+  const setWeight = (weightData, originalWeight) => {
     let tempArr = []
     let tempData = gridData[editIndex]
-
+    let grossWeight
+    let finishWeight
     if (Object.keys(weightData).length > 0) {
-      const FinishWeight = weightData.FinishWeight
-      const GrossWeight = weightData.GrossWeight
+      if (tempData.UOM === G) {
+        grossWeight = originalWeight.originalGrossWeight
+        finishWeight = originalWeight.originalFinishWeight
+      } else if (tempData.UOM === KG) {
+        grossWeight = originalWeight.originalGrossWeight / 1000
+        finishWeight = originalWeight.originalFinishWeight / 1000
+      } else if (tempData.UOM === MG) {
+        grossWeight = originalWeight.originalGrossWeight * 1000
+        finishWeight = originalWeight.originalFinishWeight * 1000
+      } else {
+        grossWeight = originalWeight.originalGrossWeight
+        finishWeight = originalWeight.originalFinishWeight
+      }
+      const FinishWeight = finishWeight
+      const GrossWeight = grossWeight
       const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
 
       tempData = {

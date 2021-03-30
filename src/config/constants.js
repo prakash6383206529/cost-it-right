@@ -1419,3 +1419,6 @@ export const POWER = 'Power'
 export const DENSITY = 'Density'
 export const AREA = 'Area'
 export const DIMENSIONLESS = 'Dimensionless'
+
+//UOM CATEGORY
+export const STD = 'STD'
