@@ -350,7 +350,7 @@ class PowerListing extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility } = this.props;
+    const { handleSubmit, AddAccessibility, initialConfiguration } = this.props;
     const { isEditFlag, } = this.state;
     const options = {
       clearSearch: true,
@@ -364,6 +364,7 @@ class PowerListing extends Component {
     };
 
     return (
+
       <div>
         {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
@@ -566,7 +567,7 @@ class PowerListing extends Component {
                 pagination>
                 {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                 <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>
+                {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>}
                 <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
                 <TableHeaderColumn searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
               </BootstrapTable>}
@@ -583,11 +584,12 @@ class PowerListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ fuel, comman, supplier }) {
+function mapStateToProps({ fuel, comman, supplier, auth }) {
   const { plantSelectList, stateSelectList, powerDataList } = fuel;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { filterPlantList, } = comman;
-  return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList, powerDataList }
+  const { initialConfiguration } = auth;
+  return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList, powerDataList, initialConfiguration }
 }
 
 /**

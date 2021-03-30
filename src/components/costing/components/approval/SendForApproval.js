@@ -235,6 +235,29 @@ const SendForApproval = (props) => {
     let temp = []
     let tempObj = {}
 
+    viewApprovalData.forEach((element, index, arr) => {
+      console.log(element, "el", index, "index", arr);
+      if (element.plantId !== '-' && index > 0) {
+        if (element.plantId === arr[index - 1].plantId) {
+          toastr.warning('Costings with same plant cannot be sent for approval')
+          return false
+        } else {
+          return true
+        }
+      } else if (element.vendorId !== '-' && index > 0) {
+        if (element.vendorId === arr[index - 1].vendorId) {
+          console.log(element.vendorId, "Inside", arr[index - 1].vendorId);
+          toastr.warning('Costings with same vendor cannot be sent for approval')
+          return false
+        } else {
+          return true
+        }
+      }
+      else {
+        return true
+      }
+    });
+
     viewApprovalData.map((data) => {
       tempObj.TypeOfCosting = data.typeOfCosting
       tempObj.PlantId =
@@ -285,14 +308,14 @@ const SendForApproval = (props) => {
     obj.CostingsList = temp
 
 
-    dispatch(
-      sendForApprovalBySender(obj, (res) => {
-        toastr.success('Data is sent for approval!')
-        props.closeDrawer('', 'Submit')
-        dispatch(setCostingApprovalData([]))
-        dispatch(setCostingViewData([]))
-      }),
-    )
+    // dispatch(
+    //   sendForApprovalBySender(obj, (res) => {
+    //     toastr.success('Data is sent for approval!')
+    //     props.closeDrawer('', 'Submit')
+    //     dispatch(setCostingApprovalData([]))
+    //     dispatch(setCostingViewData([]))
+    //   }),
+    // )
   }
 
   const handleApproverChange = (data) => {

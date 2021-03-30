@@ -32,6 +32,13 @@ function CostingDetailStepTwo(props) {
   const SurfaceCostData = useSelector(state => state.costing.SurfaceCostData)
   const OverheadProfitCostData = useSelector(state => state.costing.OverheadProfitCostData)
   const DiscountCostData = useSelector(state => state.costing.DiscountCostData)
+  const partNo = useSelector((state) => state.costing.partNo)
+
+  useEffect(() => {
+    if (partNo.isChanged === true) {
+      props.backBtn()
+    }
+  }, [partNo.isChanged])
 
   /**
    * @method setHeaderCostRMCCTab
