@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddRM(props) {
@@ -49,7 +49,7 @@ function AddRM(props) {
       const data = {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
-        VendorPlantId: costData.VendorPlantId,
+        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
       }
       dispatch(getRMDrawerVBCDataList(data, (res) => {

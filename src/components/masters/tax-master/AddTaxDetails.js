@@ -153,7 +153,6 @@ class AddTaxDetails extends Component {
         TaxName: values.TaxName,
         CountryId: country.value,
         Rate: values.Rate,
-        // EffectiveDate: effectiveDate,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         LoggedInUserId: loggedInUserId(),
       }
@@ -171,7 +170,6 @@ class AddTaxDetails extends Component {
         TaxName: values.TaxName,
         CountryId: country.value,
         Rate: values.Rate,
-        // EffectiveDate: effectiveDate,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         LoggedInUserId: loggedInUserId(),
       }

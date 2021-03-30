@@ -9,7 +9,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddProcess(props) {
@@ -58,7 +58,7 @@ function AddProcess(props) {
       const data = {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
-        VendorPlantId: costData.VendorPlantId,
+        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
