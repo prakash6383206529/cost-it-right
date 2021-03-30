@@ -634,7 +634,7 @@ function TabDiscountOther(props) {
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           //onSubmit={this.handleSubmit}
-                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                           initialFiles={initialFiles}
                           maxFiles={4}
                           maxSizeBytes={2000000}
