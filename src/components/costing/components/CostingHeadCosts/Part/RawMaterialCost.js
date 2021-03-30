@@ -115,7 +115,7 @@ function RawMaterialCost(props) {
         }, 100)
       }
     }))
-    setWeightDrawerOpen(true)
+    // setWeightDrawerOpen(true)
   }
 
   /**
