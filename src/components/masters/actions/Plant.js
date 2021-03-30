@@ -9,7 +9,8 @@ import {
     GET_PLANT_SUCCESS,
     GET_PLANT_UNIT_SUCCESS,
     config,
-    GET_PLANT_FILTER_LIST
+    GET_PLANT_FILTER_LIST,
+    GET_COMPANY_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -170,4 +171,20 @@ export function getFilteredPlantList(filterData, callback) {
             apiErrors(error);
         });
     };
+}
+
+export function getComapanySelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getComapanySelectList}`, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_COMPANY_SELECTLIST,
+                payload: response.data.SelectList
+            })
+            callback(response)
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }
