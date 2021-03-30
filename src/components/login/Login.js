@@ -13,6 +13,7 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
+import { toastr } from "react-redux-toastr";
 
 class Login extends Component {
   constructor(props) {
@@ -35,6 +36,14 @@ class Login extends Component {
       reactLocalStorage.setObject('isUserLoggedIn', false);
     }
 
+  }
+
+  forgotConfirm = () => {
+    const toastrConfirmOptions = {
+      onOk: () => { },
+      onCancel: () => { },
+    };
+    return toastr.confirm(`${'Please contact your IT Administrator'}`, toastrConfirmOptions);
   }
 
   /**
@@ -143,9 +152,14 @@ class Login extends Component {
                           </label>
                         </div> */}
                     <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
-                    <Link to="/forgot-password" className="forgotpwd-field" target='_blank'>
+                    {/* <Link
+                      to="/forgot-password"
+                      className="forgotpwd-field"
+                      onClick={() => this.forgotConfirm()}
+                      target='_blank'>
                       Forgot Password?
-                        </Link>
+                        </Link> */}
+                    <div className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</div>
                   </div>
 
                 </form>

@@ -1093,6 +1093,7 @@ function CostingDetails(props) {
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Plant Code`}</th>
+                                  <th style={{}}>{`Plant Name`}</th>
                                   <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
@@ -1117,6 +1118,7 @@ function CostingDetails(props) {
                                     return (
                                       <tr key={index}>
                                         <td>{item.PlantCode}</td>
+                                        <td>{item.PlantName}</td>
                                         <td className="cr-select-height w-100px">
                                           <TextFieldHookForm
                                             label={""}
@@ -1226,7 +1228,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Vendor`}</th>
+                                  <th style={{}}>{`Vendor Code`}</th>
+                                  <th style={{}}>{`Vendor Name`}</th>
                                   <th style={{}}>{`SOB`}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{}}>{`Status`}</th>
@@ -1250,6 +1253,7 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
+                                      <td>{item.VendorCode}</td>
                                       <td>{item.VendorName}</td>
                                       <td className="w-100px cr-select-height">
                                         <TextFieldHookForm
