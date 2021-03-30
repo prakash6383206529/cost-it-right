@@ -691,6 +691,7 @@ export function getWeightFromDensity(density, innerDiameter, outerDiameter, heig
   return value
 }
 
+
 export const applySuperScripts = (cell) => {
   console.log(cell, "CELL");
   if (cell && cell !== '') {
