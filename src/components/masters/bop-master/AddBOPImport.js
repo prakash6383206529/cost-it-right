@@ -915,7 +915,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Landed Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -931,7 +931,7 @@ class AddBOPImport extends Component {
                             this.state.showCurrency &&
                             <Col md="3">
                               <Field
-                                label={`Net Landed Cost (INR)`}
+                                label={`Net Cost (INR)`}
                                 name={"NetLandedCostCurrency"}
                                 type="text"
                                 placeholder={""}

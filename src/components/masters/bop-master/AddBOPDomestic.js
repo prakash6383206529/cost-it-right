@@ -864,7 +864,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Landed Cost (INR)`}
+                              label={`Net Cost (INR)`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}

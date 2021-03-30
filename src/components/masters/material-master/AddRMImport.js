@@ -1230,7 +1230,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Landed Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1246,7 +1246,7 @@ class AddRMImport extends Component {
                             this.state.showCurrency &&
                             <Col md="4">
                               <Field
-                                label={`Net Landed Cost (INR/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                label={`Net Cost (INR/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                                 name={"NetLandedCostCurrency"}
                                 type="text"
                                 placeholder={""}

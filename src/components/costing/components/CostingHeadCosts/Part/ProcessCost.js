@@ -677,8 +677,8 @@ function ProcessCost(props) {
                       return (
                         <tr key={index}>
                           <td>{item.ProcessName}</td>
-                          <td>{item.ProcessDescription}</td>
-                          <td>{item.MachineName}</td>
+                          <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
+                          <td>{item.MachineName ? item.MachineName : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
                           <td style={{ width: 150 }}>
@@ -698,7 +698,7 @@ function ProcessCost(props) {
                                   //     message: 'Invalid Number.',
                                   //   },
                                   // }}
-                                  defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '0.00'}
+                                  defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {

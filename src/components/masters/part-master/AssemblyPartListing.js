@@ -309,6 +309,7 @@ class AssemblyPartListing extends Component {
                     trClassName={'userlisting-row'}
                     tableHeaderClass='my-custom-header'
                     pagination>
+                    <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
                     <TableHeaderColumn dataField="BOMNumber" width={'100'}>BOM NO.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" width={'100'}>Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>

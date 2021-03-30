@@ -273,7 +273,7 @@ class BOPDomesticListing extends Component {
         return <> Part Assembly <br />Number </>
     }
     renderNetLandedCost = () => {
-        return <> Net <br />Landed Cost </>
+        return <> Net <br />Cost </>
     }
 
     /**

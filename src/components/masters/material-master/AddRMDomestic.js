@@ -1229,7 +1229,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Landed Cost (INR/UOM)`}
+                              label={`Net Cost (INR/UOM)`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}

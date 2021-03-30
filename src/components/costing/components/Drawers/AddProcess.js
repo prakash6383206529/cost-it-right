@@ -189,6 +189,7 @@ function AddProcess(props) {
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineName" >{'Machine Name'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineTypeName" >{'Machine Type'}</TableHeaderColumn>
                   <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="MachineTonnage" >{'Machine Tonnage'}</TableHeaderColumn>
+                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineRate" searchable={false} >{'Machine Rate'}</TableHeaderColumn>
                 </BootstrapTable>
               </Col>

@@ -246,7 +246,7 @@ class RMDomesticListing extends Component {
     }
 
     renderNetCost = () => {
-        return <>Net Landed <br />Cost(INR) </>
+        return <>Net <br />Cost(INR) </>
     }
 
     /**
