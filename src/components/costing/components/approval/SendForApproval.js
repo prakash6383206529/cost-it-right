@@ -308,14 +308,14 @@ const SendForApproval = (props) => {
     obj.CostingsList = temp
 
 
-    // dispatch(
-    //   sendForApprovalBySender(obj, (res) => {
-    //     toastr.success('Data is sent for approval!')
-    //     props.closeDrawer('', 'Submit')
-    //     dispatch(setCostingApprovalData([]))
-    //     dispatch(setCostingViewData([]))
-    //   }),
-    // )
+    dispatch(
+      sendForApprovalBySender(obj, (res) => {
+        toastr.success('Data is sent for approval!')
+        props.closeDrawer('', 'Submit')
+        dispatch(setCostingApprovalData([]))
+        dispatch(setCostingViewData([]))
+      }),
+    )
   }
 
   const handleApproverChange = (data) => {
