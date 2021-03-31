@@ -241,6 +241,12 @@ function AddFreight(props) {
   * @description FREIGHT FLAG
   */
   const onPressHeads = (FreightFlag) => {
+    setValue('Applicability', '')
+    setValue('Criteria', '')
+    setValue('Rate', '')
+    setValue('Quantity', '')
+    setValue('FreightCost', '')
+    setApplicability([])
     setfreightType(FreightFlag)
   }
 

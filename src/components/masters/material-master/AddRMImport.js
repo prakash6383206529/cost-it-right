@@ -381,7 +381,7 @@ class AddRMImport extends Component {
               HasDifferentSource: Data.HasDifferentSource,
               sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-              effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               remarks: Data.Remark,
               files: Data.FileList,

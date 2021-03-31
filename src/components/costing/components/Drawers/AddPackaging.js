@@ -33,7 +33,7 @@ function AddPackaging(props) {
   const headCostData = useContext(netHeadCostContext)
 
   const [applicability, setApplicability] = useState([]);
-  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
+  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : true);
   //const [formData, setFormData] = useState({});
 
   const fieldValues = useWatch({
@@ -152,6 +152,10 @@ function AddPackaging(props) {
     * @description PACKAGING TYPE 
     */
   const PackageTypeToggle = () => {
+    setValue('PackagingDescription', '')
+    setValue('PackagingCost', '')
+    setValue('PackagingCostPercentage', '')
+    setValue('Applicability', '')
     setPackageType(!PackageType)
   }
 
