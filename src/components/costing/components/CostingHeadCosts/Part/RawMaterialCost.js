@@ -140,7 +140,9 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (!isNaN(event.target.value)) {
+    if (Number(event.target.value) <= 0) {
+      toastr.warning('Please enter valid weight.')
+    } else {
       const GrossWeight = checkForNull(event.target.value)
       const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
 
@@ -150,8 +152,7 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
       setGridData(tempArr)
-    } else {
-      toastr.warning('Please enter valid weight.')
+
     }
   }
 
@@ -163,7 +164,11 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (!isNaN(event.target.value)) {
+    if (Number(event.target.value) <= 0) {
+
+
+      toastr.warning('Please enter valid weight.')
+    } else {
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
 
@@ -185,9 +190,6 @@ function RawMaterialCost(props) {
         toastr.warning('Finish weight should not be greater then gross weight.')
 
       }
-
-    } else {
-      toastr.warning('Please enter valid weight.')
     }
   }
 
