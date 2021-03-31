@@ -27,7 +27,7 @@ export const ViewCostingContext = React.createContext()
 
 function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 
@@ -95,12 +95,13 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0) {
+      console.log('partNumber: ', partNumber);
 
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
-      setPart({ label: partNumber.partName, value: partNumber.partId })
+      setPart({ label: partNumber.partNumber, value: partNumber.partId })
       setTimeout(() => {
         setTechnology({ label: partNumber.technologyName, value: partNumber.technologyId })
-        setValue('Part', { label: partNumber.partName, value: partNumber.partId })
+        setValue('Part', { label: partNumber.partNumber, value: partNumber.partId })
         setIsTechnologySelected(true)
         setShowNextBtn(true)
 
@@ -880,7 +881,7 @@ function CostingDetails(props) {
     // 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
-      setPart({ label: part.label, value: part.value })
+      //setPart({ label: part.label, value: part.value })
       setValue('PartName', Data.PartName)
       setValue("Description", Data.Description)
       setValue("ECNNumber", Data.ECNNumber)
