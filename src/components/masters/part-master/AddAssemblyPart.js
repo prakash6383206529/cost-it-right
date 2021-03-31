@@ -727,7 +727,7 @@ class AddAssemblyPart extends Component {
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}
                           >
-                            <div className={"plus"}></div>BOM VIEWER
+                            <div className={"plus"}></div>VIEW BOM
                               </button>
                         </Col>
                       </Row>
