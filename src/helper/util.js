@@ -696,12 +696,11 @@ export const applySuperScripts = (cell) => {
   console.log(cell, "CELL");
   if (cell && cell !== '') {
     const capIndex = cell && cell.indexOf('^');
-    console.log(capIndex, "CEcapIndexLL");
+
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
-    console.log(superNumber, "superNumber");
+
     const capWithNumber = cell.substring(capIndex, capIndex + 2);
-    console.log(capWithNumber, "capWithNumber");
-    console.log(cell.replace(capWithNumber, superNumber.sup()), "kkkk");
+
     return cell.replace(capWithNumber, superNumber.sup());
   } else {
     return '';

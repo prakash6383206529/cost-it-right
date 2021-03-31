@@ -227,23 +227,25 @@ class AddPower extends Component {
     const totalContributionFromGrid = powerGrid && powerGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.PowerContributionPercentage);
     }, 0)
+    if (totalContributionFromGrid !== 0 && electricBoardPowerContribution !== 0) {
 
-    let powerContributionTotal = 0;
-    if (isEditIndex) {
-      let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
-      powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
-    } else if (isEditSEBIndex) {
-      let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
-      powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
-    } else {
-      powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
-    }
+      let powerContributionTotal = 0;
+      if (isEditIndex) {
+        let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
+        powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+      } else if (isEditSEBIndex) {
+        let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
+        powerContributionTotal = electricBoardPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
+      } else {
+        powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
+      }
 
-    if (powerContributionTotal > 100) {
-      this.setState({ checkPowerContribution: true })
-      toastr.warning('Power contribution should not be greater than 100%.')
-    } else {
-      this.setState({ checkPowerContribution: false })
+      if (powerContributionTotal > 100) {
+        this.setState({ checkPowerContribution: true })
+        toastr.warning('Total power contribution should not be greater than 100%.')
+      } else {
+        this.setState({ checkPowerContribution: false })
+      }
     }
   }
 
