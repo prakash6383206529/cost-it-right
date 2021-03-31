@@ -175,6 +175,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
+    console.log('Children: ', params, Children);
     let arr = setAssembly(params, Children, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }

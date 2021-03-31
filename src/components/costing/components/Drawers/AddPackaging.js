@@ -201,7 +201,7 @@ function AddPackaging(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Packaging'}</h3>
+                  <h3>{isEditFlag ? 'Update Packaging' : 'ADD Packaging'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -280,7 +280,7 @@ function AddPackaging(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.PackagingCostPercentage}
-                      disabled={isEditFlag || !PackageType ? true : false}
+                      disabled={!PackageType ? true : false}
                     />
                   </Col>
 
@@ -298,7 +298,7 @@ function AddPackaging(props) {
                       mandatory={PackageType ? true : false}
                       handleChange={handleApplicabilityChange}
                       errors={errors.Applicability}
-                      disabled={isEditFlag || !PackageType ? true : false}
+                      disabled={!PackageType ? true : false}
                     />
                   </Col>
 
@@ -342,7 +342,7 @@ function AddPackaging(props) {
                       className="submit-button  save-btn"
                       onClick={addRow} >
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
+                      {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>
                 </Row>

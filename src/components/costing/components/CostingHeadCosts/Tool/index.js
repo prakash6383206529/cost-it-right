@@ -315,10 +315,10 @@ function Tool(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
+                        required: false,
                         pattern: {
-                          value: /^[0-9]*$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                       }}
@@ -342,7 +342,7 @@ function Tool(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
+                        required: false,
                         pattern: {
                           //value: /^[0-9]*$/i,
                           value: /^[0-9]\d*(\.\d+)?$/i,

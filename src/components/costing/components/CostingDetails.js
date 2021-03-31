@@ -95,7 +95,6 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0) {
-      console.log('partNumber: ', partNumber);
 
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
