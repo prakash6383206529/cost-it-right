@@ -226,7 +226,7 @@ function RawMaterialCost(props) {
       }
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
-      const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
+      const NetLandedCost = (GrossWeight * tempData.RMRate) - ((GrossWeight - FinishWeight) * tempData.ScrapRate);
 
       tempData = {
         ...tempData,
