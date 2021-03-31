@@ -1623,6 +1623,7 @@ class AddPower extends Component {
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={false}
+
                                   />
                                 </div>
                               </div>
