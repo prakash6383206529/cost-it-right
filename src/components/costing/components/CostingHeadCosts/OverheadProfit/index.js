@@ -129,10 +129,16 @@ function OverheadProfit(props) {
   * @description TO CHANGE OVERHEADS VALUE WHEN RM BOP CC VALUES CHANGES FROM RMCC TAB
   */
   useEffect(() => {
+    console.log('modelType', modelType)
+    if (modelType && modelType.value !== undefined) {
+      handleModelTypeChange(modelType)
+    }
 
-    handleModelTypeChange(modelType)
-    setApplicability(applicability)
-    checkRejectionApplicability(applicability.label)
+    if (applicability && applicability.value !== undefined) {
+      setApplicability(applicability)
+      checkRejectionApplicability(applicability.label)
+    }
+
   }, [headerCosts.NetTotalRMBOPCC])
 
   /**

@@ -21,6 +21,7 @@ import {
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
+import BOMUpload from '../../massUpload/BOMUpload';
 
 export const ViewCostingContext = React.createContext()
 
@@ -50,6 +51,8 @@ function CostingDetails(props) {
   const [IsShowNextBtn, setShowNextBtn] = useState(false);
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
+
+  const [IsBulkOpen, SetIsBulkOpen] = useState(false)
 
   // FOR COPY COSTING
   const [copyCostingData, setCopyCostingData] = useState({})
@@ -898,8 +901,40 @@ function CostingDetails(props) {
   const zbcPlantGridFields = 'zbcPlantGridFields'
   const vbcGridFields = 'vbcGridFields'
 
+  const bulkToggle = () => {
+    SetIsBulkOpen(true)
+  }
+
+  const closeBulkUploadDrawer = () => {
+    SetIsBulkOpen(false)
+  }
+
   return (
     <>
+      <span className="position-relative costing-page-tabs d-block w-100">
+        <div className="right-actions">
+
+          {/* BELOW BUTTONS ARE TEMPORARY HIDDEN FROM UI  */}
+
+          {/* <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/print.svg')} alt="print-button" />
+            <span className="d-block mt-1">PRINT</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/excel.svg')} alt="print-button" />
+            <span className="d-block mt-1">XLS</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/pdf.svg')} alt="print-button" />
+            <span className="d-block mt-1">PDF</span>
+          </button> */}
+
+          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+            <span className="d-block mt-1">ADD BOM</span>
+          </button>}
+        </div>
+      </span>
       <div className="login-container signup-form costing-details-page">
         <Row>
           <Col md="12">
@@ -1429,6 +1464,15 @@ function CostingDetails(props) {
           anchor={"right"}
         />
       )}
+
+      {IsBulkOpen && <BOMUpload
+        isOpen={IsBulkOpen}
+        closeDrawer={closeBulkUploadDrawer}
+        isEditFlag={false}
+        fileName={'BOM'}
+        messageLabel={'BOM'}
+        anchor={'right'}
+      />}
     </>
   );
 }
