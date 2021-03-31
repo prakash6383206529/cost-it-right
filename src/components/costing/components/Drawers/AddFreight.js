@@ -26,8 +26,8 @@ function AddFreight(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
@@ -117,6 +117,8 @@ function AddFreight(props) {
         { label: 'RM', value: 'RM' },
         { label: 'CC', value: 'CC' },
         { label: 'RM + CC', value: 'RM + CC' },
+        { label: 'RM + BOP', value: 'RM + BOP' },
+        { label: 'RM + CC + BOP', value: 'RM + CC + BOP' },
       ];
     }
 
@@ -189,6 +191,14 @@ function AddFreight(props) {
 
       case 'CC':
         setValue('FreightCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(RateAsPercentage), 2))
+        break;
+
+      case 'RM + CC + BOP':
+        setValue('FreightCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(RateAsPercentage), 2))
+        break;
+
+      case 'RM + BOP':
+        setValue('FreightCost', checkForDecimalAndNull((NetRawMaterialsCost + NetBoughtOutPartCost) * calculatePercentage(RateAsPercentage), 2))
         break;
 
       default:
@@ -279,7 +289,7 @@ function AddFreight(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Freight'}</h3>
+                  <h3>{isEditFlag ? 'Update Freight' : 'ADD Freight'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -321,7 +331,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === FullTruckLoad ? true : false}
                         onClick={() => onPressHeads(FullTruckLoad)}
-                        disabled
+                        disabled={isEditFlag ? true : false}
                       />{' '}
                       <span>Full Truck Load</span>
                     </Label>
@@ -332,7 +342,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === PartTruckLoad ? true : false}
                         onClick={() => onPressHeads(PartTruckLoad)}
-                        disabled
+                        disabled={isEditFlag ? true : false}
                       />{' '}
                       <span>Part Truck Load</span>
                     </Label>
@@ -343,6 +353,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === Fixed ? true : false}
                         onClick={() => onPressHeads(Fixed)}
+                        disabled={isEditFlag ? true : false}
                       />{' '}
                       <span>Fixed</span>
                     </Label>
@@ -353,6 +364,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === Percentage ? true : false}
                         onClick={() => onPressHeads(Percentage)}
+                        disabled={isEditFlag ? true : false}
                       />{' '}
                       <span>Percentage</span>
                     </Label>
@@ -470,11 +482,10 @@ function AddFreight(props) {
                       mandatory={true}
                       rules={{
                         required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
+                        pattern: {
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.'
+                        },
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

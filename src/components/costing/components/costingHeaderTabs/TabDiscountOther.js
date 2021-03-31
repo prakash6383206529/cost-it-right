@@ -24,7 +24,7 @@ function TabDiscountOther(props) {
 
   const { DiscountTabData } = props;
   const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 
@@ -495,7 +495,7 @@ function TabDiscountOther(props) {
                         rules={{
                           //required: true,
                           pattern: {
-                            value: /^[0-9]*$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
                             message: "Invalid Number.",
                           },
                           // maxLength: 4,

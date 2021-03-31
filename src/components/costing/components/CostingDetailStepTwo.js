@@ -16,7 +16,7 @@ export const netHeadCostContext = React.createContext()
 function CostingDetailStepTwo(props) {
 
   const dispatch = useDispatch()
-  const [IsBulkOpen, SetIsBulkOpen] = useState(false)
+
 
   useEffect(() => {
     const { costingInfo } = props;
@@ -285,40 +285,11 @@ function CostingDetailStepTwo(props) {
     return TotalCost;
   }
 
-  const bulkToggle = () => {
-    SetIsBulkOpen(true)
-  }
 
-  const closeBulkUploadDrawer = () => {
-    SetIsBulkOpen(false)
-  }
 
   return (
     <>
-      <span className="position-relative costing-page-tabs d-block w-100">
-        <div className="right-actions">
 
-          {/* BELOW BUTTONS ARE TEMPORARY HIDDEN FROM UI  */}
-
-          {/* <button className="btn btn-link text-primary">
-            <img src={require('../../../assests/images/print.svg')} alt="print-button" />
-            <span className="d-block mt-1">PRINT</span>
-          </button>
-          <button className="btn btn-link text-primary">
-            <img src={require('../../../assests/images/excel.svg')} alt="print-button" />
-            <span className="d-block mt-1">XLS</span>
-          </button>
-          <button className="btn btn-link text-primary">
-            <img src={require('../../../assests/images/pdf.svg')} alt="print-button" />
-            <span className="d-block mt-1">PDF</span>
-          </button> */}
-
-          <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
-            <span className="d-block mt-1">ADD BOM</span>
-          </button>
-        </div>
-      </span>
       <div className="login-container signup-form">
         <Row>
           <Col md="12">
@@ -337,10 +308,10 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
                       {/* <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td> */}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>
+                      {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
+                      {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
-                      {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
                     </tbody>
                   </Table>
                   <div class="table-responsive">
@@ -430,14 +401,7 @@ function CostingDetailStepTwo(props) {
           </Col>
         </Row>
       </div>
-      {IsBulkOpen && <BOMUpload
-        isOpen={IsBulkOpen}
-        closeDrawer={closeBulkUploadDrawer}
-        isEditFlag={false}
-        fileName={'BOM'}
-        messageLabel={'BOM'}
-        anchor={'right'}
-      />}
+
     </>
   );
 };

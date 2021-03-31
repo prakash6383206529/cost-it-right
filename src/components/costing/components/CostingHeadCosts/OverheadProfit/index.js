@@ -129,9 +129,16 @@ function OverheadProfit(props) {
   * @description TO CHANGE OVERHEADS VALUE WHEN RM BOP CC VALUES CHANGES FROM RMCC TAB
   */
   useEffect(() => {
-    handleModelTypeChange(modelType)
-    setApplicability(applicability)
-    checkRejectionApplicability(applicability.label)
+    console.log('modelType', modelType)
+    if (modelType && modelType.value !== undefined) {
+      handleModelTypeChange(modelType)
+    }
+
+    if (applicability && applicability.value !== undefined) {
+      setApplicability(applicability)
+      checkRejectionApplicability(applicability.label)
+    }
+
   }, [headerCosts.NetTotalRMBOPCC])
 
   /**
@@ -732,7 +739,7 @@ function OverheadProfit(props) {
       const reqParams = {
         ModelTypeId: newValue.value,
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-        IsVendor: costData.IsVendor
+        IsVendor: costData.IsVendor,
       }
       dispatch(getOverheadProfitDataByModelType(reqParams, res => {
         if (res && res.data && res.data.Data) {
@@ -1167,7 +1174,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <span className="head-text">
-                      {'Percentage (%)'}
+                      {`${overheadObj && overheadObj.IsOverheadFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
                     </span>
                   </Col>
                   <Col md="3">
@@ -1508,7 +1515,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <span className="head-text">
-                      {'Percentage (%)'}
+                      {`${profitObj && profitObj.IsProfitFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
                     </span>
                   </Col>
                   <Col md="3">

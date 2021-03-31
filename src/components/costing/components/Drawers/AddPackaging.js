@@ -23,8 +23,8 @@ function AddPackaging(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
@@ -62,7 +62,6 @@ function AddPackaging(props) {
     props.closeDrawer('', formData)
   };
 
-
   /**
   * @method renderListing
   * @description Used show listing of unit of measurement
@@ -74,6 +73,8 @@ function AddPackaging(props) {
         { label: 'RM', value: 'RM' },
         { label: 'CC', value: 'CC' },
         { label: 'RM + CC', value: 'RM + CC' },
+        { label: 'RM + BOP', value: 'RM + BOP' },
+        { label: 'RM + CC + BOP', value: 'RM + CC + BOP' },
       ];
     }
 
@@ -122,6 +123,22 @@ function AddPackaging(props) {
           setValue('PackagingCost', '')
         } else {
           setValue('PackagingCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(PackagingCostPercentage), 2))
+        }
+        break;
+
+      case 'RM + CC + BOP':
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          setValue('PackagingCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(PackagingCostPercentage), 2))
+        }
+        break;
+
+      case 'RM + BOP':
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetBoughtOutPartCost) * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
 
@@ -201,7 +218,7 @@ function AddPackaging(props) {
                         onChange={PackageTypeToggle}
                         checked={PackageType}
                         id="normal-switch"
-                        disabled={false}
+                        disabled={isEditFlag ? true : false}
                         background="#4DC771"
                         onColor="#4DC771"
                         onHandleColor="#ffffff"
@@ -249,7 +266,7 @@ function AddPackaging(props) {
                       rules={{
                         required: PackageType ? true : false,
                         pattern: {
-                          value: PackageType ? /^[0-9]*$/i : '',
+                          value: PackageType ? /^[0-9]\d*(\.\d+)?$/i : '',
                           message: PackageType ? 'Invalid Number.' : '',
                         },
                         // maxLength: 4,

@@ -12,8 +12,8 @@ import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
 function SurfaceTreatmentCost(props) {
 
   const { register, control, errors } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
   });
 
   const [gridData, setGridData] = useState(props.data)

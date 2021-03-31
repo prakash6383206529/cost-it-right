@@ -13,8 +13,8 @@ import { ViewCostingContext } from '../../CostingDetails';
 function OperationCost(props) {
 
   const { register, control, errors } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
   });
 
   const [gridData, setGridData] = useState(props.data)
@@ -132,10 +132,10 @@ function OperationCost(props) {
     let tempData = gridData[index];
 
     if (!isNaN(event.target.value)) {
-      const WithLaboutCost = checkForNull(tempData.Rate) * parseInt(event.target.value);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * parseInt(tempData.LabourQuantity) : 0;
+      const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
+      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: parseInt(event.target.value), OperationCost: OperationCost }
+      tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
@@ -150,9 +150,9 @@ function OperationCost(props) {
 
     if (!isNaN(event.target.value)) {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * parseInt(event.target.value) : 0;
+      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, LabourQuantity: parseInt(event.target.value), OperationCost: OperationCost }
+      tempData = { ...tempData, LabourQuantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
@@ -235,8 +235,8 @@ function OperationCost(props) {
                                   rules={{
                                     //required: true,
                                     pattern: {
-                                      value: /^[0-9]*$/i,
-                                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                                      //value: /^[0-9]*$/i,
+                                      value: /^[0-9]\d*(\.\d+)?$/i,
                                       message: 'Invalid Number.'
                                     },
                                   }}
