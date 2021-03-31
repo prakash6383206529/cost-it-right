@@ -189,13 +189,15 @@ function Pipe(props) {
   const calculateWeightOfSheet = () => {
     const data = {
       Density: props.rmRowData.Density,
-      OuterDiameter: getValues('OuterDiameter'),
+      OuterDiameter: Number(getValues('OuterDiameter')),
       InnerDiameter: dataToSend.InnerDiameter,
-      SheetLength: getValues('SheetLength'),
+      SheetLength: Number(getValues('SheetLength')),
       ExtraVariable: '',
     }
+    console.log(data, "DATA");
     // const SheetWeight = getWeightOfSheet(data)
     const SheetWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.SheetLength)
+    console.log(SheetWeight, "sheet weight");
     const updatedValue = dataToSend
     updatedValue.WeightofSheet = SheetWeight
     setDataToSend(updatedValue)
@@ -319,7 +321,7 @@ function Pipe(props) {
    * @description SET FINISH WEIGHT
    */
   const setFinishWeight = () => {
-    const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofPart / dataToSend.NumberOfPartsPerSheet))
+    const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
     const updatedValue = dataToSend
     setFinishWeights(FinishWeight)
     switch (UOMDimension.label) {

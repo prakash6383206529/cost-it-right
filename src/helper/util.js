@@ -682,12 +682,15 @@ export function formViewData(costingSummary) {
 }
 
 export function getVolume(innerDiameter, outerDiameter, height) {
-  const value = (Math.PI / 4) * (Math.pow(outerDiameter), 2 - Math.pow(innerDiameter), 2) * height
+  console.log(innerDiameter, "innerDiameter", outerDiameter, "hhhhh", height);
+  const value = (Math.PI / 4) * (Math.pow(outerDiameter, 2) - Math.pow(innerDiameter, 2)) * height
+  console.log(value, "value");
   return checkForNull(value)
 }
 
 export function getWeightFromDensity(density, innerDiameter, outerDiameter, height) {
   const value = density * getVolume(innerDiameter, outerDiameter, height)
+  console.log(value, "density");
   return value
 }
 
