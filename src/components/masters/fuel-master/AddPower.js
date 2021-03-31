@@ -83,13 +83,13 @@ class AddPower extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       const { SelfPowerContribution, SEBPowerContributaion } = this.props.fieldsObj
-
-      if (SelfPowerContribution) {
-        checkPercentageValue(SelfPowerContribution, "Power contribution percentage should not be more than 100") ? this.props.change('SelfPowerContribution', SelfPowerContribution) : this.props.change('SelfPowerContribution', 0)
-      }
-      if (SEBPowerContributaion) {
-        checkPercentageValue(SEBPowerContributaion, "Power contribution percentage should not be more than 100") ? this.props.change('SEBPowerContributaion', SEBPowerContributaion) : this.props.change('SEBPowerContributaion', 0)
-      }
+      console.log(SelfPowerContribution, "lllllllllllllll", SEBPowerContributaion);
+      // if (Number(SelfPowerContribution) > 100 || Number(SelfPowerContribution) !== 0) {
+      checkPercentageValue(SelfPowerContribution, "Power contribution percentage should not be more than 100") ? this.props.change('SelfPowerContribution', SelfPowerContribution) : this.props.change('SelfPowerContribution', 0)
+      // }
+      // if (Number(SEBPowerContributaion) > 100 || Number(SEBPowerContributaion) !== 0) {
+      checkPercentageValue(SEBPowerContributaion, "Power contribution percentage should not be more than 100") ? this.props.change('SEBPowerContributaion', SEBPowerContributaion) : this.props.change('SEBPowerContributaion', 0)
+      // }
       this.SEBPowerCalculation()
       this.selfPowerCalculation()
       this.powerContributionCalculation()

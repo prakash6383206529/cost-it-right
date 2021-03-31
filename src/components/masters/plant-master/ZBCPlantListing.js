@@ -345,7 +345,8 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, plantZBCList } = this.props;
+        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration } = this.props;
+
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
             clearSearch: true,
@@ -479,6 +480,7 @@ class ZBCPlantListing extends Component {
                 >
                     <TableHeaderColumn dataField="PlantName" dataAlign="left" dataSort={true}>Plant Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
+                    {initialConfiguration && initialConfiguration.IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="CompanyName" dataAlign="center" dataSort={true}>Company</TableHeaderColumn>}
                     <TableHeaderColumn dataField="CountryName" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
                     <TableHeaderColumn dataField="StateName" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
                     <TableHeaderColumn dataField="CityName" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
@@ -508,9 +510,9 @@ class ZBCPlantListing extends Component {
 function mapStateToProps({ comman, auth, plant }) {
 
     const { countryList, stateList, cityList } = comman;
-    const { loading } = auth;
+    const { initialConfiguration } = auth
     const { plantDataList } = plant;
-    return { loading, countryList, stateList, cityList, plantDataList };
+    return { countryList, stateList, cityList, plantDataList, initialConfiguration };
 }
 
 /**

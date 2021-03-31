@@ -777,6 +777,9 @@ export const API = {
   getTaxDetailsData: `${BASE_URL}/masters-tax-details/get`,
   deleteTaxDetails: `${BASE_URL}/masters-tax-details/delete`,
   updateTaxDetails: `${BASE_URL}/masters-tax-details/update`,
+
+  //COMPANY
+  getComapanySelectList: `${BASE_URL}/company/get-company-select-list`
 }
 
 //Api constants
@@ -1260,6 +1263,9 @@ export const GET_CURRENCY_SELECTLIST_BY = 'GET_CURRENCY_SELECTLIST_BY'
 //TAX DETAIL MASTER
 export const GET_TAX_DETAILS_DATALIST = 'GET_TAX_DETAILS_DATALIST'
 export const GET_TAX_DETAILS_DATA = 'GET_TAX_DETAILS_DATA'
+
+//COMPANY
+export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isValid, isInvalid } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, } from '../../layout/FormInputs'
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity, getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType } from '../../../actions/Common'
 import { createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, } from '../actions/Material'
@@ -1243,12 +1243,12 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <div className="form-group">
-                              <label>
+                              {/* <label>
                                 Effective Date
                                 <span className="asterisk-required">*</span>
-                              </label>
+                              </label> */}
                               <div className="inputbox date-section mb-3">
-                                <DatePicker
+                                {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -1263,6 +1263,22 @@ class AddRMDomestic extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={false}
+                                /> */}
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                //minDate={moment()}
                                 />
                               </div>
                             </div>
