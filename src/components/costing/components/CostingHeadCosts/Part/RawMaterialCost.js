@@ -17,7 +17,7 @@ import { G, KG, MG } from '../../../../../config/constants'
 function RawMaterialCost(props) {
 
   const { register, handleSubmit, control, setValue, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   })
 

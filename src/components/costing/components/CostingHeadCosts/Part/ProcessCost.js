@@ -20,7 +20,7 @@ function ProcessCost(props) {
   const { data } = props
 
   const { register, control, errors, setValue } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   })
 

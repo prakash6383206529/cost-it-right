@@ -1,4 +1,4 @@
-import React, { useState, useEffect, } from 'react';
+import React, { useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -8,7 +8,6 @@ import {
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
-import BOMUpload from '../../massUpload/BOMUpload';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -16,7 +15,6 @@ export const netHeadCostContext = React.createContext()
 function CostingDetailStepTwo(props) {
 
   const dispatch = useDispatch()
-
 
   useEffect(() => {
     const { costingInfo } = props;
@@ -294,6 +292,7 @@ function CostingDetailStepTwo(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
+
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
@@ -301,6 +300,7 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
+
               <Row className="sticky-top-0 mb-3">
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
@@ -358,6 +358,7 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
+
               <Row>
                 <Col md="3">
                   <button
