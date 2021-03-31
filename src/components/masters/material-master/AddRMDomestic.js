@@ -311,6 +311,7 @@ class AddRMDomestic extends Component {
             const categoryObj = categoryList && categoryList.find((item) => item.Value === Data.Category)
 
             const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId)
+
             let plantArray = []
             Data && Data.Plant.map((item) => {
               plantArray.push({ Text: item.PlantName, Value: item.PlantId })

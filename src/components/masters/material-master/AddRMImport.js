@@ -341,7 +341,7 @@ class AddRMImport extends Component {
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find(item => item.Value === Data.Category)
-            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
 
 
@@ -374,7 +374,7 @@ class AddRMImport extends Component {
               RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
               RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              TechnologyId: technologyObj !== undefined ? technologyObj.Value : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+              Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
               selectedPlants: plantArray,
               vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
