@@ -13,7 +13,7 @@ function SurfaceTreatmentCost(props) {
 
   const { register, control, errors } = useForm({
     mode: 'onBlur',
-    reValidateMode: 'onBlur',
+    reValidateMode: 'onChange',
   });
 
   const [gridData, setGridData] = useState(props.data)

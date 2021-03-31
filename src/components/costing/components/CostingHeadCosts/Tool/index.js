@@ -15,16 +15,8 @@ function Tool(props) {
 
   const { IsApplicableProcessWise, data } = props;
   const dispatch = useDispatch();
-  // const OverAllApplicability = data.OverAllApplicability;
-  const ObjectForOverAllApplicability = data.CostingPartDetails && data.CostingPartDetails.CostingToolCostResponse && data.CostingPartDetails.CostingToolCostResponse[0];
 
-  // BELOW CODE NEED TO BE USED WHEN SEPERATE OBJECT NEED FOR OVERALL APPLICABILITY
-  // const defaultValues = {
-  //   ToolMaintenanceCost: OverAllApplicability && OverAllApplicability.ToolMaintenanceCost !== undefined ? OverAllApplicability.ToolMaintenanceCost : '',
-  //   ToolCost: OverAllApplicability && OverAllApplicability.ToolCost !== undefined ? OverAllApplicability.ToolCost : '',
-  //   Life: OverAllApplicability && OverAllApplicability.Life !== undefined ? OverAllApplicability.Life : '',
-  //   NetToolCost: OverAllApplicability && OverAllApplicability.NetToolCost !== undefined ? OverAllApplicability.NetToolCost : '',
-  // }
+  const ObjectForOverAllApplicability = data.CostingPartDetails && data.CostingPartDetails.CostingToolCostResponse && data.CostingPartDetails.CostingToolCostResponse[0];
 
   // BELOW CODE NEED TO BE USED WHEN OVERALL APPLICABILITY TREATED INSIDE GRID.
   const defaultValues = {
@@ -114,14 +106,6 @@ function Tool(props) {
 
       setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
 
-      // const OverAllApplicability = {
-      //   ToolMaintenanceCost: checkForNull(event.target.value),
-      //   ToolCost: ToolCost,
-      //   Life: Life,
-      //   NetToolCost: checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
-      // }
-
-      // props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
       const zeroIndex = 0;
       let rowArray = {
         "ToolOperationId": null,
@@ -136,15 +120,11 @@ function Tool(props) {
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
       }
-      //if (editIndex !== '' && isEditFlag) {
+
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setTimeout(() => {
         setGridData(tempArr)
       }, 200)
-      // } else {
-      //   let tempArr = [...gridData, rowArray]
-      //   setGridData(tempArr)
-      // }
 
     } else {
       toastr.warning('Please enter valid number.')
@@ -166,14 +146,6 @@ function Tool(props) {
       const Life = checkForNull(getValues('Life'))
 
       setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
-
-      // const OverAllApplicability = {
-      //   ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
-      //   ToolCost: ToolCost,
-      //   Life: Life,
-      //   NetToolCost: checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2),
-      // }
-      // props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
 
       const zeroIndex = 0;
       let rowArray = {
@@ -210,14 +182,6 @@ function Tool(props) {
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(event.target.value)
       setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
-
-      // const OverAllApplicability = {
-      //   ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
-      //   ToolCost: ToolCost,
-      //   Life: checkForNull(event.target.value),
-      //   NetToolCost: checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2),
-      // }
-      // props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
 
       const zeroIndex = 0;
       let rowArray = {

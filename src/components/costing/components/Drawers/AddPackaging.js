@@ -24,7 +24,7 @@ function AddPackaging(props) {
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onBlur',
-    reValidateMode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
