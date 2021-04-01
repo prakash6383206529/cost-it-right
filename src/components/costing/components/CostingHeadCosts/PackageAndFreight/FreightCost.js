@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
+=======
+import React, { useState, useEffect, useContext } from 'react';
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 import { Col, Row, Table } from 'reactstrap';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import AddFreight from '../../Drawers/AddFreight';
+import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function FreightCost(props) {
 
@@ -11,6 +17,8 @@ function FreightCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     props.setFreightCost(gridData, props.index)
@@ -22,6 +30,7 @@ function FreightCost(props) {
   */
   const DrawerToggle = () => {
     setDrawerOpen(true)
+    setIsEditFlag(false)
   }
 
   /**
@@ -78,11 +87,11 @@ function FreightCost(props) {
               </div>
             </Col>
             <Col col={'2'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD FREIGHT</button>
+                <div className={'plus'}></div>ADD FREIGHT</button>}
             </Col>
           </Row>
           <Row>
@@ -105,17 +114,28 @@ function FreightCost(props) {
                   <tbody >
                     {
                       gridData && gridData.map((item, index) => {
+                        let EFreightLoadTypeText = '';
+
+                        if (item.EFreightLoadType === Fixed) EFreightLoadTypeText = 'Fixed';
+                        if (item.EFreightLoadType === Percentage) EFreightLoadTypeText = 'Percentage';
+                        if (item.EFreightLoadType === FullTruckLoad) EFreightLoadTypeText = 'FTL';
+                        if (item.EFreightLoadType === PartTruckLoad) EFreightLoadTypeText = 'PTL';
+
                         return (
                           <tr key={index}>
+<<<<<<< HEAD
                             <td>{item.IsPartTruckLoad}</td>
+=======
+                            <td>{EFreightLoadTypeText}</td>
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                             <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Capacity}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Criteria : '-')}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Rate : '-')}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Quantity}</td>
                             <td>{item.FreightCost}</td>
                             <td>
-                              <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                              {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                             </td>
                           </tr>
                         )

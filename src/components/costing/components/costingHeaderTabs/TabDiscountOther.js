@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
-  getExchangeRateByCurrency, setDiscountCost,
+  getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
 import { getCurrencySelectList, } from '../../../../actions/Common';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -18,11 +18,18 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
+<<<<<<< HEAD
+=======
+import { ViewCostingContext } from '../CostingDetails';
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function TabDiscountOther(props) {
 
   const { DiscountTabData } = props;
-  const { register, handleSubmit, setValue, getValues, errors, control } = useForm();
+  const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+  });
 
   const [IsCurrencyChange, setIsCurrencyChange] = useState(false);
   const [currency, setCurrency] = useState([]);
@@ -30,16 +37,83 @@ function TabDiscountOther(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
+<<<<<<< HEAD
+=======
+  const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
+  const [GoToNext, setGoToNext] = useState(false);
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
-  const fieldValues = useWatch({
-    control,
-    name: ['HundiOrDiscountPercentage'],
-  });
+  useEffect(() => {
+    if (props.activeTab !== '6') {
+      setValue('NetPOPriceINR', DiscountTabData !== undefined && (props.netPOPrice - props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
+      setValue('HundiOrDiscountValue', DiscountTabData !== undefined && (props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
+
+      let topHeaderData = {
+        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
+        HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
+        AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+      }
+      props.setHeaderCost(topHeaderData)
+    }
+  }, [props.netPOPrice])
+
+  useEffect(() => {
+    dispatch(getCurrencySelectList(() => { }))
+  }, [])
+
+  //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
+  useEffect(() => {
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: costData.CostingId }
+    })
+    let data = {
+      "CostingId": costData.CostingId,
+      "PartId": costData.PartId,
+      "PartNumber": costData.PartNumber,
+      "NetPOPrice": props.netPOPrice,
+      "LoggedInUserId": loggedInUserId(),
+      "CostingPartDetails": {
+        "CostingDetailId": costData.CostingId,
+        "PartId": costData.PartId,
+        "PartTypeId": "00000000-0000-0000-0000-000000000000",
+        "Type": costData.VendorType,
+        "PartNumber": costData.PartNumber,
+        "PartName": costData.PartName,
+        "Quantity": 1,
+        "IsOpen": true,
+        "IsPrimary": true,
+        "Sequence": 0,
+        "TotalCost": getValues('NetPOPriceINR'),
+        "NetDiscountsAndOtherCost": getValues('HundiOrDiscountValue'),
+        "OtherCostDetails": {
+          "OtherCostDetailId": '',
+          "HundiOrDiscountPercentage": getValues('HundiOrDiscountValue'),
+          "HundiOrDiscountValue": getValues('HundiOrDiscountValue'),
+          "AnyOtherCost": getValues('AnyOtherCost'),
+          "OtherCostPercentage": getValues('OtherCostPercentage'),
+          "TotalOtherCost": getValues('TotalOtherCost'),
+          "TotalDiscount": getValues('TotalDiscount'),
+          "IsChangeCurrency": IsCurrencyChange,
+          "NetPOPriceINR": getValues('NetPOPriceINR'),
+          "NetPOPriceOtherCurrency": getValues('NetPOPriceOtherCurrency'),
+          "CurrencyId": currency.value,
+          "Currency": currency.label,
+          "Remark": getValues('Remarks'),
+          "OtherCostDescription": getValues('OtherCostDescription'),
+          "CurrencyExchangeRate": CurrencyExchangeRate,
+          "EffectiveDate": effectiveDate,
+        }
+      },
+      "Attachements": updatedFiles
+    }
+    dispatch(setComponentDiscountOtherItemData(data, () => { }))
+  }, [props])
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -54,7 +128,11 @@ function TabDiscountOther(props) {
             let OtherCostDetails = Data.CostingPartDetails.OtherCostDetails;
 
             setIsCurrencyChange(OtherCostDetails.IsChangeCurrency ? true : false)
+            setCurrencyExchangeRate(OtherCostDetails.CurrencyExchangeRate)
             setFiles(Data.Attachements ? Data.Attachements : [])
+            setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
+            setCurrency(OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
+
             setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
             setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
             setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '')
@@ -70,6 +148,7 @@ function TabDiscountOther(props) {
               NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', 2),
               HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', 2),
               AnyOtherCost: checkForDecimalAndNull(OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '', 2),
+              HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '',
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -79,17 +158,11 @@ function TabDiscountOther(props) {
     }
   }, [costData]);
 
-  useEffect(() => {
-    dispatch(getCurrencySelectList(() => { }))
-  }, [])
-
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     const { DiscountTabData } = props;
-    setTimeout(() => {
-      setValue('NetPOPriceINR', DiscountTabData && DiscountTabData.NetPOPriceINR)
-      setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
-    }, 500)
+    setValue('NetPOPriceINR', DiscountTabData && DiscountTabData.NetPOPriceINR)
+    setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
   }, [props]);
 
   /**
@@ -146,13 +219,18 @@ function TabDiscountOther(props) {
   const handleCurrencyChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
-      dispatch(getExchangeRateByCurrency(newValue.label, res => {
-        let Data = res.data.Data;
-        const NetPOPriceINR = getValues('NetPOPriceINR');
-        setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+      let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
+      dispatch(getExchangeRateByCurrency(ReqParams, res => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          const NetPOPriceINR = getValues('NetPOPriceINR');
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+          setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+        }
       }))
     } else {
       setCurrency([])
+      setCurrencyExchangeRate('')
     }
   }
 
@@ -212,21 +290,6 @@ function TabDiscountOther(props) {
     if (status === 'rejected_file_type') {
       toastr.warning('Allowed only xls, doc, jpeg, pdf files.')
     }
-  }
-
-  const renderImages = () => {
-    files && files.map(f => {
-      const withOutTild = f.FileURL.replace('~', '')
-      const fileURL = `${FILE_URL}${withOutTild}`;
-      return (
-        <div className={'attachment-wrapper images'}>
-          <img src={fileURL} alt={''} />
-          <button
-            type="button"
-            onClick={() => deleteFile(f.FileId)}>X</button>
-        </div>
-      )
-    })
   }
 
   const deleteFile = (FileId, OriginalFileName) => {
@@ -300,6 +363,10 @@ function TabDiscountOther(props) {
           "Currency": currency.label,
           "Remark": values.Remarks,
           "OtherCostDescription": values.OtherCostDescription,
+<<<<<<< HEAD
+=======
+          "CurrencyExchangeRate": CurrencyExchangeRate,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
           "EffectiveDate": effectiveDate,
         }
       },
@@ -309,6 +376,12 @@ function TabDiscountOther(props) {
     dispatch(saveDiscountOtherCostTab(data, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+<<<<<<< HEAD
+=======
+        if (GoToNext) {
+          props.toggle('2')
+        }
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       }
     }))
   }
@@ -348,14 +421,17 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
-                          required: true,
+                          required: false,
                           pattern: {
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.'
                           },
-                          // maxLength: 4,
+                          max: {
+                            value: 100,
+                            message: 'Percentage cannot be greater than 100'
+                          },
                         }}
                         handleChange={(e) => {
                           e.preventDefault();
@@ -365,7 +441,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.HundiOrDiscountPercentage}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4" >
@@ -375,16 +451,20 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={false}
                         rules={{
+<<<<<<< HEAD
                           required: true,
+=======
+                          required: false,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                         }}
                         handleChange={() => { }}
                         defaultValue={""}
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.OtherCostDescription}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">
@@ -435,7 +515,7 @@ function TabDiscountOther(props) {
                         rules={{
                           //required: true,
                           pattern: {
-                            value: /^[0-9]*$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
                             message: "Invalid Number.",
                           },
                           // maxLength: 4,
@@ -448,7 +528,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.AnyOtherCost}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
                     <Col md="4">{''}</Col>
@@ -464,7 +544,7 @@ function TabDiscountOther(props) {
                       <input
                           type="checkbox"
                           checked={IsCurrencyChange}
-                          disabled={false}
+                          disabled={CostingViewMode ? true : false}
                         />
                         <span
                           className=" before-box"
@@ -493,7 +573,11 @@ function TabDiscountOther(props) {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
+<<<<<<< HEAD
                                 disabled={false}
+=======
+                                disabled={CostingViewMode ? true : false}
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                               />
                             </div>
                           </div>
@@ -512,7 +596,7 @@ function TabDiscountOther(props) {
                             mandatory={true}
                             handleChange={handleCurrencyChange}
                             errors={errors.Currency}
-                            disabled={false}
+                            disabled={CostingViewMode || effectiveDate === '' ? true : false}
                           />
                         </Col>
                         <Col md="3">
@@ -558,7 +642,7 @@ function TabDiscountOther(props) {
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.Remarks}
-                        disabled={false}
+                        disabled={CostingViewMode ? true : false}
                       />
                     </Col>
 
@@ -569,41 +653,42 @@ function TabDiscountOther(props) {
                           Maximum file upload limit has been reached.
                         </div>
                       ) : (
-                          <Dropzone
-                            getUploadParams={getUploadParams}
-                            onChangeStatus={handleChangeStatus}
-                            PreviewComponent={Preview}
-                            //onSubmit={this.handleSubmit}
-                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                            initialFiles={initialFiles}
-                            maxFiles={4}
-                            maxSizeBytes={2000000}
-                            inputContent={(files, extra) =>
-                              extra.reject ? (
-                                "Image, audio and video files only"
-                              ) : (
-                                  <div className="text-center">
-                                    <i className="text-primary fa fa-cloud-upload"></i>
-                                    <span className="d-block">
-                                      Drag and Drop or{" "}
-                                      <span className="text-primary">Browse</span>
-                                      <br />
+                        <Dropzone
+                          getUploadParams={getUploadParams}
+                          onChangeStatus={handleChangeStatus}
+                          PreviewComponent={Preview}
+                          //onSubmit={this.handleSubmit}
+                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                          initialFiles={initialFiles}
+                          maxFiles={4}
+                          maxSizeBytes={2000000}
+                          inputContent={(files, extra) =>
+                            extra.reject ? (
+                              "Image, audio and video files only"
+                            ) : (
+                              <div className="text-center">
+                                <i className="text-primary fa fa-cloud-upload"></i>
+                                <span className="d-block">
+                                  Drag and Drop or{" "}
+                                  <span className="text-primary">Browse</span>
+                                  <br />
                                         file to upload
                                     </span>
-                                  </div>
-                                )
-                            }
-                            styles={{
-                              dropzoneReject: {
-                                borderColor: "red",
-                                backgroundColor: "#DAA",
-                              },
-                              inputLabel: (files, extra) =>
-                                extra.reject ? { color: "red" } : {},
-                            }}
-                            classNames="draper-drop"
-                          />
-                        )}
+                              </div>
+                            )
+                          }
+                          styles={{
+                            dropzoneReject: {
+                              borderColor: "red",
+                              backgroundColor: "#DAA",
+                            },
+                            inputLabel: (files, extra) =>
+                              extra.reject ? { color: "red" } : {},
+                          }}
+                          classNames="draper-drop"
+                          disabled={CostingViewMode ? true : false}
+                        />
+                      )}
                     </Col>
                     <Col md="3">
                       <div className={"attachment-wrapper"}>
@@ -632,9 +717,11 @@ function TabDiscountOther(props) {
 
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
-                      <button
+
+                      {!CostingViewMode && <button
                         type={"submit"}
                         className="submit-button mr5 save-btn"
+                        onClick={() => setGoToNext(false)}
                       >
                         <div className={"check-icon"}>
                           <img
@@ -643,7 +730,22 @@ function TabDiscountOther(props) {
                           />{" "}
                         </div>
                         {"Save"}
-                      </button>
+                      </button>}
+
+                      {!CostingViewMode && <button
+                        type="submit"
+                        className="submit-button save-btn"
+                        onClick={() => setGoToNext(true)}
+                      >
+                        {"Next"}
+                        <div className={"check-icon ml-1"}>
+                          <img
+                            src={require("../../../../assests/images/right-arrow-white.svg")}
+                            alt="check-icon.jpg"
+                          />{" "}
+                        </div>
+                      </button>}
+
                     </div>
                   </Row>
 

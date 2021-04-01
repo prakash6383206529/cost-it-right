@@ -10,19 +10,28 @@ import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
-import { checkForNull, loggedInUserId, userDetails } from '../../../helper';
+import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
+<<<<<<< HEAD
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting
+=======
+  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
+import ConfirmComponent from '../../../helper/ConfirmComponent';
+import { MESSAGES } from '../../../config/message';
+import BOMUpload from '../../massUpload/BOMUpload';
+
+export const ViewCostingContext = React.createContext()
 
 function CostingDetails(props) {
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 
@@ -47,11 +56,16 @@ function CostingDetails(props) {
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
 
-  // For copy costing
+  const [IsBulkOpen, SetIsBulkOpen] = useState(false)
+
+  // FOR COPY COSTING
   const [copyCostingData, setCopyCostingData] = useState({})
   const [type, setType] = useState('')
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
+
+  //FOR VIEW MODE COSTING
+  const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
 
   const fieldValues = useWatch({
     control,
@@ -63,6 +77,7 @@ function CostingDetails(props) {
   useEffect(() => {
     dispatch(storePartNumber(''))
     dispatch(getCostingTechnologySelectList(() => { }))
+    dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
   }, [])
@@ -77,10 +92,47 @@ function CostingDetails(props) {
   )
   const partSelectList = useSelector((state) => state.costing.partSelectList)
   const partInfo = useSelector((state) => state.costing.partInfo)
-  const initialConfiguration = useSelector(
-    (state) => state.auth.initialConfiguration,
-  )
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
+
+
+  useEffect(() => {
+    if (Object.keys(partNumber).length > 0) {
+
+      setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
+      setPart({ label: partNumber.partNumber, value: partNumber.partId })
+      setTimeout(() => {
+        setTechnology({ label: partNumber.technologyName, value: partNumber.technologyId })
+        setValue('Part', { label: partNumber.partNumber, value: partNumber.partId })
+        setIsTechnologySelected(true)
+        setShowNextBtn(true)
+
+        dispatch(getPartSelectListByTechnology(partNumber.technologyId, res => {
+
+        }))
+        dispatch(
+          getPartInfo(partNumber.partId, (res) => {
+            let Data = res.data.Data
+            setValue('PartName', Data.PartName)
+            setValue('Description', Data.Description)
+            setValue('ECNNumber', Data.ECNNumber)
+            setValue('DrawingNumber', Data.DrawingNumber)
+            setValue('RevisionNumber', Data.RevisionNumber)
+            setValue('ShareOfBusiness', Data.Price)
+            setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+
+          }),
+        )
+      }, 300);
+    }
+  }, [partNumber])
+
+  useEffect(() => {
+    if (Object.keys(technology).length > 0 && Object.keys(partNumber).length > 0) {
+      nextToggle()
+    }
+  }, [technology])
 
   /**
    * @method renderListing
@@ -99,7 +151,7 @@ function CostingDetails(props) {
     }
 
     if (label === 'PartList') {
-      partSelectList && partSelectList.map((item) => {
+      partSelectListByTechnology && partSelectListByTechnology.map((item) => {
         if (item.Value === '0') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
@@ -131,6 +183,7 @@ function CostingDetails(props) {
   const handleTechnologyChange = (newValue) => {
     if (newValue && newValue !== '') {
       dispatch(getPartInfo('', () => { }))
+      dispatch(getPartSelectListByTechnology(newValue.value, () => { }))
       setTechnology(newValue)
       setPart([])
       setIsTechnologySelected(true)
@@ -307,6 +360,10 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
+<<<<<<< HEAD
+=======
+        DisplayStatus: selectedOptionObj.DisplayStatus,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         CostingId: newValue.value,
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
@@ -322,6 +379,10 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
+<<<<<<< HEAD
+=======
+        DisplayStatus: selectedOptionObj.DisplayStatus,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         CostingId: newValue.value,
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
@@ -509,6 +570,10 @@ function CostingDetails(props) {
             setCostingData({ costingId: res.data.Data.CostingId, type })
             /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
             dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+<<<<<<< HEAD
+=======
+            setIsCostingViewMode(false)
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             setStepTwo(true)
             setStepOne(false)
           }
@@ -523,7 +588,7 @@ function CostingDetails(props) {
         PartType: partInfo.PartType,
         TechnologyId: technology.value,
         VendorId: tempData.VendorId,
-        VendorPlantId: tempData.VendorPlantId,
+        VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',
         VendorPlantName: tempData.VendorPlantName,
         VendorPlantCode: tempData.VendorPlantCode,
         VendorName: tempData.VendorName,
@@ -548,6 +613,10 @@ function CostingDetails(props) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
             dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+<<<<<<< HEAD
+=======
+            setIsCostingViewMode(false)
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             setStepTwo(true)
             setStepOne(false)
           }
@@ -570,9 +639,11 @@ function CostingDetails(props) {
     } else if (!checkForError(index, type)) {
       warningMessageHandle('ERROR_WARNING')
     } else {
+      setIsCostingViewMode(true)
       moveToCostingDetail(index, type)
     }
   }
+
   /**
    * @method editCosting
    * @description EDIT COSTING DETAILS
@@ -587,9 +658,11 @@ function CostingDetails(props) {
     } else if (checkSOBChanged(index, type)) {
       editCostingAlert(index, type)
     } else {
+      setIsCostingViewMode(false)
       moveToCostingDetail(index, type)
     }
   }
+
   /**
    * @method checkSOBChanged
    * @description CHECK SOB CHANGED FOR UPDATE COSTING AND TRIGGER CONFIRMATION FOR DRAFT ALL PENDING COSTINGS
@@ -613,7 +686,7 @@ function CostingDetails(props) {
       onOk: () => {
         confirmUpdateCosting(index, type)
       },
-      onCancel: () => console.log('CANCEL: clicked'),
+      onCancel: () => { },
     }
     return toastr.confirm(
       `${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`,
@@ -636,12 +709,18 @@ function CostingDetails(props) {
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
         LoggedInUserId: loggedInUserId(),
       }
+<<<<<<< HEAD
       dispatch(
         updateZBCSOBDetail(data, (res) => {
           dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
+=======
+      dispatch(updateZBCSOBDetail(data, (res) => {
+        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
           setStepTwo(true)
           setStepOne(false)
-        }),
+        }))
+      }),
       )
     }
     if (type === VBC) {
@@ -656,12 +735,19 @@ function CostingDetails(props) {
         VendorId: tempData.VendorId,
         VendorPlantId: tempData.VendorPlantId
       }
+<<<<<<< HEAD
       dispatch(
         updateVBCSOBDetail(data, (res) => {
           dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
+=======
+      dispatch(updateVBCSOBDetail(data, (res) => {
+        dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
           setStepTwo(true)
           setStepOne(false)
-        }),
+
+        }))
+      }),
       )
     }
   }
@@ -676,25 +762,23 @@ function CostingDetails(props) {
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
-
-      setTimeout(() => {
-        setStepTwo(true)
-        setStepOne(false)
-      }, 500)
-
+      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
     }
 
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
-      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
-
-      setTimeout(() => {
-        setStepTwo(true)
-        setStepOne(false)
-      }, 500)
-
+      dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+        setTimeout(() => {
+          setStepTwo(true)
+          setStepOne(false)
+        }, 500)
+      }))
     }
   }
 
@@ -711,11 +795,12 @@ function CostingDetails(props) {
     // } else if (!checkForError(index, type)) {
     //   warningMessageHandle('ERROR_WARNING')
     // } else {
-    //   console.log('Move to Copy Costing')
+    //   
     //
 
     // }
     /*Copy Costing Drawer code here*/
+    setIsCostingViewMode(false)
     setIsCopyCostingDrawer(true)
 
     if (type === ZBC) {
@@ -737,6 +822,7 @@ function CostingDetails(props) {
   }
 
   /**
+<<<<<<< HEAD
    * @method deleteCosting
    * @description USED FOR DELETE 
    */
@@ -744,6 +830,60 @@ function CostingDetails(props) {
     let reqData = { Id: CostingId, UserId: loggedInUserId() }
     dispatch(deleteDraftCosting(reqData, () => {
 
+=======
+  * @method deleteItem
+  * @description CONFIRM DELETE COSTINGS
+  */
+  const deleteItem = (Item, index, type) => {
+    const toastrConfirmOptions = {
+      onOk: () => {
+        deleteCosting(Item, index, type);
+      },
+      onCancel: () => { },
+      component: () => <ConfirmComponent />,
+    };
+    return toastr.confirm(`${MESSAGES.COSTING_DELETE_ALERT}`, toastrConfirmOptions);
+  }
+
+  /**
+   * @method deleteCosting
+   * @description USED FOR DELETE COSTING
+   */
+  const deleteCosting = (Item, index, type) => {
+    let reqData = { Id: Item.CostingId, UserId: loggedInUserId() }
+    dispatch(deleteDraftCosting(reqData, () => {
+      setIsCostingViewMode(false)
+
+      let tempArray = []
+
+      if (type === ZBC) {
+        let tempData = zbcPlantGrid[index]
+        let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId)
+
+        tempData = {
+          ...tempData,
+          CostingOptions: selectedOptionObj,
+          CostingId: Item.CostingId,
+        }
+        tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
+        setZBCPlantGrid(tempArray)
+        setValue(`zbcPlantGridFields[${index}]CostingVersion`, '')
+      }
+
+      if (type === VBC) {
+        let tempData = vbcVendorGrid[index]
+        let selectedOptionObj = tempData.CostingOptions.filter((el) => el.CostingId !== Item.CostingId,)
+
+        tempData = {
+          ...tempData,
+          CostingOptions: selectedOptionObj,
+          CostingId: Item.CostingId,
+        }
+        tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
+        setVBCVendorGrid(tempArray)
+        setValue(`vbcGridFields[${index}]CostingVersion`, '')
+      }
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     }))
   }
 
@@ -775,10 +915,10 @@ function CostingDetails(props) {
     setStepTwo(false);
     setZBCPlantGrid([])
     nextToggle()
-    // console.log(partNu);
+    // 
     dispatch(getPartInfo(part.value !== undefined ? part.value : partNumber.partId, (res) => {
       let Data = res.data.Data;
-
+      //setPart({ label: part.label, value: part.value })
       setValue('PartName', Data.PartName)
       setValue("Description", Data.Description)
       setValue("ECNNumber", Data.ECNNumber)
@@ -799,8 +939,40 @@ function CostingDetails(props) {
   const zbcPlantGridFields = 'zbcPlantGridFields'
   const vbcGridFields = 'vbcGridFields'
 
+  const bulkToggle = () => {
+    SetIsBulkOpen(true)
+  }
+
+  const closeBulkUploadDrawer = () => {
+    SetIsBulkOpen(false)
+  }
+
   return (
     <>
+      <span className="position-relative costing-page-tabs d-block w-100">
+        <div className="right-actions">
+
+          {/* BELOW BUTTONS ARE TEMPORARY HIDDEN FROM UI  */}
+
+          {/* <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/print.svg')} alt="print-button" />
+            <span className="d-block mt-1">PRINT</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/excel.svg')} alt="print-button" />
+            <span className="d-block mt-1">XLS</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/pdf.svg')} alt="print-button" />
+            <span className="d-block mt-1">PDF</span>
+          </button> */}
+
+          {stepOne && <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+            <span className="d-block mt-1">ADD BOM</span>
+          </button>}
+        </div>
+      </span>
       <div className="login-container signup-form costing-details-page">
         <Row>
           <Col md="12">
@@ -840,8 +1012,10 @@ function CostingDetails(props) {
                           defaultValue={part.length !== 0 ? part : ""}
                           options={renderListing("PartList")}
                           mandatory={true}
+                          isLoading={false}
                           handleChange={handlePartChange}
                           errors={errors.Part}
+                          disabled={technology.length === 0 ? true : false}
                         />
                       </Col>
                       <Col className="col-md-15">
@@ -1009,9 +1183,14 @@ function CostingDetails(props) {
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Plant Code`}</th>
+                                  <th style={{}}>{`Plant Name`}</th>
                                   <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
+<<<<<<< HEAD
                                   <th style={{ minWidth: "250px" }}>{`Actions`}</th>
+=======
+                                  <th style={{ minWidth: "260px" }}>{`Actions`}</th>
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                 </tr>
                               </thead>
                               <tbody>
@@ -1033,6 +1212,7 @@ function CostingDetails(props) {
                                     return (
                                       <tr key={index}>
                                         <td>{item.PlantCode}</td>
+                                        <td>{item.PlantName}</td>
                                         <td className="cr-select-height w-100px">
                                           <TextFieldHookForm
                                             label={""}
@@ -1084,15 +1264,20 @@ function CostingDetails(props) {
                                         </td>
                                         <td className="text-center">
                                           <div className={item.Status}>
-                                            {item.Status}
+                                            {item.DisplayStatus}
                                           </div>
                                         </td>
                                         <td style={{ width: "250px" }}>
                                           <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />
                                           {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
+<<<<<<< HEAD
                                           {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteCosting(item.CostingId, ZBC)} />)}
+=======
+                                          {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
+                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                         </td>
                                       </tr>
                                     );
@@ -1142,11 +1327,16 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Vendor`}</th>
+                                  <th style={{}}>{`Vendor Code`}</th>
+                                  <th style={{}}>{`Vendor Name`}</th>
                                   <th style={{}}>{`SOB`}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{}}>{`Status`}</th>
+<<<<<<< HEAD
                                   <th style={{ minWidth: "250px" }}>{`Actions`}</th>
+=======
+                                  <th style={{ minWidth: "260px" }}>{`Actions`}</th>
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                 </tr>
                               </thead>
                               <tbody>
@@ -1166,6 +1356,7 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
+                                      <td>{item.VendorCode}</td>
                                       <td>{item.VendorName}</td>
                                       <td className="w-100px cr-select-height">
                                         <TextFieldHookForm
@@ -1216,15 +1407,20 @@ function CostingDetails(props) {
                                       </td>
                                       <td className="text-center">
                                         <div className={item.Status}>
-                                          {item.Status}
+                                          {item.DisplayStatus}
                                         </div>
                                       </td>
                                       <td>
                                         <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
                                         {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
+<<<<<<< HEAD
                                         {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                         {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteCosting(item.CostingId, VBC)} />)}
+=======
+                                        {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
+                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                       </td>
                                     </tr>
                                   );
@@ -1273,11 +1469,14 @@ function CostingDetails(props) {
                   </>
                 )}
                 {stepTwo && (
-                  <CostingDetailStepTwo
-                    backBtn={backToFirstStep}
-                    partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
-                    costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
-                  />
+                  <ViewCostingContext.Provider value={IsCostingViewMode} >
+                    <CostingDetailStepTwo
+                      backBtn={backToFirstStep}
+                      partInfo={Object.keys(props.partInfoStepTwo).length > 0 ? props.partInfoStepTwo : partInfoStepTwo}
+                      costingInfo={Object.keys(props.costingData).length > 0 ? props.costingData : costingData}
+                      toggle={props.toggle}
+                    />
+                  </ViewCostingContext.Provider>
                 )}
               </form>
             </div>
@@ -1321,6 +1520,15 @@ function CostingDetails(props) {
           anchor={"right"}
         />
       )}
+
+      {IsBulkOpen && <BOMUpload
+        isOpen={IsBulkOpen}
+        closeDrawer={closeBulkUploadDrawer}
+        isEditFlag={false}
+        fileName={'BOM'}
+        messageLabel={'BOM'}
+        anchor={'right'}
+      />}
     </>
   );
 }

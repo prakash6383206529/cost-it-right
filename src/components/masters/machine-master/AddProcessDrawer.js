@@ -38,7 +38,7 @@ class AddProcessDrawer extends Component {
    */
   getData = () => {
     const { isEditFlag, ID } = this.props
-    console.log(ID, 'ID')
+
     if (isEditFlag) {
       this.props.getProcessData(ID, (res) => {
         let Data = res.data.Data
@@ -170,7 +170,7 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        Plants: plantArray,
+        Plants: plantArray.length > 0 ? plantArray : [],
         Machines: isMachineShow ? machineArray : [],
         LoggedInUserId: loggedInUserId(),
       }
@@ -238,7 +238,7 @@ class AddProcessDrawer extends Component {
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
-                  <Col md="12">
+                  {/* <Col md="12">
                     <Field
                       label="Plant"
                       name="Plant"
@@ -255,8 +255,8 @@ class AddProcessDrawer extends Component {
                       className="multiselect-with-border"
                       disabled={false}
                     />
-                  </Col>
-                  {isMachineShow && (
+                  </Col> */}
+                  {/* {isMachineShow && (
                     <Col md="12">
                       <Field
                         label="Machine"
@@ -275,7 +275,7 @@ class AddProcessDrawer extends Component {
                         disabled={false}
                       />
                     </Col>
-                  )}
+                  )} */}
                 </Row>
 
                 <Row className="sf-btn-footer no-gutters justify-content-between">

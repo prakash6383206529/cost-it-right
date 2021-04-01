@@ -990,7 +990,7 @@ export function getRMDomesticDataList(data, callback) {
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
-                //console.log(response, "RESPPPPPPP");
+                //
                 dispatch({
                     type: GET_RM_DOMESTIC_LIST,
                     payload: response.status === 204 ? [] : response.data.DataList
@@ -998,7 +998,7 @@ export function getRMDomesticDataList(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
-            console.log('error: ', error);
+
 
             dispatch({ type: API_FAILURE, });
             callback(error);

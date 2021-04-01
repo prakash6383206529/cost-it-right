@@ -244,15 +244,15 @@ export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) 
     dispatch({ type: API_REQUEST });
     axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}`, headers)
       .then((response) => {
-        callback(response);
-        if (response.data.Result === true) {
+        if (response.data.Result === true || response.status === 202) {
           dispatch({
             type: GET_VOLUME_DATA_BY_PART_AND_YEAR,
             payload: response.data.Data,
           });
+          callback(response);
         }
       }).catch((error) => {
-        apiErrors(error);
+        // apiErrors(error);
         dispatch({ type: API_FAILURE });
       });
   };

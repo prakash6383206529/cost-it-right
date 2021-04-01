@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
@@ -9,23 +9,32 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
+<<<<<<< HEAD
   // console.log(selectedRowData, "SELECTED ROW DATA");
+=======
+
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
+
+  const rmDrawerList = useSelector(state => state.costing.rmDrawerList)
 
   useEffect(() => {
     setSelectedRowData([])
     if (costData.VendorType === ZBC) {
 
       const data = {
+        TechnologyId: costData.TechnologyId,
         PlantId: costData.PlantId,
+        TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
       }
       dispatch(getRMDrawerDataList(data, (res) => {
@@ -43,7 +52,8 @@ function AddRM(props) {
 
       const data = {
         VendorId: costData.VendorId,
-        VendorPlantId: costData.VendorPlantId,
+        TechnologyId: costData.TechnologyId,
+        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
       }
       dispatch(getRMDrawerVBCDataList(data, (res) => {
@@ -70,7 +80,7 @@ function AddRM(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+    noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal(),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -111,7 +121,7 @@ function AddRM(props) {
   }
 
   const renderBasicRate = () => {
-    return <>Basic Rate <br />INR/UOM </>
+    return <>Basic Rate /<br />UOM </>
   }
   const renderRmType = () => {
     return <>RM <br />Type</>
@@ -130,7 +140,7 @@ function AddRM(props) {
   }
 
   const renderScrapRate = () => {
-    return <>Scrap Rate <br /> INR/UOM </>
+    return <>Scrap Rate /<br />UOM </>
   }
 
   const renderNetLandedRate = () => {
@@ -193,7 +203,7 @@ function AddRM(props) {
             <Row className="mx-0">
               <Col>
                 <BootstrapTable
-                  data={tableData}
+                  data={rmDrawerList}
                   striped={false}
                   bordered={false}
                   hover={false}

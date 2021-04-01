@@ -9,6 +9,10 @@ import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTe
 import Switch from "react-switch";
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
+<<<<<<< HEAD
+=======
+import { ViewCostingContext } from '../../CostingDetails';
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -41,7 +45,7 @@ function OverheadProfit(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   });
@@ -49,6 +53,10 @@ function OverheadProfit(props) {
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
+<<<<<<< HEAD
+=======
+  const CostingViewMode = useContext(ViewCostingContext);
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -62,12 +70,12 @@ function OverheadProfit(props) {
 
   const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
 
-  const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost !== null ? true : false)
+  const [IsInventoryApplicable, setIsInventoryApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsInventoryCarringCost ? true : false)
   const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
 
   const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
 
-  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms !== null ? true : false)
+  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
   const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
   const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
 
@@ -124,6 +132,26 @@ function OverheadProfit(props) {
 
   /**
   * @method useEffect
+<<<<<<< HEAD
+=======
+  * @description TO CHANGE OVERHEADS VALUE WHEN RM BOP CC VALUES CHANGES FROM RMCC TAB
+  */
+  useEffect(() => {
+
+    if (modelType && modelType.value !== undefined) {
+      handleModelTypeChange(modelType)
+    }
+
+    if (applicability && applicability.value !== undefined) {
+      setApplicability(applicability)
+      checkRejectionApplicability(applicability.label)
+    }
+
+  }, [headerCosts.NetTotalRMBOPCC])
+
+  /**
+  * @method useEffect
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   * @description USED TO UPDATE WHEN MODEL TYPE CHANGE
   */
   useEffect(() => {
@@ -240,7 +268,11 @@ function OverheadProfit(props) {
       }, 200)
 
     } catch (error) {
+<<<<<<< HEAD
       console.log('error: setRejectionDetail', error);
+=======
+
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     }
 
   }, [rejectionFieldValues]);
@@ -720,7 +752,11 @@ function OverheadProfit(props) {
       const reqParams = {
         ModelTypeId: newValue.value,
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+<<<<<<< HEAD
         IsVendor: costData.IsVendor
+=======
+        IsVendor: costData.IsVendor,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       }
       dispatch(getOverheadProfitDataByModelType(reqParams, res => {
         if (res && res.data && res.data.Data) {
@@ -846,6 +882,35 @@ function OverheadProfit(props) {
     setIsInventoryApplicable(!IsInventoryApplicable)
   }
 
+  useEffect(() => {
+    if (IsInventoryApplicable === true) {
+      const reqParams = {
+        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+        IsVendor: costData.IsVendor
+      }
+      dispatch(getInventoryDataByHeads(reqParams, res => {
+        if (res && res.status === 204) {
+          setValue('InterestRatePercentage', '')
+          setValue('InterestRateCost', '')
+          setValue('NetICCTotal', '')
+          checkInventoryApplicability('')
+          setICCapplicability([])
+        } else {
+          if (res && res.data && res.data.Result) {
+            let Data = res.data.Data;
+            setValue('InterestRatePercentage', Data.InterestRate)
+            setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
+            checkInventoryApplicability(Data.ICCApplicability)
+            setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
+          }
+        }
+      }))
+    } else {
+      setICCapplicability([])
+      props.setICCDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+    }
+  }, [IsInventoryApplicable])
+
   /**
    * @method handleICCApplicabilityChange
    * @description  USED TO HANDLE ICC APPLICABILITY CHANGE
@@ -948,6 +1013,34 @@ function OverheadProfit(props) {
     setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
   }
 
+  useEffect(() => {
+    if (IsPaymentTermsApplicable === true) {
+      const reqParams = {
+        VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
+        IsVendor: costData.IsVendor
+      }
+      dispatch(getPaymentTermsDataByHeads(reqParams, res => {
+        if (res.status === 204) {
+          setValue('RepaymentPeriodDays', '')
+          setValue('RepaymentPeriodPercentage', '')
+          setValue('RepaymentPeriodCost', '')
+          checkPaymentTermApplicability('')
+          setPaymentTermsApplicability([])
+        } else if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
+          setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+          setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
+          checkPaymentTermApplicability(Data.PaymentTermApplicability)
+          setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+        }
+      }))
+    } else {
+      setPaymentTermsApplicability([])
+      props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
+    }
+  }, [IsPaymentTermsApplicable])
+
   /**
    * @method handlePaymentTermsApplicabilityChange
    * @description  USED TO HANDLE PAYMENT TERM APPLICABILITY CHANGE
@@ -956,7 +1049,11 @@ function OverheadProfit(props) {
     if (newValue && newValue !== '') {
       setPaymentTermsApplicability(newValue)
       const reqParams = {
+<<<<<<< HEAD
         Id: newValue.value,
+=======
+        //Id: newValue.value,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
         IsVendor: costData.IsVendor
       }
@@ -1061,11 +1158,12 @@ function OverheadProfit(props) {
                   placeholder={'-Select-'}
                   Controller={Controller}
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   register={register}
                   defaultValue={modelType.length !== 0 ? modelType : ''}
                   options={renderListing('ModelType')}
-                  mandatory={true}
+                  mandatory={false}
+                  disabled={CostingViewMode ? true : false}
                   handleChange={handleModelTypeChange}
                   errors={errors.ModelType}
                 />
@@ -1097,7 +1195,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <span className="head-text">
-                      {'Percentage (%)'}
+                      {`${overheadObj && overheadObj.IsOverheadFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
                     </span>
                   </Col>
                   <Col md="3">
@@ -1134,13 +1232,17 @@ function OverheadProfit(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.'
                             },
+                            // max: {
+                            //   value: 100,
+                            //   message: 'Percentage cannot be greater than 100'
+                            // },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.OverheadFixedPercentage}
-                          disabled={false}
+                          disabled={CostingViewMode ? true : false}
                         />
                       </Col>
                       <Col md="3">
@@ -1434,7 +1536,7 @@ function OverheadProfit(props) {
                   </Col>
                   <Col md="3">
                     <span className="head-text">
-                      {'Percentage (%)'}
+                      {`${profitObj && profitObj.IsProfitFixedApplicable ? 'Fixed Cost' : 'Percentage (%)'}`}
                     </span>
                   </Col>
                   <Col md="3">
@@ -1471,14 +1573,17 @@ function OverheadProfit(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.'
                             },
-                            // maxLength: 4,
+                            // max: {
+                            //   value: 100,
+                            //   message: 'Percentage cannot be greater than 100'
+                            // },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
                           errors={errors.ProfitFixedPercentage}
-                          disabled={false}
+                          disabled={CostingViewMode ? true : false}
                         />
                       </Col>
                       <Col md="3">
@@ -1774,11 +1879,12 @@ function OverheadProfit(props) {
                   placeholder={'-Select-'}
                   Controller={Controller}
                   control={control}
-                  rules={{ required: true }}
+                  rules={{ required: false }}
                   register={register}
                   defaultValue={applicability.length !== 0 ? applicability : ''}
                   options={renderListing('Applicability')}
-                  mandatory={true}
+                  mandatory={false}
+                  disabled={CostingViewMode ? true : false}
                   handleChange={handleApplicabilityChange}
                   errors={errors.Applicability}
                 />
@@ -1797,6 +1903,10 @@ function OverheadProfit(props) {
                       value: /^[0-9]\d*(\.\d+)?$/i,
                       message: 'Invalid Number.'
                     },
+                    // max: {
+                    //   value: 100,
+                    //   message: 'Percentage cannot be greater than 100'
+                    // },
                   }}
                   // handleChange={handleRejection}
                   handleChange={() => { }}
@@ -1804,7 +1914,7 @@ function OverheadProfit(props) {
                   className=""
                   customClassName={'withBorder'}
                   errors={errors.RejectionPercentage}
-                  disabled={false}
+                  disabled={CostingViewMode ? true : false}
                 />
               </Col>
               {applicability.label !== 'Fixed' &&
@@ -1852,7 +1962,7 @@ function OverheadProfit(props) {
                     onChange={onPressInventory}
                     checked={IsInventoryApplicable}
                     id="normal-switch"
-                    disabled={false}
+                    disabled={CostingViewMode ? true : false}
                     background="#4DC771"
                     onColor="#4DC771"
                     onHandleColor="#ffffff"
@@ -1870,7 +1980,10 @@ function OverheadProfit(props) {
               <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing">
                 <>
                   <Col md="3">
-                    <SearchableSelectHookForm
+                    <label className="col-label">
+                      {ICCapplicability.label}
+                    </label>
+                    {/* <SearchableSelectHookForm
                       label={'ICC Applicability'}
                       name={'ICCApplicability'}
                       placeholder={'-Select-'}
@@ -1883,7 +1996,7 @@ function OverheadProfit(props) {
                       mandatory={true}
                       handleChange={handleICCApplicabilityChange}
                       errors={errors.ICCApplicability}
-                    />
+                    /> */}
                   </Col>
                   <Col md="3">
                     <TextFieldHookForm
@@ -1893,6 +2006,20 @@ function OverheadProfit(props) {
                       control={control}
                       register={register}
                       mandatory={false}
+<<<<<<< HEAD
+=======
+                      rules={{
+                        required: false,
+                        pattern: {
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.'
+                        },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
+                        },
+                      }}
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                       // handleChange={handleICCDetail}
                       handleChange={() => { }}
                       defaultValue={''}
@@ -1950,7 +2077,7 @@ function OverheadProfit(props) {
                     onChange={onPressPaymentTerms}
                     checked={IsPaymentTermsApplicable}
                     id="normal-switch"
-                    disabled={false}
+                    disabled={CostingViewMode ? true : false}
                     background="#4DC771"
                     onColor="#4DC771"
                     onHandleColor="#ffffff"
@@ -1968,7 +2095,10 @@ function OverheadProfit(props) {
               <Row className="costing-border costing-border-with-labels px-2 py-3 m-0 overhead-profit-tab-costing mb-4">
                 <>
                   <Col md="3">
-                    <SearchableSelectHookForm
+                    <label className="col-label">
+                      {paymentTermsApplicability.label}
+                    </label>
+                    {/* <SearchableSelectHookForm
                       label={'Payment Terms Applicability'}
                       name={'PaymentTermsApplicability'}
                       placeholder={'-Select-'}
@@ -1981,7 +2111,7 @@ function OverheadProfit(props) {
                       mandatory={true}
                       handleChange={handlePaymentTermsApplicabilityChange}
                       errors={errors.PaymentTermsApplicability}
-                    />
+                    /> */}
                   </Col>
                   {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                     <TextFieldHookForm
@@ -2007,6 +2137,17 @@ function OverheadProfit(props) {
                       control={control}
                       register={register}
                       mandatory={false}
+                      rules={{
+                        required: false,
+                        pattern: {
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.'
+                        },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
+                        },
+                      }}
                       handleChange={() => { }}
                       defaultValue={''}
                       className=""
@@ -2038,12 +2179,12 @@ function OverheadProfit(props) {
 
             <Row className="sf-btn-footer no-gutters justify-content-between costing-overhead-profit-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
-                <button
+                {!CostingViewMode && <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                   {'Save'}
-                </button>
+                </button>}
               </div>
             </Row>
           </form>

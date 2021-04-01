@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useDispatch, } from 'react-redux';
 import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -7,21 +8,15 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
+import { setComponentToolItemData } from '../../../actions/Costing';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function Tool(props) {
 
   const { IsApplicableProcessWise, data } = props;
+  const dispatch = useDispatch();
 
-  // const OverAllApplicability = data.OverAllApplicability;
   const ObjectForOverAllApplicability = data.CostingPartDetails && data.CostingPartDetails.CostingToolCostResponse && data.CostingPartDetails.CostingToolCostResponse[0];
-
-  // BELOW CODE NEED TO BE USED WHEN SEPERATE OBJECT NEED FOR OVERALL APPLICABILITY
-  // const defaultValues = {
-  //   ToolMaintenanceCost: OverAllApplicability && OverAllApplicability.ToolMaintenanceCost !== undefined ? OverAllApplicability.ToolMaintenanceCost : '',
-  //   ToolCost: OverAllApplicability && OverAllApplicability.ToolCost !== undefined ? OverAllApplicability.ToolCost : '',
-  //   Life: OverAllApplicability && OverAllApplicability.Life !== undefined ? OverAllApplicability.Life : '',
-  //   NetToolCost: OverAllApplicability && OverAllApplicability.NetToolCost !== undefined ? OverAllApplicability.NetToolCost : '',
-  // }
 
   // BELOW CODE NEED TO BE USED WHEN OVERALL APPLICABILITY TREATED INSIDE GRID.
   const defaultValues = {
@@ -32,7 +27,7 @@ function Tool(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: IsApplicableProcessWise === false ? defaultValues : {},
   });
@@ -43,9 +38,15 @@ function Tool(props) {
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
+  const CostingViewMode = useContext(ViewCostingContext);
+
   useEffect(() => {
     props.setToolCost(gridData)
   }, [gridData]);
+
+  useEffect(() => {
+    dispatch(setComponentToolItemData(data, () => { }))
+  }, [data && data.CostingPartDetails.CostingToolCostResponse])
 
   /**
   * @method closeDrawer
@@ -103,16 +104,8 @@ function Tool(props) {
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(getValues('Life'))
 
-      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2))
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
 
-      // const OverAllApplicability = {
-      //   ToolMaintenanceCost: checkForNull(event.target.value),
-      //   ToolCost: ToolCost,
-      //   Life: Life,
-      //   NetToolCost: checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
-      // }
-
-      // props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
       const zeroIndex = 0;
       let rowArray = {
         "ToolOperationId": null,
@@ -122,18 +115,16 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
       }
-      //if (editIndex !== '' && isEditFlag) {
+
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
-      setGridData(tempArr)
-      // } else {
-      //   let tempArr = [...gridData, rowArray]
-      //   setGridData(tempArr)
-      // }
+      setTimeout(() => {
+        setGridData(tempArr)
+      }, 200)
 
     } else {
       toastr.warning('Please enter valid number.')
@@ -154,15 +145,7 @@ function Tool(props) {
       const ToolCost = checkForNull(event.target.value);
       const Life = checkForNull(getValues('Life'))
 
-      setValue('NetToolCost', checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2))
-
-      // const OverAllApplicability = {
-      //   ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
-      //   ToolCost: ToolCost,
-      //   Life: Life,
-      //   NetToolCost: checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2),
-      // }
-      // props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -173,7 +156,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
@@ -198,15 +181,7 @@ function Tool(props) {
       const ToolMaintenanceCost = checkForNull(getValues('ToolMaintenanceCost'))
       const ToolCost = checkForNull(getValues('ToolCost'));
       const Life = checkForNull(event.target.value)
-      setValue('NetToolCost', checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2))
-
-      // const OverAllApplicability = {
-      //   ToolMaintenanceCost: checkForNull(ToolMaintenanceCost),
-      //   ToolCost: ToolCost,
-      //   Life: checkForNull(event.target.value),
-      //   NetToolCost: checkForDecimalAndNull(((ToolMaintenanceCost + ToolCost) / Life), 2),
-      // }
-      // props.setOverAllApplicabilityCost(OverAllApplicability, props.index)
+      setValue('NetToolCost', checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2))
 
       const zeroIndex = 0;
       let rowArray = {
@@ -217,7 +192,7 @@ function Tool(props) {
         "Quantity": null,
         "ToolCost": ToolCost,
         "Life": Life,
-        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + ToolCost) / Life, 2),
+        "NetToolCost": checkForDecimalAndNull((ToolMaintenanceCost + checkForNull(ToolCost / Life)), 2),
         "TotalToolCost": null,
         "ToolMaintenanceCost": ToolMaintenanceCost,
         "IsCostForPerAssembly": null
@@ -313,10 +288,10 @@ function Tool(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
+                        required: false,
                         pattern: {
-                          value: /^[0-9]*$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                       }}
@@ -328,7 +303,7 @@ function Tool(props) {
                         handleToolMaintanenceChange(e)
                       }}
                       errors={errors && errors.ToolMaintenanceCost}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -340,10 +315,10 @@ function Tool(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
+                        required: false,
                         pattern: {
-                          value: /^[0-9]*$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                       }}
@@ -355,7 +330,7 @@ function Tool(props) {
                         handleToolCostChange(e)
                       }}
                       errors={errors && errors.ToolCost}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -367,10 +342,10 @@ function Tool(props) {
                       register={register}
                       mandatory={false}
                       rules={{
-                        //required: true,
+                        required: false,
                         pattern: {
-                          value: /^[0-9]*$/i,
-                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
                           message: 'Invalid Number.'
                         },
                       }}
@@ -382,7 +357,7 @@ function Tool(props) {
                         handleToolLifeChange(e)
                       }}
                       errors={errors && errors.Life}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                   </Col>
                   <Col md="3">
@@ -413,12 +388,12 @@ function Tool(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between mt25 tab-tool-cost-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
 
-                <button
+                {!CostingViewMode && <button
                   type={'submit'}
                   className="submit-button mr5 save-btn">
                   <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                   {'Save'}
-                </button>
+                </button>}
               </div>
             </Row>
           </form>

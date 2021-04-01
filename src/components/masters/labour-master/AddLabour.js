@@ -334,7 +334,7 @@ class AddLabour extends Component {
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, isDisable, } = this.state
     const { fieldsObj, error } = this.props
-    console.log(error, "ERROR");
+
 
     if (machineType.length === 0 || labourType.length === 0) {
       toastr.warning('Fields should not be empty')
@@ -845,14 +845,14 @@ class AddLabour extends Component {
                                 </button>
                             </>
                           ) : (
-                              <button
-                                type="button"
-                                className={"user-btn  pull-left"}
-                                onClick={this.gridHandler}
-                              >
-                                <div className={"plus"}></div>ADD
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              className={"user-btn  pull-left"}
+                              onClick={this.gridHandler}
+                            >
+                              <div className={"plus"}></div>ADD
+                            </button>
+                          )}
                         </div>
                       </Col>
                       <Col md="12">

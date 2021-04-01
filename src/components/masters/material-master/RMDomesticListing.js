@@ -145,7 +145,7 @@ class RMDomesticListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
@@ -246,7 +246,7 @@ class RMDomesticListing extends Component {
     }
 
     renderNetCost = () => {
-        return <>Net Landed <br />Cost(INR) </>
+        return <>Net <br />Cost(INR) </>
     }
 
     /**
@@ -405,7 +405,7 @@ class RMDomesticListing extends Component {
             onOk: () => {
                 this.confirmDensity()
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => { }
         };
         return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
@@ -433,7 +433,7 @@ class RMDomesticListing extends Component {
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, loading } = this.props;
         const { isBulkUpload, } = this.state;
-        console.log(this.props.rmDataList, "RM DATA LIST");
+
         const options = {
             clearSearch: true,
             noDataText: (this.props.rmDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -560,8 +560,8 @@ class RMDomesticListing extends Component {
                                             <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                 <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                         ) : (
-                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                            )}
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
                                         {BulkUploadAccessibility && (
                                             <button
                                                 type="button"
@@ -645,7 +645,7 @@ class RMDomesticListing extends Component {
 */
 function mapStateToProps({ material, comman, }) {
     const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading } = material;
-    console.log(loading, "Loading");
+
     return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading }
 }
 

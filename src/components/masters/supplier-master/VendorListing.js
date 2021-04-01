@@ -178,7 +178,7 @@ class VendorListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id);
             },
-            onCancel: () => console.log("CANCEL: clicked"),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`Are you sure you want to delete this Vendor?`, toastrConfirmOptions);

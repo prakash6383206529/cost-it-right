@@ -16,7 +16,7 @@ import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '
 import { getPartSelectList } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -62,7 +62,8 @@ class AddBOPImport extends Component {
       files: [],
 
       netLandedcost: '',
-      currencyValue: 1
+      currencyValue: 1,
+      showCurrency: false
     }
   }
 
@@ -162,6 +163,7 @@ class AddBOPImport extends Component {
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
+            this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
 
             this.setState({
               isEditFlag: true,
@@ -368,13 +370,13 @@ class AddBOPImport extends Component {
   handleCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       if (newValue.label === INR) {
-        this.setState({ currencyValue: 1 }, () => {
+        this.setState({ currencyValue: 1, showCurrency: false }, () => {
           this.handleCalculation()
         })
       } else {
         this.props.getExchangeRateByCurrency(newValue.label, res => {
           //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
-          this.setState({ currencyValue: res.data.Data.CurrencyExchangeRate }, () => {
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
             this.handleCalculation()
           })
         })
@@ -390,10 +392,9 @@ class AddBOPImport extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
-    this.setState({
-      netLandedcost: NetLandedCost
-    })
-    this.props.change('NetLandedCost', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
+    this.setState({ netLandedcost: (BasicRate / NoOfPieces) })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost), initialConfiguration.NoOfDecimalForPrice)
   }
 
   /**
@@ -509,6 +510,8 @@ class AddBOPImport extends Component {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
+    const { initialConfiguration } = this.props;
+
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -559,7 +562,7 @@ class AddBOPImport extends Component {
         VendorLocation: '',
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.netLandedcost,
@@ -567,11 +570,10 @@ class AddBOPImport extends Component {
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         Plant: plantArray,
-        VendorPlant: vendorPlantArray,
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
       }
-      console.log(formData, "Form");
       this.props.createBOPImport(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.BOP_ADD_SUCCESS);
@@ -586,7 +588,7 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
     return (
@@ -765,7 +767,7 @@ class AddBOPImport extends Component {
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
-                              mendatory={true}
+                              // mendatory={true}
                               className="multiselect-with-border"
                             //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                             />
@@ -800,7 +802,7 @@ class AddBOPImport extends Component {
                                                     </div> */}
                             </div>
                           </Col>
-                          {this.state.IsVendor && (
+                          {checkVendorPlantConfigurable() && this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"
@@ -829,9 +831,9 @@ class AddBOPImport extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={"Enter"}
-                                  validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                                   component={renderText}
-                                  required={true}
+                                  // required={true}
                                   disabled={false}
                                   className=" "
                                   customClassName=" withBorder"
@@ -846,9 +848,9 @@ class AddBOPImport extends Component {
                                   placeholder={"Select"}
                                   options={this.renderListing("SourceLocation")}
                                   //onKeyUp={(e) => this.changeItemDesc(e)}
-                                  validate={
-                                    this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
-                                  required={true}
+                                  // validate={
+                                  //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
+                                  // required={true}
                                   handleChangeDescription={this.handleSourceSupplierCity}
                                   valueDescription={this.state.sourceLocation}
                                 />
@@ -913,7 +915,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Landed Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -925,9 +927,26 @@ class AddBOPImport extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                        </Row>
+                          {
+                            this.state.showCurrency &&
+                            <Col md="3">
+                              <Field
+                                label={`Net Cost (INR)`}
+                                name={"NetLandedCostCurrency"}
+                                type="text"
+                                placeholder={""}
+                                validate={[]}
+                                component={renderText}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder mb-0"
+                              />
+                            </Col>
+                          }
+                          {/* </Row>
 
-                        <Row>
+                        <Row> */}
                           <Col md="3">
                             <div className="form-group">
                               <label>
@@ -981,47 +1000,47 @@ class AddBOPImport extends Component {
                                 </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
-                                <div class="alert alert-danger" role="alert">
-                                  Maximum file upload limit has been reached.
-                                </div>
-                              ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                      "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                          <i className="text-primary fa fa-cloud-upload"></i>
-                                          <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                              Browse
+                              <div class="alert alert-danger" role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={this.getUploadParams}
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={3}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                          Browse
                                             </span>
-                                            <br />
+                                        <br />
                                             file to upload
                                           </span>
-                                        </div>
-                                      )
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
-                                />
-                              )}
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                              />
+                            )}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>

@@ -11,7 +11,7 @@ import AddTool from '../../Drawers/AddTool';
 function ToolCost(props) {
 
   const { register, control, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 

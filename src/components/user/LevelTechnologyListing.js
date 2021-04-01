@@ -66,7 +66,7 @@ class LevelTechnologyListing extends Component {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
 			},
-			onCancel: () => console.log('CANCEL: clicked'),
+			onCancel: () => { },
 			component: () => <ConfirmComponent />
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);

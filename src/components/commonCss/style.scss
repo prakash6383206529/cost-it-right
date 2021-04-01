@@ -1241,7 +1241,7 @@ label for[normal-switch]{
       position: initial;
       height: 32px!important;
       margin-bottom: 25px;
-      background-color: #F8FCFF;
+      background-color: none;
       &:before{
         position: absolute;
         top: 10px;
@@ -2076,6 +2076,10 @@ html {
   font-size: 13px;
   font-weight: 400;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 .select--is-disabled{
   .css-12jo7m5{
@@ -3300,6 +3304,12 @@ body{
   }
 }
 .zindex-15{z-index: 15;}
+.switch {
+ .left-title,.right-title{vertical-align: middle;} 
+ >.switch-level > div{
+   vertical-align: middle;
+ }
+}
 
 
 // responsive media query start
@@ -3379,8 +3389,14 @@ body{
 }// 1600px media query end
 
 @media(max-width:1366px){
+  .tooltip-inner{
+    font-size: calc(0.8rem * 80 / 100);
+  }
   // ========= zoom whole website to 80% css start's here
   body{font-size: calc(1rem * 80 / 100);}
+  html body label{
+    font-size: calc(14px * 80 /100);
+  }
   .nav-link {
     display: block;
     padding: calc(0.5rem * 80 / 100) calc(0.75rem * 80 / 100);
@@ -3483,8 +3499,30 @@ body{
       }
       .content-page{
         width: calc(100% - (205px * 80 / 100));
-        padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100)
-      }
+        padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
+
+        .tab-pane{
+          .filter-block {
+            position: initial;
+            
+            &:before{
+              position: absolute;
+              top: calc(10px * 80 / 100);
+              bottom: calc( 11px * 80 / 100);
+            }
+          }
+        }
+        .blue-before{
+          .filter-block {
+            
+            &:before{
+              top: calc(10px * 80 / 100);
+              bottom: calc(10px * 80 / 100);
+            }
+          }
+        }
+      }// content-page
+
       .text-help{
         font-size: calc(12px * 80 / 100);
         height: calc(1em * 80 / 100);
@@ -3586,7 +3624,6 @@ body{
         }
       }
       
-      
       .react-bs-table-container {
         .react-bs-table-pagination {
           p{
@@ -3634,7 +3671,152 @@ body{
           }
         }
       }
+      
+      // add pages css
+      .plus-icon-square{
+        background-size: calc(22px * 80 /100);
+      }
+      .shadow-lgg .form .sf-btn-footer {
+        margin: 0 calc(-32px * 80 / 100) calc(-15px * 80 / 100);
+      }
+      .dzu-dropzone .dzu-inputLabelWithFiles, .dzu-dropzone .dzu-inputLabel{
+        font-size: calc(14px * 80 /100);
+      }
+      .date-section {
+        .react-datepicker-wrapper {
+          .react-datepicker__input-container {
+            input {
+              height:  calc(40px * 80 / 100);
+              min-height:  calc(40px * 80 / 100);
+              padding: calc(12px * 80 / 100) !important;
+              &:disabled{
+                font-size:  calc(13px * 80 / 100);
+              }
+              &::placeholder{
+                font-size: calc(13px * 80 / 100);
+              }
+            }
+          }
+        }
+      }
+
+      .css-1wa3eu0-placeholder {
+        font-size: calc(13px * 80 / 100);        
+      }
+      .css-107lb6w-singleValue,.css-1wa3eu0-placeholder{
+        font-size: calc(13px * 80 / 100);
+      }
+      .withBorder .form-control,.form-control {
+        &::placeholder{
+          font-size: calc(13px * 80 / 100);
+        }
+      }
+
+      .select__value-container--has-value{
+        .css-1g6gooi,.css-b8ldur-Input{
+          width: calc(30px * 80 / 100) !important;
+        }
+      }
+      .basic-multi-select{
+        .select__control {
+          .select__indicators .select__indicator{
+            padding: calc(9px * 80 / 100) calc(5px * 80 / 100);
+          }
+        }
+        .css-yk16xz-control{
+          min-height: calc(38px * 80 / 100) !important;
+          height: calc(38px * 80 / 100) !important;
+        }
+      }
+      .form-control {
+        padding: calc(12px * 80 / 100) !important;
+      }
+     .shadow-lgg.login-formg,.drawer-wrapper{
+      .form,form{
+          .left-border,.flex-fills{
+            margin-bottom: calc(10px * 80 / 100);
+          }
+          .form-group,.inputwith-icon,.form-group-searchable-select{
+            min-height: calc(91px * 80 / 100);
+            margin-bottom: calc(15px * 80 / 100);
+            position: relative;
+          }
+          .form-group{
+            .form-group-searchable-select,.form-group{margin-bottom: 0;min-height: unset;}
+          }
+          .inputwith-icon {
+            .form-group-searchable-select{margin-bottom: 0px;min-height: unset;}
+          }
+          .mn-height-auto{
+            min-height: auto;
+          }
+          .inputwith-icon{
+            margin-bottom: calc(15px * 80 / 100);
+          }
+      }
+     }
+     .form-control, .manageuser .css-yk16xz-control{
+       height: calc(40px * 80 / 100);
+     }
+     .css-yk16xz-control{
+        min-height: calc(40px * 80 / 100) !important;
+        height: calc(40px * 80 / 100) !important;
+        .css-tlfecz-indicatorContainer{
+          svg{
+            height: calc(20px * 80 / 100);
+            width: calc(20px * 80 / 100);
+          }
+        }
+      }
+      .css-tlfecz-indicatorContainer{
+        padding: calc(8px * 80 / 100);
+      }
+      .mt30{
+        margin-top: calc(30px * 80 / 100);
+      }
+      .blurPlus-icon-square.mt30,.blurPlus-icon-square{
+        margin-top: 8px;
+      }
+      .drawer-wrapper .drawer-heading h3{
+        font-size: calc(22px * 80 / 100);
+      }
+      .drawer-wrapper .drawer-heading .close-button{
+        width: calc(15px * 80 / 100);
+        height: calc(15px * 80 / 100);
+        background-size: contain;
+      }
+      
+      .switch-level{
+        .left-title + div{
+          transform: scale(0.8);
+        }
+      }
+       
+    // add pages css
     }// body
+
+    html {
+      body {
+        .save-btn,.cancel-btn  {
+          width: auto;
+          padding: calc(8px * 80 /100) calc(12px * 80 /100);
+          min-width: calc(96px * 80 /100);
+          vertical-align: middle;
+          height: calc(32px * 80 /100);
+          font-size: calc(14px * 80 /100);
+          img{
+            width: calc(13px * 80 /100);;
+          }
+        }  
+        .save-btn{
+          img{
+            width: calc(16px * 80 /100);;
+          }
+        }      
+      }
+    }
+
+     
 
   // // input range slider 'Net Landed Range (INR)' css 
   .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}

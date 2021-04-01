@@ -115,7 +115,7 @@ function HotForging(props) {
 
   const calculateInputWeight = (netLossWeight = 0) => {
     setLostWeight(netLossWeight)
-    console.log(netLossWeight, 'LossWeight')
+
     const forgeWeight = Number(getValues('forgeWeight'))
     const inputWeight = checkForDecimalAndNull(
       forgeWeight + netLossWeight,
@@ -191,7 +191,7 @@ function HotForging(props) {
   }
 
   const tableData = (value = []) => {
-    console.log(value, "Value of table");
+
     setTableVal(value)
   }
   const dropDown = [

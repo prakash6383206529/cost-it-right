@@ -23,7 +23,7 @@ function AddPackaging(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
   });
@@ -33,7 +33,7 @@ function AddPackaging(props) {
   const headCostData = useContext(netHeadCostContext)
 
   const [applicability, setApplicability] = useState([]);
-  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
+  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : true);
   //const [formData, setFormData] = useState({});
 
   const fieldValues = useWatch({
@@ -62,7 +62,6 @@ function AddPackaging(props) {
     props.closeDrawer('', formData)
   };
 
-
   /**
   * @method renderListing
   * @description Used show listing of unit of measurement
@@ -74,6 +73,8 @@ function AddPackaging(props) {
         { label: 'RM', value: 'RM' },
         { label: 'CC', value: 'CC' },
         { label: 'RM + CC', value: 'RM + CC' },
+        { label: 'RM + BOP', value: 'RM + BOP' },
+        { label: 'RM + CC + BOP', value: 'RM + CC + BOP' },
       ];
     }
 
@@ -125,6 +126,22 @@ function AddPackaging(props) {
         }
         break;
 
+      case 'RM + CC + BOP':
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          setValue('PackagingCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(PackagingCostPercentage), 2))
+        }
+        break;
+
+      case 'RM + BOP':
+        if (!PackageType) {
+          setValue('PackagingCost', '')
+        } else {
+          setValue('PackagingCost', checkForDecimalAndNull((NetRawMaterialsCost + NetBoughtOutPartCost) * calculatePercentage(PackagingCostPercentage), 2))
+        }
+        break;
+
       default:
         break;
     }
@@ -135,6 +152,10 @@ function AddPackaging(props) {
     * @description PACKAGING TYPE 
     */
   const PackageTypeToggle = () => {
+    setValue('PackagingDescription', '')
+    setValue('PackagingCost', '')
+    setValue('PackagingCostPercentage', '')
+    setValue('Applicability', '')
     setPackageType(!PackageType)
   }
 
@@ -180,7 +201,7 @@ function AddPackaging(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Packaging'}</h3>
+                  <h3>{isEditFlag ? 'Update Packaging' : 'ADD Packaging'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -201,7 +222,7 @@ function AddPackaging(props) {
                         onChange={PackageTypeToggle}
                         checked={PackageType}
                         id="normal-switch"
-                        disabled={false}
+                        disabled={isEditFlag ? true : false}
                         background="#4DC771"
                         onColor="#4DC771"
                         onHandleColor="#ffffff"
@@ -245,11 +266,11 @@ function AddPackaging(props) {
                       Controller={Controller}
                       control={control}
                       register={register}
-                      mandatory={true}
+                      mandatory={PackageType ? true : false}
                       rules={{
-                        required: true,
+                        required: PackageType ? true : false,
                         pattern: {
-                          value: PackageType ? /^[0-9]*$/i : '',
+                          value: PackageType ? /^[0-9]\d*(\.\d+)?$/i : '',
                           message: PackageType ? 'Invalid Number.' : '',
                         },
                         // maxLength: 4,
@@ -259,7 +280,7 @@ function AddPackaging(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.PackagingCostPercentage}
-                      disabled={isEditFlag || !PackageType ? true : false}
+                      disabled={!PackageType ? true : false}
                     />
                   </Col>
 
@@ -270,14 +291,14 @@ function AddPackaging(props) {
                       placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
-                      rules={{ required: true }}
+                      rules={{ required: PackageType ? true : false }}
                       register={register}
                       defaultValue={applicability.length !== 0 ? applicability : ''}
                       options={renderListing('Applicability')}
-                      mandatory={true}
+                      mandatory={PackageType ? true : false}
                       handleChange={handleApplicabilityChange}
                       errors={errors.Applicability}
-                      disabled={isEditFlag ? true : false}
+                      disabled={!PackageType ? true : false}
                     />
                   </Col>
 
@@ -321,7 +342,7 @@ function AddPackaging(props) {
                       className="submit-button  save-btn"
                       onClick={addRow} >
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
+                      {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>
                 </Row>

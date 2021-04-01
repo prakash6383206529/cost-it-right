@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getSurfaceTreatmentDrawerDataList, getSurfaceTreatmentDrawerVBCDataList } from '../../actions/Costing';
@@ -19,6 +19,7 @@ function AddSurfaceTreatment(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   /**
   * @method toggleDrawer
@@ -35,6 +36,7 @@ function AddSurfaceTreatment(props) {
     if (costData.VendorType === ZBC) {
       const data = {
         PlantId: costData.PlantId,
+        TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
       }
       dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {
@@ -51,6 +53,7 @@ function AddSurfaceTreatment(props) {
 
       const data = {
         VendorId: costData.VendorId,
+        TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId,
         CostingId: costData.CostingId,
       }
@@ -109,7 +112,7 @@ function AddSurfaceTreatment(props) {
     clickToSelect: true,
     unselectable: selectedIds,
     // bgColor: function (row, isSelect) {
-    //   console.log('row, isSelect', row, isSelect)
+    //   
     //   const { OperationId } = row;
     //   if (OperationId === '6446d198-b95d-4e37-bbf0-98404ea57245') return 'blue';
     //   return null;
@@ -186,7 +189,7 @@ function AddSurfaceTreatment(props) {
                   <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="Technology" >{'Technology'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Rate" searchable={false} >{'Rate'}</TableHeaderColumn>
-                  <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'LabourRate'}</TableHeaderColumn>
+                  {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourRate" searchable={false} >{'LabourRate'}</TableHeaderColumn>}
                   {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="Quantity" searchable={false} >{'Specification'}</TableHeaderColumn> */}
                   {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="LabourQuantity" searchable={false} >{'Specification'}</TableHeaderColumn> */}
                 </BootstrapTable>

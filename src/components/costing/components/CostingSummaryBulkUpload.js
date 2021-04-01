@@ -36,7 +36,7 @@ class CostingSummaryBulkUpload extends Component {
     refresh = () => { this.props.getCostingBulkUploadList(() => { }) }
 
     bulkToggle = () => {
-        console.log("Came here");
+
         this.setState({
             showBulkUpload: true
         })
@@ -115,7 +115,7 @@ class CostingSummaryBulkUpload extends Component {
      * @description Send costing for approval or reject
     */
     sendForApprovalOrReject = (id, flag) => {
-        console.log(id, "ID ", flag);
+
         let obj = {}
         obj.FileNameId = id
         obj.IsApproval = flag
@@ -135,7 +135,7 @@ class CostingSummaryBulkUpload extends Component {
         // const { handleSubmit } = this.props;
         const { costingBulkUploadList, handleSubmit } = this.props
         const { showBulkUpload } = this.state
-        console.log(costingBulkUploadList, "costingBulkUploadList");
+
         const options = {
             clearSearch: true,
             noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -221,7 +221,7 @@ class CostingSummaryBulkUpload extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    // console.log(state, "Satate");
+    // 
     const { costing } = state
     const { costingBulkUploadList } = costing
     //return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList };

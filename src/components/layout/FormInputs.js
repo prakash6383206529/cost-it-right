@@ -175,8 +175,8 @@ export function renderPasswordInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={inputbox}>
         <input
@@ -244,8 +244,8 @@ export function renderMultiSelectField(field) {
         {field.mendatory && field.mendatory === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={inputbox} onClick={field.onTouched}>
         <Select
@@ -300,8 +300,8 @@ export function renderEmailInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={disabled ? `${inputbox} disabledEmail ` : inputbox}>
         <input
@@ -351,8 +351,8 @@ export function renderTextInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={inputbox}>
         <input
@@ -399,8 +399,8 @@ export function renderSelectField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className={inputbox}>
         <select
@@ -446,8 +446,8 @@ export function renderNumberInputField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className="input-group">
         <input
@@ -475,7 +475,7 @@ export function renderNumberInputField(field) {
 @desc: Render textarea input
 */
 export function renderTextAreaField(field) {
-  console.log("field: ", field);
+
   const {
     input,
     disabled,
@@ -491,8 +491,8 @@ export function renderTextAreaField(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}
+          ""
+        )}
       </label>
       <div className="inputbox ">
         <textarea
@@ -568,8 +568,8 @@ export function renderText(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}{" "}
+          ""
+        )}{" "}
       </label>
       <input
         maxLength={field.maxLength}
@@ -634,8 +634,8 @@ export function renderDatePickerOneDayAgo(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}{" "}
+          ""
+        )}{" "}
       </label>
       <DatePicker
         {...input}
@@ -680,8 +680,8 @@ export const searchableSelect = ({
           {required === true ? (
             <span className="asterisk-required">*</span>
           ) : (
-              ""
-            )}
+            ""
+          )}
         </label>
       )}
       <Select
@@ -849,8 +849,8 @@ export function renderYearPicker(field) {
         {field.required && field.required === true ? (
           <span className="asterisk-required">*</span>
         ) : (
-            ""
-          )}{" "}
+          ""
+        )}{" "}
       </label>
       <DatePicker
         {...input}

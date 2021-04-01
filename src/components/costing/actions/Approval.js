@@ -127,7 +127,7 @@ export function getAllApprovalUserFilterByDepartment(data, callback) {
 
     request
       .then((response) => {
-        console.log(response, 'Get response for user by dep')
+
         if (response.data.Result) {
           dispatch({
             type: GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
@@ -284,7 +284,7 @@ export function sendForApprovalBySender(data, callback) {
  */
 
 export function getApprovalList(filterData, callback) {
-  console.log(filterData, 'FilterData')
+
   return (dispatch) => {
     const queryParameter = `logged_in_user_id=${filterData.loggedUser}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
     const request = axios.get(`${API.getApprovalList}?${queryParameter}`, {

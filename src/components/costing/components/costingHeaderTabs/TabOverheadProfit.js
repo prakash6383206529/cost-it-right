@@ -35,17 +35,15 @@ function TabOverheadProfit(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    setTimeout(() => {
-      let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData !== undefined && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
-      let topHeaderData = {
-        NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
-          checkForNull(TopHeaderValues.ProfitCost) +
-          checkForNull(TopHeaderValues.RejectionCost) +
-          checkForNull(TopHeaderValues.ICCCost) +
-          checkForNull(TopHeaderValues.PaymentTermCost))
-      }
-      props.setHeaderCost(topHeaderData)
-    }, 1000)
+    let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData !== undefined && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
+    let topHeaderData = {
+      NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
+        checkForNull(TopHeaderValues.ProfitCost) +
+        checkForNull(TopHeaderValues.RejectionCost) +
+        checkForNull(TopHeaderValues.ICCCost) +
+        checkForNull(TopHeaderValues.PaymentTermCost))
+    }
+    props.setHeaderCost(topHeaderData)
   }, [OverheadProfitTabData]);
 
   /**
@@ -83,7 +81,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -124,7 +122,7 @@ function TabOverheadProfit(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -221,7 +219,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -279,7 +277,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -323,7 +321,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -354,7 +352,11 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
+<<<<<<< HEAD
             IsInventoryCarringCost: ICCObj ? true : false,
+=======
+            IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 
@@ -366,7 +368,11 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
+<<<<<<< HEAD
             IsInventoryCarringCost: ICCObj ? true : false,
+=======
+            IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 
@@ -378,7 +384,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -434,7 +440,7 @@ function TabOverheadProfit(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 

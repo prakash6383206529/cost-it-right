@@ -143,7 +143,7 @@ function Drilling(props) {
     setTotalMachiningTime(totalMachiningTime)
   }
   const onSubmit = (value) => {
-    console.log(value, 'Handle Value in Facing')
+
     let obj = {}
     obj.ClampingPercentage = value.clampingPercentage
     obj.ClampingValue = value.clampingValue

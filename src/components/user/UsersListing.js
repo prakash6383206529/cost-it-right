@@ -194,7 +194,7 @@ class UsersListing extends Component {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
 			},
-			onCancel: () => console.log('CANCEL: clicked')
+			onCancel: () => { }
 		};
 		return toastr.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
 	}
@@ -237,7 +237,7 @@ class UsersListing extends Component {
 			onOk: () => {
 				this.confirmDeactivateItem(data, cell);
 			},
-			onCancel: () => console.log("CANCEL: clicked"),
+			onCancel: () => { },
 			component: () => <ConfirmComponent />,
 		};
 		return toastr.confirm(

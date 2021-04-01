@@ -73,7 +73,7 @@ class ZBCPlantListing extends Component {
             onOk: () => {
                 this.confirmDeleteItem(Id);
             },
-            onCancel: () => console.log("CANCEL: clicked"),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.PLANT_DELETE_ALERT}`, toastrConfirmOptions);
@@ -117,7 +117,7 @@ class ZBCPlantListing extends Component {
             onOk: () => {
                 this.confirmDeactivateItem(data, cell)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
@@ -345,7 +345,8 @@ class ZBCPlantListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, plantZBCList } = this.props;
+        const { handleSubmit, AddAccessibility, plantZBCList, initialConfiguration } = this.props;
+
         const { isEditFlag, isOpenVendor, } = this.state;
         const options = {
             clearSearch: true,
@@ -479,6 +480,7 @@ class ZBCPlantListing extends Component {
                 >
                     <TableHeaderColumn dataField="PlantName" dataAlign="left" dataSort={true}>Plant Name</TableHeaderColumn>
                     <TableHeaderColumn dataField="PlantCode" dataAlign="center" dataSort={true}>Plant Code</TableHeaderColumn>
+                    {initialConfiguration && initialConfiguration.IsCompanyConfigureOnPlant && <TableHeaderColumn dataField="CompanyName" dataAlign="center" dataSort={true}>Company</TableHeaderColumn>}
                     <TableHeaderColumn dataField="CountryName" dataAlign="center" dataSort={true}>Country</TableHeaderColumn>
                     <TableHeaderColumn dataField="StateName" dataAlign="center" dataSort={true}>State</TableHeaderColumn>
                     <TableHeaderColumn dataField="CityName" dataAlign="center" dataSort={true}>City</TableHeaderColumn>
@@ -506,11 +508,11 @@ class ZBCPlantListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, auth, plant }) {
-    console.log(plant, "Plant");
+
     const { countryList, stateList, cityList } = comman;
-    const { loading } = auth;
+    const { initialConfiguration } = auth
     const { plantDataList } = plant;
-    return { loading, countryList, stateList, cityList, plantDataList };
+    return { countryList, stateList, cityList, plantDataList, initialConfiguration };
 }
 
 /**

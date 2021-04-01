@@ -161,7 +161,7 @@ class SpecificationListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked'),
+            onCancel: () => { },
             component: () => <ConfirmComponent />
         };
         return toastr.confirm(`${MESSAGES.SPECIFICATION_DELETE_ALERT}`, toastrConfirmOptions);
@@ -269,7 +269,7 @@ class SpecificationListing extends Component {
             onOk: () => {
                 this.confirmDensity()
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => { }
         };
         return toastr.confirm(`Recently Created Material Density is not created, Do you want to create?`, toastrConfirmOptions);
     }

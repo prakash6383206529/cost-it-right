@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSurfaceTreatmentTabData } from '../../../actions/Costing';
+import { getSurfaceTreatmentTabData, } from '../../../actions/Costing';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import SurfaceTreatment from '.';
 import { checkForDecimalAndNull } from '../../../../../helper';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function PartSurfaceTreatment(props) {
   const { item } = props;
@@ -13,6 +14,7 @@ function PartSurfaceTreatment(props) {
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
   const dispatch = useDispatch()
 
   const toggle = (BOMLevel, PartNumber) => {
@@ -78,7 +80,7 @@ function PartSurfaceTreatment(props) {
           <td>{item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.NetSurfaceTreatmentCost, 2) : 0}</td>
         </div>
         <td>
-          {(item.CostingPartDetails.SurfaceTreatmentDetails || item.CostingPartDetails.TransportationDetails) ?
+          {!CostingViewMode && ((item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
 
             <button
               type="button"
@@ -94,7 +96,7 @@ function PartSurfaceTreatment(props) {
               //onClick={DrawerToggle}
               onClick={() => toggle(item.BOMLevel, item.PartNumber)}
             >
-              <div className={'plus'}></div>Add Surface Treatment</button>
+              <div className={'plus'}></div>Add Surface Treatment</button>)
           }
         </td>
       </tr>

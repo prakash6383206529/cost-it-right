@@ -4,7 +4,7 @@ import "./formInputs.css";
 import DatePicker from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
-  console.log('input: ', input);
+
   const { register, rules, name, label, mandatory, errors, disabled, value, ...inputProps } = input;
   const isDisabled = disabled === true ? true : false;
   const className = `form-group inputbox ${input.customClassName ? input.customClassName : ""}`;
@@ -70,7 +70,8 @@ export const TextFieldHookForm = (field) => {
           }
           }
         />
-        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
       </div>
     </>
   )
@@ -78,8 +79,9 @@ export const TextFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    isClearable, control, errors, register } = field;
+    isClearable, control, errors, register, isLoading } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
+  let isLoader = (isLoading && isLoading === true) ? true : false;
 
   return (
     <div className="w-100 mb-15 form-group-searchable-select">
@@ -108,6 +110,7 @@ export const SearchableSelectHookForm = (field) => {
               onBlur={onBlur}
               //selected={value}
               value={value}
+              isLoading={isLoader}
             />
           )
         }}

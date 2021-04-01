@@ -3,15 +3,9 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild,
-  getGradeSelectList, getRMGradeSelectListByRawMaterial,
-  getRawMaterialFilterSelectList,
-  getGradeFilterByRawMaterialSelectList,
-  getVendorFilterByRawMaterialSelectList,
-  getRawMaterialFilterByGradeSelectList,
-  getVendorFilterByGradeSelectList,
-  getRawMaterialFilterByVendorSelectList,
-  getGradeFilterByVendorSelectList,
+  deleteRawMaterialAPI, getRMImportDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial,
+  getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
+  getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList,
 } from '../actions/Material';
 import { required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
@@ -139,7 +133,7 @@ class RMImportListing extends Component {
       onOk: () => {
         this.confirmDelete(Id);
       },
-      onCancel: () => console.log("CANCEL: clicked"),
+      onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
     return toastr.confirm(`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`, toastrConfirmOptions);
@@ -249,7 +243,7 @@ class RMImportListing extends Component {
   }
 
   renderNetCost = () => {
-    return <>Net Landed <br />Cost(INR) </>
+    return <>Net <br />Cost(INR) </>
   }
 
   renderEffectiveDate = () => {
@@ -394,7 +388,7 @@ class RMImportListing extends Component {
       onOk: () => {
         this.confirmDensity()
       },
-      onCancel: () => console.log('CANCEL: clicked')
+      onCancel: () => { }
     };
     return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
   }

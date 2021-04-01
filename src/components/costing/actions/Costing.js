@@ -41,6 +41,15 @@ import {
   SET_PACKAGE_AND_FREIGHT_TAB_DATA,
   SET_TOOL_TAB_DATA,
   SET_COMPONENT_ITEM_DATA,
+  SET_COMPONENT_OVERHEAD_ITEM_DATA,
+  SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA,
+  SET_COMPONENT_TOOL_ITEM_DATA,
+  SET_COMPONENT_DISCOUNT_ITEM_DATA,
+  GET_RM_DRAWER_DATA_LIST,
+  GET_PROCESS_DRAWER_DATA_LIST,
+  GET_PART_COSTING_PLANT_SELECTLIST,
+  GET_PART_COSTING_VENDOR_SELECT_LIST,
+  GET_PART_SELECTLIST_BY_TECHNOLOGY,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -151,7 +160,7 @@ export function checkPartWithTechnology(data, callback) {
         }
       })
       .catch((error) => {
-        console.log(error, "fron check parts with technology");
+
         callback(error.response)
         dispatch({ type: API_FAILURE })
         apiErrors(error)
@@ -515,6 +524,62 @@ export function setComponentItemData(TabData, callback) {
 };
 
 /**
+ * @method setComponentOverheadItemData
+ * @description SET COMPONENT OVERHEAD ITEM DATA  
+ */
+export function setComponentOverheadItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_OVERHEAD_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentPackageFreightItemData
+ * @description SET COMPONENT PACKAGE FREIGHT ITEM DATA  
+ */
+export function setComponentPackageFreightItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentToolItemData
+ * @description SET COMPONENT TOOL ITEM DATA  
+ */
+export function setComponentToolItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_TOOL_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
+ * @method setComponentDiscountOtherItemData
+ * @description SET COMPONENT DISCOUNT OTHER ITEM DATA  
+ */
+export function setComponentDiscountOtherItemData(TabData, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COMPONENT_DISCOUNT_ITEM_DATA,
+      payload: TabData,
+    });
+    callback();
+  }
+};
+
+/**
  * @method getBOPData
  * @description GET BOP DATA IN COSTING DETAIL
  */
@@ -543,12 +608,16 @@ export function getRMDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getRMDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
       .then((response) => {
-        if (response.data.Result) {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: GET_RM_DRAWER_DATA_LIST,
+            payload: response.status === 204 ? [] : response.data.DataList
+          })
           callback(response)
         }
       })
@@ -567,9 +636,13 @@ export function getRMDrawerDataList(data, callback) {
 export function getRMDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRMDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getRMDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_RM_DRAWER_DATA_LIST,
+          payload: response.status === 204 ? [] : response.data.DataList
+        })
         callback(response);
       }
     }).catch((error) => {
@@ -633,7 +706,7 @@ export function getOperationDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getOperationDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getOperationDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
@@ -657,7 +730,7 @@ export function getOperationDrawerDataList(data, callback) {
 export function getOperationDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getOperationDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getOperationDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -678,12 +751,16 @@ export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getProcessDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getProcessDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
       .then((response) => {
-        if (response.data.Result) {
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: GET_PROCESS_DRAWER_DATA_LIST,
+            payload: response.status === 204 ? [] : response.data.DataList
+          })
           callback(response)
         }
       })
@@ -702,9 +779,13 @@ export function getProcessDrawerDataList(data, callback) {
 export function getProcessDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getProcessDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getProcessDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
-      if (response.data.Result) {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_PROCESS_DRAWER_DATA_LIST,
+          payload: response.status === 204 ? [] : response.data.DataList
+        })
         callback(response);
       }
     }).catch((error) => {
@@ -854,7 +935,7 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
     const request = axios.get(
-      `${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.CostingId}`,
+      `${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
       headers,
     )
     request
@@ -878,7 +959,7 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
 export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1013,7 +1094,11 @@ export function saveComponentOverheadProfitTab(data, callback) {
 export function getInventoryDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
+<<<<<<< HEAD
     const request = axios.get(`${API.getInventoryDataByHeads}/${data.Id}/${data.VendorId}/${data.IsVendor}`, headers)
+=======
+    const request = axios.get(`${API.getInventoryDataByHeads}/${data.VendorId}/${data.IsVendor}`, headers)
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     request
       .then((response) => {
         callback(response)
@@ -1033,7 +1118,11 @@ export function getInventoryDataByHeads(data, callback) {
 export function getPaymentTermsDataByHeads(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
+<<<<<<< HEAD
     const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.Id}/${data.VendorId}/${data.IsVendor}`, headers,)
+=======
+    const request = axios.get(`${API.getPaymentTermsDataByHeads}/${data.VendorId}/${data.IsVendor}`, headers,)
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     request.then((response) => {
       callback(response)
     }).catch((error) => {
@@ -1256,10 +1345,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(Currency, callback) {
+export function getExchangeRateByCurrency(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}`, headers);
+    const request = axios.get(`${API.getExchangeRateByCurrency}/${data.Currency}/${data.EffectiveDate}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1753,22 +1842,22 @@ export function getSingleCostingDetails(costingId, callback) {
     )
     request
       .then((response) => {
-        console.log(response, "fron single costing detail");
+
         if (response.data.Data) {
-          console.log("if");
+
           dispatch({
             type: GET_COSTING_DETAILS_BY_COSTING_ID,
             payload: response.data.Data,
           })
           callback(response)
         } else {
-          console.log("else");
-          console.log(MESSAGES.SOME_ERROR, "fron single costing detail");
+
+
           toastr.error(MESSAGES.SOME_ERROR)
         }
       })
       .catch((error) => {
-        console.log(error, "fron single costing detail");
+
         dispatch({ type: API_FAILURE })
         apiErrors(error)
       })
@@ -1803,27 +1892,30 @@ export function storePartNumber(partNo) {
 
 export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        callback(response)
-        if (response.data.Result) {
-          dispatch({
-            type: GET_COST_SUMMARY_BY_PART_PLANT,
-            payload: response.data.Result,
-          })
-        }
+    if (partNo !== '' && plantId != '') {
+      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}`, headers,)
+      request
+        .then((response) => {
+          if (response.data.Result || response.status === 204) {
+            dispatch({
+              type: GET_COST_SUMMARY_BY_PART_PLANT,
+              payload: response.status === 204 ? [] : response.data.Data.CostingOptions,
+            })
+            callback(response)
+          }
+        })
+        .catch((error) => {
+
+          dispatch({ type: API_FAILURE })
+          callback(error)
+          apiErrors(error)
+        })
+    } else {
+      dispatch({
+        type: GET_COST_SUMMARY_BY_PART_PLANT,
+        payload: [],
       })
-      .catch((error) => {
-        console.log(error, "error from summary api");
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    }
   }
 }
 
@@ -1861,20 +1953,26 @@ export const setCostingApprovalData = (data) => (dispatch) => {
 
 export function getCostingByVendorAndVendorPlant(partNo, VendorId, VendorPlantId, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`, headers,)
-    request.then((response) => {
-      callback(response)
-      if (response.data.Result) {
-        dispatch({
-          type: GET_COSTING_BY_VENDOR_VENDOR_PLANT,
-          payload: response.data.Result,
-        })
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
+    if (partNo !== '' && VendorId !== '' && VendorPlantId !== '') {
+      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${partNo}/${VendorId}/${VendorPlantId}`, headers,)
+      request.then((response) => {
+        callback(response)
+        if (response.data.Result || response.status === 204) {
+          dispatch({
+            type: GET_COST_SUMMARY_BY_PART_PLANT,
+            payload: response.status === 204 ? [] : response.data.DataList,
+          })
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+    } else {
+      dispatch({
+        type: GET_COST_SUMMARY_BY_PART_PLANT,
+        payload: [],
+      })
+    }
   }
 }
 
@@ -1914,3 +2012,67 @@ export function setItemData(item, callback) {
     callback();
   }
 };
+
+export function getPartCostingPlantSelectList(partNumber, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getPartCostingPlantSelectList}/${partNumber}`, headers)
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_PART_COSTING_PLANT_SELECTLIST,
+          payload: response.status === 204 ? [] : response.data.SelectList
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+    })
+  }
+}
+
+export function getPartCostingVendorSelectList(partNumber, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    const request = axios.get(`${API.getPartCostingVendorSelectList}/${partNumber}`, headers)
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_PART_COSTING_VENDOR_SELECT_LIST,
+          payload: response.status === 204 ? [] : response.data.SelectList
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+    })
+  }
+}
+
+export function getPartSelectListByTechnology(technologyId, callback) {
+  return (dispatch) => {
+    if (technologyId !== '') {
+      dispatch({ type: API_REQUEST })
+      const request = axios.get(`${API.getPartByTechnologyId}/${technologyId}`, headers)
+      request.then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_PART_SELECTLIST_BY_TECHNOLOGY,
+            payload: response.data.SelectList
+          })
+          callback(response)
+        }
+      }).catch(error => {
+        dispatch({ type: API_FAILURE })
+        callback(error)
+      })
+    } else {
+      dispatch({
+        type: GET_PART_SELECTLIST_BY_TECHNOLOGY,
+        payload: []
+      })
+    }
+  }
+}

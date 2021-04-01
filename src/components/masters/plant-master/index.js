@@ -66,6 +66,7 @@ class PlantMaster extends Component {
     * @description Renders the component
     */
     render() {
+        const { initialConfiguration } = this.props;
         return (
             <>
                 <Container fluid className="user-page p-0">
@@ -79,11 +80,11 @@ class PlantMaster extends Component {
                                     ZBC
                                 </NavLink>
                             </NavItem>
-                            <NavItem>
+                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <NavItem>
                                 <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
                                     VBC
                                 </NavLink>
-                            </NavItem>
+                            </NavItem>}
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
                             {this.state.activeTab === '1' &&
@@ -96,7 +97,7 @@ class PlantMaster extends Component {
                                         ActivateAccessibility={this.state.ActivateAccessibility}
                                     />
                                 </TabPane>}
-                            {this.state.activeTab === '2' &&
+                            {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.activeTab === '2' &&
                                 <TabPane tabId="2">
                                     <VBCPlantListing
                                         AddAccessibility={this.state.AddAccessibility}
@@ -122,8 +123,8 @@ class PlantMaster extends Component {
 */
 function mapStateToProps({ comman, auth }) {
     const { loading, } = comman;
-    const { leftMenuData } = auth;
-    return { loading, leftMenuData, };
+    const { leftMenuData, initialConfiguration } = auth;
+    return { loading, leftMenuData, initialConfiguration };
 }
 
 export default connect(mapStateToProps,

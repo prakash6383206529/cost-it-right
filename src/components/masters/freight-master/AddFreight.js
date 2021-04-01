@@ -737,9 +737,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10]}
+                              validate={[positiveAndDecimalNumber, maxLength10]}
                               component={renderText}
-                              required={true}
                               disabled={false}
                               className=" "
                               customClassName=" withBorder"
@@ -751,9 +750,8 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10]}
+                              validate={[positiveAndDecimalNumber, maxLength10]}
                               component={renderText}
-                              required={true}
                               disabled={false}
                               className=" "
                               customClassName=" withBorder"
@@ -867,15 +865,15 @@ class AddFreight extends Component {
                                 </button>
                                 </>
                               ) : (
-                                  <button
-                                    type="button"
-                                    className={"user-btn mt30 pull-left"}
-                                    onClick={this.gridHandler}
-                                  >
-                                    <div className={"plus"}></div>
+                                <button
+                                  type="button"
+                                  className={"user-btn mt30 pull-left"}
+                                  onClick={this.gridHandler}
+                                >
+                                  <div className={"plus"}></div>
                                 ADD
-                                  </button>
-                                )}
+                                </button>
+                              )}
                             </div>
                           </Col>
                         </Row>

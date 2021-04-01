@@ -80,7 +80,7 @@ function Rubber(props) {
     })
 
     useEffect(() => {
-        console.log(props.inputDiameter, "DM");
+
         setValue('density', density)
         if (props.inputDiameter && !WeightCalculatorRequest) {
             setValue('inputDiameter', props.inputDiameter)
@@ -92,7 +92,7 @@ function Rubber(props) {
         calculateGrossAndInputRMWeight()
     }, [fieldValues])
     const onSubmit = (value) => {
-        console.log(value, "Value");
+
         let obj = {}
         obj.InputDiameter = value.inputDiameter
         obj.Thickness = value.thickness
@@ -120,7 +120,7 @@ function Rubber(props) {
         } else {
             inputDiameter = Number(e.target.value)
         }
-        console.log(inputDiameter);
+
         const thickness = Number(getValues('thickness'))
         if (!inputDiameter || !thickness) {
             return ''

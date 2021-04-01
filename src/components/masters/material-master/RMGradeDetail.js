@@ -43,7 +43,7 @@ class RMGradeDetail extends Component {
             onOk: () => {
                 this.confirmDelete(Id)
             },
-            onCancel: () => console.log('CANCEL: clicked')
+            onCancel: () => { }
         };
         return toastr.confirm(`${MESSAGES.RM_GRADE_DELETE_ALERT}`, toastrConfirmOptions);
     }

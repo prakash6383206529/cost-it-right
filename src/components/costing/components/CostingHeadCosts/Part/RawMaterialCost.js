@@ -11,15 +11,19 @@ import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
+import { ViewCostingContext } from '../../CostingDetails'
+import { G, KG, MG } from '../../../../../config/constants'
 
 function RawMaterialCost(props) {
 
   const { register, handleSubmit, control, setValue, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   })
 
   const costData = useContext(costingInfoContext)
+  const CostingViewMode = useContext(ViewCostingContext);
+
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [editIndex, setEditIndex] = useState(false)
   const [isWeightDrawerOpen, setWeightDrawerOpen] = useState(false)
@@ -68,6 +72,7 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+    console.log(rowData, "ROW DATA ");
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
         RMName: rowData.RawMaterial,
@@ -81,6 +86,7 @@ function RawMaterialCost(props) {
         GrossWeight: '',
         NetLandedCost: '',
         RawMaterialId: rowData.RawMaterialId,
+        Category: rowData.Category
       }
 
       setGridData([...gridData, tempObj])
@@ -96,7 +102,8 @@ function RawMaterialCost(props) {
     setEditIndex(index)
     let tempArr = []
     let tempData = gridData[index]
-    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "") {
+
+    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "" || Number(tempData.Density) === 0) {
       toastr.warning("Density is not avaliable for weight calculation.")
       return false
     }
@@ -111,16 +118,16 @@ function RawMaterialCost(props) {
         }, 100)
       }
     }))
-
+    // setWeightDrawerOpen(true)
   }
 
   /**
    * @method closeWeightDrawer
    * @description HIDE WEIGHT CALCULATOR DRAWER
    */
-  const closeWeightDrawer = (e = '', weightData = {}) => {
+  const closeWeightDrawer = (e = '', weightData = {}, originalWeight = {}) => {
     setInputDiameter(weightData.Diameter)
-    setWeight(weightData)
+    setWeight(weightData, originalWeight)
     setWeightDrawerOpen(false)
 
   }
@@ -133,7 +140,9 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (!isNaN(event.target.value)) {
+    if (Number(event.target.value) <= 0) {
+      toastr.warning('Please enter valid weight.')
+    } else {
       const GrossWeight = checkForNull(event.target.value)
       const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
 
@@ -143,8 +152,7 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
       setGridData(tempArr)
-    } else {
-      toastr.warning('Please enter valid weight.')
+
     }
   }
 
@@ -156,7 +164,11 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (!isNaN(event.target.value)) {
+    if (Number(event.target.value) <= 0) {
+
+
+      toastr.warning('Please enter valid weight.')
+    } else {
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
 
@@ -178,9 +190,6 @@ function RawMaterialCost(props) {
         toastr.warning('Finish weight should not be greater then gross weight.')
 
       }
-
-    } else {
-      toastr.warning('Please enter valid weight.')
     }
   }
 
@@ -196,13 +205,31 @@ function RawMaterialCost(props) {
    * @method setWeight
    * @description SET WEIGHT IN RM
    */
+<<<<<<< HEAD
   const setWeight = (weightData) => {
+=======
+  const setWeight = (weightData, originalWeight) => {
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     let tempArr = []
     let tempData = gridData[editIndex]
-
+    let grossWeight
+    let finishWeight
     if (Object.keys(weightData).length > 0) {
-      const FinishWeight = weightData.FinishWeight
-      const GrossWeight = weightData.GrossWeight
+      if (tempData.UOM === G) {
+        grossWeight = originalWeight.originalGrossWeight
+        finishWeight = originalWeight.originalFinishWeight
+      } else if (tempData.UOM === KG) {
+        grossWeight = originalWeight.originalGrossWeight / 1000
+        finishWeight = originalWeight.originalFinishWeight / 1000
+      } else if (tempData.UOM === MG) {
+        grossWeight = originalWeight.originalGrossWeight * 1000
+        finishWeight = originalWeight.originalFinishWeight * 1000
+      } else {
+        grossWeight = originalWeight.originalGrossWeight
+        finishWeight = originalWeight.originalFinishWeight
+      }
+      const FinishWeight = finishWeight
+      const GrossWeight = grossWeight
       const NetLandedCost = GrossWeight * tempData.RMRate - (GrossWeight - FinishWeight) * tempData.ScrapRate;
 
       tempData = {
@@ -252,7 +279,7 @@ function RawMaterialCost(props) {
               <div className="left-border">{'Raw Material Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {gridData && gridData.length <= gridLength && (
+              {!CostingViewMode && gridData && gridData.length <= gridLength &&
                 <button
                   type="button"
                   className={'user-btn'}
@@ -260,7 +287,7 @@ function RawMaterialCost(props) {
                 >
                   <div className={'plus'}></div>ADD RM
                 </button>
-              )}
+              }
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
@@ -320,7 +347,7 @@ function RawMaterialCost(props) {
                                   handleGrossWeightChange(e, index)
                                 }}
                                 errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                disabled={false}
+                                disabled={CostingViewMode ? true : false}
                               />
                             </td>
                             <td>
@@ -348,18 +375,18 @@ function RawMaterialCost(props) {
                                   handleFinishWeightChange(e, index)
                                 }}
                                 errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                disabled={false}
+                                disabled={CostingViewMode ? true : false}
                               />
                             </td>
                             <td>
                               {item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, 2) : ''}
                             </td>
                             <td>
-                              <button
+                              {!CostingViewMode && <button
                                 className="Delete "
                                 type={'button'}
                                 onClick={() => deleteItem(index)}
-                              />
+                              />}
                             </td>
                           </tr>
                         )
@@ -392,9 +419,9 @@ function RawMaterialCost(props) {
         <OpenWeightCalculator
           isOpen={isWeightDrawerOpen}
           closeDrawer={closeWeightDrawer}
-          isEditFlag={false}
+          isEditFlag={CostingViewMode ? false : true}
           inputDiameter={inputDiameter}
-          technology={costData.TechnologyName}
+          technology={costData.ETechnologyType}
           ID={''}
           anchor={'right'}
           rmRowData={gridData[editIndex]}

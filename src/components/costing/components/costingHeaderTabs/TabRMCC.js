@@ -10,6 +10,10 @@ import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+<<<<<<< HEAD
+=======
+import { ViewCostingContext } from '../CostingDetails';
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function TabRMCC(props) {
 
@@ -22,6 +26,7 @@ function TabRMCC(props) {
   const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
 
   useEffect(() => {
@@ -326,7 +331,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -398,7 +403,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -479,7 +484,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -543,7 +548,7 @@ function TabRMCC(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -580,7 +585,7 @@ function TabRMCC(props) {
 
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -654,7 +659,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -738,7 +743,7 @@ function TabRMCC(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -794,7 +799,7 @@ function TabRMCC(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -841,7 +846,7 @@ function TabRMCC(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -1000,6 +1005,7 @@ function TabRMCC(props) {
                     </div>
                   </Col>
                 </Row>
+<<<<<<< HEAD
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button type={"button"} className="reset mr15 cancel-btn">
                     <div className={"cross-icon"}>
@@ -1023,6 +1029,33 @@ function TabRMCC(props) {
                     {'Save'}
                   </button>
                 </div>
+=======
+
+                {!CostingViewMode &&
+                  <div className="col-sm-12 text-right bluefooter-butn">
+                    <button type={"button"} className="reset mr15 cancel-btn" onClick={props.backBtn}>
+                      <div className={"cross-icon"}>
+                        <img
+                          src={require("../../../../assests/images/times.png")}
+                          alt="cancel-icon.jpg"
+                        />
+                      </div>{" "}
+                      {"Cancel"}
+                    </button>
+                    <button
+                      type={'submit'}
+                      className="submit-button mr5 save-btn"
+                    >
+                      <div className={'check-icon'}>
+                        <img
+                          src={require('../../../../assests/images/check.png')}
+                          alt="check-icon.jpg"
+                        />{' '}
+                      </div>
+                      {'Save'}
+                    </button>
+                  </div>}
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
               </form>
             </div>

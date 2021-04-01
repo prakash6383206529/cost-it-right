@@ -244,7 +244,7 @@ class AddOverhead extends Component {
       const OverheadMachiningCCPercentage = filedObj && filedObj.OverheadMachiningCCPercentage !== undefined && filedObj.OverheadMachiningCCPercentage !== '' ? true : false;
       const OverheadBOPPercentage = filedObj && filedObj.OverheadBOPPercentage !== undefined && filedObj.OverheadBOPPercentage !== '' ? true : false;
 
-      console.log('OverheadPercentage: ', OverheadPercentage);
+
 
 
 
@@ -842,47 +842,47 @@ class AddOverhead extends Component {
                           <label>Upload Files (upload up to 3 files)</label>
                           {this.state.files &&
                             this.state.files.length >= 3 ? (
-                              <div class="alert alert-danger" role="alert">
-                                Maximum file upload limit has been reached.
-                              </div>
-                            ) : (
-                              <Dropzone
-                                getUploadParams={this.getUploadParams}
-                                onChangeStatus={this.handleChangeStatus}
-                                PreviewComponent={this.Preview}
-                                //onSubmit={this.handleSubmit}
-                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                initialFiles={this.state.initialFiles}
-                                maxFiles={3}
-                                maxSizeBytes={2000000}
-                                inputContent={(files, extra) =>
-                                  extra.reject ? (
-                                    "Image, audio and video files only"
-                                  ) : (
-                                      <div className="text-center">
-                                        <i className="text-primary fa fa-cloud-upload"></i>
-                                        <span className="d-block">
-                                          Drag and Drop or{" "}
-                                          <span className="text-primary">
-                                            Browse
+                            <div class="alert alert-danger" role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                          ) : (
+                            <Dropzone
+                              getUploadParams={this.getUploadParams}
+                              onChangeStatus={this.handleChangeStatus}
+                              PreviewComponent={this.Preview}
+                              //onSubmit={this.handleSubmit}
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              initialFiles={this.state.initialFiles}
+                              maxFiles={3}
+                              maxSizeBytes={2000000}
+                              inputContent={(files, extra) =>
+                                extra.reject ? (
+                                  "Image, audio and video files only"
+                                ) : (
+                                  <div className="text-center">
+                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                    <span className="d-block">
+                                      Drag and Drop or{" "}
+                                      <span className="text-primary">
+                                        Browse
                                           </span>
-                                          <br />
+                                      <br />
                                           file to upload
                                         </span>
-                                      </div>
-                                    )
-                                }
-                                styles={{
-                                  dropzoneReject: {
-                                    borderColor: "red",
-                                    backgroundColor: "#DAA",
-                                  },
-                                  inputLabel: (files, extra) =>
-                                    extra.reject ? { color: "red" } : {},
-                                }}
-                                classNames="draper-drop"
-                              />
-                            )}
+                                  </div>
+                                )
+                              }
+                              styles={{
+                                dropzoneReject: {
+                                  borderColor: "red",
+                                  backgroundColor: "#DAA",
+                                },
+                                inputLabel: (files, extra) =>
+                                  extra.reject ? { color: "red" } : {},
+                              }}
+                              classNames="draper-drop"
+                            />
+                          )}
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>

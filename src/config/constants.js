@@ -503,6 +503,7 @@ export const API = {
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
+  getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
@@ -551,7 +552,8 @@ export const API = {
   fetchFreightHeadsAPI: `${BASE_URL}/configuration/get-freight-heads`,
   getCostingFreight: `${BASE_URL}/costing-sheet-metal/get-costing-freight`,
   copyCostingAPI: `${BASE_URL}/costing/copy-costing`,
-
+  getPartCostingPlantSelectList: `${BASE_URL}/costing/get-part-costing-plant-select-list`,
+  getPartCostingVendorSelectList: `${BASE_URL}/costing/get-part-costing-vendor-select-list`,
 
 
   //LOGIN API
@@ -775,6 +777,9 @@ export const API = {
   getTaxDetailsData: `${BASE_URL}/masters-tax-details/get`,
   deleteTaxDetails: `${BASE_URL}/masters-tax-details/delete`,
   updateTaxDetails: `${BASE_URL}/masters-tax-details/update`,
+
+  //COMPANY
+  getComapanySelectList: `${BASE_URL}/company/get-company-select-list`
 }
 
 //Api constants
@@ -1088,6 +1093,7 @@ export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
 export const SET_OVERHEAD_PROFIT_COST_DATA = 'SET_OVERHEAD_PROFIT_COST_DATA';
 export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
+export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1136,39 +1142,47 @@ export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DAT
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
 export const SET_OTHER_DISCOUNT_TAB_DATA = 'SET_OTHER_DISCOUNT_TAB_DATA';
 export const SET_COMPONENT_ITEM_DATA = 'SET_COMPONENT_ITEM_DATA';
+export const SET_COMPONENT_OVERHEAD_ITEM_DATA = 'SET_COMPONENT_OVERHEAD_ITEM_DATA';
+export const SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA = 'SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA';
+export const SET_COMPONENT_TOOL_ITEM_DATA = 'SET_COMPONENT_TOOL_ITEM_DATA';
+export const SET_COMPONENT_DISCOUNT_ITEM_DATA = 'SET_COMPONENT_DISCOUNT_ITEM_DATA';
+export const GET_RM_DRAWER_DATA_LIST = 'GET_RM_DRAWER_DATA_LIST';
+export const GET_PROCESS_DRAWER_DATA_LIST = 'GET_PROCESS_DRAWER_DATA_LIST';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
 
-//Login const
+//COSTING SUMMARY
+export const GET_PART_COSTING_PLANT_SELECTLIST = 'GET_PART_COSTING_PLANT_SELECTLIST';
+export const GET_PART_COSTING_VENDOR_SELECT_LIST = 'GET_PART_COSTING_VENDOR_SELECT_LIST'
+
+//LOGIN
 export const AUTH_API_FAILURE = 'AUTH_API_FAILURE'
 export const AUTH_API_REQUEST = 'AUTH_API_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS'
 export const LOGIN_PAGE_INIT_CONFIGURATION = 'LOGIN_PAGE_INIT_CONFIGURATION'
 
-//User
+//USER
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS'
 export const GET_USER_DATA_SUCCESS = 'GET_USER_DATA_SUCCESS'
 export const GET_USER_UNIT_DATA_SUCCESS = 'GET_USER_UNIT_DATA_SUCCESS'
 export const GET_USERS_BY_TECHNOLOGY_AND_LEVEL = 'GET_USERS_BY_TECHNOLOGY_AND_LEVEL'
 export const GET_LEVEL_BY_TECHNOLOGY = 'GET_LEVEL_BY_TECHNOLOGY'
 
-//Role
+//ROLE
 export const GET_ROLE_SUCCESS = 'GET_ROLE_SUCCESS'
 export const GET_UNIT_ROLE_DATA_SUCCESS = 'GET_UNIT_ROLE_DATA_SUCCESS'
 export const GET_ROLES_SELECTLIST_SUCCESS = 'GET_ROLES_SELECTLIST_SUCCESS'
 
-//level users
+//LEVEL USERS
 export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS'
 export const GET_UNIT_LEVEL_DATA_SUCCESS = 'GET_UNIT_LEVEL_DATA_SUCCESS'
 
-//Department
+//DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
-export const GET_UNIT_DEPARTMENT_DATA_SUCCESS =
-  'GET_UNIT_DEPARTMENT_DATA_SUCCESS'
-export const GET_TECHNOLOGY_DATA_LIST_SUCCESS =
-  'GET_TECHNOLOGY_DATA_LIST_SUCCESS'
+export const GET_UNIT_DEPARTMENT_DATA_SUCCESS = 'GET_UNIT_DEPARTMENT_DATA_SUCCESS'
+export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCESS'
 
 //Common to get plants by supplier
 export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER'
@@ -1249,6 +1263,9 @@ export const GET_CURRENCY_SELECTLIST_BY = 'GET_CURRENCY_SELECTLIST_BY'
 //TAX DETAIL MASTER
 export const GET_TAX_DETAILS_DATALIST = 'GET_TAX_DETAILS_DATALIST'
 export const GET_TAX_DETAILS_DATA = 'GET_TAX_DETAILS_DATA'
+
+//COMPANY
+export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -1380,16 +1397,33 @@ export const VIEW_COSTING_DATA = {
   approvalButton: '',
 }
 
-//UOM ENUMS
+//UOM ENUMS (Need to change name)
 export const KG = "Kilogram"
 export const HOUR = "Hours"
 export const NO = "Number"
 export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 
-export const INR = "INR"
+// export const INR = "INR"
 
 export const Fixed = 1;
 export const Percentage = 2;
 export const FullTruckLoad = 3;
 export const PartTruckLoad = 4;
+export const INR = "INR"
+export const G = "Gram"
+export const MG = "Milligram"
+
+// UOM TYPE ENUM
+export const MASS = 'Mass'
+export const VOLUMETYPE = 'Volume'
+export const PRESSURE = 'Pressure'
+export const DIMENSION = 'Dimension'
+export const TIME = 'Time'
+export const POWER = 'Power'
+export const DENSITY = 'Density'
+export const AREA = 'Area'
+export const DIMENSIONLESS = 'Dimensionless'
+
+//UOM CATEGORY
+export const STD = 'STD'

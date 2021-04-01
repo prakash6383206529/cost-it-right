@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector, } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList } from '../../actions/Costing';
@@ -9,7 +9,8 @@ import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddProcess(props) {
 
@@ -19,6 +20,8 @@ function AddProcess(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
+
+  const processDrawerList = useSelector(state => state.costing.processDrawerList)
 
   /**
   * @method toggleDrawer
@@ -36,6 +39,7 @@ function AddProcess(props) {
 
       const data = {
         PlantId: costData.PlantId,
+        TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
@@ -53,7 +57,8 @@ function AddProcess(props) {
 
       const data = {
         VendorId: costData.VendorId,
-        VendorPlantId: costData.VendorPlantId,
+        TechnologyId: costData.TechnologyId,
+        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
@@ -81,7 +86,7 @@ function AddProcess(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+    noDataText: (processDrawerList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal(),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -184,6 +189,7 @@ function AddProcess(props) {
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineName" >{'Machine Name'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineTypeName" >{'Machine Type'}</TableHeaderColumn>
                   <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="MachineTonnage" >{'Machine Tonnage'}</TableHeaderColumn>
+                  <TableHeaderColumn width={70} columnTitle={true} dataAlign="center" dataField="UnitOfMeasurement" >{'UOM'}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="MachineRate" searchable={false} >{'Machine Rate'}</TableHeaderColumn>
                 </BootstrapTable>
               </Col>

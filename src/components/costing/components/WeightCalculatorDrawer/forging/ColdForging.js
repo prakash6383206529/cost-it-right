@@ -16,7 +16,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant'
 import { deleteVendorPowerDetail } from '../../../../masters/actions/Fuel'
 
 function ColdForging(props) {
-  console.log(props.rmRowData, 'Props')
+
   const { rmRowData } = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
@@ -72,7 +72,7 @@ function ColdForging(props) {
    * @description For Add value in table
    */
   const onSubmit = (values) => {
-    console.log(values, 'Val')
+
     const grossForgingWeight = values.grossForgingWeight
     const weight = forgingWeight + grossForgingWeight
     setNetForgingWeight(weight)
@@ -187,16 +187,16 @@ function ColdForging(props) {
   const calculateforgingVolumeAndWeight = () => {
     const forgingOuterDiameter = getValues('forgingOuterDiameter')
     const forgingLength = getValues('forgingLength')
-    console.log(forgingOuterDiameter, 'Entered', forgingLength)
+
     if (!forgingOuterDiameter || !forgingLength) {
       return ''
     }
-    console.log('Entered1')
+
     const forgingVolume = checkForDecimalAndNull(
       Math.PI * Math.pow(forgingOuterDiameter / 2, 2) * forgingLength,
       trim,
     )
-    console.log(forgingVolume, 'Volume')
+
     const grossForgingWeight = checkForDecimalAndNull(
       forgingVolume * rmRowData.Density,
       trim,
@@ -209,7 +209,7 @@ function ColdForging(props) {
    * @description Calculate volume and weight based on length,breadth and height
    */
   const calculateforgingVolumeWeight = () => {
-    console.log('Entered in length breadth part')
+
     const forgingLength = getValues('forgingLength')
     const breadth = getValues('breadth')
     const height = getValues('height')
@@ -252,7 +252,7 @@ function ColdForging(props) {
         setValue('forgingWeight', tempObj.forgingWeight)
       }, 100)
     } else {
-      console.log('enter', tempObj)
+
       setIsShowLabel(true)
       setIsChecked(true)
       setValue('description', tempObj.Description)
@@ -290,7 +290,7 @@ function ColdForging(props) {
     // tableData.forEach((element) => {
     //   totalForgingWeight = totalForgingWeight + element.ForgingWeight
     // })
-    // console.log(totalForgingWeight, 'NetForgingWeight')
+    // 
   }
   return (
     <Fragment>
@@ -321,7 +321,7 @@ function ColdForging(props) {
                         },
                         // maxLength: 4,
                       }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -346,7 +346,7 @@ function ColdForging(props) {
                         },
                         // maxLength: 4,
                       }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -371,7 +371,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -396,7 +396,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -422,7 +422,7 @@ function ColdForging(props) {
                         },
                         // maxLength: 4,
                       }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -447,7 +447,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -507,7 +507,7 @@ function ColdForging(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -533,7 +533,7 @@ function ColdForging(props) {
                             },
                             // maxLength: 4,
                           }}
-                          handleChange={() => {}}
+                          handleChange={() => { }}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
@@ -560,7 +560,7 @@ function ColdForging(props) {
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -587,7 +587,7 @@ function ColdForging(props) {
                               },
                               // maxLength: 4,
                             }}
-                            handleChange={() => {}}
+                            handleChange={() => { }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
@@ -612,7 +612,7 @@ function ColdForging(props) {
                               },
                               // maxLength: 4,
                             }}
-                            handleChange={() => {}}
+                            handleChange={() => { }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
@@ -637,7 +637,7 @@ function ColdForging(props) {
                               },
                               // maxLength: 4,
                             }}
-                            handleChange={() => {}}
+                            handleChange={() => { }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
@@ -665,7 +665,7 @@ function ColdForging(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -690,7 +690,7 @@ function ColdForging(props) {
                         //   },
                         //   // maxLength: 4,
                         // }}
-                        handleChange={() => {}}
+                        handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
@@ -705,7 +705,7 @@ function ColdForging(props) {
                             <button
                               type="submit"
                               className={'btn btn-primary mt30 pull-left mr5'}
-                              onClick={() => {}}
+                              onClick={() => { }}
                             >
                               Update
                             </button>
@@ -722,7 +722,7 @@ function ColdForging(props) {
                           <button
                             type="submit"
                             className={'user-btn mt30 pull-left'}
-                            onClick={() => {}}
+                            onClick={() => { }}
                           >
                             <div className={'plus'}></div>ADD
                           </button>
@@ -821,7 +821,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -846,7 +846,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -871,7 +871,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -896,7 +896,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -922,7 +922,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}
@@ -947,7 +947,7 @@ function ColdForging(props) {
                       //   },
                       //   // maxLength: 4,
                       // }}
-                      handleChange={() => {}}
+                      handleChange={() => { }}
                       defaultValue={''}
                       className=""
                       customClassName={'withBorder'}

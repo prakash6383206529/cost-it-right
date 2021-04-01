@@ -32,7 +32,7 @@ class AddExchangeRate extends Component {
    * @description called after render the component
    */
   componentDidMount() {
-    console.log("COMING IN COMPONENT");
+
     this.props.getCurrencySelectList(() => { })
     // this.props.getExchangeRateData('', (res) => { })
     this.getDetail()
@@ -92,7 +92,7 @@ class AddExchangeRate extends Component {
   */
   getDetail = () => {
     const { data } = this.props;
-    console.log("COMING IN DETAIL", data);
+
     if (data && data.isEditFlag) {
       this.setState({
         isLoader: true,
@@ -100,7 +100,7 @@ class AddExchangeRate extends Component {
         ExchangeRateId: data.ID,
       })
       $('html, body').animate({ scrollTop: 0 }, 'slow');
-      console.log("DATA IM GETDETAIL.........................", data.ID);
+
       this.props.getExchangeRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
@@ -135,7 +135,7 @@ class AddExchangeRate extends Component {
   * @description used to Reset form
   */
   cancel = () => {
-    console.log("Comig in cancel");
+
     const { reset } = this.props;
     reset();
     this.setState({
@@ -152,7 +152,7 @@ class AddExchangeRate extends Component {
   */
   onSubmit = (values) => {
     const { isEditFlag, currency, effectiveDate, ExchangeRateId } = this.state;
-    console.log(values, "VALUES");
+
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
 
@@ -164,7 +164,7 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
       }
@@ -185,15 +185,13 @@ class AddExchangeRate extends Component {
         BankRate: values.BankRate,
         CustomRate: values.CustomRate,
         BankCommissionPercentage: values.BankCommissionPercentage,
-        EffectiveDate: new Date(effectiveDate),
-        // EffectiveDate: (values.EffectiveDate),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         LoggedInUserId: loggedInUserId(),
       }
-      console.log(formData, "formData");
-      this.props.reset()
+
       this.props.createExchangeRate(formData, (res) => {
         if (res.data.Result) {
-          console.log("Coming here for toaster");
+
           toastr.success(MESSAGES.EXCHANGE_ADD_SUCCESS);
           this.cancel();
         }
@@ -277,9 +275,8 @@ class AddExchangeRate extends Component {
                           name={"BankRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          required={true}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"
@@ -291,9 +288,8 @@ class AddExchangeRate extends Component {
                           name={"BankCommissionPercentage"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          required={true}
                           max={100}
                           disabled={false}
                           className=" "
@@ -307,9 +303,8 @@ class AddExchangeRate extends Component {
                           name={"CustomRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10]}
                           component={renderText}
-                          required={true}
                           disabled={false}
                           className=" "
                           customClassName=" withBorder"

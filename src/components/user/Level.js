@@ -69,7 +69,7 @@ class Level extends Component {
       //$('html, body').animate({ scrollTop: 200 }, 'slow');
       this.props.getLevelMappingAPI(LevelId, (res) => {
         const { technologyList, levelList } = this.props;
-        console.log(levelList, "List");
+
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
@@ -77,7 +77,7 @@ class Level extends Component {
 
             let technologyObj = technologyList && technologyList.filter(item => item.Value === Data.TechnologyId)
             let levelObj = levelList && levelList.filter(item => item.Value === Data.LevelId)
-            console.log(levelObj, "Object");
+
             this.setState({
               isEditMappingFlag: true,
               LevelId: LevelId,

@@ -20,14 +20,15 @@ import { saveProcessCostCalculationData } from '../../../actions/ProcessCost'
 import { toastr } from 'react-redux-toastr'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
+import { SHEETMETAL, RUBBER, PLASTIC, MACHINING } from '../../../../../config/masterData'
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
-  console.log(calculatorData, 'Process')
+
   const tonnage = calculatorData.MachineTonnage ? calculatorData.MachineTonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
-    console.log('Form Value in drawer', time)
+
     //   let obj={}
     //    obj.TurningDiameter = formValue.turningDiameter,
     //    obj.FinishDiameter = formValue.finishDiameter,
@@ -74,8 +75,8 @@ function VariableMhrDrawer(props) {
     props.closeDrawer('', formValue, weightData)
   }
   const getProcessComponent = (process) => {
-    console.log('Entered in switch case')
-    if (technology === 'Machining') {
+
+    if (technology === MACHINING) {
       switch (process) {
         case 'Facing':
           return (
@@ -152,7 +153,7 @@ function VariableMhrDrawer(props) {
         default:
           break;
       }
-    } else if (technology === 'Sheet Metal') {
+    } else if (technology === SHEETMETAL) {
       switch (process) {
         case 'Facing':
           return (
@@ -167,11 +168,12 @@ function VariableMhrDrawer(props) {
             <SheetMetalBaicDrawer
               calculateMachineTime={calculateMachineTime}
               tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
               calculatorData={calculatorData}
             />
           )
       }
-    } else if (technology === 'Plastic') {
+    } else if (technology === PLASTIC) {
       switch (process) {
         case 'Injection Moulding':
           return (
@@ -214,11 +216,11 @@ function VariableMhrDrawer(props) {
                   <span className="cr-tbl-label d-block">
                     Process Description:
                   </span>
-                  <span>{calculatorData.ProcessDescription}</span>
+                  <span>{calculatorData.ProcessDescription ? calculatorData.ProcessDescription : '-'}</span>
                 </span>
                 <span className="d-inline-block mr-4 mb-3">
                   <span className="cr-tbl-label d-block">Machine Name:</span>
-                  <span>{calculatorData.MachineName}</span>
+                  <span>{calculatorData.MachineName ? calculatorData.MachineName : '-'}</span>
                 </span>
                 <span className="d-inline-block mr-4 mb-3">
                   <span className="cr-tbl-label d-block">Machine Rate:</span>

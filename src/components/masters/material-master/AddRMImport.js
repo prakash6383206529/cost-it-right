@@ -2,8 +2,8 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField } from "../../layout/FormInputs";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull } from "../../../helper/validation";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList,
@@ -30,6 +30,8 @@ import { FILE_URL, INR, ZBC } from '../../../config/constants';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
+import moment from 'moment';
+import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -74,7 +76,8 @@ class AddRMImport extends Component {
 
       isVisible: false,
       imageURL: '',
-      currencyValue: 1
+      currencyValue: 1,
+      showCurrency: false
 
     }
   }
@@ -251,19 +254,21 @@ class AddRMImport extends Component {
   * @method handleCurrency
   * @description called
   */
-  handleCurrency = (newValue, actionMeta) => {
+  handleCurrency = (newValue) => {
     if (newValue && newValue !== '') {
       this.setState({ currency: newValue, })
       const { fieldsObj } = this.props
       if (newValue.label === INR) {
-        this.setState({ currencyValue: 1 }, () => {
 
-          this.props.change('NetLandedCost', (fieldsObj.BasicRate * this.state.currencyValue))
+        this.setState({ currencyValue: 1, showCurrency: false }, () => {
+
+          this.props.change('NetLandedCost', checkForNull(fieldsObj.BasicRate * this.state.currencyValue))
         })
       } else {
         this.props.getExchangeRateByCurrency(newValue.label, res => {
-          this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
-          this.setState({ currencyValue: res.data.Data.CurrencyExchangeRate })
+          this.props.change('NetLandedCost', checkForNull(fieldsObj.BasicRate))
+          this.props.change('NetLandedCostCurrency', checkForNull(fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true })
         })
       }
     } else {
@@ -276,10 +281,12 @@ class AddRMImport extends Component {
   * @description Set value in NetLandedCost
   */
   handleBasicRate = (e) => {
-    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : e.target.value)
-
     const { currencyValue } = this.state
-    this.props.change('NetLandedCost', (e.target.value * currencyValue))
+    // if (this.state.currency.label === INR) {
+    this.props.change('NetLandedCost', (checkForNull(e.target.value)))
+    // } else {
+    this.props.change('NetLandedCostCurrency', (checkForNull(e.target.value * currencyValue)))
+    // }
   }
 
   /**
@@ -328,14 +335,17 @@ class AddRMImport extends Component {
 
           setTimeout(() => {
             const { gradeSelectList, rmSpecification, cityList, categoryList,
-              rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, currencySelectList, } = this.props;
+              rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList } = this.props;
 
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find(item => item.Value === Data.Category)
-            // const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
+
+
+            this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
 
             let plantArray = [];
             Data && Data.Plant.map((item) => {
@@ -364,14 +374,14 @@ class AddRMImport extends Component {
               RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
               RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              // Technology:technologyObj !==  undefined ? {label: technologyObj.Text, value: technologyObj.Value}:[], NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+              TechnologyId: technologyObj !== undefined ? technologyObj.Value : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
               selectedPlants: plantArray,
               vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               HasDifferentSource: Data.HasDifferentSource,
               sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
               UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-              effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               remarks: Data.Remark,
               files: Data.FileList,
@@ -423,7 +433,7 @@ class AddRMImport extends Component {
               const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === data.RawMaterialId,)
               const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === data.GradeId)
               const specObj = rmSpecification && rmSpecification.find((item) => item.Text === data.Specification)
-              console.log(specObj, "SPEC OBJ");
+
               this.setState({
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
@@ -748,6 +758,8 @@ class AddRMImport extends Component {
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
       effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology } = this.state;
 
+    const { initialConfiguration } = this.props;
+
     let plantArray = [];
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
@@ -775,7 +787,7 @@ class AddRMImport extends Component {
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
       }
       this.props.reset()
@@ -794,7 +806,7 @@ class AddRMImport extends Component {
         RMGrade: RMGrade.value,
         RMSpec: RMSpec.value,
         Category: Category.value,
-        // Technology: Technology.value, NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+        TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
         Source: (!IsVendor && !HasDifferentSource) ? '' : values.Source,
@@ -806,11 +818,11 @@ class AddRMImport extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: checkVendorPlantConfigurable() ? (IsVendor ? vendorPlantArray : []) : [],
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -827,7 +839,7 @@ class AddRMImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
       isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
@@ -1081,27 +1093,26 @@ class AddRMImport extends Component {
                               )}
                             </div>
                           </Col>
-                          {checkVendorPlantConfigurable() &&
-                            this.state.IsVendor && (
-                              <Col md="4">
-                                <Field
-                                  label="Vendor Plant"
-                                  name="DestinationSupplierPlantId"
-                                  placeholder={"Select"}
-                                  selection={
-                                    this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                  options={this.renderListing("VendorPlant")}
-                                  validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                  selectionChanged={this.handleVendorPlant}
-                                  optionValue={(option) => option.Value}
-                                  optionLabel={(option) => option.Text}
-                                  component={renderMultiSelectField}
-                                  mendatory={true}
-                                  className="multiselect-with-border"
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </Col>
-                            )}
+                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
+                            <Col md="4">
+                              <Field
+                                label="Vendor Plant"
+                                name="DestinationSupplierPlantId"
+                                placeholder={"Select"}
+                                selection={
+                                  this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
+                                options={this.renderListing("VendorPlant")}
+                                validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
+                                selectionChanged={this.handleVendorPlant}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          )}
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
                               <>
@@ -1220,11 +1231,11 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Landed Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label}/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
-                              validate={[required]}
+                              validate={[]}
                               component={renderText}
                               required={false}
                               disabled={true}
@@ -1232,14 +1243,32 @@ class AddRMImport extends Component {
                               customClassName=" withBorder mb-0"
                             />
                           </Col>
+                          {
+                            this.state.showCurrency &&
+                            <Col md="4">
+                              <Field
+                                label={`Net Cost (INR/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label})`}
+                                name={"NetLandedCostCurrency"}
+                                type="text"
+                                placeholder={""}
+                                validate={[]}
+                                component={renderText}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder mb-0"
+                              />
+                            </Col>
+                          }
+
                           <Col md="4">
                             <div className="form-group">
-                              <label>
+                              {/* <label>
                                 Effective Date
                                     <span className="asterisk-required">*</span>
-                              </label>
+                              </label> */}
                               <div className="inputbox date-section">
-                                <DatePicker
+                                {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -1254,6 +1283,22 @@ class AddRMImport extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={false}
+                                /> */}
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                //minDate={moment()}
                                 />
                               </div>
                             </div>
@@ -1291,43 +1336,43 @@ class AddRMImport extends Component {
                                 Maximum file upload limit has been reached.
                               </div>
                             ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                      "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                          <i className="text-primary fa fa-cloud-upload"></i>
-                                          <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                              Browse
+                              <Dropzone
+                                getUploadParams={this.getUploadParams}
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={3}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                          Browse
                                             </span>
-                                            <br />
+                                        <br />
                                             file to upload
                                           </span>
-                                        </div>
-                                      )
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
-                                />
-                              )}
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                              />
+                            )}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1457,6 +1502,7 @@ class AddRMImport extends Component {
               isOpen={isOpenVendor}
               closeDrawer={this.closeVendorDrawer}
               isEditFlag={false}
+              isRM={true}
               ID={""}
               anchor={"right"}
             />
@@ -1482,13 +1528,15 @@ class AddRMImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, material, } = state;
+  const { comman, material, auth } = state;
   const fieldsObj = selector(state, 'BasicRate', 'NetLandedCost');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
     categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
     currencySelectList, technologySelectList, plantSelectList } = comman;
+
+  const { initialConfiguration } = auth;
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
     gradeSelectList, vendorListByVendorType } = material;
@@ -1509,7 +1557,8 @@ function mapStateToProps(state) {
     plantList, supplierSelectList, cityList, technologyList, categoryList, rawMaterialDetails,
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList
+    filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList,
+    initialConfiguration,
   }
 
 }
@@ -1543,7 +1592,8 @@ export default connect(mapStateToProps, {
   fetchPlantDataAPI,
   getTechnologySelectList,
   getPlantSelectListByType,
-  getExchangeRateByCurrency
+  getExchangeRateByCurrency,
+  getVendorWithVendorCodeSelectList
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

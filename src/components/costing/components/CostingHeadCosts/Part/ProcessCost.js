@@ -14,12 +14,13 @@ import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function ProcessCost(props) {
   const { data } = props
 
   const { register, control, errors, setValue } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   })
 
@@ -43,6 +44,10 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+<<<<<<< HEAD
+=======
+  const CostingViewMode = useContext(ViewCostingContext);
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({
@@ -112,6 +117,7 @@ function ProcessCost(props) {
       Quantity: weightData.Quantity,
       ProcessCost: weightData.ProcessCost,
       IsCalculatedEntry: true,
+      ProcessCalculationId: weightData.ProcessCalculationId,
       WeightCalculatorRequest: weightData
     }
 
@@ -175,8 +181,8 @@ function ProcessCost(props) {
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           MachineTonnage: el.MachineTonnage,
           ProcessCost: '',
-          UnitType: el.UnitType,
-          UnitTypeId: el.UnitTypeId
+          UOMType: el.UnitType,
+          UOMTypeId: el.UnitTypeId
         }
       })
 
@@ -352,10 +358,10 @@ function ProcessCost(props) {
     let tempData = gridData[index]
 
     if (!isNaN(event.target.value)) {
-      const ProcessCost = tempData.MHR * parseInt(event.target.value)
+      const ProcessCost = tempData.MHR * event.target.value
       tempData = {
         ...tempData,
-        Quantity: parseInt(event.target.value),
+        Quantity: event.target.value,
         IsCalculatedEntry: false,
         ProcessCost: ProcessCost,
       }
@@ -478,13 +484,13 @@ function ProcessCost(props) {
               <div className="left-border">{'Process Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}
               >
                 <div className={'plus'}></div>ADD PROCESS
-              </button>
+              </button>}
             </Col>
           </Row>
 
@@ -675,8 +681,8 @@ function ProcessCost(props) {
                       return (
                         <tr key={index}>
                           <td>{item.ProcessName}</td>
-                          <td>{item.ProcessDescription}</td>
-                          <td>{item.MachineName}</td>
+                          <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
+                          <td>{item.MachineName ? item.MachineName : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
                           <td style={{ width: 150 }}>
@@ -696,7 +702,7 @@ function ProcessCost(props) {
                                   //     message: 'Invalid Number.',
                                   //   },
                                   // }}
-                                  defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '0.00'}
+                                  defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
@@ -706,7 +712,7 @@ function ProcessCost(props) {
                                   }}
 
                                   // errors={}
-                                  disabled={false}
+                                  disabled={CostingViewMode ? true : false}
                                 />
                               }
                             </span>
@@ -776,11 +782,7 @@ function ProcessCost(props) {
                               type={"button"}
                               onClick={() => editItem(index)}
                             /> */}
-                            <button
-                              className="Delete"
-                              type={'button'}
-                              onClick={() => deleteItem(index)}
-                            />
+                            {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                           </td>
                         </tr>
                       )
@@ -827,9 +829,10 @@ function ProcessCost(props) {
       )}
       {isCalculator && (
         <VariableMhrDrawer
-          technology={costData.TechnologyName}
+          technology={costData.ETechnologyType}
           calculatorData={gridData[calciIndex]}
           isOpen={isCalculator}
+          rmFinishWeight={props.rmFinishWeight}
           closeDrawer={closeCalculatorDrawer}
           anchor={'right'}
         />

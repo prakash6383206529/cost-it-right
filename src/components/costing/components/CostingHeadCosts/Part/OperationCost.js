@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -7,11 +8,12 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function OperationCost(props) {
 
   const { register, control, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 
@@ -21,6 +23,9 @@ function OperationCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     const Params = {
@@ -127,10 +132,10 @@ function OperationCost(props) {
     let tempData = gridData[index];
 
     if (!isNaN(event.target.value)) {
-      const WithLaboutCost = checkForNull(tempData.Rate) * parseInt(event.target.value);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * parseInt(tempData.LabourQuantity) : 0;
+      const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
+      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, Quantity: parseInt(event.target.value), OperationCost: OperationCost }
+      tempData = { ...tempData, Quantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
@@ -145,9 +150,9 @@ function OperationCost(props) {
 
     if (!isNaN(event.target.value)) {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
-      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * parseInt(event.target.value) : 0;
+      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
-      tempData = { ...tempData, LabourQuantity: parseInt(event.target.value), OperationCost: OperationCost }
+      tempData = { ...tempData, LabourQuantity: event.target.value, OperationCost: OperationCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
 
@@ -178,11 +183,11 @@ function OperationCost(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD OPERATION</button>
+                <div className={'plus'}></div>ADD OPERATION</button>}
             </Col>
           </Row>
           <Row>
@@ -197,8 +202,12 @@ function OperationCost(props) {
                     <th>{`UOM`}</th>
                     <th>{`Rate`}</th>
                     <th style={{ width: "220px" }} >{`Quantity`}</th>
-                    <th style={{ width: "220px" }}>{`Labour Rate`}</th>
-                    <th style={{ width: "220px" }}>{`Labour Quantity`}</th>
+                    {initialConfiguration &&
+                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      <th style={{ width: "220px" }}>{`Labour Rate`}</th>}
+                    {initialConfiguration &&
+                      initialConfiguration.IsOperationLabourRateConfigure &&
+                      <th style={{ width: "220px" }}>{`Labour Quantity`}</th>}
                     <th style={{ width: "220px" }}>{`Net Cost`}</th>
                     <th style={{ width: "145px" }}>{`Action`}</th>
                   </tr>
@@ -226,8 +235,8 @@ function OperationCost(props) {
                                   rules={{
                                     //required: true,
                                     pattern: {
-                                      value: /^[0-9]*$/i,
-                                      //value: /^[0-9]\d*(\.\d+)?$/i,
+                                      //value: /^[0-9]*$/i,
+                                      value: /^[0-9]\d*(\.\d+)?$/i,
                                       message: 'Invalid Number.'
                                     },
                                   }}
@@ -239,43 +248,46 @@ function OperationCost(props) {
                                     handleQuantityChange(e, index)
                                   }}
                                   errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].Quantity : ''}
-                                  disabled={false}
+                                  disabled={CostingViewMode ? true : false}
                                 />
                               }
                             </td>
-                            <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
-                            <td style={{ width: 200 }}>
-                              {
-                                item.IsLabourRateExist ?
-                                  <TextFieldHookForm
-                                    label=""
-                                    name={`${OperationGridFields}[${index}]LabourQuantity`}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    rules={{
-                                      //required: true,
-                                      pattern: {
-                                        value: /^[0-9]*$/i,
-                                        //value: /^[0-9]\d*(\.\d+)?$/i,
-                                        message: 'Invalid Number.'
-                                      },
-                                    }}
-                                    defaultValue={item.LabourQuantity}
-                                    className=""
-                                    customClassName={'withBorder hide-label-inside mb-0'}
-                                    handleChange={(e) => {
-                                      e.preventDefault()
-                                      handleLabourQuantityChange(e, index)
-                                    }}
-                                    errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
-                                    disabled={false}
-                                  />
-                                  :
-                                  '-'
-                              }
-                            </td>
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>}
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>
+                                {
+
+                                  item.IsLabourRateExist ?
+                                    <TextFieldHookForm
+                                      label=""
+                                      name={`${OperationGridFields}[${index}]LabourQuantity`}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      mandatory={false}
+                                      rules={{
+                                        //required: true,
+                                        pattern: {
+                                          value: /^[0-9]*$/i,
+                                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                                          message: 'Invalid Number.'
+                                        },
+                                      }}
+                                      defaultValue={item.LabourQuantity}
+                                      className=""
+                                      customClassName={'withBorder hide-label-inside mb-0'}
+                                      handleChange={(e) => {
+                                        e.preventDefault()
+                                        handleLabourQuantityChange(e, index)
+                                      }}
+                                      errors={errors && errors.OperationGridFields && errors.OperationGridFields[index] !== undefined ? errors.OperationGridFields[index].LabourQuantity : ''}
+                                      disabled={CostingViewMode ? true : false}
+                                    />
+                                    :
+                                    '-'
+                                }
+                              </td>}
                             <td>{netCost(item)}</td>
                             <td>
                               <button className="SaveIcon mb-0 mr-2 align-middle" type={'button'} onClick={() => SaveItem(index)} />
@@ -289,12 +301,17 @@ function OperationCost(props) {
                             <td>{item.UOM}</td>
                             <td>{item.Rate}</td>
                             <td style={{ width: 200 }}>{item.Quantity}</td>
-                            <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>
-                            <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>}
+                            {initialConfiguration &&
+                              initialConfiguration.IsOperationLabourRateConfigure && <td>{
+                                item.IsLabourRateExist ? item.LabourQuantity : '-'
+                              }</td>}
                             <td>{netCost(item)}</td>
                             <td>
-                              <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />
-                              <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />
+                              {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                              {!CostingViewMode && <button className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
                             </td>
                           </tr>
                       )

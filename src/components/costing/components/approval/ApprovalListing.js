@@ -18,7 +18,7 @@ import { CONSTANT } from '../../../../helper/AllConastant'
 
 function ApprovalListing() {
   const loggedUser = loggedInUserId()
-  console.log(loggedUser, 'user id')
+
   const [tableData, setTableData] = useState([])
   const [partNoDropdown, setPartNoDropdown] = useState([])
   const [createdByDropdown, setCreatedByDropdown] = useState([])
@@ -31,7 +31,7 @@ function ApprovalListing() {
   const statusSelectList = useSelector(
     (state) => state.costing.costingStatusSelectList,
   )
-  console.log(partSelectList, 'dropdown')
+
   const { register, handleSubmit, control, setValue, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -68,12 +68,12 @@ function ApprovalListing() {
 
     dispatch(
       getApprovalList(filterData, (res) => {
-        console.log(res, 'Response for Approval List')
+
         if (res.status === 204 && res.data === '') {
           setTableData([])
         } else if (res && res.data && res.data.DataList) {
           let Data = res.data.DataList
-          console.log(Data, 'Data')
+
           const key = Data.CreatedBy
           let tempcreatedBy = []
           const createdArray = uniqueFilter(Data, key)
@@ -118,7 +118,7 @@ function ApprovalListing() {
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
-      console.log(tempDropdownList, 'temp')
+
       return tempDropdownList
     }
 
@@ -129,7 +129,7 @@ function ApprovalListing() {
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
-      console.log(tempDropdownList, 'temp')
+
       return tempDropdownList
     }
   }
@@ -139,7 +139,7 @@ function ApprovalListing() {
    * @description filtering data on Apply button
    */
   const onSubmit = (values) => {
-    console.log(values)
+
     const tempPartNo = values.partNo.value
     const tempcreatedBy = values.createdBy.value
     const tempRequestedBy = values.requestedBy.value
@@ -165,12 +165,12 @@ function ApprovalListing() {
   }
 
   const viewDetails = (approvalNumber, approvalProcessId) => {
-    console.log(approvalProcessId, "VIEW DETAIL", approvalNumber);
+
     setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
     setShowApprovalSummary(true)
     return (
       <ApprovalSummary
-        token={approvalNumber ? approvalNumber : '2345438'}
+        approvalNumber={approvalNumber ? approvalNumber : '2345438'}
         approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
       /> //TODO list
     )
@@ -275,6 +275,7 @@ function ApprovalListing() {
                       />
                     </div>
 
+
                     <div className="flex-fill filled-small hide-label">
                       <button
                         type="button"
@@ -295,7 +296,7 @@ function ApprovalListing() {
                     </div>
                   </div>
                 </Col>
-                <Col md="12" className="tag-container mb-4">
+                {/* <Col md="12" className="tag-container mb-4">
                   <Badge color="secondary" pill className="mr-1 md-badge-blue-grey">
                     Grant Marshall{' '}
                     <a href="">
@@ -308,7 +309,7 @@ function ApprovalListing() {
                       <i className="ml-1 fa fa-times-circle"></i>
                     </a>
                   </Badge>
-                </Col>
+                </Col> */}
 
                 {/* <Col md="12"  className="mb-4">
             <Badge color="success" pill className="badge-small">Approved </Badge>
@@ -342,87 +343,21 @@ function ApprovalListing() {
               tableHeaderClass="my-custom-header"
               pagination
             >
-              <TableHeaderColumn
-                dataField="ApprovalNumber"
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={true}
-                dataFormat={linkableFormatter}
-              >
-                {`Approval No.`}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="CostingNumber"
-                width={100}
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={false}
-              >
-                {'Costing Id'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="PartNumber"
-                width={100}
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={false}
-              >
-                {'Part No.'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="PartName"
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={false}
-              >
-                {'Part Name'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="CreatedBy"
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={false}
-              >
-                {'Created By'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="CreatedOn"
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={false}
-              >
-                {'Created On'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="RequestedBy"
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={false}
-              >
-                {'Requested By'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="RequestedOn"
-                columnTitle={true}
-                dataAlign="center"
-                dataSort={false}
-              >
-                {'Reuested On '}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                className="action"
-                dataField="Status"
-                export={false}
-                isKey={true}
-              // dataFormat={this.buttonFormatter}
-              >
-                Status
-        </TableHeaderColumn>
+              <TableHeaderColumn dataField="ApprovalNumber" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CostingNumber" width={100} columnTitle={true} dataAlign="center" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PartNumber" width={100} columnTitle={true} dataAlign="center" dataSort={false}>{'Part No.'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="center" dataSort={false}>{'Part Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="center" dataSort={false}>{'Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CreatedBy" columnTitle={true} dataAlign="center" dataSort={false} >{'Created By'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CreatedOn" columnTitle={true} dataAlign="center" dataSort={false} >{'Created On'} </TableHeaderColumn>
+              <TableHeaderColumn dataField="RequestedBy" columnTitle={true} dataAlign="center" dataSort={false}>{'Requested By'} </TableHeaderColumn>
+              <TableHeaderColumn dataField="RequestedOn" columnTitle={true} dataAlign="center" dataSort={false}> {'Reuested On '}</TableHeaderColumn>
+              <TableHeaderColumn className="Status" dataField="Status" export={false} isKey={true}>  Status  </TableHeaderColumn>
             </BootstrapTable>
           </>
           :
           <ApprovalSummary
-            token={approvalData.approvalNumber}
+            approvalNumber={approvalData.approvalNumber}
             approvalProcessId={approvalData.approvalProcessId}
           /> //TODO list
       }

@@ -69,7 +69,11 @@ function SurfaceTreatment(props) {
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
+<<<<<<< HEAD
           toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+=======
+          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         }
         props.closeDrawer('')
       }))
@@ -95,7 +99,11 @@ function SurfaceTreatment(props) {
       }
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
+<<<<<<< HEAD
           toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+=======
+          toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         }
         props.closeDrawer('')
       }))

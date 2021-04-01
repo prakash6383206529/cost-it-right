@@ -31,7 +31,7 @@ class ImpactDrawer extends Component {
     }
 
     onSubmit = (values) => {
-        console.log(values, "VALUES");
+
         const calaculatedValue = 5
         this.toggleDrawer('', calaculatedValue)
     }

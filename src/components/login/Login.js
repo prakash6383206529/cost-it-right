@@ -7,7 +7,7 @@ import {
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
 import { loginUserAPI, getMenuByUser, getLeftMenu, } from "../../actions/auth/AuthActions";
-import { maxLength70, minLength5, maxLength25, required, email } from "../../helper/validation";
+import { maxLength70, maxLength25, required, email } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
@@ -38,6 +38,14 @@ class Login extends Component {
 
   }
 
+  forgotConfirm = () => {
+    const toastrConfirmOptions = {
+      onOk: () => { },
+      onCancel: () => { },
+    };
+    return toastr.confirm(`${'Please contact your IT Administrator'}`, toastrConfirmOptions);
+  }
+
   /**
    * Submit the login form
    * @param values
@@ -45,7 +53,6 @@ class Login extends Component {
   onSubmit(values) {
 
     this.props.loginUserAPI(values, (res) => {
-      console.log(res, "RESPONSE");
       if (res && res.data && res.data.Result) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data);
@@ -55,12 +62,6 @@ class Login extends Component {
         setTimeout(() => {
           window.location.replace("/");
         }, 1000)
-      }
-      else {
-        // toastr.error('Entered email id or password is incorrect. Try again')
-        // console.log(res, "RES", res.Result);
-        // toastr.error(res.Message)
-
       }
     });
   }
@@ -151,9 +152,14 @@ class Login extends Component {
                           </label>
                         </div> */}
                     <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
-                    <Link to="/forgot-password" className="forgotpwd-field" target='_blank'>
+                    {/* <Link
+                      to="/forgot-password"
+                      className="forgotpwd-field"
+                      onClick={() => this.forgotConfirm()}
+                      target='_blank'>
                       Forgot Password?
-                        </Link>
+                        </Link> */}
+                    <div className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</div>
                   </div>
 
                 </form>

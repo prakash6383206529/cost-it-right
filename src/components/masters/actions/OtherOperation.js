@@ -255,7 +255,7 @@ export function getOperationsDataList(filterData, callback) {
         axios.get(`${API.getOperationsDataList}?${QueryParams}`, { headers })
 
             .then((response) => {
-                console.log(response, "Resp");
+
                 if (response.status === 204 && response.data === '') {
                     payload = []
                 } else if (response.status === 412) {

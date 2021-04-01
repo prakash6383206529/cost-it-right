@@ -76,7 +76,7 @@ class SideBar extends Component {
         this.props.logoutUserAPI(requestData, () => this.props.logUserOut());
         //this.props.logUserOut();
       },
-      onCancel: () => console.log("CANCEL: clicked"),
+      onCancel: () => { },
       component: () => <ConfirmComponent />
     };
 
@@ -614,8 +614,8 @@ class SideBar extends Component {
                                 {userData.Name}
                               </>
                             ) : (
-                                "Login"
-                              )}
+                              "Login"
+                            )}
                           </DropdownToggle>
 
                           {/* <DropdownMenu>
@@ -649,8 +649,8 @@ class SideBar extends Component {
                       </a>
                     </li>
                   ) : (
-                      ""
-                    )}
+                    ""
+                  )}
                 </ul>
               </div>
             </nav>

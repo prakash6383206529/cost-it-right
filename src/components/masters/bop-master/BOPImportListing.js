@@ -18,6 +18,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
+import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -43,7 +44,7 @@ class BOPImportListing extends Component {
     componentDidMount() {
         this.props.getBOPCategorySelectList(() => { })
         this.props.getPlantSelectList(() => { })
-        this.props.getAllVendorSelectList(() => { })
+        this.props.getVendorWithVendorCodeSelectList(() => { })
         this.getDataList()
     }
 
@@ -92,7 +93,7 @@ class BOPImportListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id);
             },
-            onCancel: () => console.log("CANCEL: clicked"),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.BOP_DELETE_ALERT}`, toastrConfirmOptions);
@@ -256,7 +257,7 @@ class BOPImportListing extends Component {
         return <> Part Assembly <br />Number </>
     }
     renderNetLandedCost = () => {
-        return <> Net <br />Landed Cost </>
+        return <> Net <br />Cost </>
     }
 
     renderEffectiveDate = () => {
@@ -268,7 +269,7 @@ class BOPImportListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { bopCategorySelectList, plantSelectList, vendorAllSelectList, } = this.props;
+        const { bopCategorySelectList, plantSelectList, vendorWithVendorCodeSelectList, } = this.props;
         const temp = [];
 
         if (label === 'costingHead') {
@@ -292,7 +293,7 @@ class BOPImportListing extends Component {
         }
 
         if (label === 'vendor') {
-            vendorAllSelectList && vendorAllSelectList.map(item => {
+            vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
                 if (item.Value === '0') return false;
                 temp.push({ label: item.Text, value: item.Value })
             });
@@ -534,10 +535,11 @@ class BOPImportListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, comman }) {
+function mapStateToProps({ boughtOutparts, comman, supplier }) {
     const { bopCategorySelectList, vendorAllSelectList, bopImportList } = boughtOutparts;
     const { plantSelectList, } = comman;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList }
+    const { vendorWithVendorCodeSelectList } = supplier;
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, vendorWithVendorCodeSelectList }
 }
 
 /**
@@ -552,6 +554,7 @@ export default connect(mapStateToProps, {
     getBOPCategorySelectList,
     getPlantSelectList,
     getAllVendorSelectList,
+    getVendorWithVendorCodeSelectList
 })(reduxForm({
     form: 'BOPImportListing',
     enableReinitialize: true,

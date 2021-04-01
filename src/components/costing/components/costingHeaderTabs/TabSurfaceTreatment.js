@@ -8,6 +8,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../helper/AllConastant';
+import { ViewCostingContext } from '../CostingDetails';
 
 function TabSurfaceTreatment(props) {
 
@@ -22,6 +23,7 @@ function TabSurfaceTreatment(props) {
   //setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -36,7 +38,7 @@ function TabSurfaceTreatment(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = SurfaceTabData && SurfaceTabData !== undefined && SurfaceTabData[0].CostingPartDetails !== undefined ? SurfaceTabData[0].CostingPartDetails : null;
+    let TopHeaderValues = SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].CostingPartDetails !== undefined ? SurfaceTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       NetSurfaceTreatmentCost: TopHeaderValues && TopHeaderValues.NetSurfaceTreatmentCost !== null ? TopHeaderValues.NetSurfaceTreatmentCost : 0,
     }
@@ -112,7 +114,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}) => {
-    console.log('Params, Data: ', Params, Data);
+
     let arr = formatData(Params, Data, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -163,7 +165,7 @@ function TabSurfaceTreatment(props) {
 
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -173,6 +175,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY DETAILS
   */
   const toggleAssembly = (params, Children = {}) => {
+    console.log('Children: ', params, Children);
     let arr = setAssembly(params, Children, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -216,7 +219,7 @@ function TabSurfaceTreatment(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -286,7 +289,7 @@ function TabSurfaceTreatment(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -367,7 +370,7 @@ function TabSurfaceTreatment(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -425,7 +428,7 @@ function TabSurfaceTreatment(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -480,7 +483,7 @@ function TabSurfaceTreatment(props) {
         return i;
       });
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
   }
@@ -519,7 +522,7 @@ function TabSurfaceTreatment(props) {
     }
 
     // dispatch(saveCostingSurfaceTreatmentTab(data, res => {
-    //   console.log('saveCostingSurfaceTreatmentTab: ', res);
+    //   
     // }))
 
   }
@@ -547,7 +550,7 @@ function TabSurfaceTreatment(props) {
                     <input
                       type="checkbox"
                       checked={isIncludeSurfaceTreatment}
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                     />
                     <span
                       className=" before-box"

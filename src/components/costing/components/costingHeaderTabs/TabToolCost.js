@@ -9,6 +9,10 @@ import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
+<<<<<<< HEAD
+=======
+import { ViewCostingContext } from '../CostingDetails';
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function TabToolCost(props) {
 
@@ -22,6 +26,7 @@ function TabToolCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -69,7 +74,7 @@ function TabToolCost(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -102,7 +107,7 @@ function TabToolCost(props) {
       });
 
     } catch (error) {
-      console.log('error: ', error);
+
     }
     return tempArr;
 
@@ -183,7 +188,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={IsApplicablilityDisable}
+                            disabled={IsApplicablilityDisable || CostingViewMode}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"

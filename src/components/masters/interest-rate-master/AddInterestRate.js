@@ -148,7 +148,7 @@ class AddInterestRate extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: date, });
+    this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
   };
 
   /**
@@ -234,7 +234,7 @@ class AddInterestRate extends Component {
         ICCPercent: values.ICCPercent,
         PaymentTermPercent: values.PaymentTermPercent,
         RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
@@ -249,7 +249,7 @@ class AddInterestRate extends Component {
       });
 
     } else {/** Add new detail for creating operation master **/
-      console.log(vendorName, "ffffffffffff", userDetail.ZBCSupplierInfo.VendorId);
+
       let formData = {
         Isvendor: IsVendor,
         VendorIdRef: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
@@ -258,13 +258,11 @@ class AddInterestRate extends Component {
         PaymentTermApplicability: PaymentTermsApplicability.label,
         PaymentTermPercent: values.PaymentTermPercent,
         RepaymentPeriod: values.RepaymentPeriod,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId()
       }
-      console.log(formData, "Form Data");
-      this.props.reset()
       this.props.createInterestRate(formData, (res) => {
 
         if (res.data.Result) {

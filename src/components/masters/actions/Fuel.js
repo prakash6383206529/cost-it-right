@@ -382,7 +382,7 @@ export function getPowerDetailDataList(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}`, headers);
         request.then((response) => {
-            if (response && response.status === 200) {
+            if (response.data.Result) {
                 dispatch({
                     type: GET_POWER_DATA_LIST,
                     payload: response.data.DataList

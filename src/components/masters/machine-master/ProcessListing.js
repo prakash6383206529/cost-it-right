@@ -111,7 +111,7 @@ class ProcessListing extends Component {
       onOk: () => {
         this.confirmDelete(Id);
       },
-      onCancel: () => console.log("CANCEL: clicked"),
+      onCancel: () => { },
       component: () => <ConfirmComponent />,
     };
     return toastr.confirm(`${MESSAGES.PROCESS_DELETE_ALERT}`, toastrConfirmOptions);
@@ -226,7 +226,7 @@ class ProcessListing extends Component {
       onOk: () => {
         this.confirmDelete(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked'),
+      onCancel: () => { },
     }
     return toastr.confirm(
       `${MESSAGES.PROCESS_DELETE_ALERT}`,
@@ -425,7 +425,7 @@ class ProcessListing extends Component {
                 <div className="d-inline-flex justify-content-start align-items-top w100">
                   <div className="flex-fills"><h5>{`Filter By:`}</h5></div>
                   <div className="flex-fill">
-                    <Field
+                    {/* <Field
                       name="plant"
                       type="text"
                       label={''}
@@ -438,7 +438,7 @@ class ProcessListing extends Component {
                       //required={true}
                       handleChangeDescription={this.handlePlant}
                       valueDescription={this.state.plant}
-                    />
+                    /> */}
                   </div>
                   <div className="flex-fill">
                     <Field
@@ -515,53 +515,11 @@ class ProcessListing extends Component {
               ref={'table'}
               pagination
             >
-              <TableHeaderColumn
-                dataField="ProcessName"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Process Name'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="ProcessCode"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Process Code'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="Plants"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Plant'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="Machines"
-                width={100}
-                columnTitle={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                {'Machine'}
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                width={100}
-                dataAlign="right"
-                searchable={false}
-                dataField="ProcessId"
-                export={false}
-                isKey={true}
-                dataFormat={this.buttonFormatter}
-              >
-                Actions
-              </TableHeaderColumn>
+              <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn>
+              {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
+              {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
+              <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>

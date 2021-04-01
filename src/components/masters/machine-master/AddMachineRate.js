@@ -72,7 +72,7 @@ class AddMachineRate extends Component {
    */
   componentDidMount() {
     const { data, editDetails, initialConfiguration } = this.props;
-    console.log(data, "Data from more detail form");
+
 
     // For Showing form in view mode if data is added in add more detail form
     if (data.isViewFlag === true) {
@@ -83,7 +83,7 @@ class AddMachineRate extends Component {
 
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
-      console.log(data, "DATA IN MACHINE RATE");
+
 
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
@@ -154,7 +154,7 @@ class AddMachineRate extends Component {
   * @description USED TO SET OLD VALUES
   */
   setOldValue = (data) => {
-    console.log("Entered here", data);
+
     this.setState({
       selectedTechnology: data.selectedTechnology,
       selectedPlants: data.selectedPlants,
@@ -464,7 +464,7 @@ class AddMachineRate extends Component {
         /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(formData).length > 0) {
           const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
-          console.log(processObj, "PROCESS");
+
           this.setState({
             processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
           })
@@ -1055,7 +1055,7 @@ class AddMachineRate extends Component {
 
                         <Col md="3">
                           <Field
-                            label={`Description`}
+                            label={`Machine Specification`}
                             name={"Description"}
                             type="text"
                             placeholder={'Enter'}
@@ -1074,9 +1074,9 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                             component={renderText}
-                            // required={true}
+                            required={true}
                             disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1093,8 +1093,8 @@ class AddMachineRate extends Component {
                                 placeholder={'Select'}
                                 options={this.renderListing('MachineTypeList')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
-                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [required] : []}
-                                required={true}
+                                validate={(this.state.machineType == null || this.state.machineType.length === 0) ? [] : []}
+                                required={false}
                                 handleChangeDescription={this.handleMachineType}
                                 valueDescription={this.state.machineType}
                                 disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
@@ -1109,13 +1109,13 @@ class AddMachineRate extends Component {
                         </Col>
                         <Col md="3">
                           <Field
-                            label={`Machine Specification`}
+                            label={`Machine Tonnage(Ton)`}
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, checkWhiteSpaces, postiveNumber, maxLength10]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
                             component={renderText}
-                            required={true}
+                            required={false}
                             disabled={isEditFlag ? true : this.state.isViewFlag ? true : false}
                             className=" "
                             customClassName="withBorder"
@@ -1320,7 +1320,7 @@ class AddMachineRate extends Component {
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               //onSubmit={this.handleSubmit}
-                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}

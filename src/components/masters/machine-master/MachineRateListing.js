@@ -257,7 +257,7 @@ class MachineRateListing extends Component {
             onOk: () => {
                 this.confirmDelete(Id);
             },
-            onCancel: () => console.log("CANCEL: clicked"),
+            onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.MACHINE_DELETE_ALERT}`, toastrConfirmOptions);

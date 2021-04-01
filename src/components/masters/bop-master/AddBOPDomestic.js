@@ -13,7 +13,7 @@ import { getPartSelectList } from '../actions/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -478,6 +478,8 @@ class AddBOPDomestic extends Component {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
+    const { initialConfiguration } = this.props;
+
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -526,7 +528,7 @@ class AddBOPDomestic extends Component {
         VendorLocation: '',
         Source: values.Source,
         SourceLocation: sourceLocation.value,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         BasicRate: values.BasicRate,
         NumberOfPieces: values.NumberOfPieces,
         NetLandedCost: this.state.NetLandedCost,
@@ -534,7 +536,7 @@ class AddBOPDomestic extends Component {
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
         Plant: plantArray,
-        VendorPlant: vendorPlantArray,
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
       }
       this.props.reset()
@@ -552,7 +554,7 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
 
     return (
@@ -727,7 +729,7 @@ class AddBOPDomestic extends Component {
                               optionValue={(option) => option.Value}
                               optionLabel={(option) => option.Text}
                               component={renderMultiSelectField}
-                              mendatory={true}
+                              //  mendatory={true}
                               className="multiselect-with-border"
                             //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                             />
@@ -765,7 +767,7 @@ class AddBOPDomestic extends Component {
                                                     </div>} */}
                             </div>
                           </Col>
-                          {this.state.IsVendor && (
+                          {checkVendorPlantConfigurable() && this.state.IsVendor && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"
@@ -862,7 +864,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`Net Landed Cost (INR)`}
+                              label={`Net Cost (INR)`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -927,47 +929,47 @@ class AddBOPDomestic extends Component {
                                 </label>
                             {this.state.files &&
                               this.state.files.length >= 3 ? (
-                                <div class="alert alert-danger" role="alert">
-                                  Maximum file upload limit has been reached.
-                                </div>
-                              ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                      "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                          <i className="text-primary fa fa-cloud-upload"></i>
-                                          <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                              Browse
+                              <div class="alert alert-danger" role="alert">
+                                Maximum file upload limit has been reached.
+                              </div>
+                            ) : (
+                              <Dropzone
+                                getUploadParams={this.getUploadParams}
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={3}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                          Browse
                                             </span>
-                                            <br />
+                                        <br />
                                             file to upload
                                           </span>
-                                        </div>
-                                      )
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
-                                />
-                              )}
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                              />
+                            )}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>

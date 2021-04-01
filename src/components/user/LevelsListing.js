@@ -138,7 +138,7 @@ class LevelsListing extends Component {
 	 * @description confirm edit item
 	 */
 	editItemDetails = (cell, Id) => {
-		console.log(Id, "ID");
+
 		this.setState({
 			// isEditFlag: true,
 			// LevelId: Id,
@@ -152,10 +152,10 @@ class LevelsListing extends Component {
 
 	closeImpactDrawer = (e = '', ImpactValue = '') => {
 		const { idForImpact, tableData } = this.state
-		console.log(ImpactValue, "Value from Drawer");
+
 
 		let tempData = tableData[idForImpact]
-		console.log(tempData, "TEMP");
+
 		tempData = {
 			...tempData,
 			Condition: ImpactValue
@@ -184,7 +184,7 @@ class LevelsListing extends Component {
 			onOk: () => {
 				this.confirmDeleteItem(Id)
 			},
-			onCancel: () => console.log('CANCEL: clicked'),
+			onCancel: () => { },
 			component: () => <ConfirmComponent />
 		};
 		return toastr.confirm(`${MESSAGES.LEVEL_DELETE_ALERT}`, toastrConfirmOptions);
@@ -235,7 +235,7 @@ class LevelsListing extends Component {
 			onOk: () => {
 				this.confirmDeactivateItem(data, cell)
 			},
-			onCancel: () => console.log('CANCEL: clicked'),
+			onCancel: () => { },
 			component: () => <ConfirmComponent />,
 		};
 		return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
@@ -298,7 +298,7 @@ class LevelsListing extends Component {
    * @description Renders buttons
    */
 	TextFormatter = (cell, row, enumObject, rowIndex) => {
-		// console.log(rowIndex, "Row Index");
+		// 
 		// this.setState({
 		// 	idForImpact: rowIndex
 		// })

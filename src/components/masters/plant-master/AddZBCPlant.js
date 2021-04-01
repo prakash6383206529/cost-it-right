@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { required, number, maxLength6, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength15, postiveNumber, maxLength10, maxLength3, } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
-import { createPlantAPI, getPlantUnitAPI, updatePlantAPI } from '../actions/Plant';
+import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
   fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, fetchSupplierCityDataAPI,
   getCityByCountry,
@@ -25,6 +25,7 @@ class AddZBCPlant extends Component {
       city: [],
       country: [],
       state: [],
+      company: []
     }
   }
 
@@ -34,6 +35,7 @@ class AddZBCPlant extends Component {
   */
   componentDidMount() {
     this.props.fetchCountryDataAPI(() => { })
+    this.props.getComapanySelectList(() => { })
     this.getDetails()
 
   }
@@ -58,18 +60,20 @@ class AddZBCPlant extends Component {
           this.props.fetchCityDataAPI(Data.StateId, () => { })
 
           setTimeout(() => {
-            const { countryList, stateList, cityList } = this.props;
+            const { countryList, stateList, cityList, companySelectList } = this.props;
 
             const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
             const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
             const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
-
+            const CompanyObj = companySelectList && companySelectList.find(item => item.Value === Data.CompanyId)
+            console.log(CompanyObj, "CompanyObj");
             this.setState({
               isEditFlag: true,
               isLoader: false,
               country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
               state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
-              city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : []
+              city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
+              company: CompanyObj && CompanyObj !== undefined ? { label: CompanyObj.Text, value: CompanyObj.Value } : []
             })
           }, 500)
         }
@@ -85,7 +89,7 @@ class AddZBCPlant extends Component {
   * @description Used show listing of unit of measurement
   */
   selectType = (label) => {
-    const { countryList, stateList, cityList } = this.props;
+    const { countryList, stateList, cityList, companySelectList } = this.props;
     const temp = [];
 
     if (label === 'country') {
@@ -111,6 +115,13 @@ class AddZBCPlant extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'Company') {
+      companySelectList && companySelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+      });
+      return temp
     }
 
   }
@@ -197,7 +208,7 @@ class AddZBCPlant extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { city, PlantId, } = this.state;
+    const { city, PlantId, company } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
 
@@ -221,6 +232,7 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        CompanyId: company.value
       }
       this.props.reset()
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
@@ -245,6 +257,7 @@ class AddZBCPlant extends Component {
         CityId: city.value,
         EVendorType: 0,
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
+        CompanyId: company.value
       }
 
       this.props.reset()
@@ -254,6 +267,14 @@ class AddZBCPlant extends Component {
           this.cancel()
         }
       });
+    }
+  }
+
+  handleCompanyChange = (value) => {
+    if (value && value !== '') {
+      this.setState({ company: value })
+    } else {
+      this.setState({ company: [] })
     }
   }
 
@@ -321,6 +342,29 @@ class AddZBCPlant extends Component {
                   </Col>
                 </Row>
                 <Row className="pl-3">
+                  {
+                    this.props.initialConfiguration.IsCompanyConfigureOnPlant &&
+                    <Col md="6">
+                      <Field
+                        name="CompanyName"
+                        type="text"
+                        label="Company Name"
+                        component={searchableSelect}
+                        placeholder={"Select"}
+                        options={this.selectType("Company")}
+                        //onKeyUp={(e) => this.changeItemDesc(e)}
+                        validate={
+                          this.state.company == null ||
+                            this.state.company.length === 0
+                            ? []
+                            : []
+                        }
+                        required={false}
+                        handleChangeDescription={this.handleCompanyChange}
+                        valueDescription={this.state.company}
+                      />
+                    </Col>
+                  }
                   <Col md="6">
                     <Row>
                       <Col className="Phone phoneNumber" md="8">
@@ -329,9 +373,9 @@ class AddZBCPlant extends Component {
                           name={"PhoneNumber"}
                           type="text"
                           placeholder={""}
-                          validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
                           component={renderText}
-                          required={true}
+                          //  required={true}
                           maxLength={10}
                           className=""
                           customClassName={"withBorder"}
@@ -343,9 +387,9 @@ class AddZBCPlant extends Component {
                           name={"Extension"}
                           type="text"
                           placeholder={""}
-                          validate={[required, postiveNumber, maxLength3, checkWhiteSpaces]}
+                          validate={[postiveNumber, maxLength3, checkWhiteSpaces]}
                           component={renderText}
-                          required={true}
+                          // required={true}
                           maxLength={3}
                           className=""
                           customClassName={"withBorder"}
@@ -353,22 +397,22 @@ class AddZBCPlant extends Component {
                       </Col>
                     </Row>
                   </Col>
+                </Row>
+                <Row className="pl-3">
                   <Col md="6">
                     <Field
                       label="Address 1"
                       name={"AddressLine1"}
                       type="text"
                       placeholder={""}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                       component={renderText}
-                      required={true}
+                      // required={true}
                       maxLength={26}
                       className=""
                       customClassName={"withBorder"}
                     />
                   </Col>
-                </Row>
-                <Row className="pl-3">
                   <Col md="6">
                     <Field
                       label="Address 2"
@@ -383,6 +427,8 @@ class AddZBCPlant extends Component {
                       customClassName={"withBorder"}
                     />
                   </Col>
+                </Row>
+                <Row className="pl-3">
                   <Col md="6">
                     <Field
                       name="CountryId"
@@ -403,8 +449,6 @@ class AddZBCPlant extends Component {
                       valueDescription={this.state.country}
                     />
                   </Col>
-                </Row>
-                <Row className="pl-3">
                   {(country.length === 0 || country.label === "India") && (
                     <Col md="6">
                       <Field
@@ -427,6 +471,9 @@ class AddZBCPlant extends Component {
                       />
                     </Col>
                   )}
+                </Row>
+
+                <Row className="pl-3">
                   <Col md="6">
                     <Field
                       name="CityId"
@@ -447,9 +494,6 @@ class AddZBCPlant extends Component {
                       valueDescription={this.state.city}
                     />
                   </Col>
-                </Row>
-
-                <Row className="pl-3">
                   <Col md="6">
                     <Field
                       label="ZipCode"
@@ -509,9 +553,12 @@ class AddZBCPlant extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, plant }) {
+function mapStateToProps({ comman, plant, auth }) {
+  console.log(auth, "AUTH");
   const { countryList, stateList, cityList } = comman;
-  const { plantUnitDetail } = plant;
+  const { plantUnitDetail, companySelectList } = plant;
+  const { initialConfiguration } = auth
+
   let initialValues = {};
   if (plantUnitDetail && plantUnitDetail !== undefined) {
     initialValues = {
@@ -524,7 +571,7 @@ function mapStateToProps({ comman, plant }) {
       ZipCode: plantUnitDetail.ZipCode,
     }
   }
-  return { countryList, stateList, cityList, initialValues, plantUnitDetail }
+  return { countryList, stateList, cityList, initialValues, plantUnitDetail, initialConfiguration, companySelectList }
 }
 
 /**
@@ -542,6 +589,7 @@ export default connect(mapStateToProps, {
   fetchSupplierCityDataAPI,
   updatePlantAPI,
   getCityByCountry,
+  getComapanySelectList
 })(reduxForm({
   form: 'AddZBCPlant',
   enableReinitialize: true,

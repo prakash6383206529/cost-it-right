@@ -34,7 +34,7 @@ function ManageSOBDrawer(props) {
   const [isDisable, setIsDisable] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  console.log(initialConfiguration, "INITIAL");
+
 
   const fieldValues = useWatch({
     control,
@@ -47,7 +47,7 @@ function ManageSOBDrawer(props) {
     dispatch(getManageBOPSOBById(ID, (res) => {
       if (res && res.data && res.data.Result) {
         let Data = res.data.Data;
-        console.log(Data, "DATA FOR SOB");
+
         if (Data.BoughtOutPartVendorList.length === 1) {
           setIsDisable(true)
         }
@@ -61,7 +61,7 @@ function ManageSOBDrawer(props) {
 
   // const VendorsBOPSOBData = useSelector(state => state.boughtOutparts.VendorsBOPSOBData)
   // if (VendorsBOPSOBData !== undefined) {
-  //   console.log('VendorsBOPSOBData: ', VendorsBOPSOBData);
+  //   
   // }
 
   useEffect(() => {
@@ -89,14 +89,15 @@ function ManageSOBDrawer(props) {
     let tempArray = [];
     let tempData = GridData[index];
 
-    if (!isNaN(event.target.value)) {//number ha...false..true
+    if (!isNaN(event.target.value)) {
       const a = checkPercentageValue(event.target.value);
-      console.log(a);
+
+
       tempData = {
         ...tempData,
+        //ShareOfBusinessPercentage: checkPercentageValue(event.target.value) ? Number(event.target.value) : 0,
         ShareOfBusinessPercentage: a ? Number(event.target.value) : 0,
-        // ShareOfBusinessPercentage: checkForNull(event.target.value) ? Number(event.target.value) : 0,
-        isSOBChanged: checkIsSOBChanged(event, index),
+        //isSOBChanged: checkIsSOBChanged(event, index),
         WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(Number(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
@@ -104,13 +105,15 @@ function ManageSOBDrawer(props) {
         if(a === false ) {
         setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)    }
 
+
+      setTimeout(() => {
+        if (a === false) {
+          setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
+        }
+
         return false;
       }, 200);
       setGridData(tempArray)
-      // if (!checkPercentageValue(event.target.value)) {
-      //   setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
-      //   return false
-      // }
 
     } else {
       warningMessageHandle('VALID_NUMBER_WARNING')
@@ -179,14 +182,14 @@ function ManageSOBDrawer(props) {
     * @description Used to Submit the form
     */
   const onSubmit = (values) => {
-    console.log('values >>>', values);
+
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
 
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
-      console.log(currentIndex, "INDEX", el.ShareOfBusinessPercentage);
+
       return accummlator + checkForNull(el.ShareOfBusinessPercentage)
     }, 0)
-    console.log(sum, "SUM");
+
     if (Number(sum) > 100) {
       toastr.warning('Total SOB% should be up to 100%')
       return false

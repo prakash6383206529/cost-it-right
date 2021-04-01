@@ -148,7 +148,7 @@ class AddFuel extends Component {
   };
 
   checkForSpecialCharacter = (value) => {
-    if (value && /[^a-zA-Z0-9 ]/i.test(value)) {
+    if (value && !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)) {
       return false;
     }
     return true;
@@ -167,7 +167,7 @@ class AddFuel extends Component {
 
     } else {
       if (StateName.length === 0 || effectiveDate === '') {
-        console.log("Enter in else ke if blck");
+
         toastr.warning('Fields should not be empty');
         return false;
       }
@@ -571,14 +571,14 @@ class AddFuel extends Component {
                                   {/* <button type="button" className={'btn btn-secondary mt30 pull-left'} onClick={this.resetRateGridData} >Cancel</button> */}
                                 </>
                               ) : (
-                                  <button
-                                    type="button"
-                                    className={"user-btn mt30 pull-left"}
-                                    onClick={this.rateTableHandler}
-                                  >
-                                    <div className={"plus"}></div>ADD
-                                  </button>
-                                )}
+                                <button
+                                  type="button"
+                                  className={"user-btn mt30 pull-left"}
+                                  onClick={this.rateTableHandler}
+                                >
+                                  <div className={"plus"}></div>ADD
+                                </button>
+                              )}
                             </div>
                           </Col>
                           <Col md="12">

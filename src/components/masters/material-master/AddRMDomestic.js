@@ -1,9 +1,9 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector,isValid,isInvalid } from "redux-form";
+import { Field, reduxForm, formValueSelector, isValid, isInvalid } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, } from '../../layout/FormInputs'
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity, getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType } from '../../../actions/Common'
 import { createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, } from '../actions/Material'
@@ -22,6 +22,7 @@ import $ from 'jquery'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { FILE_URL, ZBC } from '../../../config/constants'
+import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
 const selector = formValueSelector('AddRMDomestic')
 
@@ -261,6 +262,7 @@ class AddRMDomestic extends Component {
     this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : e.target.value)
   }
 
+
   /**
    * @method handleChange
    * @description Handle Effective Date
@@ -337,15 +339,12 @@ class AddRMDomestic extends Component {
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantArray,
               Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
-              vendorName:
-                vendorObj !== undefined
-                  ? { label: vendorObj.Text, value: vendorObj.Value }
-                  : [],
+              vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               HasDifferentSource: Data.HasDifferentSource,
               sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
               UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-              effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               remarks: Data.Remark,
               files: Data.FileList,
             })
@@ -460,7 +459,7 @@ class AddRMDomestic extends Component {
     this.setState({ isOpenVendor: true })
   }
 
-  closeVendorDrawer = (e = '', formData) => {
+  closeVendorDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenVendor: false }, () => {
       const { IsVendor } = this.state
       this.props.getVendorListByVendorType(IsVendor, () => {
@@ -692,7 +691,7 @@ class AddRMDomestic extends Component {
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
-      console.log(data, "DATA");
+
       this.props.fileUploadRMDomestic(data, (res) => {
         let Data = res.data[0]
         const { files } = this.state
@@ -761,8 +760,10 @@ class AddRMDomestic extends Component {
    * @description Used to Submit the form
    */
   onSubmit = (values) => {
-    const {
-      IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName, VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, } = this.state
+    const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
+      VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, } = this.state
+    const { initialConfiguration } = this.props
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -785,14 +786,13 @@ class AddRMDomestic extends Component {
         IsVendor: IsVendor,
         HasDifferentSource: HasDifferentSource,
         Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-        SourceLocation:
-          !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
+        SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         LoggedInUserId: loggedInUserId(),
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
       }
       this.props.reset()
@@ -814,21 +814,16 @@ class AddRMDomestic extends Component {
         Vendor: vendorName.value,
         HasDifferentSource: HasDifferentSource,
         Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-        SourceLocation:
-          !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
+        SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
-        EffectiveDate: effectiveDate,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: checkVendorPlantConfigurable()
-          ? IsVendor
-            ? vendorPlantArray
-            : []
-          : [],
+        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
         
@@ -850,7 +845,7 @@ class AddRMDomestic extends Component {
    * @description Renders the component
    */
   render() {
-    const { handleSubmit } = this.props
+    const { handleSubmit, initialConfiguration } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state
 
     return (
@@ -1114,28 +1109,26 @@ class AddRMDomestic extends Component {
                               )}
                             </div>
                           </Col>
-                          {checkVendorPlantConfigurable() &&
-                            this.state.IsVendor && (
-                              <Col md="4">
-                                <Field
-                                  label="Vendor Plant"
-                                  name="DestinationSupplierPlantId"
-                                  placeholder={"Select"}
-                                  selection={
-                                    this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
-                                  options={this.renderListing("VendorPlant")}
-                                  selectionChanged={this.handleVendorPlant}
-                                  validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
-                                  required={true}
-                                  optionValue={(option) => option.Value}
-                                  optionLabel={(option) => option.Text}
-                                  component={renderMultiSelectField}
-                                  mendatory={true}
-                                  className="multiselect-with-border"
-                                  disabled={isEditFlag ? true : false}
-                                />
-                              </Col>
-                            )}
+                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
+                            <Col md="4">
+                              <Field
+                                label="Vendor Plant"
+                                name="DestinationSupplierPlantId"
+                                placeholder={"Select"}
+                                selection={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [] : this.state.selectedVendorPlants}
+                                options={this.renderListing("VendorPlant")}
+                                selectionChanged={this.handleVendorPlant}
+                                validate={this.state.selectedVendorPlants == null || this.state.selectedVendorPlants.length === 0 ? [required] : []}
+                                required={true}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                          )}
                           {(this.state.HasDifferentSource ||
                             this.state.IsVendor) && (
                               <>
@@ -1237,7 +1230,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Landed Cost (INR/UOM)`}
+                              label={`Net Cost (INR/UOM)`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1251,12 +1244,12 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <div className="form-group">
-                              <label>
+                              {/* <label>
                                 Effective Date
                                 <span className="asterisk-required">*</span>
-                              </label>
+                              </label> */}
                               <div className="inputbox date-section mb-3">
-                                <DatePicker
+                                {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -1271,6 +1264,22 @@ class AddRMDomestic extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={false}
+                                /> */}
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                //minDate={moment()}
                                 />
                               </div>
                             </div>
@@ -1306,43 +1315,43 @@ class AddRMDomestic extends Component {
                                 Maximum file upload limit has been reached.
                               </div>
                             ) : (
-                                <Dropzone
-                                  getUploadParams={this.getUploadParams}
-                                  onChangeStatus={this.handleChangeStatus}
-                                  PreviewComponent={this.Preview}
-                                  //onSubmit={this.handleSubmit}
-                                  accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                                  initialFiles={this.state.initialFiles}
-                                  maxFiles={3}
-                                  maxSizeBytes={2000000}
-                                  inputContent={(files, extra) =>
-                                    extra.reject ? (
-                                      "Image, audio and video files only"
-                                    ) : (
-                                        <div className="text-center">
-                                          <i className="text-primary fa fa-cloud-upload"></i>
-                                          <span className="d-block">
-                                            Drag and Drop or{" "}
-                                            <span className="text-primary">
-                                              Browse
+                              <Dropzone
+                                getUploadParams={this.getUploadParams}
+                                onChangeStatus={this.handleChangeStatus}
+                                PreviewComponent={this.Preview}
+                                //onSubmit={this.handleSubmit}
+                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                initialFiles={this.state.initialFiles}
+                                maxFiles={3}
+                                maxSizeBytes={2000000}
+                                inputContent={(files, extra) =>
+                                  extra.reject ? (
+                                    "Image, audio and video files only"
+                                  ) : (
+                                    <div className="text-center">
+                                      <i className="text-primary fa fa-cloud-upload"></i>
+                                      <span className="d-block">
+                                        Drag and Drop or{" "}
+                                        <span className="text-primary">
+                                          Browse
                                         </span>
-                                            <br />
+                                        <br />
                                         file to upload
                                       </span>
-                                        </div>
-                                      )
-                                  }
-                                  styles={{
-                                    dropzoneReject: {
-                                      borderColor: "red",
-                                      backgroundColor: "#DAA",
-                                    },
-                                    inputLabel: (files, extra) =>
-                                      extra.reject ? { color: "red" } : {},
-                                  }}
-                                  classNames="draper-drop"
-                                />
-                              )}
+                                    </div>
+                                  )
+                                }
+                                styles={{
+                                  dropzoneReject: {
+                                    borderColor: "red",
+                                    backgroundColor: "#DAA",
+                                  },
+                                  inputLabel: (files, extra) =>
+                                    extra.reject ? { color: "red" } : {},
+                                }}
+                                classNames="draper-drop"
+                              />
+                            )}
                           </Col>
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
@@ -1510,12 +1519,14 @@ class AddRMDomestic extends Component {
  * @param {*} state
  */
 function mapStateToProps(state) {
-  const { comman, material } = state
+  const { comman, material, auth } = state
   const fieldsObj = selector(state, 'BasicRate')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
     plantSelectList } = comman
+
+  const { initialConfiguration } = auth;
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, } = material
 
@@ -1535,7 +1546,8 @@ function mapStateToProps(state) {
     technologyList, categoryList, rawMaterialDetails, filterPlantListByCity,
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
-    filterPlantList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList
+    filterPlantList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList,
+    initialConfiguration
   }
 }
 

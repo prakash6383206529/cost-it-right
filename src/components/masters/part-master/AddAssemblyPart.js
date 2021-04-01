@@ -250,7 +250,7 @@ class AddAssemblyPart extends Component {
     const { BOMViewerData, isEditFlag } = this.state;
 
     if (this.checkIsFormFilled() === false) {
-      toastr.warning("Fields with 'asterisk sign *' are mandatory.")
+      toastr.warning("Please fill the mandatory fields.")
       return false;
     }
 
@@ -400,7 +400,7 @@ class AddAssemblyPart extends Component {
       onOk: () => {
         this.confirmDraftItem(updateData)
       },
-      onCancel: () => console.log('CANCEL: clicked')
+      onCancel: () => { }
     };
     return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
   }
@@ -465,7 +465,7 @@ class AddAssemblyPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        EffectiveDate: this.state.effectiveDate,
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Remark: values.Remark,
         Plants: plantArray,
         Attachements: updatedFiles,
@@ -503,7 +503,7 @@ class AddAssemblyPart extends Component {
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: this.state.effectiveDate,
+        EffectiveDate: moment(this.state.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -729,7 +729,7 @@ class AddAssemblyPart extends Component {
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}
                           >
-                            <div className={"plus"}></div>BOM VIEWER
+                            <div className={"plus"}></div>VIEW BOM
                               </button>
                         </Col>
                       </Row>
@@ -757,47 +757,47 @@ class AddAssemblyPart extends Component {
                           <label>Upload Files (upload up to 3 files)</label>
                           {this.state.files &&
                             this.state.files.length >= 3 ? (
-                              <div class="alert alert-danger" role="alert">
-                                Maximum file upload limit has been reached.
-                              </div>
-                            ) : (
-                              <Dropzone
-                                getUploadParams={this.getUploadParams}
-                                onChangeStatus={this.handleChangeStatus}
-                                PreviewComponent={this.Preview}
-                                //onSubmit={this.handleSubmit}
-                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf"
-                                initialFiles={this.state.initialFiles}
-                                maxFiles={3}
-                                maxSizeBytes={2000000}
-                                inputContent={(files, extra) =>
-                                  extra.reject ? (
-                                    "Image, audio and video files only"
-                                  ) : (
-                                      <div className="text-center">
-                                        <i className="text-primary fa fa-cloud-upload"></i>
-                                        <span className="d-block">
-                                          Drag and Drop or{" "}
-                                          <span className="text-primary">
-                                            Browse
+                            <div class="alert alert-danger" role="alert">
+                              Maximum file upload limit has been reached.
+                            </div>
+                          ) : (
+                            <Dropzone
+                              getUploadParams={this.getUploadParams}
+                              onChangeStatus={this.handleChangeStatus}
+                              PreviewComponent={this.Preview}
+                              //onSubmit={this.handleSubmit}
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              initialFiles={this.state.initialFiles}
+                              maxFiles={3}
+                              maxSizeBytes={2000000}
+                              inputContent={(files, extra) =>
+                                extra.reject ? (
+                                  "Image, audio and video files only"
+                                ) : (
+                                  <div className="text-center">
+                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                    <span className="d-block">
+                                      Drag and Drop or{" "}
+                                      <span className="text-primary">
+                                        Browse
                                           </span>
-                                          <br />
+                                      <br />
                                           file to upload
                                         </span>
-                                      </div>
-                                    )
-                                }
-                                styles={{
-                                  dropzoneReject: {
-                                    borderColor: "red",
-                                    backgroundColor: "#DAA",
-                                  },
-                                  inputLabel: (files, extra) =>
-                                    extra.reject ? { color: "red" } : {},
-                                }}
-                                classNames="draper-drop"
-                              />
-                            )}
+                                  </div>
+                                )
+                              }
+                              styles={{
+                                dropzoneReject: {
+                                  borderColor: "red",
+                                  backgroundColor: "#DAA",
+                                },
+                                inputLabel: (files, extra) =>
+                                  extra.reject ? { color: "red" } : {},
+                              }}
+                              classNames="draper-drop"
+                            />
+                          )}
                         </Col>
                         <Col md="3">
                           <div className={"attachment-wrapper"}>
@@ -955,7 +955,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddAssemblyPart',
   onSubmitFail: errors => {
-    console.log('errors: ', errors);
+
     focusOnError(errors);
   },
   enableReinitialize: true,

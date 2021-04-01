@@ -5,9 +5,15 @@ import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 
 function ViewPackagingAndFreight(props) {
+<<<<<<< HEAD
   console.log(props, "Props");
   const { packagingData, freightData } = props.packagingAndFreightCost
   console.log(packagingData, "Packaging", freightData);
+=======
+
+  const { packagingData, freightData } = props.packagingAndFreightCost
+
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   const [viewPackaging, setViewPackaging] = useState([])
   const [viewFrieght, setViewFrieght] = useState([])
 

@@ -18,7 +18,7 @@ export default function VishualAdDrawer(props) {
         resolver: yupResolver(schema)
     });
 
-    console.log(watch("quantity")); // watch input value by passing the name of it
+    // watch input value by passing the name of it
 
     const toggleDrawer = (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -36,7 +36,7 @@ export default function VishualAdDrawer(props) {
     }
 
     const onSubmit = data => {
-        console.log('errors', errors)
+
         props.closeDrawer(data.quantity)
     }
 

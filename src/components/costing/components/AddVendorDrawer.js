@@ -90,7 +90,7 @@ function AddVendorDrawer(props) {
       //IF VENDOR PLANT IS NOT CONFIGURABLE
       if (!checkVendorPlantConfigurable()) {
         let data = {
-          VendorId: vendor.value,
+          VendorId: newValue.value,
           VendorPlantId: checkVendorPlantConfigurable() ? newValue.value : "00000000-0000-0000-0000-000000000000",
         }
         dispatch(getVBCDetailByVendorId(data, (res) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, } from 'react';
+import React, { useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -8,7 +8,6 @@ import {
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
-import BOMUpload from '../../massUpload/BOMUpload';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -16,11 +15,12 @@ export const netHeadCostContext = React.createContext()
 function CostingDetailStepTwo(props) {
 
   const dispatch = useDispatch()
-  const [IsBulkOpen, SetIsBulkOpen] = useState(false)
 
   useEffect(() => {
     const { costingInfo } = props;
-    //dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => { }))
+    // setTimeout(() => {
+    //   dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => { }))
+    // }, 500)
   }, []);
 
   const costingData = useSelector(state => state.costing.costingData)
@@ -30,6 +30,13 @@ function CostingDetailStepTwo(props) {
   const SurfaceCostData = useSelector(state => state.costing.SurfaceCostData)
   const OverheadProfitCostData = useSelector(state => state.costing.OverheadProfitCostData)
   const DiscountCostData = useSelector(state => state.costing.DiscountCostData)
+  const partNo = useSelector((state) => state.costing.partNo)
+
+  useEffect(() => {
+    if (partNo.isChanged === true) {
+      props.backBtn()
+    }
+  }, [partNo.isChanged])
 
   /**
    * @method setHeaderCostRMCCTab
@@ -49,8 +56,7 @@ function CostingDetailStepTwo(props) {
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        tempData.ToolCost -
-        checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
     }
 
     tempData = {
@@ -90,7 +96,7 @@ function CostingDetailStepTwo(props) {
         data.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        checkForNull(tempData.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
     }
 
     tempData = {
@@ -150,7 +156,6 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM PACKAGE AND FREIGHT
    */
   const setHeaderPackageFreightTab = (data) => {
-
     const headerIndex = 0;
 
     //setTimeout(() => {
@@ -164,7 +169,7 @@ function CostingDetailStepTwo(props) {
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         data.NetFreightPackagingCost +
-        checkForNull(tempData.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
     }
 
     tempData = {
@@ -177,7 +182,7 @@ function CostingDetailStepTwo(props) {
     dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => { }))
     dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
-    //}, 500)
+    //}, 300)
 
   }
 
@@ -200,7 +205,11 @@ function CostingDetailStepTwo(props) {
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
           tempData.NetPackagingAndFreight +
+<<<<<<< HEAD
           checkForNull(data.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
+=======
+          data.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       }
 
       tempData = {
@@ -214,7 +223,11 @@ function CostingDetailStepTwo(props) {
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       //dispatch(setSurfaceCostData(data, () => { }))
 
+<<<<<<< HEAD
     }, 300)
+=======
+    }, 200)
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
   }
 
@@ -224,6 +237,7 @@ function CostingDetailStepTwo(props) {
    */
   const setHeaderDiscountTab = (data) => {
     const headerIndex = 0;
+
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -241,6 +255,7 @@ function CostingDetailStepTwo(props) {
         NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, 2) + checkForDecimalAndNull(data.AnyOtherCost, 2),
         HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, 2),
         AnyOtherCost: checkForDecimalAndNull(data.AnyOtherCost, 2),
+        HundiOrDiscountPercentage: checkForDecimalAndNull(data.HundiOrDiscountPercentage, 2),
       }
       dispatch(setDiscountCost(discountValues, () => { }))
 
@@ -277,44 +292,16 @@ function CostingDetailStepTwo(props) {
     return TotalCost;
   }
 
-  const bulkToggle = () => {
-    SetIsBulkOpen(true)
-  }
 
-  const closeBulkUploadDrawer = () => {
-    SetIsBulkOpen(false)
-  }
 
   return (
     <>
-      <span className="position-relative costing-page-tabs d-block w-100">
-        <div className="right-actions">
 
-          {/* BELOW BUTTONS ARE TEMPORARY HIDDEN FROM UI  */}
-
-          {/* <button className="btn btn-link text-primary">
-            <img src={require('../../../assests/images/print.svg')} alt="print-button" />
-            <span className="d-block mt-1">PRINT</span>
-          </button>
-          <button className="btn btn-link text-primary">
-            <img src={require('../../../assests/images/excel.svg')} alt="print-button" />
-            <span className="d-block mt-1">XLS</span>
-          </button>
-          <button className="btn btn-link text-primary">
-            <img src={require('../../../assests/images/pdf.svg')} alt="print-button" />
-            <span className="d-block mt-1">PDF</span>
-          </button> */}
-
-          <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
-            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
-            <span className="d-block mt-1">ADD BOM</span>
-          </button>
-        </div>
-      </span>
       <div className="login-container signup-form">
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
+
               <Row>
                 <Col md="6">
                   <div className="form-heading mb-0">
@@ -322,6 +309,7 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
+
               <Row className="sticky-top-0 mb-3">
                 <Col md="12">
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
@@ -329,10 +317,17 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
                       {/* <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td> */}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
+<<<<<<< HEAD
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
                       {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
+=======
+                      {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
+                      {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
+                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                     </tbody>
                   </Table>
                   <div class="table-responsive">
@@ -340,23 +335,32 @@ function CostingDetailStepTwo(props) {
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
+<<<<<<< HEAD
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`Net RM Cost/Assembly`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`Net BOP Cost/Assembly`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`Net Conversion Cost/Assembly`}</span></th>
+=======
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net RM Cost/Assembly' : 'Net RM Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net BOP Cost/Assembly' : 'Net BOP Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net Conversion Cost/Assembly' : 'Net Conversion Cost/Pc'}`}</span></th>
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`RM + CC Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Discount & Other Cost`}</span></th>
+<<<<<<< HEAD
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost`}</span></th>
+=======
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost(INR)`}</span></th>
+>>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                         </tr>
                       </thead>
                       <tbody>
                         <tr className="cr-bg-tbl">
                           {
-                            CostingDataList &&
-                            CostingDataList.map((item, index) => {
+                            CostingDataList && CostingDataList.map((item, index) => {
                               return (
                                 <>
                                   <td><span className="cr-prt-nm fs1 font-weight-500">{item.PartNumber}</span></td>
@@ -380,6 +384,7 @@ function CostingDetailStepTwo(props) {
                   </div>
                 </Col>
               </Row>
+
               <Row>
                 <Col md="3">
                   <button
@@ -411,6 +416,8 @@ function CostingDetailStepTwo(props) {
                         headCostRMCCBOPData={RMCCBOPCost}
                         headCostSurfaceData={SurfaceCostData}
                         headCostOverheadProfitData={OverheadProfitCostData}
+                        backBtn={props.backBtn}
+                        toggle={props.toggle}
                       />
                     </netHeadCostContext.Provider>
                   </costingInfoContext.Provider>
@@ -421,14 +428,7 @@ function CostingDetailStepTwo(props) {
           </Col>
         </Row>
       </div>
-      {IsBulkOpen && <BOMUpload
-        isOpen={IsBulkOpen}
-        closeDrawer={closeBulkUploadDrawer}
-        isEditFlag={false}
-        fileName={'BOM'}
-        messageLabel={'BOM'}
-        anchor={'right'}
-      />}
+
     </>
   );
 };

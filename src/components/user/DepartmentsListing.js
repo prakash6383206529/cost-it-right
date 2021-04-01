@@ -116,7 +116,7 @@ class DepartmentsListing extends Component {
       onOk: () => {
         this.confirmDeleteItem(Id)
       },
-      onCancel: () => console.log('CANCEL: clicked')
+      onCancel: () => { }
     };
     return toastr.confirm(`${MESSAGES.DEPARTMENT_DELETE_ALERT}`, toastrConfirmOptions);
   }

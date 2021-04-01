@@ -225,7 +225,7 @@ class SOBListing extends Component {
     const { isOpen, isEditFlag } = this.state;
     const options = {
       clearSearch: true,
-      noDataText: (this.props.bopDomesticList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+      noDataText: (this.props.bopSobList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
       paginationShowsTotal: this.renderPaginationShowsTotal,
       prePage: <span className="prev-page-pg"></span>, // Previous page button text
       nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -236,7 +236,7 @@ class SOBListing extends Component {
 
     return (
       <div>
-        {this.props.loading && <Loader />}
+        {/* {this.props.loading && <Loader />} */}
         <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
           <Row className="pt-4 ">
             {this.state.shown && (

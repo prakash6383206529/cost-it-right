@@ -16,7 +16,7 @@ function WeightCalculator(props) {
 
   const dispatch = useDispatch()
   const { rmRowData } = props
-  console.log(rmRowData, "RM");
+
   const getTabno = (layout) => {
     switch (layout) {
       case 'Pipe':
@@ -44,7 +44,7 @@ function WeightCalculator(props) {
    * @method toggleDrawer
    * @description TOGGLE DRAWER
    */
-  const toggleDrawer = (event, weightData = {}) => {
+  const toggleDrawer = (event, weightData = {}, originalWeight = {}) => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
@@ -52,7 +52,7 @@ function WeightCalculator(props) {
       return
     }
 
-    props.toggleDrawer('', weightData)
+    props.toggleDrawer('', weightData, originalWeight)
   }
 
 
@@ -82,7 +82,7 @@ function WeightCalculator(props) {
                   toggle('2')
                 }}
               >
-                Bracket
+                Coil
               </NavLink>
             </NavItem>
             <NavItem>
@@ -92,10 +92,10 @@ function WeightCalculator(props) {
                   toggle('3')
                 }}
               >
-                Plate
+                Sheet
               </NavLink>
             </NavItem>
-            <NavItem>
+            {/* <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === '4' })}
                 onClick={() => {
@@ -104,8 +104,8 @@ function WeightCalculator(props) {
               >
                 L Section
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem> */}
+            {/* <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === '5' })}
                 onClick={() => {
@@ -114,8 +114,8 @@ function WeightCalculator(props) {
               >
                 C Section
               </NavLink>
-            </NavItem>
-            <NavItem>
+            </NavItem> */}
+            {/* <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === '6' })}
                 onClick={() => {
@@ -124,19 +124,21 @@ function WeightCalculator(props) {
               >
                 Z Section
               </NavLink>
-            </NavItem>
+            </NavItem> */}
           </Nav>
           <TabContent activeTab={activeTab}>
             {activeTab === '1' && (
               <TabPane tabId="1">
-                <Pipe rmRowData={props.rmRowData} toggleDrawer={toggleDrawer} />
+                <Pipe rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
               </TabPane>
             )}
+            {/* THIS IS FOR COIL */}
             {activeTab === '2' && (
               <TabPane tabId="2">
                 <Bracket />
               </TabPane>
             )}
+            {/* THIS IS FOR SHEET  */}
             {activeTab === '3' && (
               <TabPane tabId="3">
                 <Plate />

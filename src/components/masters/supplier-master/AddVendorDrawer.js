@@ -212,9 +212,19 @@ class AddVendorDrawer extends Component {
             return temp;
         }
         if (label === 'vendorType') {
+            const { isRM } = this.props
+
             vendorTypeList && vendorTypeList.map((item, i) => {
                 if (item.Value === '0') return false;
-                temp.push({ Text: item.Text, Value: item.Value })
+                if (isRM === true) {
+                    if (item.Text === 'RAW MATERIAL') {
+                        temp.push({ Text: item.Text, Value: item.Value })
+                    } else {
+                        return null
+                    }
+                } else {
+                    temp.push({ Text: item.Text, Value: item.Value })
+                }
                 return null;
             });
             return temp;
@@ -256,7 +266,7 @@ class AddVendorDrawer extends Component {
                         return null;
                     })
 
-                    Data && Data.VendorPlants.map((item) => {
+                    Data && Data.VendorPlants && Data.VendorPlants.map((item) => {
                         tempVendorPlant.push({ Text: item.PlantName, Value: item.PlantId })
                         return null;
                     })
@@ -278,7 +288,7 @@ class AddVendorDrawer extends Component {
                             existedVendorPlants: tempVendorPlant,
                             selectedVendorPlants: tempVendorPlant,
                         })
-                    }, 500)
+                    }, 1000)
 
                 }
             })
@@ -465,7 +475,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorName"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, alphaNumeric, maxLength80, checkWhiteSpaces]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -544,8 +554,8 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             component={renderText}
                                             isDisabled={false}
-                                            validate={[required, postiveNumber, maxLength10, checkWhiteSpaces]}
-                                            required={true}
+                                            validate={[postiveNumber, maxLength10, checkWhiteSpaces]}
+                                            // required={true}
                                             maxLength={12}
                                             customClassName={'withBorder'}
                                         />
@@ -630,7 +640,7 @@ class AddVendorDrawer extends Component {
                                             placeholder={''}
                                             validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
-                                            required={true}
+                                            //  required={true}
                                             maxLength={26}
                                             className=" "
                                             customClassName=" withBorder"
