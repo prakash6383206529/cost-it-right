@@ -804,11 +804,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-<<<<<<< HEAD
-              <Row className={''}>
-=======
               <Row className={'mt-15'}>
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                 <Col md="4" className="switch">
                   <label className="switch-level">
                     <div className={'left-title'}>{'One Side'}</div>

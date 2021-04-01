@@ -44,10 +44,7 @@ function ProcessCost(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
-<<<<<<< HEAD
-=======
   const CostingViewMode = useContext(ViewCostingContext);
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   // const fieldValues = useWatch({

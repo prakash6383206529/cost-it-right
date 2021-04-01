@@ -1112,11 +1112,7 @@ class AddPower extends Component {
                                 </div>}
                               </div>
                             </Col>
-<<<<<<< HEAD
-                            <Col md="4">
-=======
                             {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <Col md="4">
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                               <Field
                                 label="Vendor Plant"
                                 name="VendorPlant"
@@ -1131,11 +1127,7 @@ class AddPower extends Component {
                                 className="multiselect-with-border"
                                 disabled={false}
                               />
-<<<<<<< HEAD
-                            </Col>
-=======
                             </Col>}
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                             <Col md="4">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">

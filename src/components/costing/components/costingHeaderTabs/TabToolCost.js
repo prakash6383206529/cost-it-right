@@ -9,10 +9,7 @@ import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-<<<<<<< HEAD
-=======
 import { ViewCostingContext } from '../CostingDetails';
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function TabToolCost(props) {
 

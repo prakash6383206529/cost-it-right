@@ -39,17 +39,6 @@ function AddFreight(props) {
   const [criteria, setCriteria] = useState([]);
   const [IsPartTruckLoad, setIsPartTruckLoad] = useState(isEditFlag ? rowObjData.IsPartTruckLoad : false);
 
-<<<<<<< HEAD
-  let tempText = '';
-  if (rowObjData.IsPartTruckLoad === 'Percentage') tempText = Percentage;
-  if (rowObjData.IsPartTruckLoad === 'Fixed') tempText = Fixed;
-
-  const [freightType, setfreightType] = useState(isEditFlag ? tempText : '');
-  const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
-
-  useEffect(() => {
-    setfreightType(isEditFlag ? tempText : '')
-=======
   const [freightType, setfreightType] = useState(isEditFlag ? rowObjData.EFreightLoadType : '');
   const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Criteria, value: rowObjData.Criteria } : []);
 
@@ -57,7 +46,6 @@ function AddFreight(props) {
     setTimeout(() => {
       setfreightType(isEditFlag ? rowObjData.EFreightLoadType : '')
     }, 200)
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   }, [rowObjData]);
 
   useEffect(() => {
@@ -205,8 +193,6 @@ function AddFreight(props) {
         setValue('FreightCost', checkForDecimalAndNull(NetConversionCost * calculatePercentage(RateAsPercentage), 2))
         break;
 
-<<<<<<< HEAD
-=======
       case 'RM + CC + BOP':
         setValue('FreightCost', checkForDecimalAndNull((NetTotalRMBOPCC) * calculatePercentage(RateAsPercentage), 2))
         break;
@@ -215,7 +201,6 @@ function AddFreight(props) {
         setValue('FreightCost', checkForDecimalAndNull((NetRawMaterialsCost + NetBoughtOutPartCost) * calculatePercentage(RateAsPercentage), 2))
         break;
 
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       default:
         break;
     }
@@ -256,15 +241,12 @@ function AddFreight(props) {
   * @description FREIGHT FLAG
   */
   const onPressHeads = (FreightFlag) => {
-<<<<<<< HEAD
-=======
     setValue('Applicability', '')
     setValue('Criteria', '')
     setValue('Rate', '')
     setValue('Quantity', '')
     setValue('FreightCost', '')
     setApplicability([])
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     setfreightType(FreightFlag)
   }
 
@@ -347,53 +329,6 @@ function AddFreight(props) {
                       <div className={'right-title'}>{'Part Truck Load'}</div>
                     </label>
                   </Col> */}
-<<<<<<< HEAD
-                  <Col md="12">
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                      <input
-                        type="radio"
-                        name="freightType"
-                        register={register}
-                        checked={freightType === FullTruckLoad ? true : false}
-                        onClick={() => onPressHeads(FullTruckLoad)}
-                        disabled
-                      />{' '}
-                      <span>Full Truck Load</span>
-                    </Label>
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                      <input
-                        type="radio"
-                        name="freightType"
-                        register={register}
-                        checked={freightType === PartTruckLoad ? true : false}
-                        onClick={() => onPressHeads(PartTruckLoad)}
-                        disabled
-                      />{' '}
-                      <span>Part Truck Load</span>
-                    </Label>
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                      <input
-                        type="radio"
-                        name="freightType"
-                        register={register}
-                        checked={freightType === Fixed ? true : false}
-                        onClick={() => onPressHeads(Fixed)}
-                      />{' '}
-                      <span>Fixed</span>
-                    </Label>
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                      <input
-                        type="radio"
-                        name="freightType"
-                        register={register}
-                        checked={freightType === Percentage ? true : false}
-                        onClick={() => onPressHeads(Percentage)}
-                      />{' '}
-                      <span>Percentage</span>
-                    </Label>
-                  </Col>
-=======
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                   <Col md="12">
                     <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                       <input
@@ -472,11 +407,7 @@ function AddFreight(props) {
                         mandatory={true}
                         handleChange={handleApplicabilityChange}
                         errors={errors.Applicability}
-<<<<<<< HEAD
-                        disabled={isEditFlag ? true : false}
-=======
                         disabled={false}
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                       />
                       :
                       <SearchableSelectHookForm
@@ -545,11 +476,7 @@ function AddFreight(props) {
                       errors={errors.Quantity}
                       disabled={(freightType === Fixed || freightType === Percentage) ? true : false}
                     />
-<<<<<<< HEAD
-                  </Col>
-=======
                   </Col> */}
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
                   <Col md="12">
                     <TextFieldHookForm

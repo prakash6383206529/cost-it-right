@@ -101,11 +101,7 @@ function ManageSOBDrawer(props) {
         WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(Number(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
-      setTimeout(() => {
-        if(a === false ) {
-        setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)    }
-
-
+     
       setTimeout(() => {
         if (a === false) {
           setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)

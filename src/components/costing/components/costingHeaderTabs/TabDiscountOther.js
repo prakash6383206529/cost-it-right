@@ -18,10 +18,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
-<<<<<<< HEAD
-=======
 import { ViewCostingContext } from '../CostingDetails';
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function TabDiscountOther(props) {
 
@@ -37,11 +34,8 @@ function TabDiscountOther(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [initialFiles, setInitialFiles] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
-<<<<<<< HEAD
-=======
   const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
   const [GoToNext, setGoToNext] = useState(false);
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
   const dispatch = useDispatch()
 
@@ -363,10 +357,7 @@ function TabDiscountOther(props) {
           "Currency": currency.label,
           "Remark": values.Remarks,
           "OtherCostDescription": values.OtherCostDescription,
-<<<<<<< HEAD
-=======
           "CurrencyExchangeRate": CurrencyExchangeRate,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
           "EffectiveDate": effectiveDate,
         }
       },
@@ -376,12 +367,9 @@ function TabDiscountOther(props) {
     dispatch(saveDiscountOtherCostTab(data, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-<<<<<<< HEAD
-=======
         if (GoToNext) {
           props.toggle('2')
         }
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       }
     }))
   }
@@ -453,11 +441,7 @@ function TabDiscountOther(props) {
                         register={register}
                         mandatory={false}
                         rules={{
-<<<<<<< HEAD
-                          required: true,
-=======
                           required: false,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                         }}
                         handleChange={() => { }}
                         defaultValue={""}
@@ -573,11 +557,7 @@ function TabDiscountOther(props) {
                                 autoComplete={"off"}
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
-<<<<<<< HEAD
-                                disabled={false}
-=======
                                 disabled={CostingViewMode ? true : false}
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                               />
                             </div>
                           </div>

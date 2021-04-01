@@ -16,11 +16,6 @@ function AddRM(props) {
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-<<<<<<< HEAD
-  // console.log(selectedRowData, "SELECTED ROW DATA");
-=======
-
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)

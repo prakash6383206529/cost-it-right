@@ -9,10 +9,7 @@ import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTe
 import Switch from "react-switch";
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
-<<<<<<< HEAD
-=======
 import { ViewCostingContext } from '../../CostingDetails';
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function OverheadProfit(props) {
   const { data } = props;
@@ -53,10 +50,7 @@ function OverheadProfit(props) {
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
-<<<<<<< HEAD
-=======
   const CostingViewMode = useContext(ViewCostingContext);
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -132,8 +126,6 @@ function OverheadProfit(props) {
 
   /**
   * @method useEffect
-<<<<<<< HEAD
-=======
   * @description TO CHANGE OVERHEADS VALUE WHEN RM BOP CC VALUES CHANGES FROM RMCC TAB
   */
   useEffect(() => {
@@ -151,7 +143,6 @@ function OverheadProfit(props) {
 
   /**
   * @method useEffect
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
   * @description USED TO UPDATE WHEN MODEL TYPE CHANGE
   */
   useEffect(() => {
@@ -268,11 +259,6 @@ function OverheadProfit(props) {
       }, 200)
 
     } catch (error) {
-<<<<<<< HEAD
-      console.log('error: setRejectionDetail', error);
-=======
-
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     }
 
   }, [rejectionFieldValues]);
@@ -752,11 +738,7 @@ function OverheadProfit(props) {
       const reqParams = {
         ModelTypeId: newValue.value,
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-<<<<<<< HEAD
-        IsVendor: costData.IsVendor
-=======
         IsVendor: costData.IsVendor,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       }
       dispatch(getOverheadProfitDataByModelType(reqParams, res => {
         if (res && res.data && res.data.Data) {
@@ -1049,11 +1031,7 @@ function OverheadProfit(props) {
     if (newValue && newValue !== '') {
       setPaymentTermsApplicability(newValue)
       const reqParams = {
-<<<<<<< HEAD
-        Id: newValue.value,
-=======
         //Id: newValue.value,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
         IsVendor: costData.IsVendor
       }
@@ -2006,8 +1984,6 @@ function OverheadProfit(props) {
                       control={control}
                       register={register}
                       mandatory={false}
-<<<<<<< HEAD
-=======
                       rules={{
                         required: false,
                         pattern: {
@@ -2019,7 +1995,6 @@ function OverheadProfit(props) {
                           message: 'Percentage cannot be greater than 100'
                         },
                       }}
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                       // handleChange={handleICCDetail}
                       handleChange={() => { }}
                       defaultValue={''}

@@ -352,11 +352,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
-<<<<<<< HEAD
-            IsInventoryCarringCost: ICCObj ? true : false,
-=======
             IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 
@@ -368,11 +364,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingInterestRateDetail = {
             ...i.CostingPartDetails.CostingInterestRateDetail,
             ICCApplicabilityDetail: ICCObj,
-<<<<<<< HEAD
-            IsInventoryCarringCost: ICCObj ? true : false,
-=======
             IsInventoryCarringCost: ICCObj && ICCObj.NetCost ? true : false,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             NetICC: ICCObj && ICCObj.NetCost ? checkForNull(ICCObj.NetCost) : 0,
           };
 

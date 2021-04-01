@@ -8,10 +8,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../config/message';
-<<<<<<< HEAD
-=======
 import { ViewCostingContext } from '../CostingDetails';
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
 function TabPackagingFreight(props) {
 
@@ -145,11 +142,7 @@ function TabPackagingFreight(props) {
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
       "CostingNumber": costData.CostingNumber,
-<<<<<<< HEAD
-      "NetPackagingAndFreight": PackageAndFreightTabData.NetPackagingAndFreight,
-=======
       "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
     }
 

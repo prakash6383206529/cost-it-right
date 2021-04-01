@@ -205,11 +205,7 @@ function CostingDetailStepTwo(props) {
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
           tempData.NetPackagingAndFreight +
-<<<<<<< HEAD
-          checkForNull(data.ToolCost) - checkForNull(tempData.DiscountsAndOtherCost)
-=======
           data.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
       }
 
       tempData = {
@@ -223,11 +219,7 @@ function CostingDetailStepTwo(props) {
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
       //dispatch(setSurfaceCostData(data, () => { }))
 
-<<<<<<< HEAD
-    }, 300)
-=======
     }, 200)
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 
   }
 
@@ -317,17 +309,10 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
                       {/* <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td> */}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
-<<<<<<< HEAD
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
-                      <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
-                      {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
-=======
                       {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
                       {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue pl-1"> {costingData.ShareOfBusinessPercent}%</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue pl-1"> {`${moment(costingData.CreatedDate).format('DD/MM/YYYY HH:mmA')}-${costingData.CostingNumber}`}</span></p></div></td>
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                     </tbody>
                   </Table>
                   <div class="table-responsive">
@@ -335,26 +320,16 @@ function CostingDetailStepTwo(props) {
                       <thead>
                         <tr>
                           <th style={{ width: '100px' }}>{``}</th>
-<<<<<<< HEAD
-                          <th style={{ width: '100px' }}><span className="font-weight-500">{`Net RM Cost/Assembly`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`Net BOP Cost/Assembly`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`Net Conversion Cost/Assembly`}</span></th>
-=======
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net RM Cost/Assembly' : 'Net RM Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net BOP Cost/Assembly' : 'Net BOP Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net Conversion Cost/Assembly' : 'Net Conversion Cost/Pc'}`}</span></th>
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`RM + CC Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Discount & Other Cost`}</span></th>
-<<<<<<< HEAD
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost`}</span></th>
-=======
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost(INR)`}</span></th>
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                         </tr>
                       </thead>
                       <tbody>

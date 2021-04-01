@@ -205,11 +205,7 @@ function RawMaterialCost(props) {
    * @method setWeight
    * @description SET WEIGHT IN RM
    */
-<<<<<<< HEAD
-  const setWeight = (weightData) => {
-=======
   const setWeight = (weightData, originalWeight) => {
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight

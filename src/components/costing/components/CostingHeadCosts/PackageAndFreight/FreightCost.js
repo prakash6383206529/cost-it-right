@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-=======
 import React, { useState, useEffect, useContext } from 'react';
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 import { Col, Row, Table } from 'reactstrap';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
@@ -123,11 +119,7 @@ function FreightCost(props) {
 
                         return (
                           <tr key={index}>
-<<<<<<< HEAD
-                            <td>{item.IsPartTruckLoad}</td>
-=======
                             <td>{EFreightLoadTypeText}</td>
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                             <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Capacity}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Criteria : '-')}</td>
                             <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Rate : '-')}</td>

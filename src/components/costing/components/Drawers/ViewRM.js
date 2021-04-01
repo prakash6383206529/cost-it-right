@@ -128,18 +128,12 @@ function ViewRM(props) {
                     disabled={true}
                   />
                 </div>
-<<<<<<< HEAD
-                <div className="input-group form-group col-md-12 input-withouticon mn-height-auto">
-                  <h5>
-                    Calculator
-=======
                 {
                   viewRM.WeightCalculationId !== '00000000-0000-0000-0000-000000000000' &&
 
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <h5>
                       Calculator
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                       <br />
                       <button
                         className="CalculatorIcon cr-cl-icon mt15"
