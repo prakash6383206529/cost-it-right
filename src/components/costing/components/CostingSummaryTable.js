@@ -4,7 +4,7 @@ import { Row, Col, Table } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
-import { setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId, storePartNumber } from '../actions/Costing'
+import { setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId, storePartNumber, getSingleCostingDetails } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import $ from 'jquery'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
-import { checkForDecimalAndNull, loggedInUserId, userDetails } from '../../../helper'
+import { checkForDecimalAndNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { DRAFT, FILE_URL, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants'
 import CostingDetailStepTwo from './CostingDetailStepTwo'
@@ -23,7 +23,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId } = props
+  const { viewMode, showDetail, technologyId, costingID } = props
 
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
@@ -394,7 +394,7 @@ const CostingSummaryTable = (props) => {
           obj.vendorPlantId = viewCostingData[index].vendorPlantId
           obj.vendorPlantName = viewCostingData[index].vendorPlantName
           obj.vendorPlantCode = viewCostingData[index].vendorPlantCode
-          obj.costingName = viewCostingData[index].costingName
+          obj.costingName = viewCostingData[index].CostingNumber
           obj.costingId = viewCostingData[index].costingId
           // obj.oldPrice = viewCostingData[index].oldPrice;
           obj.oldPrice = viewCostingData[index].oldPoPrice
@@ -427,6 +427,19 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => { }, [viewCostingData])
+
+  useEffect(() => {
+    if (costingID && Object.keys(costingID).length > 0) {
+      dispatch(getSingleCostingDetails(costingID, (res) => {
+        if (res.data.Data) {
+          let dataFromAPI = res.data.Data
+          const tempObj = formViewData(dataFromAPI)
+          dispatch(setCostingViewData(tempObj))
+        }
+      },
+      ))
+    }
+  }, [costingID])
 
   // useEffect(() => {
   //   

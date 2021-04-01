@@ -624,7 +624,7 @@ export const API = {
   cancelCosting: `${BASE_URL}/app-approval-system/cancel-for-approval-click`,
   getReasonSelectList: `${BASE_URL}/configuration/select-list-get-reasons`,
   getApprovalList: `${BASE_URL}/app-approval-system/get-costing-approvals-by-filter`,
-  approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approve`,
+  approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approver`,
   rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
   getApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-costing-summary`,
 

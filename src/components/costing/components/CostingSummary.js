@@ -16,12 +16,13 @@ import { formViewData } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 
 function CostingSummary(props) {
+
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
-  const { hideUpperRow } = props
+  const { hideUpperRow, costingID } = props
 
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
@@ -56,6 +57,8 @@ function CostingSummary(props) {
       ))
     }
   }, [props.activeTab])
+
+
 
   useEffect(() => {
 

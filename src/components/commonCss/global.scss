@@ -188,7 +188,7 @@ a:hover {
 
 .btn-primary,
 .apply,
-.save-btn,
+ .save-btn,
 .btn-secondary,
 .add-button-big,
 .btn-primary-add,
@@ -198,6 +198,16 @@ a:hover {
     background-color: #1d59af;
   }
 }
+
+//tried half working
+// .save-btn {
+  
+//   &:hover,
+//   &:not(.disabled):active:focus {
+//     background-color: #4dc771;
+//   }
+// }
+
 .blue-text {
   color: #316bd1;
   padding: 5px;

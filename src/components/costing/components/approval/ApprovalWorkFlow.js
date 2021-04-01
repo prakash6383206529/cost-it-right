@@ -17,23 +17,47 @@ function ApprovalWorkFlow(props) {
               <div className="card-border card-green">
                 <div className="top d-flex">
                   <div className="left text-center">
-                    <b>{item.FlowStepSequence}</b>
+                    <b>{item.FlowStepSequence ? item.FlowStepSequence : ''}</b>
                     <span className="d-block">Level</span>
                   </div>
                   <div className="right">
-                    <span className="">Approved By:</span>
-                    <p className="">{item.Name}</p>
+                    <span className="">Created By:</span>
+                    <p className="">{item.ApprovedBy ? item.ApprovedBy : '-'}</p>
                   </div>
                 </div>
                 {/* top */}
                 <div className="bottom">
                   <div className="d-flex mb-3">
                     <span className="small-grey-text left">Date:</span>
-                    <span className=" right">{item.DateTime}</span>
+                    <span className=" right">{item.Date ? item.Date : '-'}</span>
                   </div>
                   <div className="d-flex">
                     <span className="small-grey-text left">Remark:</span>
-                    <span className=" right">{item.Remark}</span>
+                    <span className=" right">{item.Remark ? item.Remark : '-'}</span>
+                  </div>
+                </div>
+                {/* bottom */}
+              </div>
+              <div className="card-border card-green">
+                <div className="top d-flex">
+                  <div className="left text-center">
+                    <b>{item.FlowStepSequence ? item.FlowStepSequence : ''}</b>
+                    <span className="d-block">Level</span>
+                  </div>
+                  <div className="right">
+                    <span className="">Approved By:</span>
+                    <p className="">{item.ApprovedBy ? item.ApprovedBy : '-'}</p>
+                  </div>
+                </div>
+                {/* top */}
+                <div className="bottom">
+                  <div className="d-flex mb-3">
+                    <span className="small-grey-text left">Date:</span>
+                    <span className=" right">{item.Date ? item.Date : '-'}</span>
+                  </div>
+                  <div className="d-flex">
+                    <span className="small-grey-text left">Remark:</span>
+                    <span className=" right">{item.Remark ? item.Remark : '-'}</span>
                   </div>
                 </div>
                 {/* bottom */}
