@@ -89,7 +89,7 @@ import { ZBC } from '../../../config/constants'
 
 class AddVolume extends Component {
   constructor(props) {
-
+    console.log(props, 'Props')
     super(props)
     this.child = React.createRef()
     this.state = {
@@ -274,28 +274,11 @@ class AddVolume extends Component {
   buttonFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
+        <button className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cell)} />
         <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell, rowIndex)} />
       </>
     )
   }
-
-  ActualFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <span className="form-control" >{cell}</span>
-      </>
-    )
-  }
-
-  budgetFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <span className="form-control">{cell}</span>
-      </>
-    )
-  }
-
-
 
   /**
    * @method beforeSaveCell
@@ -314,15 +297,15 @@ class AddVolume extends Component {
     }
   }
 
-  // editItemDetails = (ID) => {
-  //   this.setState({ edit: true })
-  // }
+  editItemDetails = (ID) => {
+    this.setState({ edit: true })
+  }
 
   deleteItem = (ID, index) => {
     const { tableData } = this.state
 
     let filterData = tableData.map((item) => {
-      // 
+      // console.log(ID, item.VolumeApprovedDetailId, "ITEM VOLUME");
       if (item.VolumeApprovedDetailId === ID) {
         return { ...item, BudgetedQuantity: 0, ApprovedQuantity: 0 }
       }
@@ -347,11 +330,11 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
-
+          console.log(Data, "Data");
 
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
-
+            console.log("Coming?");
             plantArray.push({
               label: Data.Plant[0].PlantName,
               value: Data.Plant[0].PlantId,
@@ -550,7 +533,6 @@ class AddVolume extends Component {
         VolumeBudgetedDetails: updateBudgetArray,
       }
 
-      this.props.reset()
       this.props.updateVolume(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.VOLUME_UPDATE_SUCCESS)
@@ -583,7 +565,6 @@ class AddVolume extends Component {
         IsActive: true,
       }
 
-      this.props.reset()
       this.props.createVolume(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.VOLUME_ADD_SUCCESS)
@@ -655,7 +636,7 @@ class AddVolume extends Component {
                         </Col>
                       </Row>
 
-                      <Row className="zindex-15">
+                      <Row>
                         {!this.state.IsVendor && (
                           <Col md="3">
                             <Field
@@ -774,8 +755,8 @@ class AddVolume extends Component {
                             className="add-volume-table"
                           >
                             <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
-                            <TableHeaderColumn dataField="BudgetedQuantity" editable={true} dataFormat={this.budgetFormatter}>Budgeted Quantity </TableHeaderColumn>
-                            <TableHeaderColumn dataField="ApprovedQuantity" editable={true} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
+                            <TableHeaderColumn dataField="BudgetedQuantity" editable={edit}>Budgeted Quantity </TableHeaderColumn>
+                            <TableHeaderColumn dataField="ApprovedQuantity" editable={edit}>Actual Quantity  </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeApprovedDetailId" isKey={true} dataFormat={this.buttonFormatter} >  Actions   </TableHeaderColumn>

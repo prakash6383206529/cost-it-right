@@ -16,11 +16,7 @@ import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { APPROVED, DRAFT, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
-<<<<<<< HEAD
-  updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting
-=======
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -360,10 +356,7 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
-<<<<<<< HEAD
-=======
         DisplayStatus: selectedOptionObj.DisplayStatus,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         CostingId: newValue.value,
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
@@ -379,10 +372,7 @@ function CostingDetails(props) {
         ...tempData,
         SelectedCostingVersion: newValue,
         Status: selectedOptionObj.Status,
-<<<<<<< HEAD
-=======
         DisplayStatus: selectedOptionObj.DisplayStatus,
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
         CostingId: newValue.value,
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
@@ -570,10 +560,7 @@ function CostingDetails(props) {
             setCostingData({ costingId: res.data.Data.CostingId, type })
             /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
             dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-<<<<<<< HEAD
-=======
             setIsCostingViewMode(false)
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             setStepTwo(true)
             setStepOne(false)
           }
@@ -613,10 +600,7 @@ function CostingDetails(props) {
             setPartInfo(res.data.Data)
             setCostingData({ costingId: res.data.Data.CostingId, type })
             dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-<<<<<<< HEAD
-=======
             setIsCostingViewMode(false)
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
             setStepTwo(true)
             setStepOne(false)
           }
@@ -709,14 +693,8 @@ function CostingDetails(props) {
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
         LoggedInUserId: loggedInUserId(),
       }
-<<<<<<< HEAD
-      dispatch(
-        updateZBCSOBDetail(data, (res) => {
-          dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
-=======
       dispatch(updateZBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
           setStepTwo(true)
           setStepOne(false)
         }))
@@ -735,14 +713,8 @@ function CostingDetails(props) {
         VendorId: tempData.VendorId,
         VendorPlantId: tempData.VendorPlantId
       }
-<<<<<<< HEAD
-      dispatch(
-        updateVBCSOBDetail(data, (res) => {
-          dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => { }))
-=======
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
           setStepTwo(true)
           setStepOne(false)
 
@@ -822,15 +794,6 @@ function CostingDetails(props) {
   }
 
   /**
-<<<<<<< HEAD
-   * @method deleteCosting
-   * @description USED FOR DELETE 
-   */
-  const deleteCosting = (CostingId, type) => {
-    let reqData = { Id: CostingId, UserId: loggedInUserId() }
-    dispatch(deleteDraftCosting(reqData, () => {
-
-=======
   * @method deleteItem
   * @description CONFIRM DELETE COSTINGS
   */
@@ -883,7 +846,6 @@ function CostingDetails(props) {
         setVBCVendorGrid(tempArray)
         setValue(`vbcGridFields[${index}]CostingVersion`, '')
       }
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
     }))
   }
 
@@ -1186,11 +1148,7 @@ function CostingDetails(props) {
                                   <th style={{}}>{`Plant Name`}</th>
                                   <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
-<<<<<<< HEAD
-                                  <th style={{ minWidth: "250px" }}>{`Actions`}</th>
-=======
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                 </tr>
                               </thead>
                               <tbody>
@@ -1271,13 +1229,8 @@ function CostingDetails(props) {
                                           <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />
                                           {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
-<<<<<<< HEAD
-                                          {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
-                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteCosting(item.CostingId, ZBC)} />)}
-=======
                                           {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
                                           {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                         </td>
                                       </tr>
                                     );
@@ -1332,11 +1285,7 @@ function CostingDetails(props) {
                                   <th style={{}}>{`SOB`}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{}}>{`Status`}</th>
-<<<<<<< HEAD
-                                  <th style={{ minWidth: "250px" }}>{`Actions`}</th>
-=======
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                 </tr>
                               </thead>
                               <tbody>
@@ -1414,13 +1363,8 @@ function CostingDetails(props) {
                                         <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
                                         {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}
                                         {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBC)} />)}
-<<<<<<< HEAD
-                                        {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
-                                        {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteCosting(item.CostingId, VBC)} />)}
-=======
                                         {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                         {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
->>>>>>> bac238acd6cf1c8575be02e9f0ea56ebc5948e68
                                       </td>
                                     </tr>
                                   );
