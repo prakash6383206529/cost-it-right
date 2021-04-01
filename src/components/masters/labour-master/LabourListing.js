@@ -639,7 +639,7 @@ class LabourListing extends Component {
                         type="text"
                         label=""
                         component={searchableSelect}
-                        placeholder={"Labour"}
+                        placeholder={"Labour Type"}
                         isClearable={false}
                         options={this.renderListing("labourList")}
                         //onKeyUp={(e) => this.changeItemDesc(e)}

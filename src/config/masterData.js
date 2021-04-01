@@ -74,6 +74,7 @@ export const RMDomesticZBC = [
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "ScrapRate", value: "ScrapRate" },
+    { label: "NetCost", value: "NetCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
 
@@ -99,6 +100,7 @@ export const RMDomesticZBCTempData = [
         "UOM": "Kilogram",
         "BasicRate": "100",
         "ScrapRate": "10",
+        "NetCost": "250",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
 
@@ -122,6 +124,7 @@ export const RMDomesticZBCTempData = [
         "UOM": "Gallon",
         "BasicRate": "500",
         "ScrapRate": "50",
+        "NetCost": "350.5",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
 
@@ -151,6 +154,7 @@ export const RMDomesticVBC = [
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "ScrapRate", value: "ScrapRate" },
+    { label: "NetCost", value: "NetCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
 
@@ -176,6 +180,7 @@ export const RMDomesticVBCTempData = [
         "UOM": "Kilogram",
         "BasicRate": "100",
         "ScrapRate": "10",
+        "NetCost": "250",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
 
@@ -197,6 +202,7 @@ export const RMDomesticVBCTempData = [
         "UOM": "Gallon",
         "BasicRate": "500",
         "ScrapRate": "50",
+        "NetCost": "350.5",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
 
@@ -223,6 +229,7 @@ export const RMImportZBC = [
     { label: "Currency", value: "Currency" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "ScrapRate", value: "ScrapRate" },
+    { label: "NetCost", value: "NetCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
 
@@ -250,8 +257,9 @@ export const RMImportZBCTempData = [
         "Currency": "INR",
         "BasicRate": "100",
         "ScrapRate": "10",
-        "Remark": "Remark Text",
+        "NetCost": "250",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
 
         "Material": "Stainless Steel",
         "VendorCode": "VP123",
@@ -274,8 +282,9 @@ export const RMImportZBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "ScrapRate": "50",
-        "Remark": "Remark Text",
+        "NetCost": "350.5",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
 
         "Material": "Stainless Steel",
         "VendorCode": "VP123",
@@ -304,6 +313,7 @@ export const RMImportVBC = [
     { label: "Currency", value: "Currency" },
     { label: "BasicRate", value: "BasicRate" },
     { label: "ScrapRate", value: "ScrapRate" },
+    { label: "NetCost", value: "NetCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
     { label: "Remark", value: "Remark" },
 
@@ -329,6 +339,7 @@ export const RMImportVBCTempData = [
         "Currency": "INR",
         "BasicRate": "100",
         "ScrapRate": "10",
+        "NetCost": "250",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
 
@@ -352,6 +363,7 @@ export const RMImportVBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "ScrapRate": "50",
+        "NetCost": "350.5",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
 
@@ -639,8 +651,9 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'VendorName', value: 'VendorName', },
     { label: 'NoOfPcs', value: 'NoOfPcs', },
     { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'NetCost', value: 'NetCost', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' }
+    { label: 'Remark', value: 'Remark' }
 ]
 
 export const BOP_ZBC_DOMESTIC_TempData = [
@@ -655,22 +668,9 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         'VendorName': 'Systematix',
         'NoOfPcs': '10',
         'BasicRate': '100',
+        'NetCost': '565.6',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
-    },
-    {
-        'BOPPartNumber': 'BOP1',
-        'BOPPartName': 'BOP Name',
-        'BOPCategory': 'Category 1',
-        'PartNumber': 'P1',
-        'Specification': 'BOP Specification',
-        'Plant': 'Plant1',
-        'VendorName': 'Vendor Name123',
-        'NoOfPcs': '1',
-        'BasicRate': '100',
-        'Remark': 'Remark Text',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -692,8 +692,9 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'NoOfPcs', value: 'NoOfPcs', },
     { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'NetCost', value: 'NetCost', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' }
+    { label: 'Remark', value: 'Remark' }
 ]
 
 export const BOP_VBC_DOMESTIC_TempData = [
@@ -712,8 +713,9 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'NoOfPcs': '10',
         'BasicRate': '100',
+        'NetCost': '450.4',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -732,8 +734,9 @@ export const BOP_ZBC_IMPORT = [
     { label: 'Currency', value: 'Currency', },
     { label: 'NoOfPcs', value: 'NoOfPcs', },
     { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'NetCost', value: 'NetCost', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' },
+    { label: 'Remark', value: 'Remark' },
 ]
 
 export const BOP_ZBC_IMPORT_TempData = [
@@ -749,8 +752,9 @@ export const BOP_ZBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'NoOfPcs': '10',
         'BasicRate': '100',
+        'NetCost': '565.6',
         'EffectiveDate': moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -773,8 +777,9 @@ export const BOP_VBC_IMPORT = [
     { label: 'Currency', value: 'Currency', },
     { label: 'NoOfPcs', value: 'NoOfPcs', },
     { label: 'BasicRate', value: 'BasicRate', },
+    { label: 'NetCost', value: 'NetCost', },
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' }
+    { label: 'Remark', value: 'Remark' }
 ]
 
 export const BOP_VBC_IMPORT_TempData = [
@@ -794,8 +799,9 @@ export const BOP_VBC_IMPORT_TempData = [
         'Currency': 'INR or USD',
         'NoOfPcs': '10',
         'BasicRate': '100',
+        'NetCost': '450.4',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -990,8 +996,8 @@ export const MachineZBC = [
     { label: 'MachineNo', value: 'MachineNo', },
     { label: 'MachineName', value: 'MachineName', },
     { label: 'MachineType', value: 'MachineType', },
+    { label: 'MachineTonnage', value: 'MachineTonnage', },
     { label: 'MachineSpecification', value: 'MachineSpecification', },
-    { label: 'Description', value: 'Description', },
     { label: 'ProcessName', value: 'ProcessName', },
     { label: 'UOM', value: 'UOM', },
     { label: 'MachineRate', value: 'MachineRate', },
@@ -1005,8 +1011,8 @@ export const MachineZBCTempData = [
         'MachineNo': 'SM1002',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineSpecification': '40',
-        'Description': 'Mechanical Power Press',
+        'MachineTonnage': '40',
+        'MachineSpecification': 'Mechanical Power Press',
         'ProcessName': 'Punching',
         'UOM': 'Stroke',
         'MachineRate': 55,
@@ -1162,8 +1168,8 @@ export const MachineVBC = [
     { label: 'MachineNo', value: 'MachineNo', },
     { label: 'MachineName', value: 'MachineName', },
     { label: 'MachineType', value: 'MachineType', },
+    { label: 'MachineTonnage', value: 'MachineTonnage', },
     { label: 'MachineSpecification', value: 'MachineSpecification', },
-    { label: 'Description', value: 'Description', },
     { label: 'ProcessName', value: 'ProcessName', },
     { label: 'UOM', value: 'UOM', },
     { label: 'MachineRate', value: 'MachineRate', },
@@ -1179,8 +1185,8 @@ export const MachineVBCTempData = [
         'MachineNo': 'SM101',
         'MachineName': 'Power Press',
         'MachineType': 'Mechanical',
-        'MachineSpecification': '40',
-        'Description': 'Mechanical Power Press',
+        'MachineTonnage': '40',
+        'MachineSpecification': 'Mechanical Power Press',
         'ProcessName': 'Punching',
         'UOM': 'Stroke',
         'MachineRate': '20',

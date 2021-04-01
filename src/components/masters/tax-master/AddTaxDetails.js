@@ -194,7 +194,7 @@ class AddTaxDetails extends Component {
       <Drawer
         anchor={this.props.anchor}
         open={this.props.isOpen}
-        onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>

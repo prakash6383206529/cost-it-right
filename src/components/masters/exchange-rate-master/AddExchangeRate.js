@@ -189,6 +189,7 @@ class AddExchangeRate extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
+      this.props.reset()
       this.props.createExchangeRate(formData, (res) => {
         if (res.data.Result) {
 

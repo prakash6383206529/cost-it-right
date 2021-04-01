@@ -67,6 +67,7 @@ class AddGrade extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
       }
+      this.props.reset()
       this.props.updateRMGradeAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RM_GRADE_UPDATE_SUCCESS);
@@ -78,6 +79,7 @@ class AddGrade extends Component {
       values.RawMaterialId = RawMaterial.value;
       values.CreatedBy = loggedInUserId();
 
+      this.props.reset()
       this.props.createRMGradeAPI(values, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.GRADE_ADD_SUCCESS);

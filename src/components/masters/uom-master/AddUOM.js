@@ -119,6 +119,7 @@ class AddUOM extends Component {
         IsActive: true,
         ModifiedBy: loggedInUserId(),
       }
+      this.props.reset()
       this.props.updateUnitOfMeasurementAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_UOM_SUCESS);
@@ -136,6 +137,7 @@ class AddUOM extends Component {
         UnitTypeId: unitTypes.value,
         CreatedBy: loggedInUserId()
       }
+      this.props.reset()
       this.props.createUnitOfMeasurementAPI(reqData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.UOM_ADD_SUCCESS);

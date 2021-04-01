@@ -1509,6 +1509,7 @@ class AddMoreDetails extends Component {
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
       let MachineData = { ...requestData, MachineId: editDetails.Id }
+      this.props.reset()
       this.props.updateMachineDetails(MachineData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
@@ -1521,6 +1522,7 @@ class AddMoreDetails extends Component {
     } else if (isEditFlag) {
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND EDIT MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+      this.props.reset()
       this.props.updateMachineDetails(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
@@ -1604,6 +1606,7 @@ class AddMoreDetails extends Component {
         Attachements: files
       }
 
+      this.props.reset()
       this.props.createMachineDetails(formData, (res) => {
         if (res.data.Result) {
           formData.isViewFlag = true

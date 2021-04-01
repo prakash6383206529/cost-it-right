@@ -229,7 +229,7 @@ class AddIndivisualPart extends Component {
         Attachements: updatedFiles
       }
 
-
+      this.props.reset()
       this.props.updatePart(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_PART_SUCESS);
@@ -257,7 +257,7 @@ class AddIndivisualPart extends Component {
         Attachements: files
       }
 
-
+      this.props.reset()
       this.props.createPart(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.PART_ADD_SUCCESS);

@@ -540,6 +540,7 @@ class AddBOPImport extends Component {
 
       }
 
+      this.props.reset()
       this.props.updateBOPImport(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -574,6 +575,7 @@ class AddBOPImport extends Component {
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
       }
+      this.props.reset()
       this.props.createBOPImport(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.BOP_ADD_SUCCESS);

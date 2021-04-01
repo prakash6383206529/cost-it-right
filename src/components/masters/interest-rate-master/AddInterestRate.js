@@ -263,6 +263,7 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId()
       }
+      this.props.reset()
       this.props.createInterestRate(formData, (res) => {
 
         if (res.data.Result) {
