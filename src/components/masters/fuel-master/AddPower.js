@@ -1678,7 +1678,7 @@ class AddPower extends Component {
                                           <td>{item.CostPerUnit ? checkForDecimalAndNull(item.CostPerUnit, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                                           <td>{item.PowerContributionPercentage}</td>
                                           {/* Ask which value to use for trim */}
-                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForInputOutput)}</td>
+                                          <td>{checkForDecimalAndNull(calculatePercentageValue(item.CostPerUnit, item.PowerContributionPercentage), initialConfiguration.NoOfDecimalForPrice)}</td>
                                           <td>
                                             <button className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(index, item.SourcePowerType)} />
                                             <button className="Delete" type={'button'} onClick={() => this.deleteItem(index)} />
@@ -1696,7 +1696,7 @@ class AddPower extends Component {
                                     <td></td>
                                     <td></td>
                                     <td className="text-right"><label>{`Net Contribution Value:`}</label> </td>
-                                    <td><label> {checkForDecimalAndNull(netContributionValue, initialConfiguration.NoOfDecimalForInputOutput)}</label></td>
+                                    <td><label> {checkForDecimalAndNull(netContributionValue, initialConfiguration.NoOfDecimalForPrice)}</label></td>
                                     <td></td>
                                   </tr>
                                   {/* </div>
