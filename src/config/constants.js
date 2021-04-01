@@ -540,10 +540,10 @@ export const API = {
   getCostingOverHeadProByModelType: `${BASE_URL}/costing-sheet-metal/get-costing-overhead-profit-by-model-type`,
   saveCosting: `${BASE_URL}/costing-sheet-metal/save-costing`,
   saveBOPCosting: `${BASE_URL}/costing-sheet-metal/save-costing-bought-out-part`,
-  getCostingBulkUploadList: `${BASE_URL}/`,
+  getCostingBulkUploadList: `${BASE_URL}/bulk-costing/get-all-bulk-costings-files-info-by-filter`,
   getErrorFile: `${BASE_URL}`,
-  uploadCosting: `${BASE_URL}/`,
-  sendStatusForApproval: `${BASE_URL}/`,
+  uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
+  sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
 
 
   //COST SUMMARY

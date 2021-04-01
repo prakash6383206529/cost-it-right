@@ -11,6 +11,7 @@ import { bulkUploadCosting } from '../actions/CostWorking'
 import { CostingBulkUpload, CostingBulkUploadTempData } from '../../../config/masterData'
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
 import { FILE_URL } from '../../../config/constants';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -110,7 +111,12 @@ class CostingBulkUploadDrawer extends Component {
         let data = new FormData()
         data.append('file', fileData)
 
-        this.props.bulkUploadCosting(data, (res) => {
+        let obj = {
+            file: data,
+            LoggedInUserId: loggedInUserId(),
+        }
+
+        this.props.bulkUploadCosting(obj, (res) => {
             let Data = res.data[0]
             const { files } = this.state
             files.push(Data)
