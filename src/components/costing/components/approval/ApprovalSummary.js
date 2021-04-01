@@ -9,7 +9,6 @@ import { setCostingViewData } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
-import ViewDrawer from './ViewDrawer'
 function ApprovalSummary(props) {
   const approvalNumber = props.approvalNumber ? props.approvalNumber : '2345438'
   const approvalProcessId = props.approvalProcessId
@@ -25,8 +24,6 @@ function ApprovalSummary(props) {
   const [costingSummary, setCostingSummary] = useState(false)
   const [approvalLevelStep, setApprovalLevelStep] = useState([])
   const [departmentsId, setDepartmentId] = useState('')
-  const [viewDrawer, setViewDrawer] = useState(false)
-
   const approvalSummary = useSelector(
     (state) => state.approval.approvalSummaryData,
   )
@@ -64,7 +61,6 @@ function ApprovalSummary(props) {
   const closeDrawer = (e = '') => {
     setApproveDrawer(false)
     setRejectDrawer(false)
-    setViewDrawer(false)
   }
   return (
     <>
@@ -80,7 +76,7 @@ function ApprovalSummary(props) {
         <Col md="4" className="text-right">
           <div className="right-border">
             {
-              <button type={'button'} className="apply view-btn" onClick={() => setViewDrawer(true)}>
+              <button type={'button'} className="apply view-btn">
                 View All
               </button>
             }
@@ -377,13 +373,6 @@ function ApprovalSummary(props) {
           closeDrawer={closeDrawer}
           tokenNo={approvalNumber}
           anchor={'right'}
-        />
-      )}
-      {viewDrawer && (
-        <ViewDrawer
-          isOpen={viewDrawer}
-          closeDrawer={closeDrawer}
-          anchor={'top'}
         />
       )}
     </>
