@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isValid, isInvalid } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity, getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType } from '../../../actions/Common'
@@ -67,6 +67,8 @@ class AddRMDomestic extends Component {
 
       isVisible: false,
       imageURL: '',
+
+      netLandedCost: ''
     }
   }
 
@@ -259,7 +261,9 @@ class AddRMDomestic extends Component {
    * @description Set value in NetLandedCost
    */
   handleBasicRate = (e) => {
-    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : e.target.value)
+    const { initialConfiguration } = this.props
+    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : e.target.value })
+    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull(e.target.value, initialConfiguration.NoOfDecimalForPrice))
   }
 
 
@@ -766,7 +770,7 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost } = this.state
     const { initialConfiguration } = this.props
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
@@ -794,7 +798,7 @@ class AddRMDomestic extends Component {
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
