@@ -324,10 +324,14 @@ class AddRMImport extends Component {
       $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
-
           const Data = res.data.Data;
+          if (Data.IsVendor) {
+            this.props.getVendorWithVendorCodeSelectList(() => { })
+          } else {
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+          }
 
-          this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+          // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => { })
           this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
           this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -406,7 +410,14 @@ class AddRMImport extends Component {
       vendorLocation: [],
     }, () => {
       const { IsVendor } = this.state;
-      this.props.getVendorListByVendorType(IsVendor, () => { })
+      if (IsVendor) {
+        this.props.getVendorWithVendorCodeSelectList(() => { })
+      } else {
+        // this.props.getVendorTypeBOPSelectList(() => { })
+        this.props.getVendorListByVendorType(IsVendor, () => { })
+        this.props.getPlantBySupplier('', () => { })
+        this.props.getCityBySupplier(0, () => { })
+      }
     });
   }
 

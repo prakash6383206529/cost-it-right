@@ -5,8 +5,15 @@ import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
-import { getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity, getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType } from '../../../actions/Common'
-import { createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, } from '../actions/Material'
+import {
+  getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
+  getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
+  fetchPlantDataAPI, getPlantSelectListByType
+} from '../../../actions/Common'
+import {
+  createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
+  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList
+} from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId, checkVendorPlantConfigurable, } from '../../../helper/auth'
@@ -24,6 +31,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { FILE_URL, ZBC } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
+// import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -300,7 +308,11 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-
+          if (Data.IsVendor) {
+            this.props.getVendorWithVendorCodeSelectList(() => { })
+          } else {
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+          }
           this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
           this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
@@ -383,9 +395,14 @@ class AddRMDomestic extends Component {
       },
       () => {
         const { IsVendor } = this.state
-        this.props.getVendorListByVendorType(IsVendor, () => { })
-        this.props.getPlantBySupplier('', () => { })
-        this.props.getCityBySupplier(0, () => { })
+        if (IsVendor) {
+          this.props.getVendorWithVendorCodeSelectList(() => { })
+        } else {
+          // this.props.getVendorTypeBOPSelectList(() => { })
+          this.props.getVendorListByVendorType(IsVendor, () => { })
+          this.props.getPlantBySupplier('', () => { })
+          this.props.getCityBySupplier(0, () => { })
+        }
       },
     )
   }
@@ -1585,6 +1602,7 @@ export default connect(mapStateToProps, {
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
   getPlantSelectListByType,
+  getVendorWithVendorCodeSelectList
 })(
   reduxForm({
     form: 'AddRMDomestic',
