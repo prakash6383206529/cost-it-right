@@ -630,7 +630,7 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, alphaNumeric, checkWhiteSpaces, maxLength80]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}

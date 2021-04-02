@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, maxLength5, postiveNumber, minValue1, } from "../../../helper/validation";
+import { required, number, maxLength5, postiveNumber, minValue1, acceptAllExceptSingleSpecialCharacter, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getComponentPartSelectList, getDrawerComponentPartData, } from '../actions/Part';
 import { COMPONENT_PART } from '../../../config/constants';
@@ -173,7 +173,7 @@ class AddComponentForm extends Component {
                 name={"PartName"}
                 type="text"
                 placeholder={""}
-                //validate={[required]}
+                validate={[acceptAllExceptSingleSpecialCharacter]}
                 component={renderText}
                 //required={true}
                 className=""
@@ -188,7 +188,7 @@ class AddComponentForm extends Component {
                 name={"PartDescription"}
                 type="text"
                 placeholder={""}
-                validate={[]}
+                validate={[acceptAllExceptSingleSpecialCharacter]}
                 component={renderText}
                 // required={true}
                 className=""

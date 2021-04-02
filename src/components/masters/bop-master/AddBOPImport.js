@@ -663,7 +663,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, alphaNumeric, maxLength(80)]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
