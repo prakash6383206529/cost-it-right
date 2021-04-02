@@ -287,7 +287,7 @@ function Pipe(props) {
    */
   const setGrossWeight = () => {
     let WeightofPart
-    if (rmRowData.Category === STD) {
+    if (rmRowData.RawMaterialCategory === STD) {
       WeightofPart = dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet)
     } else {
       WeightofPart = dataToSend.WeightofPart
@@ -851,7 +851,7 @@ function Pipe(props) {
               <Row>
                 <Col md="4">
                   <TextFieldHookForm
-                    label="Net Surface Area(cm^2)"
+                    label={`Net Surface Area(cm${<sup>2</sup>})`}
                     name={'NetSurfaceArea'}
                     Controller={Controller}
                     control={control}
