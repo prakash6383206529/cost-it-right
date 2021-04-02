@@ -31,7 +31,7 @@ function SheetMetalBaicDrawer(props) {
   const {
     register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
       mode: 'onChange',
-      reValidateMode: 'onChange',
+      reValidateMode: 'onBlur',
       defaultValues: defaultValues,
     })
 
@@ -40,7 +40,7 @@ function SheetMetalBaicDrawer(props) {
   const isEditFlag = WeightCalculatorRequest ? true : false
   const [processCost, setProcessCost] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '')
   const [disable, setDisabled] = useState(false)
-
+  const [cavity, setCavity] = useState(WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
   const tempProcessObj = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : ''
 
   const fieldValues = useWatch({
@@ -58,7 +58,9 @@ function SheetMetalBaicDrawer(props) {
       setValue('Quantity', rmFinishWeight ? rmFinishWeight : 1)
       // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
     }
-
+    // if (props.calculatorData.UOMType === DIMENSIONLESS) {
+    //   setValue('Cavity', props.WeightCalculatorRequest.Cavity ? props.WeightCalculatorRequest.Cavity : 1)
+    // }
 
   }, [])
 
@@ -103,10 +105,11 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
-
+    console.log(cavity, "CAVITY");
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
-    const cavity = getValues('Cavity')
+    // const cavity = getValues('Cavity')
+    // console.log(cavity, "CAVITY");
     const rate = props.calculatorData.MHR
     let cost
     switch (props.calculatorData.UOMType) {
@@ -145,6 +148,10 @@ function SheetMetalBaicDrawer(props) {
 
   }
 
+  const getCavity = (e) => {
+    setCavity(e.target.value)
+    calculateProcessCost()
+  }
   const onCancel = () => {
     calculateMachineTime('0.00')
   }
@@ -235,7 +242,7 @@ function SheetMetalBaicDrawer(props) {
                             },
                             // maxLength: 4,
                           }}
-                          handleChange={calculateProcessCost}
+                          handleChange={getCavity}
                           defaultValue={''}
                           className=""
                           customClassName={'withBorder'}
