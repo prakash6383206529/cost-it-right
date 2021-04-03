@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isValid, isInvalid } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import {
@@ -76,7 +76,8 @@ class AddRMDomestic extends Component {
       isVisible: false,
       imageURL: '',
 
-      netLandedCost: ''
+      netLandedCost: '',
+      freightCost: ''
     }
   }
 
@@ -269,11 +270,17 @@ class AddRMDomestic extends Component {
    * @description Set value in NetLandedCost
    */
   handleBasicRate = (e) => {
-    const { initialConfiguration } = this.props
-    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : e.target.value })
-    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull(e.target.value, initialConfiguration.NoOfDecimalForPrice))
+    const { initialConfiguration, fieldsObj } = this.props
+    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : checkForNull(Number(e.target.value) + checkForNull(Number(fieldsObj.FreightCharges))) })
+    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull((Number(e.target.value) + checkForNull(Number(fieldsObj.FreightCharges))), initialConfiguration.NoOfDecimalForPrice))
   }
 
+  handleFreightCharges = (e) => {
+    const { initialConfiguration } = this.props
+    const { fieldsObj } = this.props
+    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : checkForDecimalAndNull(Number(e.target.value) + Number(fieldsObj.BasicRate)) })
+    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.BasicRate)), initialConfiguration.NoOfDecimalForPrice))
+  }
 
   /**
    * @method handleChange
@@ -317,6 +324,7 @@ class AddRMDomestic extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
           this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
+          // this.props.change('FreightCharges',Data.FreightCharges)
 
           setTimeout(() => {
             const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList } = this.props
@@ -344,7 +352,7 @@ class AddRMDomestic extends Component {
 
             const sourceLocationObj = cityList && cityList.find((item) => item.Value === Data.SourceLocation)
             const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
-
+            this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -364,7 +372,7 @@ class AddRMDomestic extends Component {
               HasDifferentSource: Data.HasDifferentSource,
               sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
               UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-              effectiveDate: Data.EffectiveDate ? new Date(Data.EffectiveDate) : new Date(),
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               remarks: Data.Remark,
               files: Data.FileList,
             })
@@ -814,6 +822,7 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
+        // FreightCharges:values.FreightCharges,
         ScrapRate: values.ScrapRate,
         NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
@@ -841,6 +850,7 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
+        // FreightCharges:values.FreightCharges,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
@@ -1251,6 +1261,21 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
+                              label={`Freight Charges (INR)`}
+                              name={""}
+                              type="text" FreightCharges
+                              placeholder={"Enter"}
+                              onChange={this.handleFreightCharges}
+                              validate={[positiveAndDecimalNumber, maxLength15]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              maxLength="15"
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
                               label={`Net Cost (INR/UOM)`}
                               name={"NetLandedCost"}
                               type="text"
@@ -1541,7 +1566,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth } = state
-  const fieldsObj = selector(state, 'BasicRate')
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharges')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
