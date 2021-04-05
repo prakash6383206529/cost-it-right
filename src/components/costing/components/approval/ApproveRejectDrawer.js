@@ -13,8 +13,10 @@ import {
   SearchableSelectHookForm,
 } from '../../../layout/HookFormInputs'
 import { loggedInUserId, userDetails } from '../../../../helper'
+import { toastr } from 'react-redux-toastr'
 function ApproveRejectDrawer(props) {
-  const { type, tokenNo, departmentId, approvalProcessId } = props
+  const { type, tokenNo, approvalData, approvalProcessId } = props
+  console.log(approvalData, "approvalData");
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
@@ -28,12 +30,12 @@ function ApproveRejectDrawer(props) {
   useEffect(() => {
     let tempDropdownList = []
     let obj = {
-      LoggedInUserId: loggedInUserId(), // use id
-      DepartmentId: departmentId.departmentId
-        ? departmentId.departmentId
+      LoggedInUserId: loggedInUserId(), // user id
+      DepartmentId: approvalData[0] && approvalData[0].DepartmentId
+        ? approvalData[0].DepartmentId
         : '00000000-0000-0000-0000-000000000000',
-      TechnologyId: departmentId.technology
-        ? departmentId.technology
+      TechnologyId: approvalData[0] && approvalData[0].TechnologyId
+        ? approvalData[0].TechnologyId
         : '00000000-0000-0000-0000-000000000000',
     }
 
@@ -45,7 +47,7 @@ function ApproveRejectDrawer(props) {
         res.data.DataList &&
           res.data.DataList.map((item) => {
 
-            //if (item.Value === '0') return false;
+            if (item.Value === '0') return false;
             tempDropdownList.push({
               label: item.Text,
               value: item.Value,
@@ -70,19 +72,48 @@ function ApproveRejectDrawer(props) {
   }
   const onSubmit = (data) => {
     let obj = {}
-    if (type === 'Approve') {
-      obj.Approver = data.approver.value
-    }
+    // if (type === 'Approve') {
+    //   obj.Approver = data.approver.value
+    // }
 
-    obj.Remark = data.remark
-    obj.ApprovalToken = tokenNo
-    obj.LoggedInUserId = userLoggedIn
-    obj.ApprovalProcessSummaryId = approvalProcessId
+
+    let Data = []
+    approvalData.map(ele => {
+      Data.push({
+        Approver: data.approver && data.approver.value ? data.approver.value : '',
+        Remark: data.remark,
+        ApprovalToken: ele.ApprovalNumber,
+        LoggedInUserId: userLoggedIn,
+        ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
+        IsApproved: type === 'Approve' ? true : false
+      })
+    })
+    // let Data = [{
+    //   Approver: data.approver.value ? data.approver.value : '',
+    //   Remark: data.remark,
+    //   ApprovalToken: approvalData.approvalNumber,
+    //   LoggedInUserId: userLoggedIn,
+    //   ApprovalProcessSummaryId: approvalData.approvalProcessSummaryId,
+    //   IsApproved: type === 'Approve' ? true : false
+    // }]
 
     if (type === 'Approve') {
-      dispatch(approvalRequestByApprove, (obj, () => { }))
+      console.log("COMING IN APPROVE", Data);
+      dispatch(approvalRequestByApprove(Data, res => {
+        if (res.data.Result) {
+          toastr.success('Costing Approved')
+          props.closeDrawer()
+        }
+      }))
+      // props.closeDrawer()
     } else {
-      dispatch(rejectRequestByApprove, (obj, () => { }))
+      console.log("COMING IN REJECT", Data);
+      dispatch(rejectRequestByApprove, (Data, res => {
+        if (res.data.Result) {
+          toastr.success('Costing Rejected')
+          props.closeDrawer()
+        }
+      }))
     }
   }
   return (
@@ -90,7 +121,7 @@ function ApproveRejectDrawer(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        onClose={(e) => toggleDrawer(e)}
+      //onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={'drawer-wrapper'}>

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -77,7 +77,9 @@ class AddRMImport extends Component {
       isVisible: false,
       imageURL: '',
       currencyValue: 1,
-      showCurrency: false
+      showCurrency: false,
+      netCost: '',
+      netCurrencyCost: ''
 
     }
   }
@@ -259,17 +261,15 @@ class AddRMImport extends Component {
       this.setState({ currency: newValue, })
       const { fieldsObj } = this.props
       if (newValue.label === INR) {
-
-        this.setState({ currencyValue: 1, showCurrency: false }, () => {
-
-          this.props.change('NetLandedCost', checkForNull(fieldsObj.BasicRate * this.state.currencyValue))
+        this.setState({ currencyValue: 1, showCurrency: false, netCost: checkForNull(fieldsObj.BasicRate) }, () => {
+          this.props.change('NetLandedCost', checkForDecimalAndNull(fieldsObj.BasicRate * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
         })
+        // this.setState({ showCurrency: false })
       } else {
-        this.props.getExchangeRateByCurrency(newValue.label, res => {
-          this.props.change('NetLandedCost', checkForNull(fieldsObj.BasicRate))
-          this.props.change('NetLandedCostCurrency', checkForNull(fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
-          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true })
-        })
+        this.props.change('NetLandedCost', checkForDecimalAndNull(fieldsObj.BasicRate, this.props.initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(fieldsObj.BasicRate * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
+        this.setState({ showCurrency: true, netCost: checkForNull(fieldsObj.BasicRate), netCurrencyCost: checkForNull(fieldsObj.BasicRate * this.state.currencyValue) })
+        // this.setState({ showCurrency: true })
       }
     } else {
       this.setState({ currency: [] })
@@ -282,11 +282,23 @@ class AddRMImport extends Component {
   */
   handleBasicRate = (e) => {
     const { currencyValue } = this.state
+    const { fieldsObj } = this.props
+    console.log(fieldsObj.FreightCharge, "FCCCCC", fieldsObj);
     // if (this.state.currency.label === INR) {
-    this.props.change('NetLandedCost', (checkForNull(e.target.value)))
+    this.setState({ netCost: checkForNull(Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0)), netCurrencyCost: checkForNull((Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : '')) * currencyValue) })
+    this.props.change('NetLandedCost', (checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0)), this.props.initialConfiguration.NoOfDecimalForPrice)))
     // } else {
-    this.props.change('NetLandedCostCurrency', (checkForNull(e.target.value * currencyValue)))
+    this.props.change('NetLandedCostCurrency', (checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0)) * currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice)))
     // }
+  }
+
+  handleFreightCharge = (e) => {
+    const { currencyValue } = this.state
+    const { netCost } = this.props
+    const { fieldsObj } = this.props
+    this.setState({ netCost: checkForNull(Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)), netCurrencyCost: checkForNull((Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)) * currencyValue) })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)), this.props.initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)) * currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -294,9 +306,25 @@ class AddRMImport extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({
-      effectiveDate: date,
-    });
+    this.props.change('EffectiveDate', this.props.initialConfiguration.NoOfDecimalForPrice)
+    setTimeout(() => {
+      this.setState({
+        effectiveDate: date,
+      });
+    }, 500);
+    const { fieldsObj } = this.props
+    const { currency } = this.state
+    if (currency === INR) {
+      this.setState({ currencyValue: 1, netCost: checkForNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * this.state.currencyValue) }, () => {
+        this.props.change('NetLandedCost', checkForDecimalAndNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
+      })
+    } else {
+      this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
+        this.props.change('NetLandedCost', checkForDecimalAndNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)), this.props.initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('NetLandedCostCurrency', checkForDecimalAndNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
+        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)), netCurrencyCost: checkForNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * res.data.Data.CurrencyExchangeRate) })
+      })
+    }
   };
 
   /**
@@ -324,28 +352,34 @@ class AddRMImport extends Component {
       $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
-
           const Data = res.data.Data;
+          if (Data.IsVendor) {
+            this.props.getVendorWithVendorCodeSelectList(() => { })
+          } else {
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+          }
 
-          this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+          // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => { })
           this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
           this.props.getPlantBySupplier(Data.Vendor, () => { })
           //this.props.getCityBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { gradeSelectList, rmSpecification, cityList, categoryList,
-              rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, currencySelectList, technologySelectList } = this.props;
+            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList,
+              vendorListByVendorType, currencySelectList, technologySelectList } = this.props;
 
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find(item => item.Value === Data.Category)
-            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.Technology) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-
-
+            // this.props.change('FreightCharge',Data.FreightCharge)
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+            this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+            // this.props.change('NetLandedCost')
+
 
             let plantArray = [];
             Data && Data.Plant.map((item) => {
@@ -374,7 +408,7 @@ class AddRMImport extends Component {
               RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
               RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              TechnologyId: technologyObj !== undefined ? technologyObj.Value : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+              Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : '', //NNED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
               selectedPlants: plantArray,
               vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
@@ -385,8 +419,10 @@ class AddRMImport extends Component {
               currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               remarks: Data.Remark,
               files: Data.FileList,
+              // FreightCharge:Data.FreightCharge
+              // netCost:Data
             })
-          }, 500)
+          }, 500);
         }
       })
     } else {
@@ -406,7 +442,14 @@ class AddRMImport extends Component {
       vendorLocation: [],
     }, () => {
       const { IsVendor } = this.state;
-      this.props.getVendorListByVendorType(IsVendor, () => { })
+      if (IsVendor) {
+        this.props.getVendorWithVendorCodeSelectList(() => { })
+      } else {
+        // this.props.getVendorTypeBOPSelectList(() => { })
+        this.props.getVendorListByVendorType(IsVendor, () => { })
+        this.props.getPlantBySupplier('', () => { })
+        this.props.getCityBySupplier(0, () => { })
+      }
     });
   }
 
@@ -756,7 +799,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -785,10 +828,12 @@ class AddRMImport extends Component {
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: netCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
+        // netCurrencyCost:netCurrencyCost
+        // FreightCharge:values.FreightCharge
       }
       this.props.reset()
       this.props.updateRMImportAPI(requestData, (res) => {
@@ -814,7 +859,7 @@ class AddRMImport extends Component {
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
         ScrapRate: values.ScrapRate,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: netCost,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],
@@ -823,6 +868,8 @@ class AddRMImport extends Component {
         Attachements: files,
         Currency: currency.label,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        // netCurrencyCost:netCurrencyCost,
+        // FreightCharge:values.FreightCharge
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -841,7 +888,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, effectiveDate, RawMaterial } = this.state;
 
     return (
       <>
@@ -1200,6 +1247,28 @@ class AddRMImport extends Component {
                             />
                           </Col>
                           <Col md="4">
+                            <div className="form-group">
+                              <div className="inputbox date-section">
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                //minDate={moment()}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                          <Col md="4">
                             <Field
                               label={`Basic Rate/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"BasicRate"}
@@ -1224,6 +1293,21 @@ class AddRMImport extends Component {
                               validate={[required, positiveAndDecimalNumber]}
                               component={renderText}
                               required={true}
+                              className=""
+                              maxLength="15"
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Freight Charge (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              name={"FreightCharge"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[positiveAndDecimalNumber]}
+                              onChange={this.handleFreightCharge}
+                              component={renderText}
+                              required={false}
                               className=""
                               maxLength="15"
                               customClassName=" withBorder"
@@ -1261,48 +1345,7 @@ class AddRMImport extends Component {
                             </Col>
                           }
 
-                          <Col md="4">
-                            <div className="form-group">
-                              {/* <label>
-                                Effective Date
-                                    <span className="asterisk-required">*</span>
-                              </label> */}
-                              <div className="inputbox date-section">
-                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  minDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder form-control"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
-                                /> */}
-                                <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    //e.preventDefault()
-                                  }}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                //minDate={moment()}
-                                />
-                              </div>
-                            </div>
-                          </Col>
+
                         </Row>
 
                         <Row>
@@ -1529,7 +1572,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'NetLandedCost');
+  const fieldsObj = selector(state, 'BasicRate', 'NetLandedCost', 'FreightCharge');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,

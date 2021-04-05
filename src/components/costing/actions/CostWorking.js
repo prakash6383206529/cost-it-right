@@ -783,71 +783,71 @@ export function saveRawMaterialCalciData(data, callback) {
 */
 
 export function getCostingBulkUploadList(callback) {
-  let JSON = {
-    status: 200,
-    data: {
-      DataList: [
-        {
-          CostingStatus: 'In Progress',
-          NoOfCorrectRow: 0,
-          NoOfIncorrectRow: 0,
-          FileNameId: 1,
-          FileName: 'BulkUpload1',
+  // let JSON = {
+  //   status: 200,
+  //   data: {
+  //     DataList: [
+  //       {
+  //         CostingStatus: 'In Progress',
+  //         NoOfCorrectRow: 0,
+  //         NoOfIncorrectRow: 0,
+  //         FileNameId: 1,
+  //         FileName: 'BulkUpload1',
 
-        },
-        {
-          CostingStatus: 'Pending For Approval',
-          NoOfCorrectRow: 5,
-          NoOfIncorrectRow: 2,
-          FileNameId: 2,
-          FileName: 'BulkUpload2',
+  //       },
+  //       {
+  //         CostingStatus: 'Pending For Approval',
+  //         NoOfCorrectRow: 5,
+  //         NoOfIncorrectRow: 2,
+  //         FileNameId: 2,
+  //         FileName: 'BulkUpload2',
 
-        },
-        {
-          CostingStatus: 'Approved',
-          NoOfCorrectRow: 2,
-          NoOfIncorrectRow: 1,
-          FileNameId: 3,
-          FileName: 'BulkUpload3',
+  //       },
+  //       {
+  //         CostingStatus: 'Approved',
+  //         NoOfCorrectRow: 2,
+  //         NoOfIncorrectRow: 1,
+  //         FileNameId: 3,
+  //         FileName: 'BulkUpload3',
 
-        },
-        {
-          CostingStatus: 'Error',
-          NoOfCorrectRow: 3,
-          NoOfIncorrectRow: 1,
-          FileNameId: 4,
-          FileName: 'BulkUpload4',
+  //       },
+  //       {
+  //         CostingStatus: 'Error',
+  //         NoOfCorrectRow: 3,
+  //         NoOfIncorrectRow: 1,
+  //         FileNameId: 4,
+  //         FileName: 'BulkUpload4',
 
-        },
-      ],
-    },
-  }
+  //       },
+  //     ],
+  //   },
+  // }
 
 
   return (dispatch) => {
 
-    dispatch({
-      type: GET_BULKUPLOAD_COSTING_LIST,
-      payload: JSON.data.DataList,
-    });
-    callback(JSON);
+    // dispatch({
+    //   type: GET_BULKUPLOAD_COSTING_LIST,
+    //   payload: JSON.data.DataList,
+    // });
+    // callback(JSON);
     // callback(JSON)
-    //dispatch({ type: API_REQUEST });
-
-    //   const request = axios.get(`${API.getCostingBulkUploadList}`, headers);
-    //   request.then((response) => {
-    //     if (response.data.Result) {
-    //       dispatch({
-    //         type: GET_BULKUPLOAD_COSTING_LIST,
-    //         payload: response.data.Data,
-    //       });
-    //       callback(response);
-    //     }
-    //   }).catch((error) => {
-    //     dispatch({ type: API_FAILURE });
-    //     callback(error);
-    //     apiErrors(error);
-    //   });
+    dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getCostingBulkUploadList}`, headers);
+    request.then((response) => {
+      console.log(response, "REQUEST");
+      if (response.data.Result) {
+        dispatch({
+          type: GET_BULKUPLOAD_COSTING_LIST,
+          payload: response.data.DataList,
+        });
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
   };
 }
 

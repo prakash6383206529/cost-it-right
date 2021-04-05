@@ -5,24 +5,20 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { RadioHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull, checkForNull, getWeightOfSheet, getWeightOfPart, getWeightOfScrap,
-  getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity,
+  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity,
 } from '../../../../../helper'
 import { getUOMListByUnitType, getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
-import { G, KG, MG, STD, UOM } from '../../../../../config/constants'
-import { set } from 'lodash'
+import { G, KG, MG, STD, } from '../../../../../config/constants'
 import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
-import { data } from 'jquery'
 
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-
 
 
   const { rmRowData, isEditFlag } = props
@@ -66,7 +62,7 @@ function Pipe(props) {
       }
       : [],
   )
-  console.log(UOMDimension, "DIM");
+
   let extraObj = {}
   const [dataToSend, setDataToSend] = useState({})
   const [isChangeApplies, setIsChangeApplied] = useState(true)
@@ -74,6 +70,7 @@ function Pipe(props) {
   const tempOldObj = WeightCalculatorRequest
   const [GrossWeight, setGrossWeights] = useState('')
   const [FinishWeight, setFinishWeights] = useState('')
+
 
 
   const fieldValues = useWatch({
@@ -189,13 +186,15 @@ function Pipe(props) {
   const calculateWeightOfSheet = () => {
     const data = {
       Density: props.rmRowData.Density,
-      OuterDiameter: getValues('OuterDiameter'),
+      OuterDiameter: Number(getValues('OuterDiameter')),
       InnerDiameter: dataToSend.InnerDiameter,
-      SheetLength: getValues('SheetLength'),
+      SheetLength: Number(getValues('SheetLength')),
       ExtraVariable: '',
     }
+
     // const SheetWeight = getWeightOfSheet(data)
     const SheetWeight = getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.SheetLength)
+
     const updatedValue = dataToSend
     updatedValue.WeightofSheet = SheetWeight
     setDataToSend(updatedValue)
@@ -285,7 +284,7 @@ function Pipe(props) {
    */
   const setGrossWeight = () => {
     let WeightofPart
-    if (rmRowData.Category === STD) {
+    if (rmRowData.RawMaterialCategory === STD) {
       WeightofPart = dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet)
     } else {
       WeightofPart = dataToSend.WeightofPart
@@ -319,7 +318,7 @@ function Pipe(props) {
    * @description SET FINISH WEIGHT
    */
   const setFinishWeight = () => {
-    const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofPart / dataToSend.NumberOfPartsPerSheet))
+    const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
     const updatedValue = dataToSend
     setFinishWeights(FinishWeight)
     switch (UOMDimension.label) {
@@ -396,8 +395,8 @@ function Pipe(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => {
-    console.log(tempOldObj, "temp");
-    console.log('values >>>', values)
+
+
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
       if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
         setIsChangeApplied(true)
@@ -454,7 +453,7 @@ function Pipe(props) {
     }
 
     dispatch(saveRawMaterialCalciData(data, res => {
-      console.log(res, "RES");
+
       if (res.data.Result) {
         data.WeightCalculationId = res.data.Identity
         toastr.success("Calculation saved successfully")
@@ -500,6 +499,11 @@ function Pipe(props) {
       default:
         break;
     }
+  }
+
+  const UnitFormat = () => {
+    return <>Net Surface Area (g/cm<sup>2</sup>)</>
+    // return (<sup>2</sup>)
   }
 
   /**
@@ -826,7 +830,35 @@ function Pipe(props) {
                   </label>
                 </Col>
                 <Col md="4"></Col>
-                <Col md="4">
+
+              </Row>
+              <hr className="mx-n4 w-auto" />
+              <Row>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={UnitFormat()}
+                    name={'NetSurfaceArea'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{
+                      required: false,
+                      // pattern: {
+                      //   value: /^[0-9]*$/i,
+                      //   message: 'Invalid Number.'
+                      // },
+                      // maxLength: 3,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.NetSurfaceArea}
+                    disabled={true}
+                  />
+                </Col>
+                <Col md="3">
                   <SearchableSelectHookForm
                     label={'Weight Unit'}
                     name={'UOMDimension'}
@@ -844,34 +876,7 @@ function Pipe(props) {
                   />
 
                 </Col>
-              </Row>
-              <hr className="mx-n4 w-auto" />
-              <Row>
-                <Col md="4">
-                  <TextFieldHookForm
-                    label="Net Surface Area(cm^2)"
-                    name={'NetSurfaceArea'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    rules={{
-                      required: false,
-                      // pattern: {
-                      //   value: /^[0-9]*$/i,
-                      //   message: 'Invalid Number.'
-                      // },
-                      // maxLength: 4,
-                    }}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.NetSurfaceArea}
-                    disabled={true}
-                  />
-                </Col>
-                <Col md="4">
+                <Col md="3">
                   <TextFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
@@ -885,7 +890,7 @@ function Pipe(props) {
                       //   value: /^[0-9]*$/i,
                       //   message: 'Invalid Number.'
                       // },
-                      // maxLength: 4,
+                      // maxLength: 3,
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -895,7 +900,7 @@ function Pipe(props) {
                     disabled={true}
                   />
                 </Col>
-                <Col md="4">
+                <Col md="3">
                   <TextFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeight'}

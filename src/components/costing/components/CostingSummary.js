@@ -16,12 +16,13 @@ import { formViewData } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 
 function CostingSummary(props) {
+
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
-  const { hideUpperRow } = props
+  const { hideUpperRow, costingID } = props
 
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
@@ -56,6 +57,8 @@ function CostingSummary(props) {
       ))
     }
   }, [props.activeTab])
+
+
 
   useEffect(() => {
 
@@ -334,7 +337,7 @@ function CostingSummary(props) {
     <>
       {/* {
         !hideUpperRow && */}
-      <div className="login-container signup-form">
+      <div className="login-container signup-form costing-summary-page ">
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
@@ -513,8 +516,9 @@ function CostingSummary(props) {
                           </div>
                         </div>
                       </Col>
-
-                      <Col className="col-md-15">
+                    </Row>
+                    <Row>
+                      <Col className="col-md-12 text-right mb-3">
                         {/* <button
                           type="button"
                           // disabled={this.state.isViewFlag ? true : false}
@@ -525,12 +529,11 @@ function CostingSummary(props) {
                           type="button"
                           //disabled={pristine || submitting}
                           onClick={resetData}
-                          className="reset mr10 mt30 pull-left"
+                          className="reset"
                         >
                           {'Reset'}
                         </button>
                       </Col>
-
                     </Row>
                   </>
                 }

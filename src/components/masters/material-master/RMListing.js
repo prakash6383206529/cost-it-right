@@ -143,7 +143,7 @@ class RMListing extends Component {
 
     renderDensity = (cell, row, enumObject, rowIndex) => {
 
-        // return (<>{`Density(g/cm${applySuperScripts(('^3'))})`}</>)
+        // return applySuperScripts('Density(g/cm^3)')
         // console.log(applySuperScripts('^3'), "llllllllllllllll")
         // return <>Density(g/cm)       </>
         // return <>Vendor <br />Location </>

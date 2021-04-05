@@ -10,7 +10,9 @@ import Bracket from './Bracket'
 import SectionL from './SectionL'
 import SectionC from './SectionC'
 import SectionZ from './SectionZ'
+import Coil from './Coil'
 import { toastr } from 'react-redux-toastr'
+import Sheet from './Sheet'
 
 function WeightCalculator(props) {
 
@@ -97,6 +99,26 @@ function WeightCalculator(props) {
             </NavItem>
             {/* <NavItem>
               <NavLink
+                className={classnames({ active: activeTab === '3' })}
+                onClick={() => {
+                  toggle('3')
+                }}
+              >
+                Bracket
+              </NavLink>
+            </NavItem> */}
+            {/* <NavItem>
+              <NavLink
+                className={classnames({ active: activeTab === '3' })}
+                onClick={() => {
+                  toggle('3')
+                }}
+              >
+                Plate
+              </NavLink>
+            </NavItem> */}
+            {/* <NavItem>
+              <NavLink
                 className={classnames({ active: activeTab === '4' })}
                 onClick={() => {
                   toggle('4')
@@ -132,18 +154,27 @@ function WeightCalculator(props) {
                 <Pipe rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
               </TabPane>
             )}
-            {/* THIS IS FOR COIL */}
             {activeTab === '2' && (
               <TabPane tabId="2">
-                <Bracket />
+                <Coil rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
               </TabPane>
             )}
             {/* THIS IS FOR SHEET  */}
             {activeTab === '3' && (
               <TabPane tabId="3">
-                <Plate />
+                <Sheet rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} />
               </TabPane>
             )}
+            {/* {activeTab === '2' && (
+              <TabPane tabId="2">
+                <Bracket />
+              </TabPane>
+            )} */}
+            {/* {activeTab === '3' && (
+              <TabPane tabId="3">
+                <Plate />
+              </TabPane>
+            )} */}
             {activeTab === '4' && (
               <TabPane tabId="4">
                 <SectionL />

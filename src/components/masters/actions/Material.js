@@ -979,6 +979,25 @@ export function getVendorListByVendorType(isVendor, callback) {
 }
 
 /**
+ * @method getVendorWithVendorCodeSelectList
+ * @description GET VBC VENDOR WITH VENDOR CODE SELECTLIST
+ */
+export function getVendorWithVendorCodeSelectList() {
+    return (dispatch) => {
+        const request = axios.get(API.getVendorWithVendorCodeSelectList, headers);
+        request.then((response) => {
+            dispatch({
+                type: GET_VENDORLIST_BY_VENDORTYPE_SELECTLIST,
+                payload: response.data.SelectList,
+            });
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+/**
  * @method getRMDomesticDataList
  * @description Used to get RM Domestic Datalist
  */

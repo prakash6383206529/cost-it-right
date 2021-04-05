@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5, minValue1 } from "../../../helper/validation";
+import { required, number, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getAssemblyPartSelectList, getDrawerAssemblyPartDetail, } from '../actions/Part';
 import { ASSEMBLY } from '../../../config/constants';
@@ -172,7 +172,7 @@ class AddAssemblyForm extends Component {
                                 name={"AssemblyPartName"}
                                 type="text"
                                 placeholder={''}
-                                validate={[]}
+                                validate={[acceptAllExceptSingleSpecialCharacter]}
                                 component={renderText}
                                 // required={true}
                                 className=""

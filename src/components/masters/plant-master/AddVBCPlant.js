@@ -339,7 +339,7 @@ class AddVBCPlant extends Component {
                       name={"PlantName"}
                       type="text"
                       placeholder={""}
-                      validate={[required, alphaNumeric, maxLength80, checkWhiteSpaces]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
                       component={renderText}
                       required={true}
                       className=""
