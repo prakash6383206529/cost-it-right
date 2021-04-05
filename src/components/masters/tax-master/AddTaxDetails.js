@@ -157,6 +157,7 @@ class AddTaxDetails extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
+      this.props.reset()
       this.props.updateTaxDetails(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.TAX_UPDATE_SUCCESS);
@@ -173,6 +174,7 @@ class AddTaxDetails extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         LoggedInUserId: loggedInUserId(),
       }
+      this.props.reset()
       this.props.createTaxDetails(reqData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.TAX_ADD_SUCCESS);
@@ -192,7 +194,7 @@ class AddTaxDetails extends Component {
       <Drawer
         anchor={this.props.anchor}
         open={this.props.isOpen}
-        onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>

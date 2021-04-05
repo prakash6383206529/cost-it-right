@@ -18,7 +18,7 @@ function TransportationCost(props) {
   }
 
   const { register, control, errors, setValue, getValues, } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   });

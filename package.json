@@ -42,6 +42,7 @@
     "redux-form": "^8.2.6",
     "redux-thunk": "^2.3.0",
     "webpack": "^4.41.0",
+    "yarn": "^1.22.10",
     "yup": "^0.29.3"
   },
   "scripts": {

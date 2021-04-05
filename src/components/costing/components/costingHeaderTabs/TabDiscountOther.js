@@ -135,6 +135,7 @@ function TabDiscountOther(props) {
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', OtherCostDetails.NetPOPriceOtherCurrency !== null ? OtherCostDetails.NetPOPriceOtherCurrency : '')
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
+            setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
@@ -212,11 +213,14 @@ function TabDiscountOther(props) {
   const handleCurrencyChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
-      dispatch(getExchangeRateByCurrency(newValue.label, res => {
-        let Data = res.data.Data;
-        const NetPOPriceINR = getValues('NetPOPriceINR');
-        setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
-        setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+      let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
+      dispatch(getExchangeRateByCurrency(ReqParams, res => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          const NetPOPriceINR = getValues('NetPOPriceINR');
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+          setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+        }
       }))
     } else {
       setCurrency([])
@@ -572,7 +576,7 @@ function TabDiscountOther(props) {
                             mandatory={true}
                             handleChange={handleCurrencyChange}
                             errors={errors.Currency}
-                            disabled={CostingViewMode ? true : false}
+                            disabled={CostingViewMode || effectiveDate === '' ? true : false}
                           />
                         </Col>
                         <Col md="3">

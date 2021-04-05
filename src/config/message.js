@@ -307,7 +307,7 @@ export const MESSAGES = {
   //MESSAGES FOR COSTING TABS SUCCESS
   OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS: 'Overhead & Profit has been successfully saved.',
   OTHER_DISCOUNT_COSTING_SAVE_SUCCESS: 'Discount & Other Cost has been successfully saved.',
-  PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS: 'Package & Freight Cost has been successfully saved.',
+  PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS: 'Packaging & Freight Cost has been successfully saved.',
   SURFACE_TREATMENT_COSTING_SAVE_SUCCESS: 'Surface Treatment Cost has been successfully saved.',
   TOOL_TAB_COSTING_SAVE_SUCCESS: 'Tool Cost has been successfully saved.',
   RMCC_TAB_COSTING_SAVE_SUCCESS: 'RM CC BOP Cost has been successfully saved.',

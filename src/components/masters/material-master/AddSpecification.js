@@ -306,6 +306,7 @@ class AddSpecification extends Component {
         MaterialId: material.value,
         MaterialTypeName: material.label,
       }
+      this.props.reset()
       this.props.updateRMSpecificationAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SPECIFICATION_UPDATE_SUCCESS);
@@ -320,6 +321,7 @@ class AddSpecification extends Component {
         GradeId: RMGrade.value,
         MaterialId: material.value,
       }
+      this.props.reset()
       this.props.createRMSpecificationAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SPECIFICATION_ADD_SUCCESS);

@@ -453,6 +453,7 @@ class AddOperation extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
+      this.props.reset()
       this.props.updateOperationAPI(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
@@ -481,6 +482,7 @@ class AddOperation extends Component {
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
       }
+      this.props.reset()
       this.props.createOperationsAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.OPERATION_ADD_SUCCESS);
@@ -711,7 +713,7 @@ class AddOperation extends Component {
                       </Col>
                       {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <Col md="3">
                         <Field
-                          label={`Labour Rate/UOM`}
+                          label={`Labour Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}`}
                           name={"LabourRatePerUOM"}
                           type="text"
                           placeholder={"Enter"}

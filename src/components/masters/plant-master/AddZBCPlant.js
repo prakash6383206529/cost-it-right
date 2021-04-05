@@ -234,6 +234,7 @@ class AddZBCPlant extends Component {
         VendorId: userDetail.ZBCSupplierInfo.VendorId,
         CompanyId: company.value
       }
+      this.props.reset()
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_PLANT_SUCESS);
@@ -259,6 +260,7 @@ class AddZBCPlant extends Component {
         CompanyId: company.value
       }
 
+      this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);
@@ -288,7 +290,7 @@ class AddZBCPlant extends Component {
         <Drawer
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          onClose={(e) => this.toggleDrawer(e)}
+          // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
             <div className={"drawer-wrapper drawer-700px"}>

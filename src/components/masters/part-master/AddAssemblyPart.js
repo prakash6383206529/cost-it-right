@@ -481,6 +481,7 @@ class AddAssemblyPart extends Component {
         }
       }
 
+      this.props.reset()
       this.props.updateAssemblyPart(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_BOM_SUCCESS);
@@ -511,6 +512,7 @@ class AddAssemblyPart extends Component {
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
       }
 
+      this.props.reset()
       this.props.createAssemblyPart(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.ASSEMBLY_PART_ADD_SUCCESS);
@@ -727,7 +729,7 @@ class AddAssemblyPart extends Component {
                             onClick={this.toggleBOMViewer}
                             className={"user-btn pull-left mt30"}
                           >
-                            <div className={"plus"}></div>BOM VIEWER
+                            <div className={"plus"}></div>VIEW BOM
                               </button>
                         </Col>
                       </Row>

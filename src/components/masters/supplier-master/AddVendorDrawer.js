@@ -388,6 +388,7 @@ class AddVendorDrawer extends Component {
                 RemoveVendorPlants: removedVendorPlants,
                 VendorTypes: vendorArray,
             }
+            this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.UPDATE_SUPPLIER_SUCESS);
@@ -412,6 +413,7 @@ class AddVendorDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
             }
+            this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.SUPPLIER_ADDED_SUCCESS);
@@ -636,7 +638,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //  required={true}
                                             maxLength={26}

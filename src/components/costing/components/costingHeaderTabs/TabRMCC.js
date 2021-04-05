@@ -25,6 +25,7 @@ function TabRMCC(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
 
+
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {

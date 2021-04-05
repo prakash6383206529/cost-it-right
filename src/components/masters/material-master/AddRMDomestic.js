@@ -80,7 +80,6 @@ class AddRMDomestic extends Component {
       freightCost: ''
     }
   }
-
   /**
    * @method componentWillMount
    * @description Called before render the component
@@ -364,10 +363,7 @@ class AddRMDomestic extends Component {
               Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantArray,
               Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
-              vendorName:
-                vendorObj !== undefined
-                  ? { label: vendorObj.Text, value: vendorObj.Value }
-                  : [],
+              vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               HasDifferentSource: Data.HasDifferentSource,
               sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
@@ -829,11 +825,12 @@ class AddRMDomestic extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
       }
-
+      this.props.reset()
       this.props.updateRMDomesticAPI(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
           this.clearForm()
+          // this.cancel()
         }
       })
     } else {
@@ -860,14 +857,17 @@ class AddRMDomestic extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
+
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS)
           this.clearForm()
+          // this.cancel()
         }
       })
+
     }
   }
 
@@ -1276,7 +1276,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Cost (INR/UOM)`}
+                              label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} )`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}

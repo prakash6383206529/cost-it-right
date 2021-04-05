@@ -64,6 +64,7 @@ class AddRawMaterial extends Component {
         RawMaterialName: values.RawMaterialName,
         LoggedInUserId: loggedInUserId(),
       }
+      this.props.reset()
       this.props.updateRawMaterialChildName(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
@@ -73,6 +74,7 @@ class AddRawMaterial extends Component {
 
     } else {
       values.LoggedInUserId = loggedInUserId();
+      this.props.reset()
       this.props.createRawMaterialNameChild(values, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);

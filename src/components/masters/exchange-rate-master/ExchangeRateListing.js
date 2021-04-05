@@ -335,7 +335,7 @@ class ExchangeRateListing extends Component {
                                                 handleChangeDescription={this.handleCurrency}
                                                 valueDescription={this.state.currency}
                                                 disabled={false}
-                                            />
+                                            /> 
                                         </div>
 
                                         <div className="flex-fill">

@@ -12,7 +12,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 function BOPCost(props) {
 
   const { register, handleSubmit, control, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 

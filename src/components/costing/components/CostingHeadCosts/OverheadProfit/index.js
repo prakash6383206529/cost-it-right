@@ -42,7 +42,7 @@ function OverheadProfit(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   });
@@ -129,7 +129,7 @@ function OverheadProfit(props) {
   * @description TO CHANGE OVERHEADS VALUE WHEN RM BOP CC VALUES CHANGES FROM RMCC TAB
   */
   useEffect(() => {
-    console.log('modelType', modelType)
+
     if (modelType && modelType.value !== undefined) {
       handleModelTypeChange(modelType)
     }
@@ -259,7 +259,6 @@ function OverheadProfit(props) {
       }, 200)
 
     } catch (error) {
-
     }
 
   }, [rejectionFieldValues]);
@@ -1211,10 +1210,10 @@ function OverheadProfit(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.'
                             },
-                            max: {
-                              value: 100,
-                              message: 'Percentage cannot be greater than 100'
-                            },
+                            // max: {
+                            //   value: 100,
+                            //   message: 'Percentage cannot be greater than 100'
+                            // },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
@@ -1552,10 +1551,10 @@ function OverheadProfit(props) {
                               value: /^[0-9]\d*(\.\d+)?$/i,
                               message: 'Invalid Number.'
                             },
-                            max: {
-                              value: 100,
-                              message: 'Percentage cannot be greater than 100'
-                            },
+                            // max: {
+                            //   value: 100,
+                            //   message: 'Percentage cannot be greater than 100'
+                            // },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
@@ -1882,10 +1881,10 @@ function OverheadProfit(props) {
                       value: /^[0-9]\d*(\.\d+)?$/i,
                       message: 'Invalid Number.'
                     },
-                    max: {
-                      value: 100,
-                      message: 'Percentage cannot be greater than 100'
-                    },
+                    // max: {
+                    //   value: 100,
+                    //   message: 'Percentage cannot be greater than 100'
+                    // },
                   }}
                   // handleChange={handleRejection}
                   handleChange={() => { }}

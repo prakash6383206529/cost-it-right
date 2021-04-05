@@ -157,7 +157,7 @@ class AddProcessDrawer extends Component {
         Machines: isMachineShow ? machineArray : [],
         LoggedInUserId: loggedInUserId(),
       }
-
+      this.props.reset()
       this.props.updateProcess(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_PROCESS_SUCCESS)
@@ -175,6 +175,7 @@ class AddProcessDrawer extends Component {
         LoggedInUserId: loggedInUserId(),
       }
 
+      this.props.reset()
       this.props.createProcess(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.PROCESS_ADD_SUCCESS)

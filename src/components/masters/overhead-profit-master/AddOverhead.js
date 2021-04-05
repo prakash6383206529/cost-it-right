@@ -526,6 +526,7 @@ class AddOverhead extends Component {
         Attachements: updatedFiles,
       }
 
+      this.props.reset()
       this.props.updateOverhead(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
@@ -555,6 +556,7 @@ class AddOverhead extends Component {
         Attachements: files,
       }
 
+      this.props.reset()
       this.props.createOverhead(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.OVERHEAD_ADDED_SUCCESS);

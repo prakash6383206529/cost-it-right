@@ -66,6 +66,7 @@ class AddFuelNameDrawer extends Component {
       let reqData = {
         FuelName: values.FuelName.trim(),
       }
+      this.props.reset()
       this.props.createFuel(reqData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.FUEL_ADD_SUCCESS);

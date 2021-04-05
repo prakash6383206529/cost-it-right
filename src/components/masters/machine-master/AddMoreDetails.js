@@ -706,7 +706,7 @@ class AddMoreDetails extends Component {
         checkPercentageValue(AnnualInsurancePercentage, "Insurance percentage should not be more than 100") ? this.props.change('AnnualInsurancePercentage', AnnualInsurancePercentage) : this.props.change('AnnualInsurancePercentage', 0)
       }
       if (UtilizationFactorPercentage) {
-        checkPercentageValue(UtilizationFactorPercentage, "Utilization percentage should not be more than 100") ? this.props.change('UtilizationFactorPercentage', UtilizationFactorPercentage) : this.props.change('UtilizationFactorPercentage', 0)
+        checkPercentageValue(UtilizationFactorPercentage, "Utilization percentage should not be more than 100") ? this.props.change('UtilizationFactorPercentage', checkForNull(UtilizationFactorPercentage)) : this.props.change('UtilizationFactorPercentage', 0)
       }
     }
   }
@@ -894,7 +894,7 @@ class AddMoreDetails extends Component {
     })
 
     this.props.change('AnnualAreaCost', checkForDecimalAndNull(annualAreaCost, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('TotalMachineCostPerAnnum', checkForDecimalAndNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('TotalMachineCostPerAnnum', checkForNull(TotalMachineCostPerAnnum, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -1509,6 +1509,7 @@ class AddMoreDetails extends Component {
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
       let MachineData = { ...requestData, MachineId: editDetails.Id }
+      this.props.reset()
       this.props.updateMachineDetails(MachineData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MACHINE_DETAILS_ADD_SUCCESS);
@@ -1521,6 +1522,7 @@ class AddMoreDetails extends Component {
     } else if (isEditFlag) {
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND EDIT MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+      this.props.reset()
       this.props.updateMachineDetails(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
@@ -1604,6 +1606,7 @@ class AddMoreDetails extends Component {
         Attachements: files
       }
 
+      this.props.reset()
       this.props.createMachineDetails(formData, (res) => {
         if (res.data.Result) {
           formData.isViewFlag = true
@@ -1802,6 +1805,20 @@ class AddMoreDetails extends Component {
                         <Col md="3">
                           <Field
                             label={`Machine Specification`}
+                            name={"Description"}
+                            type="text"
+                            placeholder={'Enter'}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            component={renderText}
+                            // required={true}
+                            disabled={isEditFlag ? true : false}
+                            className=" "
+                            customClassName="withBorder"
+                          />
+                        </Col>
+                        <Col md="3">
+                          <Field
+                            label={`Description`}
                             name={"Description"}
                             type="text"
                             placeholder={'Enter'}

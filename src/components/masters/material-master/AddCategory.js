@@ -67,11 +67,13 @@ class AddCategory extends Component {
                 CategoryName: values.CategoryName,
                 Description: values.Description,
             }
+            this.props.reset()
             this.props.updateCategoryAPI(formData, () => {
                 this.toggleModel()
             })
         } else {
 
+            this.props.reset()
             this.props.createRMCategoryAPI(values, (res) => {
                 if (res.data.Result) {
                     toastr.success(MESSAGES.CATEGORY_ADD_SUCCESS);

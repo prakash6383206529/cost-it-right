@@ -380,6 +380,7 @@ class AddFuel extends Component {
         FuelDetatils: fuelDetailArray,
       }
 
+      this.props.reset()
       this.props.updateFuelDetail(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_FUEL_DETAIL_SUCESS);
@@ -396,6 +397,7 @@ class AddFuel extends Component {
         FuelDetatils: fuelDetailArray,
       }
 
+      this.props.reset()
       this.props.createFuelDetail(formData, (res) => {
         if (res && res.data && res.data.Result) {
           toastr.success(MESSAGES.FUEL_ADD_SUCCESS);

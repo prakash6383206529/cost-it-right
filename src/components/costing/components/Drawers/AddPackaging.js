@@ -24,7 +24,7 @@ function AddPackaging(props) {
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onBlur',
-    reValidateMode: 'onBlur',
+    reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
@@ -33,7 +33,7 @@ function AddPackaging(props) {
   const headCostData = useContext(netHeadCostContext)
 
   const [applicability, setApplicability] = useState([]);
-  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : false);
+  const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : true);
   //const [formData, setFormData] = useState({});
 
   const fieldValues = useWatch({
@@ -152,6 +152,10 @@ function AddPackaging(props) {
     * @description PACKAGING TYPE 
     */
   const PackageTypeToggle = () => {
+    setValue('PackagingDescription', '')
+    setValue('PackagingCost', '')
+    setValue('PackagingCostPercentage', '')
+    setValue('Applicability', '')
     setPackageType(!PackageType)
   }
 
@@ -197,7 +201,7 @@ function AddPackaging(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'ADD Packaging'}</h3>
+                  <h3>{isEditFlag ? 'Update Packaging' : 'ADD Packaging'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -276,7 +280,7 @@ function AddPackaging(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.PackagingCostPercentage}
-                      disabled={isEditFlag || !PackageType ? true : false}
+                      disabled={!PackageType ? true : false}
                     />
                   </Col>
 
@@ -294,7 +298,7 @@ function AddPackaging(props) {
                       mandatory={PackageType ? true : false}
                       handleChange={handleApplicabilityChange}
                       errors={errors.Applicability}
-                      disabled={isEditFlag || !PackageType ? true : false}
+                      disabled={!PackageType ? true : false}
                     />
                   </Col>
 
@@ -338,7 +342,7 @@ function AddPackaging(props) {
                       className="submit-button  save-btn"
                       onClick={addRow} >
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
+                      {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>
                 </Row>

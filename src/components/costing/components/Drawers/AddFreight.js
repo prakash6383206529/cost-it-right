@@ -241,6 +241,12 @@ function AddFreight(props) {
   * @description FREIGHT FLAG
   */
   const onPressHeads = (FreightFlag) => {
+    setValue('Applicability', '')
+    setValue('Criteria', '')
+    setValue('Rate', '')
+    setValue('Quantity', '')
+    setValue('FreightCost', '')
+    setApplicability([])
     setfreightType(FreightFlag)
   }
 
@@ -331,7 +337,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === FullTruckLoad ? true : false}
                         onClick={() => onPressHeads(FullTruckLoad)}
-                        disabled={isEditFlag ? true : false}
+                        disabled={true}
                       />{' '}
                       <span>Full Truck Load</span>
                     </Label>
@@ -342,7 +348,7 @@ function AddFreight(props) {
                         register={register}
                         checked={freightType === PartTruckLoad ? true : false}
                         onClick={() => onPressHeads(PartTruckLoad)}
-                        disabled={isEditFlag ? true : false}
+                        disabled={true}
                       />{' '}
                       <span>Part Truck Load</span>
                     </Label>
@@ -369,7 +375,7 @@ function AddFreight(props) {
                       <span>Percentage</span>
                     </Label>
                   </Col>
-                  <Col md="12">
+                  {/* <Col md="12">
                     <SearchableSelectHookForm
                       label={'Capacity'}
                       name={'Capacity'}
@@ -385,7 +391,7 @@ function AddFreight(props) {
                       errors={errors.Capacity}
                       disabled={(isEditFlag || freightType === Fixed || freightType === Percentage) ? true : false}
                     />
-                  </Col>
+                  </Col> */}
                   <Col md="12">
                     {freightType === Percentage ?
                       <SearchableSelectHookForm
@@ -401,7 +407,7 @@ function AddFreight(props) {
                         mandatory={true}
                         handleChange={handleApplicabilityChange}
                         errors={errors.Applicability}
-                        disabled={isEditFlag ? true : false}
+                        disabled={false}
                       />
                       :
                       <SearchableSelectHookForm
@@ -444,7 +450,7 @@ function AddFreight(props) {
                       disabled={freightType !== Percentage ? true : false}
                     />
                   </Col>
-                  <Col md="12">
+                  {/* <Col md="12">
                     <TextFieldHookForm
                       label="Quantity"
                       name={'Quantity'}
@@ -470,7 +476,7 @@ function AddFreight(props) {
                       errors={errors.Quantity}
                       disabled={(freightType === Fixed || freightType === Percentage) ? true : false}
                     />
-                  </Col>
+                  </Col> */}
 
                   <Col md="12">
                     <TextFieldHookForm
@@ -510,7 +516,7 @@ function AddFreight(props) {
                       type={'submit'}
                       className="submit-button save-btn">
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                      {'Save'}
+                      {isEditFlag ? 'Update' : 'Save'}
                     </button>
                   </div>
                 </Row>

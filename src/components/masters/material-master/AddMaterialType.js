@@ -67,6 +67,7 @@ class AddMaterialType extends Component {
         CalculatedDensityValue: values.CalculatedDensityValue,
         IsActive: true
       }
+      this.props.reset()
       this.props.updateMaterialtypeAPI(updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
@@ -84,6 +85,7 @@ class AddMaterialType extends Component {
         CreatedBy: loggedInUserId(),
         IsActive: true
       }
+      this.props.reset()
       this.props.createMaterialTypeAPI(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MATERIAL_ADDED_SUCCESS);

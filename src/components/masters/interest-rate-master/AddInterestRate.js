@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, reset } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, } from "../../../helper/validation";
 import { renderText, searchableSelect, } from "../../layout/FormInputs";
@@ -18,6 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -32,7 +33,6 @@ class AddInterestRate extends Component {
       effectiveDate: '',
     }
   }
-
   /**
   * @method componentWillMount
   * @description called before render the component
@@ -214,7 +214,9 @@ class AddInterestRate extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
+ 
   onSubmit = (values) => {
+
     const { IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate } = this.state;
     const userDetail = userDetails()
 
@@ -237,8 +239,9 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
       }
-
+      this.props.reset()
       this.props.updateInterestRate(updateData, (res) => {
+
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
           this.cancel()
@@ -260,11 +263,13 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId()
       }
-
+      this.props.reset()
       this.props.createInterestRate(formData, (res) => {
+
         if (res.data.Result) {
           toastr.success(MESSAGES.INTEREST_RATE_ADDED_SUCCESS);
           this.cancel();
+
         }
       });
     }

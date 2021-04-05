@@ -20,7 +20,7 @@ function ProcessCost(props) {
   const { data } = props
 
   const { register, control, errors, setValue } = useForm({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onChange',
   })
 
@@ -225,6 +225,7 @@ function ProcessCost(props) {
       if (i === index) return false
       return true
     })
+
 
     let ProcessCostTotal = 0
     ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {

@@ -241,6 +241,7 @@ class AddVBCPlant extends Component {
         CreatedByUserId: loggedInUserId(),
         CityId: city.value,
       }
+      this.props.reset()
       this.props.updatePlantAPI(PlantId, updateData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_PLANT_SUCESS);
@@ -264,6 +265,7 @@ class AddVBCPlant extends Component {
         VendorId: vendor.value,
       }
 
+      this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);

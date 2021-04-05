@@ -8,6 +8,8 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercent
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
+import { required } from "../../../helper/validation";
+
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 
@@ -99,8 +101,7 @@ function ManageSOBDrawer(props) {
         WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(Number(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
-
-
+     
       setTimeout(() => {
         if (a === false) {
           setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
@@ -132,7 +133,6 @@ function ManageSOBDrawer(props) {
     }
 
   }
-
 
   /**
   * @method warningMessageHandle
@@ -198,6 +198,7 @@ function ManageSOBDrawer(props) {
       "WeightedNetLandedCost": WeightedCost,
       "BoughtOutPartVendorList": GridData
     }
+    reset()
     dispatch(updateBOPSOBVendors(data, (res) => {
       if (res && res.data && res.data.Result) {
         toastr.success('BOP Vendors SOB has been updated.')
@@ -214,7 +215,9 @@ function ManageSOBDrawer(props) {
   */
   return (
     <>
-      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer anchor={props.anchor} open={props.isOpen} 
+      // onClose={(e) => toggleDrawer(e)}
+      >
         <Container className="sob-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 
@@ -280,7 +283,7 @@ function ManageSOBDrawer(props) {
                                       message: "Should not be greater then 100"
                                     },
                                   }}
-
+                                  
                                   defaultValue={item.ShareOfBusinessPercentage}
                                   className=""
                                   customClassName={'withBorder'}

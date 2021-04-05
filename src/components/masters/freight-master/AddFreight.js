@@ -493,6 +493,7 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
       };
+      this.props.reset()
       this.props.updateFright(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.UPDATE_FREIGHT_SUCCESSFULLY);
@@ -515,6 +516,7 @@ class AddFreight extends Component {
         FullTruckLoadDetails: gridTable,
         LoggedInUserId: loggedInUserId(),
       };
+      this.props.reset()
       this.props.createFreight(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.ADD_FREIGHT_SUCCESSFULLY);

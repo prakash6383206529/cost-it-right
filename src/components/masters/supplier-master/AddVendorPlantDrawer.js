@@ -205,6 +205,7 @@ class AddVendorPlantDrawer extends Component {
         VendorId: VendorId,
       }
 
+      this.props.reset()
       this.props.createPlantAPI(formData, (res) => {
         if (res.data.Result === true) {
           toastr.success(MESSAGES.PLANT_ADDED_SUCCESS);

@@ -55,7 +55,8 @@ export const TextFieldHookForm = (field) => {
           render={({ onChange, onBlur, value, name }) => {
             return (
               <input
-                {...field}
+                // {...field}
+                register
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
@@ -114,8 +115,12 @@ export const SearchableSelectHookForm = (field) => {
           )
         }}
       />
-      {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""}
+      {console.log("pppppppppppppppppppppppppppppppppppp", errors)}
+      {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
       {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
+       { errors && errors.type === 'required' ? <div className="text-help">This field is required</div> 
+        : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      
     </div>
   )
 }

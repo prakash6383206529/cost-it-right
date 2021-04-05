@@ -1,20 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function PackageCost(props) {
-
-  const { register, control, errors } = useForm({
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  });
 
   const [gridData, setGridData] = useState(props.data)
   const [rowObjData, setRowObjData] = useState({})

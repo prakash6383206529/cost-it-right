@@ -835,6 +835,7 @@ class AddRMImport extends Component {
         // netCurrencyCost:netCurrencyCost
         // FreightCharge:values.FreightCharge
       }
+      this.props.reset()
       this.props.updateRMImportAPI(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
@@ -870,7 +871,7 @@ class AddRMImport extends Component {
         // netCurrencyCost:netCurrencyCost,
         // FreightCharge:values.FreightCharge
       }
-
+      this.props.reset()
       this.props.createRMImport(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS);
@@ -1371,7 +1372,7 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <label>
-                              Upload Files (upload up to 3 files)
+                              Upload Files (Upload up to 3 files)
                                 </label>
                             {this.state.files.length >= 3 ? (
                               <div class="alert alert-danger" role="alert">

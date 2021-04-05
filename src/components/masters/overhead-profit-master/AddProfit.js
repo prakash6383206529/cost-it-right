@@ -528,6 +528,7 @@ class AddProfit extends Component {
         Attachements: updatedFiles,
       }
 
+      this.props.reset()
       this.props.updateProfit(requestData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
@@ -556,6 +557,7 @@ class AddProfit extends Component {
         Attachements: files,
       }
 
+      this.props.reset()
       this.props.createProfit(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.PROFIT_ADDED_SUCCESS);

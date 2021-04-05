@@ -5,6 +5,7 @@ import { getSurfaceTreatmentTabData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, } from '../../../../../helper';
 import PartSurfaceTreatment from './PartSurfaceTreatment';
 import SurfaceTreatment from '.';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function AssemblySurfaceTreatment(props) {
   const { children, item, index } = props;
@@ -14,6 +15,7 @@ function AssemblySurfaceTreatment(props) {
   const [IsDrawerOpen, setDrawerOpen] = useState(false)
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const dispatch = useDispatch()
 
@@ -35,6 +37,9 @@ function AssemblySurfaceTreatment(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
           props.toggleAssembly(Params, Data)
+          if (IsCollapse === false) {
+            DrawerToggle()
+          }
         }
       }))
     } else {
@@ -113,14 +118,14 @@ function AssemblySurfaceTreatment(props) {
           </td>
         </div>
         <td>
-          {(item.CostingPartDetails.SurfaceTreatmentDetails || item.CostingPartDetails.TransportationDetails) ?
+          {!CostingViewMode && ((item.CostingPartDetails.NetSurfaceTreatmentCost !== 0) ?
             <button
               type="button"
               className={'user-btn surface-treatment-btn'}
               //onClick={DrawerToggle}
               onClick={() => {
                 toggle(item.BOMLevel, item.PartNumber, false)
-                DrawerToggle()
+                // DrawerToggle()
               }}
             >
               <div className={'fa fa-eye pr-1'}></div>View Surface Treatment</button>
@@ -131,10 +136,10 @@ function AssemblySurfaceTreatment(props) {
               //onClick={DrawerToggle}
               onClick={() => {
                 toggle(item.BOMLevel, item.PartNumber, false)
-                DrawerToggle()
+                //DrawerToggle()
               }}
             >
-              <div className={'plus'}></div>Add Surface Treatment</button>
+              <div className={'plus'}></div>Add Surface Treatment</button>)
           }
         </td>
       </tr>
