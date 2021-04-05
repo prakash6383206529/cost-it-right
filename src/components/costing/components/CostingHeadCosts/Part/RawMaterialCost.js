@@ -89,6 +89,7 @@ function RawMaterialCost(props) {
         RawMaterialCategory: rowData.Category
       }
 
+
       setGridData([...gridData, tempObj])
     }
     setDrawerOpen(false)
