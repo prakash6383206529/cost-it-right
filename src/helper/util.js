@@ -682,8 +682,8 @@ export function formViewData(costingSummary) {
   return temp
 }
 
+/*VOLUME AND DENSITY BASED ON DIAMETER*/
 export function getVolume(innerDiameter, outerDiameter, height) {
-  console.log(innerDiameter, "innerDiameter", outerDiameter, "hhhhh", height);
   const value = (Math.PI / 4) * (Math.pow(outerDiameter, 2) - Math.pow(innerDiameter, 2)) * height
   console.log(value, "value");
   return checkForNull(value)
@@ -691,10 +691,19 @@ export function getVolume(innerDiameter, outerDiameter, height) {
 
 export function getWeightFromDensity(density, innerDiameter, outerDiameter, height) {
   const value = density * getVolume(innerDiameter, outerDiameter, height)
-  console.log(value, "density");
   return value
 }
 
+/*VOLUME AND DENSITY BASED ON LENGTH WIDTH AND THICKNESS*/
+export function calculateVolume(length, width, thickness) {
+  const value = length * width * thickness
+  return value
+}
+
+export function calculateWeight(density, length, width, thickness) {
+  const value = density * calculateVolume(length, width, thickness)
+  return value
+}
 
 export const applySuperScripts = (cell) => {
   console.log(cell, "CELL");
