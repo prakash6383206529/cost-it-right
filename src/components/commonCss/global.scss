@@ -339,8 +339,15 @@ a:hover {
   border-radius: 4px;
   height: 32px;
   width:96px;
+  margin-top: 8px;
+  margin-bottom:8px;
+  vertical-align: middle;
+  transition: all ease 0.3s;
+  border: none;
   img {
     width: 16px;
+    height: auto;
+    object-fit: contain;
   }
   &:hover{
     background-color:#42d06c;
@@ -349,10 +356,18 @@ a:hover {
 }
 .approve-reject-btn{
   background-color:#FEDCE2!important;
-
+  color: #8a91ac;
+  img {
+    width: 13px;
+    height: auto;
+    object-fit: contain;
+  }
   &:hover{
     background-color:#efa9b5!important;
-   
+    color: #fff;
+    img{
+      filter:brightness(100)
+    }
   }
 }
 .edit_pencil_icon {
