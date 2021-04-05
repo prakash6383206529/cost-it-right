@@ -398,8 +398,8 @@ const CostingSummaryTable = (props) => {
           obj.costingId = viewCostingData[index].costingId
           // obj.oldPrice = viewCostingData[index].oldPrice;
           obj.oldPrice = viewCostingData[index].oldPoPrice
-          obj.revisedPrice = viewCostingData[index].nPOPrice
-          obj.variance = Number(viewCostingData[index].nPOPrice && viewCostingData[index].nPOPrice !== '-' ? viewCostingData[index].nPOPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
+          obj.revisedPrice = viewCostingData[index].poPrice
+          obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
           obj.consumptionQty = ''
           obj.remainingQty = ''
           obj.annualImpact = ''
@@ -921,7 +921,7 @@ const CostingSummaryTable = (props) => {
                       <th>Net PO Price</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPriceWithCurrency}</td>
+                          return <td>{data.nPOPriceWithCurrency !== 0 ? data.nPOPriceWithCurrency : data.nPOPrice}({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
                         })}
                     </tr>
                     <tr>

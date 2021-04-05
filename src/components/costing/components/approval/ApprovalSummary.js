@@ -335,7 +335,7 @@ function ApprovalSummary(props) {
 
                           <button
                             type={'button'}
-                            className="reset mr15 cancel-btn"
+                            className="mr15 approve-reject-btn"
                             onClick={() => setRejectDrawer(true)}
                           >
                             <div className={'cross-icon'}>
@@ -351,7 +351,7 @@ function ApprovalSummary(props) {
 
                       <button
                         type="button"
-                        className="submit-button mr5 save-btn"
+                        className="approve-button mr5 approve-hover-btn"
                         onClick={() => setApproveDrawer(true)}
                       >
                         <div className={'check-icon'}>
