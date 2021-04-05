@@ -200,7 +200,7 @@ a:hover {
 }
 
 //tried half working
-// .save-btn {
+// .approve-hover-btn {
   
 //   &:hover,
 //   &:not(.disabled):active:focus {
@@ -257,6 +257,17 @@ a:hover {
   border: none;
   cursor: pointer;
 }
+
+// .approve-button {
+//   width: 120px;
+//   height: 32px;
+//   background: $colorPrimary 0% 0% no-repeat padding-box;
+//   box-shadow: 0px 5px 10px #0000000f;
+//   border-radius: 4px;
+//   opacity: 1;
+//   border: none;
+//   cursor: pointer;
+// }
 
 .add-button {
   width: 80px;
@@ -316,6 +327,32 @@ a:hover {
   padding: 0;
   img {
     width: 16px;
+  }
+}
+.approve-button,.approve-reject-btn {
+  background-color: #4dc771;
+  // border-color: #4dc771;
+  color: #fff;
+  background-size: 10px 10px !important;
+  padding: 0;
+  font-size: 14px;
+  border-radius: 4px;
+  height: 32px;
+  width:96px;
+  img {
+    width: 16px;
+  }
+  &:hover{
+    background-color:#42d06c;
+    // border-color: #42d06c;
+  }
+}
+.approve-reject-btn{
+  background-color:#FEDCE2!important;
+
+  &:hover{
+    background-color:#efa9b5!important;
+   
   }
 }
 .edit_pencil_icon {
@@ -2281,4 +2318,27 @@ body {
 
 .L4 {
   margin-left: 40px;
+}
+.nav-item.dropdown{
+  position: relative;
+  .dropdown-menu.sub-menu{display:none;margin-top: -.125rem;position: absolute;width: 100%!important;top:86%;
+    left: 0;
+    z-index: 1000;min-width: 8.4375rem;
+    padding: 1rem 0;
+    margin: .5rem 0 0;
+    font-size: 1rem;
+    color: #677788;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 0 solid rgba(0,0,0,.15);
+  }
+  &:hover{
+    .dropdown-menu.sub-menu{
+      display:block;
+      background-color:#ff6600;
+      z-index:99999;
+    }  
+  }
 }
