@@ -86,7 +86,7 @@ function RawMaterialCost(props) {
         GrossWeight: '',
         NetLandedCost: '',
         RawMaterialId: rowData.RawMaterialId,
-        Category: rowData.Category
+        RawMaterialCategory: rowData.Category
       }
 
       setGridData([...gridData, tempObj])
