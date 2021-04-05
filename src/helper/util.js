@@ -709,13 +709,15 @@ export const applySuperScripts = (cell) => {
   console.log(cell, "CELL");
   if (cell && cell !== '') {
     const capIndex = cell && cell.indexOf('^');
-
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
-
     const capWithNumber = cell.substring(capIndex, capIndex + 2);
-
     return cell.replace(capWithNumber, superNumber.sup());
   } else {
     return '';
   }
+}
+
+
+export function convertmmTocm(value) {
+  return value / 10
 }

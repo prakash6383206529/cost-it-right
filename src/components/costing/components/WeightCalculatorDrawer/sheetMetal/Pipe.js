@@ -8,7 +8,7 @@ import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity,
+  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm,
 } from '../../../../../helper'
 import { getUOMListByUnitType, getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -138,7 +138,7 @@ function Pipe(props) {
    * @description CALCULATE INNER DIAMETER
    */
   const calculateInnerDiameter = () => {
-    const ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(fieldValues.Thickness);
+    const ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(convertmmTocm(fieldValues.Thickness));
     setValue('InnerDiameter', checkForDecimalAndNull(ID, localStorage.NoOfDecimalForInputOutput))
     const updatedValue = dataToSend
     updatedValue.InnerDiameter = ID
@@ -519,7 +519,7 @@ function Pipe(props) {
               <Row>
                 <Col md="12" className={'mt25'}>
                   <HeaderTitle className="border-bottom"
-                    title={'Raw Material'}
+                    title={'Sheet Specification'}
                     customClass={'underLine-title'}
                   />
                 </Col>
@@ -569,7 +569,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Thickness(cm)`}
+                    label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
                     control={control}

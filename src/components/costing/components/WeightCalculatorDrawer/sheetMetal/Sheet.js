@@ -7,7 +7,7 @@ import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
@@ -59,12 +59,12 @@ function Sheet(props) {
     const [GrossWeight, setGrossWeights] = useState('')
     const [FinishWeight, setFinishWeights] = useState('')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
-
+    // const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
 
     const fieldValues = useWatch({
         control,
-        name: ['Width', 'Thickness', 'Length', 'Cavity'],
+        name: ['Width', 'Thickness', 'Length', 'Cavity', 'SheetThickness', 'SheetWidth', 'SheetLength'],
     })
 
     const dispatch = useDispatch()
@@ -95,7 +95,10 @@ function Sheet(props) {
 
     useEffect(() => {
         // calculateNetSurfaceArea()
+        setWeightOfSheet()
+        setWeightOfPart()
         setGrossWeight()
+        calculateNumberOfPartPerSheet()
     }, [fieldValues])
 
 
@@ -146,6 +149,48 @@ function Sheet(props) {
     //     setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceAreaBothSide, localStorage.NoOfDecimalForInputOutput))
     // }
 
+    const setWeightOfSheet = () => {
+        let data = {
+            density: rmRowData.Density,
+            thickness: convertmmTocm(getValues('SheetThickness')),
+            length: getValues('SheetLength'),
+            width: getValues('SheetWidth')
+        }
+        console.log(data.density, data.length, data.width, data.thickness, "VALUE");
+        const getWeightSheet = calculateWeight(data.density, data.length, data.width, data.thickness)
+        console.log(getWeightSheet, "SHEET WEIGHT")
+        //        setDataToSend({ ...dataToSend, WeightOfSheet: getWeightSheet })
+        const updatedValue = dataToSend
+        updatedValue.SheetWeight = getWeightSheet
+        setDataToSend(updatedValue)
+        setValue('SheetWeight', checkForDecimalAndNull(getWeightSheet, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    const setWeightOfPart = () => {
+        let data = {
+            density: rmRowData.Density,
+            thickness: convertmmTocm(getValues('Thickness')),
+            width: getValues('Width'),
+            length: getValues('Length')
+        }
+        const getWeightOfPart = calculateWeight(data.density, data.length, data.width, data.thickness)
+        //  setDataToSend({ ...dataToSend, WeightOfPart: getWeightOfPart })
+        setValue('PartWeight', checkForDecimalAndNull(getWeightOfPart, localStorage.NoOfDecimalForInputOutput))
+    }
+
+    const calculateNumberOfPartPerSheet = () => {
+        if (getValues('SheetLength') === '') {
+            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: 1 })
+            setValue('NumberOfPartsPerSheet', 1)
+            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: 1 })
+        } else {
+            const NumberParts = checkForNull(getValues('SheetLength') / getValues('Length'))
+            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: NumberParts })
+            setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
+            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: parseInt(NumberParts) })
+        }
+    }
+
     /**
      * @method setGrossWeight
      * @description SET GROSS WEIGHT
@@ -153,16 +198,16 @@ function Sheet(props) {
     const setGrossWeight = () => {
 
         let grossWeight
-        const density = rmRowData.Density
+        // const density = rmRowData.Density
 
-        const Width = checkForNull(getValues('Width'))
-
-        const thickness = checkForNull(getValues('Thickness'))
-
-        const Length = checkForNull(getValues('Length'))
+        // const Width = checkForNull(getValues('Width'))
+        // const thickness = convertmmTocm(getValues('Thickness'))
+        // const Length = checkForNull(getValues('Length'))
         const cavity = getValues('Cavity')
 
-        grossWeight = calculateWeight(density, Width, thickness, Length) / cavity
+        // grossWeight = dataToSend.WeightOfPart / cavity
+        grossWeight = getValues('PartWeight') / cavity
+
 
         // if (rmRowData.RawMaterialCategory === STD) {
         //     WeightofPart = dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet)
@@ -352,12 +397,148 @@ function Sheet(props) {
                             <Row>
                                 <Col md="12" className={'mt25'}>
                                     <HeaderTitle className="border-bottom"
-                                        title={'Blank'}
+                                        title={'Sheet Specificaton'}
                                         customClass={'underLine-title'}
                                     />
                                 </Col>
                             </Row>
                             <Row className={'mt15'}>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Thickness(mm)`}
+                                        name={'SheetThickness'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                //value: /^[0-9]*$/i,
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.',
+                                            },
+                                            // maxLength: 4,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.Thickness}
+                                        disabled={isEditFlag ? false : true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Width(cm)`}
+                                        name={'SheetWidth'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                //value: /^[0-9]*$/i,
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.',
+                                            },
+                                            // maxLength: 4,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.Width}
+                                        disabled={isEditFlag ? false : true}
+                                    />
+                                </Col>
+
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Length(cm)`}
+                                        name={'SheetLength'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                //value: /^[0-9]*$/i,
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.',
+                                            },
+                                            // maxLength: 4,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.Length}
+                                        disabled={isEditFlag ? false : true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Weight of Sheet(g)`}
+                                        name={'SheetWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        // rules={{
+                                        //     required: true,
+                                        //     pattern: {
+                                        //         //value: /^[0-9]*$/i,
+                                        //         value: /^[0-9]\d*(\.\d+)?$/i,
+                                        //         message: 'Invalid Number.',
+                                        //     },
+                                        //     // maxLength: 4,
+                                        // }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.SheetWeight}
+                                        disabled={true}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md="12" className={'mt25'}>
+                                    <HeaderTitle className="border-bottom"
+                                        title={'Blank Specification'}
+                                        customClass={'underLine-title'}
+                                    />
+                                </Col>
+                            </Row>
+                            <Row className={'mt15'}>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Thickness(mm)`}
+                                        name={'Thickness'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={true}
+                                        rules={{
+                                            required: true,
+                                            pattern: {
+                                                //value: /^[0-9]*$/i,
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.',
+                                            },
+                                            // maxLength: 4,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.Thickness}
+                                        disabled={isEditFlag ? false : true}
+                                    />
+                                </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Width(cm)`}
@@ -383,31 +564,7 @@ function Sheet(props) {
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Thickness(cm)`}
-                                        name={'Thickness'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
-                                            // maxLength: 4,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.Thickness}
-                                        disabled={isEditFlag ? false : true}
-                                    />
-                                </Col>
+
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Length(cm)`}
@@ -435,7 +592,32 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Cavity(cm)`}
+                                        label={`Weight of Part`}
+                                        name={'PartWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        // rules={{
+                                        //     required: true,
+                                        //     pattern: {
+                                        //         //value: /^[0-9]*$/i,
+                                        //         value: /^[0-9]\d*(\.\d+)?$/i,
+                                        //         message: 'Invalid Number.',
+                                        //     },
+                                        //     // maxLength: 4,
+                                        // }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.PartWeight}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
                                         control={control}
@@ -458,40 +640,33 @@ function Sheet(props) {
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
-                            </Row>
-                            <Row className={'mt15'}>
-                                <Col md="12">
-                                    <HeaderTitle className="border-bottom"
-                                        title={'Surface Area'}
-                                        customClass={'underLine-title'}
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`No. of Parts/Sheet`}
+                                        name={'NoOfPart'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        // rules={{
+                                        //     required: true,
+                                        //     pattern: {
+                                        //         //value: /^[0-9]*$/i,
+                                        //         value: /^[0-9]\d*(\.\d+)?$/i,
+                                        //         message: 'Invalid Number.',
+                                        //     },
+                                        //     // maxLength: 4,
+                                        // }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NoOfPart}
+                                        disabled={true}
                                     />
                                 </Col>
                             </Row>
 
-                            <Row className={'mt-15'}>
-                                <Col md="4" className="switch">
-                                    <label className="switch-level">
-                                        <div className={'left-title'}>{'One Side'}</div>
-                                        <Switch
-                                            onChange={onSideToggle}
-                                            checked={isOneSide}
-                                            id="normal-switch"
-                                            disabled={false}
-                                            background="#4DC771"
-                                            onColor="#4DC771"
-                                            onHandleColor="#ffffff"
-                                            offColor="#4DC771"
-                                            uncheckedIcon={false}
-                                            checkedIcon={false}
-                                            height={20}
-                                            width={46}
-                                        />
-                                        <div className={'right-title'}>{'Both Side'}</div>
-                                    </label>
-                                </Col>
-                                <Col md="4"></Col>
-
-                            </Row>
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">

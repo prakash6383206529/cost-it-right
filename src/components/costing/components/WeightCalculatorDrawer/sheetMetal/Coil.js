@@ -7,7 +7,7 @@ import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
@@ -28,7 +28,7 @@ function Coil(props) {
         StripWidth: WeightCalculatorRequest && WeightCalculatorRequest.StripWidth !== null ? WeightCalculatorRequest.StripWidth : '',
         Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
         Pitch: WeightCalculatorRequest && WeightCalculatorRequest.Pitch !== null ? WeightCalculatorRequest.Pitch : '',
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1,
+        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? WeightCalculatorRequest.Cavity : 1,
         NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? WeightCalculatorRequest.NetSurfaceArea : '',
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
         FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
@@ -155,16 +155,14 @@ function Coil(props) {
     const setGrossWeight = () => {
 
         let grossWeight
-        const density = rmRowData.Density
-
-        const stripWidth = checkForNull(getValues('StripWidth'))
-
-        const thickness = checkForNull(getValues('Thickness'))
-
-        const pitch = checkForNull(getValues('Pitch'))
-        const cavity = getValues('Cavity')
-
-        grossWeight = calculateWeight(density, stripWidth, thickness, pitch) / cavity
+        let data = {
+            density: rmRowData.Density,
+            stripWidth: checkForNull(getValues('StripWidth')),
+            thickness: convertmmTocm(getValues('Thickness')),
+            pitch: checkForNull(getValues('Pitch')),
+            cavity: getValues('Cavity')
+        }
+        grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
 
         // if (rmRowData.RawMaterialCategory === STD) {
         //     WeightofPart = dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet)
@@ -362,7 +360,7 @@ function Coil(props) {
                             <Row>
                                 <Col md="12" className={'mt25'}>
                                     <HeaderTitle className="border-bottom"
-                                        title={'Raw Material'}
+                                        title={'Sheet Specification'}
                                         customClass={'underLine-title'}
                                     />
                                 </Col>
@@ -395,7 +393,7 @@ function Coil(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Thickness(cm)`}
+                                        label={`Thickness(mm)`}
                                         name={'Thickness'}
                                         Controller={Controller}
                                         control={control}
@@ -445,7 +443,7 @@ function Coil(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Cavity(cm)`}
+                                        label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
                                         control={control}
@@ -468,39 +466,6 @@ function Coil(props) {
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
-                            </Row>
-                            <Row className={'mt15'}>
-                                <Col md="12">
-                                    <HeaderTitle className="border-bottom"
-                                        title={'Surface Area'}
-                                        customClass={'underLine-title'}
-                                    />
-                                </Col>
-                            </Row>
-
-                            <Row className={'mt-15'}>
-                                <Col md="4" className="switch">
-                                    <label className="switch-level">
-                                        <div className={'left-title'}>{'One Side'}</div>
-                                        <Switch
-                                            onChange={onSideToggle}
-                                            checked={isOneSide}
-                                            id="normal-switch"
-                                            disabled={false}
-                                            background="#4DC771"
-                                            onColor="#4DC771"
-                                            onHandleColor="#ffffff"
-                                            offColor="#4DC771"
-                                            uncheckedIcon={false}
-                                            checkedIcon={false}
-                                            height={20}
-                                            width={46}
-                                        />
-                                        <div className={'right-title'}>{'Both Side'}</div>
-                                    </label>
-                                </Col>
-                                <Col md="4"></Col>
-
                             </Row>
                             <hr className="mx-n4 w-auto" />
                             <Row>

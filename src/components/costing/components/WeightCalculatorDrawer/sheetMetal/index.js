@@ -18,13 +18,16 @@ function WeightCalculator(props) {
 
   const dispatch = useDispatch()
   const { rmRowData } = props
+  console.log(rmRowData, "in index of sheet metal");
 
   const getTabno = (layout) => {
     switch (layout) {
       case 'Pipe':
         return '1'
-      case 'Braket':
+      case 'Coil':
         return '2'
+      case 'Sheet':
+        return '3'
       default:
         break;
     }
@@ -73,6 +76,7 @@ function WeightCalculator(props) {
                 onClick={() => {
                   toggle('1')
                 }}
+              // disabled={rmRowData.WeightCalculatorRequest.LayoutType && rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
               >
                 Pipe
               </NavLink>
@@ -83,6 +87,7 @@ function WeightCalculator(props) {
                 onClick={() => {
                   toggle('2')
                 }}
+              // disabled={rmRowData.WeightCalculatorRequest.LayoutType && rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
               >
                 Coil
               </NavLink>
@@ -93,6 +98,7 @@ function WeightCalculator(props) {
                 onClick={() => {
                   toggle('3')
                 }}
+              // disabled={rmRowData.WeightCalculatorRequest.LayoutType && rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
               >
                 Sheet
               </NavLink>
