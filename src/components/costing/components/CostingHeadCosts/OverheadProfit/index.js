@@ -7,7 +7,7 @@ import { calculatePercentage, checkForDecimalAndNull, } from '../../../../../hel
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, } from '../../../actions/Costing';
 import Switch from "react-switch";
-import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
+import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
 
@@ -51,8 +51,10 @@ function OverheadProfit(props) {
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const SurfaceTreatmentCost = useContext(SurfaceCostContext);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const IsIncludedSurfaceInOverheadProfit = useSelector(state => state.costing.IsIncludedSurfaceInOverheadProfit)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -73,8 +75,11 @@ function OverheadProfit(props) {
   const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
   const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
 
+  const [IsSurfaceTreatmentAdded, setIsSurfaceTreatmentAdded] = useState(false)
+
   // setValue('ICCApplicability', ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
   // setValue('PaymentTermsApplicability', PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
+
 
   //INITIAL CALLED EFFECT TO SET VALUES
   useEffect(() => {
@@ -444,7 +449,12 @@ function OverheadProfit(props) {
       const { OverheadCCPercentage } = overheadObj;
       setValue('OverheadCCPercentage', OverheadCCPercentage)
       setValue('OverheadCCCost', headerCosts.NetConversionCost)
-      setValue('OverheadCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(OverheadCCPercentage), 2))
+
+      /**
+       *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY) FROM SURFACE TAB, IS NOT IS USE THEN UNCOMMENT BELOW LINE
+       *  AND COMMENT THIS FUNCTION includeSurfaceTreatment()
+       */
+      // setValue('OverheadCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(OverheadCCPercentage), 2))
     }
   }
 
@@ -1104,6 +1114,39 @@ function OverheadProfit(props) {
   }
 
   /**
+  * @method includeSurfaceTreatment
+  * @description INCLUDE SURFACE TREATMENT IN TO OVERHEAD AND PROFIT
+  */
+  const includeSurfaceTreatment = () => {
+
+    if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
+      setValue('OverheadCCTotalCost', getValues('OverheadCCTotalCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+      setIsSurfaceTreatmentAdded(true)
+      setOverheadObj({
+        ...overheadObj,
+        OverheadCCTotalCost: getValues('OverheadCCTotalCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost
+      })
+    } else if (!IsIncludedSurfaceInOverheadProfit) {
+      const { OverheadCCPercentage } = overheadObj;
+      setValue('OverheadCCTotalCost', checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(OverheadCCPercentage), 2))
+      setIsSurfaceTreatmentAdded(false)
+      setOverheadObj({
+        ...overheadObj,
+        OverheadCCTotalCost: checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(OverheadCCPercentage), 2)
+      })
+    }
+
+    if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && profitObj && profitObj.IsProfitCCApplicable) {
+      setValue('ProfitCCTotalCost', getValues('ProfitCCTotalCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+      setIsSurfaceTreatmentAdded(true)
+    } else if (!IsIncludedSurfaceInOverheadProfit) {
+      setValue('ProfitCCTotalCost', getValues('ProfitCCTotalCost'))
+      setIsSurfaceTreatmentAdded(false)
+    }
+
+  }
+
+  /**
   * @method onSubmit
   * @description Used to Submit the form
   */
@@ -1148,7 +1191,14 @@ function OverheadProfit(props) {
                 />
               </Col>
 
-              <Col md="6">
+              <Col md="3">
+                <label>
+                  {''}
+                </label>
+                <button type="button" className={'refresh-icon my-1'} onClick={() => includeSurfaceTreatment()} />
+              </Col>
+
+              <Col md="3">
                 {''}
               </Col>
 

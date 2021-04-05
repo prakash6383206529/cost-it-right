@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import { saveComponentCostingSurfaceTab } from '../../../actions/Costing';
+import { saveComponentCostingSurfaceTab, setSurfaceCostInOverheadProfit } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -96,6 +96,7 @@ function SurfaceTreatment(props) {
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+          setSurfaceCostInOverheadProfit(props.isIncludeSurfaceTreatment, () => { })
         }
         props.closeDrawer('')
       }))

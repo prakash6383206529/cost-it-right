@@ -37,6 +37,8 @@ function CostingDetails(props) {
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
   const [isSOBEnabled, setEnableSOBField] = useState(true);
+  const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
+  const [isVBCSOBEnabled, setVBCEnableSOBField] = useState(true);
 
   const [IsPlantDrawerOpen, setIsPlantDrawerOpen] = useState(false);
   const [zbcPlantGrid, setZBCPlantGrid] = useState([]);
@@ -672,10 +674,7 @@ function CostingDetails(props) {
       },
       onCancel: () => { },
     }
-    return toastr.confirm(
-      `${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`,
-      toastrConfirmOptions,
-    )
+    return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -1146,7 +1145,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Plant Code`}</th>
                                   <th style={{}}>{`Plant Name`}</th>
-                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
+                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
                                 </tr>
@@ -1199,7 +1198,7 @@ function CostingDetails(props) {
                                               handleZBCSOBChange(e, index);
                                             }}
                                             errors={errors && errors.zbcPlantGridFields && errors.zbcPlantGridFields[index] !== undefined ? errors.zbcPlantGridFields[index].ShareOfBusinessPercent : ""}
-                                            disabled={isSOBEnabled ? true : false}
+                                            disabled={isZBCSOBEnabled ? true : false}
                                           />
                                         </td>
                                         <td className="cr-select-height w-100px">
@@ -1282,7 +1281,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor Code`}</th>
                                   <th style={{}}>{`Vendor Name`}</th>
-                                  <th style={{}}>{`SOB`}</th>
+                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{}}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
@@ -1335,7 +1334,7 @@ function CostingDetails(props) {
                                             handleVBCSOBChange(e, index);
                                           }}
                                           errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ""}
-                                          disabled={isSOBEnabled ? true : false}
+                                          disabled={isVBCSOBEnabled ? true : false}
                                         />
                                       </td>
                                       <td className="cr-select-height w-100px">

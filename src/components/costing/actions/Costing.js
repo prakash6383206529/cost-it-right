@@ -50,6 +50,7 @@ import {
   GET_PART_COSTING_PLANT_SELECTLIST,
   GET_PART_COSTING_VENDOR_SELECT_LIST,
   GET_PART_SELECTLIST_BY_TECHNOLOGY,
+  SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -890,6 +891,20 @@ export function setSurfaceData(TabData, callback) {
 };
 
 /**
+ * @method setSurfaceCostInOverheadProfit
+ * @description SET SURFACE TREATMENT COST FOR OVERHEAD AND PROFIT
+ */
+export function setSurfaceCostInOverheadProfit(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
+/**
  * @method saveComponentCostingSurfaceTab
  * @description SAVE COMPONENT COSTING SURFACE TAB
  */
@@ -911,19 +926,13 @@ export function saveComponentCostingSurfaceTab(data, callback) {
  */
 export function saveCostingSurfaceTreatmentTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(
-      API.saveCostingSurfaceTreatmentTab,
-      data,
-      headers,
-    )
-    request
-      .then((response) => {
-        callback(response)
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    const request = axios.post(API.saveCostingSurfaceTreatmentTab, data, headers,)
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -934,21 +943,16 @@ export function saveCostingSurfaceTreatmentTab(data, callback) {
 export function getSurfaceTreatmentDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 

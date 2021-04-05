@@ -341,6 +341,8 @@ function TabDiscountOther(props) {
         "Sequence": 0,
         "TotalCost": values.NetPOPriceINR,
         "NetDiscountsAndOtherCost": values.HundiOrDiscountValue,
+        "NetDiscountsCost": values.TotalDiscount,
+        "NetOtherCost": values.AnyOtherCost,
         "OtherCostDetails": {
           "OtherCostDetailId": '',
           "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
