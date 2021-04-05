@@ -112,6 +112,14 @@ class AddRMImport extends Component {
     this.props.getPlantSelectListByType(ZBC, () => { })
   }
 
+  componentDidUpdate(prevProps) {
+
+    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+
+      this.handleNetCost()
+    }
+  }
+
   /**
   * @method handleRMChange
   * @description  used to handle row material selection
@@ -261,45 +269,17 @@ class AddRMImport extends Component {
       this.setState({ currency: newValue, })
       const { fieldsObj } = this.props
       if (newValue.label === INR) {
-        this.setState({ currencyValue: 1, showCurrency: false, netCost: checkForNull(fieldsObj.BasicRate) }, () => {
-          this.props.change('NetLandedCost', checkForDecimalAndNull(fieldsObj.BasicRate * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
-        })
-        // this.setState({ showCurrency: false })
+        this.setState({ currencyValue: 1, showCurrency: false, })
       } else {
-        this.props.change('NetLandedCost', checkForDecimalAndNull(fieldsObj.BasicRate, this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(fieldsObj.BasicRate * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.setState({ showCurrency: true, netCost: checkForNull(fieldsObj.BasicRate), netCurrencyCost: checkForNull(fieldsObj.BasicRate * this.state.currencyValue) })
-        // this.setState({ showCurrency: true })
+        this.setState({ showCurrency: true })
       }
+      this.handleNetCost()
     } else {
       this.setState({ currency: [] })
     }
   };
 
-  /**
-  * @method handleBasicRate
-  * @description Set value in NetLandedCost
-  */
-  handleBasicRate = (e) => {
-    const { currencyValue } = this.state
-    const { fieldsObj } = this.props
-    console.log(fieldsObj.FreightCharge, "FCCCCC", fieldsObj);
-    // if (this.state.currency.label === INR) {
-    this.setState({ netCost: checkForNull(Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0)), netCurrencyCost: checkForNull((Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : '')) * currencyValue) })
-    this.props.change('NetLandedCost', (checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0)), this.props.initialConfiguration.NoOfDecimalForPrice)))
-    // } else {
-    this.props.change('NetLandedCostCurrency', (checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0)) * currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice)))
-    // }
-  }
 
-  handleFreightCharge = (e) => {
-    const { currencyValue } = this.state
-    const { netCost } = this.props
-    const { fieldsObj } = this.props
-    this.setState({ netCost: checkForNull(Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)), netCurrencyCost: checkForNull((Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)) * currencyValue) })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)), this.props.initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0)) * currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
-  }
 
   /**
   * @method handleChange
@@ -307,25 +287,30 @@ class AddRMImport extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.props.change('EffectiveDate', this.props.initialConfiguration.NoOfDecimalForPrice)
-    setTimeout(() => {
-      this.setState({
-        effectiveDate: date,
-      });
-    }, 500);
+    this.setState({ effectiveDate: date }, () => { this.handleNetCost() })
+
+  };
+
+  handleNetCost = () => {
+
     const { fieldsObj } = this.props
-    const { currency } = this.state
+    const { currency, effectiveDate } = this.state
+    const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
+    console.log('netCost: ', netCost);
+
     if (currency === INR) {
-      this.setState({ currencyValue: 1, netCost: checkForNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * this.state.currencyValue) }, () => {
-        this.props.change('NetLandedCost', checkForDecimalAndNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
+      this.setState({ currencyValue: 1, netCost: checkForNull(netCost * this.state.currencyValue) }, () => {
+        this.props.change('NetLandedCost', checkForDecimalAndNull(netCost * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
       })
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
-        this.props.change('NetLandedCost', checkForDecimalAndNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)), this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.props.change('NetLandedCostCurrency', checkForDecimalAndNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
-        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)), netCurrencyCost: checkForNull((Number(fieldsObj.BasicRate) + Number(fieldsObj.FreightCharge)) * res.data.Data.CurrencyExchangeRate) })
+      this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('DD-MM-YYYY'), res => {
+        this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
+        this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
+        console.log("COST CURRENCY", netCost * res.data.Data.CurrencyExchangeRate);
+        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
       })
     }
-  };
+  }
 
   /**
   * @method handleMessageChange
@@ -1276,7 +1261,6 @@ class AddRMImport extends Component {
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber]}
                               component={renderText}
-                              onChange={this.handleBasicRate}
                               required={true}
                               disabled={false}
                               maxLength="15"
@@ -1300,12 +1284,25 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Freight Charge (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              label={`RM Freight Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                               name={"FreightCharge"}
                               type="text"
                               placeholder={"Enter"}
                               validate={[positiveAndDecimalNumber]}
-                              onChange={this.handleFreightCharge}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              maxLength="15"
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Shearing Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              name={"ShearingCost"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[positiveAndDecimalNumber]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1572,7 +1569,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'NetLandedCost', 'FreightCharge');
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
