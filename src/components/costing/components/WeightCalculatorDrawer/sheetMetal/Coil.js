@@ -343,7 +343,7 @@ function Coil(props) {
     }
 
     const UnitFormat = () => {
-        return <>Net Surface Area (g/cm<sup>2</sup>)</>
+        return <>Net Surface Area (cm<sup>2</sup>)</>
         // return (<sup>2</sup>)
     }
 
@@ -476,13 +476,13 @@ function Coil(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
-                                            required: false,
-                                            // pattern: {
-                                            //   value: /^[0-9]*$/i,
-                                            //   message: 'Invalid Number.'
-                                            // },
+                                            required: true,
+                                            pattern: {
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.'
+                                            },
                                             // maxLength: 3,
                                         }}
                                         handleChange={() => { }}
@@ -490,7 +490,7 @@ function Coil(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NetSurfaceArea}
-                                        disabled={true}
+                                        disabled={isEditFlag ? false : true}
                                     />
                                 </Col>
                                 <Col md="3">

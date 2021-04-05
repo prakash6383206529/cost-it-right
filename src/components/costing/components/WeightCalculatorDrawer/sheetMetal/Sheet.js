@@ -64,7 +64,7 @@ function Sheet(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['Width', 'Thickness', 'Length', 'Cavity', 'SheetThickness', 'SheetWidth', 'SheetLength'],
+        name: ['Width', 'Length', 'Cavity', 'SheetThickness', 'SheetWidth', 'SheetLength'],
     })
 
     const dispatch = useDispatch()
@@ -98,56 +98,13 @@ function Sheet(props) {
         setWeightOfSheet()
         setWeightOfPart()
         setGrossWeight()
+        setThicknessOfBlank()
         calculateNumberOfPartPerSheet()
     }, [fieldValues])
 
-
-
-    useEffect(() => {
-        // if (isOneSide) {
-        //     setNetSurfaceAreaBothSide()
-        // } else {
-        //     calculateNetSurfaceArea()
-        // }
-    }, [isOneSide])
-
-
-    // /**
-    //  * @method calculateNetSurfaceArea
-    //  * @description CALCULATE NET SURFACE AREA
-    //  */
-    // const calculateNetSurfaceArea = () => {
-    //     const data = {
-    //         OuterDiameter: getValues('OuterDiameter'),
-    //         InnerDiameter: dataToSend.InnerDiameter,
-    //         PartLength: getValues('PartLength'),
-    //         ExtraVariable: '',
-    //     }
-    //     const NetSurfaceArea = getNetSurfaceArea(data)
-    //     const updatedValue = dataToSend
-    //     updatedValue.NetSurfaceArea = NetSurfaceArea
-    //     setDataToSend(updatedValue)
-    //     setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceArea, localStorage.NoOfDecimalForInputOutput))
-    // }
-
-    // /**
-    //  * @method setNetSurfaceAreaBothSide
-    //  * @description CALCULATE NET SURFACE AREA BOTH SIDE
-    //  */
-    // const setNetSurfaceAreaBothSide = () => {
-    //     const data = {
-    //         OuterDiameter: getValues('OuterDiameter'),
-    //         InnerDiameter: dataToSend.InnerDiameter,
-    //         PartLength: getValues('PartLength'),
-    //         ExtraVariable: '',
-    //     }
-
-    //     const NetSurfaceAreaBothSide = getNetSurfaceAreaBothSide(data)
-    //     const updatedValue = dataToSend
-    //     updatedValue.NetSurfaceArea = NetSurfaceAreaBothSide
-    //     setDataToSend(updatedValue)
-    //     setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceAreaBothSide, localStorage.NoOfDecimalForInputOutput))
-    // }
+    const setThicknessOfBlank = () => {
+        setValue('Thickness', getValues('SheetThickness'))
+    }
 
     const setWeightOfSheet = () => {
         let data = {
@@ -179,6 +136,7 @@ function Sheet(props) {
     }
 
     const calculateNumberOfPartPerSheet = () => {
+        /*Need to this calculation**/
         if (getValues('SheetLength') === '') {
             // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: 1 })
             setValue('NumberOfPartsPerSheet', 1)
@@ -380,7 +338,7 @@ function Sheet(props) {
     }
 
     const UnitFormat = () => {
-        return <>Net Surface Area (g/cm<sup>2</sup>)</>
+        return <>Net Surface Area (cm<sup>2</sup>)</>
         // return (<sup>2</sup>)
     }
 
@@ -521,14 +479,14 @@ function Sheet(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={true}
+                                        mandatory={false}
                                         rules={{
-                                            required: true,
-                                            pattern: {
-                                                //value: /^[0-9]*$/i,
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
+                                            required: false,
+                                            // pattern: {
+                                            //     //value: /^[0-9]*$/i,
+                                            //     value: /^[0-9]\d*(\.\d+)?$/i,
+                                            //     message: 'Invalid Number.',
+                                            // },
                                             // maxLength: 4,
                                         }}
                                         handleChange={() => { }}
@@ -536,7 +494,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.Thickness}
-                                        disabled={isEditFlag ? false : true}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -676,13 +634,13 @@ function Sheet(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
-                                            required: false,
-                                            // pattern: {
-                                            //   value: /^[0-9]*$/i,
-                                            //   message: 'Invalid Number.'
-                                            // },
+                                            required: true,
+                                            pattern: {
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.'
+                                            },
                                             // maxLength: 3,
                                         }}
                                         handleChange={() => { }}
@@ -690,7 +648,7 @@ function Sheet(props) {
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.NetSurfaceArea}
-                                        disabled={true}
+                                        disabled={false}
                                     />
                                 </Col>
                                 <Col md="3">

@@ -502,7 +502,7 @@ function Pipe(props) {
   }
 
   const UnitFormat = () => {
-    return <>Net Surface Area (g/cm<sup>2</sup>)</>
+    return <>Net Surface Area (cm<sup>2</sup>)</>
     // return (<sup>2</sup>)
   }
 
