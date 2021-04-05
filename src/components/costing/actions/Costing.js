@@ -1337,10 +1337,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(data, callback) {
+export function getExchangeRateByCurrency(Currency, effectiveDate, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}/${data.Currency}/${data.EffectiveDate}`, headers);
+    const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}/${effectiveDate}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

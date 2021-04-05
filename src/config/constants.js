@@ -540,10 +540,10 @@ export const API = {
   getCostingOverHeadProByModelType: `${BASE_URL}/costing-sheet-metal/get-costing-overhead-profit-by-model-type`,
   saveCosting: `${BASE_URL}/costing-sheet-metal/save-costing`,
   saveBOPCosting: `${BASE_URL}/costing-sheet-metal/save-costing-bought-out-part`,
-  getCostingBulkUploadList: `${BASE_URL}/`,
+  getCostingBulkUploadList: `${BASE_URL}/bulk-costing/get-all-bulk-costings-files-info-by-filter`,
   getErrorFile: `${BASE_URL}`,
-  uploadCosting: `${BASE_URL}/`,
-  sendStatusForApproval: `${BASE_URL}/`,
+  uploadCosting: `${BASE_URL}/bulk-costing/save-costing`,
+  sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
 
 
   //COST SUMMARY
@@ -624,7 +624,7 @@ export const API = {
   cancelCosting: `${BASE_URL}/app-approval-system/cancel-for-approval-click`,
   getReasonSelectList: `${BASE_URL}/configuration/select-list-get-reasons`,
   getApprovalList: `${BASE_URL}/app-approval-system/get-costing-approvals-by-filter`,
-  approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approve`,
+  approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approver`,
   rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
   getApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-costing-summary`,
 

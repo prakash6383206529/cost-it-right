@@ -154,26 +154,30 @@ class SideBar extends Component {
       menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <Link
-              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-              onClick={() => this.setLeftMenu(el.ModuleId)}
-              to={{
-                pathname: "/",
-                state: {
-                  ModuleId: el.ModuleId,
-                  PageName: "Dashboard",
-                  PageURL: "/",
-                },
-              }}
-              key={i}
-            >
-              <img
-                className=""
-                src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/home-active.svg")) : (require("../../assests/images/homeicon.svg"))}`}
-                alt={module + " icon"}
-              />
-              <span>{module}</span>
-            </Link>
+            <>
+              <li>
+                <Link
+                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  onClick={() => this.setLeftMenu(el.ModuleId)}
+                  to={{
+                    pathname: "/",
+                    state: {
+                      ModuleId: el.ModuleId,
+                      PageName: "Dashboard",
+                      PageURL: "/",
+                    },
+                  }}
+                  key={i}
+                >
+                  <img
+                    className=""
+                    src={`${reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/home-active.svg")) : (require("../../assests/images/homeicon.svg"))}`}
+                    alt={module + " icon"}
+                  />
+                  <span>{module}</span>
+                </Link>
+              </li>
+            </>
           );
         }
         return null
@@ -193,26 +197,28 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <Link
-                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-                onClick={() => this.setLeftMenu(el.ModuleId)}
-                to={{
-                  pathname: el.LandingPageURL,
-                  state: {
-                    ModuleId: el.ModuleId,
-                    PageName: "Masters",
-                    PageURL: el.LandingPageURL,
-                  },
-                }}
-                key={i}
-              >
-                <img
-                  className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/masters-active.svg") : require("../../assests/images/list.svg")}
-                  alt={module + " icon"}
-                />
-                <span>Masters</span>
-              </Link>
+              <li>
+                <Link
+                  className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  onClick={() => this.setLeftMenu(el.ModuleId)}
+                  to={{
+                    pathname: el.LandingPageURL,
+                    state: {
+                      ModuleId: el.ModuleId,
+                      PageName: "Masters",
+                      PageURL: el.LandingPageURL,
+                    },
+                  }}
+                  key={i}
+                >
+                  <img
+                    className=""
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/masters-active.svg") : require("../../assests/images/list.svg")}
+                    alt={module + " icon"}
+                  />
+                  <span>Masters</span>
+                </Link>
+              </li>
             </>
           );
         }
@@ -233,26 +239,28 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <Link
-                key={i}
-                className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-                onClick={() => this.setLeftMenu(el.ModuleId)}
-                to={{
-                  pathname: el.LandingPageURL,
-                  state: {
-                    ModuleId: el.ModuleId,
-                    PageName: "Additional Masters",
-                    PageURL: el.LandingPageURL,
-                  },
-                }}
-              >
-                <img
-                  className=""
-                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/aa-master-active.svg")) : (require("../../assests/images/list-add.png"))}
-                  alt={module + " icon"}
-                />
-                <span>Additional Masters</span>
-              </Link>
+              <li>
+                <Link
+                  key={i}
+                  className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                  onClick={() => this.setLeftMenu(el.ModuleId)}
+                  to={{
+                    pathname: el.LandingPageURL,
+                    state: {
+                      ModuleId: el.ModuleId,
+                      PageName: "Additional Masters",
+                      PageURL: el.LandingPageURL,
+                    },
+                  }}
+                >
+                  <img
+                    className=""
+                    src={reactLocalStorage.get("ModuleId") === el.ModuleId ? (require("../../assests/images/aa-master-active.svg")) : (require("../../assests/images/list-add.png"))}
+                    alt={module + " icon"}
+                  />
+                  <span>Additional Masters</span>
+                </Link>
+              </li>
             </>
           );
         }
@@ -271,26 +279,28 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <Link
-              key={i}
-              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-              onClick={() => this.setLeftMenu(el.ModuleId)}
-              to={{
-                pathname: "/report-analytics",
-                state: {
-                  ModuleId: el.ModuleId,
-                  PageName: "Reports & Analytics",
-                  PageURL: "/report-analytics",
-                },
-              }}
-            >
-              <img
-                className=""
-                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/report-active.svg") : require("../../assests/images/chart.svg")}
-                alt={module + " icon"}
-              />
-              <span>Report</span>
-            </Link>
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: "/report-analytics",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Reports & Analytics",
+                    PageURL: "/report-analytics",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/report-active.svg") : require("../../assests/images/chart.svg")}
+                  alt={module + " icon"}
+                />
+                <span>Report</span>
+              </Link>
+            </li>
           );
         }
         return null
@@ -308,27 +318,47 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <Link
-              key={i}
-              isActive={location && location.pathname === '/costing' ? true : false}
-              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-              onClick={() => this.setLeftMenu(el.ModuleId)}
-              to={{
-                pathname: "/costing",
-                state: {
-                  ModuleId: el.ModuleId,
-                  PageName: "Technology",
-                  PageURL: "/costing",
-                },
-              }}
-            >
-              <img
-                className=""
-                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
-                alt={module + " icon"}
-              />
-              <span>Costing</span>
-            </Link>
+            <li className="nav-item dropdown">
+              <Link
+                key={i}
+                isActive={location && location.pathname === '/costing' ? true : false}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: "/costing",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Technology",
+                    PageURL: "/costing",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
+                  alt={module + " icon"}
+                />
+                <span>Costing</span>
+              </Link>
+              <ul class="dropdown-menu sub-menu">
+                <li>
+                  <Link
+                    className="dropdown-item"
+                    to={{
+                      pathname: "/approval-listing",
+                      state: {
+                        ModuleId: 1,
+                        PageName: "Costing",
+                        PageURL: "/approval-listing",
+                      },
+                    }}
+                  >
+                    Approval
+                  </Link>
+                </li>
+                <li></li>
+              </ul>
+            </li>
           );
         }
         return null
@@ -346,26 +376,28 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <Link
-              key={i}
-              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-              onClick={() => this.setLeftMenu(el.ModuleId)}
-              to={{
-                pathname: "/simulation",
-                state: {
-                  ModuleId: el.ModuleId,
-                  PageName: "Simulation",
-                  PageURL: "/simulation",
-                },
-              }}
-            >
-              <img
-                className=""
-                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/simulation-active.svg") : require("../../assests/images/imac.svg")}
-                alt={module + " icon"}
-              />
-              <span>Simulation</span>
-            </Link>
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: "/simulation",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Simulation",
+                    PageURL: "/simulation",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/simulation-active.svg") : require("../../assests/images/imac.svg")}
+                  alt={module + " icon"}
+                />
+                <span>Simulation</span>
+              </Link>
+            </li>
           );
         }
         return null
@@ -384,26 +416,28 @@ class SideBar extends Component {
       menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <Link
-              key={i}
-              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-              onClick={() => this.setLeftMenu(el.ModuleId)}
-              to={{
-                pathname: el.LandingPageURL,
-                state: {
-                  ModuleId: el.ModuleId,
-                  PageName: "Users",
-                  PageURL: el.LandingPageURL,
-                },
-              }}
-            >
-              <img
-                className=""
-                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/user-active.svg") : require("../../assests/images/men.svg")}
-                alt={module + " icon"}
-              />
-              <span>{el.ModuleName}</span>
-            </Link>
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: el.LandingPageURL,
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Users",
+                    PageURL: el.LandingPageURL,
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/user-active.svg") : require("../../assests/images/men.svg")}
+                  alt={module + " icon"}
+                />
+                <span>{el.ModuleName}</span>
+              </Link>
+            </li>
           );
         }
         return null
@@ -422,26 +456,28 @@ class SideBar extends Component {
       menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <Link
-              key={i}
-              className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
-              onClick={() => this.setLeftMenu(el.ModuleId)}
-              to={{
-                pathname: "/audit",
-                state: {
-                  ModuleId: el.ModuleId,
-                  PageName: "Audit",
-                  PageURL: "/audit",
-                },
-              }}
-            >
-              <img
-                className=""
-                src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/audit-active.svg") : require("../../assests/images/Audit.svg")}
-                alt={module + " icon"}
-              />
-              <span>{el.ModuleName}</span>
-            </Link>
+            <li>
+              <Link
+                key={i}
+                className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
+                onClick={() => this.setLeftMenu(el.ModuleId)}
+                to={{
+                  pathname: "/audit",
+                  state: {
+                    ModuleId: el.ModuleId,
+                    PageName: "Audit",
+                    PageURL: "/audit",
+                  },
+                }}
+              >
+                <img
+                  className=""
+                  src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/audit-active.svg") : require("../../assests/images/Audit.svg")}
+                  alt={module + " icon"}
+                />
+                <span>{el.ModuleName}</span>
+              </Link>
+            </li>
           );
         }
         return null
@@ -658,11 +694,13 @@ class SideBar extends Component {
 
           {isLoggedIn && (
             <div className="nav-scroller bg-white shadow-sm header-secondry w100">
-              <nav className="nav nav-underline">
-                {moduleSelectList &&
-                  moduleSelectList.map((item, index) => {
-                    return this.renderMenus(item.Text);
-                  })}
+              <nav className="navbar navbar-expand-lg pl-0">
+                <ul className="navbar-nav mr-auto">
+                  {moduleSelectList &&
+                    moduleSelectList.map((item, index) => {
+                      return this.renderMenus(item.Text);
+                    })}
+                </ul>
               </nav>
             </div>
           )}

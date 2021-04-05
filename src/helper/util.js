@@ -569,6 +569,7 @@ export function formViewData(costingSummary) {
   obj.zbc = dataFromAPI.TypeOfCosting
   obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
   obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
+  obj.CostingNumber = dataFromAPI.CostingNumber ? dataFromAPI.CostingNumber : '-'
   obj.status = dataFromAPI.CostingStatus ? dataFromAPI.CostingStatus : '-'
   obj.rm = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRawMaterialsCost.length > 0 ? dataFromAPI.CostingPartDetails.CostingRawMaterialsCost[0].RMName : '-'
   obj.gWeight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetGrossWeight ? dataFromAPI.CostingPartDetails.NetGrossWeight : 0
@@ -681,8 +682,10 @@ export function formViewData(costingSummary) {
   return temp
 }
 
+/*VOLUME AND DENSITY BASED ON DIAMETER*/
 export function getVolume(innerDiameter, outerDiameter, height) {
-  const value = (Math.PI / 4) * (Math.pow(outerDiameter), 2 - Math.pow(innerDiameter), 2) * height
+  const value = (Math.PI / 4) * (Math.pow(outerDiameter, 2) - Math.pow(innerDiameter, 2)) * height
+  console.log(value, "value");
   return checkForNull(value)
 }
 
@@ -691,17 +694,26 @@ export function getWeightFromDensity(density, innerDiameter, outerDiameter, heig
   return value
 }
 
+/*VOLUME AND DENSITY BASED ON LENGTH WIDTH AND THICKNESS*/
+export function calculateVolume(length, width, thickness) {
+  const value = length * width * thickness
+  return value
+}
+
+export function calculateWeight(density, length, width, thickness) {
+  const value = density * calculateVolume(length, width, thickness)
+  return value
+}
 
 export const applySuperScripts = (cell) => {
   console.log(cell, "CELL");
   if (cell && cell !== '') {
     const capIndex = cell && cell.indexOf('^');
-    console.log(capIndex, "CEcapIndexLL");
+
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
-    console.log(superNumber, "superNumber");
+
     const capWithNumber = cell.substring(capIndex, capIndex + 2);
-    console.log(capWithNumber, "capWithNumber");
-    console.log(cell.replace(capWithNumber, superNumber.sup()), "kkkk");
+
     return cell.replace(capWithNumber, superNumber.sup());
   } else {
     return '';

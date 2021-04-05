@@ -164,6 +164,7 @@ class AddBOPImport extends Component {
             let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
+            this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
 
             this.setState({
               isEditFlag: true,
@@ -370,15 +371,13 @@ class AddBOPImport extends Component {
   handleCurrency = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       if (newValue.label === INR) {
-        this.setState({ currencyValue: 1, showCurrency: false }, () => {
+        this.setState({ showCurrency: false }, () => {
           this.handleCalculation()
         })
+
       } else {
-        this.props.getExchangeRateByCurrency(newValue.label, res => {
-          //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
-          this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
-            this.handleCalculation()
-          })
+        this.setState({ showCurrency: true }, () => {
+          this.handleCalculation()
         })
       }
       this.setState({ currency: newValue, })
@@ -405,6 +404,20 @@ class AddBOPImport extends Component {
     this.setState({
       effectiveDate: date,
     });
+    const { currency } = this.state
+    if (currency.label === INR) {
+      this.setState({ currencyValue: 1, showCurrency: false }, () => {
+        this.handleCalculation()
+      })
+
+    } else {
+      this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
+        //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
+        this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
+          this.handleCalculation()
+        })
+      })
+    }
   };
 
 
@@ -665,7 +678,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, alphaNumeric, maxLength(80)]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}

@@ -222,12 +222,15 @@ const SendForApproval = (props) => {
     let obj = {
       ApproverDepartmentId: selectedDepartment.value,
       ApproverDepartmentName: selectedDepartment.label,
-      ApproverLevelId: selectedApproverLevelId,
+      ApproverLevelId: selectedApproverLevelId.levelId,
+      ApproverLevel: selectedApproverLevelId.level,
       ApproverId: selectedApprover,
+      ApprovalProcessId: "00000000-0000-0000-0000-000000000000",
       // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
       // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
       SenderLevelId: userData.LoggedInLevelId,
-      SenderLevelName: userData.LoggedInLevel,
+      SenderLevel: userData.LoggedInLevel,
+
       SenderId: userData.LoggedInUserId,
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
@@ -259,7 +262,7 @@ const SendForApproval = (props) => {
     });
 
     viewApprovalData.map((data) => {
-      tempObj.TypeOfCosting = data.typeOfCosting
+      tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
       tempObj.PlantId =
         data.typeOfCosting == 0 ? data.plantId : ''
       tempObj.PlantNumber =
@@ -321,7 +324,7 @@ const SendForApproval = (props) => {
   const handleApproverChange = (data) => {
 
     setSelectedApprover(data.value)
-    setSelectedApproverLevelId(data.levelId)
+    setSelectedApproverLevelId({ level: data.LevelName, levelId: data.levelId })
   }
 
   useEffect(() => { }, [viewApprovalData])

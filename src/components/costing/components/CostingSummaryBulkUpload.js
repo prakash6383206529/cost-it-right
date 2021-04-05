@@ -10,6 +10,7 @@ import { getCostingBulkUploadList, sendForApprovalFromBulkUpload, getErrorFile }
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
 import { toastr } from 'react-redux-toastr';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -59,8 +60,8 @@ class CostingSummaryBulkUpload extends Component {
         if (row.CostingStatus === "Pending For Approval") {
             return (
                 <>
-                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.FileNameId, 1)} type={'button'}>Approve</button>
-                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.FileNameId, 0)} type={'button'}>Reject</button>
+                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.FileNameId, true)} type={'button'}>Approve</button>
+                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.FileNameId, false)} type={'button'}>Reject</button>
                     {row.NoOfIncorrectRow > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.FileNameId)} type={'button'}>Download Error File</button>}
                 </>
             )
@@ -117,8 +118,9 @@ class CostingSummaryBulkUpload extends Component {
     sendForApprovalOrReject = (id, flag) => {
 
         let obj = {}
-        obj.FileNameId = id
-        obj.IsApproval = flag
+        obj.CostingBulkUploadFileId = id
+        obj.IsAccept = flag
+        obj.LoggedInUserId = loggedInUserId()
         this.props.sendForApprovalFromBulkUpload(obj, res => {
             if (res.data.Result) {
                 toastr.success(res.data.Message)

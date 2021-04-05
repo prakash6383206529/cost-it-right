@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, reset } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
-import { required } from '../../../helper/validation'
+import { acceptAllExceptSingleSpecialCharacter, required } from '../../../helper/validation'
 import { renderText, renderMultiSelectField } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
@@ -215,7 +215,7 @@ class AddProcessDrawer extends Component {
                       name={'ProcessName'}
                       type="text"
                       placeholder={'Enter'}
-                      validate={[required]}
+                      validate={[required, , acceptAllExceptSingleSpecialCharacter]}
                       component={renderText}
                       onBlur={this.checkProcessCode}
                       required={true}

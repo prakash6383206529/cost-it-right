@@ -2,11 +2,18 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isValid, isInvalid } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512 } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
-import { getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity, getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI, fetchPlantDataAPI, getPlantSelectListByType } from '../../../actions/Common'
-import { createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, } from '../actions/Material'
+import {
+  getTechnologySelectList, getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
+  getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getPlantBySupplier, getUOMSelectList, fetchSupplierCityDataAPI,
+  fetchPlantDataAPI, getPlantSelectListByType
+} from '../../../actions/Common'
+import {
+  createRMDomestic, getRawMaterialDetailsAPI, updateRMDomesticAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
+  getVendorListByVendorType, fileUploadRMDomestic, fileUpdateRMDomestic, fileDeleteRMDomestic, getVendorWithVendorCodeSelectList
+} from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId, checkVendorPlantConfigurable, } from '../../../helper/auth'
@@ -24,6 +31,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { FILE_URL, ZBC } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
+// import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 const selector = formValueSelector('AddRMDomestic')
 
 class AddRMDomestic extends Component {
@@ -67,7 +75,9 @@ class AddRMDomestic extends Component {
 
       isVisible: false,
       imageURL: '',
-      a: ''
+
+      netLandedCost: '',
+      freightCost: ''
     }
   }
   /**
@@ -259,9 +269,17 @@ class AddRMDomestic extends Component {
    * @description Set value in NetLandedCost
    */
   handleBasicRate = (e) => {
-    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : e.target.value)
+    const { initialConfiguration, fieldsObj } = this.props
+    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : checkForNull(Number(e.target.value) + checkForNull(Number(fieldsObj.FreightCharges))) })
+    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull((Number(e.target.value) + checkForNull(Number(fieldsObj.FreightCharges))), initialConfiguration.NoOfDecimalForPrice))
   }
 
+  handleFreightCharges = (e) => {
+    const { initialConfiguration } = this.props
+    const { fieldsObj } = this.props
+    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : checkForDecimalAndNull(Number(e.target.value) + Number(fieldsObj.BasicRate)) })
+    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.BasicRate)), initialConfiguration.NoOfDecimalForPrice))
+  }
 
   /**
    * @method handleChange
@@ -296,11 +314,16 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-
+          if (Data.IsVendor) {
+            this.props.getVendorWithVendorCodeSelectList(() => { })
+          } else {
+            this.props.getVendorListByVendorType(Data.IsVendor, () => { })
+          }
           this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
           this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
+          // this.props.change('FreightCharges',Data.FreightCharges)
 
           setTimeout(() => {
             const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList } = this.props
@@ -311,6 +334,7 @@ class AddRMDomestic extends Component {
             const categoryObj = categoryList && categoryList.find((item) => item.Value === Data.Category)
 
             const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId)
+
             let plantArray = []
             Data && Data.Plant.map((item) => {
               plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -327,7 +351,7 @@ class AddRMDomestic extends Component {
 
             const sourceLocationObj = cityList && cityList.find((item) => item.Value === Data.SourceLocation)
             const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
-
+            this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -375,9 +399,14 @@ class AddRMDomestic extends Component {
       },
       () => {
         const { IsVendor } = this.state
-        this.props.getVendorListByVendorType(IsVendor, () => { })
-        this.props.getPlantBySupplier('', () => { })
-        this.props.getCityBySupplier(0, () => { })
+        if (IsVendor) {
+          this.props.getVendorWithVendorCodeSelectList(() => { })
+        } else {
+          // this.props.getVendorTypeBOPSelectList(() => { })
+          this.props.getVendorListByVendorType(IsVendor, () => { })
+          this.props.getPlantBySupplier('', () => { })
+          this.props.getCityBySupplier(0, () => { })
+        }
       },
     )
   }
@@ -762,7 +791,7 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost } = this.state
     const { initialConfiguration } = this.props
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
@@ -789,8 +818,9 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
+        // FreightCharges:values.FreightCharges,
         ScrapRate: values.ScrapRate,
-        NetLandedCost: values.NetLandedCost,
+        NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
@@ -817,6 +847,7 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
+        // FreightCharges:values.FreightCharges,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
@@ -826,7 +857,7 @@ class AddRMDomestic extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
-        
+
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
@@ -1204,7 +1235,7 @@ class AddRMDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber , maxLength15]}
+                              validate={[required, positiveAndDecimalNumber, maxLength15]}
                               component={renderText}
                               onChange={this.handleBasicRate}
                               required={true}
@@ -1230,7 +1261,22 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Cost (INR/UOM)`}
+                              label={`Freight Charges (INR)`}
+                              name={""}
+                              type="text" FreightCharges
+                              placeholder={"Enter"}
+                              onChange={this.handleFreightCharges}
+                              validate={[positiveAndDecimalNumber, maxLength15]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              maxLength="15"
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} )`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1520,7 +1566,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth } = state
-  const fieldsObj = selector(state, 'BasicRate')
+  const fieldsObj = selector(state, 'BasicRate', 'FreightCharges')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
@@ -1581,6 +1627,7 @@ export default connect(mapStateToProps, {
   fileUpdateRMDomestic,
   fileDeleteRMDomestic,
   getPlantSelectListByType,
+  getVendorWithVendorCodeSelectList
 })(
   reduxForm({
     form: 'AddRMDomestic',

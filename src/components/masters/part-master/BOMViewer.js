@@ -257,7 +257,7 @@ class BOMViewer extends Component {
   * @description used to Reset form
   */
   cancel = () => {
-    this.setState({ isCancel: true, isSaved: false, }, () => this.toggleDrawer(''))
+    this.setState({ isCancel: true, isSaved: false, flowpoints: [] }, () => this.toggleDrawer(''))
   }
 
   /**
