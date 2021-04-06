@@ -41,7 +41,9 @@ class ImpactDrawer extends Component {
         return (
             <div>
                 {/* {isLoader && <Loader />} */}
-                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Drawer className="add-update-level-drawer" anchor={this.props.anchor} open={this.props.isOpen} 
+                // onClose={(e) => this.toggleDrawer(e)}
+                >
                     <Container>
                         <div className={'drawer-wrapper'}>
                             <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
