@@ -451,9 +451,9 @@ function Coil(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={true}
+                                        mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             pattern: {
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
                                                 message: 'Invalid Number.'
