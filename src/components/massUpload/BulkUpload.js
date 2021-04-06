@@ -181,6 +181,7 @@ class BulkUpload extends Component {
     onSubmit = (values) => {
         const { fileData, costingHead } = this.state;
         const { fileName } = this.props;
+        console.log(fileData, "FILE DATA", fileName);
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),

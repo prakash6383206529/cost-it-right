@@ -442,6 +442,7 @@ function Coil(props) {
                                     />
                                 </Col>
                             </Row>
+
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
