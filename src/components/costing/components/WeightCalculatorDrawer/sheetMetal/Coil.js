@@ -7,7 +7,7 @@ import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
@@ -94,59 +94,33 @@ function Coil(props) {
         }))
     }, [])
 
-
+    const setFinishWeight = (e) => {
+        const FinishWeight = e.target.value
+        switch (UOMDimension.label) {
+            case G:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeight)
+                }, 200);
+                break;
+            case KG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeight * 1000)
+                }, 200);
+                break;
+            case MG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeight / 1000)
+                }, 200);
+                break;
+            default:
+                break;
+        }
+    }
     useEffect(() => {
         // calculateNetSurfaceArea()
         setGrossWeight()
     }, [fieldValues])
 
-
-
-    useEffect(() => {
-        // if (isOneSide) {
-        //     setNetSurfaceAreaBothSide()
-        // } else {
-        //     calculateNetSurfaceArea()
-        // }
-    }, [isOneSide])
-
-
-    // /**
-    //  * @method calculateNetSurfaceArea
-    //  * @description CALCULATE NET SURFACE AREA
-    //  */
-    // const calculateNetSurfaceArea = () => {
-    //     const data = {
-    //         OuterDiameter: getValues('OuterDiameter'),
-    //         InnerDiameter: dataToSend.InnerDiameter,
-    //         PartLength: getValues('PartLength'),
-    //         ExtraVariable: '',
-    //     }
-    //     const NetSurfaceArea = getNetSurfaceArea(data)
-    //     const updatedValue = dataToSend
-    //     updatedValue.NetSurfaceArea = NetSurfaceArea
-    //     setDataToSend(updatedValue)
-    //     setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceArea, localStorage.NoOfDecimalForInputOutput))
-    // }
-
-    // /**
-    //  * @method setNetSurfaceAreaBothSide
-    //  * @description CALCULATE NET SURFACE AREA BOTH SIDE
-    //  */
-    // const setNetSurfaceAreaBothSide = () => {
-    //     const data = {
-    //         OuterDiameter: getValues('OuterDiameter'),
-    //         InnerDiameter: dataToSend.InnerDiameter,
-    //         PartLength: getValues('PartLength'),
-    //         ExtraVariable: '',
-    //     }
-
-    //     const NetSurfaceAreaBothSide = getNetSurfaceAreaBothSide(data)
-    //     const updatedValue = dataToSend
-    //     updatedValue.NetSurfaceArea = NetSurfaceAreaBothSide
-    //     setDataToSend(updatedValue)
-    //     setValue('NetSurfaceArea', checkForDecimalAndNull(NetSurfaceAreaBothSide, localStorage.NoOfDecimalForInputOutput))
-    // }
 
     /**
      * @method setGrossWeight
@@ -163,29 +137,24 @@ function Coil(props) {
             cavity: getValues('Cavity')
         }
         grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
-
-        // if (rmRowData.RawMaterialCategory === STD) {
-        //     WeightofPart = dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet)
-        // } else {
-        //     WeightofPart = dataToSend.WeightofPart
+        setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
+        // switch (UOMDimension.label) {
+        //     case G:
+        //         // setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight }))
+        //         setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+        //         break;
+        //     case KG:
+        //         // setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight / 1000 }))
+        //         setValue('GrossWeight', checkForDecimalAndNull(grossWeight / 1000, localStorage.NoOfDecimalForInputOutput))
+        //         break;
+        //     case MG:
+        //         //      setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight * 1000 }))
+        //         setValue('GrossWeight', checkForDecimalAndNull(grossWeight * 1000, localStorage.NoOfDecimalForInputOutput))
+        //         break;
+        //     default:
+        //         break;
         // }
-        setGrossWeights(grossWeight)
-        switch (UOMDimension.label) {
-            case G:
-                // setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight }))
-                setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                break;
-            case KG:
-                // setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight / 1000 }))
-                setValue('GrossWeight', checkForDecimalAndNull(grossWeight / 1000, localStorage.NoOfDecimalForInputOutput))
-                break;
-            case MG:
-                //      setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight * 1000 }))
-                setValue('GrossWeight', checkForDecimalAndNull(grossWeight * 1000, localStorage.NoOfDecimalForInputOutput))
-                break;
-            default:
-                break;
-        }
     }
 
 
@@ -241,7 +210,7 @@ function Coil(props) {
             }
         }
         let data = {
-            LayoutType: 'Pipe',
+            LayoutType: 'Coil',
             WeightCalculationId: WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId ? WeightCalculatorRequest.WeightCalculationId : "00000000-0000-0000-0000-000000000000",
             IsChangeApplied: isChangeApplies, //NEED TO MAKE IT DYNAMIC how to do,
             PartId: costData.PartId,
@@ -262,8 +231,7 @@ function Coil(props) {
             // UOMDimension: values.UOMDimension,  where it is
             OuterDiameter: values.OuterDiameter,
             Thickness: values.Thickness,
-            InnerDiameter: dataToSend.InnerDiameter
-            ,
+            InnerDiameter: dataToSend.InnerDiameter,
             LengthOfSheet: values.SheetLength,
             LengthOfPart: values.PartLength,
             NumberOfPartsPerSheet: dataToSend.NumberOfPartsPerSheet,
@@ -279,7 +247,7 @@ function Coil(props) {
             SurfaceAreaSide: isOneSide ? 'Both Side' : 'One  Side',
             NetSurfaceArea: dataToSend.NetSurfaceArea,
             GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
-            FinishWeight: (dataToSend.newFinishWeight === undefined || dataToSend.newFinishWeight === 0) ? values.FinishWeight : dataToSend.newFinishWeight,
+            FinishWeight: getValues('FinishWeight'),
             LoggedInUserId: loggedInUserId()
         }
 
@@ -289,7 +257,6 @@ function Coil(props) {
         }
 
         dispatch(saveRawMaterialCalciData(data, res => {
-
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity
                 toastr.success("Calculation saved successfully")
@@ -302,44 +269,52 @@ function Coil(props) {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
-        let finishWeight = getValues('FinishWeight')
-        setFinishWeights(getValues('FinishWeight'))
+        // let finishWeight = FinishWeightOfSheet
         setUnit(value.label)
-        switch (value.label) {
-            case KG:
-                grossWeight = grossWeight / 1000
-                finishWeight = finishWeight / 1000
-                setFinishWeights(FinishWeight * 1000)
-                setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-                setTimeout(() => {
-                    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                    setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-                }, 100);
-                break;
-            case G:
+        setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeight, value.label) }))
+        setTimeout(() => {
+            setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+            setValue('FinishWeight', checkForDecimalAndNull(setValueAccToUOM(FinishWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+        }, 500);
+        //         setTimeout(() => {
+        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+        //         }, 100);
+        // switch (value.label) {
+        //     case KG:
+        //         grossWeight = grossWeight / 1000
+        //         finishWeight = finishWeight / 1000
+        //         setFinishWeights(FinishWeight * 1000)
+        //         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
+        //         setTimeout(() => {
+        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+        //         }, 100);
+        //         break;
+        //     case G:
 
-                grossWeight = grossWeight
-                finishWeight = finishWeight
-                setFinishWeights(FinishWeight * 1000)
-                setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-                setTimeout(() => {
-                    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                    setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-                }, 100);
-                break;
-            case MG:
-                grossWeight = grossWeight * 1000
-                finishWeight = finishWeight * 1000
-                setFinishWeights(FinishWeight / 1000)
-                setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-                setTimeout(() => {
-                    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                    setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-                }, 100);
-                break;
-            default:
-                break;
-        }
+        //         grossWeight = grossWeight
+        //         finishWeight = finishWeight
+        //         setFinishWeights(FinishWeight * 1000)
+        //         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
+        //         setTimeout(() => {
+        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+        //         }, 100);
+        //         break;
+        //     case MG:
+        //         grossWeight = grossWeight * 1000
+        //         finishWeight = finishWeight * 1000
+        //         setFinishWeights(FinishWeight / 1000)
+        //         setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
+        //         setTimeout(() => {
+        //             setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
+        //             setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
+        //         }, 100);
+        //         break;
+        //     default:
+        //         break;
+        // }
     }
 
     const UnitFormat = () => {
@@ -542,16 +517,16 @@ function Coil(props) {
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
-                                            required: false,
-                                            // pattern: {
-                                            //   value: /^[0-9]*$/i,
-                                            //   message: 'Invalid Number.'
-                                            // },
+                                            required: true,
+                                            pattern: {
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.'
+                                            },
                                             // maxLength: 4,
                                         }}
-                                        handleChange={() => { }}
+                                        handleChange={setFinishWeight}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}

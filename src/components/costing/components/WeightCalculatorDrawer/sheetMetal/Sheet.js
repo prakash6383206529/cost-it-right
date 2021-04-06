@@ -7,7 +7,7 @@ import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { toastr } from 'react-redux-toastr'
@@ -26,10 +26,10 @@ function Sheet(props) {
         Width: WeightCalculatorRequest && WeightCalculatorRequest.Width !== null ? WeightCalculatorRequest.Width : '',
         Thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== null ? WeightCalculatorRequest.Thickness : '',
         Length: WeightCalculatorRequest && WeightCalculatorRequest.Length !== null ? WeightCalculatorRequest.Length : '',
-        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1,
+        Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? WeightCalculatorRequest.Cavity : 1,
         NetSurfaceArea: WeightCalculatorRequest && WeightCalculatorRequest.NetSurfaceArea !== null ? WeightCalculatorRequest.NetSurfaceArea : '',
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
+        FinishWeightOfSheet: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : '',
     }
 
     const {
@@ -57,14 +57,17 @@ function Sheet(props) {
     const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
     const tempOldObj = WeightCalculatorRequest
     const [GrossWeight, setGrossWeights] = useState('')
-    const [FinishWeight, setFinishWeights] = useState('')
+    const [FinishWeightOfSheet, setFinishWeights] = useState('')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     // const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+
+    let SheetWidth = getValues('SheetWidth')
+    let length = getValues('SheetLength')
 
 
     const fieldValues = useWatch({
         control,
-        name: ['Width', 'Length', 'Cavity', 'SheetThickness', 'SheetWidth', 'SheetLength'],
+        name: ['SheetThickness', 'SheetWidth', 'SheetLength', 'StripWidth', 'BlankSize', 'Cavity'],
     })
 
     const dispatch = useDispatch()
@@ -94,60 +97,73 @@ function Sheet(props) {
 
 
     useEffect(() => {
-        // calculateNetSurfaceArea()
         setWeightOfSheet()
-        setWeightOfPart()
+        setNoOfStrips()
+        setComponentPerStrips()
+        setNoOfComponent()
         setGrossWeight()
-        setThicknessOfBlank()
-        calculateNumberOfPartPerSheet()
+        //     setFinishWeight()
     }, [fieldValues])
 
-    const setThicknessOfBlank = () => {
-        setValue('Thickness', getValues('SheetThickness'))
+    const setFinishWeight = (e) => {
+        const FinishWeightOfSheet = e.target.value
+        console.log('FinishWeightOfSheet: ', FinishWeightOfSheet);
+        switch (UOMDimension.label) {
+            case G:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet)
+                }, 200);
+                break;
+            case KG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet * 1000)
+                }, 200);
+                break;
+            case MG:
+                setTimeout(() => {
+                    setFinishWeights(FinishWeightOfSheet / 1000)
+                }, 200);
+                break;
+            default:
+                break;
+        }
     }
 
     const setWeightOfSheet = () => {
         let data = {
             density: rmRowData.Density,
-            thickness: convertmmTocm(getValues('SheetThickness')),
-            length: getValues('SheetLength'),
-            width: getValues('SheetWidth')
+            thickness: getValues('SheetThickness'),
+            length: length,
+            width: SheetWidth
         }
-        console.log(data.density, data.length, data.width, data.thickness, "VALUE");
-        const getWeightSheet = calculateWeight(data.density, data.length, data.width, data.thickness)
-        console.log(getWeightSheet, "SHEET WEIGHT")
-        //        setDataToSend({ ...dataToSend, WeightOfSheet: getWeightSheet })
-        const updatedValue = dataToSend
-        updatedValue.SheetWeight = getWeightSheet
-        setDataToSend(updatedValue)
-        setValue('SheetWeight', checkForDecimalAndNull(getWeightSheet, localStorage.NoOfDecimalForInputOutput))
+        const getWeightSheet = calculateWeight(data.density, data.length, data.width, data.thickness) / 1000000
+
+        setTimeout(() => {
+            setDataToSend({ ...dataToSend, WeightOfSheet: getWeightSheet })
+            setValue('SheetWeight', checkForDecimalAndNull(getWeightSheet, localStorage.NoOfDecimalForInputOutput))
+        }, 200);
     }
 
-    const setWeightOfPart = () => {
-        let data = {
-            density: rmRowData.Density,
-            thickness: convertmmTocm(getValues('Thickness')),
-            width: getValues('Width'),
-            length: getValues('Length')
-        }
-        const getWeightOfPart = calculateWeight(data.density, data.length, data.width, data.thickness)
-        //  setDataToSend({ ...dataToSend, WeightOfPart: getWeightOfPart })
-        setValue('PartWeight', checkForDecimalAndNull(getWeightOfPart, localStorage.NoOfDecimalForInputOutput))
+    const setNoOfStrips = () => {
+        const stripWidth = getValues('StripWidth')
+        const stripNo = parseInt(length / stripWidth)
+        setValue('StripsNumber', checkForNull(stripNo))
     }
 
-    const calculateNumberOfPartPerSheet = () => {
-        /*Need to this calculation**/
-        if (getValues('SheetLength') === '') {
-            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: 1 })
-            setValue('NumberOfPartsPerSheet', 1)
-            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: 1 })
-        } else {
-            const NumberParts = checkForNull(getValues('SheetLength') / getValues('Length'))
-            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: NumberParts })
-            setValue('NumberOfPartsPerSheet', parseInt(NumberParts))
-            // setDataToSend({ ...dataToSend, NumberOfPartsPerSheet: parseInt(NumberParts) })
-        }
+    const setComponentPerStrips = () => {
+        const blankSize = getValues('BlankSize')
+        const componentPerStrip = parseInt(SheetWidth / blankSize)
+        setValue('ComponentPerStrip', checkForNull(componentPerStrip))
+
     }
+
+    const setNoOfComponent = () => {
+        const stripNo = getValues('StripsNumber')
+        const componentPerStrip = getValues('ComponentPerStrip')
+        const noOfComponent = stripNo * componentPerStrip
+        setValue('NoOfComponent', checkForNull(noOfComponent))
+    }
+
 
     /**
      * @method setGrossWeight
@@ -156,36 +172,14 @@ function Sheet(props) {
     const setGrossWeight = () => {
 
         let grossWeight
-        // const density = rmRowData.Density
-
-        // const Width = checkForNull(getValues('Width'))
-        // const thickness = convertmmTocm(getValues('Thickness'))
-        // const Length = checkForNull(getValues('Length'))
+        const sheetWeight = getValues('SheetWeight')
+        const noOfComponent = getValues('NoOfComponent')
         const cavity = getValues('Cavity')
 
-        // grossWeight = dataToSend.WeightOfPart / cavity
-        grossWeight = getValues('PartWeight') / cavity
+        grossWeight = (sheetWeight / noOfComponent) / cavity
 
-
-        // if (rmRowData.RawMaterialCategory === STD) {
-        //     WeightofPart = dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet)
-        // } else {
-        //     WeightofPart = dataToSend.WeightofPart
-        // }
         setGrossWeights(grossWeight)
-        switch (UOMDimension.label) {
-            case G:
-                setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                break;
-            case KG:
-                setValue('GrossWeight', checkForDecimalAndNull(grossWeight / 1000, localStorage.NoOfDecimalForInputOutput))
-                break;
-            case MG:
-                setValue('GrossWeight', checkForDecimalAndNull(grossWeight * 1000, localStorage.NoOfDecimalForInputOutput))
-                break;
-            default:
-                break;
-        }
+        setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
     }
 
 
@@ -234,7 +228,7 @@ function Sheet(props) {
 
 
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
-            if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
+            if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
             } else {
                 setIsChangeApplied(false)
@@ -253,7 +247,7 @@ function Sheet(props) {
             RawMaterialType: rmRowData.MaterialType,
             BasicRatePerUOM: rmRowData.RMRate,
             ScrapRate: rmRowData.ScrapRate,
-            NetLandedCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - dataToSend.FinishWeight) * rmRowData.ScrapRate,
+            NetLandedCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - dataToSend.FinishWeightOfSheet) * rmRowData.ScrapRate,
             PartNumber: costData.PartNumber,
             TechnologyName: costData.TechnologyName,
             Density: rmRowData.Density,
@@ -279,13 +273,13 @@ function Sheet(props) {
             SurfaceAreaSide: isOneSide ? 'Both Side' : 'One  Side',
             NetSurfaceArea: dataToSend.NetSurfaceArea,
             GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
-            FinishWeight: (dataToSend.newFinishWeight === undefined || dataToSend.newFinishWeight === 0) ? values.FinishWeight : dataToSend.newFinishWeight,
+            FinishWeight: getValues('FinishWeightOfSheet'),
             LoggedInUserId: loggedInUserId()
         }
 
         let obj = {
             originalGrossWeight: GrossWeight,
-            originalFinishWeight: FinishWeight
+            originalFinishWeight: FinishWeightOfSheet
         }
 
         dispatch(saveRawMaterialCalciData(data, res => {
@@ -302,39 +296,14 @@ function Sheet(props) {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
-        let finishWeight = getValues('FinishWeight')
+        console.log(grossWeight, 'GW', setValueAccToUOM(grossWeight, value.label));
+        // let finishWeight = FinishWeightOfSheet
         setUnit(value.label)
-        switch (value.label) {
-            case KG:
-                grossWeight = grossWeight / 1000
-                finishWeight = finishWeight / 1000
-                setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-                setTimeout(() => {
-                    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                    setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-                }, 100);
-                break;
-            case G:
-                grossWeight = grossWeight
-                finishWeight = finishWeight
-                setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-                setTimeout(() => {
-                    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                    setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-                }, 100);
-                break;
-            case MG:
-                grossWeight = grossWeight * 1000
-                finishWeight = finishWeight * 1000
-                setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-                setTimeout(() => {
-                    setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-                    setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-                }, 100);
-                break;
-            default:
-                break;
-        }
+        setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
+        setTimeout(() => {
+            setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, value.label), localStorage.NoOfDecimalForInputOutput))
+            setValue('FinishWeightOfSheet', checkForDecimalAndNull(setValueAccToUOM(FinishWeightOfSheet, value.label), localStorage.NoOfDecimalForInputOutput))
+        }, 500);
     }
 
     const UnitFormat = () => {
@@ -388,7 +357,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Width(cm)`}
+                                        label={`Width(mm)`}
                                         name={'SheetWidth'}
                                         Controller={Controller}
                                         control={control}
@@ -414,7 +383,7 @@ function Sheet(props) {
 
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Length(cm)`}
+                                        label={`Length(mm)`}
                                         name={'SheetLength'}
                                         Controller={Controller}
                                         control={control}
@@ -474,39 +443,14 @@ function Sheet(props) {
                             <Row className={'mt15'}>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Thickness(mm)`}
-                                        name={'Thickness'}
+                                        label={`Strip Width(mm)`}
+                                        name={'StripWidth'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            // pattern: {
-                                            //     //value: /^[0-9]*$/i,
-                                            //     value: /^[0-9]\d*(\.\d+)?$/i,
-                                            //     message: 'Invalid Number.',
-                                            // },
-                                            // maxLength: 4,
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.Thickness}
-                                        disabled={true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Width(cm)`}
-                                        name={'Width'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
                                             pattern: {
                                                 //value: /^[0-9]*$/i,
                                                 value: /^[0-9]\d*(\.\d+)?$/i,
@@ -518,15 +462,31 @@ function Sheet(props) {
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.Width}
-                                        disabled={isEditFlag ? false : true}
+                                        errors={errors.Thickness}
+                                        disabled={false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`No of strips`}
+                                        name={'StripsNumber'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.StripsNumber}
+                                        disabled={true}
                                     />
                                 </Col>
 
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Length(cm)`}
-                                        name={'Length'}
+                                        label={`Blank Size(mm)`}
+                                        name={'BlankSize'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -550,8 +510,8 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Weight of Part`}
-                                        name={'PartWeight'}
+                                        label={`Components/Strip`}
+                                        name={'ComponentPerStrip'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
@@ -569,7 +529,23 @@ function Sheet(props) {
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.PartWeight}
+                                        errors={errors.ComponentPerStrip}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Total number of Components`}
+                                        name={'NoOfComponent'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NoOfComponent}
                                         disabled={true}
                                     />
                                 </Col>
@@ -596,31 +572,6 @@ function Sheet(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.Cavity}
                                         disabled={isEditFlag ? false : true}
-                                    />
-                                </Col>
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`No. of Parts/Sheet`}
-                                        name={'NoOfPart'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        // rules={{
-                                        //     required: true,
-                                        //     pattern: {
-                                        //         //value: /^[0-9]*$/i,
-                                        //         value: /^[0-9]\d*(\.\d+)?$/i,
-                                        //         message: 'Invalid Number.',
-                                        //     },
-                                        //     // maxLength: 4,
-                                        // }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.NoOfPart}
-                                        disabled={true}
                                     />
                                 </Col>
                             </Row>
@@ -696,24 +647,24 @@ function Sheet(props) {
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
-                                        name={'FinishWeight'}
+                                        name={'FinishWeightOfSheet'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            // pattern: {
-                                            //   value: /^[0-9]*$/i,
-                                            //   message: 'Invalid Number.'
-                                            // },
-                                            // maxLength: 4,
+                                            pattern: {
+                                                value: /^[0-9]\d*(\.\d+)?$/i,
+                                                message: 'Invalid Number.'
+                                            },
+                                            //  maxLength: 4,
                                         }}
-                                        handleChange={() => { }}
+                                        handleChange={setFinishWeight}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.FinishWeight}
+                                        errors={errors.FinishWeightOfSheet}
                                         disabled={isEditFlag ? false : true}
                                     />
                                 </Col>

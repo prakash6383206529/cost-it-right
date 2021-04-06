@@ -466,7 +466,7 @@ function Pipe(props) {
     setValue('UOMDimension', { label: value.label, value: value.value })
     setUOMDimension(value)
     let grossWeight = GrossWeight
-    let finishWeight = FinishWeight
+    let finishWeight = getValues('FinishWeight')
     setUnit(value.label)
     switch (value.label) {
       case KG:

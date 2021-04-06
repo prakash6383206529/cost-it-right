@@ -207,23 +207,22 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
+    console.log(weightData, "WEIGHT DATA");
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
     let finishWeight
+    console.log(tempData, "TEMP DATA");
     if (Object.keys(weightData).length > 0) {
-      if (tempData.UOM === G) {
-        grossWeight = originalWeight.originalGrossWeight
-        finishWeight = originalWeight.originalFinishWeight
-      } else if (tempData.UOM === KG) {
-        grossWeight = originalWeight.originalGrossWeight / 1000
-        finishWeight = originalWeight.originalFinishWeight / 1000
-      } else if (tempData.UOM === MG) {
-        grossWeight = originalWeight.originalGrossWeight * 1000
-        finishWeight = originalWeight.originalFinishWeight * 1000
-      } else {
-        grossWeight = originalWeight.originalGrossWeight
-        finishWeight = originalWeight.originalFinishWeight
+      if (weightData.UOMForDimension === G) {
+        grossWeight = weightData.GrossWeight / 1000
+        finishWeight = weightData.FinishWeight / 1000
+      } else if (weightData.UOMForDimension === KG) {
+        grossWeight = weightData.GrossWeight
+        finishWeight = weightData.FinishWeight
+      } else if (weightData.UOMForDimension === MG) {
+        grossWeight = checkForDecimalAndNull(weightData.GrossWeight / 1000000)
+        finishWeight = checkForDecimalAndNull(weightData.FinishWeight / 1000000)
       }
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
