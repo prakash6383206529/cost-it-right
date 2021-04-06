@@ -16,7 +16,9 @@ function PushButtonDrawer(props) {
 
   return (
     <>
-      <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen} 
+      // onClose={(e) => toggleDrawer(e)}
+      >
         <Container>
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-full-width'}>

@@ -108,7 +108,9 @@ function SurfaceTreatment(props) {
   */
   return (
     <>
-      <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen} 
+      // onClose={(e) => toggleDrawer(e)}
+      >
         <div className="container-fluid">
           <div className={'drawer-wrapper drawer-1500px'}>
 

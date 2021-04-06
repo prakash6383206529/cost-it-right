@@ -45,7 +45,7 @@ function ViewConversionCost(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        onClose={(e) => toggleDrawer(e)}
+        // onClose={(e) => toggleDrawer(e)}
       >
         <Container className="view-conversion-cost-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>

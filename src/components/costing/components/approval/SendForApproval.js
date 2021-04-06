@@ -344,7 +344,7 @@ const SendForApproval = (props) => {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        onClose={(e) => toggleDrawer(e)}
+        // onClose={(e) => toggleDrawer(e)}
       >
         <div className={"drawer-wrapper drawer-md"}>
           <Row className="drawer-heading mx-0">
