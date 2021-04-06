@@ -319,7 +319,7 @@ function CostingDetailStepTwo(props) {
                     <Table className="table cr-brdr-main mb-0" size="sm">
                       <thead>
                         <tr>
-                          <th style={{ width: '100px' }}>{``}</th>
+                          <th style={{ width: '140px' }}>{``}</th>
                           <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net RM Cost/Assembly' : 'Net RM Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net BOP Cost/Assembly' : 'Net BOP Cost/Pc'}`}</span></th>
                           <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Net Conversion Cost/Assembly' : 'Net Conversion Cost/Pc'}`}</span></th>

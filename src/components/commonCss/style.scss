@@ -1790,8 +1790,10 @@ body {
 		-ms-flex: 0 0 calc(25% - 40px);
 		flex: 0 0 calc(25% - 40px);
 		max-width: calc(25% - 40px);
-		position: relative;
+    position: relative;
+    margin-right: 53px;
 		&:last-child {
+      margin-right: 0;
 			.card-border {
 				&:after {
 					display: none;
@@ -2690,7 +2692,7 @@ opacity: 0.5;
 }
 .costing-table-next{
   thead{
-    tr{
+    tr{width: 100%;
       th{
         &:first-child{width: 20%;}
         &:nth-child(2){width: 15%;}
@@ -2891,6 +2893,7 @@ body {
   }
 }
 .table-responsive{
+  .table.cr-brdr-main{width: calc(100% - 2px);}
   padding-bottom: 1px;
 }
 
@@ -3113,6 +3116,9 @@ body {
           .form-group-searchable-select,.form-group{
             margin-bottom: 0px;
             min-height: unset;
+            .text-help{
+              display: none;
+            }
           }
         }
       }
@@ -3312,7 +3318,9 @@ body{
  }
 }
 
-
+.approval-summary-page{
+  min-height: calc(100vh - 240px);
+}
 
 
 // responsive media query start
@@ -3746,6 +3754,9 @@ body{
           min-height: calc(38px * 80 / 100) !important;
           height: calc(38px * 80 / 100) !important;
         }
+        .select__control.css-yk16xz-control{
+          height: auto !important;
+        }
       }
       .form-control {
         padding: calc(12px * 80 / 100) !important;
@@ -3843,6 +3854,10 @@ body{
   // // input range slider 'Net Landed Range (INR)' css  end
 
   // ========= zoom whole website to 80% css end's here 
+
+  .costing-page-tabs {
+    .right-actions{top: -70px;}
+  }
 
   .costing-raw-material-section{
     thead{
@@ -3998,9 +4013,13 @@ body{
 
 
   .sticky-top-0{
-    .table {
+    .table{
       td,th{
-        padding: 0.71rem 20px;
+        padding: 0.71rem 12px;
+        font-size:14px !important;
+        .fs1{
+          font-size: 15px;
+        }
       }
     }
   }

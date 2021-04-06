@@ -334,16 +334,17 @@ a:hover {
   // border-color: #4dc771;
   color: #fff;
   background-size: 10px 10px !important;
-  padding: 0;
+  padding: 0 12px;
   font-size: 14px;
   border-radius: 4px;
   height: 32px;
-  width:96px;
+  min-width:96px;
   margin-top: 8px;
   margin-bottom:8px;
   vertical-align: middle;
   transition: all ease 0.3s;
-  border: none;
+  text-transform: uppercase;
+  border: 1px solid #4dc771;
   img {
     width: 16px;
     height: auto;
@@ -355,18 +356,19 @@ a:hover {
   }
 }
 .approve-reject-btn{
-  background-color:#FEDCE2!important;
-  color: #8a91ac;
+  background-color:#FC5774!important;
+  border: 1px solid #FC5774;
   img {
     width: 13px;
     height: auto;
     object-fit: contain;
+    filter:brightness(100)
   }
   &:hover{
-    background-color:#efa9b5!important;
-    color: #fff;
+    background-color:#fff!important;
+    color: #FC5774;
     img{
-      filter:brightness(100)
+      filter: invert(41%) sepia(66%) saturate(1100%) hue-rotate(314deg) brightness(105%) contrast(98%);
     }
   }
 }
@@ -2258,6 +2260,7 @@ td {
     display: inline-block;
     line-height: 30px;
     padding: 0 1.5rem;
+    vertical-align: middle;
   }
   [class^="Pending"]{
     background-color: #f8a000;
@@ -2278,7 +2281,15 @@ td {
      th{
       border-top: 1px solid #C2CBE8;
       border-bottom: 1px solid #C2CBE8;
+      &:last-child{border-right: 1px solid #C2CBE8;}
      }
+  }
+  tbody{
+    tr{
+      td{
+        &:last-child{border-right: 1px solid #C2CBE8;}
+      }
+    }
   }
 }
 body {
@@ -2384,6 +2395,7 @@ body {
         padding: 0;
         &:hover,&:focus{
           background-color: #fff;
+          color: #256bd1 !important;
         }
       }
       .active-nav{

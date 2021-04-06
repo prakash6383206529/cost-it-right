@@ -192,7 +192,7 @@ function ApproveRejectDrawer(props) {
 
                   <button
                     type="submit"
-                    className="submit-button mr5 save-btn"
+                    className="submit-button  save-btn"
                   //onClick={() => setApproveDrawer(true)}
                   >
                     <div className={'check-icon'}>

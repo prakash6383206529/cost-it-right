@@ -344,7 +344,7 @@ class SideBar extends Component {
                 <ul>
                   <li>
                     <Link
-                      className="dropdown-item active-nav"
+                      className="dropdown-item "
                       to={{
                         pathname: "/approval-listing",
                         state: {
