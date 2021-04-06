@@ -504,6 +504,15 @@ class AddPower extends Component {
 
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
+    if (Number(fieldsObj.MinDemandKWPerMonth) < 0 ||
+    Number(fieldsObj.DemandChargesPerKW) < 0 ||
+    Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
+    Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 ||
+    Number(fieldsObj.DutyChargesAndFCA) < 0 ||
+    Number(fieldsObj.SEBPowerContributaion) < 0) {
+    toastr.warning('Fields should not be negative');
+    return false;
+  }
 
     if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined) {
       toastr.warning('Fields should not be empty.')
