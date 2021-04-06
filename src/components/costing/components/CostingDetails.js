@@ -13,7 +13,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
+import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology
@@ -37,6 +37,8 @@ function CostingDetails(props) {
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
   const [isSOBEnabled, setEnableSOBField] = useState(true);
+  const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
+  const [isVBCSOBEnabled, setVBCEnableSOBField] = useState(true);
 
   const [IsPlantDrawerOpen, setIsPlantDrawerOpen] = useState(false);
   const [zbcPlantGrid, setZBCPlantGrid] = useState([]);
@@ -83,9 +85,7 @@ function CostingDetails(props) {
     setStepTwo(Object.keys(props.costingData).length > 0 ? true : false);
   }, [props.costingData])
 
-  const technologySelectList = useSelector(
-    (state) => state.costing.technologySelectList,
-  )
+  const technologySelectList = useSelector((state) => state.costing.technologySelectList)
   const partSelectList = useSelector((state) => state.costing.partSelectList)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -438,13 +438,9 @@ function CostingDetails(props) {
 
     if (index > vbcVendorOldArray.length - 1) {
       return false
-    } else if (
-      parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent
-    ) {
+    } else if (parseInt(event.target.value) === tempOldObj.ShareOfBusinessPercent) {
       return false
-    } else if (
-      parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercent
-    ) {
+    } else if (parseInt(event.target.value) !== tempOldObj.ShareOfBusinessPercent) {
       return true
     }
   }
@@ -472,7 +468,6 @@ function CostingDetails(props) {
 
   }
 
-
   /**
    * @method isCostingVersionSelected
    * @description HANDLE COSTING VERSION SELECTED
@@ -486,6 +481,7 @@ function CostingDetails(props) {
       return tempData.SelectedCostingVersion !== undefined ? true : false
     }
   }
+
   /**
    * @method checkForError
    * @description HANDLE COSTING VERSION SELECTED
@@ -497,6 +493,7 @@ function CostingDetails(props) {
       return true
     }
   }
+
   /**
    * @method warningMessageHandle
    * @description VIEW COSTING DETAILS IN READ ONLY MODE
@@ -505,6 +502,9 @@ function CostingDetails(props) {
     switch (warningType) {
       case 'SOB_WARNING':
         toastr.warning('SOB Should not be greater than 100.')
+        break
+      case 'SOB_SAVED_WARNING':
+        toastr.warning('Please save SOB percentage.')
         break
       case 'COSTING_VERSION_WARNING':
         toastr.warning('Please select a costing version.')
@@ -526,6 +526,11 @@ function CostingDetails(props) {
    */
   const addDetails = (index, type) => {
     const userDetail = userDetails()
+
+    if (CheckIsSOBChangedSaved()) {
+      warningMessageHandle('SOB_SAVED_WARNING')
+      return false;
+    }
 
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index]
@@ -553,18 +558,17 @@ function CostingDetails(props) {
         EffectiveDate: effectiveDate,
       }
 
-      dispatch(
-        createZBCCosting(data, (res) => {
-          if (res.data.Result) {
-            setPartInfo(res.data.Data)
-            setCostingData({ costingId: res.data.Data.CostingId, type })
-            /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
-            dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-            setIsCostingViewMode(false)
-            setStepTwo(true)
-            setStepOne(false)
-          }
-        }),
+      dispatch(createZBCCosting(data, (res) => {
+        if (res.data.Result) {
+          setPartInfo(res.data.Data)
+          setCostingData({ costingId: res.data.Data.CostingId, type })
+          /***********ADDED THIS DISPATCH METHOD FOR GETTING ZBC DETAIL************/
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          setIsCostingViewMode(false)
+          setStepTwo(true)
+          setStepOne(false)
+        }
+      }),
       )
     } else if (checkSOBTotal() && type === VBC) {
       let tempData = vbcVendorGrid[index]
@@ -594,17 +598,16 @@ function CostingDetails(props) {
         EffectiveDate: effectiveDate,
       }
 
-      dispatch(
-        createVBCCosting(data, (res) => {
-          if (res.data.Result) {
-            setPartInfo(res.data.Data)
-            setCostingData({ costingId: res.data.Data.CostingId, type })
-            dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
-            setIsCostingViewMode(false)
-            setStepTwo(true)
-            setStepOne(false)
-          }
-        }),
+      dispatch(createVBCCosting(data, (res) => {
+        if (res.data.Result) {
+          setPartInfo(res.data.Data)
+          setCostingData({ costingId: res.data.Data.CostingId, type })
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
+          setIsCostingViewMode(false)
+          setStepTwo(true)
+          setStepOne(false)
+        }
+      }),
       )
     } else {
       toastr.warning('SOB Should not be greater than 100.')
@@ -616,7 +619,10 @@ function CostingDetails(props) {
    * @description VIEW COSTING DETAILS IN READ ONLY MODE
    */
   const viewDetails = (index, type) => {
-    if (!checkSOBTotal()) {
+    if (CheckIsSOBChangedSaved()) {
+      warningMessageHandle('SOB_SAVED_WARNING')
+      return false;
+    } else if (!checkSOBTotal()) {
       warningMessageHandle('SOB_WARNING')
     } else if (!isCostingVersionSelected(index, type)) {
       warningMessageHandle('COSTING_VERSION_WARNING')
@@ -633,14 +639,15 @@ function CostingDetails(props) {
    * @description EDIT COSTING DETAILS
    */
   const editCosting = (index, type) => {
-    if (!checkSOBTotal()) {
+    if (CheckIsSOBChangedSaved()) {
+      warningMessageHandle('SOB_SAVED_WARNING')
+      return false;
+    } else if (!checkSOBTotal()) {
       warningMessageHandle('SOB_WARNING')
     } else if (!isCostingVersionSelected(index, type)) {
       warningMessageHandle('COSTING_VERSION_WARNING')
     } else if (!checkForError(index, type)) {
       warningMessageHandle('ERROR_WARNING')
-    } else if (checkSOBChanged(index, type)) {
-      editCostingAlert(index, type)
     } else {
       setIsCostingViewMode(false)
       moveToCostingDetail(index, type)
@@ -651,16 +658,25 @@ function CostingDetails(props) {
    * @method checkSOBChanged
    * @description CHECK SOB CHANGED FOR UPDATE COSTING AND TRIGGER CONFIRMATION FOR DRAFT ALL PENDING COSTINGS
    */
-  const checkSOBChanged = (index, type) => {
-    if (type === ZBC) {
-      let tempData = zbcPlantGrid[index]
-      return tempData && tempData.isSOBChanged ? true : false
-    }
-    if (type === VBC) {
-      let tempData = vbcVendorGrid[index]
-      return tempData && tempData.isSOBChanged ? true : false
-    }
+  const checkSOBChanged = () => {
+
+    let IsSOBChanged = false;
+
+    zbcPlantGrid && zbcPlantGrid.map((el) => {
+      if (el.isSOBChanged) {
+        IsSOBChanged = true;
+      }
+    })
+
+    vbcVendorGrid && vbcVendorGrid.map((el) => {
+      if (el.isSOBChanged) {
+        IsSOBChanged = true;
+      }
+    })
+
+    return IsSOBChanged;
   }
+
   /**
    * @method editCostingAlert
    * @description CONFIRM EDIT COSTING FOR SOB CHANGE CONFIRMATION
@@ -672,10 +688,7 @@ function CostingDetails(props) {
       },
       onCancel: () => { },
     }
-    return toastr.confirm(
-      `${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`,
-      toastrConfirmOptions,
-    )
+    return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
   }
 
   /**
@@ -683,6 +696,7 @@ function CostingDetails(props) {
    * @description CONFIRM UPDATE AND MOVE TO STEP TWO
    */
   const confirmUpdateCosting = (index, type) => {
+
     if (type === ZBC) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -695,12 +709,13 @@ function CostingDetails(props) {
       }
       dispatch(updateZBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+          resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
         }))
-      }),
-      )
+      }))
     }
+
     if (type === VBC) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
@@ -715,13 +730,13 @@ function CostingDetails(props) {
       }
       dispatch(updateVBCSOBDetail(data, (res) => {
         dispatch(getZBCCostingByCostingId(tempData.SelectedCostingVersion.value, (res) => {
+          resetSOBChanged()
           setStepTwo(true)
           setStepOne(false)
-
         }))
-      }),
-      )
+      }))
     }
+
   }
 
   /**
@@ -760,37 +775,42 @@ function CostingDetails(props) {
    */
   const copyCosting = (index, type) => {
     /*Commented because of error*/
-    // if (!checkSOBTotal()) {
-    //   warningMessageHandle('SOB_WARNING')
-    // } else if (!isCostingVersionSelected(index, type)) {
-    //   warningMessageHandle('COSTING_VERSION_WARNING')
-    // } else if (!checkForError(index, type)) {
-    //   warningMessageHandle('ERROR_WARNING')
-    // } else {
-    //   
-    //
-
-    // }
-    /*Copy Costing Drawer code here*/
-    setIsCostingViewMode(false)
-    setIsCopyCostingDrawer(true)
-
-    if (type === ZBC) {
-      const tempcopyCostingData = zbcPlantGrid[index]
-      setCopyCostingData(tempcopyCostingData)
-      setCostingIdForCopy({
-        zbcCosting: getValues(`${zbcPlantGridFields}[${index}]CostingVersion`),
-        vbcCosting: '',
-      })
+    if (CheckIsSOBChangedSaved()) {
+      warningMessageHandle('SOB_SAVED_WARNING')
+      return false;
+    } else if (!checkSOBTotal()) {
+      warningMessageHandle('SOB_WARNING')
+      return false;
+    } else if (!isCostingVersionSelected(index, type)) {
+      warningMessageHandle('COSTING_VERSION_WARNING')
+      return false;
+    } else if (!checkForError(index, type)) {
+      warningMessageHandle('ERROR_WARNING')
+      return false;
     } else {
-      const tempcopyCostingData = vbcVendorGrid[index]
-      setCopyCostingData(tempcopyCostingData)
-      setCostingIdForCopy({
-        zbcCosting: '',
-        vbcCosting: getValues(`${vbcGridFields}[${index}]CostingVersion`),
-      })
+
+      /*Copy Costing Drawer code here*/
+      setIsCostingViewMode(false)
+      setIsCopyCostingDrawer(true)
+
+      if (type === ZBC) {
+        const tempcopyCostingData = zbcPlantGrid[index]
+        setCopyCostingData(tempcopyCostingData)
+        setCostingIdForCopy({
+          zbcCosting: getValues(`${zbcPlantGridFields}[${index}]CostingVersion`),
+          vbcCosting: '',
+        })
+      } else {
+        const tempcopyCostingData = vbcVendorGrid[index]
+        setCopyCostingData(tempcopyCostingData)
+        setCostingIdForCopy({
+          zbcCosting: '',
+          vbcCosting: getValues(`${vbcGridFields}[${index}]CostingVersion`),
+        })
+      }
+      setType(type)
+
     }
-    setType(type)
   }
 
   /**
@@ -890,6 +910,194 @@ function CostingDetails(props) {
       setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
     }))
 
+  }
+
+  /**
+   * @method CheckIsSOBChangedSaved
+   * @description CHECK IF SOB % CHANGED THEN IT SAVED OR NOT
+   */
+  const CheckIsSOBChangedSaved = () => {
+    return (!isZBCSOBEnabled || !isVBCSOBEnabled) ? true : false;
+  }
+
+  useEffect(() => {
+    if (isZBCSOBEnabled && zbcPlantGrid.length > 0) {
+
+      if (CheckIsCostingAvailable() === false) {
+        let tempArr = []
+        //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+        zbcPlantGrid && zbcPlantGrid.map((el) => {
+          let data = {}
+          if (el.isSOBChanged === true) {
+            data = {
+              PlantId: el.PlantId,
+              PartId: part.value,
+              ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+              LoggedInUserId: loggedInUserId(),
+            }
+            tempArr.push(data)
+          }
+          return false;
+        })
+
+        setTimeout(() => {
+          dispatch(updateZBCSOBDetail(tempArr, (res) => {
+            resetSOBChanged()
+          }))
+        }, 200)
+
+      } else if (checkSOBChanged()) {
+        SOBUpdateAlert(ZBC)
+      } else {
+
+      }
+
+    }
+  }, [isZBCSOBEnabled])
+
+  /**
+   * @method SOBUpdateAlert
+   * @description CONFIRMATION FOR ZBC SOB UPDATE
+   */
+  const SOBUpdateAlert = (type) => {
+    const toastrConfirmOptions = {
+      onOk: () => {
+        confirmSOBUpdate(type)
+      },
+      onCancel: () => { },
+    }
+    return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+  }
+
+  /**
+   * @method confirmSOBUpdate
+   * @description CONFIRM SOB UPDATE
+   */
+  const confirmSOBUpdate = (type) => {
+    if (type === ZBC) {
+      let tempArr = []
+      //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      zbcPlantGrid && zbcPlantGrid.map((el) => {
+        let data = {}
+        if (el.isSOBChanged === true) {
+          data = {
+            PlantId: el.PlantId,
+            PartId: part.value,
+            ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+            LoggedInUserId: loggedInUserId(),
+          }
+          tempArr.push(data)
+        }
+        return false;
+      })
+
+      setTimeout(() => {
+        dispatch(updateZBCSOBDetail(tempArr, (res) => {
+          resetSOBChanged()
+        }))
+      }, 200)
+    }
+
+    if (type === VBC) {
+      let tempArr = []
+      //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+      vbcVendorGrid && vbcVendorGrid.map((el) => {
+        let data = {}
+        if (el.isSOBChanged === true) {
+          data = {
+            PlantId: el.PlantId,
+            PartId: part.value,
+            ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+            LoggedInUserId: loggedInUserId(),
+            VendorId: el.VendorId,
+            VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID
+          }
+          tempArr.push(data)
+        }
+        return false;
+      })
+
+      setTimeout(() => {
+        dispatch(updateVBCSOBDetail(tempArr, (res) => {
+          resetSOBChanged()
+        }))
+      }, 200)
+    }
+
+  }
+
+  useEffect(() => {
+    if (isVBCSOBEnabled && vbcVendorGrid.length > 0) {
+
+      if (CheckIsCostingAvailable() === false) {
+
+        let tempArr = []
+        //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
+        vbcVendorGrid && vbcVendorGrid.map((el) => {
+          let data = {}
+          if (el.isSOBChanged === true) {
+            data = {
+              PlantId: el.PlantId,
+              PartId: part.value,
+              ShareOfBusinessPercent: el.ShareOfBusinessPercent,
+              LoggedInUserId: loggedInUserId(),
+              VendorId: el.VendorId,
+              VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID
+            }
+            tempArr.push(data)
+          }
+          return false;
+        })
+
+        setTimeout(() => {
+          dispatch(updateVBCSOBDetail(tempArr, (res) => {
+            resetSOBChanged()
+          }))
+        }, 200)
+
+      } else if (checkSOBChanged()) {
+        SOBUpdateAlert(VBC)
+      } else {
+
+      }
+
+    }
+
+  }, [isVBCSOBEnabled])
+
+  /**
+   * @method CheckIsCostingAvailable
+   * @description CHECK IS ANY COSTING CREATED YET OR AVAILABLE
+   */
+  const CheckIsCostingAvailable = () => {
+    let ZBCAvailableIndex = '';
+    let VBCAvailableIndex = '';
+
+    ZBCAvailableIndex = zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => el.CostingOptions.length > 0)
+    VBCAvailableIndex = vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => el.CostingOptions.length > 0)
+    console.log('Indexxxxx ZBCAvailableIndex: ', ZBCAvailableIndex);
+    console.log('Indexxxxx VBCAvailableIndex: ', VBCAvailableIndex);
+    return (ZBCAvailableIndex !== -1 && VBCAvailableIndex !== -1) ? true : false;
+  }
+
+  /**
+   * @method resetSOBChanged
+   * @description RESET isSOBChanged TO FALSE IN BOTH ZBC AND VBC GRID, AFTER UPDATE ZBC AND VBC SOB 
+   */
+  const resetSOBChanged = () => {
+
+    let tempZBCArr = zbcPlantGrid && zbcPlantGrid.map((el) => {
+      el.isSOBChanged = false;
+      return el;
+    })
+
+    let tempVBCArr = vbcVendorGrid && vbcVendorGrid.map((el) => {
+      el.isSOBChanged = false;
+      return el;
+    })
+
+    setZBCPlantGrid(tempZBCArr)
+    setVBCVendorGrid(tempVBCArr)
   }
 
   /**
@@ -1146,7 +1354,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Plant Code`}</th>
                                   <th style={{}}>{`Plant Name`}</th>
-                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
+                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th><th className="text-center" style={{}}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
                                 </tr>
@@ -1199,7 +1407,7 @@ function CostingDetails(props) {
                                               handleZBCSOBChange(e, index);
                                             }}
                                             errors={errors && errors.zbcPlantGridFields && errors.zbcPlantGridFields[index] !== undefined ? errors.zbcPlantGridFields[index].ShareOfBusinessPercent : ""}
-                                            disabled={isSOBEnabled ? true : false}
+                                            disabled={isZBCSOBEnabled ? true : false}
                                           />
                                         </td>
                                         <td className="cr-select-height w-100px">
@@ -1237,7 +1445,7 @@ function CostingDetails(props) {
                                   })}
                                 {zbcPlantGrid && zbcPlantGrid.length === 0 && (
                                   <tr>
-                                    <td colSpan={5}>
+                                    <td colSpan={6}>
                                       <NoContentFound
                                         title={CONSTANT.EMPTY_DATA}
                                       />
@@ -1282,7 +1490,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor Code`}</th>
                                   <th style={{}}>{`Vendor Name`}</th>
-                                  <th style={{}}>{`SOB`}</th>
+                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{}}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
@@ -1335,7 +1543,7 @@ function CostingDetails(props) {
                                             handleVBCSOBChange(e, index);
                                           }}
                                           errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ""}
-                                          disabled={isSOBEnabled ? true : false}
+                                          disabled={isVBCSOBEnabled ? true : false}
                                         />
                                       </td>
                                       <td className="cr-select-height w-100px">
@@ -1371,7 +1579,7 @@ function CostingDetails(props) {
                                 })}
                                 {vbcVendorGrid.length === 0 && (
                                   <tr>
-                                    <td colSpan={5}>
+                                    <td colSpan={6}>
                                       <NoContentFound
                                         title={CONSTANT.EMPTY_DATA}
                                       />

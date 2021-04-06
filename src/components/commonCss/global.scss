@@ -208,6 +208,9 @@ a:hover {
 //   }
 // }
 
+// .save-btn:hover {
+//   background-color: #4dc771;
+//  }
 .blue-text {
   color: #316bd1;
   padding: 5px;
@@ -2401,4 +2404,11 @@ body {
       display:block;
     }  
   }
+}
+.refresh-icon {
+  width: 36px;
+  height: 36px;
+  background: transparent url('../../assests/images/refresh_icon.svg') 0% 0%
+    no-repeat padding-box;
+  border: none;
 }
