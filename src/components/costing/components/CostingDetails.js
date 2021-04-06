@@ -1232,7 +1232,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="ECO No."
+                          label="ECN No."
                           name={"ECNNumber"}
                           Controller={Controller}
                           control={control}
