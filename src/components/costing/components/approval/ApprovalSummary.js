@@ -9,6 +9,9 @@ import { setCostingViewData } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
+import moment from 'moment'
+import { Fragment } from 'react'
+import ApprovalListing from './ApprovalListing'
 import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
 
@@ -26,384 +29,395 @@ function ApprovalSummary(props) {
 
   const [costingSummary, setCostingSummary] = useState(false)
   const [approvalLevelStep, setApprovalLevelStep] = useState([])
-  const [departmentsId, setDepartmentId] = useState('')
+  const [approvalData, setApprovalData] = useState('')
+  const [showButton, setShowButton] = useState(true)
+  const [isFinalApproval, setIsFinalApproval] = useState(false)
+  const [isApprovalDone, setIsApprovalDone] = useState(false)
+  const [showListing, setShowListing] = useState(false)
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
-  {
-    const approvalSummary = useSelector(
-      (state) => state.approval.approvalSummaryData,
+  console.log(approvalData, "approvalData");
+  const approvalSummary = useSelector(
+    (state) => state.approval.approvalSummaryData,
+  )
+
+  useEffect(() => {
+    dispatch(
+      getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
+
+        const { PartDetails, ApprovalDetails, ApprovalLevelStep, } = res.data.Data.Costings[0] //Need to ask how data will come
+        setPartDetail(PartDetails)
+        setApprovalDetails(ApprovalDetails[0])
+        setApprovalLevelStep(ApprovalLevelStep)
+
+        const departmentId = res.data.Data.Costings[0].DepartmentId
+        const technology = res.data.Data.Costings[0].Technology
+        const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
+        const approvalProcessId = res.data.Data.Costings[0].ApprovalProcessId
+        const approvalProcessSummaryId = res.data.Data.Costings[0].ApprovalProcessSummaryId
+        const approvalNumber = res.data.Data.Costings[0].ApprovalNumber
+        const IsFinalApprovalDone = res.data.Data.Costings[0].IsFinalApprovalDone
+        // setIsFinalApproval(IsFinalApprovalDone)
+        setIsApprovalDone(IsFinalApprovalDone)
+        setApprovalData({
+          DepartmentId: departmentId,
+          Technology: technology,
+          TechnologyId: technologyId,
+          ApprovalProcessId: approvalProcessId,
+          ApprovalProcessSummaryId: approvalProcessSummaryId,
+          ApprovalNumber: approvalNumber,
+        })
+        // const tempObj = formViewData(CostingSummary)
+        // dispatch(setCostingViewData(tempObj))
+      }),
     )
+  }, [])
 
-    useEffect(() => {
-      dispatch(
-        getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
+  const closeDrawer = (e = '') => {
+    setApproveDrawer(false)
+    setRejectDrawer(false)
+    setShowListing(true)
+  }
+  const closeViewDrawer = (e = '') => {
+    setPushButton(false)
+    setViewButton(false)
+  }
+  return (
 
-          const {
-            PartDetails,
-            CostingSummary,
-            ApprovalDetails,
-            ApprovalLevelStep,
-          } = res.data.Data.Costings[0] //Need to ask how data will come
-          setPartDetail(PartDetails)
-          setApprovalDetails(ApprovalDetails)
-          setApprovalLevelStep(ApprovalLevelStep)
-
-          const departmentId = res.data.Data.DepartmentId
-          const technology = res.data.Data.Technology
-          const approvalProcessId = res.data.Data.ApprovalProcessId
-          const approvalNumber = res.data.Data.ApprovalNumber
-          setDepartmentId({
-            departmentId: departmentId,
-            technology: technology,
-            approvalProcessId: approvalProcessId,
-            approvalNumber: approvalNumber,
-          })
-          const tempObj = formViewData(CostingSummary)
-          dispatch(setCostingViewData(tempObj))
-        }),
-      )
-    }, [])
-
-    const closeDrawer = (e = '') => {
-      setApproveDrawer(false)
-      setRejectDrawer(false)
-    }
-
-    const closeViewDrawer = (e = '') => {
-      setPushButton(false)
-      setViewButton(false)
-    }
-
-    return (
-      <>
-        <h2 className="heading-main">Approval Summary</h2>
-        <Row>
-          <Col md="8">
-            <div className="left-border">
-              {'Approval Workflow (Approval No. '}
-              {`${departmentsId.approvalNumber ? departmentsId.approvalNumber : '-'
-                }) :`}
-            </div>
-          </Col>
-          <Col md="4" className="text-right">
-            <div className="right-border">
-              {
-                <button type={'button'} className="apply view-btn" onClick={() => setViewButton(true)}>
-                  View All
+    <>
+      {
+        showListing === false ?
+          <>
+            <h2 className="heading-main">Approval Summary</h2>
+            <Row>
+              <Col md="8">
+                <div className="left-border">
+                  {'Approval Workflow (Approval No. '}
+                  {`${approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'
+                    }) :`}
+                </div>
+              </Col>
+              <Col md="4" className="text-right">
+                <div className="right-border">
+                  {
+                    <button type={'button'} className="apply view-btn" onClick={() => setViewButton(true)}>
+                      View All
               </button>
-              }
-            </div>
-          </Col>
-        </Row>
-        {/* Code for approval workflow */}
-        <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} />
-        <hr />
-        <Row>
-          <Col md="8">
-            <div className="left-border">{'Part Details:'}</div>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="12" className="mb-2">
-            <Table responsive className="table cr-brdr-main" size="sm">
-              <thead>
-                <tr>
-                  <th>
-                    <span className="d-block grey-text text-small">{`Technology:`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.Technology ? partDetail.Technology : '-'}
-                    </span>
-                  </th>
-                  <th>
-                    <span className="d-block grey-text text-small">{`Assembly No./Part No.`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.PartNumber ? partDetail.PartNumber : '-'}
-                    </span>
-                  </th>
-                  <th>
-                    <span className="d-block grey-text text-small">{`Assembly Name/Part Name`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.PartName ? partDetail.PartName : '-'}
-                    </span>
-                  </th>
-                  <th>
-                    <span className="d-block grey-text text-small">{`Assembly Description/Part Description`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.Description ? partDetail.Description : '-'}
-                    </span>
-                  </th>
-                  <th>
-                    <span className="d-block grey-text text-small">{`ECO No:`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
-                    </span>
-                  </th>
-                  <th>
-                    <span className="d-block grey-text text-small">{`Drawing No:`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
-                    </span>
-                  </th>
-                  <th>
-                    <span className="d-block grey-text text-small">{`Revision No:`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.RevisionNumber
-                        ? partDetail.RevisionNumber
-                        : '-'}
-                    </span>
-                  </th>
-                  <th>
-                    <span className="d-block grey-text text-small">{`Effective Date:`}</span>
-                    <span className="d-block text-small">
-                      {partDetail.EffectiveDate ? partDetail.EffectiveDate : '-'}
-                    </span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* {Object.keys(partDetail).length === 0 && (
-                <tr>
-                  <td colSpan={12}>
-                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                  </td>
-                </tr>
-              )} */}
-                {/* {costingProcessCost && costingProcessCost.length === 0 && (
+                  }
+                </div>
+              </Col>
+            </Row>
+            {/* Code for approval workflow */}
+            <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} />
+            <hr />
+            <Row>
+              <Col md="8">
+                <div className="left-border">{'Part Details:'}</div>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="12" className="mb-2">
+                <Table responsive className="table cr-brdr-main" size="sm">
+                  <thead>
+                    <tr>
+                      <th>
+                        <span className="d-block grey-text text-small">{`Technology:`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.Technology ? partDetail.Technology : '-'}
+                        </span>
+                      </th>
+                      <th>
+                        <span className="d-block grey-text text-small">{`Assembly No./Part No.`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.PartNumber ? partDetail.PartNumber : '-'}
+                        </span>
+                      </th>
+                      <th>
+                        <span className="d-block grey-text text-small">{`Assembly Name/Part Name`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.PartName ? partDetail.PartName : '-'}
+                        </span>
+                      </th>
+                      <th>
+                        <span className="d-block grey-text text-small">{`Assembly Description/Part Description`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.Description ? partDetail.Description : '-'}
+                        </span>
+                      </th>
+                      <th>
+                        <span className="d-block grey-text text-small">{`ECO No:`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
+                        </span>
+                      </th>
+                      <th>
+                        <span className="d-block grey-text text-small">{`Drawing No:`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
+                        </span>
+                      </th>
+                      <th>
+                        <span className="d-block grey-text text-small">{`Revision No:`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.RevisionNumber
+                            ? partDetail.RevisionNumber
+                            : '-'}
+                        </span>
+                      </th>
+                      <th>
+                        <span className="d-block grey-text text-small">{`Effective Date:`}</span>
+                        <span className="d-block text-small">
+                          {partDetail.EffectiveDate ? moment(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                        </span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* {Object.keys(partDetail).length === 0 && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={CONSTANT.EMPTY_DATA} />
                   </td>
                 </tr>
               )} */}
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="8">
-            <div className="left-border">{'Approval Details:'}</div>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="12">
-            <Table responsive className="table cr-brdr-main" size="sm">
-              <thead>
-                <tr>
-                  <th>{`Costing ID`}</th>
-                  {approvalDetails.TypeOfCosting === 'VBC' && (
-                    <th>{`ZBC/Vendor Name`}</th>
-                  )}
-                  <th>
-                    {approvalDetails.TypeOfCosting === 'VBC'
-                      ? 'Vendor Plant'
-                      : 'Plant'}
-                    {`Code`}
-                  </th>
-                  <th>{`SOB`}</th>
-                  <th>{`Old/Current Price`}</th>
-                  <th>{`New/Revised Price:`}</th>
-                  <th>{`Variance`}</th>
-                  <th>{`Consumption Quantity`}</th>
-                  <th>{`Remaining Quantity`}</th>
-                  <th>{`Annual Impact`}</th>
-                  <th>{`Impact of The Year`}</th>
-                  <th>{`Effective Date`}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                    {approvalDetails.CostingId
-                      ? approvalDetails.CostingNumber
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.TypeOfCosting === 'VBC' &&
-                      approvalDetails.VendorName
-                      ? approvalDetails.VendorName
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.TypeOfCosting === 'VBC'
-                      ? approvalDetails.VendorPlantCode
-                        ? approvalDetails.VendorPlantCode
-                        : '-'
-                      : approvalDetails.PlantCode
-                        ? approvalDetails.PlantCode
-                        : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.ShareOfBusiness
-                      ? approvalDetails.ShareOfBusiness
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.OldPOPrice
-                      ? approvalDetails.OldPOPrice
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.NewPOPrice
-                      ? approvalDetails.NewPOPrice
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.Variance ? approvalDetails.Variance : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.ConsumptionQuantity
-                      ? approvalDetails.ConsumptionQuantity
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.RemainingQuantity
-                      ? approvalDetails.RemainingQuantity
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.AnnualImpact
-                      ? approvalDetails.AnnualImpact
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.ImpactOfTheYear
-                      ? approvalDetails.ImpactOfTheYear
-                      : '-'}
-                  </td>
-                  <td>
-                    {approvalDetails.EffectiveDate
-                      ? approvalDetails.EffectiveDate
-                      : '-'}
-                  </td>
-                </tr>
-
-                {/* {Object.keys(approvalDetails).length === 0 && (
+                    {/* {costingProcessCost && costingProcessCost.length === 0 && (
                 <tr>
                   <td colSpan={12}>
                     <NoContentFound title={CONSTANT.EMPTY_DATA} />
                   </td>
                 </tr>
               )} */}
-              </tbody>
-              <tfoot>
+                  </tbody>
+                </Table>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="8">
+                <div className="left-border">{'Approval Details:'}</div>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="12">
+                <Table responsive className="table cr-brdr-main" size="sm">
+                  <thead>
+                    <tr>
+                      <th>{`Costing ID`}</th>
+                      {approvalDetails.TypeOfCosting === 'VBC' && (
+                        <th>{`ZBC/Vendor Name`}</th>
+                      )}
+                      <th>
+                        {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
+                      </th>
+                      <th>{`SOB`}</th>
+                      <th>{`Old/Current Price`}</th>
+                      <th>{`New/Revised Price:`}</th>
+                      <th>{`Variance`}</th>
+                      <th>{`Consumption Quantity`}</th>
+                      <th>{`Remaining Quantity`}</th>
+                      <th>{`Annual Impact`}</th>
+                      <th>{`Impact of The Year`}</th>
+                      <th>{`Effective Date`}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        {approvalDetails.CostingId ? approvalDetails.CostingNumber : '-'}
+                      </td>
+                      {/* <td> */}
+                      {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
+                      {/* </td> */}
+                      <td>
+                        {approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.OldPOPrice !== null ? approvalDetails.OldPOPrice : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.NewPOPrice !== null ? approvalDetails.NewPOPrice : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.Variance !== null ? approvalDetails.Variance : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.ConsumptionQuantity !== null ? approvalDetails.ConsumptionQuantity : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.RemainingQuantity !== null ? approvalDetails.RemainingQuantity : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.AnnualImpact !== null ? approvalDetails.AnnualImpact : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.ImpactOfTheYear !== null ? approvalDetails.ImpactOfTheYear : '-'}
+                      </td>
+                      <td>
+                        {approvalDetails.EffectiveDate !== null ? moment(approvalDetails.EffectiveDate).format('DD/MM/YYYY') : '-'}
+                      </td>
+                    </tr>
+
+                    {/* {Object.keys(approvalDetails).length === 0 && (
                 <tr>
-                  <td colSpan="12">
-                    <span className="grey-text">Reason:</span>
-                    {approvalDetails.Reason ? approvalDetails.Reason : '-'}
+                  <td colSpan={12}>
+                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
                   </td>
                 </tr>
-                <tr>
-                  <td colSpan="12">
-                    <span className="grey-text">Remark:</span>
-                    {approvalDetails.Remark ? approvalDetails.Remark : '-'}{' '}
-                  </td>
-                </tr>
-              </tfoot>
-            </Table>
-          </Col>
-        </Row>
-        <hr />
-        <Row>
-          <Col md="10">
-            <div className="left-border">{'Costing Summary:'}</div>
-          </Col>
-          <Col md="2" className="text-right">
-            <div className="right-border">
-              <button className="btn btn-small-primary-circle ml-1" type="button">
-                {costingSummary ? (
-                  <i
-                    onClick={() => {
-                      setCostingSummary(false)
-                    }}
-                    className="fa fa-minus"
-                  ></i>
-                ) : (
-                  <i
-                    onClick={() => {
-                      setCostingSummary(true)
-                    }}
-                    className="fa fa-plus"
-                  ></i>
-                )}
-              </button>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="12">
-            {costingSummary && <CostingSummaryTable viewMode={true} />}
-          </Col>
-        </Row>
-        {/* Costing Summary page here */}
-        <hr />
-        <Row className="sf-btn-footer no-gutters justify-content-between">
-          <div className="col-sm-12 text-right bluefooter-butn">
+              )} */}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan="12">
+                        <span className="grey-text">Reason:</span>
+                        {approvalDetails.Reason ? approvalDetails.Reason : '-'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colSpan="12">
+                        <span className="grey-text">Remark:</span>
+                        {approvalDetails.Remark ? approvalDetails.Remark : '-'}{' '}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </Table>
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col md="10">
+                <div className="left-border">{'Costing Summary:'}</div>
+              </Col>
+              <Col md="2" className="text-right">
+                <div className="right-border">
+                  <button className="btn btn-small-primary-circle ml-1" type="button">
+                    {costingSummary ? (
+                      <i
+                        onClick={() => {
+                          setCostingSummary(false)
+                        }}
+                        className="fa fa-minus"
+                      ></i>
+                    ) : (
+                      <i
+                        onClick={() => {
+                          setCostingSummary(true)
+                        }}
+                        className="fa fa-plus"
+                      ></i>
+                    )}
+                  </button>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="12">
+                {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} />}
+              </Col>
+            </Row>
+            {/* Costing Summary page here */}
+            <hr />
+            {
+              !isApprovalDone &&
 
-            <button
-              type="button"
-              className="submit-button mr5 save-btn"
-              onClick={() => setPushButton(true)}
-            >
-              <div className={'check-icon'}>
-                <img
-                  src={require('../../../../assests/images/check.png')}
-                  alt="check-icon.jpg"
-                />{' '}
-              </div>
-              {'Push'}
-            </button>
+              <Row className="sf-btn-footer no-gutters justify-content-between">
+                <div className="col-sm-12 text-right bluefooter-butn">
+                  {
+                    showButton &&
+                    <Fragment>
+                      {
+                      
+                        isFinalApproval === true ?
+                          <button
+                            type="button"
+                            className="submit-button mr5 save-btn"
+                            onClick={() => setApproveDrawer(true)}
+                          >
+                            <div className={'check-icon'}>
+                              <img
+                                src={require('../../../../assests/images/check.png')}
+                                alt="check-icon.jpg"
+                              />{' '}
+                            </div>
+                            {'Push'}
+                          </button> :
+                          
+                          
+                          
+                          <button
+                            type={'button'}
+                            className="mr15 approve-reject-btn"
+                            onClick={() => setRejectDrawer(true)}
+                          >
+                            <div className={'cross-icon'}>
 
-            <button
-              type={'button'}
-              className="reset mr15 cancel-btn"
-              onClick={() => setRejectDrawer(true)}
-            >
-              <div className={'cross-icon'}>
-                <img
-                  src={require('../../../../assests/images/times.png')}
-                  alt="cancel-icon.jpg"
-                />
-              </div>{' '}
-              {'Reject'}
-            </button>
+                              <img
+                                src={require('../../../../assests/images/times.png')}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>{' '}
+                            {'Reject'}
+                          </button>
+                      }
 
-            <button
-              type="button"
-              className="submit-button mr5 save-btn"
-              onClick={() => setApproveDrawer(true)}
-            >
-              <div className={'check-icon'}>
-                <img
-                  src={require('../../../../assests/images/check.png')}
-                  alt="check-icon.jpg"
-                />{' '}
-              </div>
-              {'Approve'}
-            </button>
-          </div>
-        </Row>
-        {approveDrawer && (
-          <ApproveRejectDrawer
-            type={'Approve'}
-            isOpen={approveDrawer}
-            closeDrawer={closeDrawer}
-            tokenNo={approvalNumber}
-            departmentId={departmentsId}
-            anchor={'right'}
-          />
-        )}
-        {rejectDrawer && (
-          <ApproveRejectDrawer
-            type={'Reject'}
-            isOpen={rejectDrawer}
-            departmentId={departmentsId}
-            closeDrawer={closeDrawer}
-            tokenNo={approvalNumber}
-            anchor={'right'}
-          />
-        )}
+                       {/* <button
+                        type="button"
+                        className="submit-button mr5 save-btn"
+                        onClick={() => setPushButton(true)}
+                      >
+                        <div className={'check-icon'}>
+                          <img
+                            src={require('../../../../assests/images/check.png')}
+                            alt="check-icon.jpg"
+                          />{' '}
+                        </div>
+                        {'Push'}
+                      </button> */}
 
-        {pushButton && (
+                      <button
+                        type="button"
+                        className="approve-button mr5 approve-hover-btn"
+                        onClick={() => setApproveDrawer(true)}
+                      >
+                        <div className={'check-icon'}>
+                          <img
+                            src={require('../../../../assests/images/check.png')}
+                            alt="check-icon.jpg"
+                          />{' '}
+                        </div>
+                        {isFinalApproval ? 'Approved' : 'Approve'}
+                      </button>
+                    </Fragment>
+                  }
+                </div>
+              </Row>
+            }
+          </> :
+          <ApprovalListing />
+      }
+
+      {approveDrawer && (
+        <ApproveRejectDrawer
+          type={'Approve'}
+          isOpen={approveDrawer}
+          closeDrawer={closeDrawer}
+          // tokenNo={approvalNumber}
+          approvalData={[approvalData]}
+          anchor={'right'}
+        />
+      )}
+      {rejectDrawer && (
+        <ApproveRejectDrawer
+          type={'Reject'}
+          isOpen={rejectDrawer}
+          approvalData={[approvalData]}
+          closeDrawer={closeDrawer}
+          //  tokenNo={approvalNumber}
+          anchor={'right'}
+        />
+      )}
+      {pushButton && (
           <PushButtonDrawer
             isOpen={pushButton}
             closeDrawer={closeViewDrawer}
@@ -419,8 +433,10 @@ function ApprovalSummary(props) {
             anchor={'top'}
           />
         )}
-      </>
-    )
-  }
+
+
+    </>
+  )
 }
+
 export default ApprovalSummary
