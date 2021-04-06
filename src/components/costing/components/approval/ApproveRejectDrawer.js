@@ -138,7 +138,7 @@ function ApproveRejectDrawer(props) {
                 </Col>
               </Row>
 
-              <Row>
+              <Row className="ml-0">
                 {type === 'Approve' && (
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
@@ -174,7 +174,6 @@ function ApproveRejectDrawer(props) {
                   />
                 </div>
               </Row>
-              <hr />
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button

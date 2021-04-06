@@ -2515,6 +2515,11 @@ button:disabled{pointer-events: none;}
     }
 }
 .react-bs-table-container {
+  th,td{
+    >input[type=checkbox]{
+      min-width: 18px;
+    }
+  }
   .react-bs-table-search-form{
     max-width: 245px;
     input.form-control{
@@ -3306,6 +3311,8 @@ body{
    vertical-align: middle;
  }
 }
+
+
 
 
 // responsive media query start
