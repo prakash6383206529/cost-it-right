@@ -3,6 +3,7 @@ import Moment from 'moment'
 import { MESSAGES } from '../config/message'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForNull } from './validation'
+import { G, KG, MG } from '../config/constants'
 
 /**
  * @method  apiErrors
@@ -709,13 +710,28 @@ export const applySuperScripts = (cell) => {
   console.log(cell, "CELL");
   if (cell && cell !== '') {
     const capIndex = cell && cell.indexOf('^');
-
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
-
     const capWithNumber = cell.substring(capIndex, capIndex + 2);
-
     return cell.replace(capWithNumber, superNumber.sup());
   } else {
     return '';
+  }
+}
+
+
+export function convertmmTocm(value) {
+  return value / 10
+}
+
+export function setValueAccToUOM(value, UOM) {
+  switch (UOM) {
+    case G:
+      return value
+    case KG:
+      return value / 1000
+    case MG:
+      return value * 1000
+    default:
+      break;
   }
 }

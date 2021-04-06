@@ -109,6 +109,12 @@ class AddRMDomestic extends Component {
 
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      this.calculateNetCost()
+    }
+  }
+
   /**
    * @method handleRMChange
    * @description  used to handle row material selection
@@ -263,22 +269,17 @@ class AddRMDomestic extends Component {
       this.setState({ UOM: [] })
     }
   }
-
   /**
-   * @method handleBasicRate
-   * @description Set value in NetLandedCost
-   */
-  handleBasicRate = (e) => {
-    const { initialConfiguration, fieldsObj } = this.props
-    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : checkForNull(Number(e.target.value) + checkForNull(Number(fieldsObj.FreightCharges))) })
-    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull((Number(e.target.value) + checkForNull(Number(fieldsObj.FreightCharges))), initialConfiguration.NoOfDecimalForPrice))
-  }
+   * @method calculateNetCost
+   * @description CALCUALTION NET COST
+  */
 
-  handleFreightCharges = (e) => {
+  calculateNetCost = () => {
     const { initialConfiguration } = this.props
     const { fieldsObj } = this.props
-    this.setState({ netLandedCost: isNaN(e.target.value) ? 0 : checkForDecimalAndNull(Number(e.target.value) + Number(fieldsObj.BasicRate)) })
-    this.props.change('NetLandedCost', isNaN(e.target.value) ? 0 : checkForDecimalAndNull((Number(e.target.value) + Number(fieldsObj.BasicRate)), initialConfiguration.NoOfDecimalForPrice))
+    const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FrieghtCharge ? fieldsObj.FrieghtCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
+    this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+    this.setState({ netLandedCost: netCost })
   }
 
   /**
@@ -323,7 +324,8 @@ class AddRMDomestic extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
           this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
-          // this.props.change('FreightCharges',Data.FreightCharges)
+          // this.props.change('FreightCharge',Data.FreightCharge)
+          // this.props.change('ShearingCost',Data.ShearingCost)
 
           setTimeout(() => {
             const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList } = this.props
@@ -818,7 +820,8 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
-        // FreightCharges:values.FreightCharges,
+        // FrieghtCharge:values.FrieghtCharge,
+        // ShearingCost:values.ShearingCost,
         ScrapRate: values.ScrapRate,
         NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
@@ -847,7 +850,8 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
-        // FreightCharges:values.FreightCharges,
+        // FrieghtCharge:values.FrieghtCharge,
+        // ShearingCost:values.ShearingCost,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
@@ -1237,7 +1241,7 @@ class AddRMDomestic extends Component {
                               placeholder={"Enter"}
                               validate={[required, positiveAndDecimalNumber, maxLength15]}
                               component={renderText}
-                              onChange={this.handleBasicRate}
+                              // onChange={thishandleBasicRate.}
                               required={true}
                               disabled={false}
                               className=" "
@@ -1261,11 +1265,26 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Freight Charges (INR)`}
-                              name={""}
-                              type="text" FreightCharges
+                              label={`RM Freight Cost(INR)`}
+                              name={"FrieghtCharge"}
+                              type="text"
                               placeholder={"Enter"}
-                              onChange={this.handleFreightCharges}
+                              // onChange={this.handleFreightCharges}
+                              validate={[positiveAndDecimalNumber, maxLength15]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              maxLength="15"
+                            />
+                          </Col>
+                          <Col md="4">
+                            <Field
+                              label={`Shearing Cost (INR)`}
+                              name={"ShearingCost"}
+                              type="text"
+                              placeholder={"Enter"}
+                              // onChange={this.handleFreightCharges}
                               validate={[positiveAndDecimalNumber, maxLength15]}
                               component={renderText}
                               required={false}
@@ -1566,7 +1585,7 @@ class AddRMDomestic extends Component {
  */
 function mapStateToProps(state) {
   const { comman, material, auth } = state
-  const fieldsObj = selector(state, 'BasicRate', 'FreightCharges')
+  const fieldsObj = selector(state, 'BasicRate', 'FrieghtCharge', 'ShearingCost')
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList, technologySelectList,
