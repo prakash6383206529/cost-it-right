@@ -433,7 +433,9 @@ class AddVendorDrawer extends Component {
         const { country, isOpenVendorPlant } = this.state;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                // onClose={(e) => this.toggleDrawer(e)}
+                >
                     <Container >
                         <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
                             <form

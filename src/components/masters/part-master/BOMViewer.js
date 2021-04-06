@@ -284,7 +284,7 @@ class BOMViewer extends Component {
           className={"bom-viewer-main"}
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          onClose={(e) => this.toggleDrawer(e)}
+          // onClose={(e) => this.toggleDrawer(e)}
         >
           <>
             <div className={"drawer-wrapper drawer-full-width bom-drawer"}>

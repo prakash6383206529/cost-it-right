@@ -193,7 +193,9 @@ class AddProcessDrawer extends Component {
     const { handleSubmit, isEditFlag, isMachineShow } = this.props
     return (
       <div>
-        <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+        <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+        // onClose={(e) => this.toggleDrawer(e)}
+        >
           <Container>
             <div className={'drawer-wrapper'}>
               <form noValidate className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
