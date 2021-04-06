@@ -49,7 +49,8 @@ import {
   GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_VENDOR_SELECT_LIST,
   GET_PART_COSTING_PLANT_SELECTLIST,
-  GET_PART_SELECTLIST_BY_TECHNOLOGY
+  GET_PART_SELECTLIST_BY_TECHNOLOGY,
+  SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
 } from '../../../config/constants';
 
 const initialState = {
@@ -66,6 +67,7 @@ const initialState = {
   viewCostingDetailData: [],
   partNo: '',
   costingApprovalData: [],
+  IsIncludedSurfaceInOverheadProfit: false,
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -429,6 +431,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         partSelectListByTechnology: action.payload
+      }
+    case SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA:
+      return {
+        ...state,
+        loading: false,
+        IsIncludedSurfaceInOverheadProfit: action.payload
       }
     default:
       return state

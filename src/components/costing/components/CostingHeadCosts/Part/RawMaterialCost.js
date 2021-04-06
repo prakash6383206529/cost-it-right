@@ -142,7 +142,18 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
 
     if (Number(event.target.value) <= 0) {
+
+      const GrossWeight = checkForNull(event.target.value)
+      const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
+
+      const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+      const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
+      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
+      setGridData(tempArr)
       toastr.warning('Please enter valid weight.')
+
     } else {
       const GrossWeight = checkForNull(event.target.value)
       const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
@@ -167,6 +178,14 @@ function RawMaterialCost(props) {
 
     if (Number(event.target.value) <= 0) {
 
+      const FinishWeight = checkForNull(event.target.value);
+      const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
+      const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+      const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
+      tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
+      setGridData(tempArr)
 
       toastr.warning('Please enter valid weight.')
     } else {
