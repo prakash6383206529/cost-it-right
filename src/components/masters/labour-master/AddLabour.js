@@ -369,6 +369,7 @@ class AddLabour extends Component {
     const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
     const tempArray = []
 
+    
     tempArray.push(...gridTable, {
       LabourDetailId: '',
       MachineTypeId: machineType.value,
