@@ -141,6 +141,10 @@ class BOMUpload extends Component {
   */
   onSubmit = (values) => {
     const { fileData, } = this.state;
+    if (fileData.length === 0) {
+      toastr.warning('Please select a file to upload.')
+      return false
+    }
 
     let uploadData = {
       Records: fileData,
