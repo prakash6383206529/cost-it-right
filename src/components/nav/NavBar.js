@@ -338,7 +338,7 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
                   alt={module + " icon"}
                 />
-                <span>Costing <i class="fa fa-chevron-down dr-icon"></i></span>
+                <span>Costing </span>
               </Link>
               <div className="dropdown-menu sub-menu">
                 <ul>

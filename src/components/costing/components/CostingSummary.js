@@ -529,7 +529,7 @@ function CostingSummary(props) {
                           type="button"
                           //disabled={pristine || submitting}
                           onClick={resetData}
-                          className="reset"
+                          className="cancel-btn"
                         >
                           {'Reset'}
                         </button>
