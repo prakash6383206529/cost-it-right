@@ -181,15 +181,6 @@ function SheetMetalBaicDrawer(props) {
                         control={control}
                         register={register}
                         mandatory={false}
-                        rules={{
-                          required: false,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
                         handleChange={() => { }}
                         defaultValue={MachineTonnage}
                         className=""
