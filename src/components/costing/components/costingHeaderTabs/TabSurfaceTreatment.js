@@ -583,7 +583,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Transportation Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "120px" }}>{`Total Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
                         </tr>
                       </thead>

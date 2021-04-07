@@ -2102,7 +2102,7 @@ input:disabled,
 .sf-mainwrapper {
   position: relative;
   // z-index: 3;
-  z-index: 11;
+  z-index: 13;
 }
 .blue-box {
   position: initial;
@@ -2284,17 +2284,28 @@ td {
      th{
       border-top: 1px solid #C2CBE8;
       border-bottom: 1px solid #C2CBE8;
-      &:last-child{border-right: 1px solid #C2CBE8;}
      }
   }
-  tbody{
-    tr{
-      td{
+}
+
+.costing-summary-page{
+  .table.cr-brdr-main{
+    thead{
+       th{
         &:last-child{border-right: 1px solid #C2CBE8;}
+       }
+    }
+    tbody{
+      tr{
+        td{
+          &:last-child{border-right: 1px solid #C2CBE8;}
+        }
       }
     }
   }
 }
+
+
 body {
   .mb-15 {
     margin-bottom: 15px;
