@@ -277,7 +277,7 @@ class AddLabour extends Component {
    */
   handleMachineType = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ machineType: newValue }, () => {
+      this.setState({ machineType: newValue, labourType: []  }, () => {
         const { machineType } = this.state
         this.props.getLabourTypeByMachineTypeSelectList(
           machineType.value,
@@ -285,7 +285,7 @@ class AddLabour extends Component {
         )
       })
     } else {
-      this.setState({ machineType: [] })
+      this.setState({ machineType: [], labourType: []  })
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     }
   }
