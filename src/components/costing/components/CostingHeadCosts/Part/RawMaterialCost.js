@@ -72,7 +72,6 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
-    console.log(rowData, "ROW DATA ");
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
         RMName: rowData.RawMaterial,
@@ -104,20 +103,20 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "" || Number(tempData.Density) === 0) {
+    if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
       toastr.warning("Density is not avaliable for weight calculation.")
       return false
     }
     dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        tempData = { ...tempData, WeightCalculatorRequest: data, }
-        tempArr = Object.assign([...gridData], { [index]: tempData })
-        setTimeout(() => {
-          setGridData(tempArr)
-          setWeightDrawerOpen(true)
-        }, 100)
-      }
+      // if (res && res.data && res.data.Data) {
+      const data = res && res.data && res.data.Data ? res.data.Data : {}
+      tempData = { ...tempData, WeightCalculatorRequest: data, }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setTimeout(() => {
+        setGridData(tempArr)
+        setWeightDrawerOpen(true)
+      }, 100)
+      // }
     }))
     // setWeightDrawerOpen(true)
   }
