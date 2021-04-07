@@ -357,36 +357,6 @@ class SideBar extends Component {
                       - Approval
                   </Link>
                   </li>
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={{
-                        pathname: "/approval-listing",
-                        state: {
-                          ModuleId: 1,
-                          PageName: "Costing",
-                          PageURL: "/approval-listing",
-                        },
-                      }}
-                    >
-                      - Approval
-                  </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item"
-                      to={{
-                        pathname: "/approval-listing",
-                        state: {
-                          ModuleId: 1,
-                          PageName: "Costing",
-                          PageURL: "/approval-listing",
-                        },
-                      }}
-                    >
-                      - Approval
-                  </Link>
-                  </li>
                 </ul>
               </div>
             </li>
@@ -681,8 +651,8 @@ class SideBar extends Component {
                                 {userData.Name}
                               </>
                             ) : (
-                                "Login"
-                              )}
+                              "Login"
+                            )}
                           </DropdownToggle>
 
                           {/* <DropdownMenu>
@@ -716,8 +686,8 @@ class SideBar extends Component {
                       </a>
                     </li>
                   ) : (
-                      ""
-                    )}
+                    ""
+                  )}
                 </ul>
               </div>
             </nav>
