@@ -95,7 +95,7 @@ class AddVendorDrawer extends Component {
             if (removedVendorTypeIds.length === 0) {
                 this.setState({ selectedVendorType: e });
             } else {
-                toastr.warning("You cann't removed existed Vendor Type.");
+                toastr.warning("You can not remove existing Vendor Type.");
                 return false;
             }
 
