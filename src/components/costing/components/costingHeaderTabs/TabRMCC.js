@@ -389,12 +389,61 @@ function TabRMCC(props) {
           let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(i.CostingPartDetails.TotalConversionCost);
 
           i.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-          i.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(bopGrid);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost + checkForNull(i.CostingPartDetails.BOPHandlingCharges);
+          i.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(bopGrid) + checkForNull(i.CostingPartDetails.BOPHandlingCharges);
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
 
         } else {
           setBOPCostInDataList(bopGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+
+    } catch (error) {
+
+    }
+    return tempArr;
+  }
+
+  /**
+   * @method setBOPHandlingCost
+   * @description SET BOP COST
+   */
+  const setBOPHandlingCost = (bopGrid, BOPHandlingFields, params) => {
+    console.log('BOPHandlingFields: ', BOPHandlingFields);
+    let arr = setBOPHandlingCostInDataList(bopGrid, BOPHandlingFields, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
+  }
+
+  const setBOPHandlingCostInDataList = (bopGrid, BOPHandlingFields, params, arr) => {
+    let tempArr = [];
+    try {
+      tempArr = arr && arr.map(i => {
+        if (i.IsAssemblyPart === true) {
+
+          i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(netBOPCost(bopGrid)), params) + checkForNull(BOPHandlingFields.BOPHandlingCharges);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getTotalCostForAssembly(i.CostingChildPartDetails, i.CostingPartDetails, 'BOP', checkForNull(netBOPCost(bopGrid)), params) + checkForNull(BOPHandlingFields.BOPHandlingCharges);
+
+          // BELOW KEYS USED FOR BOP COST WITH QUANTITY
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getBOPCostWithQuantity(i.CostingChildPartDetails, checkForNull(netBOPCost(bopGrid)), params);
+          i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = getBOPTotalCostForAssemblyWithQuantity(i.CostingChildPartDetails, checkForNull(netBOPCost(bopGrid)), params);
+          setBOPHandlingCostInDataList(bopGrid, BOPHandlingFields, params, i.CostingChildPartDetails)
+
+        } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          let GrandTotalCost = checkForNull(i.CostingPartDetails.TotalRawMaterialsCost) + checkForNull(netBOPCost(bopGrid)) + checkForNull(i.CostingPartDetails.TotalConversionCost);
+
+          i.CostingPartDetails.CostingBoughtOutPartCost = bopGrid;
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost + checkForNull(BOPHandlingFields.BOPHandlingCharges);
+          i.CostingPartDetails.TotalBoughtOutPartCost = netBOPCost(bopGrid) + checkForNull(BOPHandlingFields.BOPHandlingCharges);
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
+
+          i.CostingPartDetails.IsApplyBOPHandlingCharges = BOPHandlingFields.IsApplyBOPHandlingCharges;
+          i.CostingPartDetails.BOPHandlingPercentage = checkForNull(BOPHandlingFields.BOPHandlingPercentage);
+          i.CostingPartDetails.BOPHandlingCharges = checkForNull(BOPHandlingFields.BOPHandlingCharges);
+
+        } else {
+          setBOPHandlingCostInDataList(bopGrid, BOPHandlingFields, params, i.CostingChildPartDetails)
         }
         return i;
       });
@@ -967,6 +1016,7 @@ function TabRMCC(props) {
                                       setPartDetails={setPartDetails}
                                       setRMCost={setRMCost}
                                       setBOPCost={setBOPCost}
+                                      setBOPHandlingCost={setBOPHandlingCost}
                                       setProcessCost={setProcessCost}
                                       setOperationCost={setOperationCost}
                                       setToolCost={setToolCost}
@@ -985,6 +1035,7 @@ function TabRMCC(props) {
                                       toggleAssembly={toggleAssembly}
                                       setRMCost={setRMCost}
                                       setBOPCost={setBOPCost}
+                                      setBOPHandlingCost={setBOPHandlingCost}
                                       setProcessCost={setProcessCost}
                                       setOperationCost={setOperationCost}
                                       setToolCost={setToolCost}
