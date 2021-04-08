@@ -271,7 +271,7 @@ class ReasonListing extends Component {
                       className={'user-btn'}
                       onClick={this.formToggle}
                     >
-                      <div className={'plus'}></div>ADD REASON
+                      <div className={'plus'}></div>ADD
                     </button>
                   )}
                 </div>
