@@ -194,7 +194,7 @@ function VariableMhrDrawer(props) {
         onClose={(e) => toggleDrawer(e)}
       >
         <div className="container-fluid">
-          <div className={'drawer-wrapper drawer-1500px'}>
+          <div className={'drawer-wrapper drawer-md'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
