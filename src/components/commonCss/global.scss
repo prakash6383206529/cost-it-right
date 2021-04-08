@@ -2245,12 +2245,14 @@ input:disabled,
   }
 }
 td {
+  .Error,
+  .Pushed,
   .Draft,
   [class^="Pending"],
   .Approved,
   .Rejected,
   .History {
-    background-color: #fc5774;
+    background-color:#da94a1;
     min-width: 90px;
     height: 30px;
     border-radius: 30px;
@@ -2272,7 +2274,13 @@ td {
     background-color: #c2cbe8;
   }
   .Rejected{
-    background-color: #c3344d;
+    background-color:  #fc5774;
+  }
+  .Error{
+    background-color: #f73d3d;
+  }
+  .Pushed{
+    background-color: #498cef;
   }
 }
 .table.cr-brdr-main{
