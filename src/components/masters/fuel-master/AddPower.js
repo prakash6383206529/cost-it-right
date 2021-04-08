@@ -593,7 +593,7 @@ class AddPower extends Component {
     const { source, UOM, powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
-    if (source.length === 0) {
+    if (source.length === 0 || (fieldsObj.UnitGeneratedPerAnnum === undefined || fieldsObj.SelfPowerContribution === undefined)) {
       toastr.warning('Fields should not be empty');
       return false;
     }
@@ -1607,7 +1607,7 @@ class AddPower extends Component {
                                     placeholder={'Enter'}
                                     validate={[positiveAndDecimalNumber, maxLength20]}
                                     component={renderText}
-                                    //required={true}
+                                    required={true}
                                     className=""
                                     customClassName=" withBorder"
                                     disabled={false}
