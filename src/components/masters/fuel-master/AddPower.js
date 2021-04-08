@@ -2,13 +2,12 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, maxLength20, checkPercentageValue,decimalLength2 } from "../../../helper/validation";
+import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, maxLength20, checkPercentageValue, decimalLength2 } from "../../../helper/validation";
 import { renderNumberInputField, searchableSelect, renderMultiSelectField, focusOnError, renderText, } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import {
-  getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState,
-  createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
+  getFuelComboData, createPowerDetail, updatePowerDetail, getPlantListByState, createVendorPowerDetail, updateVendorPowerDetail, getDieselRateByStateAndUOM,
   getPowerDetailData, getVendorPowerDetailData,
 } from '../actions/Fuel';
 import { toastr } from 'react-redux-toastr';
@@ -504,16 +503,12 @@ class AddPower extends Component {
 
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
-    if (Number(fieldsObj.MinDemandKWPerMonth) < 0 ||
-    Number(fieldsObj.DemandChargesPerKW) < 0 ||
-    Number(fieldsObj.MaxDemandChargesKW) < 0 ||
-    Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
-    Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 ||
-    Number(fieldsObj.DutyChargesAndFCA) < 0 ||
-    Number(fieldsObj.SEBPowerContributaion) < 0) {
-    toastr.warning('Fields should not be negative');
-    return false;
-  }
+    if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.MaxDemandChargesKW) < 0 ||
+      Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 || Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 || Number(fieldsObj.DutyChargesAndFCA) < 0 ||
+      Number(fieldsObj.SEBPowerContributaion) < 0) {
+      toastr.warning('Fields should not be negative');
+      return false;
+    }
 
     if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined) {
       toastr.warning('Fields should not be empty.')
@@ -598,13 +593,11 @@ class AddPower extends Component {
       return false;
     }
 
-    if (Number(fieldsObj.AssetCost) < 0 ||
-    Number(fieldsObj.AnnualCost) < 0 ||
-    Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
-    Number(fieldsObj.SelfPowerContribution) < 0){
-    toastr.warning('Fields should not be negative');
-    return false;
-  }
+    if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
+      Number(fieldsObj.SelfPowerContribution) < 0) {
+      toastr.warning('Fields should not be negative');
+      return false;
+    }
 
     const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
     const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
@@ -923,7 +916,7 @@ class AddPower extends Component {
       return { VendorPlantName: item.Text, VendorPlantId: item.Value, }
     })
 
-    if (IsVendor && vendorPlantArray.length === 0) return false;
+    if (IsVendor && initialConfiguration.IsVendorPlantConfigurable && vendorPlantArray.length === 0) return false;
 
     const NetPowerCostPerUnit = powerGrid && powerGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.CostPerUnit * el.PowerContributionPercentage / 100);
@@ -1156,7 +1149,7 @@ class AddPower extends Component {
                                     name={"NetPowerCostPerUnit"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLength2]}                                    component={renderNumberInputField}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLength2]} component={renderNumberInputField}
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
