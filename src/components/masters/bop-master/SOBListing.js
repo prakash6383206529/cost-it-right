@@ -141,7 +141,7 @@ class SOBListing extends Component {
   }
 
   renderNoOfVendor = () => {
-    return <>No Of <br />Vendors </>
+    return <>No of <br />Vendors </>
   }
 
   /**
@@ -249,7 +249,7 @@ class SOBListing extends Component {
                       type="text"
                       label=""
                       component={searchableSelect}
-                      placeholder={'-BOP Part No.-'}
+                      placeholder={'BOP Part No.'}
                       isClearable={false}
                       options={this.renderListing('SOBVendors')}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
