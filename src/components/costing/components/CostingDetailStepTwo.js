@@ -11,6 +11,7 @@ import CostingHeadTabs from './CostingHeaderTabs/index'
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
+export const SurfaceCostContext = React.createContext()
 
 function CostingDetailStepTwo(props) {
 
@@ -56,7 +57,7 @@ function CostingDetailStepTwo(props) {
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.NetDiscountsCost)
     }
 
     tempData = {
@@ -96,7 +97,7 @@ function CostingDetailStepTwo(props) {
         data.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.NetDiscountsCost)
     }
 
     tempData = {
@@ -133,7 +134,7 @@ function CostingDetailStepTwo(props) {
         tempData.NetSurfaceTreatmentCost +
         data.NetOverheadProfitCost +
         tempData.NetPackagingAndFreight +
-        tempData.ToolCost - tempData.DiscountsAndOtherCost
+        tempData.ToolCost - tempData.NetDiscountsCost
     }
 
     tempData = {
@@ -169,7 +170,7 @@ function CostingDetailStepTwo(props) {
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         data.NetFreightPackagingCost +
-        tempData.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
+        tempData.ToolCost - checkForNull(tempData.NetDiscountsCost)
     }
 
     tempData = {
@@ -205,7 +206,7 @@ function CostingDetailStepTwo(props) {
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
           tempData.NetPackagingAndFreight +
-          data.ToolCost - checkForNull(tempData.DiscountsAndOtherCost)
+          data.ToolCost - checkForNull(tempData.NetDiscountsCost)
       }
 
       tempData = {
@@ -260,7 +261,8 @@ function CostingDetailStepTwo(props) {
       //setTimeout(() => {
       tempData = {
         ...tempData,
-        DiscountsAndOtherCost: checkForDecimalAndNull(discountedCost, 2),
+        NetDiscountsCost: checkForDecimalAndNull(discountedCost, 2),
+        NetOtherCost: checkForDecimalAndNull(data.AnyOtherCost, 2),
         TotalCost: OverAllCost + checkForDecimalAndNull(data.AnyOtherCost, 2),
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
@@ -328,7 +330,8 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Discount & Other Cost`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Discounts`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Total Cost(INR)`}</span></th>
                         </tr>
                       </thead>
@@ -347,7 +350,8 @@ function CostingDetailStepTwo(props) {
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOverheadAndProfitCost, 2)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPackagingAndFreight, 2)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, 2)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.DiscountsAndOtherCost, 2)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, 2)}</span></td>
+                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, 2)}</span></td>
                                   <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.TotalCost, 2)}</span></td>
                                 </>
                               )
@@ -378,22 +382,24 @@ function CostingDetailStepTwo(props) {
                 <Col md="12">
                   <costingInfoContext.Provider value={costingData} >
                     <netHeadCostContext.Provider value={RMCCBOPCost} >
-                      <CostingHeadTabs
-                        //costData={costingData}
-                        netPOPrice={NetPOPrice}
-                        setHeaderCost={setHeaderCostRMCCTab}
-                        setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
-                        setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
-                        setHeaderPackageFreightTab={setHeaderPackageFreightTab}
-                        setHeaderCostToolTab={setHeaderCostToolTab}
-                        setHeaderDiscountTab={setHeaderDiscountTab}
-                        DiscountTabData={DiscountCostData}
-                        headCostRMCCBOPData={RMCCBOPCost}
-                        headCostSurfaceData={SurfaceCostData}
-                        headCostOverheadProfitData={OverheadProfitCostData}
-                        backBtn={props.backBtn}
-                        toggle={props.toggle}
-                      />
+                      <SurfaceCostContext.Provider value={SurfaceCostData} >
+                        <CostingHeadTabs
+                          //costData={costingData}
+                          netPOPrice={NetPOPrice}
+                          setHeaderCost={setHeaderCostRMCCTab}
+                          setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}
+                          setHeaderOverheadProfitCostTab={setHeaderOverheadProfitCostTab}
+                          setHeaderPackageFreightTab={setHeaderPackageFreightTab}
+                          setHeaderCostToolTab={setHeaderCostToolTab}
+                          setHeaderDiscountTab={setHeaderDiscountTab}
+                          DiscountTabData={DiscountCostData}
+                          headCostRMCCBOPData={RMCCBOPCost}
+                          headCostSurfaceData={SurfaceCostData}
+                          headCostOverheadProfitData={OverheadProfitCostData}
+                          backBtn={props.backBtn}
+                          toggle={props.toggle}
+                        />
+                      </SurfaceCostContext.Provider>
                     </netHeadCostContext.Provider>
                   </costingInfoContext.Provider>
                 </Col>

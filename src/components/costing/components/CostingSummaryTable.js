@@ -492,13 +492,13 @@ const CostingSummaryTable = (props) => {
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
                   <thead>
-                    <tr>
+                    <tr className="main-row">
                       <th scope="col">ZBC v/s VBC</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
                           return (
                             <th scope="col">
-                              <div class="element w-50 d-inline-flex align-items-center">
+                              <div class="element w-60 d-inline-flex align-items-center">
                                 {
                                   data.status === DRAFT &&
                                   <div class="custom-check d-inline-block">
@@ -521,7 +521,7 @@ const CostingSummaryTable = (props) => {
                                 <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName} ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                               </div>
                               {!viewMode && (
-                                <div class="action w-50 d-inline-block text-right">
+                                <div class="action w-40 d-inline-block text-right">
                                   <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />
                                   <button className="Add-file mr-2 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />
                                   <button type="button" class="CancelIcon mb-0 align-middle" onClick={() => deleteCostingFromView(index)}></button>
@@ -865,16 +865,16 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data) => {
                           return (
                             <td>
-                              <div>
-                                <span>{data.otherDiscount.discount}</span> &nbsp;{' '}
-                                <span>{data.otherDiscount.value}</span>
+                              <div className="d-flex">
+                                <span className="d-inline-block w-50 ">{data.otherDiscount.discount}</span> &nbsp;{' '}
+                                <span className="d-inline-block w-50 ">{data.otherDiscount.value}</span>
                               </div>
-                              <div>
-                                <span>
+                              <div className="d-flex">
+                                <span className="d-inline-block w-50 small-grey-text">
                                   {data.otherDiscountValue.discountPercentValue}
                                 </span>{' '}
-                            &nbsp;{' '}
-                                <span>{data.otherDiscountValue.discountValue}</span>
+                                {' '}
+                                <span className="d-inline-block w-50 small-grey-text">{data.otherDiscountValue.discountValue}</span>
                               </div>
                             </td>
                           )
@@ -954,18 +954,18 @@ const CostingSummaryTable = (props) => {
                                   )
                                 })
                               ) : (
-                                // <img
-                                //   src={require('../../../assests/images/times.png')}
-                                //   alt="cancel-icon.jpg"
-                                // />
-                                <button
-                                  onClick={() => {
-                                    setAttachment(true)
-                                  }}
-                                >
-                                  View Attachment
-                                </button>
-                              )}
+                                    // <img
+                                    //   src={require('../../../assests/images/times.png')}
+                                    //   alt="cancel-icon.jpg"
+                                    // />
+                                    <button
+                                      onClick={() => {
+                                        setAttachment(true)
+                                      }}
+                                    >
+                                      View Attachment
+                                    </button>
+                                  )}
                             </td>
                           )
                         })}

@@ -290,7 +290,7 @@ function AddFreight(props) {
     <div>
       <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
         <Container>
-          <div className={'drawer-wrapper drawer-md'}>
+          <div className={'drawer-wrapper'}>
 
             <Row className="drawer-heading">
               <Col>
@@ -330,7 +330,7 @@ function AddFreight(props) {
                     </label>
                   </Col> */}
                   <Col md="12">
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -341,7 +341,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Full Truck Load</span>
                     </Label>
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -352,7 +352,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Part Truck Load</span>
                     </Label>
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
@@ -363,7 +363,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Fixed</span>
                     </Label>
-                    <Label sm={3} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"

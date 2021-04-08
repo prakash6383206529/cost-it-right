@@ -72,7 +72,6 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
-    console.log(rowData, "ROW DATA ");
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
         RMName: rowData.RawMaterial,
@@ -104,20 +103,20 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "" || Number(tempData.Density) === 0) {
+    if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
       toastr.warning("Density is not avaliable for weight calculation.")
       return false
     }
     dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        tempData = { ...tempData, WeightCalculatorRequest: data, }
-        tempArr = Object.assign([...gridData], { [index]: tempData })
-        setTimeout(() => {
-          setGridData(tempArr)
-          setWeightDrawerOpen(true)
-        }, 100)
-      }
+      // if (res && res.data && res.data.Data) {
+      const data = res && res.data && res.data.Data ? res.data.Data : {}
+      tempData = { ...tempData, WeightCalculatorRequest: data, }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setTimeout(() => {
+        setGridData(tempArr)
+        setWeightDrawerOpen(true)
+      }, 100)
+      // }
     }))
     // setWeightDrawerOpen(true)
   }
@@ -142,7 +141,18 @@ function RawMaterialCost(props) {
     let tempData = gridData[index]
 
     if (Number(event.target.value) <= 0) {
+
+      const GrossWeight = checkForNull(event.target.value)
+      const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
+
+      const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+      const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
+      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
+      setGridData(tempArr)
       toastr.warning('Please enter valid weight.')
+
     } else {
       const GrossWeight = checkForNull(event.target.value)
       const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
@@ -167,6 +177,14 @@ function RawMaterialCost(props) {
 
     if (Number(event.target.value) <= 0) {
 
+      const FinishWeight = checkForNull(event.target.value);
+      const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
+      const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+      const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
+      tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
+      setGridData(tempArr)
 
       toastr.warning('Please enter valid weight.')
     } else {
@@ -207,23 +225,22 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
+    console.log(weightData, "WEIGHT DATA");
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
     let finishWeight
+    console.log(tempData, "TEMP DATA");
     if (Object.keys(weightData).length > 0) {
-      if (tempData.UOM === G) {
-        grossWeight = originalWeight.originalGrossWeight
-        finishWeight = originalWeight.originalFinishWeight
-      } else if (tempData.UOM === KG) {
-        grossWeight = originalWeight.originalGrossWeight / 1000
-        finishWeight = originalWeight.originalFinishWeight / 1000
-      } else if (tempData.UOM === MG) {
-        grossWeight = originalWeight.originalGrossWeight * 1000
-        finishWeight = originalWeight.originalFinishWeight * 1000
-      } else {
-        grossWeight = originalWeight.originalGrossWeight
-        finishWeight = originalWeight.originalFinishWeight
+      if (weightData.UOMForDimension === G) {
+        grossWeight = weightData.GrossWeight / 1000
+        finishWeight = weightData.FinishWeight / 1000
+      } else if (weightData.UOMForDimension === KG) {
+        grossWeight = weightData.GrossWeight
+        finishWeight = weightData.FinishWeight
+      } else if (weightData.UOMForDimension === MG) {
+        grossWeight = checkForDecimalAndNull(weightData.GrossWeight / 1000000)
+        finishWeight = checkForDecimalAndNull(weightData.FinishWeight / 1000000)
       }
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight

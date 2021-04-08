@@ -213,8 +213,8 @@ function TabDiscountOther(props) {
   const handleCurrencyChange = (newValue) => {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
-      let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
-      dispatch(getExchangeRateByCurrency(ReqParams, res => {
+      //let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
+      dispatch(getExchangeRateByCurrency(newValue.label, moment(effectiveDate).local().format('DD-MM-YYYY'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
@@ -342,6 +342,8 @@ function TabDiscountOther(props) {
         "Sequence": 0,
         "TotalCost": values.NetPOPriceINR,
         "NetDiscountsAndOtherCost": values.HundiOrDiscountValue,
+        "NetDiscountsCost": values.TotalDiscount,
+        "NetOtherCost": values.AnyOtherCost,
         "OtherCostDetails": {
           "OtherCostDetailId": '',
           "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,

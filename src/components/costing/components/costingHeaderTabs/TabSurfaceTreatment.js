@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getSurfaceTreatmentTabData, setSurfaceData, saveCostingSurfaceTreatmentTab } from '../../actions/Costing';
+import { getSurfaceTreatmentTabData, setSurfaceData, saveCostingSurfaceTreatmentTab, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { checkForNull, } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
 import { LEVEL0 } from '../../../../helper/AllConastant';
@@ -19,11 +19,17 @@ function TabSurfaceTreatment(props) {
 
   const dispatch = useDispatch()
 
-  const SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
-  //setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+  let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
+  //setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+
+  const filteredUsers = React.useMemo(() => {
+    setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+    dispatch(setSurfaceCostInOverheadProfit(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
+  }, [SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]
+  );
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -509,6 +515,7 @@ function TabSurfaceTreatment(props) {
   * @description SET INCLUDE SURFACE TREATMENT
   */
   const onPressIncludeSurfaceTreatment = () => {
+    dispatch(setSurfaceCostInOverheadProfit(!isIncludeSurfaceTreatment, () => { }))
     setIsIncludeSurfaceTreatment(!isIncludeSurfaceTreatment)
   }
 
@@ -535,6 +542,7 @@ function TabSurfaceTreatment(props) {
 
   return (
     <>
+      {/* {filteredUsers} */}
       <div className="login-container signup-form">
         <Row>
           <Col md="12">
@@ -575,7 +583,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Transportation Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "120px" }}>{`Total Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
                         </tr>
                       </thead>
