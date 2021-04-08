@@ -1156,8 +1156,7 @@ class AddPower extends Component {
                                     name={"NetPowerCostPerUnit"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, decimalLength2]}
-                                    component={renderNumberInputField}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLength2]}                                    component={renderNumberInputField}
                                     required={true}
                                     className=""
                                     customClassName=" withBorder"
