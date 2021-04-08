@@ -13,12 +13,13 @@ import moment from 'moment'
 import { Fragment } from 'react'
 import ApprovalListing from './ApprovalListing'
 function ApprovalSummary(props) {
-  const approvalNumber = props.approvalNumber ? props.approvalNumber : '2345438'
-  const approvalProcessId = props.approvalProcessId
-    ? props.approvalProcessId
-    : '1'
+  // const approvalNumber = props.approvalNumber 
+  // const approvalProcessId = props.approvalProcessId 
+  const { approvalNumber, approvalProcessId } = props
   const loggedInUser = loggedInUserId()
+
   const dispatch = useDispatch()
+
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [rejectDrawer, setRejectDrawer] = useState(false)
   const [partDetail, setPartDetail] = useState({})
@@ -27,46 +28,48 @@ function ApprovalSummary(props) {
   const [costingSummary, setCostingSummary] = useState(false)
   const [approvalLevelStep, setApprovalLevelStep] = useState([])
   const [approvalData, setApprovalData] = useState('')
+  /**NEED TO REMOVE THIS 2 VARIABLE**/
   const [showButton, setShowButton] = useState(true)
   const [isFinalApproval, setIsFinalApproval] = useState(false)
-  const [isApprovalDone, setIsApprovalDone] = useState(false)
+
+  const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
   const [showListing, setShowListing] = useState(false)
-  console.log(approvalData, "approvalData");
-  const approvalSummary = useSelector(
-    (state) => state.approval.approvalSummaryData,
-  )
+  const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
+  const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
+  const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
+  const [showPushDrawer, setShowPushDrawer] = useState(false)
+
 
   useEffect(() => {
     dispatch(
       getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
-        const { PartDetails, ApprovalDetails, ApprovalLevelStep, } = res.data.Data.Costings[0] //Need to ask how data will come
+        const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId, ApprovalProcessSummaryId,
+          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow } = res.data.Data.Costings[0]
+        const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
+
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails[0])
         setApprovalLevelStep(ApprovalLevelStep)
-
-        const departmentId = res.data.Data.Costings[0].DepartmentId
-        const technology = res.data.Data.Costings[0].Technology
-        const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
-        const approvalProcessId = res.data.Data.Costings[0].ApprovalProcessId
-        const approvalProcessSummaryId = res.data.Data.Costings[0].ApprovalProcessSummaryId
-        const approvalNumber = res.data.Data.Costings[0].ApprovalNumber
-        const IsFinalApprovalDone = res.data.Data.Costings[0].IsFinalApprovalDone
-        // setIsFinalApproval(IsFinalApprovalDone)
-        setIsApprovalDone(IsFinalApprovalDone)
+        setIsApprovalDone(IsSent)
+        setShowFinalLevelButton(IsFinalLevelButtonShow)
+        setShowPushButton(IsPushedButtonShow)
         setApprovalData({
-          DepartmentId: departmentId,
-          Technology: technology,
+          DepartmentId: DepartmentId,
+          Technology: Technology,
           TechnologyId: technologyId,
-          ApprovalProcessId: approvalProcessId,
-          ApprovalProcessSummaryId: approvalProcessSummaryId,
-          ApprovalNumber: approvalNumber,
+          ApprovalProcessId: ApprovalProcessId,
+          ApprovalProcessSummaryId: ApprovalProcessSummaryId,
+          ApprovalNumber: ApprovalNumber,
         })
-        // const tempObj = formViewData(CostingSummary)
-        // dispatch(setCostingViewData(tempObj))
       }),
     )
   }, [])
+
+  const handleApproveAndPushButton = () => {
+    setShowPushDrawer(true)
+    setApproveDrawer(true)
+  }
 
   const closeDrawer = (e = '') => {
     setApproveDrawer(false)
@@ -85,17 +88,17 @@ function ApprovalSummary(props) {
                 <Col md="8">
                   <div className="left-border">
                     {'Approval Workflow (Approval No. '}
-                    {`${approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'
-                      }) :`}
+                    {`${approvalData.ApprovalNumber ? approvalData.ApprovalNumber : '-'}) :`}
                   </div>
                 </Col>
                 <Col md="4" className="text-right">
                   <div className="right-border">
-                    {
-                      <button type={'button'} className="apply view-btn">
-                        View All
-              </button>
-                    }
+                    <button type={'button'} className="apply view-btn mr-3" onClick={() => setShowListing(true)}>
+                      Back
+                     </button>
+                    <button type={'button'} className="apply view-btn">
+                      View All
+                      </button>
                   </div>
                 </Col>
               </Row>
@@ -292,13 +295,13 @@ function ApprovalSummary(props) {
                           className="fa fa-minus"
                         ></i>
                       ) : (
-                          <i
-                            onClick={() => {
-                              setCostingSummary(true)
-                            }}
-                            className="fa fa-plus"
-                          ></i>
-                        )}
+                        <i
+                          onClick={() => {
+                            setCostingSummary(true)
+                          }}
+                          className="fa fa-plus"
+                        ></i>
+                      )}
                     </button>
                   </div>
                 </Col>
@@ -313,59 +316,61 @@ function ApprovalSummary(props) {
 
             {
               !isApprovalDone &&
-
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
-                  {
-                    showButton &&
-                    <Fragment>
-                      {
-                        isFinalApproval === true ?
-                          <button
-                            type="button"
-                            className="submit-button mr5 save-btn"
-                            onClick={() => setApproveDrawer(true)}
-                          >
-                            <div className={'check-icon'}>
-                              <img
-                                src={require('../../../../assests/images/check.png')}
-                                alt="check-icon.jpg"
-                              />{' '}
-                            </div>
-                            {'Push'}
-                          </button> :
-
-                          <button
-                            type={'button'}
-                            className="mr15 approve-reject-btn"
-                            onClick={() => setRejectDrawer(true)}
-                          >
-                            <div className={'cross-icon'}>
-
-                              <img
-                                src={require('../../../../assests/images/times.png')}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{' '}
-                            {'Reject'}
-                          </button>
-                      }
-
+                  <Fragment>
+                    <button type={'button'} className="mr15 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
+                      <div className={'cross-icon'}>
+                        <img src={require('../../../../assests/images/times.png')} alt="cancel-icon.jpg" />
+                      </div>{' '}
+                      {'Reject'}
+                    </button>
+                    <button
+                      type="button"
+                      className="approve-button mr5 approve-hover-btn"
+                      onClick={() => setApproveDrawer(true)}
+                    >
+                      <div className={'check-icon'}>
+                        <img
+                          src={require('../../../../assests/images/check.png')}
+                          alt="check-icon.jpg"
+                        />{' '}
+                      </div>
+                      {'Approve'}
+                    </button>
+                    {
+                      showFinalLevelButtons &&
                       <button
-                        type="button"
-                        className="approve-button mr5 approve-hover-btn"
-                        onClick={() => setApproveDrawer(true)}
-                      >
+                        type="button" className="approve-button mr5 approve-hover-btn" onClick={() => handleApproveAndPushButton()}                    >
                         <div className={'check-icon'}>
                           <img
                             src={require('../../../../assests/images/check.png')}
                             alt="check-icon.jpg"
                           />{' '}
                         </div>
-                        {isFinalApproval ? 'Approved' : 'Approve'}
+                        {'Approve & Push'}
                       </button>
-                    </Fragment>
-                  }
+                    }
+                  </Fragment>
+
+                </div>
+              </Row>
+            }
+            {
+              showPushButton &&
+              <Row className="sf-btn-footer no-gutters justify-content-between">
+                <div className="col-sm-12 text-right bluefooter-butn">
+                  <Fragment>
+                    <button type="submit" className="submit-button mr5 save-btn">
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />
+                      </div>{" "}
+                      {"Push"}
+                    </button>
+                  </Fragment>
                 </div>
               </Row>
             }
@@ -381,6 +386,8 @@ function ApprovalSummary(props) {
           // tokenNo={approvalNumber}
           approvalData={[approvalData]}
           anchor={'right'}
+          IsFinalLevel={!showFinalLevelButtons}
+          IsPushDrawer={showPushDrawer}
         />
       )}
       {rejectDrawer && (
@@ -391,6 +398,8 @@ function ApprovalSummary(props) {
           closeDrawer={closeDrawer}
           //  tokenNo={approvalNumber}
           anchor={'right'}
+          IsFinalLevel={!showFinalLevelButtons}
+          IsPushDrawer={showPushDrawer}
         />
       )}
     </>
