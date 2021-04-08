@@ -506,6 +506,7 @@ class AddPower extends Component {
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
     if (Number(fieldsObj.MinDemandKWPerMonth) < 0 ||
     Number(fieldsObj.DemandChargesPerKW) < 0 ||
+    Number(fieldsObj.MaxDemandChargesKW) < 0 ||
     Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
     Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 ||
     Number(fieldsObj.DutyChargesAndFCA) < 0 ||
@@ -596,6 +597,14 @@ class AddPower extends Component {
       toastr.warning('Fields should not be empty');
       return false;
     }
+
+    if (Number(fieldsObj.AssetCost) < 0 ||
+    Number(fieldsObj.AnnualCost) < 0 ||
+    Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
+    Number(fieldsObj.SelfPowerContribution) < 0){
+    toastr.warning('Fields should not be negative');
+    return false;
+  }
 
     const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
     const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
