@@ -277,7 +277,7 @@ class AddLabour extends Component {
    */
   handleMachineType = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ machineType: newValue, labourType: []  }, () => {
+      this.setState({ machineType: newValue, labourType: [] }, () => {
         const { machineType } = this.state
         this.props.getLabourTypeByMachineTypeSelectList(
           machineType.value,
@@ -285,7 +285,7 @@ class AddLabour extends Component {
         )
       })
     } else {
-      this.setState({ machineType: [], labourType: []  })
+      this.setState({ machineType: [], labourType: [] })
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     }
   }
@@ -345,7 +345,11 @@ class AddLabour extends Component {
       toastr.warning('Please enter valid value.')
       return false;
     }
-        
+
+    if (fieldsObj.length > 10) {
+      return false;
+    }
+
     if (decimalLength2(Number(fieldsObj))) {
       // toastr.warning('Please enter valid value.')
       return false;
@@ -369,7 +373,7 @@ class AddLabour extends Component {
     const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
     const tempArray = []
 
-    
+
     tempArray.push(...gridTable, {
       LabourDetailId: '',
       MachineTypeId: machineType.value,
