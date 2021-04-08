@@ -87,8 +87,8 @@ export const RMDomesticZBCTempData = [
     {
         //"CostingHead": "ZBC",
         "RawMaterial": "RawMaterial Name",
-        "RMGrade": "RMGrade Name",
-        "RMSpec": "RMSpec Name",
+        "RMGrade": "1",
+        "RMSpec": "2",
         "Category": "Category Name",
         "TechnologyName": "Technology Name",
         "Material": "Material Name",

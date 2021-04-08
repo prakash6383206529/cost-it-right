@@ -110,7 +110,7 @@ class Login extends Component {
                         placeholder={"Email"}
                         validate={[required, email, maxLength70]}
                         required={true}
-                        maxLength={71}
+                      // maxLength={71}
                       />
                       :
                       <Field
@@ -121,7 +121,7 @@ class Login extends Component {
                         validate={[required, maxLength70]}
                         component={renderText}
                         required={true}
-                        maxLength={26}
+                        // maxLength={26}
                         customClassName={'withBorder'}
                       />
                     }

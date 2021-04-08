@@ -136,7 +136,6 @@ function CostingHeaderTabs(props) {
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && activeTab !== '6') {
-      console.log('ComponentItemDiscountData: ', ComponentItemDiscountData, Object.keys(ComponentItemDiscountData).length > 0);
       // setTimeout(() => {
       //   dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
       //     dispatch(setComponentDiscountOtherItemData({}, () => { }))

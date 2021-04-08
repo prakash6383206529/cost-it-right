@@ -99,6 +99,7 @@ const SendForApproval = (props) => {
                   label: item.Text,
                   value: item.Value,
                   levelId: item.LevelId,
+                  levelName: item.LevelName
                 })
                 return null
               })
@@ -223,9 +224,9 @@ const SendForApproval = (props) => {
       ApproverDepartmentId: selectedDepartment.value,
       ApproverDepartmentName: selectedDepartment.label,
       ApproverLevelId: selectedApproverLevelId.levelId,
-      ApproverLevel: selectedApproverLevelId.level,
+      ApproverLevel: selectedApproverLevelId.levelName,
       ApproverId: selectedApprover,
-      ApprovalProcessId: "00000000-0000-0000-0000-000000000000",
+
       // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
       // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
       SenderLevelId: userData.LoggedInLevelId,
@@ -235,6 +236,7 @@ const SendForApproval = (props) => {
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
     }
+    console.log(obj, "obj");
     let temp = []
     let tempObj = {}
 
@@ -262,6 +264,9 @@ const SendForApproval = (props) => {
     });
 
     viewApprovalData.map((data) => {
+      console.log(data, "DATA INSIDE");
+      let tempObj = {}
+      tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
       tempObj.PlantId =
         data.typeOfCosting == 0 ? data.plantId : ''
@@ -275,7 +280,7 @@ const SendForApproval = (props) => {
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
       tempObj.Reason = data.reason
-      tempObj.ECNNumber = data.ecnNo
+      tempObj.ECNNumber = data.ecNo
       // tempObj.ECNNumber = 1;
       tempObj.EffectiveDate = data.effectiveDate
       tempObj.RevisionNumber = partNo.revisionNumber
@@ -309,22 +314,22 @@ const SendForApproval = (props) => {
     })
 
     obj.CostingsList = temp
+    console.log(obj, "OBJECT");
 
-
-    dispatch(
-      sendForApprovalBySender(obj, (res) => {
-        toastr.success('Data is sent for approval!')
-        props.closeDrawer('', 'Submit')
-        dispatch(setCostingApprovalData([]))
-        dispatch(setCostingViewData([]))
-      }),
-    )
+    // dispatch(
+    //   sendForApprovalBySender(obj, (res) => {
+    //     toastr.success('Data is sent for approval!')
+    //     props.closeDrawer('', 'Submit')
+    //     dispatch(setCostingApprovalData([]))
+    //     dispatch(setCostingViewData([]))
+    //   }),
+    // )
   }
 
   const handleApproverChange = (data) => {
-
+    console.log(data, "DATA");
     setSelectedApprover(data.value)
-    setSelectedApproverLevelId({ level: data.LevelName, levelId: data.levelId })
+    setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
 
   useEffect(() => { }, [viewApprovalData])
@@ -473,7 +478,7 @@ const SendForApproval = (props) => {
                       </Row>
                       <Row>
                         <Col md="4">
-                          <label>Consumpion Quantity</label>
+                          <label>Consumed Quantity</label>
                           <div className="d-flex align-items-center">
                             <label className="form-control bg-grey">
                               {data.consumptionQty ? data.consumptionQty : 0}

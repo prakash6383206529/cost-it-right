@@ -86,7 +86,7 @@ function AddProcess(props) {
 
   const options = {
     clearSearch: true,
-    noDataText: (processDrawerList ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
+    noDataText: (processDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
     paginationShowsTotal: renderPaginationShowsTotal(),
     prePage: <span className="prev-page-pg"></span>, // Previous page button text
     nextPage: <span className="next-page-pg"></span>, // Next page button text
@@ -173,7 +173,7 @@ function AddProcess(props) {
             <Row className="mx-0">
               <Col>
                 <BootstrapTable
-                  data={tableData}
+                  data={processDrawerList}
                   striped={false}
                   bordered={false}
                   hover={false}

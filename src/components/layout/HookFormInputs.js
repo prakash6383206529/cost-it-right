@@ -115,12 +115,12 @@ export const SearchableSelectHookForm = (field) => {
           )
         }}
       />
-      {console.log("pppppppppppppppppppppppppppppppppppp", errors)}
+
       {/* {errors && errors.type === 'required' ? <div className="text-help">'This field is required'</div> : ""} */}
       {/* {errors && errors.type === 'required' ? '<div className="text-help">This field is required</div>' : ""} */}
-       { errors && errors.type === 'required' ? <div className="text-help">This field is required</div> 
+      { errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
         : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
-      
+
     </div>
   )
 }

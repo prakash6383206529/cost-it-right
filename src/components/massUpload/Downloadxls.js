@@ -198,6 +198,7 @@ class Downloadxls extends React.Component {
                     {costingHead === 'ZBC_MACHINE_MORE' &&
                         <ExcelFile filename={`MACHINE_MORE_ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../assests/images/download.png')}></img> Download ZBC DETAIL</button>}>
                             {fileName ? this.renderZBCSwitch(costingHead) : ''}
+
                         </ExcelFile>}
                 </>
             );

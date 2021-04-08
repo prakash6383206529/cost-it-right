@@ -50,6 +50,7 @@ import {
   GET_PART_COSTING_PLANT_SELECTLIST,
   GET_PART_COSTING_VENDOR_SELECT_LIST,
   GET_PART_SELECTLIST_BY_TECHNOLOGY,
+  SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -257,12 +258,10 @@ export function getVBCExistingCosting(PartId, callback) {
 export function updateZBCSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios
-      .put(`${API.updateZBCSOBDetail}`, requestData, headers)
+    axios.put(`${API.updateZBCSOBDetail}`, requestData, headers)
       .then((response) => {
         callback(response)
-      })
-      .catch((error) => {
+      }).catch((error) => {
         apiErrors(error)
         dispatch({ type: API_FAILURE })
       })
@@ -276,12 +275,10 @@ export function updateZBCSOBDetail(requestData, callback) {
 export function updateVBCSOBDetail(requestData, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios
-      .put(`${API.updateVBCSOBDetail}`, requestData, headers)
+    axios.put(`${API.updateVBCSOBDetail}`, requestData, headers)
       .then((response) => {
         callback(response)
-      })
-      .catch((error) => {
+      }).catch((error) => {
         apiErrors(error)
         dispatch({ type: API_FAILURE })
       })
@@ -890,6 +887,20 @@ export function setSurfaceData(TabData, callback) {
 };
 
 /**
+ * @method setSurfaceCostInOverheadProfit
+ * @description SET SURFACE TREATMENT COST FOR OVERHEAD AND PROFIT
+ */
+export function setSurfaceCostInOverheadProfit(IsIncluded, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
+      payload: IsIncluded,
+    });
+    callback();
+  }
+};
+
+/**
  * @method saveComponentCostingSurfaceTab
  * @description SAVE COMPONENT COSTING SURFACE TAB
  */
@@ -911,19 +922,13 @@ export function saveComponentCostingSurfaceTab(data, callback) {
  */
 export function saveCostingSurfaceTreatmentTab(data, callback) {
   return (dispatch) => {
-    const request = axios.post(
-      API.saveCostingSurfaceTreatmentTab,
-      data,
-      headers,
-    )
-    request
-      .then((response) => {
-        callback(response)
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    const request = axios.post(API.saveCostingSurfaceTreatmentTab, data, headers,)
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -934,21 +939,16 @@ export function saveCostingSurfaceTreatmentTab(data, callback) {
 export function getSurfaceTreatmentDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -1337,10 +1337,10 @@ export function getDiscountOtherCostTabData(data, callback) {
  * @method getExchangeRateByCurrency
  * @description GET EXCHANGE RATE BY CURRENCY
  */
-export function getExchangeRateByCurrency(Currency, effectiveDate, callback) {
+export function getExchangeRateByCurrency(Currency, EffectiveDate, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}/${effectiveDate}`, headers);
+    const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}/${EffectiveDate}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1360,14 +1360,12 @@ export function getExchangeRateByCurrency(Currency, effectiveDate, callback) {
 export function saveDiscountOtherCostTab(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.saveDiscountOtherCostTab, data, headers)
-    request
-      .then((response) => {
-        callback(response)
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1378,16 +1376,14 @@ export function saveDiscountOtherCostTab(data, callback) {
 export function fileUploadCosting(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.fileUploadCosting, data, headers)
-    request
-      .then((response) => {
-        if (response && response.status === 200) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response && response.status === 200) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -1398,12 +1394,10 @@ export function fileUploadCosting(data, callback) {
 export function fileDeleteCosting(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios
-      .delete(`${API.fileDeleteCosting}/${data.Id}/${data.DeletedBy}`, headers)
+    axios.delete(`${API.fileDeleteCosting}/${data.Id}/${data.DeletedBy}`, headers)
       .then((response) => {
         callback(response)
-      })
-      .catch((error) => {
+      }).catch((error) => {
         apiErrors(error)
         dispatch({ type: API_FAILURE })
       })
@@ -1417,12 +1411,10 @@ export function fileDeleteCosting(data, callback) {
 export function deleteDraftCosting(data, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    axios
-      .delete(`${API.deleteDraftCosting}/${data.Id}/${data.UserId}`, headers)
+    axios.delete(`${API.deleteDraftCosting}/${data.Id}/${data.UserId}`, headers)
       .then((response) => {
         callback(response)
-      })
-      .catch((error) => {
+      }).catch((error) => {
         apiErrors(error)
         dispatch({ type: API_FAILURE })
       })
@@ -1433,36 +1425,27 @@ export function deleteDraftCosting(data, callback) {
  * @method getExistingSupplierDetailByPartId
  * @description get Existing Supplier Detail By PartId
  */
-export function getExistingSupplierDetailByPartId(
-  partId,
-  loginUserId,
-  callback,
-) {
+export function getExistingSupplierDetailByPartId(partId, loginUserId, callback,) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getExistingSupplierDetailByPartId}/${partId}/${loginUserId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          dispatch({
-            type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
-            payload: response.data.DynamicData,
-          })
-          callback(response)
-        }
-      })
-      .catch((error) => {
+    const request = axios.get(`${API.getExistingSupplierDetailByPartId}/${partId}/${loginUserId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
         dispatch({
           type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
-          payload: null,
+          payload: response.data.DynamicData,
         })
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({
+        type: GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS,
+        payload: null,
       })
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -1484,34 +1467,24 @@ export function setEmptyExistingSupplierData(callback) {
  * @method getZBCCostingSelectListByPart
  * @description get ZBC Costing Select List By Part
  */
-export function getZBCCostingSelectListByPart(
-  PartId,
-  SupplierId,
-  UserId,
-  callback,
-) {
+export function getZBCCostingSelectListByPart(PartId, SupplierId, UserId, callback,) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
-    const request = axios.get(
-      `${API.getZBCCostingSelectListByPart}/${PartId}/${SupplierId}/${UserId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          dispatch({
-            type: GET_ZBC_COSTING_SELECTLIST_BY_PART,
-            payload: response.data.SelectList,
-          })
-          callback(response)
-        } else {
-          toastr.error(MESSAGES.SOME_ERROR)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getZBCCostingSelectListByPart}/${PartId}/${SupplierId}/${UserId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_ZBC_COSTING_SELECTLIST_BY_PART,
+          payload: response.data.SelectList,
+        })
+        callback(response)
+      } else {
+        toastr.error(MESSAGES.SOME_ERROR)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 

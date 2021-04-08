@@ -181,6 +181,10 @@ class BulkUpload extends Component {
     onSubmit = (values) => {
         const { fileData, costingHead } = this.state;
         const { fileName } = this.props;
+        if (fileData.length === 0) {
+            toastr.warning('Please select a file to upload.')
+            return false
+        }
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),

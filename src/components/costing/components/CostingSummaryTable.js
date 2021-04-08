@@ -544,12 +544,15 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span class="d-flex justify-content-between bg-grey">
                                 {data.costingName}{' '}
-                                <a
-                                  class="text-primary d-inline-block"
-                                  onClick={() => editHandler(index)}
-                                >
-                                  <small>Change version</small>
-                                </a>
+                                {
+                                  !viewMode &&
+                                  <a
+                                    class="text-primary d-inline-block"
+                                    onClick={() => editHandler(index)}
+                                  >
+                                    <small>Change version</small>
+                                  </a>
+                                }
                               </span>
                               <span class="d-block">{data.poPrice}</span>
                             </td>

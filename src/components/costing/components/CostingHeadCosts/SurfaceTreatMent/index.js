@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import { saveComponentCostingSurfaceTab } from '../../../actions/Costing';
+import { saveComponentCostingSurfaceTab, setSurfaceCostInOverheadProfit } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -96,6 +96,7 @@ function SurfaceTreatment(props) {
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+          setSurfaceCostInOverheadProfit(props.isIncludeSurfaceTreatment, () => { })
         }
         props.closeDrawer('')
       }))
@@ -135,13 +136,13 @@ function SurfaceTreatment(props) {
                         props.IsAssemblyCalculation ?
                           <>
                             <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0}`}</Col>
-                            <Col md="4" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0}`}</Col>
+                            <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0}`}</Col>
                             <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col>
                           </>
                           :
                           <>
                             <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? item.CostingPartDetails.SurfaceTreatmentCost : 0}`}</Col>
-                            <Col md="4" className="cr-costlabel">{`Tool Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? item.CostingPartDetails.TransportationCost : 0}`}</Col>
+                            <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? item.CostingPartDetails.TransportationCost : 0}`}</Col>
                             <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? item.CostingPartDetails.NetSurfaceTreatmentCost : 0}`}</Col>
                           </>
                       }

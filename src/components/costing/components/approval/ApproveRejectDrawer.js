@@ -15,7 +15,7 @@ import {
 import { loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 function ApproveRejectDrawer(props) {
-  const { type, tokenNo, approvalData, approvalProcessId } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer } = props
   console.log(approvalData, "approvalData");
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -52,6 +52,7 @@ function ApproveRejectDrawer(props) {
               label: item.Text,
               value: item.Value,
               levelId: item.LevelId,
+              levelName: item.LevelName
             })
             return null
           })
@@ -80,35 +81,41 @@ function ApproveRejectDrawer(props) {
     let Data = []
     approvalData.map(ele => {
       Data.push({
-        Approver: data.approver && data.approver.value ? data.approver.value : '',
-        Remark: data.remark,
+        ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
         ApprovalToken: ele.ApprovalNumber,
         LoggedInUserId: userLoggedIn,
-        ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
-        IsApproved: type === 'Approve' ? true : false
+        SenderLevelId: userData.LoggedInLevelId,
+        SenderLevel: userData.LoggedInLevel,
+        Approver: data.approver && data.approver.value ? data.approver.value : '',
+        ApproverLevelId: data.approver && data.approver.levelId ? data.approver.levelId : '',
+        ApproverLevel: data.approver && data.approver.levelName ? data.approver.levelName : '',
+        Remark: data.remark,
+        IsApproved: type === 'Approve' ? true : false,
       })
     })
-    // let Data = [{
-    //   Approver: data.approver.value ? data.approver.value : '',
-    //   Remark: data.remark,
-    //   ApprovalToken: approvalData.approvalNumber,
-    //   LoggedInUserId: userLoggedIn,
-    //   ApprovalProcessSummaryId: approvalData.approvalProcessSummaryId,
-    //   IsApproved: type === 'Approve' ? true : false
-    // }]
+    console.log(Data, "DATA for approve");
+
 
     if (type === 'Approve') {
       console.log("COMING IN APPROVE", Data);
+
+
       dispatch(approvalRequestByApprove(Data, res => {
         if (res.data.Result) {
+          // if (IsPushDrawer) {
+          //   toastr.success('Costing  Approved push drawer')
+          // } else {
+          //   toastr.success('Costing Approved')
+          //   props.closeDrawer()
+          // }
           toastr.success('Costing Approved')
           props.closeDrawer()
         }
       }))
-      // props.closeDrawer()
+      //  props.closeDrawer()
     } else {
       console.log("COMING IN REJECT", Data);
-      dispatch(rejectRequestByApprove, (Data, res => {
+      dispatch(rejectRequestByApprove(Data, res => {
         if (res.data.Result) {
           toastr.success('Costing Rejected')
           props.closeDrawer()
@@ -138,8 +145,8 @@ function ApproveRejectDrawer(props) {
                 </Col>
               </Row>
 
-              <Row>
-                {type === 'Approve' && (
+              <Row className="ml-0">
+                {type === 'Approve' && IsFinalLevel && (
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
                       label={'Approver'}
@@ -174,7 +181,6 @@ function ApproveRejectDrawer(props) {
                   />
                 </div>
               </Row>
-              <hr />
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button
@@ -193,7 +199,7 @@ function ApproveRejectDrawer(props) {
 
                   <button
                     type="submit"
-                    className="submit-button mr5 save-btn"
+                    className="submit-button  save-btn"
                   //onClick={() => setApproveDrawer(true)}
                   >
                     <div className={'check-icon'}>

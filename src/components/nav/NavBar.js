@@ -338,26 +338,57 @@ class SideBar extends Component {
                   src={reactLocalStorage.get("ModuleId") === el.ModuleId ? require("../../assests/images/costing-active.svg") : require("../../assests/images/costing.svg")}
                   alt={module + " icon"}
                 />
-                <span>Costing</span>
+                <span>Costing <i class="fa fa-chevron-down dr-icon"></i></span>
               </Link>
-              <ul class="dropdown-menu sub-menu">
-                <li>
-                  <Link
-                    className="dropdown-item"
-                    to={{
-                      pathname: "/approval-listing",
-                      state: {
-                        ModuleId: 1,
-                        PageName: "Costing",
-                        PageURL: "/approval-listing",
-                      },
-                    }}
-                  >
-                    Approval
+              <div className="dropdown-menu sub-menu">
+                <ul>
+                  <li>
+                    <Link
+                      className="dropdown-item "
+                      to={{
+                        pathname: "/approval-listing",
+                        state: {
+                          ModuleId: 1,
+                          PageName: "Costing",
+                          PageURL: "/approval-listing",
+                        },
+                      }}
+                    >
+                      - Approval
                   </Link>
-                </li>
-                <li></li>
-              </ul>
+                  </li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={{
+                        pathname: "/approval-listing",
+                        state: {
+                          ModuleId: 1,
+                          PageName: "Costing",
+                          PageURL: "/approval-listing",
+                        },
+                      }}
+                    >
+                      - Approval
+                  </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="dropdown-item"
+                      to={{
+                        pathname: "/approval-listing",
+                        state: {
+                          ModuleId: 1,
+                          PageName: "Costing",
+                          PageURL: "/approval-listing",
+                        },
+                      }}
+                    >
+                      - Approval
+                  </Link>
+                  </li>
+                </ul>
+              </div>
             </li>
           );
         }
@@ -650,8 +681,8 @@ class SideBar extends Component {
                                 {userData.Name}
                               </>
                             ) : (
-                              "Login"
-                            )}
+                                "Login"
+                              )}
                           </DropdownToggle>
 
                           {/* <DropdownMenu>
@@ -685,8 +716,8 @@ class SideBar extends Component {
                       </a>
                     </li>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </ul>
               </div>
             </nav>
