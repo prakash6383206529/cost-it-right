@@ -599,7 +599,7 @@ export function renderDatePicker(field) {
       <label>{field.label}{field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}      </label>
       <DatePicker
         {...input}
-        dateFormat="MM/dd/yyyy"
+        dateFormat="dd/MM/yyyy"
         placeholderText={placeholder}
         //maxDate={new Date()}
         // minDate={new Date()}
