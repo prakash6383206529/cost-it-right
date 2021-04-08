@@ -42,6 +42,8 @@ import {
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
+import SimulationHistory from './simulation/components/SimulationHistory'
+import Simulation from './simulation/components/Simulation'
 
 class Main extends Component {
   constructor(props) {
@@ -221,6 +223,10 @@ class Main extends Component {
                     <Route path="/exchange-master" component={AuthMiddleware(ExchangeRateListing, EXCHANGE_RATE,)} />
 
                     <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
+
+                    <Route path="/simulation-history" component={SimulationHistory} />
+
+                    <Route path="/simulation" component={Simulation} />
 
                     <Route
                       render={(props) => (
