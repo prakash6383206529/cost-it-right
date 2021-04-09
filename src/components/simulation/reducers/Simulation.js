@@ -13,12 +13,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: true
             };
-        case GET_SIMULATION_HISTORY:
-            return {
-                ...state,
-                loading: false,
-                simulationHistory: action.payload
-            }
+        // case GET_SIMULATION_HISTORY:
+        //     return {
+        //         ...state,
+        //         loading: false,
+        //         simulationHistory: action.payload
+        //     }
         default:
             return state;
     }
