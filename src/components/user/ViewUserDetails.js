@@ -158,7 +158,9 @@ class ViewUserDetails extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
-        <Drawer className="user-detail" anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+        <Drawer className="user-detail" anchor={this.props.anchor} open={this.props.isOpen} 
+        // onClose={(e) => this.toggleDrawer(e)}
+        >
           <Container>
             <div className={'drawer-wrapper'}>
               <Row className="drawer-heading">

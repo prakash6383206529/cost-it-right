@@ -530,8 +530,13 @@ function CostingSummary(props) {
                           //disabled={pristine || submitting}
                           onClick={resetData}
                           className="cancel-btn"
-                        >
-                          {'Reset'}
+                        ><div className={"cross-icon"}>
+                        <img
+                          src={require("../../../assests/images/times.png")}
+                          alt="cancel-icon.jpg"
+                        />
+                      </div>{" "}
+                          {"Clear"}
                         </button>
                       </Col>
                     </Row>

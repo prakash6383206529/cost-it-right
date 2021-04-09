@@ -469,7 +469,7 @@ const CostingSummaryTable = (props) => {
             }
             {!viewMode && (
               <Col md="8" className="text-right">
-                <button class="user-btn mr-1 mb-2" onClick={() => checkCostings()}>
+                <button class="user-btn mr-1 mb-2 approval-btn" onClick={() => checkCostings()}>
                   <img
                     class="mr-1"
                     src={require('../../../assests/images/send-for-approval.svg')}
@@ -544,12 +544,15 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span class="d-flex justify-content-between bg-grey">
                                 {data.costingName}{' '}
-                                <a
-                                  class="text-primary d-inline-block"
-                                  onClick={() => editHandler(index)}
-                                >
-                                  <small>Change version</small>
-                                </a>
+                                {
+                                  !viewMode &&
+                                  <a
+                                    class="text-primary d-inline-block"
+                                    onClick={() => editHandler(index)}
+                                  >
+                                    <small>Change version</small>
+                                  </a>
+                                }
                               </span>
                               <span class="d-block">{data.poPrice}</span>
                             </td>

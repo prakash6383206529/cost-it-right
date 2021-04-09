@@ -181,7 +181,10 @@ class BulkUpload extends Component {
     onSubmit = (values) => {
         const { fileData, costingHead } = this.state;
         const { fileName } = this.props;
-        console.log(fileData, "FILE DATA", fileName);
+        if (fileData.length === 0) {
+            toastr.warning('Please select a file to upload.')
+            return false
+        }
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
@@ -366,7 +369,9 @@ class BulkUpload extends Component {
         }
 
         return (
-            <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+            <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+            // onClose={(e) => this.toggleDrawer(e)}
+            >
                 <Container>
                     <div className={'drawer-wrapper WIDTH-400'}>
                         <form

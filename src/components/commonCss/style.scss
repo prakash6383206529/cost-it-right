@@ -1537,6 +1537,7 @@ $roboto: "Roboto", sans-serif;
       th{
         width: 33%;
         min-width: 410px;
+        vertical-align: middle;
       }
     }
   }
@@ -3022,6 +3023,8 @@ body {
 }
 .weight-drawer-costing{
   .drawer-1500px{
+    width: 870px;
+    min-width: unset;
     >.row{
       margin-left: 0;
       margin-right: 0px;
@@ -3335,6 +3338,94 @@ body{
   z-index: 12;
 }
 
+.role-permision-page{
+  .table-bordered{
+    position: relative;
+    &:before{
+      content: "";
+      width: 1px;
+      border-right: 1px solid #dfe6f1 !important;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: -1px;
+      height: 100%;
+    }
+    &:after{
+      content: "";
+      height: 1px;
+      border-bottom: 1px solid #dfe6f1 !important;
+      position: absolute;
+      bottom: -1px;
+      right: 0;
+      left: 0;
+      width: 100%;
+    }
+    tr{
+      border: 1px solid #dfe6f1 !important;
+    }
+  }
+}
+
+// top menu bar drop down css starts here
+.nav-item.dropdown{
+  position: unset;
+  .dr-icon{
+    font-size: 14px;
+  }
+  .dropdown-menu.sub-menu{
+    display:none;
+    position: absolute;
+    right: 29px;
+    top:30px;
+    left: 29px;
+    z-index: 10;
+    text-align: left;
+    list-style: none;
+    padding-top: 19px;
+    background-clip: padding-box;
+    background-color:transparent;
+    border: none;
+    ul{
+      background-color: #fff;
+      box-shadow: 0px 5px 10px #00000033;
+      border-radius: 4px;
+      min-width: 8.4375rem;
+      padding:25px;
+      li{
+        padding: 5px 10px;
+        padding: 5px 10px;
+        display: inline-block;
+        vertical-align: top;
+        width: 19.8%;
+        text-align: left;
+      }
+      a{
+        color: #8A91AC;
+        font-size: 15px;
+        padding: 0;
+        &:hover,&:focus{
+          background-color: #fff;
+          color: #256bd1 !important;
+        }
+      }
+      .active-nav{
+        color: #256bd1;
+      }
+    }
+  }
+  &:hover{
+    >.nav-link{color: #256bd1;}
+    i.dr-icon{
+      transform: rotate(180deg);
+      color: #256bd1;
+    }
+    .dropdown-menu.sub-menu{
+      display:block;
+    }  
+  }
+}
+// top menu bar drop down css starts end
 
 
 // responsive media query start
@@ -3591,7 +3682,7 @@ body{
         padding:calc(2px * 80 / 100) calc(8px * 80 /100)
       }
       .css-107lb6w-singleValue, .css-1wa3eu0-placeholder{
-        font-size:calc(13px * 80 /100) ;
+        font-size:calc(14px * 80 /100) ;
       }
       .css-b8ldur-Input{
         padding-top: calc(2px * 80 / 100);
@@ -3644,7 +3735,7 @@ body{
         table{
           th,td{
             font-size: calc(14px * 80 /100);
-            padding:calc(0.71rem * 80 /100) calc(0.75rem * 80 /100);
+            padding:calc(0.71rem * 80 /100) calc(0.85rem * 80 /100);
           }
         }
       }
@@ -3731,10 +3822,10 @@ body{
               min-height:  calc(40px * 80 / 100);
               padding: calc(12px * 80 / 100) !important;
               &:disabled{
-                font-size:  calc(13px * 80 / 100);
+                font-size:  calc(14px * 80 / 100);
               }
               &::placeholder{
-                font-size: calc(13px * 80 / 100);
+                font-size: calc(14px * 80 / 100);
               }
             }
           }
@@ -3742,14 +3833,14 @@ body{
       }
       
       .css-1wa3eu0-placeholder {
-        font-size: calc(13px * 80 / 100);        
+        font-size: calc(14px * 80 / 100);        
       }
       .css-107lb6w-singleValue,.css-1wa3eu0-placeholder{
-        font-size: calc(13px * 80 / 100);
+        font-size: calc(14px * 80 / 100);
       }
       .withBorder .form-control,.form-control {
         &::placeholder{
-          font-size: calc(13px * 80 / 100);
+          font-size: calc(14px * 80 / 100);
         }
       }
 
@@ -3803,8 +3894,25 @@ body{
           }
       }
      }
-     .form-control, .manageuser .css-yk16xz-control{
+     .login-form .inputbox.input-group .form-control,.form-control, .manageuser .css-yk16xz-control{
        height: calc(40px * 80 / 100);
+     }
+     textarea.form-control{
+       height: auto;
+     }
+     .btn-lg,.approval-btn{
+       img{
+         height: calc(18px * 80 / 100);
+       }
+     }
+     .login-form .inputbox.input-group{
+       &:before{
+         top: 8px;
+       }
+     }
+     .login-btn{
+      font-size: calc(14px * 80 / 100);
+      padding: calc(10px * 80 / 100) calc(15px * 80 / 100);
      }
      .css-yk16xz-control{
         min-height: calc(40px * 80 / 100) !important;
@@ -3850,8 +3958,96 @@ body{
           transform: scale(0.8);
         }
       }
-       
-    // add pages css
+      .cr-tbl-label{
+        font-size: calc(16px * 80 / 100);
+      }
+
+      .left-border{
+        font-size: calc(17px * 80 / 100);
+      }
+      .sec-heading {
+        font-size: calc(16px * 80 / 100);
+      }
+      // add pages css
+
+      // top menu bar drop down css starts here
+      .nav-item.dropdown{
+        .dr-icon{
+          font-size: calc(14px * 80 / 100);
+        }
+        .dropdown-menu.sub-menu{
+          ul{
+            padding:calc(25px * 80 / 100);
+            li{
+              padding: calc(5px * 80 / 100) calc(10px * 80 / 100);
+            }
+            a{
+              color: #8A91AC;
+              font-size: calc(15px * 80 / 100);
+            }
+          }
+        }
+      }
+      // top menu bar drop down css starts end
+
+      .costing-page-tabs{
+        .right-actions{
+          span.d-block{
+            font-size: calc(14px * 80 / 100);
+          }
+          img{
+            max-height: calc(30px * 80 / 100);
+          }
+        }  
+      }
+      
+      .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: calc(16px * 80 / 100);padding: calc(10px * 80 / 100) calc(15px * 80 / 100);}
+      .table-responsive {
+        font-size: calc(14px * 80 / 100);
+        .cr-brdr-main {
+          tbody {
+            td {
+              font-size: calc(15px * 80 / 100);
+            }
+          }
+          tr {
+            th {
+              font-size: calc(15px * 80 / 100);
+            }
+          }
+        }
+      }
+      .head-text{
+        font-size: calc(15px * 80 / 100);
+      }
+      .refresh-icon{
+        background-size: calc(36px * 80 / 100);
+        width: calc(36px * 80 / 100);
+        height: calc(36px * 80 / 100);
+      }
+
+      .react-bs-table-container {
+        .react-bs-table {
+          .sort-column {
+            .dropdown,
+            .dropup {
+              .caret {
+                width: calc(11px * 80 / 100);
+                height: calc(11px * 80 / 100);
+                background-size: calc(11px * 80 / 100) calc(11px * 80 / 100) !important;
+              }
+            }
+      
+            .dropup {
+              .caret {
+                background: transparent
+                  url('../../assests/images/down-sorting-arrow.png') calc(11px * 80 / 100) calc(11px * 80 / 100);
+              }
+            }
+          }
+        }
+      }
+
     }// body
 
     html {
@@ -4044,7 +4240,7 @@ body{
   .costing-details-page{
     .table {
       td,th{
-        font-size: 14px;
+        font-size: calc(15px * 80 / 100);
       }
     }
   }

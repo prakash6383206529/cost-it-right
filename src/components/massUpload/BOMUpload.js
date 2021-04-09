@@ -141,6 +141,10 @@ class BOMUpload extends Component {
   */
   onSubmit = (values) => {
     const { fileData, } = this.state;
+    if (fileData.length === 0) {
+      toastr.warning('Please select a file to upload.')
+      return false
+    }
 
     let uploadData = {
       Records: fileData,
@@ -171,7 +175,9 @@ class BOMUpload extends Component {
     }
 
     return (
-      <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+      <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+      // onClose={(e) => this.toggleDrawer(e)}
+      >
         <Container>
           <div className={'drawer-wrapper WIDTH-400 yhi-h'}>
             <form

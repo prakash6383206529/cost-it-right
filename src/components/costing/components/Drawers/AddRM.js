@@ -179,7 +179,9 @@ function AddRM(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer anchor={props.anchor} open={props.isOpen} 
+      // onClose={(e) => toggleDrawer(e)}
+      >
         <Container className="costing-rm-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 

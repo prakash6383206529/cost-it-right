@@ -119,7 +119,9 @@ class Department extends Component {
 		return (
 			<div>
 				{this.props.loading && <Loader />}
-				<Drawer className="add-department-drawer" anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+				<Drawer className="add-department-drawer" anchor={this.props.anchor} open={this.props.isOpen}
+				//  onClose={(e) => this.toggleDrawer(e)}
+				 >
 					<Container>
 						<div className={'drawer-wrapper'}>
 							<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>

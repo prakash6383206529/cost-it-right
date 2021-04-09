@@ -123,7 +123,9 @@ function AddAssemblyOperation(props) {
   */
   return (
     <div>
-      <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer className="bottom-drawer" anchor='bottom' open={props.isOpen} 
+      // onClose={(e) => toggleDrawer(e)}
+      >
         <div className="container-fluid add-operation-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 

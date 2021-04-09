@@ -195,7 +195,9 @@ function AddPackaging(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer anchor={props.anchor} open={props.isOpen} 
+      // onClose={(e) => toggleDrawer(e)}
+      >
         <Container>
           <div className={'drawer-wrapper'}>
             <Row className="drawer-heading">

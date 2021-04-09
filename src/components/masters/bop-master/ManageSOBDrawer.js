@@ -109,7 +109,7 @@ function ManageSOBDrawer(props) {
       setGridData(tempArray)
 
     } else {
-      warningMessageHandle('VALID_NUMBER_WARNING')
+      //  warningMessageHandle('VALID_NUMBER_WARNING')
     }
 
   }
@@ -257,17 +257,14 @@ function ManageSOBDrawer(props) {
                                   name={`${GridFields}[${index}]ShareOfBusinessPercentage`}
                                   Controller={Controller}
                                   control={control}
-                                  register={register({
-                                    validate: {
-                                      lessThanTen: value => Number(value, 10) < 10 || 'should be lower than 10',
-                                    },
-                                  })}
+                                  register={register}
                                   mandatory={false}
                                   rules={{
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
+                                      // value: /^[0-9]\d*(\.\d+)?$/i,
+                                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                       message: 'Invalid Number.'
                                     },
                                     maxLength: {

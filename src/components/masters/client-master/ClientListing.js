@@ -282,7 +282,7 @@ class ClientListing extends Component {
                         className={'client-table mr15 pr15'}
                         pagination>
                         <TableHeaderColumn dataField="CompanyName" dataAlign="left" >{'Company'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Client Name'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ClientName" dataAlign="left" >{'Contact Name'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="ClientEmailId" dataAlign="left" >{'Email Id'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="CountryName" dataAlign="left" >{'Country'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="StateName" dataAlign="left" >{'State'}</TableHeaderColumn>

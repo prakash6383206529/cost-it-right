@@ -226,7 +226,7 @@ class Role extends Component {
 		const { isLoader, isSubmitted, isEditFlag } = this.state;
 
 		return (
-			<div className="container-fluid">
+			<div className="container-fluid role-permision-page">
 				{isLoader && <Loader />}
 				<div className="login-container signup-form ">
 					<div className="row">

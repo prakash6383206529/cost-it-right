@@ -460,7 +460,7 @@ class MachineRateListing extends Component {
                                             type="text"
                                             label=""
                                             component={searchableSelect}
-                                            placeholder={'Head'}
+                                            placeholder={'Costing Head'}
                                             isClearable={false}
                                             options={this.renderListing('costingHead')}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}

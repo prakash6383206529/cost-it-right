@@ -2029,7 +2029,7 @@ body {
 }
 .css-yk16xz-control {
   border-color: #c2cbe8 !important;
-  min-height: 40px !important;
+  min-height: 38px !important;
 }
 .form-group {
   margin-bottom: 15px;
@@ -2248,12 +2248,14 @@ input:disabled,
   }
 }
 td {
+  .Error,
+  .Pushed,
   .Draft,
   [class^="Pending"],
   .Approved,
   .Rejected,
   .History {
-    background-color: #fc5774;
+    background-color:#da94a1;
     min-width: 90px;
     height: 30px;
     border-radius: 30px;
@@ -2262,7 +2264,7 @@ td {
     font-size: 14px;
     display: inline-block;
     line-height: 30px;
-    padding: 0 1.5rem;
+    padding: 0 0.5rem;
     vertical-align: middle;
   }
   [class^="Pending"]{
@@ -2275,7 +2277,13 @@ td {
     background-color: #c2cbe8;
   }
   .Rejected{
-    background-color: #c3344d;
+    background-color:  #fc5774;
+  }
+  .Error{
+    background-color: #f73d3d;
+  }
+  .Pushed{
+    background-color: #498cef;
   }
 }
 .table.cr-brdr-main{
@@ -2321,7 +2329,7 @@ body {
 .calculator-drawer {
   .form-group {
     label {
-      min-height: 44px;
+      // min-height: 44px;
     }
   }
 }
@@ -2369,63 +2377,6 @@ body {
         z-index: 11;
       }
     }
-  }
-}
-.nav-item.dropdown{
-  position: unset;
-  .dr-icon{
-    font-size: 14px;
-  }
-  .dropdown-menu.sub-menu{
-    display:none;
-    position: absolute;
-    right: 29px;
-    top:30px;
-    left: 29px;
-    z-index: 10;
-    text-align: left;
-    list-style: none;
-    padding-top: 19px;
-    background-clip: padding-box;
-    background-color:transparent;
-    border: none;
-    ul{
-      background-color: #fff;
-      box-shadow: 0px 5px 10px #00000033;
-      border-radius: 4px;
-      min-width: 8.4375rem;
-      padding:25px;
-      li{
-        padding: 5px 10px;
-        padding: 5px 10px;
-        display: inline-block;
-        vertical-align: top;
-        width: 19.8%;
-        text-align: left;
-      }
-      a{
-        color: #8A91AC;
-        font-size: 15px;
-        padding: 0;
-        &:hover,&:focus{
-          background-color: #fff;
-          color: #256bd1 !important;
-        }
-      }
-      .active-nav{
-        color: #256bd1;
-      }
-    }
-  }
-  &:hover{
-    >.nav-link{color: #256bd1;}
-    i.dr-icon{
-      transform: rotate(180deg);
-      color: #256bd1;
-    }
-    .dropdown-menu.sub-menu{
-      display:block;
-    }  
   }
 }
 .refresh-icon {

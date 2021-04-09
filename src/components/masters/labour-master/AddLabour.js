@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { Row, Col, Table } from 'reactstrap'
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, } from '../../../helper/validation'
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLength2 } from '../../../helper/validation'
 import { renderText, searchableSelect } from '../../layout/FormInputs'
 import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
@@ -277,7 +277,7 @@ class AddLabour extends Component {
    */
   handleMachineType = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ machineType: newValue }, () => {
+      this.setState({ machineType: newValue, labourType: [] }, () => {
         const { machineType } = this.state
         this.props.getLabourTypeByMachineTypeSelectList(
           machineType.value,
@@ -285,7 +285,7 @@ class AddLabour extends Component {
         )
       })
     } else {
-      this.setState({ machineType: [] })
+      this.setState({ machineType: [], labourType: [] })
       this.props.getLabourTypeByMachineTypeSelectList('', () => { })
     }
   }
@@ -346,6 +346,20 @@ class AddLabour extends Component {
       return false;
     }
 
+    if (fieldsObj.length > 10) {
+      return false;
+    }
+
+    if (decimalLength2(Number(fieldsObj))) {
+      // toastr.warning('Please enter valid value.')
+      return false;
+    }
+
+    // if ((machineType.length >= 11) || (labourType.length > 11)) {
+    //   toastr.warning('Please enter qo')
+    //   return false;
+    // }
+
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     const isExist = gridTable.findIndex((el) =>
       el.MachineTypeId === machineType.value &&
@@ -358,6 +372,7 @@ class AddLabour extends Component {
 
     const LabourRate = fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0
     const tempArray = []
+
 
     tempArray.push(...gridTable, {
       LabourDetailId: '',
@@ -791,7 +806,7 @@ class AddLabour extends Component {
                             name={"LabourRate"}
                             type="text"
                             placeholder={"Enter"}
-                            validate={[positiveAndDecimalNumber, maxLength10]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLength2]}
                             component={renderText}
                             required={true}
                             disabled={false}

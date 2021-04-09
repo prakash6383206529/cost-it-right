@@ -103,8 +103,8 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if ((tempData.Density === undefined && tempData.Density === null && tempData.Density === "") || Number(tempData.Density) === 0) {
-      toastr.warning("Density is not avaliable for weight calculation.")
+    if (tempData.Density === undefined && tempData.Density === null && tempData.Density === "" || Number(tempData.Density) === 0) {
+      toastr.warning("This Material's density is not available for weight calculation. Please add density for this material in RM Master > Manage Material.")
       return false
     }
     dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
