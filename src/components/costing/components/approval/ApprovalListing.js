@@ -177,7 +177,7 @@ function ApprovalListing() {
   }
 
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
   const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
@@ -185,7 +185,7 @@ function ApprovalListing() {
   }
 
   const statusFormatter = (cell, row, enumObject, rowIndex) => {
-    return <div className={cell}>{cell}</div>
+    return <div className={cell}>{row.DisplayStatus}</div>
   }
 
   const viewDetails = (approvalNumber, approvalProcessId) => {
@@ -380,8 +380,8 @@ function ApprovalListing() {
                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setshown(!shown)}>
                           <img src={require("../../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                       ) : (
-                          <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
-                        )}
+                        <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
+                      )}
                       <button class="user-btn" onClick={sendForApproval}>
                         <img
                           class="mr-1"

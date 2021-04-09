@@ -151,7 +151,9 @@ function AddSurfaceTreatment(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} onClose={(e) => toggleDrawer(e)}>
+      <Drawer anchor={props.anchor} open={props.isOpen} 
+      // onClose={(e) => toggleDrawer(e)}
+      >
         <Container>
           <div className={'drawer-wrapper drawer-1500px'}>
 

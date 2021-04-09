@@ -95,7 +95,7 @@ class AddVendorDrawer extends Component {
             if (removedVendorTypeIds.length === 0) {
                 this.setState({ selectedVendorType: e });
             } else {
-                toastr.warning("You cann't removed existed Vendor Type.");
+                toastr.warning("You can not remove existing Vendor Type.");
                 return false;
             }
 
@@ -433,7 +433,9 @@ class AddVendorDrawer extends Component {
         const { country, isOpenVendorPlant } = this.state;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} onClose={(e) => this.toggleDrawer(e)}>
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                // onClose={(e) => this.toggleDrawer(e)}
+                >
                     <Container >
                         <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
                             <form

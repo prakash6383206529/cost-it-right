@@ -40,7 +40,7 @@ function ViewOverheadProfit(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        onClose={(e) => toggleDrawer(e)}
+        // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper drawer-1500px"}>

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, reset } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, } from "../../../helper/validation";
-import { renderText, searchableSelect, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
@@ -167,7 +167,7 @@ class AddInterestRate extends Component {
       this.props.getInterestRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
+          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
 
@@ -465,12 +465,12 @@ class AddInterestRate extends Component {
                       </Col>
                       <Col md="3">
                         <div className="form-group">
-                          <label>
-                            Effective Date
+                          {/* <label>
+                            Effective Date */}
                               {/* <span className="asterisk-required">*</span> */}
-                          </label>
+                          {/* </label> */}
                           <div className="inputbox date-section">
-                            <DatePicker
+                            {/* <DatePicker
                               name="EffectiveDate"
                               selected={this.state.effectiveDate}
                               onChange={this.handleEffectiveDateChange}
@@ -485,7 +485,26 @@ class AddInterestRate extends Component {
                               disabledKeyboardNavigation
                               onChangeRaw={(e) => e.preventDefault()}
                               disabled={isEditFlag ? true : false}
-                            />
+                            /> */}
+                            <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  placeholder="Enter"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    // e.preventDefault()
+                                  }}
+                                  // disabled={isEditFlag ? true : false}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                //minDate={moment()}
+                                />
+
                           </div>
                         </div>
                       </Col>

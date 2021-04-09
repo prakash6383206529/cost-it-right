@@ -14,6 +14,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
+import { dropRight, flowRight, takeRight } from "lodash";
 
 class Login extends Component {
   constructor(props) {
@@ -22,6 +23,7 @@ class Login extends Component {
       isLoader: false,
       isSubmitted: false,
       isRedirect: false,
+      flag: false
     };
   }
 
@@ -39,11 +41,12 @@ class Login extends Component {
   }
 
   forgotConfirm = () => {
-    const toastrConfirmOptions = {
-      onOk: () => { },
-      onCancel: () => { },
-    };
-    return toastr.confirm(`${'Please contact your IT Administrator'}`, toastrConfirmOptions);
+    // const toastrConfirmOptions = {
+    //   onOk: () => { },
+    //   onCancel: () => { },
+    // };
+    // return toastr.confirm(`${'Please contact your IT Administrator'}`, toastrConfirmOptions);
+    this.setState({ flag: true })
   }
 
   /**
@@ -161,7 +164,10 @@ class Login extends Component {
                         </Link> */}
                     <div className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</div>
                   </div>
-
+                  {this.state.flag && (
+                    <i className="text-help">Please contact your IT Administrator</i>
+                  )
+                  }
                 </form>
               </div>
               <div className="col-md-7 p-0 right-sideimg">

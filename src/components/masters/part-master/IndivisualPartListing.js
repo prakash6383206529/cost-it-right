@@ -262,7 +262,7 @@ class IndivisualPartListing extends Component {
                                     type="button"
                                     className={'user-btn'}
                                     onClick={this.formToggle}>
-                                    <div className={'plus'}></div>Add  Part</button>}
+                                    <div className={'plus'}></div>Add</button>}
                             </div>
                         </div>
                     </Col>
@@ -287,8 +287,8 @@ class IndivisualPartListing extends Component {
                     <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
                     {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
                     <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
