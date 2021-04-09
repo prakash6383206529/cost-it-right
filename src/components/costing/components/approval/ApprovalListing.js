@@ -270,10 +270,10 @@ function ApprovalListing() {
     <Fragment>
       {
         !showApprovalSumary ?
-          <div className="container-fluid">
+          <div className="container-fluid approval-listing-page">
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-              <h3>Costing Approval</h3>
+              <h1 className="mb-0">Costing Approval</h1>
 
 
               <Row className="pt-4 blue-before">
@@ -382,7 +382,7 @@ function ApprovalListing() {
                       ) : (
                         <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                       )}
-                      <button class="user-btn" onClick={sendForApproval}>
+                      <button class="user-btn approval-btn" onClick={sendForApproval}>
                         <img
                           class="mr-1"
                           src={require('../../../../assests/images/send-for-approval.svg')}

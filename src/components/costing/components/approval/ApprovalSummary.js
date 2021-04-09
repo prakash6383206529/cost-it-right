@@ -109,10 +109,11 @@ function ApprovalSummary(props) {
                 </Col>
                 <Col md="4" className="text-right">
                   <div className="right-border">
-                    <button type={'button'} className="apply view-btn mr-3" onClick={() => setShowListing(true)}>
-                      Back
+                    <button type={'button'} className="apply mr5" onClick={() => setShowListing(true)}>
+                    <div className={'check-icon'}><img src={require('../../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
+                    {'Back '}
                      </button>
-                    <button type={'button'} className="apply view-btn" onClick={() => setViewButton(true)}>
+                    <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
                       View All
                       </button>
                   </div>
@@ -335,7 +336,7 @@ function ApprovalSummary(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
-                    <button type={'button'} className="mr15 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
+                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
                       <div className={'cross-icon'}>
                         <img src={require('../../../../assests/images/times.png')} alt="cancel-icon.jpg" />
                       </div>{' '}

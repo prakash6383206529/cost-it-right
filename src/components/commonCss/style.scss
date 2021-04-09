@@ -1772,6 +1772,10 @@ body {
 	p {
 		font-size: 14px;
 		font-weight: 300;
+    max-width: 100%;
+    text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
 	}
 	.bottom {
 		padding: 10px;
@@ -1782,6 +1786,9 @@ body {
 		.right {
 			width: calc(100% - 75px);
 			display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
 		}
 	}
 }
@@ -1803,8 +1810,15 @@ body {
 		max-width: calc(25% - 40px);
     position: relative;
     margin-right: 53px;
-		&:last-child {
+		&:nth-child(4),&:nth-child(8),&:nth-child(12){
       margin-right: 0;
+			.card-border {
+				&:after {
+					display: none;
+				}
+			}
+		}
+    &:last-child{
 			.card-border {
 				&:after {
 					display: none;
@@ -3427,6 +3441,23 @@ body{
 }
 // top menu bar drop down css starts end
 
+// approval-workflow-drawer start
+.MuiDrawer-root.MuiDrawer-modal.approval-workflow-drawer{
+  .MuiDrawer-paper{
+    padding-bottom: 0px;
+    .sf-btn-footer{
+       .bluefooter-butn{
+         padding-top: 0 !important;
+       }
+      }
+  }
+  .workflow-row {
+    .col-lg-3{
+      margin-bottom: 30px;
+    }
+  }
+}
+// approval-workflow-drawer end
 
 // responsive media query start
 @media(max-width:1600px){
@@ -3612,6 +3643,7 @@ body{
         padding-right: calc(15px * 80 / 100);
         line-height: calc(14px * 80 / 100);
         height: calc(32px * 80 / 100);
+        width: auto;
       }
       .content-page{
         width: calc(100% - (205px * 80 / 100));
@@ -3620,7 +3652,6 @@ body{
         .tab-pane{
           .filter-block {
             position: initial;
-            
             &:before{
               position: absolute;
               top: calc(10px * 80 / 100);
@@ -3638,6 +3669,18 @@ body{
           }
         }
       }// content-page
+
+      .content-page {
+        .filter-block {
+          .css-1gtu0rj-indicatorContainer{
+            padding: 1px 5px;
+            svg{
+              height: calc(20px * 80 / 100);
+              width: calc(20px * 80 / 100);
+            }
+          }
+        }
+      }
 
       .text-help{
         font-size: calc(12px * 80 / 100);
@@ -4026,6 +4069,10 @@ body{
         height: calc(36px * 80 / 100);
       }
 
+      .filled-small div[class$="placeholder"]{
+        top: calc(14px * 80 / 100);
+      }
+
       .react-bs-table-container {
         .react-bs-table {
           .sort-column {
@@ -4044,6 +4091,94 @@ body{
                   url('../../assests/images/down-sorting-arrow.png') calc(11px * 80 / 100) calc(11px * 80 / 100);
               }
             }
+          }
+        }
+      }
+
+      td {
+        .Error,
+        .Pushed,
+        .Draft,
+        [class^="Pending"],
+        .Approved,
+        .Rejected,
+        .History {
+          min-width: calc(90px * 80 / 100);
+          height: calc(30px * 80 / 100);
+          font-size: calc(14px * 80 / 100);
+          line-height: calc(30px * 80 / 100);
+        }
+      }
+      .link{
+        font-size: calc(14px * 80 / 100);
+      }
+
+      .card-border {
+        &:after {
+          width: calc(25px * 80 / 100);
+          height: calc(25px * 80 / 100);
+        }
+        .top {
+          b {
+            font-size: calc(20px * 80 / 100);
+          }
+          .left {
+            padding: calc(10px * 80 / 100);
+          }
+          .right {
+            padding: calc(10px * 80 / 100);
+          }
+        }
+        span {
+          font-size: calc(14px * 80 / 100);
+        }
+        p {
+          font-size: calc(14px * 80 / 100);
+        }
+        .bottom{
+          padding:calc(10px * 80 / 100);
+          .d-flex.mb-3{
+            margin-bottom: calc(1rem * 80 / 100) !important;
+          }
+        }
+      }
+
+      .react-bs-table-container .react-bs-table-pagination .col-md-6:nth-last-child(1) ul.pagination,.react-bs-table-container .react-bs-table-pagination .col-md-6:nth-last-child(1) ul.pagination .page-link{
+        font-size: calc(14px * 80 / 100);
+      }
+
+      .rrt-confirm-holder{
+        .header-bar{
+          padding: calc(16px * 80 / 100) calc(20px * 80 / 100);
+          margin-bottom: calc(25px * 80 / 100);
+          h4{
+            color: #256BD1;
+            font-size: calc(24px * 80 / 100);
+          }
+        }
+        .rrt-ok-btn{
+          width: calc(18px * 80 / 100);
+          height: calc(14px * 80 / 100);
+        }
+        .rrt-cancel-btn{
+          &:before{
+            width: calc(18px * 80 / 100);
+            height: calc(14px * 80 / 100);
+          }
+        }
+        .rrt-confirm{
+          width: calc(444px * 80 / 100);
+          .rrt-message{
+            font-size: calc(18px * 80 / 100);
+            padding: calc(10px * 80 / 100);
+          }
+          .rrt-buttons-holder {
+            .rrt-button{height: calc(42px * 80 / 100);}
+          }
+        }
+        .img-block{
+          img{
+            height: calc(83px * 80 / 100);
           }
         }
       }
@@ -4070,8 +4205,7 @@ body{
         }      
       }
     }
-
-     
+  
 
   // // input range slider 'Net Landed Range (INR)' css 
   .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}

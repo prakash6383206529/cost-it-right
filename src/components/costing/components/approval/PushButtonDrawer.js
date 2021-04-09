@@ -35,8 +35,6 @@ function PushButtonDrawer(props) {
                 </Col>
               </Row>
 
-
-              <hr />
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button
@@ -55,7 +53,7 @@ function PushButtonDrawer(props) {
 
                   <button
                     type="submit"
-                    className="submit-button mr5 save-btn"
+                    className="submit-button  save-btn"
                   //onClick={() => setApproveDrawer(true)}
                   >
                     <div className={'check-icon'}>

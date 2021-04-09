@@ -17,9 +17,9 @@ function ViewDrawer(props) {
 
   return (
     <>
-      <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen} >
+      <Drawer className="top-drawer approval-workflow-drawer" anchor={props.anchor} open={props.isOpen} >
         {/* <Container > */}
-        <div className="container-fluid add-operation-drawer">
+        <div className="container-fluid ">
           <div className={'drawer-wrapper drawer-full-width'}>
 
             <Row className="drawer-heading sticky-top-0">
@@ -39,7 +39,7 @@ function ViewDrawer(props) {
 
             {
               approvalLevelStep &&
-              <div className="row process workflow-row mb-4">
+              <div className="row process workflow-row mt-5 mx-0">
                 {/* <div className="col-lg-3 col-md-6 col-sm-12 ">
         <div className="card-border card-green">
           <div className="top d-flex">
@@ -102,7 +102,6 @@ function ViewDrawer(props) {
               </div>
             }
             {/* </Row> */}
-            <hr />
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
                 <button
