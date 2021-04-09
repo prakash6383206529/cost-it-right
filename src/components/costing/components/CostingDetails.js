@@ -1317,19 +1317,7 @@ function CostingDetails(props) {
                           </div>
                         </div>
                       </Col>
-                      <Col className="col-md-15">
-                        <div className="col-sm-12 text-right mt-15">
-                          <button type={"button"} className="cancel-btn mt-15" onClick={cancel} >
-                            <div className={"cross-icon"}>
-                              <img
-                                src={require("../../../assests/images/times.png")}
-                                alt="cancel-icon.jpg"
-                              />
-                            </div>{" "}
-                            {"Clear"}
-                          </button>
-                        </div>
-                      </Col>
+
                     </Row>
                     {IsOpenVendorSOBDetails && (
                       <Row>
@@ -1607,21 +1595,31 @@ function CostingDetails(props) {
                       </>
                     )}
 
-                    {!IsOpenVendorSOBDetails && IsShowNextBtn &&
+                    {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between">
-                        <Col className="col-md-9 text-right"></Col>
-                        <Col className="col-md-3 text-right">
-                          <button type="button" className="submit-button save-btn ml15" onClick={nextToggle} >
-                            {"Next"}
-                            <div className={"check-icon ml-1"}>
+                        <div className="col-sm-12 text-right">
+                          <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel} >
+                            <div className={"cross-icon"}>
                               <img
-                                src={require("../../../assests/images/right-arrow-white.svg")}
-                                alt="check-icon.jpg"
-                              />{" "}
-                            </div>
+                                src={require("../../../assests/images/times.png")}
+                                alt="cancel-icon.jpg"
+                              />
+                            </div>{" "}
+                            {"Clear"}
                           </button>
-                        </Col>
+                          {IsShowNextBtn &&
+                            <button type="button" className="submit-button save-btn" onClick={nextToggle} >
+                              {"Next"}
+                              <div className={"check-icon ml-1"}>
+                                <img
+                                  src={require("../../../assests/images/right-arrow-white.svg")}
+                                  alt="check-icon.jpg"
+                                />{" "}
+                              </div>
+                            </button>}
+                        </div>
                       </Row>}
+
 
                   </>
                 )}

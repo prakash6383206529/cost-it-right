@@ -410,7 +410,6 @@ function TabRMCC(props) {
    * @description SET BOP COST
    */
   const setBOPHandlingCost = (bopGrid, BOPHandlingFields, params) => {
-    console.log('BOPHandlingFields: ', BOPHandlingFields);
     let arr = setBOPHandlingCostInDataList(bopGrid, BOPHandlingFields, params, RMCCTabData)
     dispatch(setRMCCData(arr, () => { }))
   }

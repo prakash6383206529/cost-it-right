@@ -26,18 +26,18 @@ function SurfaceTreatmentCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
-    setTimeout(() => {
-      const Params = {
-        index: props.index,
-        BOMLevel: props.item.BOMLevel,
-        PartNumber: props.item.PartNumber,
-      }
-      if (props.IsAssemblyCalculation) {
-        props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-      } else {
-        props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
-      }
-    }, 100)
+    // setTimeout(() => {
+    const Params = {
+      index: props.index,
+      BOMLevel: props.item.BOMLevel,
+      PartNumber: props.item.PartNumber,
+    }
+    if (props.IsAssemblyCalculation) {
+      props.setAssemblySurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    } else {
+      props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
+    }
+    // }, 100)
   }, [gridData]);
 
   /**
