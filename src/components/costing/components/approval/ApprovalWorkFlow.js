@@ -39,14 +39,14 @@ function ApprovalWorkFlow(props) {
       </div> */}
       {approvalLevelStep &&
         approvalLevelStep.map((item, index) => {
+          if (index > 4) return false
           return (
             <>
-
               <div key={index} className="col-lg-3 col-md-6 col-sm-12 ">
                 <div className="card-border card-green">
                   <div className="top d-flex">
                     <div className="left text-center">
-                      <b>{item.FlowStepSequence ? item.FlowStepSequence : ''}</b>
+                      <b>{item.FlowStepSequence ? item.FlowStepSequence : 0}</b>
                       <span className="d-block">Level</span>
                     </div>
                     <div className="right">

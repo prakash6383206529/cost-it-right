@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Container, Row, Col, Table } from 'reactstrap'
-import { formViewData, loggedInUserId } from '../../../../helper'
+import { checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
 import { CONSTANT } from '../../../../helper/AllConastant'
 import NoContentFound from '../../../common/NoContentFound'
 import { getApprovalSummary } from '../../actions/Approval'
@@ -12,6 +12,9 @@ import CostingSummaryTable from '../CostingSummaryTable'
 import moment from 'moment'
 import { Fragment } from 'react'
 import ApprovalListing from './ApprovalListing'
+import ViewDrawer from './ViewDrawer'
+import PushButtonDrawer from './PushButtonDrawer'
+
 function ApprovalSummary(props) {
   // const approvalNumber = props.approvalNumber 
   // const approvalProcessId = props.approvalProcessId 
@@ -38,6 +41,9 @@ function ApprovalSummary(props) {
   const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
   const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
   const [showPushDrawer, setShowPushDrawer] = useState(false)
+
+  const [viewButton, setViewButton] = useState(false)
+  const [pushButton, setPushButton] = useState(false)
 
 
   useEffect(() => {
@@ -76,6 +82,16 @@ function ApprovalSummary(props) {
     setRejectDrawer(false)
     setShowListing(true)
   }
+
+  const closeViewDrawer = (e = '') => {
+    setViewButton(false)
+  }
+
+  const closePushButton = (e = '') => {
+    setPushButton(false)
+    setShowListing(true)
+  }
+
   return (
 
     <>
@@ -96,7 +112,7 @@ function ApprovalSummary(props) {
                     <button type={'button'} className="apply view-btn mr-3" onClick={() => setShowListing(true)}>
                       Back
                      </button>
-                    <button type={'button'} className="apply view-btn">
+                    <button type={'button'} className="apply view-btn" onClick={() => setViewButton(true)}>
                       View All
                       </button>
                   </div>
@@ -201,7 +217,7 @@ function ApprovalSummary(props) {
                           <th>{`ZBC/Vendor Name`}</th>
                         )}
                         <th>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
+                          {approvalDetails.TypeOfCosting === 'VBC' && checkVendorPlantConfigurable() ? 'Vendor Plant' : 'Plant'}{` Code`}
                         </th>
                         <th>{`SOB`}</th>
                         <th>{`Old/Current Price`}</th>
@@ -223,7 +239,7 @@ function ApprovalSummary(props) {
                         {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
                         {/* </td> */}
                         <td>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'}
+                          {approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode && checkVendorPlantConfigurable() ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'}
                         </td>
                         <td>
                           {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
@@ -361,7 +377,7 @@ function ApprovalSummary(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
-                    <button type="submit" className="submit-button mr5 save-btn">
+                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
                       <div className={"check-icon"}>
                         <img
                           src={require("../../../../assests/images/check.png")}
@@ -400,6 +416,22 @@ function ApprovalSummary(props) {
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
+        />
+      )}
+      {pushButton && (
+        <PushButtonDrawer
+          isOpen={pushButton}
+          closeDrawer={closePushButton}
+          anchor={'right'}
+        />
+      )}
+
+      {viewButton && (
+        <ViewDrawer
+          approvalLevelStep={approvalLevelStep}
+          isOpen={viewButton}
+          closeDrawer={closeViewDrawer}
+          anchor={'top'}
         />
       )}
     </>

@@ -38,7 +38,9 @@ const SendForApproval = (props) => {
     dispatch(getReasonSelectList((res) => { }))
     dispatch(getAllApprovalDepartment((res) => { }))
   }, [])
+  useEffect(() => {
 
+  }, [viewApprovalData])
   /**
    * @method renderDropdownListing
    * @description Used show listing of unit of measurement
@@ -120,11 +122,14 @@ const SendForApproval = (props) => {
    * @description This method is used to handle change of reason for every costing
    */
   const handleReasonChange = (data, index) => {
+    console.log('index: ', index);
+    console.log('data: ', data);
     let viewDataTemp = viewApprovalData
     let temp = viewApprovalData[index]
     temp.reason = data.label
     temp.reasonId = data.value
     viewDataTemp[index] = temp
+    console.log('viewDataTemp: ', viewDataTemp);
     dispatch(setCostingApprovalData(viewDataTemp))
   }
 
@@ -170,8 +175,9 @@ const SendForApproval = (props) => {
           let approvedQtyArr = res.data.Data.VolumeApprovedDetails
           let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
           let actualQty = 0
-          let budgetedRemQty = 0
+          let totalBudgetedQty = 0
           let actualRemQty = 0
+
           approvedQtyArr.map((data) => {
             if (data.Sequence < sequence) {
               actualQty += parseInt(data.ApprovedQuantity)
@@ -180,20 +186,18 @@ const SendForApproval = (props) => {
             }
           })
           budgetedQtyArr.map((data) => {
-            if (data.Sequence >= sequence) {
-              budgetedRemQty += parseInt(data.BudgetedQuantity)
-            }
+            // if (data.Sequence >= sequence) {
+            totalBudgetedQty += parseInt(data.BudgetedQuantity)
+            // }
           })
           temp.consumptionQty = checkForNull(actualQty)
-          temp.remainingQty = checkForNull(budgetedRemQty - actualRemQty)
+          temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
           temp.annualImpact =
             temp.variance != ''
-              ? (actualQty + (budgetedRemQty - actualRemQty)) *
-              parseInt(temp.variance)
-              : 0
+              ? totalBudgetedQty * temp.variance : 0
           temp.yearImpact =
             temp.variance != ''
-              ? (budgetedRemQty - actualRemQty) * parseInt(temp.variance)
+              ? (totalBudgetedQty - actualQty) * parseInt(temp.variance)
               : 0
 
           viewDataTemp[index] = temp
@@ -316,14 +320,14 @@ const SendForApproval = (props) => {
     obj.CostingsList = temp
     console.log(obj, "OBJECT");
 
-    // dispatch(
-    //   sendForApprovalBySender(obj, (res) => {
-    //     toastr.success('Data is sent for approval!')
-    //     props.closeDrawer('', 'Submit')
-    //     dispatch(setCostingApprovalData([]))
-    //     dispatch(setCostingViewData([]))
-    //   }),
-    // )
+    dispatch(
+      sendForApprovalBySender(obj, (res) => {
+        toastr.success('Data is sent for approval!')
+        props.closeDrawer('', 'Submit')
+        dispatch(setCostingApprovalData([]))
+        dispatch(setCostingViewData([]))
+      }),
+    )
   }
 
   const handleApproverChange = (data) => {
@@ -349,7 +353,7 @@ const SendForApproval = (props) => {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <div className={"drawer-wrapper drawer-md"}>
           <Row className="drawer-heading mx-0">
@@ -365,6 +369,8 @@ const SendForApproval = (props) => {
           </Row>
           {viewApprovalData &&
             viewApprovalData.map((data, index) => {
+              console.log('data: ', data);
+
               return (
                 <div className="pl-3 pr-3">
                   <Row className="px-3">
@@ -483,11 +489,11 @@ const SendForApproval = (props) => {
                             <label className="form-control bg-grey">
                               {data.consumptionQty ? data.consumptionQty : 0}
                             </label>
-                            <div class="plus-icon-square  right m-0 mb-1"></div>
+                            {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
                           </div>
                         </Col>
                         <Col md="4">
-                          <label>Remaining Quantity</label>
+                          <label>Remaining Budgeted Quantity</label>
                           <label className="form-control bg-grey">
                             {data.remainingQty !== "" ? data.remainingQty : 0}
                           </label>

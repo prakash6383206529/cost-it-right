@@ -185,7 +185,7 @@ function ApprovalListing() {
   }
 
   const statusFormatter = (cell, row, enumObject, rowIndex) => {
-    return <div className={cell}>{cell}</div>
+    return <div className={cell}>{row.DisplayStatus}</div>
   }
 
   const viewDetails = (approvalNumber, approvalProcessId) => {
