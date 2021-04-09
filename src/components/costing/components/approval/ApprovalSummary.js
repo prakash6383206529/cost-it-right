@@ -358,7 +358,7 @@ function ApprovalSummary(props) {
                     {
                       showFinalLevelButtons &&
                       <button
-                        type="button" className="approve-button mr5 approve-hover-btn" onClick={() => handleApproveAndPushButton()}                    >
+                        type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                         <div className={'check-icon'}>
                           <img
                             src={require('../../../../assests/images/check.png')}

@@ -1196,7 +1196,7 @@ class UserRegistration extends Component {
                         onClick={this.cancel}
                         type="submit"
                         value="CANCEL"
-                        className="reset mr15 cancel-btn">
+                        className="mr15 cancel-btn">
                         <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
                       CANCEL
                       </button>
@@ -1204,7 +1204,7 @@ class UserRegistration extends Component {
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        className="user-btn save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>

@@ -712,7 +712,7 @@ class VolumeListing extends Component {
                         type="button"
                         //disabled={pristine || submitting}
                         onClick={this.filterList}
-                        className="apply mr5"
+                        className="user-btn mr5"
                       >
                         {'Apply'}
                       </button>

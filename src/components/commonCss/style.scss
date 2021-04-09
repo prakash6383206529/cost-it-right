@@ -3536,6 +3536,9 @@ body{
 }// 1600px media query end
 
 @media(max-width:1366px){
+  .add-min-height{
+    min-height: calc(100vh - 273px);
+  }
   .tooltip-inner{
     font-size: calc(0.8rem * 80 / 100);
   }
@@ -3548,6 +3551,16 @@ body{
     display: block;
     padding: calc(0.5rem * 80 / 100) calc(0.75rem * 80 / 100);
   }
+  .add-min-height{
+    .btn-secondary,.btn-primary,.user-btn{
+      height: calc(40px * 80 / 100);
+    }
+    .reset-btn{
+      height: calc(40px * 80 / 100);
+    }
+    .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: calc(27px * 80 / 100);}
+  }
+
   .sf-mainheader{
      .img-xs{
       width: calc(30px * 80 / 100);
@@ -3645,6 +3658,10 @@ body{
         height: calc(32px * 80 / 100);
         width: auto;
       }
+      
+      .download-btn{
+         button{width: 100%;}
+        }
       .content-page{
         width: calc(100% - (205px * 80 / 100));
         padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
@@ -3681,7 +3698,15 @@ body{
           }
         }
       }
-
+      .header-title h5{
+        font-size: calc(18px * 80 / 100);
+      }
+      .btn-mr-rate{
+        margin-top: calc(28px * 80 / 100);
+      }
+      .reset-btn{
+        font-size: calc(14px * 80 / 100);
+      }
       .text-help{
         font-size: calc(12px * 80 / 100);
         height: calc(1em * 80 / 100);
@@ -4019,6 +4044,7 @@ body{
           font-size: calc(14px * 80 / 100);
         }
         .dropdown-menu.sub-menu{
+          padding-top: 10px;
           ul{
             padding:calc(25px * 80 / 100);
             li{
@@ -4183,10 +4209,20 @@ body{
         }
       }
 
-    }// body
+      .topminus88.filter-btn-top{
+        top: -82px;
+      }
 
+    }// body
+    
     html {
       body {
+        .approve-button, .approve-reject-btn{
+          padding: calc(5px * 80 /100) calc(12px * 80 /100);
+          vertical-align: middle;
+          height: calc(32px * 80 /100);
+          font-size: calc(14px * 80 /100);
+        }
         .save-btn,.cancel-btn  {
           width: auto;
           padding: calc(8px * 80 /100) calc(12px * 80 /100);
@@ -4201,6 +4237,16 @@ body{
         .save-btn{
           img{
             width: calc(16px * 80 /100);;
+          }
+        }
+        .user-btn,.approve-button{
+          img{
+            width: calc(16px * 80 /100);
+          }
+        }
+        .approve-reject-btn{
+          img{
+            width: calc(13px * 80 /100);
           }
         }      
       }

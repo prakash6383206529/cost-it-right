@@ -230,12 +230,12 @@ a:hover {
   text-transform: uppercase;
   font-weight: 400;
   color: #8a91ac;
-  background: transparent;
+  background: #fff;
   display: inline-flex;
   align-items: center;
 }
 
-.reset {
+.cancel-btn,.reset {
   &:hover,
   &:focus,
   &:not(.disabled):active:focus {

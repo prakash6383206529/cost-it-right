@@ -1375,13 +1375,13 @@ class AddMachineRate extends Component {
                             <>
                               <button
                                 type={'button'}
-                                className="reset mr15 cancel-btn"
+                                className=" mr15 cancel-btn"
                                 onClick={this.cancel} >
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                               </button>
                               <button
                                 type="submit"
-                                className="submit-button mr5 save-btn" >
+                                className="user-btn mr5 save-btn" >
                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                 {isEditFlag ? 'Update' : 'Save'}
                               </button>
