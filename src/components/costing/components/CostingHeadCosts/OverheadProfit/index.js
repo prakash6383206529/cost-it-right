@@ -110,7 +110,9 @@ function OverheadProfit(props) {
       setPaymentTermsApplicability({ label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability })
       setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
     }
-
+    setTimeout(() => {
+      includeSurfaceTreatment()
+    }, 3000)
   }, []);
 
   /**
@@ -1122,7 +1124,6 @@ function OverheadProfit(props) {
   * @description INCLUDE SURFACE TREATMENT IN TO OVERHEAD AND PROFIT
   */
   const includeSurfaceTreatment = () => {
-
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
       const { OverheadCCPercentage } = overheadObj;

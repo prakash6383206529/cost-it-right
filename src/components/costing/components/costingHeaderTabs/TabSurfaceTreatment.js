@@ -61,7 +61,7 @@ function TabSurfaceTreatment(props) {
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails.SurfaceTreatmentCost !== null ? el.CostingPartDetails.SurfaceTreatmentCost : 0);
+        return accummlator + checkForNull(el.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? el.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0);
       }
     }, 0)
     return NetCost;
@@ -77,7 +77,7 @@ function TabSurfaceTreatment(props) {
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails.TransportationCost !== null ? el.CostingPartDetails.TransportationCost : 0);
+        return accummlator + checkForNull(el.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? el.CostingPartDetails.TotalTransportationCostPerAssembly : 0);
       }
     }, 0)
     return NetCost;
@@ -120,6 +120,7 @@ function TabSurfaceTreatment(props) {
   * @description SET PART DETAILS
   */
   const setPartDetails = (Params, Data = {}) => {
+    console.log('Data: ', Data);
 
     let arr = formatData(Params, Data, SurfaceTabData)
     dispatch(setSurfaceData(arr, () => { }))
@@ -140,7 +141,7 @@ function TabSurfaceTreatment(props) {
 
           let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(Data.SurfaceTreatmentDetails)), Params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(Data.TransportationCost), Params) +
-            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.TotalSurfaceTreatmentCostPerAssembly), Params) +
+            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.TotalSurfaceTreatmentCostPerAssembly), Params, 'BBB') +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.TotalTransportationCostPerAssembly), Params);
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
@@ -268,7 +269,7 @@ function TabSurfaceTreatment(props) {
 
           let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TransportationCost), params) +
-            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params) +
+            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params, 'CCC') +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly), params);
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
@@ -352,7 +353,7 @@ function TabSurfaceTreatment(props) {
 
           let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(surfaceCost(i.CostingPartDetails.SurfaceTreatmentDetails)), params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(transportationObj.TransportationCost), params) +
-            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params) +
+            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params, 'DDD') +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly), params);
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
@@ -386,7 +387,8 @@ function TabSurfaceTreatment(props) {
    * @method getTransportationTotalCost
    * @description GET TRANSPORTATION TOTAL COST
    */
-  const getTransportationTotalCost = (arr, GridTotalCost, params) => {
+  const getTransportationTotalCost = (arr, GridTotalCost, params, flag) => {
+    console.log('arrrrrrrrrrrrrrr', flag, GridTotalCost, params, arr)
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
@@ -403,6 +405,7 @@ function TabSurfaceTreatment(props) {
   * @description SET ASSEMBLY SURFACE COST
   */
   const setAssemblySurfaceCost = (surfaceGrid, params, IsGridChanged) => {
+    console.log('surfaceGrid, params, SurfaceTabData', surfaceGrid, params, SurfaceTabData)
     let arr = dispatchAssemblySurfaceCost(surfaceGrid, params, SurfaceTabData, IsGridChanged)
     dispatch(setSurfaceData(arr, () => { }))
   }
@@ -416,7 +419,7 @@ function TabSurfaceTreatment(props) {
 
           let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.SurfaceTreatmentCost), params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TransportationCost), params) +
-            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params) +
+            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params, 'AAA') +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly), params);
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
@@ -443,7 +446,8 @@ function TabSurfaceTreatment(props) {
   * @method getSurfaceTreatmentTotalCostForAssembly
   * @description GET SURFACE TREATMENT TOTAL COST FOR ASSEMBLY
   */
-  const getSurfaceTreatmentTotalCostForAssembly = (arr, GridTotalCost, params) => {
+  const getSurfaceTreatmentTotalCostForAssembly = (arr, GridTotalCost, params, FLAG) => {
+    console.log('arr, GridTotalCost, params, FLAG', arr, GridTotalCost, params, FLAG)
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
@@ -473,7 +477,7 @@ function TabSurfaceTreatment(props) {
 
           let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.SurfaceTreatmentCost), params) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TransportationCost), params) +
-            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params) +
+            getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params, 'EEE') +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(TransportationObj.TransportationCost), params);
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
@@ -504,7 +508,7 @@ function TabSurfaceTreatment(props) {
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails.TransportationCost !== null ? el.CostingPartDetails.TransportationCost : 0);
+        return accummlator + checkForNull(el.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? el.CostingPartDetails.TotalTransportationCostPerAssembly : 0);
       }
     }, 0)
     return NetCost;
@@ -583,7 +587,7 @@ function TabSurfaceTreatment(props) {
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Transportation Cost`}</th>
-                          <th className="py-3 align-middle" style={{ width: "120px" }}>{`Total Surface Treatment Cost`}</th>
+                          <th className="py-3 align-middle" style={{ width: "150px" }}>{`Total Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
                         </tr>
                       </thead>

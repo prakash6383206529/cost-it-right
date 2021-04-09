@@ -430,7 +430,8 @@ class AddAssemblyPart extends Component {
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let childPartArray = [];
 
-    if (BOMViewerData && (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
+    // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
+    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       toastr.warning('Need to add Child parts');
       return false;
     }

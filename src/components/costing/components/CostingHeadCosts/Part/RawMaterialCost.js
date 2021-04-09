@@ -17,7 +17,7 @@ import { G, KG, MG } from '../../../../../config/constants'
 function RawMaterialCost(props) {
 
   const { register, handleSubmit, control, setValue, errors } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
@@ -151,7 +151,7 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
       setGridData(tempArr)
-      toastr.warning('Please enter valid weight.')
+      //toastr.warning('Please enter valid weight.')
 
     } else {
       const GrossWeight = checkForNull(event.target.value)
@@ -185,8 +185,8 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
       setGridData(tempArr)
+      //toastr.warning('Please enter valid weight.')
 
-      toastr.warning('Please enter valid weight.')
     } else {
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
@@ -349,7 +349,8 @@ function RawMaterialCost(props) {
                                 rules={{
                                   //required: true,
                                   pattern: {
-                                    value: /^[0-9]\d*(\.\d+)?$/i,
+                                    value: /[0-9]\d*(\.\d+)?$/i,
+                                    // value: /[0-9]+\.[0-9]+$/,
                                     message: 'Invalid Number.',
                                   },
                                 }}

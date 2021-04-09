@@ -85,7 +85,6 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
       setRate(event.target.value)
       if (TransportationType === 'Percentage') {
-        console.log('Transsssssss', item.CostingPartDetails.SurfaceTreatmentCost, event.target.value, checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), 2))
         setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), 2))
       } else {
         if (Quantity !== '') {
