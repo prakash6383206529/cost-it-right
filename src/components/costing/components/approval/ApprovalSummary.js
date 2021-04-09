@@ -87,9 +87,15 @@ function ApprovalSummary(props) {
     setViewButton(false)
   }
 
-  const closePushButton = (e = '') => {
+  const closePushButton = (e = '', type = {}) => {
     setPushButton(false)
-    setShowListing(true)
+    if (Object.keys(type).length > 0) {
+      if (type === 'Push') {
+        setShowListing(true)
+      } else {
+        setShowListing(false)
+      }
+    }
   }
 
   return (
@@ -216,9 +222,12 @@ function ApprovalSummary(props) {
                         {approvalDetails.TypeOfCosting === 'VBC' && (
                           <th>{`ZBC/Vendor Name`}</th>
                         )}
-                        <th>
-                          {approvalDetails.TypeOfCosting === 'VBC' && checkVendorPlantConfigurable() ? 'Vendor Plant' : 'Plant'}{` Code`}
-                        </th>
+                        {
+                          checkVendorPlantConfigurable() &&
+                          <th>
+                            {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
+                          </th>
+                        }
                         <th>{`SOB`}</th>
                         <th>{`Old/Current Price`}</th>
                         <th>{`New/Revised Price:`}</th>
@@ -238,9 +247,14 @@ function ApprovalSummary(props) {
                         {/* <td> */}
                         {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
                         {/* </td> */}
-                        <td>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode && checkVendorPlantConfigurable() ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'}
-                        </td>
+                        {
+                          checkVendorPlantConfigurable() &&
+                          <td>
+                            {
+                              approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
+                            }
+                          </td>
+                        }
                         <td>
                           {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                         </td>

@@ -408,6 +408,7 @@ const CostingSummaryTable = (props) => {
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
 
+          console.log(obj, "OBJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ");
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
@@ -957,18 +958,18 @@ const CostingSummaryTable = (props) => {
                                   )
                                 })
                               ) : (
-                                    // <img
-                                    //   src={require('../../../assests/images/times.png')}
-                                    //   alt="cancel-icon.jpg"
-                                    // />
-                                    <button
-                                      onClick={() => {
-                                        setAttachment(true)
-                                      }}
-                                    >
-                                      View Attachment
-                                    </button>
-                                  )}
+                                // <img
+                                //   src={require('../../../assests/images/times.png')}
+                                //   alt="cancel-icon.jpg"
+                                // />
+                                <button
+                                  onClick={() => {
+                                    setAttachment(true)
+                                  }}
+                                >
+                                  View Attachment
+                                </button>
+                              )}
                             </td>
                           )
                         })}

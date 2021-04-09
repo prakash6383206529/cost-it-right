@@ -11,7 +11,11 @@ function PushButtonDrawer(props) {
     ) {
       return
     }
-    props.closeDrawer('')
+    props.closeDrawer('', 'Cancel')
+  }
+
+  const closeDrawerAfterPush = () => {
+    props.closeDrawer('', 'Push')
   }
 
   return (
@@ -56,7 +60,7 @@ function PushButtonDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button mr5 save-btn"
-                  //onClick={() => setApproveDrawer(true)}
+                    onClick={() => closeDrawerAfterPush()}
                   >
                     <div className={'check-icon'}>
                       <img

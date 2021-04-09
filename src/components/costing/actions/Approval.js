@@ -286,7 +286,7 @@ export function sendForApprovalBySender(data, callback) {
 export function getApprovalList(filterData, callback) {
 
   return (dispatch) => {
-    const queryParameter = `logged_in_user_id=${filterData.loggedUser}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
+    const queryParameter = `logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
     const request = axios.get(`${API.getApprovalList}?${queryParameter}`, {
       headers,
     })
@@ -295,7 +295,7 @@ export function getApprovalList(filterData, callback) {
         if (response.data.Result) {
           dispatch({
             type: GET_APPROVAL_LIST,
-            payload: response.data.SelectList,
+            payload: response.data.DataList,
           })
           callback(response)
         } else {
