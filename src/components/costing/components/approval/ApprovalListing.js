@@ -93,7 +93,7 @@ function ApprovalListing() {
           let temp = []
 
           unSelectedData.map(item => {
-            if (item.Status !== PENDING && item.Status !== WAITING_FOR_APPROVAL) {
+            if (item.Status !== PENDING) {
               temp.push(item.CostingId)
               return null
             }
