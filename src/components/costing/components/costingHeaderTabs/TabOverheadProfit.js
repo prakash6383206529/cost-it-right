@@ -159,9 +159,9 @@ function TabOverheadProfit(props) {
 
     const { overheadObj, profitObj, modelType } = data;
 
-    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
+    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
 
     if (overheadObj.IsOverheadFixedApplicable === true) {
       OverheadCost = overheadObj.OverheadFixedTotalCost;
@@ -171,9 +171,9 @@ function TabOverheadProfit(props) {
       OverheadCost = overheadObj.OverheadCombinedTotalCost;
     }
 
-    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
+    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
 
     if (profitObj.IsProfitFixedApplicable === true) {
       ProfitCost = profitObj.ProfitFixedTotalCost;
@@ -241,13 +241,13 @@ function TabOverheadProfit(props) {
 
     const { overheadObj, profitObj } = data;
 
-    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
+    let OverheadCost = checkForDecimalAndNull(overheadObj.OverheadRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(overheadObj.OverheadBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(overheadObj.OverheadCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
 
-    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NumberOfDecimalForTransaction) +
-      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NumberOfDecimalForTransaction);
+    let ProfitCost = checkForDecimalAndNull(profitObj.ProfitRMTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(profitObj.ProfitBOPTotalCost, initialConfiguration.NoOfDecimalForPrice) +
+      checkForDecimalAndNull(profitObj.ProfitCCTotalCost, initialConfiguration.NoOfDecimalForPrice);
 
     let tempArr = [];
     try {
