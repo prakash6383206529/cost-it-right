@@ -5,7 +5,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList } from '../../actions/Approval'
-import { loggedInUserId } from '../../../../helper/auth'
+import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import { Badge } from 'reactstrap'
 import { values } from 'lodash'
 import ApprovalSummary from './ApprovalSummary'
@@ -18,6 +18,8 @@ import { CONSTANT } from '../../../../helper/AllConastant'
 import moment from 'moment'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
+import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
+import { APPROVED, PENDING, WAITING_FOR_APPROVAL } from '../../../../config/constants'
 
 function ApprovalListing() {
   const loggedUser = loggedInUserId()
@@ -31,13 +33,18 @@ function ApprovalListing() {
   const [approvalData, setApprovalData] = useState('')
   const [selectedRowData, setSelectedRowData] = useState([]);
   const [approveDrawer, setApproveDrawer] = useState(false)
+  const [selectedIds, setSelectedIds] = useState('')
 
-  console.log(selectedRowData, "SELET");
+  console.log(selectedIds, "SELET");
   const [showApprovalSumary, setShowApprovalSummary] = useState(false)
+  const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
   const dispatch = useDispatch()
+
   const partSelectList = useSelector((state) => state.costing.partSelectList)
   const statusSelectList = useSelector((state) => state.costing.costingStatusSelectList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const approvalList = useSelector(state => state.approval.approvalList)
+  const userList = useSelector(state => state.auth.userList)
 
   const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
     mode: 'onBlur',
@@ -47,31 +54,33 @@ function ApprovalListing() {
     getTableData()
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getCostingStatusSelectList(() => { }))
+    dispatch(getAllUserAPI(() => { }))
+    console.log(userDetails(), "DETAil");
   }, [])
+
+  useEffect(() => {
+
+  }, [selectedIds])
   /**
    * @method getTableData
    * @description getting approval list table
    */
 
   const getTableData = (
-    partNo = '',
-    createdBy = ' ',
-    requestedBy = ' ',
-    status = ' ',
+    partNo = '00000000-0000-0000-0000-000000000000',
+    createdBy = '00000000-0000-0000-0000-000000000000',
+    requestedBy = '00000000-0000-0000-0000-000000000000',
+    status = '00000000-0000-0000-0000-000000000000',
   ) => {
     let filterData = {
       loggedUser: loggedUser,
+      logged_in_user_level_id: userDetails().LoggedInLevelId,
       partNo: partNo,
       createdBy: createdBy,
       requestedBy: requestedBy,
       status: status,
     }
-    function uniqueFilter(data, key) {
-      const arrayUniqueByKey = [
-        ...new Map(data.map((item) => [item[key], item])).values(),
-      ]
-      return arrayUniqueByKey
-    }
+    console.log(filterData, "filterData");
 
     dispatch(
       getApprovalList(filterData, (res) => {
@@ -79,35 +88,21 @@ function ApprovalListing() {
         if (res.status === 204 && res.data === '') {
           setTableData([])
         } else if (res && res.data && res.data.DataList) {
-          let Data = res.data.DataList
+          let unSelectedData = res.data.DataList
+          console.log('unSelectedData: ', unSelectedData);
+          let temp = []
 
-          const key = Data.CreatedBy
-          let tempcreatedBy = []
-          const createdArray = uniqueFilter(Data, key)
-          createdArray &&
-            createdArray.map((item) => {
-              tempcreatedBy.push({
-                label: item.CreatedBy,
-                value: item.CreatedById,
-              })
-            })
-          setRequestedByDropdown(tempcreatedBy)
-          const key2 = Data.RequestedBy
-          let tempRequestedBy = []
-          const requestedArray = uniqueFilter(Data, key2)
-          requestedArray &&
-            requestedArray.map((item) => {
-              tempRequestedBy.push({
-                label: item.RequestedBy,
-                value: item.RequestedById,
-              })
-            })
-          setRequestedByDropdown(tempRequestedBy)
-          setTableData(
-            Data.sort((a, b) => a.Sequence - b.Sequence).sort(
-              (a, b) => a.Index - b.Index,
-            ),
-          )
+          unSelectedData.map(item => {
+            if (item.Status !== PENDING) {
+              temp.push(item.CostingId)
+              return null
+            }
+            return temp
+          })
+          setSelectedIds(temp)
+          let Data = res.data.DynamicData
+          setShowFinalLevelButton(Data.IsFinalLevelButtonShow)
+          //  setTableData(Data)
         } else {
           setTableData([])
         }
@@ -136,7 +131,15 @@ function ApprovalListing() {
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })
-
+      return tempDropdownList
+    }
+    if (label === 'users') {
+      console.log(userList, "userList");
+      userList && userList.map((item) => {
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return tempDropdownList
     }
   }
@@ -148,10 +151,11 @@ function ApprovalListing() {
   const onSubmit = (values) => {
     console.log(values, "VAL");
     console.log(getValues('createdBy'), "PN", getValues('status'), "gggggggggggggg", getValues('requestedBy'));
-    const tempPartNo = getValues('partNo') ? getValues('partNo').label : ''
-    const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').label : ''
-    const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').label : ''
-    const tempStatus = getValues('status') ? getValues('status').label : ''
+    const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
+    const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
+    const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
+    const tempStatus = getValues('status') ? getValues('status').value : '00000000-0000-0000-0000-000000000000'
+    // const type_of_costing = 
     getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
   }
 
@@ -173,7 +177,8 @@ function ApprovalListing() {
   }
 
   const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY HH:mm') : '';
+    console.log(cell, "cell", moment(cell)._isValid);
+    return cell != null ? cell : '';
   }
 
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
@@ -181,7 +186,7 @@ function ApprovalListing() {
   }
 
   const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? moment(cell).format('DD/MM/YYYY HH:mm') : '';
+    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
   const statusFormatter = (cell, row, enumObject, rowIndex) => {
@@ -236,7 +241,7 @@ function ApprovalListing() {
   const selectRowProp = {
     mode: 'checkbox',
     clickToSelect: true,
-    // unselectable: selectedIds,
+    unselectable: selectedIds,
     onSelect: onRowSelect,
     onSelectAll: onSelectAll,
   };
@@ -270,10 +275,10 @@ function ApprovalListing() {
     <Fragment>
       {
         !showApprovalSumary ?
-          <div className="container-fluid">
+          <div className="container-fluid approval-listing-page">
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
 
-              <h3>Costing Approval</h3>
+              <h1 className="mb-0">Costing Approval</h1>
 
 
               <Row className="pt-4 blue-before">
@@ -310,7 +315,7 @@ function ApprovalListing() {
                           rules={{ required: false }}
                           register={register}
                           // defaultValue={plant.length !== 0 ? plant : ''}
-                          options={createdByDropdown}
+                          options={renderDropdownListing('users')}
                           mandatory={false}
                           handleChange={() => { }}
                           errors={errors.createdBy}
@@ -326,7 +331,7 @@ function ApprovalListing() {
                           rules={{ required: false }}
                           register={register}
                           // defaultValue={plant.length !== 0 ? plant : ''}
-                          options={requestedByDropdown}
+                          options={renderDropdownListing('users')}
                           mandatory={false}
                           handleChange={() => { }}
                           errors={errors.requestedBy}
@@ -382,7 +387,7 @@ function ApprovalListing() {
                       ) : (
                         <button type="button" className="user-btn mr5" onClick={() => setshown(!shown)}>Show Filter</button>
                       )}
-                      <button class="user-btn" onClick={sendForApproval}>
+                      <button class="user-btn approval-btn" onClick={sendForApproval}>
                         <img
                           class="mr-1"
                           src={require('../../../../assests/images/send-for-approval.svg')}
@@ -425,7 +430,7 @@ function ApprovalListing() {
             </form>
 
             <BootstrapTable
-              data={tableData}
+              data={approvalList}
               striped={false}
               hover={false}
               bordered={false}
@@ -439,8 +444,9 @@ function ApprovalListing() {
               tableHeaderClass="my-custom-header"
               pagination
             >
+              <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
               <TableHeaderColumn dataField="ApprovalNumber" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Approval No.`}</TableHeaderColumn>
-              <TableHeaderColumn dataField="CostingNumber" width={140} columnTitle={true} dataAlign="left" isKey={true} dataSort={false}>{'Costing Id'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="CostingNumber" width={140} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartNumber" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
               <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'Price'}</TableHeaderColumn>
@@ -465,6 +471,7 @@ function ApprovalListing() {
           //tokenNo={approvalNumber}
           approvalData={selectedRowData}
           anchor={'right'}
+          IsFinalLevel={!showFinalLevelButtons}
         />
       )}
     </Fragment>

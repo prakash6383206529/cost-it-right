@@ -1458,7 +1458,7 @@ class AddRMDomestic extends Component {
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button
                             type={"button"}
-                            className="reset mr15 cancel-btn"
+                            className="mr15 cancel-btn"
                             onClick={this.cancel}
                           >
                             <div className={"cross-icon"}>
@@ -1471,7 +1471,7 @@ class AddRMDomestic extends Component {
                           </button>
                           <button
                             type="submit"
-                            className="submit-button mr5 save-btn"
+                            className="user-btn mr5 save-btn"
                           >
                             <div className={"check-icon"}>
                               <img

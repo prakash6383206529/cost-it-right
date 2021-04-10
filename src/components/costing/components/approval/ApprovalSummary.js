@@ -87,9 +87,15 @@ function ApprovalSummary(props) {
     setViewButton(false)
   }
 
-  const closePushButton = (e = '') => {
+  const closePushButton = (e = '', type = {}) => {
     setPushButton(false)
-    setShowListing(true)
+    if (Object.keys(type).length > 0) {
+      if (type === 'Push') {
+        setShowListing(true)
+      } else {
+        setShowListing(false)
+      }
+    }
   }
 
   return (
@@ -109,10 +115,11 @@ function ApprovalSummary(props) {
                 </Col>
                 <Col md="4" className="text-right">
                   <div className="right-border">
-                    <button type={'button'} className="apply view-btn mr-3" onClick={() => setShowListing(true)}>
-                      Back
+                    <button type={'button'} className="apply mr5" onClick={() => setShowListing(true)}>
+                    <div className={'check-icon'}><img src={require('../../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
+                    {'Back '}
                      </button>
-                    <button type={'button'} className="apply view-btn" onClick={() => setViewButton(true)}>
+                    <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
                       View All
                       </button>
                   </div>
@@ -216,9 +223,12 @@ function ApprovalSummary(props) {
                         {approvalDetails.TypeOfCosting === 'VBC' && (
                           <th>{`ZBC/Vendor Name`}</th>
                         )}
-                        <th>
-                          {approvalDetails.TypeOfCosting === 'VBC' && checkVendorPlantConfigurable() ? 'Vendor Plant' : 'Plant'}{` Code`}
-                        </th>
+                        {
+                          checkVendorPlantConfigurable() &&
+                          <th>
+                            {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
+                          </th>
+                        }
                         <th>{`SOB`}</th>
                         <th>{`Old/Current Price`}</th>
                         <th>{`New/Revised Price:`}</th>
@@ -238,9 +248,14 @@ function ApprovalSummary(props) {
                         {/* <td> */}
                         {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
                         {/* </td> */}
-                        <td>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode && checkVendorPlantConfigurable() ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'}
-                        </td>
+                        {
+                          checkVendorPlantConfigurable() &&
+                          <td>
+                            {
+                              approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
+                            }
+                          </td>
+                        }
                         <td>
                           {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                         </td>
@@ -335,7 +350,7 @@ function ApprovalSummary(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
-                    <button type={'button'} className="mr15 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
+                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
                       <div className={'cross-icon'}>
                         <img src={require('../../../../assests/images/times.png')} alt="cancel-icon.jpg" />
                       </div>{' '}
@@ -357,7 +372,7 @@ function ApprovalSummary(props) {
                     {
                       showFinalLevelButtons &&
                       <button
-                        type="button" className="approve-button mr5 approve-hover-btn" onClick={() => handleApproveAndPushButton()}                    >
+                        type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                         <div className={'check-icon'}>
                           <img
                             src={require('../../../../assests/images/check.png')}

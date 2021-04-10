@@ -179,7 +179,7 @@ class AddMachineTypeDrawer extends Component {
                   <div className="col-sm-12 text-right px-3">
                     <button
                       type={"button"}
-                      className="reset mr15 cancel-btn"
+                      className=" mr15 cancel-btn"
                       onClick={this.cancel}
                     >
                       <div className={"cross-icon"}>
@@ -192,7 +192,7 @@ class AddMachineTypeDrawer extends Component {
                     </button>
                     <button
                       type="submit"
-                      className="submit-button  save-btn"
+                      className="user-btn  save-btn"
                     >
                       <div className={"check-icon"}>
                         <img

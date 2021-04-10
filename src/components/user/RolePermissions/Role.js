@@ -277,12 +277,12 @@ class Role extends Component {
 												onClick={this.cancel}
 												type="button"
 												value="Cancel"
-												className="reset mr15 cancel-btn">
+												className="mr15 cancel-btn">
 												<div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> Cancel</button>
 											<button
 												disabled={isSubmitted ? true : false}
 												type="submit"
-												className="btn-primary save-btn"
+												className="user-btn save-btn"
 											>	<div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' />
 												</div>
 												{isEditFlag ? 'Update' : 'Save'}

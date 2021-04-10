@@ -762,6 +762,12 @@ class UserRegistration extends Component {
 
     }
   }
+  handleKeyDown = function (e, cb) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      cb();
+    }
+  };
 
   render() {
     const { handleSubmit, initialConfiguration, loading } = this.props;
@@ -784,7 +790,7 @@ class UserRegistration extends Component {
                     <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
                   </div>}
                 </div>
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser" onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}>
                   <div className="add-min-height">
                     <HeaderTitle
                       title={'Personal Details:'}
@@ -1196,7 +1202,7 @@ class UserRegistration extends Component {
                         onClick={this.cancel}
                         type="submit"
                         value="CANCEL"
-                        className="reset mr15 cancel-btn">
+                        className="mr15 cancel-btn">
                         <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
                       CANCEL
                       </button>
@@ -1204,7 +1210,7 @@ class UserRegistration extends Component {
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        className="user-btn save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>
