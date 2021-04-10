@@ -419,7 +419,7 @@ function ProcessCost(props) {
       ...tabData,
       //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
       IsShowToolCost: true,
-      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NumberOfDecimalForTransaction),
+      ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NoOfDecimalForPrice),
       CostingToolsCostResponse: toolGrid,
     }
     // setTabData(tempArr)

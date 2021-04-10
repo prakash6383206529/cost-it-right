@@ -13,9 +13,11 @@ import {
 import { loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
+
 function ApproveRejectDrawer(props) {
+
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer } = props
-  console.log(approvalData, "approvalData");
+
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
@@ -24,9 +26,11 @@ function ApproveRejectDrawer(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
+
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
+
   useEffect(() => {
     let tempDropdownList = []
     let obj = {

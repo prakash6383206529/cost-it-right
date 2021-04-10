@@ -406,21 +406,16 @@ export function setDiscountCost(Data, callback) {
 export function getZBCDetailByPlantId(PlantId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getZBCDetailByPlantId}/${PlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getZBCDetailByPlantId}/${PlantId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -431,16 +426,12 @@ export function getZBCDetailByPlantId(PlantId, callback) {
 export function getVBCDetailByVendorId(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
+    const request = axios.get(`${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    })
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         callback(error)
