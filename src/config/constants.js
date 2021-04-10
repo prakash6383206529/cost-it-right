@@ -782,7 +782,8 @@ export const API = {
   getComapanySelectList: `${BASE_URL}/company/get-company-select-list`,
 
   //SIMULATION
-  getSimulationHistory: `${BASE_URL}/`
+  getSimulationHistory: `${BASE_URL}/`,
+  getSelectListOfSimulationMaster: `${BASE_URL}/`
 }
 
 //Api constants
@@ -1273,6 +1274,7 @@ export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 
 //SIMULATION
 export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
+export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -1434,3 +1436,7 @@ export const DIMENSIONLESS = 'Dimensionless'
 
 //UOM CATEGORY
 export const STD = 'STD'
+
+//SIMULATION MASTER NAME
+// export const DOMESTIC = 'Domestic'
+// export const  
