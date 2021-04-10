@@ -190,17 +190,18 @@ class SideBar extends Component {
    * @description Render master menu.
    */
   renderMaster = (module) => {
-    const { menusData } = this.props
+    const { menusData, leftMenuData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
-              <li>
+              <li className="nav-item dropdown">
                 <Link
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
+                  onMouseOver={() => this.setLeftMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -218,6 +219,31 @@ class SideBar extends Component {
                   />
                   <span>Masters</span>
                 </Link>
+                <div className="dropdown-menu sub-menu">
+                  <ul>
+                    {
+                      leftMenuData && leftMenuData.map((el, i) => {
+                        return (
+                          <li key={i}>
+                            <Link
+                              className="dropdown-item"
+                              to={{
+                                pathname: el.NavigationURL,
+                                state: {
+                                  ModuleId: el.PageId,
+                                  PageName: el.PageName,
+                                  PageURL: el.NavigationURL,
+                                },
+                              }}
+                            >
+                              - {el.PageName}
+                            </Link>
+                          </li>
+                        )
+                      })
+                    }
+                  </ul>
+                </div>
               </li>
             </>
           );
@@ -232,18 +258,19 @@ class SideBar extends Component {
    * @description Render Addtional master menu.
    */
   renderAdditionalMaster = (module) => {
-    const { menusData } = this.props
+    const { menusData, leftMenuData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
             <>
-              <li>
+              <li className="nav-item dropdown">
                 <Link
                   key={i}
                   className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
+                  onMouseOver={() => this.setLeftMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -260,6 +287,31 @@ class SideBar extends Component {
                   />
                   <span>Additional Masters</span>
                 </Link>
+                <div className="dropdown-menu sub-menu">
+                  <ul>
+                    {
+                      leftMenuData && leftMenuData.map((el, i) => {
+                        return (
+                          <li key={i}>
+                            <Link
+                              className="dropdown-item"
+                              to={{
+                                pathname: el.NavigationURL,
+                                state: {
+                                  ModuleId: el.PageId,
+                                  PageName: el.PageName,
+                                  PageURL: el.NavigationURL,
+                                },
+                              }}
+                            >
+                              - {el.PageName}
+                            </Link>
+                          </li>
+                        )
+                      })
+                    }
+                  </ul>
+                </div>
               </li>
             </>
           );
