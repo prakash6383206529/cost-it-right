@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { DRAFT, FILE_URL, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants'
+import { DRAFT, FILE_URL, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants'
 import CostingDetailStepTwo from './CostingDetailStepTwo'
 import CostingDetails from './CostingDetails'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -523,7 +523,7 @@ const CostingSummaryTable = (props) => {
                               </div>
                               {!viewMode && (
                                 <div class="action w-40 d-inline-block text-right">
-                                  <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />
+                                  {(data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                   <button className="Add-file mr-2 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />
                                   <button type="button" class="CancelIcon mb-0 align-middle" onClick={() => deleteCostingFromView(index)}></button>
                                 </div>
