@@ -18,13 +18,17 @@ function SimulationHistory(props) {
 
     const simulationHistory = useSelector(state => state.history.simulationHistory)
     console.log(simulationHistory, "SIM HISTORY");
+
     const dispatch = useDispatch()
+
     const simulatedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
+        //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
+        return cell != null ? cell : '';
     }
 
     const approvedOnFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
+        //   return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
+        return cell != null ? cell : '';
     }
 
     const linkableFormatter = (cell, row, enumObject, rowIndex) => {
@@ -46,7 +50,7 @@ function SimulationHistory(props) {
     }
 
     const statusFormatter = (cell, row, enumObject, rowIndex) => {
-        return <div className={cell}>{cell}</div>
+        return <div className={cell}>{row.DisplayCostingStatus}</div>
     }
 
     const renderVendorName = () => {
@@ -96,7 +100,7 @@ function SimulationHistory(props) {
                 </Col>
             </Row>
             <BootstrapTable
-                data={[]}
+                data={simulationHistory}
                 striped={false}
                 hover={false}
                 bordered={false}
@@ -108,7 +112,7 @@ function SimulationHistory(props) {
                 tableHeaderClass="my-custom-header"
                 pagination
             >
-                <TableHeaderColumn dataField="TokenNo" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
+                <TableHeaderColumn dataField="TokenNumber" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
                 <TableHeaderColumn dataField="CostingHead" width={140} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Technology'}</TableHeaderColumn>
                 <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false}>{renderVendorName()}</TableHeaderColumn>
@@ -118,7 +122,7 @@ function SimulationHistory(props) {
                 <TableHeaderColumn dataField="SimulatedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={simulatedOnFormatter} >{renderSimulatedOn()} </TableHeaderColumn>
                 <TableHeaderColumn dataField="ApprovedBy" columnTitle={true} dataAlign="left" dataSort={false}>{renderApprovedOn()} </TableHeaderColumn>
                 <TableHeaderColumn dataField="ApprovedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={approvedOnFormatter}> {renderApprovedBy()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="Status" width={200} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={200} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
                 <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="SimulationId" export={false} isKey={true} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
         </div>

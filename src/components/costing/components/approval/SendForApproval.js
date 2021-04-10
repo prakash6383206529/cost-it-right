@@ -14,12 +14,13 @@ import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 import 'react-datepicker/dist/react-datepicker.css'
 import { checkForNull } from '../../../../helper'
 import moment from 'moment'
+import WarningMessage from '../../../common/WarningMessage'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
   const history = useHistory()
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm()
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, setError } = useForm()
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const usersList = useSelector((state) => state.approval.approvalUsersList)
@@ -32,6 +33,7 @@ const SendForApproval = (props) => {
   const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
+  const [showValidation, setShowValidation] = useState(false)
   const userData = userDetails()
 
   useEffect(() => {
@@ -83,6 +85,8 @@ const SendForApproval = (props) => {
    * @description  USED TO HANDLE DEPARTMENT CHANGE
    */
   const handleDepartmentChange = (newValue) => {
+    //  errors.approver = 'No data.'
+
     const tempDropdownList = []
     if (newValue && newValue !== '') {
       // dispatch(getAllApprovalUserByDepartment({ // add approval api here
@@ -94,6 +98,9 @@ const SendForApproval = (props) => {
             TechnologyId: partNo.technologyId,
           },
           (res) => {
+            if (res.data.DataList.length <= 1) {
+              setShowValidation(true)
+            }
             res.data.DataList &&
               res.data.DataList.map((item) => {
                 if (item.Value === '0') return false;
@@ -122,14 +129,14 @@ const SendForApproval = (props) => {
    * @description This method is used to handle change of reason for every costing
    */
   const handleReasonChange = (data, index) => {
-    console.log('index: ', index);
-    console.log('data: ', data);
+
+
     let viewDataTemp = viewApprovalData
     let temp = viewApprovalData[index]
     temp.reason = data.label
     temp.reasonId = data.value
     viewDataTemp[index] = temp
-    console.log('viewDataTemp: ', viewDataTemp);
+
     dispatch(setCostingApprovalData(viewDataTemp))
   }
 
@@ -167,9 +174,9 @@ const SendForApproval = (props) => {
       year = `${date.getFullYear()}-${date.getFullYear() + 1}`
     }
     setFinancialYear(year)
-    // dispatch(getVolumeDataByPartAndYear(partNo.label, year, res => { //change when kamal sir map and give data.
+
     dispatch(
-      getVolumeDataByPartAndYear(partNo.label, year, (res) => {
+      getVolumeDataByPartAndYear(partNo.label ? partNo.label : partNo.partNumber, year, (res) => {
         //getVolumeDataByPartAndYear('WISHER', year, (res) => {
         if (res.data.Result === true || res.status === 202) {
           let approvedQtyArr = res.data.Data.VolumeApprovedDetails
@@ -240,12 +247,12 @@ const SendForApproval = (props) => {
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
     }
-    console.log(obj, "obj");
+
     let temp = []
     let tempObj = {}
 
     viewApprovalData.forEach((element, index, arr) => {
-      console.log(element, "el", index, "index", arr);
+
       if (element.plantId !== '-' && index > 0) {
         if (element.plantId === arr[index - 1].plantId) {
           toastr.warning('Costings with same plant cannot be sent for approval')
@@ -255,7 +262,7 @@ const SendForApproval = (props) => {
         }
       } else if (element.vendorId !== '-' && index > 0) {
         if (element.vendorId === arr[index - 1].vendorId) {
-          console.log(element.vendorId, "Inside", arr[index - 1].vendorId);
+
           toastr.warning('Costings with same vendor cannot be sent for approval')
           return false
         } else {
@@ -268,7 +275,7 @@ const SendForApproval = (props) => {
     });
 
     viewApprovalData.map((data) => {
-      console.log(data, "DATA INSIDE");
+
       let tempObj = {}
       tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
       tempObj.TypeOfCosting = data.typeOfCosting === 0 ? 'ZBC' : 'VBC'
@@ -304,7 +311,7 @@ const SendForApproval = (props) => {
       tempObj.VendorId =
         data.typeOfCosting == 1 ? data.vendorId : ''
       tempObj.VendorCode =
-        data.typeOfCosting == 1 ? data.vendoreCode : ''
+        data.typeOfCosting == 1 ? data.vendorCode : ''
       tempObj.VendorPlantId =
         data.typeOfCosting == 1 ? data.vendorePlantId : ''
       tempObj.VendorPlantCode =
@@ -318,7 +325,7 @@ const SendForApproval = (props) => {
     })
 
     obj.CostingsList = temp
-    console.log(obj, "OBJECT");
+
 
     dispatch(
       sendForApprovalBySender(obj, (res) => {
@@ -331,7 +338,7 @@ const SendForApproval = (props) => {
   }
 
   const handleApproverChange = (data) => {
-    console.log(data, "DATA");
+
     setSelectedApprover(data.value)
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
@@ -348,6 +355,7 @@ const SendForApproval = (props) => {
     dispatch(setCostingApprovalData([]))
     props.closeDrawer('', 'Cancel')
   }
+  const reasonField = 'reasonField'
   return (
     <Fragment>
       <Drawer
@@ -369,7 +377,7 @@ const SendForApproval = (props) => {
           </Row>
           {viewApprovalData &&
             viewApprovalData.map((data, index) => {
-              console.log('data: ', data);
+
 
               return (
                 <div className="pl-3 pr-3">
@@ -394,19 +402,21 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <SearchableSelectHookForm
                             label={"Reason"}
-                            name={"reason"}
+                            // name={"reason"}
+                            name={`${reasonField}[${index}]reason`}
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
                             rules={{ required: true }}
                             register={register}
-                            defaultValue={data.reason != "" ? data.reason : ""}
+                            defaultValue={data.reason != "" ? { label: data.reason, value: data.reasonId } : ""}
                             options={renderDropdownListing("Reason")}
                             mandatory={true}
                             handleChange={(e) => {
                               handleReasonChange(e, index);
                             }}
                             errors={errors.reason}
+
                           />
                         </Col>
                         <Col md="4">
@@ -558,7 +568,9 @@ const SendForApproval = (props) => {
                   handleChange={handleApproverChange}
                   errors={errors.approver}
                 />
-
+                {
+                  showValidation && <WarningMessage message={'Level for this user/technology is not yet added!'} />
+                }
               </Col>
               <Col md="12">
                 <TextAreaHookForm
