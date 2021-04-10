@@ -14,6 +14,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { VIEW_COSTING_DATA } from '../../../config/constants'
 import { formViewData } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
+import BOMUpload from '../../massUpload/BOMUpload'
 
 function CostingSummary(props) {
 
@@ -26,7 +27,7 @@ function CostingSummary(props) {
 
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
-
+  const [IsBulkOpen, SetIsBulkOpen] = useState(false)
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false)
   const [part, setPart] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
@@ -331,12 +332,40 @@ function CostingSummary(props) {
     dispatch(getPartSelectListByTechnology('', () => { }))
   }
 
+  const bulkToggle = () => {
+    SetIsBulkOpen(true)
+  }
 
+  const closeBulkUploadDrawer = () => {
+    SetIsBulkOpen(false)
+  }
 
   return (
     <>
-      {/* {
-        !hideUpperRow && */}
+      <span className="position-relative costing-page-tabs d-block w-100">
+        <div className="right-actions">
+
+          {/* BELOW BUTTONS ARE TEMPORARY HIDDEN FROM UI  */}
+
+          {/* <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/print.svg')} alt="print-button" />
+            <span className="d-block mt-1">PRINT</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/excel.svg')} alt="print-button" />
+            <span className="d-block mt-1">XLS</span>
+          </button>
+          <button className="btn btn-link text-primary">
+            <img src={require('../../../assests/images/pdf.svg')} alt="print-button" />
+            <span className="d-block mt-1">PDF</span>
+          </button> */}
+
+          <button onClick={bulkToggle} className="btn btn-link text-primary pr-0">
+            <img src={require('../../../assests/images/add-bom.svg')} alt="print-button" />
+            <span className="d-block mt-1">ADD BOM</span>
+          </button>
+        </div>
+      </span>
       <div className="login-container signup-form costing-summary-page ">
         <Row>
           <Col md="12">
@@ -531,11 +560,11 @@ function CostingSummary(props) {
                           onClick={resetData}
                           className="cancel-btn"
                         ><div className={"cross-icon"}>
-                        <img
-                          src={require("../../../assests/images/times.png")}
-                          alt="cancel-icon.jpg"
-                        />
-                      </div>{" "}
+                            <img
+                              src={require("../../../assests/images/times.png")}
+                              alt="cancel-icon.jpg"
+                            />
+                          </div>{" "}
                           {"Clear"}
                         </button>
                       </Col>
@@ -548,7 +577,14 @@ function CostingSummary(props) {
         </Row>
       </div>
       {partNumber !== "" && <CostingSummaryTable resetData={resetData} showDetail={props.showDetail} technologyId={TechnologyId} />}
-      {/* // } */}
+      {IsBulkOpen && <BOMUpload
+        isOpen={IsBulkOpen}
+        closeDrawer={closeBulkUploadDrawer}
+        isEditFlag={false}
+        fileName={'BOM'}
+        messageLabel={'BOM'}
+        anchor={'right'}
+      />}
     </>
   )
 }
