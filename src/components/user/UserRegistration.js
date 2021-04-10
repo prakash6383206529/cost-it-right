@@ -762,6 +762,12 @@ class UserRegistration extends Component {
 
     }
   }
+  handleKeyDown = function (e, cb) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      cb();
+    }
+  };
 
   render() {
     const { handleSubmit, initialConfiguration, loading } = this.props;
@@ -784,7 +790,7 @@ class UserRegistration extends Component {
                     <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
                   </div>}
                 </div>
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser" onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}>
                   <div className="add-min-height">
                     <HeaderTitle
                       title={'Personal Details:'}
