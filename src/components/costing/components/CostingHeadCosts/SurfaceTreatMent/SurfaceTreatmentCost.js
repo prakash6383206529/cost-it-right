@@ -38,6 +38,7 @@ function SurfaceTreatmentCost(props) {
       props.setSurfaceCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     }
     // }, 100)
+    selectedIds(gridData)
   }, [gridData]);
 
   /**
@@ -63,13 +64,13 @@ function SurfaceTreatmentCost(props) {
         return {
           OperationId: el.OperationId,
           OperationName: el.OperationName,
-          SurfaceArea: '',
+          SurfaceArea: 1,
           UOM: el.UnitOfMeasurement,
           RatePerUOM: el.Rate,
           LabourRate: el.IsLabourRateExist ? el.LabourRate : '-',
           LabourQuantity: el.IsLabourRateExist ? el.LabourQuantity : '-',
           IsLabourRateExist: el.IsLabourRateExist,
-          SurfaceTreatmentCost: 0,
+          SurfaceTreatmentCost: el.Rate * 1,
           SurfaceTreatmentDetailsId: '',
         }
       })
