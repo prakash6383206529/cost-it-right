@@ -170,7 +170,7 @@ class AddAssemblyPart extends Component {
         PartType: childData && childData.PartType ? childData.PartType : '',
         PartTypeId: childData && childData.PartTypeId ? childData.PartTypeId : '',
         PartNumber: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
-        Position: { "x": posX, "y": 250 },
+        Position: { "x": posX, "y": 50 },
         Outputs: [],
         InnerContent: childData && childData.InnerContent !== undefined ? childData.InnerContent : '',
         PartName: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
