@@ -241,7 +241,7 @@ class AddPower extends Component {
 
       if (powerContributionTotal > 100) {
         this.setState({ checkPowerContribution: true })
-        toastr.warning('Total power contribution should not be greater than 100%.')
+        // toastr.warning('Total power contribution should not be greater than 100%.')
       } else {
         this.setState({ checkPowerContribution: false })
       }
@@ -503,14 +503,22 @@ class AddPower extends Component {
 
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
     const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0
-    if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.MaxDemandChargesKW) < 0 ||
-      Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 || Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 || Number(fieldsObj.DutyChargesAndFCA) < 0 ||
+
+    if (maxLength10(fieldsObj.MinDemandKWPerMonth) || maxLength10(fieldsObj.DemandChargesPerKW) || maxLength10(fieldsObj.AvgUnitConsumptionPerMonth) ||
+      maxLength10(fieldsObj.MaxDemandChargesKW) || maxLength10(fieldsObj.MeterRentAndOtherChargesPerAnnum) || maxLength10(fieldsObj.DutyChargesAndFCA)) {
+      toastr.warning('Fields value should not be more than 10');
+      return false;
+    }
+
+    if (Number(fieldsObj.MinDemandKWPerMonth) < 0 || Number(fieldsObj.DemandChargesPerKW) < 0 || Number(fieldsObj.AvgUnitConsumptionPerMonth) < 0 ||
+      Number(fieldsObj.MaxDemandChargesKW) < 0 || Number(fieldsObj.MeterRentAndOtherChargesPerAnnum) < 0 || Number(fieldsObj.DutyChargesAndFCA) < 0 ||
       Number(fieldsObj.SEBPowerContributaion) < 0) {
       toastr.warning('Fields should not be negative');
       return false;
     }
 
-    if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined) {
+    if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined  || fieldsObj.MinDemandKWPerMonth === undefined  || fieldsObj.DemandChargesPerKW === undefined 
+    || fieldsObj.AvgUnitConsumptionPerMonth === undefined  || fieldsObj.MaxDemandChargesKW === undefined ) {
       toastr.warning('Fields should not be empty.')
       return false;
     }
@@ -593,12 +601,18 @@ class AddPower extends Component {
       return false;
     }
 
-    if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
-      Number(fieldsObj.SelfPowerContribution) < 0) {
-      toastr.warning('Fields should not be negative');
+    if (maxLength10(fieldsObj.AssetCost) || maxLength10(fieldsObj.AnnualCost) || maxLength10(fieldsObj.UnitGeneratedPerAnnum)
+    || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
+      toastr.warning('Fields value should not be more than 10');
       return false;
     }
 
+    if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
+      Number(fieldsObj.SelfPowerContribution) < 0 || Number(fieldsObj.CostPerUnitOfMeasurement) < 0|| Number(fieldsObj.UnitGeneratedPerUnitOfFuel) < 0 ) {
+      toastr.warning('Fields should not be negative');
+      return false;
+    }
+    
     const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
     const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;
@@ -1485,7 +1499,7 @@ class AddPower extends Component {
                                     options={this.renderListing('Source')}
                                     //onKeyUp={(e) => this.changeItemDesc(e)}
                                     //validate={(this.state.source == null || this.state.source.length == 0) ? [required] : []}
-                                    //required={true}
+                                    required={true}
                                     handleChangeDescription={this.handleSource}
                                     valueDescription={this.state.source}
                                     disabled={false}
@@ -1559,9 +1573,8 @@ class AddPower extends Component {
                                         name={"CostPerUnitOfMeasurement"}
                                         type="text"
                                         placeholder={'Enter'}
-                                        //validate={[required]}
+                                        validate={[positiveAndDecimalNumber, maxLength10]}
                                         component={renderNumberInputField}
-                                        //required={true}
                                         className=""
                                         customClassName=" withBorder"
                                         disabled={false}
@@ -1597,7 +1610,7 @@ class AddPower extends Component {
                                     name={"UnitGeneratedPerAnnum"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[positiveAndDecimalNumber, maxLength20]}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10]}
                                     component={renderText}
                                     required={true}
                                     className=""
