@@ -105,13 +105,13 @@ input:focus {
   padding-top: 100px;
   height: 550px;
   .inputbox.input-group {
-  .form-control { height: 48px;border-color: #C2CBE8;padding-left: 40px!important;
+  .form-control { height: 40px;border-color: #C2CBE8;padding-left: 40px!important;
   }
     &::before{
       // content: url(../../assests/images/email.png);
       position: absolute;
       left: 11px;
-      top: 13px;
+      top: 11px;
       z-index: 10;
     }
   }
@@ -218,7 +218,8 @@ span.input-group-text.bg-white {
  }
  label.btn.btn-link.align-middle.checkbox-label { margin:0; padding: 0; font-size: 12px;margin-bottom: 0 !important;
   padding-left: 5px;color: #3D4465;}
- .forgotpwd-field { font-size: 12px;}
+ .forgotpwd-field{font-size: 12px;}
+ a:not([href]):not([tabindex]).forgotpwd-field{color: #256bd1;}
  .asterisk-required {
   display: none;
 }
