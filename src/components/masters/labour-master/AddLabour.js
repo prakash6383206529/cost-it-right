@@ -336,17 +336,20 @@ class AddLabour extends Component {
     const { fieldsObj, error } = this.props
 
 
-    if (machineType.length === 0 || labourType.length === 0) {
+    if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
       toastr.warning('Fields should not be empty')
       return false
     }
-
-    if (isNaN(Number(fieldsObj))) {
-      toastr.warning('Please enter valid value.')
+    if(Number(fieldsObj) === 0 || Number(fieldsObj) === ''){
+      toastr.warning('Please enter value.')
       return false;
     }
 
-    if (fieldsObj.length > 10) {
+    if (fieldsObj != undefined && isNaN(Number(fieldsObj))) {
+      toastr.warning('Please enter valid value.')
+      return false;
+    }
+    if (maxLength10(fieldsObj)) {
       return false;
     }
 
