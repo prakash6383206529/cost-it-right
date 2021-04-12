@@ -177,7 +177,7 @@ function ProcessCost(props) {
           UOM: el.UnitOfMeasurement,
           UnitOfMeasurementId: el.UnitOfMeasurementId,
           MachineTonnage: el.MachineTonnage,
-          ProcessCost: '',
+          ProcessCost: el.MachineRate * 1,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId
         }
