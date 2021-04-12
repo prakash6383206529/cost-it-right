@@ -55,12 +55,12 @@ export default function processReducer(state = initialState, action) {
                 loading: false,
                 processList: action.payload,
             };
-        case GET_PROCESS_UNIT_DATA_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                processUnitData: action.payload,
-            };
+        // case GET_PROCESS_UNIT_DATA_SUCCESS:
+        //     return {
+        //         ...state,
+        //         loading: false,
+        //         processUnitData: action.payload,
+        //     };
         case GET_INITIAL_PLANT_SELECTLIST_SUCCESS:
             return {
                 ...state,

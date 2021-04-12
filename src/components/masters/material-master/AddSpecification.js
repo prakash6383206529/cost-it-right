@@ -344,7 +344,7 @@ class AddSpecification extends Component {
         <Drawer
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
             <div className={"drawer-wrapper spec-drawer"}>
@@ -410,6 +410,52 @@ class AddSpecification extends Component {
                   </Row>
                   <Row>
                     <Col md="12">
+                      <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                        <div className="fullinput-icon">
+                          <Field
+                            name="GradeId"
+                            type="text"
+                            label="RM Grade"
+                            component={searchableSelect}
+                            placeholder={"Select"}
+                            options={this.renderListing("RMGrade")}
+                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                            validate={
+                              this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
+                            required={true}
+                            handleChangeDescription={this.handleGrade}
+                            valueDescription={this.state.RMGrade}
+                          />
+                        </div>
+                        {isEditFlag ? (
+                          EditAccessibilityRMANDGRADE && (
+                            <button
+                              className="Edit drawer-edit mt-2"
+                              type={"button"}
+                              onClick={() =>
+                                this.gradeToggler(specificationData.GradeId)
+                              }
+                            />
+                          )
+                        ) : (this.state.RawMaterial == null ||
+                          this.state.RawMaterial.length === 0) &&
+                          AddAccessibilityRMANDGRADE ? (
+                          <div
+                            className={"plus-icon-square blurPlus-icon-square right mt30"}
+                          ></div>
+                        ) : (
+                          AddAccessibilityRMANDGRADE && (
+                            <div
+                              onClick={() => this.gradeToggler("")}
+                              className={"plus-icon-square right"}
+                            ></div>
+                          )
+                        )}
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="12">
                       <div className="d-flex">
                         <Field
                           name="MaterialTypeId"
@@ -445,52 +491,7 @@ class AddSpecification extends Component {
                       />
                     </Col>
                   </Row>
-                  <Row>
-                    <Col md="12">
-                      <div className="d-flex justify-space-between align-items-center inputwith-icon">
-                        <div className="fullinput-icon">
-                          <Field
-                            name="GradeId"
-                            type="text"
-                            label="RM Grade"
-                            component={searchableSelect}
-                            placeholder={"Select"}
-                            options={this.renderListing("RMGrade")}
-                            //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={
-                              this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
-                            required={true}
-                            handleChangeDescription={this.handleGrade}
-                            valueDescription={this.state.RMGrade}
-                          />
-                        </div>
-                        {isEditFlag ? (
-                          EditAccessibilityRMANDGRADE && (
-                            <button
-                              className="Edit drawer-edit mt-2"
-                              type={"button"}
-                              onClick={() =>
-                                this.gradeToggler(specificationData.GradeId)
-                              }
-                            />
-                          )
-                        ) : (this.state.RawMaterial == null ||
-                          this.state.RawMaterial.length === 0) &&
-                          AddAccessibilityRMANDGRADE ? (
-                              <div
-                                className={"plus-icon-square blurPlus-icon-square right mt30"}
-                              ></div>
-                            ) : (
-                              AddAccessibilityRMANDGRADE && (
-                                <div
-                                  onClick={() => this.gradeToggler("")}
-                                  className={"plus-icon-square right"}
-                                ></div>
-                              )
-                            )}
-                      </div>
-                    </Col>
-                  </Row>
+
 
                   <Row>
                     <Col md="12">

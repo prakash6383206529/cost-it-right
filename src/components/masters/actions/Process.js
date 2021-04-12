@@ -113,6 +113,7 @@ export function getProcessData(processId, callback) {
                             type: GET_PROCESS_UNIT_DATA_SUCCESS,
                             payload: response.data.Data,
                         });
+
                         callback(response);
                     }
                 }).catch((error) => {
