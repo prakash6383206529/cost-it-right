@@ -277,7 +277,7 @@ function ManageSOBDrawer(props) {
 
                                     max: {
                                       value: 100,
-                                      message: "Should not be greater then 100"
+                                      message: "Should not be greater than 100"
                                     },
                                   }}
 
