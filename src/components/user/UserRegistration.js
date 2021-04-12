@@ -5,8 +5,8 @@ import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, maxLength25, maxLength11, maxLength12, required, email,
-  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
+  maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
@@ -14,7 +14,7 @@ import {
 } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
-  updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
+  updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
   setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
 } from "../../actions/auth/AuthActions";
