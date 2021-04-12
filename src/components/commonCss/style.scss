@@ -1021,7 +1021,7 @@ input.form-control{
   opacity: 1;
   float: left;
   position: $positio-relative;
-  top: 3px;
+  // top: 3px;
   margin-right: 8px;
 }
 
@@ -2173,7 +2173,7 @@ html {
           color: #3D4465;
           font-family: "Roboto", sans-serif;;
           font-size: 10px;
-          top: -2px;
+          top: -12px;
           &:after{
             content: "-";
             right: -5px;
@@ -2201,17 +2201,17 @@ html {
       &:nth-child(2) {
         .input-range__label--value {
           span {
-            top: -4px;
+            top: -12px;
           }
         }
       }
     }
   }
 }
+//fire-fox css
 .filter-block {
   .apply{vertical-align: top;}
 }
-//fire-fox css
 
 // input range slider 'Net Landed Range (INR)' css  end
 
@@ -3477,6 +3477,16 @@ body{
   width: 100%;
 }
 
+//fire-fox css
+@-moz-document url-prefix() {
+  .filled-icon-inside{
+     .calculate-icon{
+      margin-bottom: 8px;
+     }
+    }
+}
+//fire-fox css
+
 // responsive media query start
 @media(max-width:1600px){
   // costing details page only
@@ -3668,6 +3678,12 @@ body{
 
     // right side .content-page
     body{
+      .filled-icon-inside{
+        .calculate-icon{
+          right: 8px;
+          margin-bottom: 8px;
+        }
+      }
       .btn-primary, .user-btn, .btn-primary-add, .apply, .btn-secondary{
         font-size: calc(14px * 80 / 100);
         padding-left: calc(15px * 80 / 100);
@@ -4269,12 +4285,21 @@ body{
         }      
       }
     }
-  
-
   // // input range slider 'Net Landed Range (INR)' css 
   .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}
   .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span:after{top: -4px;}
   // // input range slider 'Net Landed Range (INR)' css  end
+  
+  //fire-fox css
+  @-moz-document url-prefix() {
+    body{
+      .add-min-height{
+        .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: calc(30px * 80 / 100);}
+      }
+      .btn-mr-rate{margin-top: calc(30px * 80 / 100);}
+    }
+  }
+  //fire-fox css
 
   // ========= zoom whole website to 80% css end's here 
 

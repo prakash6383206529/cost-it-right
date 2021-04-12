@@ -2145,7 +2145,7 @@ class AddMoreDetails extends Component {
                                 type="text"
                                 label="No. Of Shifts"
                                 component={searchableSelect}
-                                placeholder={'--select--'}
+                                placeholder={'select'}
                                 options={this.renderListing('ShiftType')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 validate={(this.state.shiftType == null || this.state.shiftType.length === 0) ? [] : []}

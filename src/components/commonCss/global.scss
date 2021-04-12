@@ -193,11 +193,17 @@ a:hover {
 .add-button-big,
 .btn-primary-add,
 .user-btn {
+  .edit-icon{
+    height: 14px;
+    background-size: contain;
+    top: unset;
+  }
   &:hover,
   &:not(.disabled):active:focus {
     background-color: #1d59af;
   }
 }
+
 
 //tried half working
 // .approve-hover-btn {
@@ -2252,6 +2258,7 @@ td {
   .Pushed,
   .Draft,
   [class^="Pending"],
+  [class^="Awaiting"],
   .Approved,
   .Rejected,
   .History {
@@ -2269,6 +2276,9 @@ td {
   }
   [class^="Pending"]{
     background-color: #f8a000;
+  }
+  [class^="Awaiting"]{
+    background-color: #eac607;
   }
   .Approved {
     background-color: #4dc771;
