@@ -11,7 +11,6 @@ import {
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
-import { VIEW_COSTING_DATA } from '../../../config/constants'
 import { formViewData } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
@@ -23,8 +22,7 @@ function CostingSummary(props) {
     reValidateMode: 'onChange',
   })
 
-  const { hideUpperRow, costingID } = props
-
+  const dispatch = useDispatch()
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
@@ -35,18 +33,13 @@ function CostingSummary(props) {
   const [disabled, setDisabled] = useState(false)
   const partNumber = useSelector(state => state.costing.partNo);
 
-
-
-  const fieldValues = useWatch({ control })
-
-  const dispatch = useDispatch()
-
   const costingData = useSelector(state => state.costing.costingData)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
+  const technologySelectList = useSelector(state => state.costing.technologySelectList,)
+  const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
 
-
+  /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
-
     if (Object.keys(costingData).length > 0) {
       dispatch(getSingleCostingDetails(costingData.CostingId, (res) => {
         if (res.data.Data) {
@@ -62,23 +55,16 @@ function CostingSummary(props) {
 
 
   useEffect(() => {
-
     dispatch(getCostingTechnologySelectList(() => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
-
-    // if (costingData.length > 0) {
-    //   
-    // }
   }, [])
 
+  /*************USED FOR SETTING DEFAULT VALUE IN SUMMARY AFTER SELECTING COSTING FROM DETAIL*****************/
   useEffect(() => {
-
     if (Object.keys(costingData).length > 0) {
-
       setTimeout(() => {
-
         setValue('Technology', costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
         setTechnology(costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
         setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
@@ -118,11 +104,7 @@ function CostingSummary(props) {
     }
   }, [costingData])
 
-  const technologySelectList = useSelector(state => state.costing.technologySelectList,)
-  const partSelectList = useSelector(state => state.costing.partSelectList)
 
-  const partInfo = useSelector(state => state.costing.partInfo)
-  const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
 
   /**
    * @method renderDropdownListing
@@ -184,15 +166,6 @@ function CostingSummary(props) {
   const handlePartChange = (newValue) => {
     let temp = []
     temp = viewCostingData
-    // if (viewCostingData.length == 0 || part.value == newValue.value || part.value != newValue.value) {
-    //   
-    //   temp.push(VIEW_COSTING_DATA)
-    // }
-    // else if (viewCostingData.length >= 1) {
-    //   
-    //   temp = viewCostingData
-    // }
-    // else if(part != newValue)
 
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
@@ -275,49 +248,11 @@ function CostingSummary(props) {
     setEffectiveDate(date)
   }
 
-  /**
-   * @method checkForError
-   * @description HANDLE COSTING VERSION SELECTED
-   */
-  const checkForError = (index, type) => {
-    if (errors && (errors.zbcPlantGridFields || errors.vbcGridFields)) {
-      return false
-    } else {
-      return true
-    }
-  }
 
   /**
-   * @method warningMessageHandle
-   * @description VIEW COSTING DETAILS IN READ ONLY MODE
-   */
-  const warningMessageHandle = (warningType) => {
-    switch (warningType) {
-      case 'SOB_WARNING':
-        toastr.warning('SOB Should not be greater than 100.')
-        break
-      case 'COSTING_VERSION_WARNING':
-        toastr.warning('Please select a costing version.')
-        break
-      case 'VALID_NUMBER_WARNING':
-        toastr.warning('Please enter a valid number.')
-        break
-      case 'ERROR_WARNING':
-        toastr.warning('Please enter a valid number.')
-        break
-      default:
-        break
-    }
-  }
-
-  /**
-   * @method onSubmit
-   * @description Used to Submit the form
-   */
-  // const onSubmit = (values) => {
-
-  // }
-
+   * @method resetData
+   * @description RESETING FORM AFTER SELECTING RESET BUTTON
+  */
   const resetData = () => {
     reset()
     setTechnology([])
@@ -332,10 +267,19 @@ function CostingSummary(props) {
     dispatch(getPartSelectListByTechnology('', () => { }))
   }
 
+  /**
+   * @method bulkToggle
+   * @description OPEN ADD BOM DRAWER
+  */
   const bulkToggle = () => {
     SetIsBulkOpen(true)
   }
 
+
+  /**
+   * @method closeBulkUploadDrawer
+   * @description CLOSE ADD BOM DRAWER
+  */
   const closeBulkUploadDrawer = () => {
     SetIsBulkOpen(false)
   }
@@ -456,7 +400,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="ECO No."
+                          label="ECN No."
                           name={'ECNNumber'}
                           Controller={Controller}
                           control={control}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { REJECTED } from '../../../../config/constants'
 
 function ApprovalWorkFlow(props) {
   const { approvalLevelStep } = props
@@ -43,7 +44,8 @@ function ApprovalWorkFlow(props) {
           return (
             <>
               <div key={index} className="col-lg-3 col-md-6 col-sm-12 ">
-                <div className="card-border card-green">
+
+                <div className={`card-border  ${item.Title.split(' ')[0] === REJECTED ? 'card-red' : 'card-green'}`}>
                   <div className="top d-flex">
                     <div className="left text-center">
                       <b>{item.FlowStepSequence ? item.FlowStepSequence : 0}</b>

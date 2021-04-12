@@ -1,32 +1,30 @@
 import React, { Fragment, useState, useEffect } from 'react'
-import { Row, Col, Table, Container } from 'reactstrap'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { Row, Col } from 'reactstrap'
+import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import DatePicker from 'react-datepicker'
 import { toastr } from 'react-redux-toastr'
-import { useHistory } from 'react-router-dom'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, } from '../../../layout/HookFormInputs'
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserByDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, } from '../../actions/Approval'
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, } from '../../actions/Approval'
 import { userDetails } from '../../../../helper/auth'
-import { setCostingApprovalData, setCostingViewData, storePartNumber, } from '../../actions/Costing'
+import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
 import 'react-datepicker/dist/react-datepicker.css'
-import { checkForNull } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import moment from 'moment'
 import WarningMessage from '../../../common/WarningMessage'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
-  const history = useHistory()
   const { register, handleSubmit, control, setValue, getValues, reset, errors, setError } = useForm()
+
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const usersList = useSelector((state) => state.approval.approvalUsersList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-
   const partNo = useSelector((state) => state.costing.partNo)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -45,7 +43,7 @@ const SendForApproval = (props) => {
   }, [viewApprovalData])
   /**
    * @method renderDropdownListing
-   * @description Used show listing of unit of measurement
+   * @description DROPDOWN
    */
   const renderDropdownListing = (label) => {
     const tempDropdownList = []
@@ -69,15 +67,6 @@ const SendForApproval = (props) => {
         })
       return tempDropdownList
     }
-    // if (label === 'Approver') {
-    //     usersList && usersList.map(item => {
-    //         
-    //         // if (item.Value === '0') return false;
-    //         tempDropdownList.push({ label: item.Text, value: item.Value })
-    //         return null;
-    //     });
-    //     return tempDropdownList;
-    // }
   }
 
   /**
@@ -85,35 +74,30 @@ const SendForApproval = (props) => {
    * @description  USED TO HANDLE DEPARTMENT CHANGE
    */
   const handleDepartmentChange = (newValue) => {
-    //  errors.approver = 'No data.'
-
     const tempDropdownList = []
     if (newValue && newValue !== '') {
-      // dispatch(getAllApprovalUserByDepartment({ // add approval api here
       dispatch(
-        getAllApprovalUserFilterByDepartment(
-          {
-            LoggedInUserId: userData.LoggedInUserId,
-            DepartmentId: newValue.value,
-            TechnologyId: partNo.technologyId,
-          },
-          (res) => {
-            if (res.data.DataList.length <= 1) {
-              setShowValidation(true)
-            }
-            res.data.DataList &&
-              res.data.DataList.map((item) => {
-                if (item.Value === '0') return false;
-                tempDropdownList.push({
-                  label: item.Text,
-                  value: item.Value,
-                  levelId: item.LevelId,
-                  levelName: item.LevelName
-                })
-                return null
+        getAllApprovalUserFilterByDepartment({
+          LoggedInUserId: userData.LoggedInUserId,
+          DepartmentId: newValue.value,
+          TechnologyId: partNo.technologyId,
+        }, (res) => {
+          if (res.data.DataList.length <= 1) {
+            setShowValidation(true)
+          }
+          res.data.DataList &&
+            res.data.DataList.map((item) => {
+              if (item.Value === '0') return false;
+              tempDropdownList.push({
+                label: item.Text,
+                value: item.Value,
+                levelId: item.LevelId,
+                levelName: item.LevelName
               })
-            setApprovalDropDown(tempDropdownList)
-          },
+              return null
+            })
+          setApprovalDropDown(tempDropdownList)
+        },
         ),
       )
       setSelectedDepartment(newValue)
@@ -177,7 +161,6 @@ const SendForApproval = (props) => {
 
     dispatch(
       getVolumeDataByPartAndYear(partNo.label ? partNo.label : partNo.partNumber, year, (res) => {
-        //getVolumeDataByPartAndYear('WISHER', year, (res) => {
         if (res.data.Result === true || res.status === 202) {
           let approvedQtyArr = res.data.Data.VolumeApprovedDetails
           let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
@@ -187,6 +170,9 @@ const SendForApproval = (props) => {
 
           approvedQtyArr.map((data) => {
             if (data.Sequence < sequence) {
+              // if(data.Date <= moment(effectiveDate).format('dd/MM/YYYY')){ 
+              //   actualQty += parseInt(data.ApprovedQuantity)
+              // }
               actualQty += parseInt(data.ApprovedQuantity)
             } else if (data.Sequence >= sequence) {
               actualRemQty += parseInt(data.ApprovedQuantity)
@@ -197,16 +183,10 @@ const SendForApproval = (props) => {
             totalBudgetedQty += parseInt(data.BudgetedQuantity)
             // }
           })
-          temp.consumptionQty = checkForNull(actualQty)
+          temp.consumptionQty = checkForNull(actualQty,)
           temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
-          temp.annualImpact =
-            temp.variance != ''
-              ? totalBudgetedQty * temp.variance : 0
-          temp.yearImpact =
-            temp.variance != ''
-              ? (totalBudgetedQty - actualQty) * parseInt(temp.variance)
-              : 0
-
+          temp.annualImpact = temp.variance != '' ? totalBudgetedQty * temp.variance : 0
+          temp.yearImpact = temp.variance != '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
           viewDataTemp[index] = temp
           dispatch(setCostingApprovalData(viewDataTemp))
         }
@@ -377,8 +357,6 @@ const SendForApproval = (props) => {
           </Row>
           {viewApprovalData &&
             viewApprovalData.map((data, index) => {
-
-
               return (
                 <div className="pl-3 pr-3">
                   <Row className="px-3">
@@ -476,19 +454,19 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <label>Old/Current Price</label>
                           <label className="form-control bg-grey">
-                            {data.oldPrice && data.oldPrice !== '-' ? data.oldPrice : 0}
+                            {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
                           </label>
                         </Col>
                         <Col md="4">
                           <label>Revised Price</label>
                           <label className="form-control bg-grey">
-                            {data.revisedPrice ? data.revisedPrice : 0}
+                            {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
                           </label>
                         </Col>
                         <Col md="4">
                           <label>Variance</label>
                           <label className="form-control bg-grey">
-                            {data.variance ? data.variance : 0}
+                            {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
                           </label>
                         </Col>
                       </Row>
@@ -497,7 +475,7 @@ const SendForApproval = (props) => {
                           <label>Consumed Quantity</label>
                           <div className="d-flex align-items-center">
                             <label className="form-control bg-grey">
-                              {data.consumptionQty ? data.consumptionQty : 0}
+                              {data.consumptionQty ? checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
                             {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
                           </div>
@@ -505,13 +483,13 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <label>Remaining Budgeted Quantity</label>
                           <label className="form-control bg-grey">
-                            {data.remainingQty !== "" ? data.remainingQty : 0}
+                            {data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
                           </label>
                         </Col>
                         <Col md="4">
                           <label>Annual Impact</label>
                           <label className="form-control bg-grey">
-                            {data.annualImpact ? data.annualImpact : 0}
+                            {data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                           </label>
                         </Col>
                       </Row>
@@ -519,7 +497,7 @@ const SendForApproval = (props) => {
                         <Col md="4">
                           <label>Impact for the Year</label>
                           <label className="form-control bg-grey">
-                            {data.yearImpact ? data.yearImpact : 0}
+                            {data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                           </label>
                         </Col>
                       </Row>
@@ -548,7 +526,7 @@ const SendForApproval = (props) => {
                   register={register}
                   defaultValue={""}
                   options={renderDropdownListing("Dept")}
-                  // mandatory={true}
+                  mandatory={true}
                   handleChange={handleDepartmentChange}
                   errors={errors.dept}
                 />
@@ -561,10 +539,11 @@ const SendForApproval = (props) => {
                   placeholder={"-Select-"}
                   Controller={Controller}
                   control={control}
+                  rules={{ required: true }}
                   register={register}
                   defaultValue={""}
                   options={approvalDropDown}
-                  mandatory={false}
+                  mandatory={true}
                   handleChange={handleApproverChange}
                   errors={errors.approver}
                 />
