@@ -342,9 +342,9 @@ const SendForApproval = (props) => {
         anchor={props.anchor}
         open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
-      >
+      ><div className="container">
         <div className={"drawer-wrapper drawer-md"}>
-          <Row className="drawer-heading mx-0">
+          <Row className="drawer-heading ">
             <Col>
               <div className={"header-wrapper left"}>
                 <h3>{"Send for Approval"}</h3>
@@ -358,7 +358,7 @@ const SendForApproval = (props) => {
           {viewApprovalData &&
             viewApprovalData.map((data, index) => {
               return (
-                <div className="pl-3 pr-3">
+                <div className="pr-3">
                   <Row className="px-3">
                     <Col md="12">
                       <h6 className="left-border d-inline-block mr-3">
@@ -506,105 +506,106 @@ const SendForApproval = (props) => {
                 </div>
               );
             })}
-        </div>
-        <div className="pl-3 pr-3">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Row className="px-3">
-              <Col md="4">
-                <div className="left-border">{"Approver"}</div>
-              </Col>
-            </Row>
-            <Row className="px-3">
-              <Col md="6">
-                <SearchableSelectHookForm
-                  label={"Department"}
-                  name={"dept"}
-                  placeholder={"-Select-"}
-                  Controller={Controller}
-                  control={control}
-                  rules={{ required: true }}
-                  register={register}
-                  defaultValue={""}
-                  options={renderDropdownListing("Dept")}
-                  mandatory={true}
-                  handleChange={handleDepartmentChange}
-                  errors={errors.dept}
-                />
-              </Col>
-              <Col md="6">
-
-                <SearchableSelectHookForm
-                  label={"Approver"}
-                  name={"approver"}
-                  placeholder={"-Select-"}
-                  Controller={Controller}
-                  control={control}
-                  rules={{ required: true }}
-                  register={register}
-                  defaultValue={""}
-                  options={approvalDropDown}
-                  mandatory={true}
-                  handleChange={handleApproverChange}
-                  errors={errors.approver}
-                />
-                {
-                  showValidation && <WarningMessage message={'Level for this user/technology is not yet added!'} />
-                }
-              </Col>
-              <Col md="12">
-                <TextAreaHookForm
-                  label="Remarks"
-                  name={"remarks"}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={""}
-                  className=""
-                  customClassName={"withBorder"}
-                  errors={errors.remarks}
-                  disabled={false}
-                />
-              </Col>
-            </Row>
-            <Row className="mb-4">
-              <Col
-                md="12"
-                className="d-flex justify-content-end align-items-center"
-              >
-                <button
-                  className="cancel-btn mr-2"
-                  type={"button"}
-                  onClick={toggleDrawer}
-                // className="reset mr15 cancel-btn"
-                >
-                  <div className={"cross-icon"}>
-                    <img
-                      src={require("../../../../assests/images/times.png")}
-                      alt="cancel-icon.jpg"
+            <div className="pr-3">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Row className="px-3">
+                  <Col md="4">
+                    <div className="left-border">{"Approver"}</div>
+                  </Col>
+                </Row>
+                <Row className="px-3">
+                  <Col md="6">
+                    <SearchableSelectHookForm
+                      label={"Department"}
+                      name={"dept"}
+                      placeholder={"-Select-"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={""}
+                      options={renderDropdownListing("Dept")}
+                      mandatory={true}
+                      handleChange={handleDepartmentChange}
+                      errors={errors.dept}
                     />
-                  </div>{" "}
-                  {"Clear"}
-                </button>
+                  </Col>
+                  <Col md="6">
 
-                <button
-                  className="btn btn-primary save-btn"
-                  type="submit"
-                // className="submit-button save-btn"
-                // onClick={() => handleSubmit(onSubmit)}
-                >
-                  <div className={"check-icon"}>
-                    <img
-                      src={require("../../../../assests/images/check.png")}
-                      alt="check-icon.jpg"
-                    />{" "}
-                  </div>
-                  {"Submit"}
-                </button>
-              </Col>
-            </Row>
-          </form>
+                    <SearchableSelectHookForm
+                      label={"Approver"}
+                      name={"approver"}
+                      placeholder={"-Select-"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={""}
+                      options={approvalDropDown}
+                      mandatory={true}
+                      handleChange={handleApproverChange}
+                      errors={errors.approver}
+                    />
+                  </Col>
+                  {
+                      showValidation && <span className="warning-top"><WarningMessage  message={'Level for this user/technology is not yet added!'} /></span>
+                    }
+                  <Col md="12">
+                    <TextAreaHookForm
+                      label="Remarks"
+                      name={"remarks"}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      handleChange={() => { }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={"withBorder"}
+                      errors={errors.remarks}
+                      disabled={false}
+                    />
+                  </Col>
+                </Row>
+                <Row className="mb-4">
+                  <Col
+                    md="12"
+                    className="d-flex justify-content-end align-items-center"
+                  >
+                    <button
+                      className="cancel-btn mr-2"
+                      type={"button"}
+                      onClick={toggleDrawer}
+                    // className="reset mr15 cancel-btn"
+                    >
+                      <div className={"cross-icon"}>
+                        <img
+                          src={require("../../../../assests/images/times.png")}
+                          alt="cancel-icon.jpg"
+                        />
+                      </div>{" "}
+                      {"Clear"}
+                    </button>
+
+                    <button
+                      className="btn btn-primary save-btn"
+                      type="submit"
+                    // className="submit-button save-btn"
+                    // onClick={() => handleSubmit(onSubmit)}
+                    >
+                      <div className={"check-icon"}>
+                        <img
+                          src={require("../../../../assests/images/check.png")}
+                          alt="check-icon.jpg"
+                        />{" "}
+                      </div>
+                      {"Submit"}
+                    </button>
+                  </Col>
+                </Row>
+              </form>
+            </div>
+        </div>
         </div>
       </Drawer>
     </Fragment>

@@ -162,10 +162,10 @@ class Login extends Component {
                       target='_blank'>
                       Forgot Password?
                         </Link> */}
-                    <div className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</div>
+                    <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
                   </div>
                   {this.state.flag && (
-                    <i className="text-help">Please contact your IT Administrator</i>
+                    <div className="text-help mb-2">Please contact your IT Administrator</div>
                   )
                   }
                 </form>

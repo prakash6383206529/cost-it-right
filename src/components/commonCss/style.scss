@@ -30,6 +30,7 @@
 body {
   color: #000;
   // overflow: hidden;
+  background-color: #EDF0F5;
 }
 
 .icon-about:before {
@@ -797,6 +798,10 @@ button.add-btn {
 .manageuser .css-yk16xz-control {
   font-size: 14px !important;
   font-weight: 400 !important;
+  height: 40px;
+}
+
+input.form-control{
   height: 40px;
 }
 
@@ -3458,6 +3463,19 @@ body{
   }
 }
 // approval-workflow-drawer end
+
+.text-warning{font-size: 12px;}
+.warning-row{
+  img{
+    width: 12px;
+    height: auto;
+    object-fit: contain;
+  }
+}
+.warning-top{
+  margin-top: -30px;
+  width: 100%;
+}
 
 // responsive media query start
 @media(max-width:1600px){
