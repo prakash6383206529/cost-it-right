@@ -142,7 +142,14 @@ class SideBar extends Component {
       // }
     });
   };
-
+  /**
+    * @method setLeftMenu
+    * @description Used to set left menu and Redirect to first menu.
+    */
+  SetMenu = (ModuleId) => {
+    reactLocalStorage.set("ModuleId", ModuleId);
+    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { });
+  };
   /**
    * @method renderDashboard
    * @description Render dashboard menu.
@@ -197,11 +204,13 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown">
+              <li className="nav-item dropdown"
+                onMouseOver={() => this.SetMenu(el.ModuleId)}
+              >
                 <Link
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  onMouseOver={() => this.setLeftMenu(el.ModuleId)}
+                  // onMouseOver={() => this.setLeftMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -223,6 +232,7 @@ class SideBar extends Component {
                   <ul>
                     {
                       leftMenuData && leftMenuData.map((el, i) => {
+                        if (el.Sequence === 22) return false
                         return (
                           <li key={i}>
                             <Link
@@ -270,7 +280,7 @@ class SideBar extends Component {
                   key={i}
                   className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  onMouseOver={() => this.setLeftMenu(el.ModuleId)}
+                  onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {

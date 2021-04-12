@@ -1438,5 +1438,13 @@ export const DIMENSIONLESS = 'Dimensionless'
 export const STD = 'STD'
 
 //SIMULATION MASTER NAME
-// export const DOMESTIC = 'Domestic'
-// export const  
+export const RMDOMESTIC = 'Raw Material(Domestic)'
+export const RMIMPORT = 'Raw Material(Import)'
+export const BOPDOMESTIC = 'BOP (Domestic)'
+export const BOPIMPORT = 'BOP (Import)'
+export const PROCESS = 'Process'
+export const OPERATIONSIM = 'Operation'
+export const SURFACETREATMENT = 'SURFACE TREATMENT'
+export const OVERHEAD = 'Overhead'
+export const PROFIT = 'Profits'
+// export constse

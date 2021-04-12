@@ -3115,7 +3115,7 @@ class AddMoreDetails extends Component {
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               //onSubmit={this.handleSubmit}
-                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}

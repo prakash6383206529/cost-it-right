@@ -34,13 +34,76 @@ export function getSelectListOfMasters(callback) {
                     Text: "Raw Material(Import)",
                     Value: "0d635de3-8c83-493d-b446-8b3e1f6ed4d0"
                 },
-                {
-                    Disabled: false,
-                    Group: null,
-                    Selected: false,
-                    Text: "BOP (Domestic)",
-                    Value: "abddb973-b5ea-42ad-b99a-e60674c40e28"
-                },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "BOP (Domestic)",
+                //     Value: "abddb973-b5ea-42ad-b99a-e60674c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "BOP (Import)",
+                //     Value: "abddb973-b5ea-42ad-b99a-e60673c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "Process",
+                //     Value: "abddb972-b5ea-42ad-b99a-e60674c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "Operation",
+                //     Value: "abbdb973-b5ea-42ad-b99a-e60674c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: " Surface Treatment",
+                //     Value: "abddb973-b5ea-42ad-b99a-e61674c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "Overhead",
+                //     Value: "bbddb973-b5ea-42ad-b99a-e60674c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "Profits",
+                //     Value: "abdda873-b5ea-42ad-b99a-e60674c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "ICC",
+                //     Value: "abdda873-b5ea-42ad-b1000a-e60674c40e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "Payment Terms",
+                //     Value: "abdda873-b5ea-42ad-b99a-e60674c500e28"
+                // },
+                // {
+                //     Disabled: false,
+                //     Group: null,
+                //     Selected: false,
+                //     Text: "Freight",
+                //     Value: "abdda873-b5ea-42dd-b99a-e60674c40e28"
+                // },
             ],
         },
     }

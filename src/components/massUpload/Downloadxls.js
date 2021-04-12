@@ -145,7 +145,7 @@ class Downloadxls extends React.Component {
         }
 
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
