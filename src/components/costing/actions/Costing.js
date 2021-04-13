@@ -1106,7 +1106,10 @@ export function getPaymentTermsDataByHeads(data, callback) {
  */
 export function getPackageFreightTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_PACKAGE_AND_FREIGHT_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
@@ -1233,7 +1236,10 @@ export function getRateByCapacityCriteria(data, callback) {
  */
 export function getToolTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_TOOL_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
