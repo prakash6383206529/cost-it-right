@@ -205,7 +205,7 @@ class SideBar extends Component {
           return (
             <>
               <li className="nav-item dropdown"
-                onMouseOver={() => this.SetMenu(el.ModuleId)}
+              // onMouseOver={() => this.SetMenu(el.ModuleId)}
               >
                 <Link
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
@@ -228,7 +228,7 @@ class SideBar extends Component {
                   />
                   <span>Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                {/* <div className="dropdown-menu sub-menu">
                   <ul>
                     {
                       leftMenuData && leftMenuData.map((el, i) => {
@@ -253,7 +253,7 @@ class SideBar extends Component {
                       })
                     }
                   </ul>
-                </div>
+                </div> */}
               </li>
             </>
           );
@@ -280,7 +280,7 @@ class SideBar extends Component {
                   key={i}
                   className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  onMouseOver={() => this.SetMenu(el.ModuleId)}
+                  // onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -297,7 +297,7 @@ class SideBar extends Component {
                   />
                   <span>Additional Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                {/* <div className="dropdown-menu sub-menu">
                   <ul>
                     {
                       leftMenuData && leftMenuData.map((el, i) => {
@@ -321,7 +321,7 @@ class SideBar extends Component {
                       })
                     }
                   </ul>
-                </div>
+                </div> */}
               </li>
             </>
           );

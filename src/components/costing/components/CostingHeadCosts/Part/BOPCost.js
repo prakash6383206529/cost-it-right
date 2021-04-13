@@ -13,8 +13,12 @@ import { ViewCostingContext } from '../../CostingDetails';
 function BOPCost(props) {
   const { item, data } = props;
   const { register, handleSubmit, control, errors, setValue, getValues } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues: {
+      BOPHandlingPercentage: item.CostingPartDetails.BOPHandlingPercentage,
+      BOPHandlingCharges: item.CostingPartDetails.BOPHandlingCharges,
+    }
   });
 
   const [gridData, setGridData] = useState(data)
@@ -22,7 +26,7 @@ function BOPCost(props) {
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
-  const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(false)
+  const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -155,6 +159,12 @@ function BOPCost(props) {
   const handleBOPPercentageChange = (value) => {
     if (!isNaN(value)) {
 
+      if (value > 100) {
+        setValue('BOPHandlingPercentage', 0)
+        setValue('BOPHandlingCharges', 0)
+        return false;
+      }
+
       let TotalBOPCost = gridData && gridData.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.NetBoughtOutPartCost)
       }, 0)
@@ -177,6 +187,7 @@ function BOPCost(props) {
 
     } else {
       setValue('BOPHandlingCharges', 0)
+      setValue('BOPHandlingPercentage', 0)
       toastr.warning('Please enter valid number.')
     }
   }

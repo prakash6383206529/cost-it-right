@@ -120,10 +120,10 @@ function FreightCost(props) {
                         return (
                           <tr key={index}>
                             <td>{EFreightLoadTypeText}</td>
-                            <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Capacity}</td>
-                            <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Criteria : '-')}</td>
-                            <td>{item.IsPartTruckLoad === 'Fixed' ? '-' : (item.IsPartTruckLoad === 'Percentage' ? item.Rate : '-')}</td>
-                            <td>{item.IsPartTruckLoad === 'Fixed' || item.IsPartTruckLoad === 'Percentage' ? '-' : item.Quantity}</td>
+                            <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Capacity}</td>
+                            <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Criteria : '-')}</td>
+                            <td>{item.EFreightLoadType === Fixed ? '-' : (item.EFreightLoadType === Percentage ? item.Rate : '-')}</td>
+                            <td>{item.EFreightLoadType === Fixed || item.EFreightLoadType === Percentage ? '-' : item.Quantity}</td>
                             <td>{item.FreightCost}</td>
                             <td>
                               {!CostingViewMode && <button className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />}
