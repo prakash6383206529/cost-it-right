@@ -51,6 +51,7 @@ import {
   GET_PART_COSTING_VENDOR_SELECT_LIST,
   GET_PART_SELECTLIST_BY_TECHNOLOGY,
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
+  SET_EXCHANGE_RATE_CURRENCY_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1324,6 +1325,10 @@ export function getExchangeRateByCurrency(Currency, EffectiveDate, callback) {
     const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}/${EffectiveDate}`, headers);
     request.then((response) => {
       if (response.data.Result) {
+        dispatch({
+          type: SET_EXCHANGE_RATE_CURRENCY_DATA,
+          payload: response.data.Data,
+        });
         callback(response);
       }
     }).catch((error) => {

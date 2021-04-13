@@ -523,7 +523,7 @@ function TabOverheadProfit(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Net Overheads`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>

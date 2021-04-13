@@ -987,7 +987,7 @@ function TabRMCC(props) {
                       <Table className="table cr-brdr-main mb-0 rmcc-main-headings" size="sm">
                         <thead>
                           <tr>
-                            <th className="py-3 align-middle" style={{ width: '100px' }}>{``}</th>
+                            <th className="py-3 align-middle" style={{ width: '100px' }}>{`Part Number`}</th>
                             <th className="py-3 align-middle" style={{ width: '70px' }}>{`Level`}</th>
                             <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                             <th className="py-3 align-middle" style={{ width: '100px' }}>{`RM Cost`}</th>

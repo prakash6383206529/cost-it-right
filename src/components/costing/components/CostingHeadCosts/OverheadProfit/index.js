@@ -70,8 +70,8 @@ function OverheadProfit(props) {
   const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
 
   const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
-  console.log('ddddddddddddddddddddddd', CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms)
-  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms === true ? true : false)
+  console.log('ddddddddddddddddddddddd', CostingInterestRateDetail && CostingInterestRateDetail.NetPaymentTermCost === 0 ? false : true)
+  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.NetPaymentTermCost === 0 ? false : true)
   const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
   const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
 
@@ -1009,6 +1009,7 @@ function OverheadProfit(props) {
    * @description  USED TO HANDLE INVENTORY CHANGE
    */
   const onPressPaymentTerms = () => {
+    console.log('ddddddddddddddddddddddd From toggle')
     setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
   }
 
