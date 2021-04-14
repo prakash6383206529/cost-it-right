@@ -8,6 +8,7 @@ import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRawMaterialCalculationByTechnology } from '../../actions/CostWorking';
 import { toastr } from 'react-redux-toastr';
+import { checkForDecimalAndNull } from '../../../../helper';
 
 
 function ViewRM(props) {
@@ -32,7 +33,7 @@ function ViewRM(props) {
   const dispatch = useDispatch()
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-  //WeightCalculatorRequest
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const getWeightData = () => {
     if (viewRM.WeightCalculationId === '00000000-0000-0000-0000-000000000000') {
@@ -85,7 +86,7 @@ function ViewRM(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"RM:"}</h3>
+                  <h3>{"View RM Cost:"}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -152,7 +153,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.GrossWeight !== undefined ? viewRM.GrossWeight : ""}
+                    defaultValue={viewRM && viewRM.GrossWeight !== undefined ? checkForDecimalAndNull(viewRM.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput) : ""}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -168,7 +169,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.FinishWeight !== undefined ? viewRM.FinishWeight : ""}
+                    defaultValue={viewRM && viewRM.FinishWeight !== undefined ? checkForDecimalAndNull(viewRM.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput) : 0}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}
@@ -184,7 +185,7 @@ function ViewRM(props) {
                     register={register}
                     mandatory={false}
                     handleChange={() => { }}
-                    defaultValue={viewRM && viewRM.NetLandedCost !== undefined ? viewRM.NetLandedCost : "-"}
+                    defaultValue={viewRM && viewRM.NetLandedCost !== undefined ? checkForDecimalAndNull(viewRM.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                     className=""
                     customClassName={"withBorder"}
                     //errors={errors.ECNNumber}

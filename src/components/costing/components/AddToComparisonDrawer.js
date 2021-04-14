@@ -7,17 +7,18 @@ import { getPlantSelectListByType, getVendorWithVendorCodeSelectList, getPlantBy
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { ZBC, VBC, VIEW_COSTING_DATA } from '../../../config/constants'
+import { ZBC, VBC, VIEW_COSTING_DATA, APPROVED } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { isUserLoggedIn } from '../../../helper/auth'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { checkForNull } from '../../../helper'
 
 function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
 
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
-  const { editObject, isEditFlag } = props
+  const { editObject, isEditFlag, viewMode } = props
 
   const { partId, plantId, plantName, costingId, CostingNumber, index, typeOfCosting, VendorId, vendorName, vendorPlantName, vendorPlantId } = editObject
 
@@ -73,12 +74,13 @@ function AddToComparisonDrawer(props) {
     /******FIRST TIME RENDER ADD TO COMPARISION******/
     if (!isEditFlag) {
       const temp = []
+      setIsZbcSelected(true)
+      setIsVbcSelected(false)
+      setisCbcSelected(false)
       dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => {
         dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
-        setIsZbcSelected(true)
-        setIsVbcSelected(false)
-        setisCbcSelected(false)
+
       }),
       )
     }
@@ -89,7 +91,7 @@ function AddToComparisonDrawer(props) {
           setIsZbcSelected(true)
           setIsVbcSelected(false)
           setisCbcSelected(false)
-        }, 200);
+        }, 100);
         dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => { }))
         dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
         dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
@@ -128,6 +130,9 @@ function AddToComparisonDrawer(props) {
     ) {
       return
     }
+    setIsZbcSelected(true)
+    setIsVbcSelected(false)
+    setisCbcSelected(false)
     props.closeDrawer('')
   }
 
@@ -138,33 +143,36 @@ function AddToComparisonDrawer(props) {
   const handleComparison = (value) => {
     setValue('comparisonValue', value)
     if (value === 'ZBC') {
+      setIsZbcSelected(true)
+      setIsVbcSelected(false)
+      setisCbcSelected(false)
       dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => {
         if (plantId !== undefined && plantId !== '-') {
           dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
         }
         dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
         setValue('costings', '')
-        setIsZbcSelected(true)
-        setIsVbcSelected(false)
-        setisCbcSelected(false)
+
       }))
     } else if (value === 'VBC') {
       setCostingDropdown([])
+      setIsZbcSelected(false)
+      setIsVbcSelected(true)
+      setisCbcSelected(false)
       setValue('costings', '')
       dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
       dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
       dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
-      setIsZbcSelected(false)
-      setIsVbcSelected(true)
-      setisCbcSelected(false)
+
     } else if (value === 'CBC') {
+      setisCbcSelected(true)
+      setIsZbcSelected(false)
+      setIsVbcSelected(false)
       setCostingDropdown([])
       dispatch(getClientSelectList((res) => {
         dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
-        setisCbcSelected(true)
-        setIsZbcSelected(false)
-        setIsVbcSelected(false)
+
       }),
       )
     }
@@ -197,7 +205,9 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
    */
   const onSubmit = (values) => {
-
+    setIsZbcSelected(true)
+    setIsVbcSelected(false)
+    setisCbcSelected(false)
     setPlantValue(values.plant)
     setVendorValue(values.vendor)
     setVendorPlant(values.vendorPlant)
@@ -238,17 +248,14 @@ function AddToComparisonDrawer(props) {
           obj.aValue = { applicability: 'Applicability', value: 'Value', }
           obj.overheadOn = {
             overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
-            overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) : 0 +
-              (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) : 0) +
-              (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost,) : 0) +
-              (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost,) : 0),
+            overheadValue: dataFromAPI.CostingPartDetails.CostingOverheadDetail && checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) +
+              checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost),
           }
           obj.profitOn = {
             profitTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-',
-            profitValue: dataFromAPI.CostingPartDetails && (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost) : 0) +
-              (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost) : 0) +
-              (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost) : 0) +
-              (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost) : 0),
+            profitValue: dataFromAPI.CostingPartDetails && checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost) +
+              checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost) +
+              checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost)
           }
           obj.rejectionOn = {
             rejectionTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability : '-',
@@ -331,6 +338,7 @@ function AddToComparisonDrawer(props) {
           obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
           obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
 
+          console.log(obj, "OBJ");
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 
@@ -429,10 +437,19 @@ function AddToComparisonDrawer(props) {
       return temp
     }
     if (label === 'costing') {
-      costingSelectList && costingSelectList.map((item) => {
-        temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
-        return null
-      })
+      if (viewMode === true) {
+        costingSelectList && costingSelectList.map((item) => {
+          if (item.status === APPROVED) {
+            temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
+            return null
+          }
+        })
+      } else {
+        costingSelectList && costingSelectList.map((item) => {
+          temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
+          return null
+        })
+      }
       return temp
     }
   }
@@ -442,7 +459,7 @@ function AddToComparisonDrawer(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>
@@ -509,7 +526,7 @@ function AddToComparisonDrawer(props) {
                     />
                   </Col>
                 )}
-                {isVbcSelected && (
+                {isVbcSelected === true && (
                   <>
                     <Col md="12">
                       <SearchableSelectHookForm
