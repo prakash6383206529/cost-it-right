@@ -487,9 +487,9 @@ class AddVolume extends Component {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
-
+    
     // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
-    const filteredArray = tableData.filter(item => item.BudgetedQuantity === 0 && item.ApprovedQuantity === 0)
+    const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
     if (filteredArray.length === 12) {
       toastr.warning("Please fill atleast one entry")
       return false

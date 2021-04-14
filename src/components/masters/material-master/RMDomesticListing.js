@@ -590,7 +590,7 @@ class RMDomesticListing extends Component {
                             options={options}
                             search
                             multiColumnSearch={true}
-                            //exportCSV
+                            // exportCSV={true}
                             //ignoreSinglePage
                             ref={'table'}
                             pagination>

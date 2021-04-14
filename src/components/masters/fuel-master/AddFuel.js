@@ -166,8 +166,7 @@ class AddFuel extends Component {
       return false
 
     } else {
-      if (StateName.length === 0 || effectiveDate === '') {
-
+      if (StateName.length === 0 || effectiveDate === '' || Rate === 0 ) {
         toastr.warning('Fields should not be empty');
         return false;
       }

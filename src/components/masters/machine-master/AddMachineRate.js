@@ -278,7 +278,7 @@ class AddMachineRate extends Component {
     if (label === 'technology') {
       technologySelectList && technologySelectList.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        temp.push({ label: item.Text, value: item.Value })
         return null;
       });
       return temp;
@@ -976,9 +976,9 @@ class AddMachineRate extends Component {
                             selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                             options={this.renderListing('technology')}
                             selectionChanged={this.handleTechnology}
-                            optionValue={option => option.Value}
-                            optionLabel={option => option.Text}
-                            component={renderMultiSelectField}
+                            // optionValue={option => option.Value}
+                            // optionLabel={option => option.Text}
+                            component={searchableSelect}
                             mendatory={true}
                             className="multiselect-with-border"
                             disabled={this.state.isViewFlag ? true : false}

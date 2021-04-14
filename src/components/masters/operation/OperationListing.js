@@ -29,7 +29,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj } from '../../../config/masterData';
+import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { Loader } from '../../common/Loader';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -134,7 +134,7 @@ class OperationListing extends Component {
         }
 
         if (label === 'costingHead') {
-            return costingHeadObj;
+            return costingHeadObjs;
         }
 
         if (label === 'OperationNameList') {
