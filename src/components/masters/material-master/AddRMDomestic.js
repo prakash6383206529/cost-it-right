@@ -1067,7 +1067,7 @@ class AddRMDomestic extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {!this.state.IsVendor && (
+                          {/* {!this.state.IsVendor && ( */}
                             <Col md="4">
                               <Field
                                 label="Plant"
@@ -1085,10 +1085,10 @@ class AddRMDomestic extends Component {
                                 component={renderMultiSelectField}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                disabled={this.state.IsVendor || isEditFlag ? true : false}
+                                // disabled={this.state.IsVendor || isEditFlag ? true : false}
                               />
                             </Col>
-                          )}
+                          {/* )} */}
 
                         </Row>
 

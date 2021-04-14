@@ -1051,7 +1051,7 @@ class AddRMImport extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {!this.state.IsVendor && (
+                          {/* {!this.state.IsVendor && ( */}
                             <Col md="4">
                               <Field
                                 label="Plant"
@@ -1068,9 +1068,10 @@ class AddRMImport extends Component {
                                 mendatory={true}
                                 required={true}
                                 className="multiselect-with-border"
-                                disabled={this.state.IsVendor || isEditFlag ? true : false} />
+                                // disabled={this.state.IsVendor || isEditFlag ? true : false} 
+                                />
                             </Col>
-                          )}
+                          {/* )} */}
                         </Row>
 
 
