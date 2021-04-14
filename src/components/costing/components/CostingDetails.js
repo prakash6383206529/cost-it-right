@@ -36,7 +36,6 @@ function CostingDetails(props) {
   const [part, setPart] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
-  const [isSOBEnabled, setEnableSOBField] = useState(true);
   const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
   const [isVBCSOBEnabled, setVBCEnableSOBField] = useState(true);
 

@@ -357,9 +357,9 @@ function TabDiscountOther(props) {
         "IsOpen": true,
         "IsPrimary": true,
         "Sequence": 0,
+        "NetDiscountsCost": values.TotalDiscount,
         "TotalCost": values.NetPOPriceINR,
         "NetDiscountsAndOtherCost": values.HundiOrDiscountValue,
-        "NetDiscountsCost": values.TotalDiscount,
         "NetOtherCost": values.AnyOtherCost,
         "OtherCostDetails": {
           "OtherCostDetailId": '',
