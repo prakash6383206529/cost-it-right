@@ -42,6 +42,7 @@ function TabDiscountOther(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
+  const ExchangeRateData = useSelector(state => state.costing.ExchangeRateData)
 
   useEffect(() => {
     if (props.activeTab !== '6') {
@@ -157,6 +158,10 @@ function TabDiscountOther(props) {
     const { DiscountTabData } = props;
     setValue('NetPOPriceINR', DiscountTabData && DiscountTabData.NetPOPriceINR)
     setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
+
+    if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
+      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && DiscountTabData.NetPOPriceINR / ExchangeRateData.CurrencyExchangeRate), 2))
+    }
   }, [props]);
 
   /**
@@ -234,6 +239,18 @@ function TabDiscountOther(props) {
    */
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
+    if (Object.keys(currency).length > 0) {
+      setTimeout(() => {
+        dispatch(getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
+          if (res && res.data && res.data.Result) {
+            let Data = res.data.Data;
+            const NetPOPriceINR = getValues('NetPOPriceINR');
+            setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+            setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+          }
+        }))
+      }, 500)
+    }
   }
 
   /**
@@ -521,7 +538,7 @@ function TabDiscountOther(props) {
                   </Row>
 
                   <Row className="mx-0">
-                    <Col md="3">
+                    <Col md="2">
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
@@ -541,7 +558,7 @@ function TabDiscountOther(props) {
                     </Col>
                     {IsCurrencyChange && (
                       <>
-                        <Col md="3">
+                        <Col md="2">
                           <div className="form-group">
                             <label>Effective Date</label>
                             <div className="inputbox date-section">
@@ -564,7 +581,7 @@ function TabDiscountOther(props) {
                             </div>
                           </div>
                         </Col>
-                        <Col md="3">
+                        <Col md="4">
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
@@ -581,7 +598,7 @@ function TabDiscountOther(props) {
                             disabled={CostingViewMode || effectiveDate === '' ? true : false}
                           />
                         </Col>
-                        <Col md="3">
+                        <Col md="4">
                           <TextFieldHookForm
                             label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                             name={'NetPOPriceOtherCurrency'}
@@ -640,7 +657,7 @@ function TabDiscountOther(props) {
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           //onSubmit={this.handleSubmit}
-                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                          accept="*"
                           initialFiles={initialFiles}
                           maxFiles={4}
                           maxSizeBytes={2000000}

@@ -108,7 +108,7 @@ class AddBOPCategory extends Component {
                                         <div className="text-right ">
                                             <button
                                                 type={"button"}
-                                                className="reset mr15 cancel-btn"
+                                                className=" mr15 cancel-btn"
                                                 onClick={this.cancel}
                                             >
                                                 <div className={"cross-icon"}>
@@ -123,7 +123,7 @@ class AddBOPCategory extends Component {
 
                                             <button
                                                 type="submit"
-                                                className="submit-button save-btn"
+                                                className="user-btn save-btn"
                                             >
                                                 <div className={"check-icon"}>
                                                     <img

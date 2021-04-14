@@ -574,7 +574,7 @@ class MachineRateListing extends Component {
                                             type="button"
                                             //disabled={pristine || submitting}
                                             onClick={this.filterList}
-                                            className="apply"
+                                            className="user-btn"
                                         >
                                             {'Apply'}
                                         </button>

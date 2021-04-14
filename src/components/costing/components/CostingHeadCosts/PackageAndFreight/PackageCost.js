@@ -9,7 +9,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 
 function PackageCost(props) {
 
-  const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(props.data && props.data.length > 0 ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editIndex, setEditIndex] = useState('')
@@ -110,7 +110,7 @@ function PackageCost(props) {
                   <thead>
                     <tr>
                       <th>{`Packaging Description`}</th>
-                      <th>{`Packaging Cost`}</th>
+                      <th>{`Packaging Type`}</th>
                       <th>{`Cost`}</th>
                       <th style={{ width: "130px" }} className="costing-border-right"  >{`Action`}</th>
                     </tr>

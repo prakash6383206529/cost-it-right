@@ -1,28 +1,39 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function BOPCost(props) {
-
-  const { register, handleSubmit, control, errors } = useForm({
-    mode: 'onBlur',
+  const { item, data } = props;
+  const { register, handleSubmit, control, errors, setValue, getValues } = useForm({
+    mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues: {
+      BOPHandlingPercentage: item.CostingPartDetails.BOPHandlingPercentage,
+      BOPHandlingCharges: item.CostingPartDetails.BOPHandlingCharges,
+    }
   });
 
-  const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(data)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [Ids, setIds] = useState([])
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+  const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
+
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const CostingViewMode = useContext(ViewCostingContext);
+
+  const BOPHandlingPercentage = getValues('BOPHandlingPercentage')
+  const BOPHandlingCharges = getValues('BOPHandlingCharges')
 
   useEffect(() => {
     setTimeout(() => {
@@ -133,15 +144,71 @@ function BOPCost(props) {
     }
   }
 
+  /**
+  * @method onPressApplyBOPCharges
+  * @description ON PRESS APPLY BOP HANDLING CHARGES
+  */
+  const onPressApplyBOPCharges = () => {
+    setIsApplyBOPHandlingCharges(!IsApplyBOPHandlingCharges)
+  }
+
+  /**
+  * @method handleBOPPercentageChange
+  * @description HANDLE BOP % CHANGE
+  */
+  const handleBOPPercentageChange = (value) => {
+    if (!isNaN(value)) {
+
+      if (value > 100) {
+        setValue('BOPHandlingPercentage', 0)
+        setValue('BOPHandlingCharges', 0)
+        return false;
+      }
+
+      let TotalBOPCost = gridData && gridData.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.NetBoughtOutPartCost)
+      }, 0)
+
+      setValue('BOPHandlingCharges', checkForDecimalAndNull(TotalBOPCost * calculatePercentage(value), initialConfiguration.NoOfDecimalForPrice))
+
+      setTimeout(() => {
+        const Params = {
+          BOMLevel: item.BOMLevel,
+          PartNumber: item.PartNumber,
+        }
+
+        const BOPHandlingFields = {
+          IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
+          BOPHandlingPercentage: getValues('BOPHandlingPercentage'),
+          BOPHandlingCharges: getValues('BOPHandlingCharges'),
+        }
+        props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+      }, 200)
+
+    } else {
+      setValue('BOPHandlingCharges', 0)
+      setValue('BOPHandlingPercentage', 0)
+      toastr.warning('Please enter valid number.')
+    }
+  }
+
+  useEffect(() => {
+    if (IsApplyBOPHandlingCharges) {
+      handleBOPPercentageChange(getValues('BOPHandlingPercentage'))
+    }
+  }, [item.CostingPartDetails.TotalBoughtOutPartCost])
+
+  useEffect(() => {
+
+  }, [gridData]);
+
   const bopGridFields = 'bopGridFields';
 
   /**
-* @method onSubmit
-* @description Used to Submit the form
-*/
-  const onSubmit = (values) => {
-
-  }
+  * @method onSubmit
+  * @description Used to Submit the form
+  */
+  const onSubmit = (values) => { }
 
   /**
   * @method render
@@ -255,6 +322,78 @@ function BOPCost(props) {
                   </tbody>
                 </Table>
               </Col>
+            </Row>
+            <Row className="m-0">
+              <Col md="3" className="px-30 py-4 ">
+                <label
+                  className={`custom-checkbox mb-0`}
+                  onChange={onPressApplyBOPCharges}
+                >
+                  Apply BOP Handling Charges
+                    <input
+                    type="checkbox"
+                    checked={IsApplyBOPHandlingCharges}
+                    disabled={CostingViewMode ? true : false}
+                  />
+                  <span
+                    className=" before-box"
+                    checked={IsApplyBOPHandlingCharges}
+                    onChange={onPressApplyBOPCharges}
+                  />
+                </label>
+              </Col>
+
+              {IsApplyBOPHandlingCharges &&
+                <Col md="3" >
+                  <TextFieldHookForm
+                    label="Percentage"
+                    name={"BOPHandlingPercentage"}
+                    Controller={Controller}
+                    control={control}
+                    register={register({ required: true, })}
+                    mandatory={false}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.'
+                      },
+                      max: {
+                        value: 100,
+                        message: 'Percentage cannot be greater than 100'
+                      },
+                    }}
+                    handleChange={(e) => {
+                      e.preventDefault();
+                      handleBOPPercentageChange(e.target.value);
+                    }}
+                    defaultValue={""}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors.BOPHandlingPercentage}
+                    disabled={CostingViewMode ? true : false}
+                  />
+                </Col>}
+
+              {IsApplyBOPHandlingCharges &&
+                <Col md="3">
+                  <TextFieldHookForm
+                    label="Handling Charges"
+                    name={'BOPHandlingCharges'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    rules={{}}
+                    handleChange={() => { }}
+                    defaultValue={""}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.BOPHandlingCharges}
+                    disabled={true}
+                  />
+                </Col>}
+
             </Row>
           </form>
         </div>

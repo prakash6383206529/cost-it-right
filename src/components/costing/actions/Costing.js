@@ -51,6 +51,7 @@ import {
   GET_PART_COSTING_VENDOR_SELECT_LIST,
   GET_PART_SELECTLIST_BY_TECHNOLOGY,
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
+  SET_EXCHANGE_RATE_CURRENCY_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -120,24 +121,19 @@ export function getPartInfo(PartId, callback) {
   return (dispatch) => {
     if (PartId !== '') {
       dispatch({ type: API_REQUEST })
-      const request = axios.get(
-        `${API.getCostingPartDetails}/${PartId}`,
-        headers,
-      )
-      request
-        .then((response) => {
-          if (response.data.Result) {
-            dispatch({
-              type: GET_PART_INFO,
-              payload: response.data.Data,
-            })
-            callback(response)
-          }
-        })
-        .catch((error) => {
-          dispatch({ type: API_FAILURE })
-          apiErrors(error)
-        })
+      const request = axios.get(`${API.getCostingPartDetails}/${PartId}`, headers,)
+      request.then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_PART_INFO,
+            payload: response.data.Data,
+          })
+          callback(response)
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
     } else {
       dispatch({
         type: GET_PART_INFO,
@@ -154,18 +150,15 @@ export function getPartInfo(PartId, callback) {
 export function checkPartWithTechnology(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.checkPartWithTechnology, data, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-
-        callback(error.response)
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -176,16 +169,14 @@ export function checkPartWithTechnology(data, callback) {
 export function createZBCCosting(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.createZBCCosting, data, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -196,16 +187,14 @@ export function createZBCCosting(data, callback) {
 export function createVBCCosting(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.createVBCCosting, data, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -217,16 +206,14 @@ export function getZBCExistingCosting(PartId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getZBCExistingCosting}/${PartId}`, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        //apiErrors(error);
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      //apiErrors(error);
+    })
   }
 }
 
@@ -238,16 +225,14 @@ export function getVBCExistingCosting(PartId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getVBCExistingCosting}/${PartId}`, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        //apiErrors(error);
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      //apiErrors(error);
+    })
   }
 }
 
@@ -422,21 +407,16 @@ export function setDiscountCost(Data, callback) {
 export function getZBCDetailByPlantId(PlantId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getZBCDetailByPlantId}/${PlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getZBCDetailByPlantId}/${PlantId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -447,16 +427,12 @@ export function getZBCDetailByPlantId(PlantId, callback) {
 export function getVBCDetailByVendorId(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
+    const request = axios.get(`${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    })
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         callback(error)
@@ -1131,7 +1107,10 @@ export function getPaymentTermsDataByHeads(data, callback) {
  */
 export function getPackageFreightTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_PACKAGE_AND_FREIGHT_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
@@ -1258,7 +1237,10 @@ export function getRateByCapacityCriteria(data, callback) {
  */
 export function getToolTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_TOOL_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
@@ -1343,6 +1325,10 @@ export function getExchangeRateByCurrency(Currency, EffectiveDate, callback) {
     const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}/${EffectiveDate}`, headers);
     request.then((response) => {
       if (response.data.Result) {
+        dispatch({
+          type: SET_EXCHANGE_RATE_CURRENCY_DATA,
+          payload: response.data.Data,
+        });
         callback(response);
       }
     }).catch((error) => {

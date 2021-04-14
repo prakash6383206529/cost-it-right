@@ -279,7 +279,7 @@ class AddMachineRate extends Component {
     if (label === 'technology') {
       technologySelectList && technologySelectList.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        temp.push({ label: item.Text, value: item.Value })
         return null;
       });
       return temp;
@@ -976,9 +976,9 @@ class AddMachineRate extends Component {
                             selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                             options={this.renderListing('technology')}
                             selectionChanged={this.handleTechnology}
-                            optionValue={option => option.Value}
-                            optionLabel={option => option.Text}
-                            component={renderMultiSelectField}
+                            // optionValue={option => option.Value}
+                            // optionLabel={option => option.Text}
+                            component={searchableSelect}
                             mendatory={true}
                             className="multiselect-with-border"
                             disabled={this.state.isViewFlag ? true : false}
@@ -1320,7 +1320,7 @@ class AddMachineRate extends Component {
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               //onSubmit={this.handleSubmit}
-                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}
@@ -1375,13 +1375,13 @@ class AddMachineRate extends Component {
                             <>
                               <button
                                 type={'button'}
-                                className="reset mr15 cancel-btn"
+                                className=" mr15 cancel-btn"
                                 onClick={this.cancel} >
                                 <div className={'cross-icon'}><img src={require('../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
                               </button>
                               <button
                                 type="submit"
-                                className="submit-button mr5 save-btn" >
+                                className="user-btn mr5 save-btn" >
                                 <div className={'check-icon'}><img src={require('../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                                 {isEditFlag ? 'Update' : 'Save'}
                               </button>

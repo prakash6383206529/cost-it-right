@@ -37,7 +37,7 @@ function TabToolCost(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = ToolTabData && ToolTabData !== undefined && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
+    let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
     }
@@ -228,7 +228,7 @@ function TabToolCost(props) {
                                     {item.PartName}
                                   </span>
                                 </td>
-                                <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NumberOfDecimalForTransaction)}</td>
+                                <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                               </tr>
                               <tr>
                                 <td colSpan={2} className="cr-innerwrap-td pb-3">

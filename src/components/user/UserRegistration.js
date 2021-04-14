@@ -5,8 +5,8 @@ import { toastr } from "react-redux-toastr";
 import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, maxLength25, maxLength11, maxLength12, required, email,
-  minLength7, maxLength70, alphabetsOnlyForName, number, maxLength18, maxLength10, maxLength6, minLength10, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
+  minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
+  maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
 import {
   renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
@@ -14,7 +14,7 @@ import {
 } from "../layout/FormInputs";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
-  updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI, getAllLevelAPI,
+  updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
   getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
   setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
 } from "../../actions/auth/AuthActions";
@@ -762,6 +762,12 @@ class UserRegistration extends Component {
 
     }
   }
+  handleKeyDown = function (e, cb) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      cb();
+    }
+  };
 
   render() {
     const { handleSubmit, initialConfiguration, loading } = this.props;
@@ -784,7 +790,7 @@ class UserRegistration extends Component {
                     <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
                   </div>}
                 </div>
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser">
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser" onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}>
                   <div className="add-min-height">
                     <HeaderTitle
                       title={'Personal Details:'}
@@ -1196,7 +1202,7 @@ class UserRegistration extends Component {
                         onClick={this.cancel}
                         type="submit"
                         value="CANCEL"
-                        className="reset mr15 cancel-btn">
+                        className="mr15 cancel-btn">
                         <div className={'cross-icon'}><img alt={''} src={require('../../assests/images/times.png')}></img></div>
                       CANCEL
                       </button>
@@ -1204,7 +1210,7 @@ class UserRegistration extends Component {
                       <button
                         type="submit"
                         disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
+                        className="user-btn save-btn"><div className={'check-icon'}><img alt={''} src={require('../../assests/images/check.png')}></img></div>
                         {this.state.isEditFlag ? 'UPDATE' : 'SAVE'}
                       </button>
                     </div>

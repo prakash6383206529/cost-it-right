@@ -90,7 +90,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo-login.png')} alt='Cost It Rights' />
+                  <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo.png')} alt='Cost It Rights' />
                   </a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
@@ -164,10 +164,10 @@ class Login extends Component {
                       target='_blank'>
                       Forgot Password?
                         </Link> */}
-                    <div className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</div>
+                    <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
                   </div>
                   {this.state.flag && (
-                    <div className="text-help">Please contact your IT Administrator</div>
+                    <div className="text-help mb-2">Please contact your IT Administrator</div>
                   )
                   }
                 </form>

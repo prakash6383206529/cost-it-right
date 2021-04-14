@@ -1567,7 +1567,7 @@ export const CostingBulkUpload = [
     { label: "L3Total", value: "L3Total" }
 ]
 
-export const CostingBulkUploadTempData = [
+export const CostingBulkUloadTempData = [
     {
         "SlNo": "0",
         "Class": "\u0000",

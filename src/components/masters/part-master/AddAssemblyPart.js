@@ -170,7 +170,7 @@ class AddAssemblyPart extends Component {
         PartType: childData && childData.PartType ? childData.PartType : '',
         PartTypeId: childData && childData.PartTypeId ? childData.PartTypeId : '',
         PartNumber: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
-        Position: { "x": posX, "y": 250 },
+        Position: { "x": posX, "y": 50 },
         Outputs: [],
         InnerContent: childData && childData.InnerContent !== undefined ? childData.InnerContent : '',
         PartName: childData && childData.PartNumber !== undefined ? childData.PartNumber.label : '',
@@ -430,7 +430,8 @@ class AddAssemblyPart extends Component {
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let childPartArray = [];
 
-    if (BOMViewerData && (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
+    // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
+    if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       toastr.warning('Need to add Child parts');
       return false;
     }
@@ -595,7 +596,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartName"}
                             type="text"
                             placeholder={""}
-                            validate={[required, specialName, checkWhiteSpaces]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                             component={renderText}
                             required={true}
                             className=""
@@ -766,7 +767,7 @@ class AddAssemblyPart extends Component {
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               //onSubmit={this.handleSubmit}
-                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
                               maxSizeBytes={2000000}
@@ -844,7 +845,7 @@ class AddAssemblyPart extends Component {
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button
                           type={"button"}
-                          className="reset mr15 cancel-btn"
+                          className=" mr15 cancel-btn"
                           onClick={this.cancel}
                         >
                           <div className={"cross-icon"}>
@@ -857,7 +858,7 @@ class AddAssemblyPart extends Component {
                         </button>
                         <button
                           type="submit"
-                          className="submit-button mr5 save-btn"
+                          className="user-btn mr5 save-btn"
                         >
                           <div className={"check-icon"}>
                             <img

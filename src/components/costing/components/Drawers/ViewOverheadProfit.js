@@ -5,6 +5,8 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { checkForDecimalAndNull } from '../../../../helper'
+import { useSelector } from 'react-redux'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType } = props
 
@@ -17,6 +19,7 @@ function ViewOverheadProfit(props) {
 
   const [viewOverheadData, setViewOverheadData] = useState({})
   const [viewProfitData, setViewProfitData] = useState({})
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     setViewOverheadData(overheadData)
@@ -40,14 +43,14 @@ function ViewOverheadProfit(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper drawer-1500px"}>
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"Overhead & Profit"}</h3>
+                  <h3>{"View Overhead & Profit Cost:"}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -100,19 +103,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{`Fixed`}</td>
                               <td>
-                                {viewOverheadData.OverheadFixedPercentage
-                                  ? viewOverheadData.OverheadFixedPercentage
-                                  : "-"}
+                                {viewOverheadData.OverheadFixedPercentage ? viewOverheadData.OverheadFixedPercentage : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadFixedCost
-                                  ? viewOverheadData.OverheadFixedCost
-                                  : "-"}
+                                {viewOverheadData.OverheadFixedCost ? viewOverheadData.OverheadFixedCost : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadFixedTotalCost
-                                  ? viewOverheadData.OverheadFixedTotalCost
-                                  : "-"}
+                                {viewOverheadData.OverheadFixedTotalCost ? viewOverheadData.OverheadFixedTotalCost : "-"}
                               </td>
                             </tr>
                           )}
@@ -120,19 +117,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{`RM`}</td>
                               <td>
-                                {viewOverheadData.OverheadRMPercentage
-                                  ? viewOverheadData.OverheadRMPercentage
-                                  : "-"}
+                                {viewOverheadData.OverheadRMPercentage ? viewOverheadData.OverheadRMPercentage : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadRMCost
-                                  ? viewOverheadData.OverheadRMCost
-                                  : "-"}
+                                {viewOverheadData.OverheadRMCost ? viewOverheadData.OverheadRMCost : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadRMTotalCost
-                                  ? viewOverheadData.OverheadRMTotalCost
-                                  : "-"}
+                                {viewOverheadData.OverheadRMTotalCost ? viewOverheadData.OverheadRMTotalCost : "-"}
                               </td>
                             </tr>
                           )}
@@ -140,19 +131,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{`BOP`}</td>
                               <td>
-                                {viewOverheadData.OverheadBOPPercentage
-                                  ? viewOverheadData.OverheadBOPPercentage
-                                  : "-"}
+                                {viewOverheadData.OverheadBOPPercentage ? viewOverheadData.OverheadBOPPercentage : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadBOPCost
-                                  ? viewOverheadData.OverheadBOPCost
-                                  : "-"}
+                                {viewOverheadData.OverheadBOPCost ? viewOverheadData.OverheadBOPCost : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadBOPTotalCost
-                                  ? viewOverheadData.OverheadBOPTotalCost
-                                  : "-"}
+                                {viewOverheadData.OverheadBOPTotalCost ? viewOverheadData.OverheadBOPTotalCost : "-"}
                               </td>
                             </tr>
                           )}
@@ -160,19 +145,13 @@ function ViewOverheadProfit(props) {
                             <tr>
                               <td>{`CC`}</td>
                               <td>
-                                {viewOverheadData.OverheadCCPercentage
-                                  ? viewOverheadData.OverheadCCPercentage
-                                  : "-"}
+                                {viewOverheadData.OverheadCCPercentage ? viewOverheadData.OverheadCCPercentage : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadCCCost
-                                  ? viewOverheadData.OverheadCCCost
-                                  : "-"}
+                                {viewOverheadData.OverheadCCCost ? viewOverheadData.OverheadCCCost : "-"}
                               </td>
                               <td>
-                                {viewOverheadData.OverheadCCTotalCost
-                                  ? viewOverheadData.OverheadCCTotalCost
-                                  : "-"}
+                                {viewOverheadData.OverheadCCTotalCost ? viewOverheadData.OverheadCCTotalCost : "-"}
                               </td>
                             </tr>
                           )}
@@ -217,19 +196,13 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{`Fixed`}</td>
                                 <td>
-                                  {viewProfitData.ProfitFixedPercentage
-                                    ? viewProfitData.ProfitFixedPercentage
-                                    : "-"}
+                                  {viewProfitData.ProfitFixedPercentage ? viewProfitData.ProfitFixedPercentage : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitFixedCost
-                                    ? viewProfitData.ProfitFixedCost
-                                    : "-"}
+                                  {viewProfitData.ProfitFixedCost ? viewProfitData.ProfitFixedCost : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitFixedTotalCost
-                                    ? viewProfitData.ProfitFixedTotalCost
-                                    : "-"}
+                                  {viewProfitData.ProfitFixedTotalCost ? viewProfitData.ProfitFixedTotalCost : "-"}
                                 </td>
                               </tr>
                             )}
@@ -237,19 +210,13 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{`RM`}</td>
                                 <td>
-                                  {viewProfitData.ProfitRMPercentage
-                                    ? viewProfitData.ProfitRMPercentage
-                                    : "-"}
+                                  {viewProfitData.ProfitRMPercentage ? viewProfitData.ProfitRMPercentage : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitRMCost
-                                    ? viewProfitData.ProfitRMCost
-                                    : "-"}
+                                  {viewProfitData.ProfitRMCost ? viewProfitData.ProfitRMCost : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitRMTotalCost
-                                    ? viewProfitData.ProfitRMTotalCost
-                                    : "-"}
+                                  {viewProfitData.ProfitRMTotalCost ? viewProfitData.ProfitRMTotalCost : "-"}
                                 </td>
                               </tr>
                             )}
@@ -257,19 +224,13 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{`BOP`}</td>
                                 <td>
-                                  {viewProfitData.ProfitBOPPercentage
-                                    ? viewProfitData.ProfitBOPPercentage
-                                    : "-"}
+                                  {viewProfitData.ProfitBOPPercentage ? viewProfitData.ProfitBOPPercentage : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitBOPCost
-                                    ? viewProfitData.ProfitBOPCost
-                                    : "-"}
+                                  {viewProfitData.ProfitBOPCost ? viewProfitData.ProfitBOPCost : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitBOPTotalCost
-                                    ? viewProfitData.ProfitBOPTotalCost
-                                    : "-"}
+                                  {viewProfitData.ProfitBOPTotalCost ? viewProfitData.ProfitBOPTotalCost : "-"}
                                 </td>
                               </tr>
                             )}
@@ -277,14 +238,10 @@ function ViewOverheadProfit(props) {
                               <tr>
                                 <td>{`CC`}</td>
                                 <td>
-                                  {viewProfitData.ProfitCCPercentage
-                                    ? viewProfitData.ProfitCCPercentage
-                                    : "-"}
+                                  {viewProfitData.ProfitCCPercentage ? viewProfitData.ProfitCCPercentage : "-"}
                                 </td>
                                 <td>
-                                  {viewProfitData.ProfitCCCost
-                                    ? viewProfitData.ProfitCCCost
-                                    : "-"}
+                                  {viewProfitData.ProfitCCCost ? viewProfitData.ProfitCCCost : "-"}
                                 </td>
                                 <td>
                                   {viewProfitData.ProfitCCTotalCost

@@ -372,14 +372,14 @@ class Level extends Component {
                           onClick={this.cancel}
                           type="button"
                           value="CANCEL"
-                          className="reset mr15 cancel-btn">
+                          className="mr15 cancel-btn">
                           <div className={'cross-icon'}><img src={require('../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> CANCEL</button>
 
 
                         <button
                           type="submit"
                           disabled={isSubmitted ? true : false}
-                          className="btn-primary save-btn"
+                          className="user-btn save-btn"
                         >	<div className={'check-icon'}><img src={require('../../assests/images/check.png')} alt='check-icon.jpg' />
                           </div>
                           {this.state.isEditFlag ? 'Update' : 'Save'}

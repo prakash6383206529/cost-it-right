@@ -576,7 +576,7 @@ class RMImportListing extends Component {
                       type="button"
                       //disabled={pristine || submitting}
                       onClick={this.filterList}
-                      className="apply"
+                      className="user-btn"
                     >
                       {"Apply"}
                     </button>
@@ -640,7 +640,8 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" dataFormat={this.costFormatter} >{this.renderScrapRate()}</TableHeaderColumn>
               <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-              <TableHeaderColumn dataAlign="right" width={100} dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+              {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
+              {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
             </BootstrapTable>
           </Col>
         </Row>

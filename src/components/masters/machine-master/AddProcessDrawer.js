@@ -40,11 +40,11 @@ class AddProcessDrawer extends Component {
     const { isEditFlag, ID } = this.props
 
     if (isEditFlag) {
-      this.props.getProcessData(ID, (res) => {
+      this.props.getProcessData(ID, res => {
         let Data = res.data.Data
 
-        let PlantArray = Data && Data.Plants.map((el) => ({ Text: el.PlantName, Value: el.PlantId }))
-        let MachineArray = Data && Data.Machines.map((el) => ({ Text: el.Machine, Value: el.MachineId }))
+        let PlantArray = Data && Data.Plants.length > 0 ? Data.Plants.map((el) => ({ Text: el.PlantName, Value: el.PlantId })) : []
+        let MachineArray = Data && Data.Machines.length > 0 ? Data.Machines.map((el) => ({ Text: el.Machine, Value: el.MachineId })) : []
 
         this.setState({
           ProcessId: Data.ProcessId,
@@ -193,7 +193,7 @@ class AddProcessDrawer extends Component {
     const { handleSubmit, isEditFlag, isMachineShow } = this.props
     return (
       <div>
-        <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+        <Drawer anchor={this.props.anchor} open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
@@ -217,7 +217,7 @@ class AddProcessDrawer extends Component {
                       name={'ProcessName'}
                       type="text"
                       placeholder={'Enter'}
-                      validate={[required, , acceptAllExceptSingleSpecialCharacter]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter]}
                       component={renderText}
                       onBlur={this.checkProcessCode}
                       required={true}
@@ -284,7 +284,7 @@ class AddProcessDrawer extends Component {
                   <div className="col-sm-12 text-right px-3">
                     <button
                       type={'button'}
-                      className="reset mr15 cancel-btn"
+                      className="mr15 cancel-btn"
                       onClick={this.cancel}
                     >
                       <div className={'cross-icon'}>
@@ -297,7 +297,7 @@ class AddProcessDrawer extends Component {
                     </button>
                     <button
                       type="submit"
-                      className="submit-button save-btn"
+                      className="user-btn save-btn"
                     >
                       <div className={'check-icon'}>
                         <img
@@ -327,7 +327,6 @@ function mapStateToProps({ comman, machine, process }) {
   const { plantSelectList } = comman
   const { machineSelectList } = machine
   const { processUnitData } = process
-
   let initialValues = {}
 
   if (processUnitData && processUnitData !== undefined) {

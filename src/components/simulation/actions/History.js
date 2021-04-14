@@ -21,12 +21,12 @@ export function getSimulationHistory(callback) {
         data: {
             DataList: [
                 {
-                    TokenNumber: 1,
+                    TokenNumber: 1234,
                     CostingStatus: 'PendingForApproval',
                     DisplayCostingStatus: 'Pending For Approval',
                     CostingHead: 'ZBC',
                     Technology: 'Sheet Metal',
-                    VendorName: 'Raghav IT',
+                    VendorName: '-',
                     ImpactCosting: 5,
                     ImpactParts: 2,
                     SimulatedBy: 'Ram Sharma',
@@ -35,10 +35,10 @@ export function getSimulationHistory(callback) {
                     ApprovedOn: '20/05/2020 12:00PM'
                 },
                 {
-                    TokenNumber: 1,
+                    TokenNumber: 1567,
                     CostingStatus: 'Approved',
                     DisplayCostingStatus: 'Approved',
-                    CostingHead: 'ZBC',
+                    CostingHead: 'VBC',
                     Technology: 'Plastic',
                     VendorName: 'Vivo-V1',
                     ImpactCosting: 6,
@@ -49,10 +49,10 @@ export function getSimulationHistory(callback) {
                     ApprovedOn: '20/05/2020 12:00PM'
                 },
                 {
-                    TokenNumber: 1,
+                    TokenNumber: 1234,
                     CostingStatus: 'History',
                     DisplayCostingStatus: 'History',
-                    CostingHead: 'ZBC',
+                    CostingHead: 'VBC',
                     Technology: 'Forging',
                     VendorName: 'AP-Automobile',
                     ImpactCosting: 5,

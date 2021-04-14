@@ -1,12 +1,12 @@
 import React, { Fragment, useEffect, useState } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import { Row, Col, Table } from 'reactstrap'
+import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { SearchableSelectHookForm } from '../../layout/HookFormInputs'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
-import { setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId, storePartNumber, getSingleCostingDetails } from '../actions/Costing'
+import {
+  setCostingViewData, setCostingApprovalData, createZBCCosting, createVBCCosting, getZBCCostingByCostingId,
+  storePartNumber, getSingleCostingDetails
+} from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
-import $ from 'jquery'
 import ViewConversionCost from './Drawers/ViewConversionCost'
 import ViewRM from './Drawers/ViewRM'
 import ViewOverheadProfit from './Drawers/ViewOverheadProfit'
@@ -16,21 +16,17 @@ import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
 import { checkForDecimalAndNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { DRAFT, FILE_URL, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants'
-import CostingDetailStepTwo from './CostingDetailStepTwo'
-import CostingDetails from './CostingDetails'
-import { reactLocalStorage } from 'reactjs-localstorage'
-
+import { DRAFT, FILE_URL, REJECTED, VBC, ZBC } from '../../../config/constants'
 
 const CostingSummaryTable = (props) => {
   const { viewMode, showDetail, technologyId, costingID } = props
 
-  const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const dispatch = useDispatch()
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editObject, setEditObject] = useState({})
+
   /* Constant  for drawer toggle*/
   const [isViewBOP, setViewBOP] = useState(false)
   const [isViewConversionCost, setIsViewConversionCost] = useState(false)
@@ -39,6 +35,7 @@ const CostingSummaryTable = (props) => {
   const [isViewOverheadProfit, setIsViewOverheadProfit] = useState(false)
   const [isViewPackagingFreight, setIsViewPackagingFreight] = useState(false)
   const [showApproval, setShowApproval] = useState(false)
+
   /*Constants for sending data in drawer*/
   const [viewBOPData, setViewBOPData] = useState([])
   const [viewConversionCostData, setViewConversionCostData] = useState([])
@@ -49,6 +46,7 @@ const CostingSummaryTable = (props) => {
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
+  console.log(multipleCostings, "MULTIPLE COSTING");
   const [flag, setFlag] = useState(false)
   const [isAttachment, setAttachment] = useState(false)
 
@@ -60,19 +58,19 @@ const CostingSummaryTable = (props) => {
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
-
-
   const partInfo = useSelector((state) => state.costing.partInfo)
-
-
   const partNumber = useSelector(state => state.costing.partNo);
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
+
+  useEffect(() => {
+
+  }, [multipleCostings])
   /**
    * @method ViewBOP
    * @description SET VIEW BOP DATA FOR DRAWER
    */
   const viewBop = (index) => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
     setViewBOP(true)
     setIsViewConversionCost(false)
     if (index != -1) {
@@ -85,7 +83,6 @@ const CostingSummaryTable = (props) => {
    * @description SET COVERSION DATA FOR DRAWER
    */
   const viewConversionCost = (index) => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
     setIsViewConversionCost(true)
     setViewBOP(false)
     if (index != -1) {
@@ -98,10 +95,7 @@ const CostingSummaryTable = (props) => {
    * @description SET RM DATA FOR DRAWER
    */
   const viewRM = (index) => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
-
     let data = viewCostingData[index].netRMCostView
-
     setIsViewRM(true)
     setIndex(index)
     setViewRMData(data)
@@ -111,8 +105,6 @@ const CostingSummaryTable = (props) => {
    * @description SET OVERHEAD & PROFIT DATA FOR DRAWER
    */
   const overHeadProfit = (index) => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
-
     let overHeadData = viewCostingData[index].netOverheadCostView
     let profitData = viewCostingData[index].netProfitCostView
     let rejectData = viewCostingData[index].netRejectionCostView
@@ -128,8 +120,6 @@ const CostingSummaryTable = (props) => {
    * @description SET PACKAGING AND FRIEGHT DATA FOR DRAWER
    */
   const viewPackagingAndFrieghtData = (index) => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
-
     let packagingData = viewCostingData[index].netPackagingCostView
     let freightData = viewCostingData[index].netFreightCostView
 
@@ -144,8 +134,6 @@ const CostingSummaryTable = (props) => {
    * @description SET TOOL DATA FOR DRAWER
    */
   const viewToolCostData = (index) => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
-
     let data = viewCostingData[index].netToolCostView
     setIsViewToolCost(true)
     setViewToolCost(data)
@@ -279,30 +267,6 @@ const CostingSummaryTable = (props) => {
     }
   }
 
-  /**
-  * @method backToFirstStep
-  * @description used to Reset form
-  */
-  const backToFirstStep = () => {
-    setStepOne(true);
-    setStepTwo(false);
-
-    // setZBCPlantGrid([])
-    // nextToggle()
-    // dispatch(getPartInfo(partInfo.PartNumber, (res) => {
-    //   let Data = res.data.Data;
-    //   // setValue('PartName', Data.PartName)
-    //   // setValue("Description", Data.Description)
-    //   // setValue("ECNNumber", Data.ECNNumber)
-    //   // setValue("DrawingNumber", Data.DrawingNumber)
-    //   // setValue("RevisionNumber", Data.RevisionNumber)
-    //   // setValue("ShareOfBusiness", Data.Price)
-    //   // setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
-    // }))
-    // dispatch(getZBCCostingByCostingId('', (res) => { }))
-
-  }
-
 
   /**
    * @method addComparisonDrawerToggle
@@ -310,7 +274,6 @@ const CostingSummaryTable = (props) => {
    */
 
   const addComparisonDrawerToggle = () => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
     setaddComparisonToggle(true)
     setIsEditFlag(false)
     setEditObject({})
@@ -321,6 +284,7 @@ const CostingSummaryTable = (props) => {
    */
   const closeAddComparisonDrawer = (e = '') => {
     setaddComparisonToggle(false)
+    setMultipleCostings([])
   }
 
   /**
@@ -341,6 +305,9 @@ const CostingSummaryTable = (props) => {
    */
   const closeShowApproval = (e = '', type) => {
     setShowApproval(false)
+
+    setMultipleCostings([])
+
     if (type === 'Submit') {
       dispatch(storePartNumber(''))
       props.resetData()
@@ -355,6 +322,7 @@ const CostingSummaryTable = (props) => {
   }
 
   const handleMultipleCostings = (checked, index) => {
+    //console.log(multipleCostings.length === 0 ? false : (multipleCostings.includes(data.costingName,) ? true : false), "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
     let temp = multipleCostings
 
     if (checked) {
@@ -374,8 +342,23 @@ const CostingSummaryTable = (props) => {
     // setViewBOPData(data)
   }
 
+  const moduleHandler = (id) => {
+    let temp = multipleCostings
+    if (temp.includes(id)) {
+      const ind = multipleCostings.findIndex((data) => data === id)
+      if (ind !== -1) {
+        temp.splice(ind, 1)
+      }
+    } else {
+      temp.push(id)
+    }
+    setMultipleCostings(temp)
+    setFlag(!flag)
+  }
+
+
+
   const sendForApprovalData = (costingIds) => {
-    $('html, body').animate({ scrollTop: 0 }, 'slow')
 
     let temp = viewApprovalData
     costingIds &&
@@ -396,7 +379,6 @@ const CostingSummaryTable = (props) => {
           obj.vendorPlantCode = viewCostingData[index].vendorPlantCode
           obj.costingName = viewCostingData[index].CostingNumber
           obj.costingId = viewCostingData[index].costingId
-          // obj.oldPrice = viewCostingData[index].oldPrice;
           obj.oldPrice = viewCostingData[index].oldPoPrice
           obj.revisedPrice = viewCostingData[index].poPrice
           obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
@@ -407,7 +389,6 @@ const CostingSummaryTable = (props) => {
           obj.reason = ''
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
-
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
@@ -416,9 +397,7 @@ const CostingSummaryTable = (props) => {
 
   const checkCostings = () => {
     if (multipleCostings.length === 0) {
-      toastr.warning(
-        'Please select at least one costing for sendig for approval',
-      )
+      toastr.warning('Please select at least one costing to send for approval')
       return
     } else {
       sendForApprovalData(multipleCostings)
@@ -467,62 +446,83 @@ const CostingSummaryTable = (props) => {
               //   </button>
               // </Col>
             }
-            {!viewMode && (
-              <Col md="8" className="text-right">
-                <button class="user-btn mr-1 mb-2" onClick={() => checkCostings()}>
+
+            <Col md="8" className="text-right">
+              {!viewMode && (
+                <button class="user-btn mr-1 mb-2 approval-btn" onClick={() => checkCostings()}>
                   <img
                     class="mr-1"
                     src={require('../../../assests/images/send-for-approval.svg')}
                   ></img>{' '}
                   {'Send For Approval'}
                 </button>
-                <button
-                  type="button"
-                  className={'user-btn mb-2'}
-                  onClick={addComparisonDrawerToggle}
-                >
-                  <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
+              )}
+              <button
+                type="button"
+                className={'user-btn mb-2'}
+                onClick={addComparisonDrawerToggle}
+              >
+                <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
               Add To Comparison{' '}
-                </button>
-              </Col>
-            )}
+              </button>
+            </Col>
+
           </Row>
           <Row>
             <Col md="12">
               <div class="table-responsive">
                 <table class="table table-bordered costing-summary-table">
                   <thead>
-                    <tr>
+                    <tr className="main-row">
                       <th scope="col">ZBC v/s VBC</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
+
                           return (
                             <th scope="col">
-                              <div class="element w-50 d-inline-flex align-items-center">
+                              <div class="element w-60 d-inline-flex align-items-center">
                                 {
                                   data.status === DRAFT &&
-                                  <div class="custom-check d-inline-block">
-
-                                    <input
-                                      type="checkbox"
-                                      id={`check${index}`}
-                                      // disabled={(data.status === DRAFT || data.status === WAITING_FOR_APPROVAL) ? false : true}
-                                      onClick={(e) => {
-                                        handleMultipleCostings(e.target.checked, index)
-                                      }}
-                                      value={
-                                        multipleCostings.length === 0 ? false : multipleCostings.includes(data.costingName,) ? true : false} />
-
-                                    {
-                                      !viewMode && (<label for={`check${index}`}></label>) /*dont remove it is for check box*/
-                                    }
+                                  <div class="custom-check1 d-inline-block">
+                                    <label
+                                      className="custom-checkbox"
+                                      onChange={() => moduleHandler(data.costingId)}
+                                    >
+                                      {''}
+                                      <input
+                                        type="checkbox"
+                                        value={"All"}
+                                        // disabled={true}
+                                        checked={multipleCostings.includes(data.costingId)}
+                                      />
+                                      <span
+                                        className=" before-box"
+                                        checked={multipleCostings.includes(data.costingId)}
+                                        onChange={() => moduleHandler(data.costingId)}
+                                      />
+                                    </label>
                                   </div>
+                                  // <div class="custom-check d-inline-block">
+
+                                  //   <input
+                                  //     type="checkbox"
+                                  //     id={`check${index}`}
+                                  //     // disabled={(data.status === DRAFT || data.status === WAITING_FOR_APPROVAL) ? false : true}
+                                  //     onClick={(e) => {
+                                  //       handleMultipleCostings(e.target.checked, index)
+                                  //     }}
+                                  //     value={multipleCostings.length === 0 ? false : (multipleCostings.includes(data.costingName,) ? true : false)} />
+
+                                  //   {
+                                  //     !viewMode && (<label for={`check${index}`}></label>) /*dont remove it is for check box*/
+                                  //   }
+                                  // </div>
                                 }
                                 <span className="checkbox-text">{data.zbc === 0 ? `ZBC(${data.plantName})` : data.zbc === 1 ? `${data.vendorName} ${localStorage.IsVendorPlantConfigurable ? `(${data.vendorPlantName})` : ''}` : 'CBC'}{` (SOB: ${data.shareOfBusinessPercent}%)`}</span>
                               </div>
                               {!viewMode && (
-                                <div class="action w-50 d-inline-block text-right">
-                                  <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />
+                                <div class="action w-40 d-inline-block text-right">
+                                  {(data.status === DRAFT || data.status === REJECTED) && <button className="Edit mr-2 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
                                   <button className="Add-file mr-2 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />
                                   <button type="button" class="CancelIcon mb-0 align-middle" onClick={() => deleteCostingFromView(index)}></button>
                                 </div>
@@ -554,7 +554,7 @@ const CostingSummaryTable = (props) => {
                                   </a>
                                 }
                               </span>
-                              <span class="d-block">{data.poPrice}</span>
+                              <span class="d-block">{checkForDecimalAndNull(data.poPrice, initialConfiguration.NoOfDecimalForPrice)}</span>
                             </td>
                           )
                         })}
@@ -571,10 +571,10 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span class="d-block small-grey-text">{data.rm}</span>
                               <span class="d-block small-grey-text">
-                                {data.gWeight}
+                                {checkForDecimalAndNull(data.gWeight, initialConfiguration.NoOfDecimalForInputOutput)}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.fWeight}
+                                {checkForDecimalAndNull(data.fWeight, initialConfiguration.NoOfDecimalForInputOutput)}
                               </span>
                             </td>
                           )
@@ -586,7 +586,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.netRM}
+                              {checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
                                 class="float-right btn small-square-btn btn-link eye-btn"
@@ -604,7 +604,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.netBOP}
+                              {checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
                                 class="float-right btn small-square-btn btn-link eye-btn"
@@ -624,7 +624,7 @@ const CostingSummaryTable = (props) => {
                           Surface Treatment
                     </span>
                         <span class="d-block small-grey-text">
-                          Suportation Cost
+                          Transportation Cost
                     </span>
                       </td>
                       {viewCostingData &&
@@ -632,16 +632,16 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">
-                                {data.pCost}
+                                {checkForDecimalAndNull(data.pCost, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.oCost}
+                                {checkForDecimalAndNull(data.oCost, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.sTreatment}
+                                {checkForDecimalAndNull(data.sTreatment, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.tCost}
+                                {checkForDecimalAndNull(data.tCost, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                             </td>
                           )
@@ -653,7 +653,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.nConvCost}
+                              {checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
                                 class="float-right btn small-square-btn btn-link eye-btn"
@@ -697,7 +697,7 @@ const CostingSummaryTable = (props) => {
                                 </span>{' '}
                             &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.overheadOn.overheadValue}
+                                  {checkForDecimalAndNull(data.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
                               </div>
                               <div class="d-flex">
@@ -706,7 +706,7 @@ const CostingSummaryTable = (props) => {
                                 </span>{' '}
                             &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.profitOn.profitValue}
+                                  {checkForDecimalAndNull(data.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
                               </div>
                               <div class="d-flex">
@@ -715,7 +715,7 @@ const CostingSummaryTable = (props) => {
                                 </span>{' '}
                             &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.rejectionOn.rejectionValue}
+                                  {checkForDecimalAndNull(data.rejectionOn.rejectionValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
                               </div>
                               <div class="d-flex">
@@ -724,7 +724,7 @@ const CostingSummaryTable = (props) => {
                                 </span>{' '}
                             &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.iccOn.iccValue}
+                                  {checkForDecimalAndNull(data.iccOn.iccValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
                               </div>
                               <div class="d-flex">
@@ -733,7 +733,7 @@ const CostingSummaryTable = (props) => {
                                 </span>{' '}
                             &nbsp;{' '}
                                 <span class="d-inline-block w-50 small-grey-text">
-                                  {data.paymentTerms.paymentValue}
+                                  {checkForDecimalAndNull(data.paymentTerms.paymentValue, initialConfiguration.NoOfDecimalForPrice)}
                                 </span>
                               </div>
                             </td>
@@ -746,7 +746,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.nOverheadProfit}
+                              {checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
                                 class="float-right btn small-square-btn btn-link eye-btn"
@@ -768,10 +768,10 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">
-                                {data.packagingCost}
+                                {checkForDecimalAndNull(data.packagingCost, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.freight}
+                                {checkForDecimalAndNull(data.freight, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                             </td>
                           )
@@ -783,7 +783,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.nPackagingAndFreight}
+                              {checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
                                 class="float-right btn small-square-btn btn-link eye-btn"
@@ -810,10 +810,10 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-block small-grey-text">
-                                {data.toolMaintenanceCost}
+                                {checkForDecimalAndNull(data.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                               <span class="d-block small-grey-text">
-                                {data.toolPrice}
+                                {checkForDecimalAndNull(data.toolPrice, initialConfiguration.NoOfDecimalForPrice)}
                               </span>
                               <span class="d-block small-grey-text">
                                 {data.amortizationQty}
@@ -828,7 +828,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.totalToolCost}
+                              {checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
                                 class="float-right btn small-square-btn btn-link eye-btn"
@@ -846,7 +846,7 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data, index) => {
                           return (
                             <td>
-                              {data.totalCost}
+                              {checkForDecimalAndNull(data.totalCost, initialConfiguration.NoOfDecimalForPrice)}
                               {/* <button
                             type="button"
                             class="float-right btn small-square-btn btn-link eye-btn"
@@ -868,16 +868,16 @@ const CostingSummaryTable = (props) => {
                         viewCostingData.map((data) => {
                           return (
                             <td>
-                              <div>
-                                <span>{data.otherDiscount.discount}</span> &nbsp;{' '}
-                                <span>{data.otherDiscount.value}</span>
+                              <div className="d-flex">
+                                <span className="d-inline-block w-50 ">{data.otherDiscount.discount}</span> &nbsp;{' '}
+                                <span className="d-inline-block w-50 ">{data.otherDiscount.value}</span>
                               </div>
-                              <div>
-                                <span>
+                              <div className="d-flex">
+                                <span className="d-inline-block w-50 small-grey-text">
                                   {data.otherDiscountValue.discountPercentValue}
                                 </span>{' '}
-                            &nbsp;{' '}
-                                <span>{data.otherDiscountValue.discountValue}</span>
+                                {' '}
+                                <span className="d-inline-block w-50 small-grey-text">{checkForDecimalAndNull(data.otherDiscountValue.discountValue, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </div>
                             </td>
                           )
@@ -887,7 +887,7 @@ const CostingSummaryTable = (props) => {
                       <th>Any Other Cost</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.anyOtherCost}</td>
+                          return <td>{checkForDecimalAndNull(data.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                         })}
                     </tr>
                     <tr>
@@ -901,7 +901,7 @@ const CostingSummaryTable = (props) => {
                       <th>Net PO Price(INR)</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPrice}</td>
+                          return <td>{checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                         })}
                     </tr>
                     <tr>
@@ -914,7 +914,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <div>
                                 <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
-                                <span>{data.currency.currencyValue}</span>
+                                <span>{checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </div>
                             </td>
                           )
@@ -924,7 +924,7 @@ const CostingSummaryTable = (props) => {
                       <th>Net PO Price</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.nPOPriceWithCurrency !== 0 ? data.nPOPriceWithCurrency : data.nPOPrice}({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
+                          return <td>{data.nPOPriceWithCurrency !== 0 ? checkForDecimalAndNull(data.nPOPriceWithCurrency, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(data.nPOPrice, initialConfiguration.NoOfDecimalForPrice)}({(data.currency.currencyTitle !== '-' ? data.currency.currencyTitle : 'INR')})</td>
                         })}
                     </tr>
                     <tr>
@@ -1022,6 +1022,7 @@ const CostingSummaryTable = (props) => {
           isEditFlag={isEditFlag}
           editObject={editObject}
           anchor={'right'}
+          viewMode={viewMode}
         />
       )}
       {/* DRAWERS FOR VIEW  */}
@@ -1091,13 +1092,6 @@ const CostingSummaryTable = (props) => {
           anchor={'right'}
         />
       )}
-      {/* {stepTwo && (
-        <CostingDetails
-          //backBtn={backToFirstStep}
-          partInfo={partInfoStepTwo}
-          costingInfo={costingData}
-        />
-      )} */}
     </Fragment>
   )
 }

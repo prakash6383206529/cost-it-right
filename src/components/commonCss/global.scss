@@ -193,11 +193,17 @@ a:hover {
 .add-button-big,
 .btn-primary-add,
 .user-btn {
+  .edit-icon{
+    height: 14px;
+    background-size: contain;
+    top: unset;
+  }
   &:hover,
   &:not(.disabled):active:focus {
     background-color: #1d59af;
   }
 }
+
 
 //tried half working
 // .approve-hover-btn {
@@ -230,12 +236,12 @@ a:hover {
   text-transform: uppercase;
   font-weight: 400;
   color: #8a91ac;
-  background: transparent;
+  background: #fff;
   display: inline-flex;
   align-items: center;
 }
 
-.reset {
+.cancel-btn,.reset {
   &:hover,
   &:focus,
   &:not(.disabled):active:focus {
@@ -1632,7 +1638,7 @@ form .form-control {
 
 .middleContainer {
   display: flex;
-  min-height: calc(100vh - 222px);
+  min-height: calc(100vh - 190px);
   flex-direction: column;
   width: 100%;
 }
@@ -2029,7 +2035,7 @@ body {
 }
 .css-yk16xz-control {
   border-color: #c2cbe8 !important;
-  min-height: 40px !important;
+  min-height: 38px !important;
 }
 .form-group {
   margin-bottom: 15px;
@@ -2102,7 +2108,7 @@ input:disabled,
 .sf-mainwrapper {
   position: relative;
   // z-index: 3;
-  z-index: 11;
+  z-index: 13;
 }
 .blue-box {
   position: initial;
@@ -2248,12 +2254,15 @@ input:disabled,
   }
 }
 td {
+  .Error,
+  .Pushed,
   .Draft,
   [class^="Pending"],
+  [class^="Awaiting"],
   .Approved,
   .Rejected,
   .History {
-    background-color: #fc5774;
+    background-color:#da94a1;
     min-width: 90px;
     height: 30px;
     border-radius: 30px;
@@ -2262,11 +2271,14 @@ td {
     font-size: 14px;
     display: inline-block;
     line-height: 30px;
-    padding: 0 1.5rem;
+    padding: 0 0.5rem;
     vertical-align: middle;
   }
   [class^="Pending"]{
     background-color: #f8a000;
+  }
+  [class^="Awaiting"]{
+    background-color: #eac607;
   }
   .Approved {
     background-color: #4dc771;
@@ -2275,7 +2287,13 @@ td {
     background-color: #c2cbe8;
   }
   .Rejected{
-    background-color: #c3344d;
+    background-color:  #fc5774;
+  }
+  .Error{
+    background-color: #f73d3d;
+  }
+  .Pushed{
+    background-color: #498cef;
   }
 }
 .table.cr-brdr-main{
@@ -2284,17 +2302,28 @@ td {
      th{
       border-top: 1px solid #C2CBE8;
       border-bottom: 1px solid #C2CBE8;
-      &:last-child{border-right: 1px solid #C2CBE8;}
      }
   }
-  tbody{
-    tr{
-      td{
+}
+
+.approval-summary-page,.costing-summary-page{
+  .table.cr-brdr-main{
+    thead{
+       th{
         &:last-child{border-right: 1px solid #C2CBE8;}
+       }
+    }
+    tbody{
+      tr{
+        td{
+          &:last-child{border-right: 1px solid #C2CBE8;}
+        }
       }
     }
   }
 }
+
+
 body {
   .mb-15 {
     margin-bottom: 15px;
@@ -2310,7 +2339,7 @@ body {
 .calculator-drawer {
   .form-group {
     label {
-      min-height: 44px;
+      // min-height: 44px;
     }
   }
 }
@@ -2358,63 +2387,6 @@ body {
         z-index: 11;
       }
     }
-  }
-}
-.nav-item.dropdown{
-  position: unset;
-  .dr-icon{
-    font-size: 14px;
-  }
-  .dropdown-menu.sub-menu{
-    display:none;
-    position: absolute;
-    right: 29px;
-    top:30px;
-    left: 29px;
-    z-index: 10;
-    text-align: left;
-    list-style: none;
-    padding-top: 19px;
-    background-clip: padding-box;
-    background-color:transparent;
-    border: none;
-    ul{
-      background-color: #fff;
-      box-shadow: 0px 5px 10px #00000033;
-      border-radius: 4px;
-      min-width: 8.4375rem;
-      padding:25px;
-      li{
-        padding: 5px 10px;
-        padding: 5px 10px;
-        display: inline-block;
-        vertical-align: top;
-        width: 19.8%;
-        text-align: left;
-      }
-      a{
-        color: #8A91AC;
-        font-size: 15px;
-        padding: 0;
-        &:hover,&:focus{
-          background-color: #fff;
-          color: #256bd1 !important;
-        }
-      }
-      .active-nav{
-        color: #256bd1;
-      }
-    }
-  }
-  &:hover{
-    >.nav-link{color: #256bd1;}
-    i.dr-icon{
-      transform: rotate(180deg);
-      color: #256bd1;
-    }
-    .dropdown-menu.sub-menu{
-      display:block;
-    }  
   }
 }
 .refresh-icon {
