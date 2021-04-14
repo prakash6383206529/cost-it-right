@@ -70,7 +70,7 @@ function OverheadProfit(props) {
   const [ICCapplicability, setICCapplicability] = useState(ICCApplicabilityDetail !== undefined ? { label: ICCApplicabilityDetail.ICCApplicability, value: ICCApplicabilityDetail.ICCApplicability } : [])
 
   const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
-  console.log('ddddddddddddddddddddddd', CostingInterestRateDetail && CostingInterestRateDetail.NetPaymentTermCost === 0 ? false : true)
+
   const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.NetPaymentTermCost === 0 ? false : true)
   const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
   const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
@@ -1154,7 +1154,7 @@ function OverheadProfit(props) {
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && profitObj && profitObj.IsProfitCCApplicable) {
       const { ProfitCCPercentage } = profitObj;
       setValue('ProfitCCCost', getValues('ProfitCCCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
-      setValue('ProfitCCTotalCost', checkForDecimalAndNull(getValues('ProfitCCCost') * calculatePercentage(ProfitCCPercentage)), 2)
+      setValue('ProfitCCTotalCost', checkForDecimalAndNull(getValues('ProfitCCCost') * calculatePercentage(ProfitCCPercentage), 2))
       setIsSurfaceTreatmentAdded(true)
       setProfitObj({
         ...profitObj,
