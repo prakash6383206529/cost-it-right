@@ -16,6 +16,7 @@ import BOMViewer from './BOMViewer';
 import BOMUpload from '../../massUpload/BOMUpload';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -103,6 +104,8 @@ class AssemblyPartListing extends Component {
             }
         });
     }
+
+    
 
     /**
     * @method effectiveDateFormatter
@@ -310,15 +313,15 @@ class AssemblyPartListing extends Component {
                     tableHeaderClass='my-custom-header'
                     pagination>
                     <TableHeaderColumn dataField="Technology" searchable={false} width={'100'} >Technology</TableHeaderColumn>
-                    <TableHeaderColumn dataField="BOMNumber" width={'100'}>BOM NO.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="PartNumber" width={'100'}>Part No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="BOMNumber" width={'100'} dataFormat={this.inputOutputFormatter} >BOM NO.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="PartNumber" width={'100'} dataFormat={this.inputOutputFormatter} >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="Plants" searchable={false} width={'100'} >Plant</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
-                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'}>ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} dataFormat={this.inputOutputFormatter} >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} dataFormat={this.inputOutputFormatter} >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} dataFormat={this.inputOutputFormatter} >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
@@ -352,9 +355,11 @@ class AssemblyPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part }) {
+function mapStateToProps({ part , auth }) {
     const { partsListing } = part
-    return { partsListing };
+    const { initialConfiguration } = auth;
+
+    return { partsListing, initialConfiguration };
 }
 
 /**

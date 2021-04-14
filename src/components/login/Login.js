@@ -108,6 +108,7 @@ class Login extends Component {
                         component={renderEmailInputField}
                         isDisabled={false}
                         placeholder={"Email"}
+                        onClickCapture={(e) => this.setState({flag: false})}
                         validate={[required, email, maxLength70]}
                         required={true}
                       // maxLength={71}
@@ -121,12 +122,13 @@ class Login extends Component {
                         validate={[required, maxLength70]}
                         component={renderText}
                         required={true}
+                        onClickCapture={(e) => this.setState({flag: false})}
                         // maxLength={26}
                         customClassName={'withBorder'}
                       />
                     }
                   </div>
-                  <div className="input-group phone">
+                  <div className="input-group phone" onClickCapture={(e) => this.setState({flag: false})}>
                     <Field
                       name="Password"
                       // label="Password"
@@ -165,7 +167,7 @@ class Login extends Component {
                     <div className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</div>
                   </div>
                   {this.state.flag && (
-                    <i className="text-help">Please contact your IT Administrator</i>
+                    <div className="text-help">Please contact your IT Administrator</div>
                   )
                   }
                 </form>

@@ -7,7 +7,7 @@ import {
   getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
   getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList,
 } from '../actions/Material';
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
@@ -23,6 +23,9 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { getPlantSelectListByType } from '../../../actions/Common'
+import { ZBC } from '../../../config/constants'
+import { costingHeadObjs } from '../../../config/masterData';
 
 class RMImportListing extends Component {
   constructor(props) {
@@ -79,6 +82,7 @@ class RMImportListing extends Component {
     this.props.getRawMaterialFilterSelectList(() => { })
 
     this.getDataList()
+    this.props.getPlantSelectListByType(ZBC, () => { })
   }
 
   // Get updated Table data list after any action performed.
@@ -161,6 +165,11 @@ class RMImportListing extends Component {
   */
   renderPaginationShowsTotal(start, to, total) {
     return <GridTotalFormate start={start} to={to} total={total} />
+  }
+
+  costFormatter = (cell, row, enumObject, rowIndex) => {
+    const { initialConfiguration } = this.props
+    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
   }
 
   /**
@@ -255,8 +264,18 @@ class RMImportListing extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { filterRMSelectList, } = this.props;
+    const { filterRMSelectList, plantSelectList } = this.props;
     const temp = [];
+    if (label === 'costingHead') {
+      return costingHeadObjs;
+    }
+    if (label === 'plant') {
+      plantSelectList && plantSelectList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+      });
+      return temp;
+    }
     if (label === 'material') {
       filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
         if (item.Value === '0') return false;
@@ -440,6 +459,39 @@ class RMImportListing extends Component {
                   </div>
                   <div className="flex-fill">
                     <Field
+                      name="costingHead"
+                      type="text"
+                      label=""
+                      component={searchableSelect}
+                      placeholder={'Costing Head'}
+                      isClearable={false}
+                      options={this.renderListing('costingHead')}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
+                      required={true}
+                      handleChangeDescription={this.handleHeadChange}
+                      valueDescription={this.state.costingHead}
+                    />
+                  </div>
+                  <div className="flex-fill">
+                    <Field
+                      name="plant"
+                      type="text"
+                      label=""
+                      component={searchableSelect}
+                      placeholder={'Plant'}
+                      isClearable={false}
+                      options={this.renderListing('plant')}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
+                      required={true}
+                      handleChangeDescription={this.handlePlantChange}
+                      valueDescription={this.state.plant}
+                    />
+                  </div>
+
+                  <div className="flex-fill">
+                    <Field
                       name="RawMaterialId"
                       type="text"
                       label={""}
@@ -539,8 +591,8 @@ class RMImportListing extends Component {
                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                       <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                   ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
+                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                  )}
                   {BulkUploadAccessibility && (
                     <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
                       <div className={"upload"}></div>Bulk Upload
@@ -584,9 +636,9 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate" >{this.renderBasicRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate" dataFormat={this.costFormatter} >{this.renderBasicRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" dataFormat={this.costFormatter} >{this.renderScrapRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
               <TableHeaderColumn dataAlign="right" width={100} dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
@@ -612,10 +664,11 @@ class RMImportListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, comman, }) {
+function mapStateToProps({ material, comman, auth }) {
   const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList } = material;
-  const { supplierSelectList, } = comman;
-  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList }
+  const { supplierSelectList, plantSelectList } = comman;
+  const { initialConfiguration } = auth;
+  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList, initialConfiguration, plantSelectList }
 }
 
 /**
@@ -638,6 +691,7 @@ export default connect(mapStateToProps, {
   getVendorFilterByGradeSelectList,
   getRawMaterialFilterByVendorSelectList,
   getGradeFilterByVendorSelectList,
+  getPlantSelectListByType,
 })(reduxForm({
   form: 'RMImportListing',
   enableReinitialize: true,

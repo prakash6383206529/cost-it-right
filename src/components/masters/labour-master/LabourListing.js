@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -398,7 +398,10 @@ class LabourListing extends Component {
   dashFormatter = (cell, row, enumObject, rowIndex) => {
     return cell !== 'NA' ? cell : '-'
   }
-
+  costFormatter = (cell, row, enumObject, rowIndex) => {
+    const { initialConfiguration } = this.props
+    return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+}
   /**
    * @method effectiveDateFormatter
    * @description Renders buttons
@@ -781,6 +784,7 @@ class LabourListing extends Component {
               columnTitle={true}
               width={120}
               dataAlign="left"
+              dataFormat={this.costFormatter} 
             >
               {this.renderRatePerPerson()}
             </TableHeaderColumn>
@@ -834,7 +838,7 @@ function mapStateToProps({ labour, auth, fuel, machine }) {
   const { loading, labourTypeByPlantSelectList, labourDataList } = labour
   const { plantSelectList, stateSelectList } = fuel
   const { machineTypeSelectList } = machine
-  const { leftMenuData } = auth
+  const { leftMenuData, initialConfiguration } = auth
   return {
     loading,
     leftMenuData,
@@ -842,7 +846,8 @@ function mapStateToProps({ labour, auth, fuel, machine }) {
     stateSelectList,
     labourTypeByPlantSelectList,
     machineTypeSelectList,
-    labourDataList
+    labourDataList,
+    initialConfiguration
   }
 }
 

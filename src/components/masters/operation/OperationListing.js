@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import $ from "jquery";
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -371,7 +371,10 @@ class OperationListing extends Component {
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         return cell ? 'Vendor Based' : 'Zero Based';
     }
-
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+    }
     onExportToCSV = (row) => {
         // ...
         return this.state.userData; // must return the data which you want to be exported
@@ -629,7 +632,7 @@ class OperationListing extends Component {
                         <TableHeaderColumn dataField="Plants" width={150} columnTitle={true} dataAlign="left" >{'Plant'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" >{this.renderVendorName()}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="UnitOfMeasurement" columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
-                        <TableHeaderColumn searchable={false} dataField="Rate" width={100} columnTitle={true} dataAlign="left" >{'Rate'}</TableHeaderColumn>
+                        <TableHeaderColumn searchable={false} dataField="Rate" width={100} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter} >{'Rate'}</TableHeaderColumn>
                         {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
@@ -655,8 +658,8 @@ class OperationListing extends Component {
 */
 function mapStateToProps({ otherOperation, auth }) {
     const { loading, filterOperation, operationList } = otherOperation;
-    const { leftMenuData } = auth;
-    return { loading, filterOperation, leftMenuData, operationList };
+    const { leftMenuData, initialConfiguration } = auth;
+    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration };
 }
 
 /**

@@ -25,6 +25,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -282,6 +283,11 @@ class MachineRateListing extends Component {
     */
     renderPaginationShowsTotal(start, to, total) {
         return <GridTotalFormate start={start} to={to} total={total} />
+    }
+
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
     /**
@@ -623,7 +629,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="MachineTypeName" width={110} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessName" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costFormatter} >{this.renderMachineRate()}</TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={140} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>
@@ -649,11 +655,15 @@ class MachineRateListing extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
+    
     const { comman, process, machine, } = state;
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
     const { machineDatalist } = machine
-    return { technologySelectList, filterSelectList, machineDatalist }
+    const { auth } = state;
+    const { initialConfiguration } = auth;
+
+    return { technologySelectList, filterSelectList, machineDatalist, initialConfiguration }
 }
 
 /**

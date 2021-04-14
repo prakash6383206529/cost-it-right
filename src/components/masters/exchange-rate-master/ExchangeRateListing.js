@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -141,7 +141,14 @@ class ExchangeRateListing extends Component {
             }
         });
     }
-
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+    }
+    inputOutputFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForInputOutput) : '';
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -392,10 +399,10 @@ class ExchangeRateListing extends Component {
                         tableHeaderClass='my-custom-header'
                         pagination>
                         <TableHeaderColumn dataField="Currency" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={120} columnTitle={true} dataAlign="left" >{this.renderExchangeRate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="left" >{this.renderBankRate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="left" >{this.renderBankCommision()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="left" >{this.renderCustomrate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={120} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter} >{this.renderExchangeRate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}>{this.renderBankRate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="left" dataFormat={this.inputOutputFormatter} >{this.renderBankCommision()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}>{this.renderCustomrate()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="EffectiveDate" width={160} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="DateOfModification" width={130} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderDateOfModification()}</TableHeaderColumn>
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
@@ -413,8 +420,8 @@ class ExchangeRateListing extends Component {
 */
 function mapStateToProps({ exchangeRate, auth }) {
     const { currencySelectList, exchangeRateDataList } = exchangeRate;
-    const { leftMenuData } = auth;
-    return { leftMenuData, currencySelectList, exchangeRateDataList };
+    const { leftMenuData, initialConfiguration } = auth;
+    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration };
 }
 
 /**

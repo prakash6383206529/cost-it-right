@@ -19,6 +19,7 @@ import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 class FuelListing extends Component {
     constructor(props) {
@@ -139,7 +140,10 @@ class FuelListing extends Component {
     renderSerialNumber = () => {
         return <>Sr. <br />No. </>
     }
-
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -375,7 +379,7 @@ class FuelListing extends Component {
                             <TableHeaderColumn dataField="FuelName" columnTitle={true} dataAlign="left" dataSort={true} >{'Fuel'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="UnitOfMeasurementName" columnTitle={true} dataAlign="left" dataSort={true} >{'UOM'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Rate (INR)'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Rate" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costFormatter} >{'Rate (INR)'}</TableHeaderColumn>
                             <TableHeaderColumn width={180} columnTitle={true} dataAlign="left" dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={180} columnTitle={true} dataAlign="left" dataField="ModifiedDate" dataFormat={this.effectiveDateFormatter} >{'Date Of Modification'}</TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="FuelDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
@@ -400,9 +404,11 @@ class FuelListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ fuel }) {
+function mapStateToProps({ fuel, auth }) {
     const { fuelComboSelectList, fuelDataList } = fuel;
-    return { fuelComboSelectList, fuelDataList }
+    const { initialConfiguration } = auth;
+
+    return { fuelComboSelectList, fuelDataList, initialConfiguration }
 }
 
 /**

@@ -23,6 +23,7 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 class InterestRateListing extends Component {
   constructor(props) {
@@ -175,6 +176,10 @@ class InterestRateListing extends Component {
     });
   }
 
+  inputOutputFormatter = (cell, row, enumObject, rowIndex) => {
+    const { initialConfiguration } = this.props
+    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForInputOutput) : '';
+  }
   /**
   * @method effectiveDateFormatter
   * @description Renders buttons
@@ -587,10 +592,10 @@ class InterestRateListing extends Component {
             <TableHeaderColumn width={100} dataField="IsVendor" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
             <TableHeaderColumn width={100} dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
             <TableHeaderColumn width={120} dataField="ICCApplicability" columnTitle={true} dataAlign="left" >{this.renderIccApp()}</TableHeaderColumn>
-            <TableHeaderColumn width={100} dataField="ICCPercent" columnTitle={true} dataAlign="left" >{this.renderAnnualIcc()}</TableHeaderColumn>
+            <TableHeaderColumn width={100} dataField="ICCPercent" columnTitle={true} dataAlign="left" dataFormat={this.inputOutputFormatter} >{this.renderAnnualIcc()}</TableHeaderColumn>
             <TableHeaderColumn width={120} dataField="PaymentTermApplicability" columnTitle={true} dataAlign="left" >{this.renderPaymentTerm()}</TableHeaderColumn>
             <TableHeaderColumn width={110} dataField="RepaymentPeriod" columnTitle={true} dataAlign="left" >{this.renderRepayment()}</TableHeaderColumn>
-            <TableHeaderColumn width={130} dataField="PaymentTermPercent" columnTitle={true} dataAlign="left" >{this.renderInterestRate()}</TableHeaderColumn>
+            <TableHeaderColumn width={130} dataField="PaymentTermPercent" columnTitle={true} dataAlign="left" dataFormat={this.inputOutputFormatter} >{this.renderInterestRate()}</TableHeaderColumn>
             <TableHeaderColumn width={120} dataField="EffectiveDate" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{'Effective Date'}</TableHeaderColumn>
             <TableHeaderColumn width={100} dataAlign="right" searchable={false} className="action" dataField="VendorInterestRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
           </BootstrapTable>
@@ -617,11 +622,11 @@ class InterestRateListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, auth, interestRate, comman }) {
-  const { leftMenuData } = auth;
+  const { leftMenuData, initialConfiguration } = auth;
   const { vendorListByVendorType } = material;
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateDataList } = interestRate;
   const { vendorWithVendorCodeSelectList } = comman;
-  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList };
+  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList, initialConfiguration };
 }
 
 /**

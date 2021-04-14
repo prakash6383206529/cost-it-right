@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import {
   getPowerDetailDataList, getVendorPowerDetailDataList, getFuelComboData, getPlantListByState,
   getZBCPlantList, getStateSelectList, deletePowerDetail, deleteVendorPowerDetail,
@@ -189,7 +189,10 @@ class PowerListing extends Component {
   renderSerialNumber = () => {
     return <>Sr. <br />No. </>
   }
-
+  costFormatter = (cell, row, enumObject, rowIndex) => {
+    const { initialConfiguration } = this.props
+    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+  }
   /**
   * @method effectiveDateFormatter
   * @description Renders buttons
@@ -512,8 +515,8 @@ class PowerListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                         <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                     ) : (
-                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                      )}
+                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    )}
                     {AddAccessibility && (
                       <button
                         type="button"
@@ -548,7 +551,7 @@ class PowerListing extends Component {
                 {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                 <TableHeaderColumn dataField="StateName" columnTitle={true} dataAlign="left" dataSort={true} >{'State'}</TableHeaderColumn>
                 <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="left" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costFormatter} >{'Net Cost Per Unit'}</TableHeaderColumn>
                 <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
               </BootstrapTable>}
 
@@ -568,7 +571,7 @@ class PowerListing extends Component {
                 {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                 <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
                 {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>}
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} >{'Net Cost Per Unit'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costFormatter} >{'Net Cost Per Unit'}</TableHeaderColumn>
                 <TableHeaderColumn searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
               </BootstrapTable>}
 

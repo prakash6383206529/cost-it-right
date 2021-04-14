@@ -15,6 +15,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 function enumFormatter(cell, row, enumObject) {
     return enumObject[cell];
@@ -187,7 +188,10 @@ class IndivisualPartListing extends Component {
         }
         return serialNumber;
     }
-
+    inputOutputFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForInputOutput) : '';
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -286,9 +290,9 @@ class IndivisualPartListing extends Component {
                     <TableHeaderColumn dataField="PartNumber" >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" >Part Name</TableHeaderColumn>
                     {/* <TableHeaderColumn searchable={false} dataField="Plants" >Plant</TableHeaderColumn> */}
-                    <TableHeaderColumn searchable={false} dataField="ECNNumber" >ECN No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" >Revision No.</TableHeaderColumn>
-                    <TableHeaderColumn searchable={false} dataField="DrawingNumber" >Drawing No.</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataField="ECNNumber" dataFormat={this.inputOutputFormatter} >ECN No.</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataField="RevisionNumber" dataFormat={this.inputOutputFormatter} >Revision No.</TableHeaderColumn>
+                    <TableHeaderColumn searchable={false} dataField="DrawingNumber" dataFormat={this.inputOutputFormatter} >Drawing No.</TableHeaderColumn>
                     <TableHeaderColumn searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                     {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn dataAlign="right" className="action" searchable={false} dataField="PartId" isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
@@ -312,9 +316,11 @@ class IndivisualPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part }) {
+function mapStateToProps({ part, auth }) {
     const { newPartsListing } = part
-    return { newPartsListing };
+    const { initialConfiguration } = auth;
+
+    return { newPartsListing,initialConfiguration };
 }
 
 /**
