@@ -239,9 +239,9 @@ class AddPower extends Component {
         powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
       }
 
-      if (powerContributionTotal > 100) {
+      if (fieldsObj.SelfPowerContribution < 100 && powerContributionTotal > 100) {
         this.setState({ checkPowerContribution: true })
-        // toastr.warning('Total power contribution should not be greater than 100%.')
+        toastr.warning('Total power contribution should not be greater than 100%.')
       } else {
         this.setState({ checkPowerContribution: false })
       }
