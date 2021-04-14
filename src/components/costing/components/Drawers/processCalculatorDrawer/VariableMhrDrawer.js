@@ -1,11 +1,6 @@
 import React from 'react'
-import { Row, Col, Container } from 'reactstrap'
-
+import { Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../../layout/HookFormInputs'
 import Facing from './Facing'
 import Drilling from './Drilling'
 import Turning from './Turning'
@@ -16,8 +11,6 @@ import SlotCutting from './SlotCutting'
 import ChamferingMiller from './ChamferingMiller'
 import EndMill from './EndMill'
 import { useDispatch } from 'react-redux'
-import { saveProcessCostCalculationData } from '../../../actions/ProcessCost'
-import { toastr } from 'react-redux-toastr'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
 import { SHEETMETAL, RUBBER, PLASTIC, MACHINING } from '../../../../../config/masterData'
@@ -191,10 +184,10 @@ function VariableMhrDrawer(props) {
         className="drawer-md calculator-drawer"
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <div className="container-fluid">
-          <div className={'drawer-wrapper drawer-1500px'}>
+          <div className={'drawer-wrapper drawer-md'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>

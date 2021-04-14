@@ -938,7 +938,7 @@ class AddBOPDomestic extends Component {
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 //onSubmit={this.handleSubmit}
-                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                accept="*"
                                 initialFiles={this.state.initialFiles}
                                 maxFiles={3}
                                 maxSizeBytes={2000000}
@@ -1014,7 +1014,7 @@ class AddBOPDomestic extends Component {
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button
                             type={"button"}
-                            className="reset mr15 cancel-btn"
+                            className="mr15 cancel-btn"
                             onClick={this.cancel}
                           >
                             <div className={"cross-icon"}>
@@ -1027,7 +1027,7 @@ class AddBOPDomestic extends Component {
                           </button>
                           <button
                             type="submit"
-                            className="submit-button mr5 save-btn"
+                            className="user-btn mr5 save-btn"
                           >
                             <div className={"check-icon"}>
                               <img

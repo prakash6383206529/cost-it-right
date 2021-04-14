@@ -3,6 +3,8 @@ import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
+import { checkForDecimalAndNull } from '../../../../helper';
+import { useSelector } from 'react-redux';
 
 function ViewPackagingAndFreight(props) {
 
@@ -10,6 +12,8 @@ function ViewPackagingAndFreight(props) {
 
   const [viewPackaging, setViewPackaging] = useState([])
   const [viewFrieght, setViewFrieght] = useState([])
+
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     setViewPackaging(packagingData)
@@ -34,14 +38,14 @@ function ViewPackagingAndFreight(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Packaging & Freight'}</h3>
+                  <h3>{'View Packaging & Freight Cost:'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -66,7 +70,7 @@ function ViewPackagingAndFreight(props) {
                     <thead>
                       <tr>
                         <th>{`Packaging Description`}</th>
-                        <th>{`Packaging Cost`}</th>
+                        <th>{`Packaging Type`}</th>
                         <th className="costing-border-right">{`Cost`}</th>
                       </tr>
                     </thead>
@@ -76,17 +80,13 @@ function ViewPackagingAndFreight(props) {
                           return (
                             <tr key={index}>
                               <td>
-                                {item.PackagingDescription
-                                  ? item.PackagingDescription
-                                  : '-'}
+                                {item.PackagingDescription ? item.PackagingDescription : '-'}
                               </td>
                               <td>
-                                {item.PackagingCost ? item.PackagingCost : '-'}
+                                {item.IsPackagingCostFixed && item.IsPackagingCostFixed === true ? 'Fixed' : 'Percentage'}
                               </td>
                               <td>
-                                {item.PackagingCostFixed
-                                  ? item.PackagingCostFixed
-                                  : '-'}
+                                {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
                               </td>
                             </tr>
                           )
@@ -129,14 +129,12 @@ function ViewPackagingAndFreight(props) {
                           viewFrieght.map((item, index) => {
                             return (
                               <tr key={index}>
-                                <td>
-                                  {item.FreightType ? item.FreightType : '-'}
-                                </td>
+                                <td>{item.FreightType ? item.FreightType : '-'}</td>
                                 <td>{item.Criteria ? item.Criteria : '-'}</td>
-                                <td>{item.Rate ? item.Rate : '-'}</td>
+                                <td>{item.Rate ? checkForDecimalAndNull(item.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                                 <td>{item.Quantity ? item.Quantity : '-'}</td>
                                 <td>
-                                  {item.FreightCost ? item.FreightCost : '-'}
+                                  {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
                                 </td>
                               </tr>
                             )

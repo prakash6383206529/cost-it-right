@@ -2,7 +2,7 @@
     .react-bs-table-container{
         .react-bs-table{
             .react-bs-container-body{
-                min-height: calc(100vh - 485px);
+                min-height: calc(100vh - 443px);
             }
         }
     }
@@ -763,13 +763,33 @@
             }
         }
       }
+
+    body .approval-listing-page{
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        width:1470px !important;
+                    }
+                }
+            }
+        }
+    }
 }
 
 @media(max-width:1366px){
+    .blue-box{
+        .main-section{
+            > .left-side-menu + .content-page{
+                min-height: calc(100vh - 149px);
+            }
+        }
+    }
     :not(.login-container.signup-form) {
         .react-bs-table-container{
             .react-bs-table{
                 .react-bs-container-body{
+                    min-height: calc(100vh - 360px);
                     .react-bs-table-no-data{
                         width: 1040px;
                     }
@@ -777,4 +797,17 @@
             }
         }
       }
+    
+      body .approval-listing-page{
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        width:1250px !important;
+                    }
+                }
+            }
+        }
+    }
+      
 }

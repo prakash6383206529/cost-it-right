@@ -1,5 +1,5 @@
 import {
-    API_REQUEST, GET_SIMULATION_HISTORY,
+    API_REQUEST, GET_SELECTLIST_MASTERS, GET_SIMULATION_HISTORY,
 } from '../../../config/constants';
 
 const initialState = {
@@ -13,11 +13,11 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: true
             };
-        case GET_SIMULATION_HISTORY:
+        case GET_SELECTLIST_MASTERS:
             return {
                 ...state,
                 loading: false,
-                simulationHistory: action.payload
+                masterSelectList: action.payload
             }
         default:
             return state;

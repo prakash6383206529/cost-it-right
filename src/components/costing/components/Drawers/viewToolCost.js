@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { checkForDecimalAndNull } from '../../../../../src/helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
+import { useSelector } from 'react-redux';
 
 
 function ViewToolCost(props) {
 
   const { viewToolCost } = props
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   /**
  * @method toggleDrawer
@@ -23,7 +25,7 @@ function ViewToolCost(props) {
   }
   return (
     <>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
@@ -32,7 +34,7 @@ function ViewToolCost(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'View Tool Cost'}</h3>
+                  <h3>{'View Tool Cost:'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -58,10 +60,10 @@ function ViewToolCost(props) {
                       viewToolCost.map((item, index) => {
                         return (
                           <tr key={index}>
-                            <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, 2) : '-'}</td>
-                            <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, 2) : '-'}</td>
+                            <td>{item.ToolMaintenanceCost ? checkForDecimalAndNull(item.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                            <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                             <td>{item.Life ? item.Life : "-"}</td>
-                            <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, 2) : '-'}</td>
+                            <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                           </tr>
                         )
                       })

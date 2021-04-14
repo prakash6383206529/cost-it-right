@@ -120,24 +120,19 @@ export function getPartInfo(PartId, callback) {
   return (dispatch) => {
     if (PartId !== '') {
       dispatch({ type: API_REQUEST })
-      const request = axios.get(
-        `${API.getCostingPartDetails}/${PartId}`,
-        headers,
-      )
-      request
-        .then((response) => {
-          if (response.data.Result) {
-            dispatch({
-              type: GET_PART_INFO,
-              payload: response.data.Data,
-            })
-            callback(response)
-          }
-        })
-        .catch((error) => {
-          dispatch({ type: API_FAILURE })
-          apiErrors(error)
-        })
+      const request = axios.get(`${API.getCostingPartDetails}/${PartId}`, headers,)
+      request.then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_PART_INFO,
+            payload: response.data.Data,
+          })
+          callback(response)
+        }
+      }).catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
     } else {
       dispatch({
         type: GET_PART_INFO,
@@ -154,18 +149,15 @@ export function getPartInfo(PartId, callback) {
 export function checkPartWithTechnology(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.checkPartWithTechnology, data, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-
-        callback(error.response)
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -176,16 +168,14 @@ export function checkPartWithTechnology(data, callback) {
 export function createZBCCosting(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.createZBCCosting, data, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -196,16 +186,14 @@ export function createZBCCosting(data, callback) {
 export function createVBCCosting(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.createVBCCosting, data, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 
@@ -217,16 +205,14 @@ export function getZBCExistingCosting(PartId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getZBCExistingCosting}/${PartId}`, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        //apiErrors(error);
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      //apiErrors(error);
+    })
   }
 }
 
@@ -238,16 +224,14 @@ export function getVBCExistingCosting(PartId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST })
     const request = axios.get(`${API.getVBCExistingCosting}/${PartId}`, headers)
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        //apiErrors(error);
-      })
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      //apiErrors(error);
+    })
   }
 }
 
@@ -422,21 +406,16 @@ export function setDiscountCost(Data, callback) {
 export function getZBCDetailByPlantId(PlantId, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getZBCDetailByPlantId}/${PlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getZBCDetailByPlantId}/${PlantId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -447,16 +426,12 @@ export function getZBCDetailByPlantId(PlantId, callback) {
 export function getVBCDetailByVendorId(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
+    const request = axios.get(`${API.getVBCDetailByVendorId}/${data.VendorId}/${data.VendorPlantId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    })
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         callback(error)

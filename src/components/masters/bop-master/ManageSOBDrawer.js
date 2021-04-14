@@ -90,25 +90,22 @@ function ManageSOBDrawer(props) {
     let tempData = GridData[index];
 
     if (!isNaN(event.target.value)) {
-      const a = checkPercentageValue(event.target.value);
-
 
       tempData = {
         ...tempData,
-        //ShareOfBusinessPercentage: checkPercentageValue(event.target.value) ? Number(event.target.value) : 0,
-        ShareOfBusinessPercentage: a ? Number(event.target.value) : 0,
+        ShareOfBusinessPercentage: event.target.value,
+        //ShareOfBusinessPercentage: a ? Number(event.target.value) : 0,
         //isSOBChanged: checkIsSOBChanged(event, index),
         WeightedCost: checkForDecimalAndNull(tempData.NetLandedCost * calculatePercentage(Number(event.target.value)), 2),
       }
       tempArray = Object.assign([...GridData], { [index]: tempData })
 
-      setTimeout(() => {
-        if (a === false) {
-          setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
-        }
-
-        return false;
-      }, 200);
+      // setTimeout(() => {
+      //   if (event.target.value === false) {
+      //     setValue(`${GridFields}[${index}]ShareOfBusinessPercentage`, 0)
+      //   }
+      //   return false;
+      // }, 200);
       setGridData(tempArray)
 
     } else {
@@ -270,10 +267,10 @@ function ManageSOBDrawer(props) {
                                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                                       message: 'Invalid Number.'
                                     },
-                                    // maxLength: {
-                                    //   value: 10,
-                                    //   message: 'Length should not be more than 10'
-                                    // },
+                                    maxLength: {
+                                      value: 10,
+                                      message: 'Length should not be more than 10'
+                                    },
 
                                     max: {
                                       value: 100,

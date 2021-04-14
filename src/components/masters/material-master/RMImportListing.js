@@ -524,7 +524,7 @@ class RMImportListing extends Component {
                       type="button"
                       //disabled={pristine || submitting}
                       onClick={this.filterList}
-                      className="apply"
+                      className="user-btn"
                     >
                       {"Apply"}
                     </button>
@@ -539,8 +539,8 @@ class RMImportListing extends Component {
                     <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                       <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                   ) : (
-                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                    )}
+                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                  )}
                   {BulkUploadAccessibility && (
                     <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
                       <div className={"upload"}></div>Bulk Upload
@@ -588,7 +588,8 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
               <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" >{this.renderNetCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
-              <TableHeaderColumn dataAlign="right" width={100} dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+              {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
+              {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
             </BootstrapTable>
           </Col>
         </Row>

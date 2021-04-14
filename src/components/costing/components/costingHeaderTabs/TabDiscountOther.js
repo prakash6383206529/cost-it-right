@@ -521,7 +521,7 @@ function TabDiscountOther(props) {
                   </Row>
 
                   <Row className="mx-0">
-                    <Col md="3">
+                    <Col md="2">
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
@@ -541,7 +541,7 @@ function TabDiscountOther(props) {
                     </Col>
                     {IsCurrencyChange && (
                       <>
-                        <Col md="3">
+                        <Col md="2">
                           <div className="form-group">
                             <label>Effective Date</label>
                             <div className="inputbox date-section">
@@ -564,7 +564,7 @@ function TabDiscountOther(props) {
                             </div>
                           </div>
                         </Col>
-                        <Col md="3">
+                        <Col md="4">
                           <SearchableSelectHookForm
                             label={"Select Currency"}
                             name={"Currency"}
@@ -581,7 +581,7 @@ function TabDiscountOther(props) {
                             disabled={CostingViewMode || effectiveDate === '' ? true : false}
                           />
                         </Col>
-                        <Col md="3">
+                        <Col md="4">
                           <TextFieldHookForm
                             label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                             name={'NetPOPriceOtherCurrency'}
@@ -640,7 +640,7 @@ function TabDiscountOther(props) {
                           onChangeStatus={handleChangeStatus}
                           PreviewComponent={Preview}
                           //onSubmit={this.handleSubmit}
-                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                          accept="*"
                           initialFiles={initialFiles}
                           maxFiles={4}
                           maxSizeBytes={2000000}

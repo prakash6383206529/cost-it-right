@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { Container, Row, Col, Table } from 'reactstrap'
-import { formViewData, loggedInUserId } from '../../../../helper'
-import { CONSTANT } from '../../../../helper/AllConastant'
-import NoContentFound from '../../../common/NoContentFound'
+import { useDispatch } from 'react-redux'
+import { Row, Col, Table } from 'reactstrap'
+import { checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
 import { getApprovalSummary } from '../../actions/Approval'
-import { setCostingViewData } from '../../actions/Costing'
+import { setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
 import moment from 'moment'
 import { Fragment } from 'react'
 import ApprovalListing from './ApprovalListing'
+import ViewDrawer from './ViewDrawer'
+import PushButtonDrawer from './PushButtonDrawer'
+
 function ApprovalSummary(props) {
-  // const approvalNumber = props.approvalNumber 
-  // const approvalProcessId = props.approvalProcessId 
   const { approvalNumber, approvalProcessId } = props
   const loggedInUser = loggedInUserId()
 
@@ -24,20 +23,17 @@ function ApprovalSummary(props) {
   const [rejectDrawer, setRejectDrawer] = useState(false)
   const [partDetail, setPartDetail] = useState({})
   const [approvalDetails, setApprovalDetails] = useState({})
-
   const [costingSummary, setCostingSummary] = useState(false)
   const [approvalLevelStep, setApprovalLevelStep] = useState([])
   const [approvalData, setApprovalData] = useState('')
-  /**NEED TO REMOVE THIS 2 VARIABLE**/
-  const [showButton, setShowButton] = useState(true)
-  const [isFinalApproval, setIsFinalApproval] = useState(false)
-
   const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
   const [showListing, setShowListing] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
   const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
   const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
   const [showPushDrawer, setShowPushDrawer] = useState(false)
+  const [viewButton, setViewButton] = useState(false)
+  const [pushButton, setPushButton] = useState(false)
 
 
   useEffect(() => {
@@ -47,7 +43,8 @@ function ApprovalSummary(props) {
         const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId, ApprovalProcessSummaryId,
           ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow } = res.data.Data.Costings[0]
         const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
-
+        const partNumber = PartDetails.PartNumber
+        dispatch(storePartNumber({ partNumber: PartDetails.PartNumber }))
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails[0])
         setApprovalLevelStep(ApprovalLevelStep)
@@ -76,6 +73,22 @@ function ApprovalSummary(props) {
     setRejectDrawer(false)
     setShowListing(true)
   }
+
+  const closeViewDrawer = (e = '') => {
+    setViewButton(false)
+  }
+
+  const closePushButton = (e = '', type = {}) => {
+    setPushButton(false)
+    if (Object.keys(type).length > 0) {
+      if (type === 'Push') {
+        setShowListing(true)
+      } else {
+        setShowListing(false)
+      }
+    }
+  }
+
   return (
 
     <>
@@ -93,10 +106,11 @@ function ApprovalSummary(props) {
                 </Col>
                 <Col md="4" className="text-right">
                   <div className="right-border">
-                    <button type={'button'} className="apply view-btn mr-3" onClick={() => setShowListing(true)}>
-                      Back
-                     </button>
-                    <button type={'button'} className="apply view-btn">
+                    <button type={'button'} className="apply mr5" onClick={() => setShowListing(true)}>
+                      <div className={'check-icon'}><img src={require('../../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
+                      {'Back '}
+                    </button>
+                    <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
                       View All
                       </button>
                   </div>
@@ -200,9 +214,12 @@ function ApprovalSummary(props) {
                         {approvalDetails.TypeOfCosting === 'VBC' && (
                           <th>{`ZBC/Vendor Name`}</th>
                         )}
-                        <th>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
-                        </th>
+                        {
+                          checkVendorPlantConfigurable() &&
+                          <th>
+                            {approvalDetails.TypeOfCosting === 'VBC' ? 'Vendor Plant' : 'Plant'}{` Code`}
+                          </th>
+                        }
                         <th>{`SOB`}</th>
                         <th>{`Old/Current Price`}</th>
                         <th>{`New/Revised Price:`}</th>
@@ -222,9 +239,14 @@ function ApprovalSummary(props) {
                         {/* <td> */}
                         {approvalDetails.TypeOfCosting === 'VBC' && <td> {approvalDetails.VendorName ? approvalDetails.VendorName : '-'}</td>}
                         {/* </td> */}
-                        <td>
-                          {approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'}
-                        </td>
+                        {
+                          checkVendorPlantConfigurable() &&
+                          <td>
+                            {
+                              approvalDetails.TypeOfCosting === 'VBC' ? (approvalDetails.VendorPlantCode ? approvalDetails.VendorPlantCode : '-') : approvalDetails.PlantCode ? approvalDetails.PlantCode : '-'
+                            }
+                          </td>
+                        }
                         <td>
                           {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                         </td>
@@ -319,7 +341,7 @@ function ApprovalSummary(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
-                    <button type={'button'} className="mr15 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
+                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
                       <div className={'cross-icon'}>
                         <img src={require('../../../../assests/images/times.png')} alt="cancel-icon.jpg" />
                       </div>{' '}
@@ -341,7 +363,7 @@ function ApprovalSummary(props) {
                     {
                       showFinalLevelButtons &&
                       <button
-                        type="button" className="approve-button mr5 approve-hover-btn" onClick={() => handleApproveAndPushButton()}                    >
+                        type="button" className="mr5 user-btn" onClick={() => handleApproveAndPushButton()}                    >
                         <div className={'check-icon'}>
                           <img
                             src={require('../../../../assests/images/check.png')}
@@ -361,7 +383,7 @@ function ApprovalSummary(props) {
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <Fragment>
-                    <button type="submit" className="submit-button mr5 save-btn">
+                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
                       <div className={"check-icon"}>
                         <img
                           src={require("../../../../assests/images/check.png")}
@@ -400,6 +422,22 @@ function ApprovalSummary(props) {
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
+        />
+      )}
+      {pushButton && (
+        <PushButtonDrawer
+          isOpen={pushButton}
+          closeDrawer={closePushButton}
+          anchor={'right'}
+        />
+      )}
+
+      {viewButton && (
+        <ViewDrawer
+          approvalLevelStep={approvalLevelStep}
+          isOpen={viewButton}
+          closeDrawer={closeViewDrawer}
+          anchor={'top'}
         />
       )}
     </>

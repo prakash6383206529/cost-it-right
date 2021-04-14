@@ -4,6 +4,7 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
+import { useSelector } from 'react-redux'
 
 function ViewConversionCost(props) {
 
@@ -21,17 +22,13 @@ function ViewConversionCost(props) {
     props.closeDrawer('')
   }
   const { viewConversionCostData } = props
-  const {
-    CostingOperationCostResponse,
-    CostingProcessCostResponse,
-    CostingToolsCostResponse,
-    IsShowToolCost,
-  } = viewConversionCostData
-
+  const { CostingOperationCostResponse, CostingProcessCostResponse, CostingToolsCostResponse, IsShowToolCost, } = viewConversionCostData
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [isShowToolCost, setIsShowToolCost] = useState(false)
   const [costingToolsCost, setcostingToolsCost] = useState(false)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
   useEffect(() => {
     if (IsShowToolCost) {
       setIsShowToolCost(IsShowToolCost)
@@ -45,14 +42,14 @@ function ViewConversionCost(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container className="view-conversion-cost-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Conversion Cost'}</h3>
+                  <h3>{'View Conversion Cost:'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -94,28 +91,17 @@ function ViewConversionCost(props) {
                         costingProcessCost.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>
-                                {item.ProcessName ? item.ProcessName : '-'}
-                              </td>
-                              <td>
-                                {item.ProcessDescription
-                                  ? item.ProcessDescription
-                                  : '-'}
-                              </td>
-                              <td>
-                                {item.MachineName ? item.MachineName : '-'}
-                              </td>
+                              <td>{item.ProcessName ? item.ProcessName : '-'}</td>
+                              <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
+                              <td>{item.MachineName ? item.MachineName : '-'}</td>
                               <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                               <td>{item.UOM ? item.UOM : '-'}</td>
                               <td>{item.MHR ? item.MHR : '-'}</td>
                               <td>{item.CycleTime ? item.CycleTime : '-'}</td>
-                              <td>{item.Efficiency ? item.Efficiency : '-'}</td>
+                              <td>{item.Efficiency ? checkForDecimalAndNull(item.Efficiency, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                               <td>{item.Cavity ? item.Cavity : '-'}</td>
-                              <td>{item.Quantity ? item.Quantity : '-'}</td>
-                              <td>
-                                {item.ProcessCost
-                                  ? checkForDecimalAndNull(item.ProcessCost, 2)
-                                  : 0}
+                              <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+                              <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </td>
                             </tr>
                           )

@@ -3,7 +3,7 @@ import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 
 function PushButtonDrawer(props) {
-  
+
   const toggleDrawer = (event) => {
     if (
       event.type === 'keydown' &&
@@ -11,33 +11,34 @@ function PushButtonDrawer(props) {
     ) {
       return
     }
-    props.closeDrawer('')
+    props.closeDrawer('', 'Cancel')
+  }
+
+  const closeDrawerAfterPush = () => {
+    props.closeDrawer('', 'Push')
   }
 
   return (
     <>
-      <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen} 
+      <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-        <div className="container-fluid add-operation-drawer">
-          <div className={'drawer-wrapper drawer-full-width'}>
+          <div className={'drawer-wrapper'}>
+
             <form>
-              <Row className="drawer-heading sticky-top-0">
+              <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{`
-                    Approval Workflow`}</h3>
+                    <h3>{`Push`}</h3>
                   </div>
                   <div
-                    onClick={(e) => toggleDrawer(e)}
+                    //onClick={(e) => toggleDrawer(e)}
                     className={'close-button right'}
                   ></div>
                 </Col>
               </Row>
 
-
-              <hr />
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button
@@ -57,7 +58,7 @@ function PushButtonDrawer(props) {
                   <button
                     type="submit"
                     className="submit-button mr5 save-btn"
-                  //onClick={() => setApproveDrawer(true)}
+                    onClick={() => closeDrawerAfterPush()}
                   >
                     <div className={'check-icon'}>
                       <img
@@ -70,7 +71,7 @@ function PushButtonDrawer(props) {
                 </div>
               </Row>
             </form>
-          </div>
+
           </div>
         </Container>
       </Drawer>

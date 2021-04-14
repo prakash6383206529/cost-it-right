@@ -129,6 +129,7 @@ function PartCompoment(props) {
                 index={props.index}
                 data={bopData}
                 setBOPCost={props.setBOPCost}
+                setBOPHandlingCost={props.setBOPHandlingCost}
                 item={item}
               />
 

@@ -4,9 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  approvalRequestByApprove,
-  rejectRequestByApprove,
-  getAllApprovalUserFilterByDepartment,
+  approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment,
 } from '../../../costing/actions/Approval'
 import {
   TextAreaHookForm,
@@ -14,9 +12,12 @@ import {
 } from '../../../layout/HookFormInputs'
 import { loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
+import PushButtonDrawer from './PushButtonDrawer'
+
 function ApproveRejectDrawer(props) {
+
   const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer } = props
-  console.log(approvalData, "approvalData");
+
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
@@ -25,8 +26,11 @@ function ApproveRejectDrawer(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
+
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
+  const [openPushButton, setOpenPushButton] = useState(false)
+
   useEffect(() => {
     let tempDropdownList = []
     let obj = {
@@ -71,6 +75,11 @@ function ApproveRejectDrawer(props) {
     }
     props.closeDrawer('')
   }
+
+  const closePushButton = () => {
+    setOpenPushButton(false)
+    props.closeDrawer('')
+  }
   const onSubmit = (data) => {
     let obj = {}
     // if (type === 'Approve') {
@@ -98,18 +107,27 @@ function ApproveRejectDrawer(props) {
 
     if (type === 'Approve') {
       console.log("COMING IN APPROVE", Data);
+      // if (IsPushDrawer) {
+      //   toastr.success('The costing has been approved')
+      //   setOpenPushButton(true)
 
+      // } else {
+      //   toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+      //   props.closeDrawer()
+      // }
 
       dispatch(approvalRequestByApprove(Data, res => {
         if (res.data.Result) {
-          // if (IsPushDrawer) {
-          //   toastr.success('Costing  Approved push drawer')
-          // } else {
-          //   toastr.success('Costing Approved')
-          //   props.closeDrawer()
-          // }
-          toastr.success('Costing Approved')
-          props.closeDrawer()
+          if (IsPushDrawer) {
+            toastr.success('The costing has been approved')
+            setOpenPushButton(true)
+
+          } else {
+            toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+            props.closeDrawer()
+          }
+          // toastr.success('Costing Approved')
+          // props.closeDrawer()
         }
       }))
       //  props.closeDrawer()
@@ -216,6 +234,13 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
       </Drawer>
+      {openPushButton && (
+        <PushButtonDrawer
+          isOpen={openPushButton}
+          closeDrawer={closePushButton}
+          anchor={'right'}
+        />
+      )}
     </>
   )
 }

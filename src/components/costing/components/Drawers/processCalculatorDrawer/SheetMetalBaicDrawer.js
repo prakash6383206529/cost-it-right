@@ -171,9 +171,9 @@ function SheetMetalBaicDrawer(props) {
                 {/* <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col> */}
-                <Col md="12">
+                
                   <Row className={'mt15'}>
-                    <Col md="2">
+                    <Col className="col">
                       <TextFieldHookForm
                         label={`Tonnage`}
                         name={'MachineTonnage'}
@@ -189,7 +189,7 @@ function SheetMetalBaicDrawer(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2">
+                    <Col className="col">
                       <TextFieldHookForm
                         label={`Cycle Time`}
                         name={'CycleTime'}
@@ -216,7 +216,7 @@ function SheetMetalBaicDrawer(props) {
                     </Col>
                     {
                       props.calculatorData.UOMType === DIMENSIONLESS &&
-                      <Col md="2">
+                      <Col className="col">
                         <TextFieldHookForm
                           label={`Cavity`}
                           name={'Cavity'}
@@ -242,7 +242,7 @@ function SheetMetalBaicDrawer(props) {
                         />
                       </Col>
                     }
-                    <Col md="2">
+                    <Col className="col">
                       <TextFieldHookForm
                         label={`Efficiency`}
                         name={'Efficiency'}
@@ -267,7 +267,7 @@ function SheetMetalBaicDrawer(props) {
                         disabled={false}
                       />
                     </Col>
-                    <Col md="2">
+                    <Col className="col">
                       <TextFieldHookForm
                         label={props.calculatorData.UOMType === MASS ? `Finished Weight` : `Quantity`}
                         name={'Quantity'}
@@ -292,7 +292,7 @@ function SheetMetalBaicDrawer(props) {
                         disabled={props.calculatorData.UOMType === MASS ? true : false}
                       />
                     </Col>
-                    <Col md="2">
+                    <Col className="col">
                       <TextFieldHookForm
                         label={`Total Process Cost`}
                         name={'ProcessCost'}
@@ -318,7 +318,7 @@ function SheetMetalBaicDrawer(props) {
                       />
                     </Col>
                   </Row>
-                </Col>
+                
 
                 {/* <div className="bluefooter-butn border row">
                   <div className="col-sm-8">Total Machining Time </div>
@@ -351,9 +351,12 @@ function SheetMetalBaicDrawer(props) {
                 // disabled={isSubmitted ? true : false}
                 className="btn-primary save-btn"
               >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
+                <div className={"check-icon"}>
+                            <img
+                              src={require("../../../../../assests/images/check.png")}
+                              alt="check-icon.jpg"
+                            />{" "}
+                          </div>
                 {'SAVE'}
               </button>
             </div>

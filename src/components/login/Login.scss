@@ -126,7 +126,7 @@ input:focus {
     
   }
   .input-group  {label{display: none}}
-  .form{ margin-top: 48px;}
+  .form{ margin-top: 15px;}
 }
 .customs-checkbox {
   position: relative;
@@ -199,8 +199,9 @@ span.input-group-text.bg-white {
     justify-content: center;
     border-radius: 8px 0 0 8px; 
    img{
-     width: 78%;
-     padding: 15px;
+     width: 100%;
+     padding: 10px;
+     margin-bottom: 15px;
    }
  h3{
   font-size: 20px;

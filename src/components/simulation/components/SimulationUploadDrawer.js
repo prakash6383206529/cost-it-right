@@ -7,9 +7,8 @@ import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting } from '../actions/CostWorking'
+import { bulkUploadCosting } from '../../costing/actions/CostWorking'
 import { CostingBulkUpload, CostingBulkUploadTempData } from '../../../config/masterData'
-import { fileUploadRMDomestic, } from '../../masters/actions/Material'
 import { FILE_URL } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
@@ -19,7 +18,7 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
-class CostingBulkUploadDrawer extends Component {
+class SimulationUploadDrawer extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -105,13 +104,14 @@ class CostingBulkUploadDrawer extends Component {
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
         </ExcelSheet>);
     }
+
     fileHandler = event => {
 
         let fileObj = event.target.files[0];
         let fileHeads = [];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
-        console.log(fileObj, "FILE OBJ");
+
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             toastr.warning('File type should be .xls or .xlsx')
@@ -124,64 +124,58 @@ class CostingBulkUploadDrawer extends Component {
                 if (err) {
 
                 } else {
-
                     fileHeads = resp.rows[0];
-                    console.log(fileHeads, "FILE HEADS");
-                    const check = fileHeads.includes(CostingBulkUpload)
-                    console.log(check, "llllllllllllllllllllllllllllll");
-                    if (check === false) {
-                        toastr.error('Please check your data.')
-                    }
-                    else {
-                        // fileHeads = resp.rows[0];
-                        // let fileData = [];
-                        // resp.rows.map((val, index) => {
-                        //     if (index > 0) {
+                    //
+                    // fileHeads = ["SerialNumber", "BillNumber"]
 
-                        //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                        //         const i = val.findIndex(e => e === undefined);
-                        //         if (i !== -1) {
-                        //             val[i] = '';
-                        //         }
+                    let fileData = [];
+                    resp.rows.map((val, index) => {
+                        if (index > 0) {
 
-                        //         let obj = {}
-                        //         val.map((el, i) => {
-                        //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                        //                 el = getJsDateFromExcel(el)
-                        //             }
-                        //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                        //                 el = parseInt(el)
-                        //             }
-                        //             obj[fileHeads[i]] = el;
-                        //             return null;
-                        //         })
-                        //         fileData.push(obj)
-                        //         obj = {}
+                            // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+                            const i = val.findIndex(e => e === undefined);
+                            if (i !== -1) {
+                                val[i] = '';
+                            }
 
-                        //     }
-                        //     console.log(fileData, "FD");
-                        //     return null;
-                        // })
-                        this.setState({
-                            fileData: fileObj,
-                            uploadfileName: uploadfileName,
-                        });
-                    };
+                            let obj = {}
+                            val.map((el, i) => {
+                                if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+                                    el = getJsDateFromExcel(el)
+                                }
+                                if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+                                    el = parseInt(el)
+                                }
+                                obj[fileHeads[i]] = el;
+                                return null;
+                            })
+                            fileData.push(obj)
+                            obj = {}
+
+                        }
+                        return null;
+                    })
+                    this.setState({
+                        fileData: fileData,
+                        uploadfileName: uploadfileName,
+                    });
                 }
             });
         }
     }
 
-    onSubmit = (value) => {
-        //  console.log(value, "VAL");
+    onSubmit = () => {
         const { fileData } = this.state
-        console.log(fileData, "DATTTTTTTTTTTTTTTTTTTT")
+        console.log('fileData: ', fileData);
+
         // let data = new FormData()
         // data.append('file', fileData)
+
         let obj = {
-            file: fileData
+            file: fileData,
+            LoggedInUserId: loggedInUserId(),
         }
-        console.log(obj, "OBJ");
+
         this.props.bulkUploadCosting(obj, (res) => {
             let Data = res.data[0]
             const { files } = this.state
@@ -210,7 +204,7 @@ class CostingBulkUploadDrawer extends Component {
                                     <Col>
                                         <div className={"header-wrapper left"}>
                                             <h3>
-                                                {"Costing Bulk Upload"}
+                                                {"Upload Data"}
                                             </h3>
                                         </div>
                                         <div
@@ -226,6 +220,7 @@ class CostingBulkUploadDrawer extends Component {
                                         </ExcelFile>
                                     </Col> */}
                                     <Col md="12">
+                                        <label>Upload</label>
                                         <div className="input-group mt25 col-md-12 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../../assests/images/uploadcloud.png')} ></img> </label>
@@ -238,71 +233,11 @@ class CostingBulkUploadDrawer extends Component {
                                                 <p> {this.state.uploadfileName}</p>
                                             </div>
                                         </div>
-
                                     </Col>
-                                    {/* <Col md="12">
-                                        <label>Upload File</label>
-                                        {this.state.fileName !== "" ? (
-                                            <div class="alert alert-danger" role="alert">
-                                                {this.state.fileName}
-                                            </div>
-                                        ) : (
-                                            <Dropzone
-                                                getUploadParams={this.getUploadParams}
-                                                onChangeStatus={this.handleChangeStatus}
-                                                PreviewComponent={this.Preview}
-                                                onChange={this.fileHandler}
-                                                accept=".xlsx"
-                                                initialFiles={this.state.initialFiles}
-                                                maxFiles={1}
-                                                maxSizeBytes={2000000}
-                                                inputContent={(files, extra) =>
-                                                    extra.reject ? (
-                                                        "Image, audio and video files only"
-                                                    ) : (
-                                                        <div className="text-center">
-                                                            <i className="text-primary fa fa-cloud-upload"></i>
-                                                            <span className="d-block">
-                                                                Drag and Drop or{" "}
-                                                                <span className="text-primary">
-                                                                    Browse
-                                                                        </span>
-                                                                <br />
-                                                                      file to upload
-                                                                     </span>
-                                                        </div>
-                                                    )
-                                                }
-                                                styles={{
-                                                    dropzoneReject: {
-                                                        borderColor: "red",
-                                                        backgroundColor: "#DAA",
-                                                    },
-                                                    inputLabel: (files, extra) =>
-                                                        extra.reject ? { color: "red" } : {},
-                                                }}
-                                                classNames="draper-drop"
-                                            />
-                                        )}
-                                    </Col> */}
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12 pl-3 pr-3">
                                         <div className="text-right ">
-                                            <button
-                                                onClick={this.cancel}
-                                                type="submit"
-                                                value="CANCEL"
-                                                className="reset mr15 cancel-btn"
-                                            >
-                                                <div className={"cross-icon"}>
-                                                    <img
-                                                        src={require("../../../assests/images/times.png")}
-                                                        alt="cancel-icon.jpg"
-                                                    />
-                                                </div>
-                                                    CANCEL
-                                            </button>
                                             <button type="submit" className="btn-primary save-btn">
                                                 <div className={"check-icon"}>
                                                     <img src={require("../../../assests/images/check.png")} alt="" />
@@ -340,8 +275,8 @@ export default connect(mapStateToProps,
     {
         bulkUploadCosting
     })(reduxForm({
-        form: 'CostingBulkUploadDrawer',
+        form: 'SimulationUploadDrawer',
         enableReinitialize: true,
-    })(CostingBulkUploadDrawer));
+    })(SimulationUploadDrawer));
 
-// export default CostingBulkUploadDrawer;
+// export default SimulationUploadDrawer;

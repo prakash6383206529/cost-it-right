@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
+import { useForm, } from 'react-hook-form';
 import { saveComponentCostingSurfaceTab, setSurfaceCostInOverheadProfit } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
@@ -12,6 +13,11 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 function SurfaceTreatment(props) {
 
   const { surfaceData, transportationData, item } = props;
+
+  const { handleSubmit } = useForm({
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+  });
 
   const dispatch = useDispatch()
 
@@ -126,76 +132,80 @@ function SurfaceTreatment(props) {
                 </div>
               </Col>
             </Row>
+            <form
+              noValidate
+              className="form"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <Row className="mb-3 pt-3">
+                <Col>
+                  <div className="user-page p-0 px-3">
+                    <div className="cr-process-costwrap">
+                      <Row className="cr-innertool-cost">
+                        {
+                          props.IsAssemblyCalculation ?
+                            <>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col>
+                            </>
+                            :
+                            <>
+                              <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? item.CostingPartDetails.SurfaceTreatmentCost : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? item.CostingPartDetails.TransportationCost : 0}`}</Col>
+                              <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? item.CostingPartDetails.NetSurfaceTreatmentCost : 0}`}</Col>
+                            </>
+                        }
+                      </Row>
 
-            <Row className="mb-3 pt-3">
-              <Col>
-                <div className="user-page p-0 px-3">
-                  <div className="cr-process-costwrap">
-                    <Row className="cr-innertool-cost">
-                      {
-                        props.IsAssemblyCalculation ?
-                          <>
-                            <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0}`}</Col>
-                            <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0}`}</Col>
-                            <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${(item.CostingPartDetails && item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? item.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0) + (item.CostingPartDetails && item.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? item.CostingPartDetails.TotalTransportationCostPerAssembly : 0)}`}</Col>
-                          </>
-                          :
-                          <>
-                            <Col md="4" className="cr-costlabel">{`Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.SurfaceTreatmentCost !== null ? item.CostingPartDetails.SurfaceTreatmentCost : 0}`}</Col>
-                            <Col md="4" className="cr-costlabel">{`Transportation Cost: ${item.CostingPartDetails && item.CostingPartDetails.TransportationCost !== null ? item.CostingPartDetails.TransportationCost : 0}`}</Col>
-                            <Col md="4" className="cr-costlabel">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.NetSurfaceTreatmentCost !== null ? item.CostingPartDetails.NetSurfaceTreatmentCost : 0}`}</Col>
-                          </>
-                      }
-                    </Row>
+                      {/* <hr /> */}
+                      <div className="user-page px-3 pb-3">
+                        <div>
+                          <SurfaceTreatmentCost
+                            index={props.index}
+                            data={surfaceData}
+                            item={props.item}
+                            setSurfaceCost={props.setSurfaceCost}
+                            IsAssemblyCalculation={props.IsAssemblyCalculation}
+                            setAssemblySurfaceCost={props.setAssemblySurfaceCost}
+                          />
+                          {/* <hr /> */}
 
-                    {/* <hr /> */}
-                    <div className="user-page px-3 pb-3">
-                      <div>
-                        <SurfaceTreatmentCost
-                          index={props.index}
-                          data={surfaceData}
-                          item={props.item}
-                          setSurfaceCost={props.setSurfaceCost}
-                          IsAssemblyCalculation={props.IsAssemblyCalculation}
-                          setAssemblySurfaceCost={props.setAssemblySurfaceCost}
-                        />
-                        {/* <hr /> */}
+                          <TransportationCost
+                            index={props.index}
+                            data={transportationData}
+                            item={props.item}
+                            setTransportationCost={props.setTransportationCost}
+                            IsAssemblyCalculation={props.IsAssemblyCalculation}
+                            setAssemblyTransportationCost={props.setAssemblyTransportationCost}
+                          />
+                        </div>
+                      </div >
 
-                        <TransportationCost
-                          index={props.index}
-                          data={transportationData}
-                          item={props.item}
-                          setTransportationCost={props.setTransportationCost}
-                          IsAssemblyCalculation={props.IsAssemblyCalculation}
-                          setAssemblyTransportationCost={props.setAssemblyTransportationCost}
-                        />
-                      </div>
-                    </div >
-
+                    </div>
                   </div>
+                </Col>
+              </Row>
+
+              <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
+                <div className="col-sm-12 text-right">
+                  <button
+                    type={'button'}
+                    className="submit-button mr5 save-btn"
+                    onClick={saveData} >
+                    <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                    {'SAVE'}
+                  </button>
+
+                  <button
+                    type={'button'}
+                    className="reset mr15 cancel-btn"
+                    onClick={cancel} >
+                    <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                  </button>
                 </div>
-              </Col>
-            </Row>
-
-            <Row className="sf-btn-footer no-gutters justify-content-between mx-0">
-              <div className="col-sm-12 text-right">
-                <button
-                  type={'button'}
-                  className="submit-button mr5 save-btn"
-                  onClick={saveData} >
-                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                  {'SAVE'}
-                </button>
-
-                <button
-                  type={'button'}
-                  className="reset mr15 cancel-btn"
-                  onClick={cancel} >
-                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-                </button>
-              </div>
-            </Row>
-
+              </Row>
+            </form>
           </div>
         </div>
       </Drawer>

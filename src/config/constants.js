@@ -782,7 +782,8 @@ export const API = {
   getComapanySelectList: `${BASE_URL}/company/get-company-select-list`,
 
   //SIMULATION
-  getSimulationHistory: `${BASE_URL}/`
+  getSimulationHistory: `${BASE_URL}/`,
+  getSelectListOfSimulationMaster: `${BASE_URL}/`
 }
 
 //Api constants
@@ -1207,6 +1208,7 @@ export const GET_PAGES_SELECTLIST_SUCCESS = 'GET_PAGES_SELECTLIST_SUCCESS'
 export const GET_ACTION_HEAD_SELECTLIST_SUCCESS = 'GET_ACTION_HEAD_SELECTLIST_SUCCESS'
 export const GET_MENU_BY_USER_DATA_SUCCESS = 'GET_MENU_BY_USER_DATA_SUCCESS'
 export const GET_LEFT_MENU_BY_MODULE_ID_AND_USER = 'GET_LEFT_MENU_BY_MODULE_ID_AND_USER'
+export const GET_MENU_BY_MODULE_ID_AND_USER = 'GET_MENU_BY_MODULE_ID_AND_USER'
 
 //REASON
 export const GET_REASON_DATA_SUCCESS = 'GET_REASON_DATA_SUCCESS'
@@ -1273,12 +1275,13 @@ export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 
 //SIMULATION
 export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
+export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
 export const DRAFT = 'Draft'
 export const PENDING = 'PendingForApproval'
-export const WAITING_FOR_APPROVAL = 'WaitingForApproval'
+export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
 export const FINAL_APPROVAL = 'Final Approval'
@@ -1434,3 +1437,15 @@ export const DIMENSIONLESS = 'Dimensionless'
 
 //UOM CATEGORY
 export const STD = 'STD'
+
+//SIMULATION MASTER NAME
+export const RMDOMESTIC = 'Raw Material(Domestic)'
+export const RMIMPORT = 'Raw Material(Import)'
+export const BOPDOMESTIC = 'BOP (Domestic)'
+export const BOPIMPORT = 'BOP (Import)'
+export const PROCESS = 'Process'
+export const OPERATIONSIM = 'Operation'
+export const SURFACETREATMENT = 'SURFACE TREATMENT'
+export const OVERHEAD = 'Overhead'
+export const PROFIT = 'Profits'
+// export constse

@@ -1075,9 +1075,9 @@ function CostingDetails(props) {
 
     ZBCAvailableIndex = zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => el.CostingOptions.length > 0)
     VBCAvailableIndex = vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => el.CostingOptions.length > 0)
-    console.log('Indexxxxx ZBCAvailableIndex: ', ZBCAvailableIndex);
-    console.log('Indexxxxx VBCAvailableIndex: ', VBCAvailableIndex);
-    return (ZBCAvailableIndex !== -1 && VBCAvailableIndex !== -1) ? true : false;
+    // console.log('Indexxxxx ZBCAvailableIndex: ', ZBCAvailableIndex);
+    // console.log('Indexxxxx VBCAvailableIndex: ', VBCAvailableIndex);
+    return (ZBCAvailableIndex !== -1 || VBCAvailableIndex !== -1) ? true : false;
   }
 
   /**
@@ -1232,7 +1232,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="ECO No."
+                          label="ECN No."
                           name={"ECNNumber"}
                           Controller={Controller}
                           control={control}
@@ -1280,7 +1280,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Price(Approved SOB)"
+                          label={`Current Price(Approved SOB: ${partInfo && partInfo.Price !== undefined ? partInfo.Price : 0})`}
                           name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
@@ -1317,6 +1317,7 @@ function CostingDetails(props) {
                           </div>
                         </div>
                       </Col>
+
                     </Row>
                     {IsOpenVendorSOBDetails && (
                       <Row>
@@ -1354,7 +1355,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Plant Code`}</th>
                                   <th style={{}}>{`Plant Name`}</th>
-                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setEnableSOBField(!isSOBEnabled)} /></th>
+                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} /></th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
@@ -1476,8 +1477,8 @@ function CostingDetails(props) {
                                 <div className={"plus"}></div>ADD VENDOR
                               </button>
                             ) : (
-                                ""
-                              )}
+                              ""
+                            )}
                           </Col>
                           {/* ZBC PLANT GRID FOR COSTING */}
                         </Row>
@@ -1597,7 +1598,7 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between">
                         <div className="col-sm-12 text-right">
-                          <button type={"button"} className=" cancel-btn" onClick={cancel} >
+                          <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel} >
                             <div className={"cross-icon"}>
                               <img
                                 src={require("../../../assests/images/times.png")}
@@ -1607,7 +1608,7 @@ function CostingDetails(props) {
                             {"Clear"}
                           </button>
                           {IsShowNextBtn &&
-                            <button type="button" className="submit-button save-btn ml15" onClick={nextToggle} >
+                            <button type="button" className="submit-button save-btn" onClick={nextToggle} >
                               {"Next"}
                               <div className={"check-icon ml-1"}>
                                 <img
@@ -1618,6 +1619,7 @@ function CostingDetails(props) {
                             </button>}
                         </div>
                       </Row>}
+
 
                   </>
                 )}

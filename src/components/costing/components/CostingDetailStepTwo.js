@@ -243,7 +243,7 @@ function CostingDetailStepTwo(props) {
         checkForNull(tempData.NetPackagingAndFreight) +
         checkForNull(tempData.ToolCost)
 
-      const discountedCost = SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage);
+      const discountedCost = checkForDecimalAndNull(SumOfTab * calculatePercentage(data.HundiOrDiscountPercentage), 2);
       const discountValues = {
         NetPOPriceINR: checkForDecimalAndNull(SumOfTab - discountedCost, 2) + checkForDecimalAndNull(data.AnyOtherCost, 2),
         HundiOrDiscountValue: checkForDecimalAndNull(discountedCost, 2),

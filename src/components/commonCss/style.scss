@@ -1525,11 +1525,22 @@ $roboto: "Roboto", sans-serif;
 		}
 	}
 }
-.costing-summary-table {
+.w-40{width: 40%;}
+.w-60{width: 60%;}
+.costing-summary-table{
 	position: relative;
 	font-size: 14px;
 	color: #3D4465;
-	min-width: 980px;
+  min-width: 980px;
+  thead{
+    .main-row{
+      th{
+        width: 33%;
+        min-width: 410px;
+        vertical-align: middle;
+      }
+    }
+  }
 	tr {
 		td {
 			span {
@@ -1761,6 +1772,10 @@ body {
 	p {
 		font-size: 14px;
 		font-weight: 300;
+    max-width: 100%;
+    text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
 	}
 	.bottom {
 		padding: 10px;
@@ -1771,6 +1786,9 @@ body {
 		.right {
 			width: calc(100% - 75px);
 			display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
 		}
 	}
 }
@@ -1792,8 +1810,15 @@ body {
 		max-width: calc(25% - 40px);
     position: relative;
     margin-right: 53px;
-		&:last-child {
+		&:nth-child(4),&:nth-child(8),&:nth-child(12){
       margin-right: 0;
+			.card-border {
+				&:after {
+					display: none;
+				}
+			}
+		}
+    &:last-child{
 			.card-border {
 				&:after {
 					display: none;
@@ -2115,7 +2140,7 @@ html {
   {
     position: relative;
     &:before {
-      content: 'Net Landed Range (INR)';
+      content: 'Net Cost Range (INR)';
       position: absolute;
       left: -7px;
       font-family: $roboto !important;
@@ -3012,6 +3037,8 @@ body {
 }
 .weight-drawer-costing{
   .drawer-1500px{
+    width: 870px;
+    min-width: unset;
     >.row{
       margin-left: 0;
       margin-right: 0px;
@@ -3321,7 +3348,116 @@ body{
 .approval-summary-page{
   min-height: calc(100vh - 240px);
 }
+.z12{
+  z-index: 12;
+}
 
+.role-permision-page{
+  .table-bordered{
+    position: relative;
+    &:before{
+      content: "";
+      width: 1px;
+      border-right: 1px solid #dfe6f1 !important;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: -1px;
+      height: 100%;
+    }
+    &:after{
+      content: "";
+      height: 1px;
+      border-bottom: 1px solid #dfe6f1 !important;
+      position: absolute;
+      bottom: -1px;
+      right: 0;
+      left: 0;
+      width: 100%;
+    }
+    tr{
+      border: 1px solid #dfe6f1 !important;
+    }
+  }
+}
+
+// top menu bar drop down css starts here
+.nav-item.dropdown{
+  position: unset;
+  .dr-icon{
+    font-size: 14px;
+  }
+  .dropdown-menu.sub-menu{
+    display:none;
+    position: absolute;
+    right: 29px;
+    top:30px;
+    left: 29px;
+    z-index: 10;
+    text-align: left;
+    list-style: none;
+    padding-top: 19px;
+    background-clip: padding-box;
+    background-color:transparent;
+    border: none;
+    ul{
+      background-color: #fff;
+      box-shadow: 0px 5px 10px #00000033;
+      border-radius: 4px;
+      min-width: 8.4375rem;
+      padding:25px;
+      li{
+        padding: 5px 10px;
+        padding: 5px 10px;
+        display: inline-block;
+        vertical-align: top;
+        width: 19.8%;
+        text-align: left;
+      }
+      a{
+        color: #8A91AC;
+        font-size: 15px;
+        padding: 0;
+        &:hover,&:focus{
+          background-color: #fff;
+          color: #256bd1 !important;
+        }
+      }
+      .active-nav{
+        color: #256bd1;
+      }
+    }
+  }
+  &:hover{
+    >.nav-link{color: #256bd1;}
+    i.dr-icon{
+      transform: rotate(180deg);
+      color: #256bd1;
+    }
+    .dropdown-menu.sub-menu{
+      display:block;
+    }  
+  }
+}
+// top menu bar drop down css starts end
+
+// approval-workflow-drawer start
+.MuiDrawer-root.MuiDrawer-modal.approval-workflow-drawer{
+  .MuiDrawer-paper{
+    padding-bottom: 0px;
+    .sf-btn-footer{
+       .bluefooter-butn{
+         padding-top: 0 !important;
+       }
+      }
+  }
+  .workflow-row {
+    .col-lg-3{
+      margin-bottom: 30px;
+    }
+  }
+}
+// approval-workflow-drawer end
 
 // responsive media query start
 @media(max-width:1600px){
@@ -3400,6 +3536,9 @@ body{
 }// 1600px media query end
 
 @media(max-width:1366px){
+  .add-min-height{
+    min-height: calc(100vh - 273px);
+  }
   .tooltip-inner{
     font-size: calc(0.8rem * 80 / 100);
   }
@@ -3412,6 +3551,16 @@ body{
     display: block;
     padding: calc(0.5rem * 80 / 100) calc(0.75rem * 80 / 100);
   }
+  .add-min-height{
+    .btn-secondary,.btn-primary,.user-btn{
+      height: calc(40px * 80 / 100);
+    }
+    .reset-btn{
+      height: calc(40px * 80 / 100);
+    }
+    .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: calc(27px * 80 / 100);}
+  }
+
   .sf-mainheader{
      .img-xs{
       width: calc(30px * 80 / 100);
@@ -3507,7 +3656,12 @@ body{
         padding-right: calc(15px * 80 / 100);
         line-height: calc(14px * 80 / 100);
         height: calc(32px * 80 / 100);
+        width: auto;
       }
+      
+      .download-btn{
+         button{width: 100%;}
+        }
       .content-page{
         width: calc(100% - (205px * 80 / 100));
         padding: calc(21px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100) calc(15px * 80 / 100);
@@ -3515,7 +3669,6 @@ body{
         .tab-pane{
           .filter-block {
             position: initial;
-            
             &:before{
               position: absolute;
               top: calc(10px * 80 / 100);
@@ -3534,6 +3687,26 @@ body{
         }
       }// content-page
 
+      .content-page {
+        .filter-block {
+          .css-1gtu0rj-indicatorContainer{
+            padding: 1px 5px;
+            svg{
+              height: calc(20px * 80 / 100);
+              width: calc(20px * 80 / 100);
+            }
+          }
+        }
+      }
+      .header-title h5{
+        font-size: calc(18px * 80 / 100);
+      }
+      .btn-mr-rate{
+        margin-top: calc(28px * 80 / 100);
+      }
+      .reset-btn{
+        font-size: calc(14px * 80 / 100);
+      }
       .text-help{
         font-size: calc(12px * 80 / 100);
         height: calc(1em * 80 / 100);
@@ -3577,7 +3750,7 @@ body{
         padding:calc(2px * 80 / 100) calc(8px * 80 /100)
       }
       .css-107lb6w-singleValue, .css-1wa3eu0-placeholder{
-        font-size:calc(13px * 80 /100) ;
+        font-size:calc(14px * 80 /100) ;
       }
       .css-b8ldur-Input{
         padding-top: calc(2px * 80 / 100);
@@ -3630,7 +3803,7 @@ body{
         table{
           th,td{
             font-size: calc(14px * 80 /100);
-            padding:calc(0.71rem * 80 /100) calc(0.75rem * 80 /100);
+            padding:calc(0.71rem * 80 /100) calc(0.85rem * 80 /100);
           }
         }
       }
@@ -3717,26 +3890,30 @@ body{
               min-height:  calc(40px * 80 / 100);
               padding: calc(12px * 80 / 100) !important;
               &:disabled{
-                font-size:  calc(13px * 80 / 100);
+                font-size:  calc(14px * 80 / 100);
               }
               &::placeholder{
-                font-size: calc(13px * 80 / 100);
+                font-size: calc(14px * 80 / 100);
               }
             }
           }
         }
       }
-
+      
       .css-1wa3eu0-placeholder {
-        font-size: calc(13px * 80 / 100);        
+        font-size: calc(14px * 80 / 100);        
       }
       .css-107lb6w-singleValue,.css-1wa3eu0-placeholder{
-        font-size: calc(13px * 80 / 100);
+        font-size: calc(14px * 80 / 100);
       }
       .withBorder .form-control,.form-control {
         &::placeholder{
-          font-size: calc(13px * 80 / 100);
+          font-size: calc(14px * 80 / 100);
         }
+      }
+
+      .css-1fhf3k1-control{
+        min-height: calc(38px * 80 / 100);
       }
 
       .select__value-container--has-value{
@@ -3785,8 +3962,25 @@ body{
           }
       }
      }
-     .form-control, .manageuser .css-yk16xz-control{
+     .login-form .inputbox.input-group .form-control,.form-control, .manageuser .css-yk16xz-control{
        height: calc(40px * 80 / 100);
+     }
+     textarea.form-control{
+       height: auto;
+     }
+     .btn-lg,.approval-btn{
+       img{
+         height: calc(18px * 80 / 100);
+       }
+     }
+     .login-form .inputbox.input-group{
+       &:before{
+         top: 8px;
+       }
+     }
+     .login-btn{
+      font-size: calc(14px * 80 / 100);
+      padding: calc(10px * 80 / 100) calc(15px * 80 / 100);
      }
      .css-yk16xz-control{
         min-height: calc(40px * 80 / 100) !important;
@@ -3798,8 +3992,8 @@ body{
           }
         }
       }
-      .css-tlfecz-indicatorContainer{
-        padding: calc(8px * 80 / 100);
+      .css-1gtu0rj-indicatorContainer,.css-tlfecz-indicatorContainer{
+        padding: calc(6px * 80 / 100);
       }
       .mt30{
         margin-top: calc(30px * 80 / 100);
@@ -3815,18 +4009,220 @@ body{
         height: calc(15px * 80 / 100);
         background-size: contain;
       }
+
+      [class$=hdxg-control]{
+        min-height: calc(40px * 80 / 100) !important;
+      }
+      .css-26l3qy-menu,.css-1uccc91-singleValue{
+        font-size: calc(14px * 80 / 100);
+      }
+
+      body .btn-lg img{
+        height: calc(18px * 80 / 100);
+      }
       
       .switch-level{
         .left-title + div{
           transform: scale(0.8);
         }
       }
-       
-    // add pages css
-    }// body
+      .cr-tbl-label{
+        font-size: calc(16px * 80 / 100);
+      }
 
+      .left-border{
+        font-size: calc(17px * 80 / 100);
+      }
+      .sec-heading {
+        font-size: calc(16px * 80 / 100);
+      }
+      // add pages css
+
+      // top menu bar drop down css starts here
+      .nav-item.dropdown{
+        .dr-icon{
+          font-size: calc(14px * 80 / 100);
+        }
+        .dropdown-menu.sub-menu{
+          padding-top: 10px;
+          ul{
+            padding:calc(25px * 80 / 100);
+            li{
+              padding: calc(5px * 80 / 100) calc(10px * 80 / 100);
+            }
+            a{
+              color: #8A91AC;
+              font-size: calc(15px * 80 / 100);
+            }
+          }
+        }
+      }
+      // top menu bar drop down css starts end
+
+      .costing-page-tabs{
+        .right-actions{
+          span.d-block{
+            font-size: calc(14px * 80 / 100);
+          }
+          img{
+            max-height: calc(30px * 80 / 100);
+          }
+        }  
+      }
+      
+      .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: calc(16px * 80 / 100);padding: calc(10px * 80 / 100) calc(15px * 80 / 100);}
+      .table-responsive {
+        font-size: calc(14px * 80 / 100);
+        .cr-brdr-main {
+          tbody {
+            td {
+              font-size: calc(15px * 80 / 100);
+            }
+          }
+          tr {
+            th {
+              font-size: calc(15px * 80 / 100);
+            }
+          }
+        }
+      }
+      .head-text{
+        font-size: calc(15px * 80 / 100);
+      }
+      .refresh-icon{
+        background-size: calc(36px * 80 / 100);
+        width: calc(36px * 80 / 100);
+        height: calc(36px * 80 / 100);
+      }
+
+      .filled-small div[class$="placeholder"]{
+        top: calc(14px * 80 / 100);
+      }
+
+      .react-bs-table-container {
+        .react-bs-table {
+          .sort-column {
+            .dropdown,
+            .dropup {
+              .caret {
+                width: calc(11px * 80 / 100);
+                height: calc(11px * 80 / 100);
+                background-size: calc(11px * 80 / 100) calc(11px * 80 / 100) !important;
+              }
+            }
+      
+            .dropup {
+              .caret {
+                background: transparent
+                  url('../../assests/images/down-sorting-arrow.png') calc(11px * 80 / 100) calc(11px * 80 / 100);
+              }
+            }
+          }
+        }
+      }
+
+      td {
+        .Error,
+        .Pushed,
+        .Draft,
+        [class^="Pending"],
+        .Approved,
+        .Rejected,
+        .History {
+          min-width: calc(90px * 80 / 100);
+          height: calc(30px * 80 / 100);
+          font-size: calc(14px * 80 / 100);
+          line-height: calc(30px * 80 / 100);
+        }
+      }
+      .link{
+        font-size: calc(14px * 80 / 100);
+      }
+
+      .card-border {
+        &:after {
+          width: calc(25px * 80 / 100);
+          height: calc(25px * 80 / 100);
+        }
+        .top {
+          b {
+            font-size: calc(20px * 80 / 100);
+          }
+          .left {
+            padding: calc(10px * 80 / 100);
+          }
+          .right {
+            padding: calc(10px * 80 / 100);
+          }
+        }
+        span {
+          font-size: calc(14px * 80 / 100);
+        }
+        p {
+          font-size: calc(14px * 80 / 100);
+        }
+        .bottom{
+          padding:calc(10px * 80 / 100);
+          .d-flex.mb-3{
+            margin-bottom: calc(1rem * 80 / 100) !important;
+          }
+        }
+      }
+
+      .react-bs-table-container .react-bs-table-pagination .col-md-6:nth-last-child(1) ul.pagination,.react-bs-table-container .react-bs-table-pagination .col-md-6:nth-last-child(1) ul.pagination .page-link{
+        font-size: calc(14px * 80 / 100);
+      }
+
+      .rrt-confirm-holder{
+        .header-bar{
+          padding: calc(16px * 80 / 100) calc(20px * 80 / 100);
+          margin-bottom: calc(25px * 80 / 100);
+          h4{
+            color: #256BD1;
+            font-size: calc(24px * 80 / 100);
+          }
+        }
+        .rrt-ok-btn{
+          width: calc(18px * 80 / 100);
+          height: calc(14px * 80 / 100);
+        }
+        .rrt-cancel-btn{
+          &:before{
+            width: calc(18px * 80 / 100);
+            height: calc(14px * 80 / 100);
+          }
+        }
+        .rrt-confirm{
+          width: calc(444px * 80 / 100);
+          .rrt-message{
+            font-size: calc(18px * 80 / 100);
+            padding: calc(10px * 80 / 100);
+          }
+          .rrt-buttons-holder {
+            .rrt-button{height: calc(42px * 80 / 100);}
+          }
+        }
+        .img-block{
+          img{
+            height: calc(83px * 80 / 100);
+          }
+        }
+      }
+
+      .topminus88.filter-btn-top{
+        top: -82px;
+      }
+
+    }// body
+    
     html {
       body {
+        .approve-button, .approve-reject-btn{
+          padding: calc(5px * 80 /100) calc(12px * 80 /100);
+          vertical-align: middle;
+          height: calc(32px * 80 /100);
+          font-size: calc(14px * 80 /100);
+        }
         .save-btn,.cancel-btn  {
           width: auto;
           padding: calc(8px * 80 /100) calc(12px * 80 /100);
@@ -3842,11 +4238,20 @@ body{
           img{
             width: calc(16px * 80 /100);;
           }
+        }
+        .user-btn,.approve-button{
+          img{
+            width: calc(16px * 80 /100);
+          }
+        }
+        .approve-reject-btn{
+          img{
+            width: calc(13px * 80 /100);
+          }
         }      
       }
     }
-
-     
+  
 
   // // input range slider 'Net Landed Range (INR)' css 
   .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}
@@ -3947,6 +4352,15 @@ body{
           }
         }
       }
+    }
+    .surfacetreatment-main-headings{
+      >thead{
+        >tr{
+          >th:nth-child(5){
+            width: 145px !important;
+          }
+        }
+      }
     }    
     .table {
       td,th{
@@ -4006,7 +4420,7 @@ body{
   .costing-details-page{
     .table {
       td,th{
-        font-size: 14px;
+        font-size: calc(15px * 80 / 100);
       }
     }
   }

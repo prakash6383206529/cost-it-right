@@ -53,12 +53,12 @@ class Breadcrumb extends Component {
 				<div className="container-fluid">
 					<div className="row">
 						<div className="col-12 pl-0">
-							<div className="bread-inner">
+							{/* <div className="bread-inner">
 								<ul className="bread-list d-inline-flex">
 									<li><a href="/">Home</a></li>
 									<li><a href={`/${url}`}>{this.state.secondTitle}</a></li>
-									<li className="active">{this.state.ThirdTitle}</li>
-									{/* <Link className="bell-notifcation-icon" to="/">
+									<li className="active">{this.state.ThirdTitle}</li> */}
+							{/* <Link className="bell-notifcation-icon" to="/">
 										Home
                   </Link>
 									<Link className="bell-notifcation-icon" to={`/${url}`}>
@@ -67,8 +67,8 @@ class Breadcrumb extends Component {
 									<Link className="bell-notifcation-icon active" >
 										{this.state.ThirdTitle}
 									</Link> */}
-								</ul>
-							</div>
+							{/* </ul>
+							</div> */}
 						</div>
 					</div>
 				</div>

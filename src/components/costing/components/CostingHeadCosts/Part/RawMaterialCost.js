@@ -17,7 +17,7 @@ import { G, KG, MG } from '../../../../../config/constants'
 function RawMaterialCost(props) {
 
   const { register, handleSubmit, control, setValue, errors } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
@@ -72,7 +72,6 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
-    console.log(rowData, "ROW DATA ");
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
         RMName: rowData.RawMaterial,
@@ -109,15 +108,15 @@ function RawMaterialCost(props) {
       return false
     }
     dispatch(getRawMaterialCalculationByTechnology(costData.CostingId, tempData.RawMaterialId, tempData.WeightCalculationId, costData.TechnologyId, res => {
-      if (res && res.data && res.data.Data) {
-        const data = res.data.Data
-        tempData = { ...tempData, WeightCalculatorRequest: data, }
-        tempArr = Object.assign([...gridData], { [index]: tempData })
-        setTimeout(() => {
-          setGridData(tempArr)
-          setWeightDrawerOpen(true)
-        }, 100)
-      }
+      // if (res && res.data && res.data.Data) {
+      const data = res && res.data && res.data.Data ? res.data.Data : {}
+      tempData = { ...tempData, WeightCalculatorRequest: data, }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setTimeout(() => {
+        setGridData(tempArr)
+        setWeightDrawerOpen(true)
+      }, 100)
+      // }
     }))
     // setWeightDrawerOpen(true)
   }
@@ -152,7 +151,7 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
       setGridData(tempArr)
-      toastr.warning('Please enter valid weight.')
+      //toastr.warning('Please enter valid weight.')
 
     } else {
       const GrossWeight = checkForNull(event.target.value)
@@ -186,8 +185,8 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
       setGridData(tempArr)
+      //toastr.warning('Please enter valid weight.')
 
-      toastr.warning('Please enter valid weight.')
     } else {
       const FinishWeight = checkForNull(event.target.value);
       const GrossWeight = tempData.GrossWeight !== undefined ? tempData.GrossWeight : 0;
@@ -350,7 +349,8 @@ function RawMaterialCost(props) {
                                 rules={{
                                   //required: true,
                                   pattern: {
-                                    value: /^[0-9]\d*(\.\d+)?$/i,
+                                    value: /[0-9]\d*(\.\d+)?$/i,
+                                    // value: /[0-9]+\.[0-9]+$/,
                                     message: 'Invalid Number.',
                                   },
                                 }}

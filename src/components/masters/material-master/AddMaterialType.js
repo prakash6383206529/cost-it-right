@@ -182,7 +182,7 @@ class AddMaterialType extends Component {
                         onClick={this.cancel}
                         type="submit"
                         value="CANCEL"
-                        className="reset mr15 cancel-btn"
+                        className="mr15 cancel-btn"
                       >
                         <div className={"cross-icon"}>
                           <img
@@ -195,7 +195,7 @@ class AddMaterialType extends Component {
                       <button
                         type="submit"
                         // disabled={isSubmitted ? true : false}
-                        className="btn-primary save-btn"
+                        className="user-btn save-btn"
                       >
                         {" "}
                         <div className={"check-icon"}>

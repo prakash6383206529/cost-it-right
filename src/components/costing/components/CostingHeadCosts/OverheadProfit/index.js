@@ -71,7 +71,7 @@ function OverheadProfit(props) {
 
   const [ICCInterestRateId, setICCInterestRateId] = useState(ICCApplicabilityDetail !== undefined ? ICCApplicabilityDetail.InterestRateId : '')
 
-  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms ? true : false)
+  const [IsPaymentTermsApplicable, setIsPaymentTermsApplicable] = useState(CostingInterestRateDetail && CostingInterestRateDetail.IsPaymentTerms === true ? true : false)
   const [paymentTermsApplicability, setPaymentTermsApplicability] = useState(PaymentTermDetail !== undefined ? { label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability } : [])
   const [PaymentTermInterestRateId, setPaymentTermInterestRateId] = useState(PaymentTermDetail !== undefined ? PaymentTermDetail.InterestRateId : '')
 
@@ -110,7 +110,9 @@ function OverheadProfit(props) {
       setPaymentTermsApplicability({ label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability })
       setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
     }
-
+    setTimeout(() => {
+      includeSurfaceTreatment()
+    }, 3000)
   }, []);
 
   /**
@@ -447,7 +449,7 @@ function OverheadProfit(props) {
     if (headerCosts !== undefined && overheadObj && overheadObj.IsOverheadCCApplicable) {
       const { OverheadCCPercentage } = overheadObj;
       setValue('OverheadCCPercentage', OverheadCCPercentage)
-      setValue('OverheadCCCost', headerCosts.NetConversionCost)
+      //setValue('OverheadCCCost', headerCosts.NetConversionCost)
 
       /**
        *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY) FROM SURFACE TAB, IS NOT IS USE THEN UNCOMMENT BELOW LINE
@@ -562,8 +564,13 @@ function OverheadProfit(props) {
     if (headerCosts !== undefined && profitObj && profitObj.IsProfitCCApplicable) {
       const { ProfitCCPercentage } = profitObj;
       setValue('ProfitCCPercentage', ProfitCCPercentage)
-      setValue('ProfitCCCost', headerCosts.NetConversionCost)
-      setValue('ProfitCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(ProfitCCPercentage), 2))
+      //setValue('ProfitCCCost', headerCosts.NetConversionCost)
+
+      /**
+       *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY) FROM SURFACE TAB, IS NOT IS USE THEN UNCOMMENT BELOW LINE
+       *  AND COMMENT THIS FUNCTION includeSurfaceTreatment()
+       */
+      //setValue('ProfitCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(ProfitCCPercentage), 2))
     }
   }
 
@@ -769,7 +776,7 @@ function OverheadProfit(props) {
           }
 
           setRejectionObj(Data.CostingRejectionDetail)
-
+          setIsSurfaceTreatmentAdded(false)
         }
       }))
     } else {
@@ -1117,30 +1124,52 @@ function OverheadProfit(props) {
   * @description INCLUDE SURFACE TREATMENT IN TO OVERHEAD AND PROFIT
   */
   const includeSurfaceTreatment = () => {
-
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
-      setValue('OverheadCCTotalCost', getValues('OverheadCCTotalCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+
+      const { OverheadCCPercentage } = overheadObj;
+      setValue('OverheadCCCost', getValues('OverheadCCCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+      setValue('OverheadCCTotalCost', checkForDecimalAndNull((getValues('OverheadCCCost') * calculatePercentage(OverheadCCPercentage)), 2))
       setIsSurfaceTreatmentAdded(true)
       setOverheadObj({
         ...overheadObj,
-        OverheadCCTotalCost: getValues('OverheadCCTotalCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost
+        OverheadCCCost: getValues('OverheadCCCost'),
+        OverheadCCTotalCost: checkForDecimalAndNull((getValues('OverheadCCCost') * calculatePercentage(OverheadCCPercentage)), 2),
       })
+
     } else if (!IsIncludedSurfaceInOverheadProfit) {
+
       const { OverheadCCPercentage } = overheadObj;
+      setValue('OverheadCCCost', headerCosts !== undefined ? headerCosts.NetConversionCost : 0)
       setValue('OverheadCCTotalCost', checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(OverheadCCPercentage), 2))
       setIsSurfaceTreatmentAdded(false)
       setOverheadObj({
         ...overheadObj,
+        OverheadCCCost: headerCosts !== undefined ? headerCosts.NetConversionCost : 0,
         OverheadCCTotalCost: checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(OverheadCCPercentage), 2)
       })
+
     }
 
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && profitObj && profitObj.IsProfitCCApplicable) {
-      setValue('ProfitCCTotalCost', getValues('ProfitCCTotalCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+      const { ProfitCCPercentage } = profitObj;
+      setValue('ProfitCCCost', getValues('ProfitCCCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
+      setValue('ProfitCCTotalCost', checkForDecimalAndNull(getValues('ProfitCCCost') * calculatePercentage(ProfitCCPercentage)), 2)
       setIsSurfaceTreatmentAdded(true)
+      setProfitObj({
+        ...profitObj,
+        ProfitCCCost: getValues('ProfitCCCost'),
+        ProfitCCTotalCost: checkForDecimalAndNull(getValues('ProfitCCCost') * calculatePercentage(ProfitCCPercentage), 2),
+      })
     } else if (!IsIncludedSurfaceInOverheadProfit) {
-      setValue('ProfitCCTotalCost', getValues('ProfitCCTotalCost'))
+      const { ProfitCCPercentage } = profitObj;
+      setValue('ProfitCCCost', headerCosts !== undefined ? headerCosts.NetConversionCost : 0)
+      setValue('ProfitCCTotalCost', checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(ProfitCCPercentage), 2))
       setIsSurfaceTreatmentAdded(false)
+      setProfitObj({
+        ...profitObj,
+        ProfitCCCost: headerCosts !== undefined ? headerCosts.NetConversionCost : 0,
+        ProfitCCTotalCost: checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(ProfitCCPercentage), 2),
+      })
     }
 
   }

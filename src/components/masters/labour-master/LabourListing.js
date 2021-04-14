@@ -679,7 +679,7 @@ class LabourListing extends Component {
                         type="button"
                         //disabled={pristine || submitting}
                         onClick={this.filterList}
-                        className="apply mr0"
+                        className="user-btn mr0"
                       >
                         {"Apply"}
                       </button>
