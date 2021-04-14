@@ -596,7 +596,7 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartName"}
                             type="text"
                             placeholder={""}
-                            validate={[required, specialName, checkWhiteSpaces]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces]}
                             component={renderText}
                             required={true}
                             className=""

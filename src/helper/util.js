@@ -586,17 +586,14 @@ export function formViewData(costingSummary) {
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
     overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
-    overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) : 0 +
-      (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost,) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost,) : 0),
+    overheadValue: dataFromAPI.CostingPartDetails.CostingOverheadDetail && checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) +
+      checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost),
   }
   obj.profitOn = {
     profitTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-',
-    profitValue: dataFromAPI.CostingPartDetails && (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost) : 0),
+    profitValue: dataFromAPI.CostingPartDetails && checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost) +
+      checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost) +
+      checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost)
   }
   obj.rejectionOn = {
     rejectionTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability : '-',
