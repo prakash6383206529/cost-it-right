@@ -193,8 +193,7 @@ class AddMachineRate extends Component {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
             // let technologyArray = Data && Data.Technology.map((item) => ({ label: item.Technology, value: item.TechnologyId }))
-            let technologyArray = { label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId }
-            console.log(technologyArray, "technologyArray");
+
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
                 processName: el.ProcessName,
@@ -217,7 +216,7 @@ class AddMachineRate extends Component {
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
-              selectedTechnology: [{ label: Data.Technology[0].Technology, value: Data.Technology[0].TechnologyId }],
+              selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
               selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,

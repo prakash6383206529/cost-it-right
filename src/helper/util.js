@@ -720,10 +720,35 @@ export function convertmmTocm(value) {
   return value / 10
 }
 
+/**g to kg,mg**/
 export function setValueAccToUOM(value, UOM) {
   switch (UOM) {
     case G:
-      return value
+      return checkForNull(value)
+    case KG:
+      return checkForNull(value / 1000)
+    case MG:
+      return checkForNull(value * 1000)
+    default:
+      break;
+  }
+}
+// export function setValueAccToUOM(value, UOM) {
+//   switch (UOM) {
+//     case G:
+//       return value
+//     case KG:
+//       return value / 1000
+//     case MG:
+//       return value * 1000
+//     default:
+//       break;
+//   }
+// }
+export function setValueAccToUOMFromkg(value, UOM) {
+  switch (UOM) {
+    case G:
+      return value * 1000
     case KG:
       return value / 1000
     case MG:
@@ -731,4 +756,69 @@ export function setValueAccToUOM(value, UOM) {
     default:
       break;
   }
+}
+
+export function getConvertedValue(value, unit, UOM) {
+  console.log('UOM: ', UOM);
+  console.log('unit: ', unit);
+  console.log('value: ', value);
+  if (unit === G) {
+    switch (UOM) {
+      case KG:
+        return convertGTokg(value)
+      case MG:
+        return convertGToMg(value)
+      default:
+        return checkForNull(value)
+
+    }
+  } else if (unit === KG) {
+    switch (UOM) {
+      case G:
+        return convertKgToG(value)
+      case MG:
+        return convertKgToMg(value)
+      default:
+        return checkForNull(value)
+    }
+  } else if (unit === MG) {
+    switch (UOM) {
+      case G:
+        return convertMgToG(value)
+      case KG:
+        return convertMgToKg(value)
+      default:
+        return checkForNull(value)
+    }
+  }
+  // switch (UOM) {
+  //   case G:
+  //     return value * 1000
+  //   case KG:
+  //     return value
+  //   case MG:
+  //     return value / 1000000
+  //   default:
+  //     break;
+  // }
+}
+
+export function convertGTokg(value) {
+  console.log('value from g to kg: ', value);
+  return checkForNull(value / 1000)
+}
+export function convertGToMg(value) {
+  return checkForNull(value * 1000)
+}
+export function convertKgToMg(value) {
+  return checkForNull(value / 1000000)
+}
+export function convertKgToG(value) {
+  return checkForNull(value * 1000)
+}
+export function convertMgToG(value) {
+  return checkForNull(value / 1000)
+}
+export function convertMgToKg(value) {
+  return checkForNull(value * 1000000)
 }
