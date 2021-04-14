@@ -125,43 +125,26 @@ class CostingBulkUploadDrawer extends Component {
 
                 } else {
 
+                    // CostingBulkUpload && CostingBulkUpload.map(item => {
+                    //     const check = fileHeads.includes(item.label)
+                    //     if (check === false) {
+                    //         toastr.error('Please check your data.')
+                    //     }
+                    //   });
+
+                    let flag = 0
+
                     fileHeads = resp.rows[0];
                     console.log(fileHeads, "FILE HEADS");
-                    const check = fileHeads.includes(CostingBulkUpload)
-                    console.log(check, "llllllllllllllllllllllllllllll");
-                    if (check === false) {
-                        toastr.error('Please check your data.')
-                    }
+                    CostingBulkUpload && CostingBulkUpload.map(item => {
+                        const check = fileHeads.includes(item.label)
+                        if (check === false) {
+                            toastr.error('Please re-upload the file with correct data.')
+                            flag = flag + 1
+                        }
+                    });
+                    if (flag > 0) { return null }
                     else {
-                        // fileHeads = resp.rows[0];
-                        // let fileData = [];
-                        // resp.rows.map((val, index) => {
-                        //     if (index > 0) {
-
-                        //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                        //         const i = val.findIndex(e => e === undefined);
-                        //         if (i !== -1) {
-                        //             val[i] = '';
-                        //         }
-
-                        //         let obj = {}
-                        //         val.map((el, i) => {
-                        //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                        //                 el = getJsDateFromExcel(el)
-                        //             }
-                        //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                        //                 el = parseInt(el)
-                        //             }
-                        //             obj[fileHeads[i]] = el;
-                        //             return null;
-                        //         })
-                        //         fileData.push(obj)
-                        //         obj = {}
-
-                        //     }
-                        //     console.log(fileData, "FD");
-                        //     return null;
-                        // })
                         this.setState({
                             fileData: fileObj,
                             uploadfileName: uploadfileName,
