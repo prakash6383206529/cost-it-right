@@ -8,7 +8,27 @@ import { getSelectListOfMasters } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
-
+import ReactExport from 'react-export-excel';
+import {
+    Fuel, FuelTempData,
+    RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
+    RMImportZBC, RMImportZBCTempData, RMImportVBC, RMImportVBCTempData,
+    RMSpecification, RMSpecificationXLTempData,
+    Vendor, VendorTempData,
+    Labour, LabourTempData,
+    Overhead, OverheadTempData, Profit, ProfitTempData,
+    ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
+    MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
+    PartComponent, PartComponentTempData,
+    BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData,
+    BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
+    VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
+    VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
+    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData,
+} from '../../../config/masterData';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function Simulation(props) {
 
     let options = {}
@@ -24,7 +44,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
     const masterList = useSelector(state => state.simulation.masterSelectList)
-    console.log(masterList, "MASTER LIST");
+    const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const [master, setMaster] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
@@ -51,7 +71,19 @@ function Simulation(props) {
         }
     }
 
-
+    const handleExcel = () => {
+        console.log("EXCEL FILE");
+        let data = RMDomesticZBC
+        //data = data.splice(10, { label: 'New Basic Rate', value: 'New Basic Rate' })
+        let obj = { label: 'New Basic Rate', value: 'New Basic Rate' }
+        data.push(obj)
+        console.log(data, "DATA");
+        return (<ExcelFile filename={'RMName'} fileExtension={'.xls'} >
+            <ExcelSheet data={rmDomesticListing} name={'RMName'}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+            </ExcelSheet>
+        </ExcelFile>)
+    }
 
     const renderListing = (label) => {
         let temp = []
@@ -113,7 +145,10 @@ function Simulation(props) {
                         <button type="button" className={"user-btn edit-btn mt2 mr5"}>
                             <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>
                             {"EDIT"} </button>
-                        <button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button>
+                        <ExcelFile filename={'RM'} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>Download File</button>}>
+                            {() => handleExcel()}
+                        </ExcelFile>
+                        {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
                         <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>Bulk Upload </button>
                     </div>
                 </div>
