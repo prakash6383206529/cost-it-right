@@ -27,6 +27,7 @@ import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
+import { Rate } from 'antd';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -498,8 +499,7 @@ class AddMachineRate extends Component {
     const { fieldsObj } = this.props;
     const tempArray = [];
 
-
-    if (processName.length === 0 || UOM.length === 0) {
+    if (processName.length === 0 || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
       toastr.warning('Fields should not be empty');
       return false;
     }
@@ -1189,7 +1189,7 @@ class AddMachineRate extends Component {
                             placeholder={'Select'}
                             options={this.renderListing('UOM')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                            //validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
                             //required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}
@@ -1202,7 +1202,7 @@ class AddMachineRate extends Component {
                             name={"MachineRate"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[number, positiveAndDecimalNumber, maxLength10]}
+                            validate={[positiveAndDecimalNumber, maxLength10]}
                             component={renderText}
                             onChange={this.handleMachineRate}
                             //required={true}
