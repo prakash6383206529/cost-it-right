@@ -38,7 +38,7 @@ function TabRMCC(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = RMCCTabData && RMCCTabData !== undefined && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
+    let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       NetRawMaterialsCost: TopHeaderValues !== null && TopHeaderValues.TotalRawMaterialsCost !== null ? TopHeaderValues.TotalRawMaterialsCost : 0,
       // NetRawMaterialsCost: TopHeaderValues !== null && TopHeaderValues.TotalRawMaterialsCostWithQuantity !== null ? TopHeaderValues.TotalRawMaterialsCostWithQuantity : 0,
@@ -59,7 +59,7 @@ function TabRMCC(props) {
   const getRMTotalCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.BOMLevel === LEVEL1 && el.PartNumber === 'HeadCD') || (el.BOMLevel === 'L2' && el.PartNumber === 'HeadEF')) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
         return accummlator + checkForNull(el.CostingPartDetails.TotalRawMaterialsCost !== null ? el.CostingPartDetails.TotalRawMaterialsCost : 0);

@@ -834,7 +834,7 @@ function OverheadProfit(props) {
       setValue('ProfitFixedTotalCost', dataObj.IsProfitFixedApplicable ? dataObj.ProfitFixedPercentage : '')
     }
 
-    if (dataObj.IsProfitCombined) {
+    if (dataObj.IsProfitCombined && IsAPIResponse === false) {
       setValue('ProfitCombinedPercentage', dataObj.IsProfitCombined ? dataObj.ProfitCombinedPercentage : '')
       setValue('ProfitCombinedCost', headerCosts && headerCosts.NetTotalRMBOPCC)
       setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(dataObj.ProfitCombinedPercentage), 2))
@@ -1685,7 +1685,7 @@ function OverheadProfit(props) {
                     <>
                       <Col md="3">
                         <label className="col-label">
-                          {`${profitObj && profitObj.OverheadApplicability ? '(' + profitObj.OverheadApplicability + ')' : ''}`}
+                          {`${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : ''}`}
                         </label>
                       </Col>
                       <Col md="3">

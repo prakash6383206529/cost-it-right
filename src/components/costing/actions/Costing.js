@@ -447,7 +447,6 @@ export function getVBCDetailByVendorId(data, callback) {
  */
 export function getRMCCTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
@@ -825,7 +824,10 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_SURFACE_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
@@ -954,7 +956,10 @@ export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
  */
 export function getOverheadProfitTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
