@@ -467,8 +467,8 @@ function AddToComparisonDrawer(props) {
               <Col>
                 <div className={"header-wrapper left"}>
                   <h3>
-                    {isEditFlag ? "Edit for" : "Add to"}
-                    {" Comparison: "}
+                    {isEditFlag ? "Change Version:" : "Add to Comparison:"}
+
                   </h3>
                 </div>
                 <div
@@ -636,7 +636,7 @@ function AddToComparisonDrawer(props) {
                     ) : (
                       <div class="plus"></div>
                     )}{" "}
-                    {isEditFlag ? "Edit" : "Add"}
+                    {isEditFlag ? "Ok" : "Add"}
                   </button>
                 </div>
               </Row>
