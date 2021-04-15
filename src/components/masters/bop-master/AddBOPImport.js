@@ -156,7 +156,6 @@ class AddBOPImport extends Component {
             const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, currencySelectList, UOMSelectList } = this.props;
 
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.CategoryId)
-            let plantArray = Data && Data.Plant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
             let currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
             let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
@@ -172,7 +171,7 @@ class AddBOPImport extends Component {
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPartAssembly: partArray,
-              selectedPlants: plantArray,
+              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data && Data.Plant[0].PlantName, value: Data && Data.Plant[0].PlantId } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
@@ -218,7 +217,7 @@ class AddBOPImport extends Component {
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        temp.push({ label: item.Text, value: item.Value })
         return null;
       });
       return temp;
@@ -526,7 +525,7 @@ class AddBOPImport extends Component {
     const { initialConfiguration } = this.props;
 
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
-    let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
+    let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (selectedPlants.length === 0 && !this.state.IsVendor) {
@@ -540,14 +539,14 @@ class AddBOPImport extends Component {
       let requestData = {
         Currency: currency.label,
         BoughtOutPartId: BOPID,
-        Part: partArray,
+        Part: partArray.length > 0 ? partArray.length : [],
         Source: values.Source,
         SourceLocation: values.sourceLocation,
         BasicRate: values.BasicRate,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
-        Plant: plantArray,
+        Plant: [plantArray],
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
 
@@ -570,7 +569,7 @@ class AddBOPImport extends Component {
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
-        Part: partArray,
+        Part: partArray.length > 0 ? partArray.length : [],
         Specification: values.Specification,
         Vendor: vendorName.value,
         VendorLocation: '',
@@ -583,7 +582,7 @@ class AddBOPImport extends Component {
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        Plant: plantArray,
+        Plant: [plantArray],
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
@@ -755,22 +754,21 @@ class AddBOPImport extends Component {
                                 label="Plant"
                                 name="Plant"
                                 placeholder={"Select"}
-                                selection={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
                                 options={this.renderListing("plant")}
-                                selectionChanged={this.handlePlant}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                validate={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                                component={renderMultiSelectField}
+                                handleChangeDescription={this.handlePlant}
+                                validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                // optionValue={(option) => option.Value}
+                                // optionLabel={(option) => option.Text}
+                                component={searchableSelect}
+                                valueDescription={this.state.selectedPlants}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                                disabled={this.state.IsVendor || isEditFlag ? true : false}
+                                disabled={isEditFlag ? true : false}
                               />
                             </Col>
                           )}
-                          <Col md="3">
+                          {/* <Col md="3">
                             <Field
                               label="Part/ Assembly No."
                               name="PartAssemblyNo"
@@ -786,7 +784,7 @@ class AddBOPImport extends Component {
                               className="multiselect-with-border"
                             //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                             />
-                          </Col>
+                          </Col> */}
                         </Row>
 
                         <Row>
@@ -903,7 +901,7 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`No. Of Pcs.`}
+                              label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
