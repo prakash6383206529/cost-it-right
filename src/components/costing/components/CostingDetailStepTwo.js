@@ -328,7 +328,7 @@ function CostingDetailStepTwo(props) {
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net RM + CC Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
-                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight`}</span></th>
+                          <th style={{ width: '150px' }}><span className="font-weight-500">{`Packaging & Freight Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Tool Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Other Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Discounts`}</span></th>

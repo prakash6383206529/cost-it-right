@@ -393,7 +393,7 @@ function CostingDetails(props) {
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
-      let tempArr = [...vbcVendorGrid, vendorData]
+      let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
       setVBCVendorGrid(tempArr)
     }
     setIsVendorDrawerOpen(false)
@@ -1354,7 +1354,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Plant Code`}</th>
                                   <th style={{}}>{`Plant Name`}</th>
-                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} /></th>
+                                  <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
@@ -1491,7 +1491,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor Code`}</th>
                                   <th style={{}}>{`Vendor Name`}</th>
-                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} /></th>
+                                  <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
