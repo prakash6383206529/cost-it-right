@@ -812,7 +812,7 @@ class AddMachineRate extends Component {
           IsActive: true,
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
-          Technology: technologyArray,
+          Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
           Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
           VendorPlant: vendorPlantArray,
           Remark: remarks,
