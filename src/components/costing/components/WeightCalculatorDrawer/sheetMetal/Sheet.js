@@ -535,7 +535,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Total number of Components`}
+                                        label={`Total Components/Sheet`}
                                         name={'NoOfComponent'}
                                         Controller={Controller}
                                         control={control}
