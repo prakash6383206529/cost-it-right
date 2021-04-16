@@ -757,6 +757,14 @@ function OverheadProfit(props) {
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
         IsVendor: costData.IsVendor,
       }
+
+      setOverheadObj({})
+      setProfitObj({})
+      setOverheadValues({}, true)
+      setProfitValues({}, true)
+      setRejectionObj({})
+      setIsSurfaceTreatmentAdded(false)
+
       dispatch(getOverheadProfitDataByModelType(reqParams, res => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;

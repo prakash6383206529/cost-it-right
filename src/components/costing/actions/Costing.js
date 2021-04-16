@@ -824,10 +824,6 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    dispatch({
-      type: SET_SURFACE_TAB_DATA,
-      payload: [],
-    });
     const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
