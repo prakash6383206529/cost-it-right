@@ -37,6 +37,7 @@ function CostingSummary(props) {
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const technologySelectList = useSelector(state => state.costing.technologySelectList,)
   const viewCostingData = useSelector(state => state.costing.viewCostingDetailData)
+  const partInfo = useSelector((state) => state.costing.partInfo)
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
@@ -451,7 +452,7 @@ function CostingSummary(props) {
 
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label="Price(Approved SOB)"
+                          label={`Current Price(Approved SOB: ${partInfo && partInfo.Price !== undefined ? partInfo.Price : 0})`}
                           name={'ShareOfBusiness'}
                           Controller={Controller}
                           control={control}

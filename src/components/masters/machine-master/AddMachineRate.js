@@ -193,7 +193,7 @@ class AddMachineRate extends Component {
           setTimeout(() => {
             const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
-            let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+            // let technologyArray = Data && Data.Technology.map((item) => ({ label: item.Technology, value: item.TechnologyId }))
 
             let MachineProcessArray = Data && Data.MachineProcessRates.map(el => {
               return {
@@ -217,7 +217,7 @@ class AddMachineRate extends Component {
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
-              selectedTechnology: technologyArray,
+              selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
               selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
@@ -255,6 +255,7 @@ class AddMachineRate extends Component {
   * @description Used handle technology
   */
   handleTechnology = (e) => {
+    console.log(e, "VALUE");
     this.setState({ selectedTechnology: e })
   }
 
@@ -760,6 +761,8 @@ class AddMachineRate extends Component {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag } = this.state;
 
+    console.log(selectedTechnology, "selectedTechnology");
+
     if (isViewFlag) {
       this.cancel();
       return false
@@ -772,7 +775,8 @@ class AddMachineRate extends Component {
       return false;
     }
 
-    let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
+    let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
+    console.log(technologyArray, "technologyArray");
 
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
@@ -808,7 +812,7 @@ class AddMachineRate extends Component {
           IsActive: true,
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
-          Technology: technologyArray,
+          Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
           Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
           VendorPlant: vendorPlantArray,
           Remark: remarks,
@@ -844,7 +848,7 @@ class AddMachineRate extends Component {
         Remark: remarks,
         Attachements: files,
       }
-
+      console.log(formData, "DARA");
       this.props.reset()
       this.props.createMachine(formData, (res) => {
         if (res.data.Result) {
@@ -973,14 +977,15 @@ class AddMachineRate extends Component {
                             label="Technology"
                             name="technology"
                             placeholder="Select"
-                            selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
+                            // selection={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0) ? [] : this.state.selectedTechnology}
                             options={this.renderListing('technology')}
-                            selectionChanged={this.handleTechnology}
+                            handleChangeDescription={this.handleTechnology}
                             // optionValue={option => option.Value}
                             // optionLabel={option => option.Text}
                             component={searchableSelect}
                             mendatory={true}
                             className="multiselect-with-border"
+                            valueDescription={this.state.selectedTechnology}
                             disabled={this.state.isViewFlag ? true : false}
                           //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                           />
