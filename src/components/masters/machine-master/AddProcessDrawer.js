@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Field, reduxForm, reset } from 'redux-form'
+import { Field, reduxForm, reset, formValueSelector } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
 import { acceptAllExceptSingleSpecialCharacter, required } from '../../../helper/validation'
 import { renderText, renderMultiSelectField } from '../../layout/FormInputs'
@@ -11,6 +11,7 @@ import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
+const selector = formValueSelector('AddProcessDrawer');
 
 class AddProcessDrawer extends Component {
   constructor(props) {
@@ -68,13 +69,16 @@ class AddProcessDrawer extends Component {
   }
 
   checkProcessCode = (e) => {
+    const { fieldsObj } = this.props
     const value = e.target.value
-    this.props.getProcessCode(value, (res) => {
-      if (res && res.data && res.data.Result) {
-        let Data = res.data.DynamicData
-        this.props.change('ProcessCode', Data.ProcessCode)
-      }
-    })
+    if (fieldsObj === undefined) {
+      this.props.getProcessCode(value, (res) => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.DynamicData
+          this.props.change('ProcessCode', Data.ProcessCode)
+        }
+      })
+    }
   }
 
   /**
@@ -323,10 +327,13 @@ class AddProcessDrawer extends Component {
  * @description return state to component as props
  * @param {*} state
  */
-function mapStateToProps({ comman, machine, process }) {
+function mapStateToProps(state) {
+  const { comman, machine, process } = state
   const { plantSelectList } = comman
   const { machineSelectList } = machine
   const { processUnitData } = process
+  const fieldsObj = selector(state, 'ProcessCode')
+
   let initialValues = {}
 
   if (processUnitData && processUnitData !== undefined) {
@@ -335,7 +342,7 @@ function mapStateToProps({ comman, machine, process }) {
       ProcessCode: processUnitData.ProcessCode,
     }
   }
-  return { plantSelectList, machineSelectList, processUnitData, initialValues }
+  return { plantSelectList, machineSelectList, processUnitData, initialValues, fieldsObj }
 }
 
 /**
