@@ -750,7 +750,13 @@ function OverheadProfit(props) {
     * @description  USED TO HANDLE MODEL TYPE CHANGE
     */
   const handleModelTypeChange = (newValue) => {
-    if (newValue && newValue !== '') {
+    setOverheadObj({})
+    setProfitObj({})
+    setOverheadValues({}, true)
+    setProfitValues({}, true)
+    setRejectionObj({})
+    setIsSurfaceTreatmentAdded(false)
+    if (newValue && newValue !== '' && newValue.value !== undefined && costData.IsVendor !== undefined) {
       setModelType(newValue)
       const reqParams = {
         ModelTypeId: newValue.value,
@@ -758,12 +764,12 @@ function OverheadProfit(props) {
         IsVendor: costData.IsVendor,
       }
 
-      setOverheadObj({})
-      setProfitObj({})
-      setOverheadValues({}, true)
-      setProfitValues({}, true)
-      setRejectionObj({})
-      setIsSurfaceTreatmentAdded(false)
+      // setOverheadObj({})
+      // setProfitObj({})
+      // setOverheadValues({}, true)
+      // setProfitValues({}, true)
+      // setRejectionObj({})
+      // setIsSurfaceTreatmentAdded(false)
 
       dispatch(getOverheadProfitDataByModelType(reqParams, res => {
         if (res && res.data && res.data.Data) {
