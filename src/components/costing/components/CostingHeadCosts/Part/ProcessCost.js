@@ -103,7 +103,7 @@ function ProcessCost(props) {
     //   }
     // } else {
     //   if (tempData.UOM === 'Hours') {
-    //     time = value === '0.00' ? '0.00' : checkForDecimalAndNull(value / 60, 4)
+    //     time = value === '0.00' ? '0.00' : checkForDecimalAndNull(value / 60, initialConfiguration.NoOfDecimalForPrice)
     //     netCost = value === '0.00' ? '0.00' : value * Number(tempData.MHR)
     //   } else {
     //     time = value === '0.00' ? '0.00' : value
@@ -448,9 +448,9 @@ function ProcessCost(props) {
         <div className="cr-process-costwrap">
           <Row className="cr-innertool-cost">
 
-            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, 2) : 0}`}</span></Col>
-            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, 2) : 0}`}</span></Col>
-            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, 2) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
 
             <Col md="3" className="switch cr-costlabel text-right">
               {/* DISABLED FOR FUTURE SCOPE 03-03-2021 */}
@@ -658,7 +658,7 @@ function ProcessCost(props) {
 
                       //                         {/* <td>
                       //                           {item.ProcessCost
-                      //                             ? checkForDecimalAndNull(item.ProcessCost, 2)
+                      //                             ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice)
                       //                             : 0}
                       //                         </td> */}
                       //                         <td>
@@ -722,7 +722,7 @@ function ProcessCost(props) {
                           {/* <td>
                             <span className={'mr-2'}>
                               {item.Quantity
-                                ? checkForDecimalAndNull(item.Quantity, 4)
+                                ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice)
                                 : '0.00'}
                             </span>
                             <button
@@ -765,7 +765,7 @@ function ProcessCost(props) {
                               />
                             }
                             {/* {item.NetCost
-                              ? checkForDecimalAndNull(item.NetCost, 2)
+                              ? checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice)
                               : '0.00'}{' '} */}
                             {/* <button
                               className="CalculatorIcon cr-cl-icon mt15"

@@ -1074,8 +1074,7 @@ function CostingDetails(props) {
 
     ZBCAvailableIndex = zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => el.CostingOptions.length > 0)
     VBCAvailableIndex = vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => el.CostingOptions.length > 0)
-    // console.log('Indexxxxx ZBCAvailableIndex: ', ZBCAvailableIndex);
-    // console.log('Indexxxxx VBCAvailableIndex: ', VBCAvailableIndex);
+
     return (ZBCAvailableIndex !== -1 || VBCAvailableIndex !== -1) ? true : false;
   }
 

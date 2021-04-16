@@ -18,7 +18,6 @@ function WeightCalculator(props) {
 
   const dispatch = useDispatch()
   const { rmRowData } = props
-  console.log(rmRowData, "in index of sheet metal");
 
   const getTabno = (layout) => {
     switch (layout) {

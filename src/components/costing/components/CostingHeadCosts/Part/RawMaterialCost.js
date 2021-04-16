@@ -4,7 +4,7 @@ import { Col, Row, Table } from 'reactstrap'
 import AddRM from '../../Drawers/AddRM'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
-import { useDispatch, } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
@@ -30,6 +30,8 @@ function RawMaterialCost(props) {
   const [inputDiameter, setInputDiameter] = useState('')
   const [gridLength, setGridLength] = useState(0)
   const [gridData, setGridData] = useState(props.data)
+
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const dispatch = useDispatch()
 
@@ -225,12 +227,12 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
-    console.log(weightData, "WEIGHT DATA");
+
     let tempArr = []
     let tempData = gridData[editIndex]
     let grossWeight
     let finishWeight
-    console.log(tempData, "TEMP DATA");
+
     if (Object.keys(weightData).length > 0) {
       if (weightData.UOMForDimension === G) {
         grossWeight = weightData.GrossWeight / 1000
@@ -239,8 +241,8 @@ function RawMaterialCost(props) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
       } else if (weightData.UOMForDimension === MG) {
-        grossWeight = checkForDecimalAndNull(weightData.GrossWeight / 1000000)
-        finishWeight = checkForDecimalAndNull(weightData.FinishWeight / 1000000)
+        grossWeight = checkForDecimalAndNull(weightData.GrossWeight / 1000000, initialConfiguration.NoOfDecimalForPrice)
+        finishWeight = checkForDecimalAndNull(weightData.FinishWeight / 1000000, initialConfiguration.NoOfDecimalForPrice)
       }
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
@@ -378,6 +380,7 @@ function RawMaterialCost(props) {
                                   //required: true,
                                   pattern: {
                                     value: /^[0-9]\d*(\.\d+)?$/i,
+                                    // value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
                                     message: 'Invalid Number.',
                                   },
                                   //validate: (value) => item.GrossWeight >= value ? value : 0
@@ -394,7 +397,7 @@ function RawMaterialCost(props) {
                               />
                             </td>
                             <td>
-                              {item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, 2) : ''}
+                              {item.NetLandedCost ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                             </td>
                             <td>
                               {!CostingViewMode && <button

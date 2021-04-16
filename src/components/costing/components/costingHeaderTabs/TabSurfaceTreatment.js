@@ -140,8 +140,6 @@ function TabSurfaceTreatment(props) {
             getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.TotalSurfaceTreatmentCostPerAssembly), Params) +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.TotalTransportationCostPerAssembly), Params);
 
-          console.log('getTransportationTotalCost', getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(Data.TransportationCost), Params))
-
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
           i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = getTotalSurfaceCostForAssembly(CostingChildPartDetails, Data.TotalSurfaceTreatmentCostPerAssembly, Params);
           i.CostingPartDetails.TotalTransportationCostPerAssembly = getTotalTransportationCostForAssembly(CostingChildPartDetails, Data.TotalTransportationCostPerAssembly, Params);
@@ -208,7 +206,6 @@ function TabSurfaceTreatment(props) {
           //   checkForNull(Children.CostingPartDetails.TotalTransportationCostPerAssembly) +
           //   checkForNull(Children.CostingPartDetails.SurfaceTreatmentCost) +
           //   checkForNull(Children.CostingPartDetails.TransportationCost);
-          console.log('setAssembly NetSurfaceTreatmentCost', NetSurfaceTreatmentCost)
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
           i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = getTotalSurfaceCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly, params);
@@ -272,7 +269,7 @@ function TabSurfaceTreatment(props) {
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TransportationCost), params) +
             getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params) +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly), params);
-          console.log('setSurfaceCost NetSurfaceTreatmentCost', NetSurfaceTreatmentCost)
+
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
           i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly = checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly);
           i.CostingPartDetails.TotalTransportationCostPerAssembly = checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly);
@@ -310,7 +307,6 @@ function TabSurfaceTreatment(props) {
   const getSurfaceTreatmentTotalCost = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      console.log('getSurfaceTreatmentTotalCost', el, GridTotalCost, params)
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -346,18 +342,12 @@ function TabSurfaceTreatment(props) {
   * @description DISPATCHED TRANSPORTATION COST
   */
   const dispatchTransportationCost = (transportationObj, params, arr) => {
-    console.log('NetSurfaceTreatmentCost transportationObj: ', transportationObj);
     let tempArr = [];
     try {
 
       tempArr = arr && arr.map(i => {
 
         if (i.IsAssemblyPart === true) {
-
-          console.log('getSurfaceTreatmentTotalCost zzz', getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.SurfaceTreatmentCost), params))
-          console.log('getTransportationTotalCost zzz', getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(transportationObj.TransportationCost), params))
-          console.log('getSurfaceTreatmentTotalCostForAssembly zzz', getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params))
-          console.log('getTransportationTotalCostForAssembly zzz', getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly), params))
 
           // let NetSurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.SurfaceTreatmentCost), params) +
           // getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly), params) +
@@ -369,7 +359,6 @@ function TabSurfaceTreatment(props) {
             checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly) +
             getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(transportationObj.TransportationCost), params)
 
-          console.log('setTransportationCost NetSurfaceTreatmentCost', NetSurfaceTreatmentCost)
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
           i.CostingPartDetails.TransportationCost = getTransportationTotalCost(i.CostingChildPartDetails, checkForNull(transportationObj.TransportationCost), params);
 
@@ -439,8 +428,6 @@ function TabSurfaceTreatment(props) {
             getSurfaceTreatmentTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(surfaceCost(surfaceGrid)), params) +
             getTransportationTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.TotalTransportationCostPerAssembly), params);
 
-          console.log('setAssemblySurfaceCost NetSurfaceTreatmentCost', NetSurfaceTreatmentCost + checkForNull(surfaceCost(surfaceGrid)))
-
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost + checkForNull(surfaceCost(surfaceGrid));
           //i.CostingPartDetails.SurfaceTreatmentCost = getSurfaceTreatmentTotalCost(i.CostingChildPartDetails, checkForNull(i.CostingPartDetails.SurfaceTreatmentCost), params)
           //+            checkForNull(surfaceCost(surfaceGrid));
@@ -502,8 +489,6 @@ function TabSurfaceTreatment(props) {
           //   checkForNull(i.CostingPartDetails.TransportationCost) +
           //   checkForNull(i.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly) +
           //   checkForNull(TransportationObj.TransportationCost);
-
-          console.log('setAssemblyTransportationCost NetSurfaceTreatmentCost', NetSurfaceTreatmentCost)
 
           i.CostingPartDetails.NetSurfaceTreatmentCost = NetSurfaceTreatmentCost;
           i.CostingPartDetails.TransportationDetails = TransportationObj;

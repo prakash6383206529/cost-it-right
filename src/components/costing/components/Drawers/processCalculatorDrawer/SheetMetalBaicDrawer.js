@@ -105,11 +105,9 @@ function SheetMetalBaicDrawer(props) {
    * @description FOR CALCULATING PROCESS COST 
   */
   const calculateProcessCost = () => {
-    console.log(cavity, "CAVITY");
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
     // const cavity = getValues('Cavity')
-    // console.log(cavity, "CAVITY");
     const rate = props.calculatorData.MHR
     let cost
     switch (props.calculatorData.UOMType) {
@@ -171,28 +169,55 @@ function SheetMetalBaicDrawer(props) {
                 {/* <Col md="10">
                   <div className="left-border">{'Distance:'}</div>
                 </Col> */}
-                
-                  <Row className={'mt15'}>
+
+                <Row className={'mt15'}>
+                  <Col className="col">
+                    <TextFieldHookForm
+                      label={`Tonnage`}
+                      name={'MachineTonnage'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      handleChange={() => { }}
+                      defaultValue={MachineTonnage}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.MachineTonnage}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col className="col">
+                    <TextFieldHookForm
+                      label={`Cycle Time`}
+                      name={'CycleTime'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={!disable}
+                      rules={{
+                        required: !disable,
+                        pattern: {
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.',
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.CycleTime}
+                      disabled={disable}
+                    />
+                  </Col>
+                  {
+                    props.calculatorData.UOMType === DIMENSIONLESS &&
                     <Col className="col">
                       <TextFieldHookForm
-                        label={`Tonnage`}
-                        name={'MachineTonnage'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        defaultValue={MachineTonnage}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.MachineTonnage}
-                        disabled={true}
-                      />
-                    </Col>
-                    <Col className="col">
-                      <TextFieldHookForm
-                        label={`Cycle Time`}
-                        name={'CycleTime'}
+                        label={`Cavity`}
+                        name={'Cavity'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -200,125 +225,98 @@ function SheetMetalBaicDrawer(props) {
                         rules={{
                           required: !disable,
                           pattern: {
-                            //value: /^[0-9]*$/i,
+                            //  value: /^[0-9\b]+$/i,
                             value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
                           // maxLength: 4,
                         }}
-                        handleChange={() => { }}
+                        handleChange={getCavity}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.CycleTime}
-                        disabled={disable}
+                        errors={errors.Cavity}
+                        disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
                       />
                     </Col>
-                    {
-                      props.calculatorData.UOMType === DIMENSIONLESS &&
-                      <Col className="col">
-                        <TextFieldHookForm
-                          label={`Cavity`}
-                          name={'Cavity'}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={!disable}
-                          rules={{
-                            required: !disable,
-                            pattern: {
-                              //  value: /^[0-9\b]+$/i,
-                              value: /^[0-9]\d*(\.\d+)?$/i,
-                              message: 'Invalid Number.',
-                            },
-                            // maxLength: 4,
-                          }}
-                          handleChange={getCavity}
-                          defaultValue={''}
-                          className=""
-                          customClassName={'withBorder'}
-                          errors={errors.Cavity}
-                          disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
-                        />
-                      </Col>
-                    }
-                    <Col className="col">
-                      <TextFieldHookForm
-                        label={`Efficiency`}
-                        name={'Efficiency'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={checlPercentageForEfficiency}
-                        defaultValue={100}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.Efficiency}
-                        disabled={false}
-                      />
-                    </Col>
-                    <Col className="col">
-                      <TextFieldHookForm
-                        label={props.calculatorData.UOMType === MASS ? `Finished Weight` : `Quantity`}
-                        name={'Quantity'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            // value: /^[0-9\b]+$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={calculateProcessCost}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.Quantity}
-                        disabled={props.calculatorData.UOMType === MASS ? true : false}
-                      />
-                    </Col>
-                    <Col className="col">
-                      <TextFieldHookForm
-                        label={`Total Process Cost`}
-                        name={'ProcessCost'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          required: false,
-                          // pattern: {
-                          //   value: /^[0-9\b]+$/i,
-                          //   //value: /^[0-9]\d*(\.\d+)?$/i,
-                          //   message: 'Invalid Number.',
-                          // },
-                          // maxLength: 4,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.ProcessCost}
-                        disabled={true}
-                      />
-                    </Col>
-                  </Row>
-                
+                  }
+                  <Col className="col">
+                    <TextFieldHookForm
+                      label={`Efficiency`}
+                      name={'Efficiency'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          //value: /^[0-9]*$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.',
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={checlPercentageForEfficiency}
+                      defaultValue={100}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.Efficiency}
+                      disabled={false}
+                    />
+                  </Col>
+                  <Col className="col">
+                    <TextFieldHookForm
+                      label={props.calculatorData.UOMType === MASS ? `Finished Weight` : `Quantity`}
+                      name={'Quantity'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        pattern: {
+                          // value: /^[0-9\b]+$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.',
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={calculateProcessCost}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.Quantity}
+                      disabled={props.calculatorData.UOMType === MASS ? true : false}
+                    />
+                  </Col>
+                  <Col className="col">
+                    <TextFieldHookForm
+                      label={`Total Process Cost`}
+                      name={'ProcessCost'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                        // pattern: {
+                        //   value: /^[0-9\b]+$/i,
+                        //   //value: /^[0-9]\d*(\.\d+)?$/i,
+                        //   message: 'Invalid Number.',
+                        // },
+                        // maxLength: 4,
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.ProcessCost}
+                      disabled={true}
+                    />
+                  </Col>
+                </Row>
+
 
                 {/* <div className="bluefooter-butn border row">
                   <div className="col-sm-8">Total Machining Time </div>
@@ -352,11 +350,11 @@ function SheetMetalBaicDrawer(props) {
                 className="btn-primary save-btn"
               >
                 <div className={"check-icon"}>
-                            <img
-                              src={require("../../../../../assests/images/check.png")}
-                              alt="check-icon.jpg"
-                            />{" "}
-                          </div>
+                  <img
+                    src={require("../../../../../assests/images/check.png")}
+                    alt="check-icon.jpg"
+                  />{" "}
+                </div>
                 {'SAVE'}
               </button>
             </div>

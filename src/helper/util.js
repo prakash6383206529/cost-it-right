@@ -683,7 +683,6 @@ export function formViewData(costingSummary) {
 /*VOLUME AND DENSITY BASED ON DIAMETER*/
 export function getVolume(innerDiameter, outerDiameter, height) {
   const value = (Math.PI / 4) * (Math.pow(outerDiameter, 2) - Math.pow(innerDiameter, 2)) * height
-  console.log(value, "value");
   return checkForNull(value)
 }
 
@@ -704,7 +703,6 @@ export function calculateWeight(density, length, width, thickness) {
 }
 
 export const applySuperScripts = (cell) => {
-  console.log(cell, "CELL");
   if (cell && cell !== '') {
     const capIndex = cell && cell.indexOf('^');
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
@@ -759,9 +757,6 @@ export function setValueAccToUOMFromkg(value, UOM) {
 }
 
 export function getConvertedValue(value, unit, UOM) {
-  console.log('UOM: ', UOM);
-  console.log('unit: ', unit);
-  console.log('value: ', value);
   if (unit === G) {
     switch (UOM) {
       case KG:
@@ -804,7 +799,6 @@ export function getConvertedValue(value, unit, UOM) {
 }
 
 export function convertGTokg(value) {
-  console.log('value from g to kg: ', value);
   return checkForNull(value / 1000)
 }
 export function convertGToMg(value) {

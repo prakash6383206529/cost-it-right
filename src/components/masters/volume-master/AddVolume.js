@@ -89,7 +89,6 @@ import { ZBC } from '../../../config/constants'
 
 class AddVolume extends Component {
   constructor(props) {
-    console.log(props, 'Props')
     super(props)
     this.child = React.createRef()
     this.state = {
@@ -319,7 +318,6 @@ class AddVolume extends Component {
     const { tableData } = this.state
 
     let filterData = tableData.map((item) => {
-      // console.log(ID, item.VolumeApprovedDetailId, "ITEM VOLUME");
       if (item.VolumeApprovedDetailId === ID) {
         return { ...item, BudgetedQuantity: 0, ApprovedQuantity: 0 }
       }
@@ -344,11 +342,8 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
-          console.log(Data, "Data");
-
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
-            console.log("Coming?");
             plantArray.push({
               label: Data.Plant[0].PlantName,
               value: Data.Plant[0].PlantId,
@@ -487,7 +482,7 @@ class AddVolume extends Component {
     //     plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' })
     //     return plantArray;
     // })
-    
+
     // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
     const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
     if (filteredArray.length === 12) {

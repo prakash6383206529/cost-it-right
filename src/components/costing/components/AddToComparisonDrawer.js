@@ -216,7 +216,7 @@ function AddToComparisonDrawer(props) {
 
 
     partNo.isChanged = true
-    console.log(partNo, "part after updation");
+
     dispatch(storePartNumber(partNo))
 
     setValue('costings', '')
@@ -338,7 +338,7 @@ function AddToComparisonDrawer(props) {
           obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
           obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
 
-          console.log(obj, "OBJ");
+
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

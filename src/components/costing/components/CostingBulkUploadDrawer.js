@@ -111,7 +111,7 @@ class CostingBulkUploadDrawer extends Component {
         let fileHeads = [];
         let uploadfileName = fileObj.name;
         let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
-        console.log(fileObj, "FILE OBJ");
+
         //pass the fileObj as parameter
         if (fileType !== '.xls' && fileType !== '.xlsx') {
             toastr.warning('File type should be .xls or .xlsx')
@@ -126,9 +126,9 @@ class CostingBulkUploadDrawer extends Component {
                 } else {
 
                     fileHeads = resp.rows[0];
-                    console.log(fileHeads, "FILE HEADS");
+
                     const check = fileHeads.includes(CostingBulkUpload)
-                    console.log(check, "llllllllllllllllllllllllllllll");
+
                     if (check === false) {
                         toastr.error('Please check your data.')
                     }
@@ -173,15 +173,15 @@ class CostingBulkUploadDrawer extends Component {
     }
 
     onSubmit = (value) => {
-        //  console.log(value, "VAL");
+
         const { fileData } = this.state
-        console.log(fileData, "DATTTTTTTTTTTTTTTTTTTT")
+
         // let data = new FormData()
         // data.append('file', fileData)
         let obj = {
             file: fileData
         }
-        console.log(obj, "OBJ");
+
         this.props.bulkUploadCosting(obj, (res) => {
             let Data = res.data[0]
             const { files } = this.state

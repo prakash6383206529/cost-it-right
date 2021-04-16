@@ -82,7 +82,6 @@ class AddPower extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
       const { SelfPowerContribution, SEBPowerContributaion } = this.props.fieldsObj
-      console.log(SelfPowerContribution, "lllllllllllllll", SEBPowerContributaion);
       // if (Number(SelfPowerContribution) > 100 || Number(SelfPowerContribution) !== 0) {
       checkPercentageValue(SelfPowerContribution, "Power contribution percentage should not be more than 100") ? this.props.change('SelfPowerContribution', SelfPowerContribution) : this.props.change('SelfPowerContribution', 0)
       // }
@@ -517,8 +516,8 @@ class AddPower extends Component {
       return false;
     }
 
-    if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined  || fieldsObj.MinDemandKWPerMonth === undefined  || fieldsObj.DemandChargesPerKW === undefined 
-    || fieldsObj.AvgUnitConsumptionPerMonth === undefined  || fieldsObj.MaxDemandChargesKW === undefined ) {
+    if (TotalUnitCharges === 'NaN' || SEBPowerContributaion === undefined || fieldsObj.MinDemandKWPerMonth === undefined || fieldsObj.DemandChargesPerKW === undefined
+      || fieldsObj.AvgUnitConsumptionPerMonth === undefined || fieldsObj.MaxDemandChargesKW === undefined) {
       toastr.warning('Fields should not be empty.')
       return false;
     }
@@ -602,17 +601,17 @@ class AddPower extends Component {
     }
 
     if (maxLength10(fieldsObj.AssetCost) || maxLength10(fieldsObj.AnnualCost) || maxLength10(fieldsObj.UnitGeneratedPerAnnum)
-    || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
+      || maxLength10(fieldsObj.CostPerUnitOfMeasurement) || maxLength10(fieldsObj.UnitGeneratedPerUnitOfFuel)) {
       toastr.warning('Fields value should not be more than 10');
       return false;
     }
 
     if (Number(fieldsObj.AssetCost) < 0 || Number(fieldsObj.AnnualCost) < 0 || Number(fieldsObj.UnitGeneratedPerAnnum) < 0 ||
-      Number(fieldsObj.SelfPowerContribution) < 0 || Number(fieldsObj.CostPerUnitOfMeasurement) < 0|| Number(fieldsObj.UnitGeneratedPerUnitOfFuel) < 0 ) {
+      Number(fieldsObj.SelfPowerContribution) < 0 || Number(fieldsObj.CostPerUnitOfMeasurement) < 0 || Number(fieldsObj.UnitGeneratedPerUnitOfFuel) < 0) {
       toastr.warning('Fields should not be negative');
       return false;
     }
-    
+
     const AssetCost = fieldsObj && fieldsObj.AssetCost !== undefined ? fieldsObj.AssetCost : 0;
     const AnnualCost = fieldsObj && fieldsObj.AnnualCost !== undefined ? fieldsObj.AnnualCost : 0;
     const UnitGeneratedPerAnnum = fieldsObj && fieldsObj.UnitGeneratedPerAnnum !== undefined ? fieldsObj.UnitGeneratedPerAnnum : 0;

@@ -942,7 +942,7 @@ function TabRMCC(props) {
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": ComponentItemData.CostingId,
         "PartId": ComponentItemData.PartId,                              //ROOT ID
-        "CostingNumber": costData.CostingNumber,            //ROOT    
+        "CostingNumber": costData.CostingNumber,                         //ROOT    
         "PartNumber": ComponentItemData.PartNumber,                      //ROOT
 
         "AssemblyCostingId": ComponentItemData.BOMLevel === LEVEL1 ? costData.CostingId : ComponentItemData.AssemblyCostingId,                  //IF ITS L1 PART THEN ROOT ID ELSE JUST PARENT SUB ASSEMBLY ID

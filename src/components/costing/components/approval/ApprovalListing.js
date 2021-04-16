@@ -35,7 +35,6 @@ function ApprovalListing() {
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [selectedIds, setSelectedIds] = useState('')
 
-  console.log(selectedIds, "SELET");
   const [showApprovalSumary, setShowApprovalSummary] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
   const dispatch = useDispatch()
@@ -55,7 +54,7 @@ function ApprovalListing() {
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getCostingStatusSelectList(() => { }))
     dispatch(getAllUserAPI(() => { }))
-    console.log(userDetails(), "DETAil");
+
   }, [])
 
   useEffect(() => {
@@ -80,7 +79,6 @@ function ApprovalListing() {
       requestedBy: requestedBy,
       status: status,
     }
-    console.log(filterData, "filterData");
 
     dispatch(
       getApprovalList(filterData, (res) => {
@@ -89,7 +87,6 @@ function ApprovalListing() {
           setTableData([])
         } else if (res && res.data && res.data.DataList) {
           let unSelectedData = res.data.DataList
-          console.log('unSelectedData: ', unSelectedData);
           let temp = []
 
           unSelectedData.map(item => {
@@ -134,7 +131,6 @@ function ApprovalListing() {
       return tempDropdownList
     }
     if (label === 'users') {
-      console.log(userList, "userList");
       userList && userList.map((item) => {
         if (item.Value === '0') return false
         tempDropdownList.push({ label: item.Text, value: item.Value })
@@ -149,8 +145,6 @@ function ApprovalListing() {
    * @description filtering data on Apply button
    */
   const onSubmit = (values) => {
-    console.log(values, "VAL");
-    console.log(getValues('createdBy'), "PN", getValues('status'), "gggggggggggggg", getValues('requestedBy'));
     const tempPartNo = getValues('partNo') ? getValues('partNo').value : '00000000-0000-0000-0000-000000000000'
     const tempcreatedBy = getValues('createdBy') ? getValues('createdBy').value : '00000000-0000-0000-0000-000000000000'
     const tempRequestedBy = getValues('requestedBy') ? getValues('requestedBy').value : '00000000-0000-0000-0000-000000000000'
@@ -177,7 +171,6 @@ function ApprovalListing() {
   }
 
   const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-    console.log(cell, "cell", moment(cell)._isValid);
     return cell != null ? cell : '';
   }
 
@@ -261,7 +254,6 @@ function ApprovalListing() {
   }
 
   const sendForApproval = () => {
-    console.log(selectedRowData, "seleted row data");
     setApproveDrawer(true)
   }
 

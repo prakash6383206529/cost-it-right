@@ -17,7 +17,6 @@ import { getSimulationHistory } from '../actions/History'
 function SimulationHistory(props) {
 
     const simulationHistory = useSelector(state => state.history.simulationHistory)
-    console.log(simulationHistory, "SIM HISTORY");
 
     const dispatch = useDispatch()
 

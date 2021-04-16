@@ -102,11 +102,8 @@ function ApproveRejectDrawer(props) {
         IsApproved: type === 'Approve' ? true : false,
       })
     })
-    console.log(Data, "DATA for approve");
-
 
     if (type === 'Approve') {
-      console.log("COMING IN APPROVE", Data);
       // if (IsPushDrawer) {
       //   toastr.success('The costing has been approved')
       //   setOpenPushButton(true)
@@ -132,7 +129,6 @@ function ApproveRejectDrawer(props) {
       }))
       //  props.closeDrawer()
     } else {
-      console.log("COMING IN REJECT", Data);
       dispatch(rejectRequestByApprove(Data, res => {
         if (res.data.Result) {
           toastr.success('Costing Rejected')

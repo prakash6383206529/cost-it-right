@@ -284,7 +284,7 @@ function Pipe(props) {
    * @description SET GROSS WEIGHT
    */
   const setGrossWeight = () => {
-    console.log("HOW MANY TIMES IN GW");
+
     let WeightofPart
     if (rmRowData.RawMaterialCategory === STD) {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
@@ -472,7 +472,6 @@ function Pipe(props) {
     setValue('UOMDimension', { label: value.label, value: value.value })
     setUOMDimension(value)
     let grossWeight = GrossWeight
-    console.log('GrossWeight: ', GrossWeight);
 
     let finishWeight = FinishWeight
     grossWeight = setValueAccToUOM(grossWeight, value.label)
@@ -521,7 +520,6 @@ function Pipe(props) {
 
   const onFinishChange = (e) => {
     const weight = checkForNull(e.target.value)
-    console.log(weight, "Weight");
     setTimeout(() => {
       setValue('FinishWeight', weight)
       setFinishWeight(weight)

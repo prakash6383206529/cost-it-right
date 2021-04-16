@@ -50,10 +50,8 @@ function Simulation(props) {
     const [showUploadDrawer, setShowDrawer] = useState(false)
 
     const handleMasterChange = (value) => {
-        console.log(value, "Value");
         setMaster(value)
         setShowMasterList(true)
-
     }
 
     const renderModule = (value) => {
@@ -72,12 +70,10 @@ function Simulation(props) {
     }
 
     const handleExcel = () => {
-        console.log("EXCEL FILE");
         let data = RMDomesticZBC
         //data = data.splice(10, { label: 'New Basic Rate', value: 'New Basic Rate' })
         let obj = { label: 'New Basic Rate', value: 'New Basic Rate' }
         data.push(obj)
-        console.log(data, "DATA");
         return (<ExcelFile filename={'RMName'} fileExtension={'.xls'} >
             <ExcelSheet data={rmDomesticListing} name={'RMName'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}

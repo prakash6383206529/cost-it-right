@@ -259,7 +259,7 @@ function BOPCost(props) {
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
                               <td>{item.Currency}</td>
-                              <td>{checkForDecimalAndNull(item.LandedCostINR, 2)}</td>
+                              <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
                                   <TextFieldHookForm
@@ -289,7 +289,7 @@ function BOPCost(props) {
                                   />
                                 }
                               </td>
-                              <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
+                              <td>{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 {!CostingViewMode && <button className="SaveIcon mr-2" type={'button'} onClick={() => SaveItem(index)} />}
                                 {!CostingViewMode && <button className="CancelIcon " type={'button'} onClick={() => CancelItem(index)} />}
@@ -300,9 +300,9 @@ function BOPCost(props) {
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
                               <td>{item.Currency}</td>
-                              <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, 2) : ''}</td>
+                              <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{item.Quantity}</td>
-                              <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, 2) : 0}</td>
+                              <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
                               <td>
                                 {!CostingViewMode && <button className="Edit mr-2" type={'button'} onClick={() => editItem(index)} />}
                                 {!CostingViewMode && <button className="Delete " type={'button'} onClick={() => deleteItem(index)} />}

@@ -29,6 +29,8 @@ function TransportationCost(props) {
   const [OldTransportObj, setOldTransportObj] = useState(data)
   const [TransportationType, setTransportationType] = useState(data && data.UOM !== undefined ? data.UOM : '')
 
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
   const dispatch = useDispatch()
 
   const fieldValues = useWatch({
@@ -88,11 +90,11 @@ function TransportationCost(props) {
       const Quantity = getValues('Quantity')
       setRate(event.target.value)
       if (TransportationType === 'Percentage') {
-        setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), 2))
+        setValue('TransportationCost', checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost * calculatePercentage(event.target.value), initialConfiguration.NoOfDecimalForPrice))
       } else {
         if (Quantity !== '') {
           const cost = Quantity * event.target.value;
-          setValue('TransportationCost', checkForDecimalAndNull(cost, 2))
+          setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
         } else {
           setValue('TransportationCost', 0)
         }
@@ -109,7 +111,7 @@ function TransportationCost(props) {
 
       if (Rate !== '') {
         const cost = Rate * event.target.value;
-        setValue('TransportationCost', checkForDecimalAndNull(cost, 2));
+        setValue('TransportationCost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice));
       } else {
         setValue('TransportationCost', 0);
       }

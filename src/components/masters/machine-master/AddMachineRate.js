@@ -254,7 +254,6 @@ class AddMachineRate extends Component {
   * @description Used handle technology
   */
   handleTechnology = (e) => {
-    console.log(e, "VALUE");
     this.setState({ selectedTechnology: e })
   }
 
@@ -761,8 +760,6 @@ class AddMachineRate extends Component {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag } = this.state;
 
-    console.log(selectedTechnology, "selectedTechnology");
-
     if (isViewFlag) {
       this.cancel();
       return false
@@ -776,10 +773,7 @@ class AddMachineRate extends Component {
     }
 
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
-    console.log(technologyArray, "technologyArray");
-
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
-
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
     if (isEditFlag) {
@@ -848,7 +842,7 @@ class AddMachineRate extends Component {
         Remark: remarks,
         Attachements: files,
       }
-      console.log(formData, "DARA");
+
       this.props.reset()
       this.props.createMachine(formData, (res) => {
         if (res.data.Result) {

@@ -141,7 +141,7 @@ function ToolCost(props) {
                           <td style={{ width: 200 }}>{item.Quantity}</td>
                           <td>{item.ToolCost}</td>
                           <td>{item.Life}</td>
-                          <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 2) : 0}</td>
+                          <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 4) : 0}</td>
                           <td>
                             <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
                             <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />

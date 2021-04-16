@@ -46,7 +46,7 @@ const CostingSummaryTable = (props) => {
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
-  console.log(multipleCostings, "MULTIPLE COSTING");
+
   const [flag, setFlag] = useState(false)
   const [isAttachment, setAttachment] = useState(false)
 
@@ -322,7 +322,7 @@ const CostingSummaryTable = (props) => {
   }
 
   const handleMultipleCostings = (checked, index) => {
-    //console.log(multipleCostings.length === 0 ? false : (multipleCostings.includes(data.costingName,) ? true : false), "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+
     let temp = multipleCostings
 
     if (checked) {

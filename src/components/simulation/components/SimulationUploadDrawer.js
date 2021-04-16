@@ -166,8 +166,6 @@ class SimulationUploadDrawer extends Component {
 
     onSubmit = () => {
         const { fileData } = this.state
-        console.log('fileData: ', fileData);
-
         // let data = new FormData()
         // data.append('file', fileData)
 
