@@ -416,7 +416,7 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { menusData, location } = this.props
+    const { menusData, location, menuData } = this.props
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
@@ -427,6 +427,7 @@ class SideBar extends Component {
                 isActive={location && location.pathname === '/costing' ? true : false}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
+                onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
                   pathname: "/costing",
                   state: {
@@ -445,7 +446,24 @@ class SideBar extends Component {
               </Link>
               <div className="dropdown-menu sub-menu">
                 <ul>
-                  <li>
+                  {/* UNCOMMENT IT WHEN DONE FROM KAMAL SIR END */}
+                  {
+                    menuData && menuData.map((item, i) => {
+                      if (item.Sequence !== 0) return false
+                      return (
+                        <li key={i} className={`mb5`}>
+                          <Link
+                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                            to={{
+                              pathname: item.NavigationURL,
+                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                            }}
+                          >{item.PageName}</Link>
+                        </li>
+                      )
+                    })
+                  }
+                  {/* <li>
                     <Link
                       className="dropdown-item "
                       to={{
@@ -459,7 +477,7 @@ class SideBar extends Component {
                     >
                       - Approval
                   </Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </li>
@@ -475,22 +493,23 @@ class SideBar extends Component {
    * @description Render Simulation.
    */
   renderSimulation = (module) => {
-    const { menusData } = this.props
+    const { menusData, menuData } = this.props
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li>
+            <li className={'nav-item dropdown'}>
               <Link
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
+                onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  pathname: "/simulation",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
-                    PageURL: "/simulation",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -501,6 +520,41 @@ class SideBar extends Component {
                 />
                 <span>Simulation</span>
               </Link>
+              <div className="dropdown-menu sub-menu">
+                <ul>
+                  {
+                    menuData && menuData.map((item, i) => {
+                      if (item.Sequence !== 0) return false
+                      return (
+                        <li key={i} className={`mb5`}>
+                          <Link
+                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                            to={{
+                              pathname: item.NavigationURL,
+                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                            }}
+                          >{item.PageName}</Link>
+                        </li>
+                      )
+                    })
+                  }
+                  {/* <li>
+                    <Link
+                      className="dropdown-item "
+                      to={{
+                        pathname: "/approval-listing",
+                        state: {
+                          ModuleId: 1,
+                          PageName: "Costing",
+                          PageURL: "/approval-listing",
+                        },
+                      }}
+                    >
+                      - Approval
+                  </Link>
+                  </li> */}
+                </ul>
+              </div>
             </li>
           );
         }

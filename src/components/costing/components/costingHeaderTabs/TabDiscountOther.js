@@ -19,6 +19,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { MESSAGES } from '../../../../config/message';
 import moment from 'moment';
 import { ViewCostingContext } from '../CostingDetails';
+import { useHistory } from "react-router-dom";
 
 function TabDiscountOther(props) {
 
@@ -38,6 +39,7 @@ function TabDiscountOther(props) {
   const [GoToNext, setGoToNext] = useState(false);
 
   const dispatch = useDispatch()
+  let history = useHistory();
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -388,6 +390,7 @@ function TabDiscountOther(props) {
         toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
         if (GoToNext) {
           props.toggle('2')
+          history.push('/costing-summary')
         }
       }
     }))

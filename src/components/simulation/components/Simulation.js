@@ -74,11 +74,12 @@ function Simulation(props) {
         //data = data.splice(10, { label: 'New Basic Rate', value: 'New Basic Rate' })
         let obj = { label: 'New Basic Rate', value: 'New Basic Rate' }
         data.push(obj)
-        return (<ExcelFile filename={'RMName'} fileExtension={'.xls'} >
+        console.log(data, "DATA");
+        return (
             <ExcelSheet data={rmDomesticListing} name={'RMName'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-            </ExcelSheet>
-        </ExcelFile>)
+            </ExcelSheet>)
+
     }
 
     const renderListing = (label) => {
@@ -139,8 +140,7 @@ function Simulation(props) {
                 <div className="d-flex justify-content-end bd-highlight w100">
                     <div>
                         <button type="button" className={"user-btn edit-btn mt2 mr5"}>
-                            <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>
-                            {"EDIT"} </button>
+                            <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
                         <ExcelFile filename={'RM'} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>Download File</button>}>
                             {() => handleExcel()}
                         </ExcelFile>

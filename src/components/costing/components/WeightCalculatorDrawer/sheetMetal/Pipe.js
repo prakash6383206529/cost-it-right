@@ -522,7 +522,7 @@ function Pipe(props) {
     const weight = checkForNull(e.target.value)
     setTimeout(() => {
       setValue('FinishWeight', weight)
-      setFinishWeight(weight)
+      setFinishWeights(weight)
     }, 200);
   }
 

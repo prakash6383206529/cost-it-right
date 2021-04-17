@@ -152,7 +152,6 @@ class AddBOPDomestic extends Component {
             const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, UOMSelectList } = this.props;
 
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.CategoryId)
-            let plantArray = Data && Data.Plant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
             let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
@@ -165,7 +164,7 @@ class AddBOPDomestic extends Component {
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPartAssembly: partArray,
-              selectedPlants: plantArray,
+              selectedPlants: { label: Data && Data.Plant[0].PlantName, value: Data && Data.Plant[0].PlantId },
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
@@ -208,7 +207,7 @@ class AddBOPDomestic extends Component {
     if (label === 'plant') {
       plantSelectList && plantSelectList.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ Text: item.Text, Value: item.Value })
+        temp.push({ label: item.Text, value: item.Value })
         return null;
       });
       return temp;
@@ -279,6 +278,7 @@ class AddBOPDomestic extends Component {
   * @description Used handle Plant
   */
   handlePlant = (e) => {
+    console.log(e, "EVENT PLANT");
     this.setState({ selectedPlants: e })
   }
 
@@ -481,7 +481,7 @@ class AddBOPDomestic extends Component {
     const { initialConfiguration } = this.props;
 
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
-    let plantArray = selectedPlants && selectedPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
+    let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (selectedPlants.length === 0 && !this.state.IsVendor) {
@@ -500,8 +500,8 @@ class AddBOPDomestic extends Component {
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
-        Part: partArray,
-        Plant: plantArray,
+        Part: partArray.length > 0 ? partArray.length : [],
+        Plant: [plantArray],
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
       }
@@ -521,7 +521,7 @@ class AddBOPDomestic extends Component {
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
-        Part: partArray,
+        Part: partArray.length > 0 ? partArray.length : [],
         Specification: values.Specification,
         UnitOfMeasurementId: UOM.value,
         Vendor: vendorName.value,
@@ -535,7 +535,7 @@ class AddBOPDomestic extends Component {
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        Plant: plantArray,
+        Plant: [plantArray],
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
       }
@@ -705,19 +705,21 @@ class AddBOPDomestic extends Component {
                                 label="Plant"
                                 name="Plant"
                                 placeholder={"Select"}
-                                selection={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} options={this.renderListing("plant")}
-                                selectionChanged={this.handlePlant}
-                                validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []} optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
+                                //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
+                                options={this.renderListing("plant")}
+                                handleChangeDescription={this.handlePlant}
+                                validate={this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                // optionValue={(option) => option.Value}
+                                // optionLabel={(option) => option.Text}
+                                component={searchableSelect}
+                                valueDescription={this.state.selectedPlants}
                                 mendatory={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />
                             </Col>
                           )}
-                          <Col md="3">
+                          {/* <Col md="3">
                             <Field
                               label="Part/ Assembly No."
                               name="PartAssemblyNo"
@@ -733,7 +735,7 @@ class AddBOPDomestic extends Component {
                               className="multiselect-with-border"
                             //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                             />
-                          </Col>
+                          </Col> */}
                         </Row>
 
                         <Row>
@@ -836,7 +838,7 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
-                              label={`No. Of Pcs.`}
+                              label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}

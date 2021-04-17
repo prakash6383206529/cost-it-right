@@ -5,7 +5,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkPercentageValue, loggedInUserId } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPercentageValue, loggedInUserId } from '../../../../../helper'
 import { DIMENSIONLESS, HOUR, KG, MASS, NO, SHOTS, STROKE, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking';
 import { toastr } from 'react-redux-toastr';
@@ -40,14 +40,16 @@ function SheetMetalBaicDrawer(props) {
   const isEditFlag = WeightCalculatorRequest ? true : false
   const [processCost, setProcessCost] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '')
   const [disable, setDisabled] = useState(false)
+  const [hide, setHide] = useState(false)
   const [cavity, setCavity] = useState(WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
   const tempProcessObj = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : ''
 
   const fieldValues = useWatch({
     control,
-    name: ['Efficiency'],
+    name: ['Efficiency', 'Cavity', 'CycleTime'],
   })
   useEffect(() => {
+    handleProductionPerHour()
     calculateProcessCost()
   }, [fieldValues])
 
@@ -56,7 +58,12 @@ function SheetMetalBaicDrawer(props) {
     if (props.calculatorData.UOMType === MASS) {
 
       setValue('Quantity', rmFinishWeight ? rmFinishWeight : 1)
+
       // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
+    }
+
+    if (props.calculatorData.UOMType === TIME) {
+      setHide(true)
     }
     // if (props.calculatorData.UOMType === DIMENSIONLESS) {
     //   setValue('Cavity', props.WeightCalculatorRequest.Cavity ? props.WeightCalculatorRequest.Cavity : 1)
@@ -91,6 +98,8 @@ function SheetMetalBaicDrawer(props) {
     obj.Quantity = value.Quantity
     obj.ProcessCost = processCost
     obj.LoggedInUserId = loggedInUserId()
+    obj.UnitTypeId = props.calculatorData.UOMTypeId
+    obj.UnitType = props.calculatorData.UOMType
 
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
@@ -107,20 +116,26 @@ function SheetMetalBaicDrawer(props) {
   const calculateProcessCost = () => {
     const efficiency = getValues('Efficiency')
     const quantity = getValues('Quantity')
+
+    // const prodPerHrs
     // const cavity = getValues('Cavity')
+    // 
     const rate = props.calculatorData.MHR
+
+
     let cost
     switch (props.calculatorData.UOMType) {
       case MASS:
-
         setDisabled(true)
-        cost = (100 / efficiency) * quantity * rate
-
+        cost = ((100 / efficiency) * quantity * rate) / cavity
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
       case TIME:
         //This need to be done later
+        cost = rate / quantity
+        setProcessCost(cost)
+        setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return;
       case DIMENSIONLESS:
         setDisabled(true)
@@ -130,7 +145,7 @@ function SheetMetalBaicDrawer(props) {
         return true
       case VOLUMETYPE:
         setDisabled(true)
-        cost = (100 / efficiency) * (quantity * rate)
+        cost = ((100 / efficiency) * (quantity * rate)) / cavity
         setProcessCost(cost)
         setValue('ProcessCost', checkForDecimalAndNull(cost, localStorage.NoOfDecimalForPrice))
         return true
@@ -154,10 +169,24 @@ function SheetMetalBaicDrawer(props) {
     calculateMachineTime('0.00')
   }
 
+  const handleProductionPerHour = () => {
+    if (props.calculatorData.UOMType === TIME) {
+      const cavity = getValues('Cavity')
+      const cycleTime = getValues('CycleTime')
+      const efficiency = getValues('Efficiency')
+      const prodPerHrs = checkForNull((cavity * 3600 * efficiency) / (cycleTime * 100))
+      setValue('Quantity', Math.floor(prodPerHrs))
+    }
+  }
+
   const checlPercentageForEfficiency = (e) => {
     checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")
     setValue('Efficiency', 100)
   }
+
+  // const quantity = (e) => {
+  //   setQuantity(e.target.value)
+  // }
 
   return (
     <Fragment>
@@ -173,7 +202,7 @@ function SheetMetalBaicDrawer(props) {
                 <Row className={'mt15'}>
                   <Col className="col">
                     <TextFieldHookForm
-                      label={`Tonnage`}
+                      label={`Tonnage(T)`}
                       name={'MachineTonnage'}
                       Controller={Controller}
                       control={control}
@@ -187,37 +216,12 @@ function SheetMetalBaicDrawer(props) {
                       disabled={true}
                     />
                   </Col>
-                  <Col className="col">
-                    <TextFieldHookForm
-                      label={`Cycle Time`}
-                      name={'CycleTime'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={!disable}
-                      rules={{
-                        required: !disable,
-                        pattern: {
-                          //value: /^[0-9]*$/i,
-                          value: /^[0-9]\d*(\.\d+)?$/i,
-                          message: 'Invalid Number.',
-                        },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.CycleTime}
-                      disabled={disable}
-                    />
-                  </Col>
                   {
-                    props.calculatorData.UOMType === DIMENSIONLESS &&
+                    hide &&
                     <Col className="col">
                       <TextFieldHookForm
-                        label={`Cavity`}
-                        name={'Cavity'}
+                        label={`Cycle Time(sec)`}
+                        name={'CycleTime'}
                         Controller={Controller}
                         control={control}
                         register={register}
@@ -235,14 +239,43 @@ function SheetMetalBaicDrawer(props) {
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.Cavity}
-                        disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
+                        errors={errors.CycleTime}
+                        disabled={false}
                       />
                     </Col>
                   }
+                  {/* {
+                      props.calculatorData.UOMType === DIMENSIONLESS && */}
                   <Col className="col">
                     <TextFieldHookForm
-                      label={`Efficiency`}
+                      label={`Cavity`}
+                      name={'Cavity'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={!disable}
+                      rules={{
+                        required: !disable,
+                        pattern: {
+                          //  value: /^[0-9\b]+$/i,
+                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          message: 'Invalid Number.',
+                        },
+                        // maxLength: 4,
+                      }}
+                      handleChange={getCavity}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.Cavity}
+                      // disabled={props.calculatorData.UOMType === DIMENSIONLESS ? false : disable}
+                      disabled={false}
+                    />
+                  </Col>
+
+                  <Col className="col">
+                    <TextFieldHookForm
+                      label={`Efficiency(%)`}
                       name={'Efficiency'}
                       Controller={Controller}
                       control={control}
@@ -267,7 +300,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   <Col className="col">
                     <TextFieldHookForm
-                      label={props.calculatorData.UOMType === MASS ? `Finished Weight` : `Quantity`}
+                      label={props.calculatorData.UOMType === MASS ? `Finished Weight` : props.calculatorData.UOMType === TIME ? `Production / Hour` : `Quantity`}
                       name={'Quantity'}
                       Controller={Controller}
                       control={control}
@@ -287,12 +320,12 @@ function SheetMetalBaicDrawer(props) {
                       className=""
                       customClassName={'withBorder'}
                       errors={errors.Quantity}
-                      disabled={props.calculatorData.UOMType === MASS ? true : false}
+                      disabled={(props.calculatorData.UOMType === MASS || props.calculatorData.UOMType === TIME) ? true : false}
                     />
                   </Col>
                   <Col className="col">
                     <TextFieldHookForm
-                      label={`Total Process Cost`}
+                      label={`Process Cost`}
                       name={'ProcessCost'}
                       Controller={Controller}
                       control={control}

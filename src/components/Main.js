@@ -95,7 +95,7 @@ class Main extends Component {
     const { location } = this.props
     let isLogin = false
     let checkLogin = reactLocalStorage.getObject('isUserLoggedIn')
-
+    reactLocalStorage.set('location', location.pathname)
     if (typeof checkLogin == 'object') {
       isLogin = false
     }

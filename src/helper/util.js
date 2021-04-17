@@ -614,10 +614,8 @@ export function formViewData(costingSummary) {
   obj.freight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightCost !== null ? dataFromAPI.CostingPartDetails.NetFreightCost : 0
   obj.nPackagingAndFreight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightPackagingCost ? dataFromAPI.CostingPartDetails.NetFreightPackagingCost : 0
 
-  // obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.ToolMaintenanceCost : 0
-  // obj.toolPrice = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.ToolCost !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.ToolCost : 0
-  // obj.amortizationQty = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.Life !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.Life : 0
-
+  obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails.BOPHandlingCharges : 0
+  obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails.BOPHandlingPercentage : 0
 
   obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost : 0
@@ -648,6 +646,8 @@ export function formViewData(costingSummary) {
   obj.netBOPCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingBoughtOutPartCost : []
   // //COnversion Cost
   obj.netConversionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingConversionCost : '-'
+  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.TransportationDetails : ''
+  obj.surfaceTreatmentDetails = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingOverheadDetail : '-'
   obj.netProfitCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingProfitDetail : '-'
@@ -731,88 +731,5 @@ export function setValueAccToUOM(value, UOM) {
       break;
   }
 }
-// export function setValueAccToUOM(value, UOM) {
-//   switch (UOM) {
-//     case G:
-//       return value
-//     case KG:
-//       return value / 1000
-//     case MG:
-//       return value * 1000
-//     default:
-//       break;
-//   }
-// }
-export function setValueAccToUOMFromkg(value, UOM) {
-  switch (UOM) {
-    case G:
-      return value * 1000
-    case KG:
-      return value / 1000
-    case MG:
-      return value * 1000
-    default:
-      break;
-  }
-}
 
-export function getConvertedValue(value, unit, UOM) {
-  if (unit === G) {
-    switch (UOM) {
-      case KG:
-        return convertGTokg(value)
-      case MG:
-        return convertGToMg(value)
-      default:
-        return checkForNull(value)
 
-    }
-  } else if (unit === KG) {
-    switch (UOM) {
-      case G:
-        return convertKgToG(value)
-      case MG:
-        return convertKgToMg(value)
-      default:
-        return checkForNull(value)
-    }
-  } else if (unit === MG) {
-    switch (UOM) {
-      case G:
-        return convertMgToG(value)
-      case KG:
-        return convertMgToKg(value)
-      default:
-        return checkForNull(value)
-    }
-  }
-  // switch (UOM) {
-  //   case G:
-  //     return value * 1000
-  //   case KG:
-  //     return value
-  //   case MG:
-  //     return value / 1000000
-  //   default:
-  //     break;
-  // }
-}
-
-export function convertGTokg(value) {
-  return checkForNull(value / 1000)
-}
-export function convertGToMg(value) {
-  return checkForNull(value * 1000)
-}
-export function convertKgToMg(value) {
-  return checkForNull(value / 1000000)
-}
-export function convertKgToG(value) {
-  return checkForNull(value * 1000)
-}
-export function convertMgToG(value) {
-  return checkForNull(value / 1000)
-}
-export function convertMgToKg(value) {
-  return checkForNull(value * 1000000)
-}
