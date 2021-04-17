@@ -25,7 +25,7 @@ function Attachament(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={'drawer-wrapper drawer-1500px'}>
@@ -62,13 +62,10 @@ function Attachament(props) {
                             : ''
                           const fileURL = `${FILE_URL}${withOutTild}`
                           return (
-                            <div className={'image-viwer'} onClick={() => {}}>
-                              <img
-                                src={fileURL}
-                                height={50}
-                                width={100}
-                                alt="cancel-icon.jpg"
-                              />
+                            <div className={"attachment images"}>
+                              <a href={fileURL} target="_blank">
+                                {f.OriginalFileName}
+                              </a>
                             </div>
                           )
                         })}

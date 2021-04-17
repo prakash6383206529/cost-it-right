@@ -14,6 +14,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { formViewData } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
+import { useHistory } from "react-router-dom";
 
 function CostingSummary(props) {
 
@@ -23,6 +24,7 @@ function CostingSummary(props) {
   })
 
   const dispatch = useDispatch()
+  let history = useHistory();
   /* Dropdown cosntant*/
   const [technology, setTechnology] = useState([])
   const [IsBulkOpen, SetIsBulkOpen] = useState(false)
@@ -31,6 +33,7 @@ function CostingSummary(props) {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [TechnologyId, setTechnologyId] = useState('')
   const [disabled, setDisabled] = useState(false)
+  const [showWarningMsg, setShowWarningMsg] = useState(false)
   const partNumber = useSelector(state => state.costing.partNo);
 
   const costingData = useSelector(state => state.costing.costingData)
@@ -48,6 +51,7 @@ function CostingSummary(props) {
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
         }
+        // history.push("/costing-summary");
       },
       ))
     }
@@ -201,19 +205,27 @@ function CostingSummary(props) {
                       newValue.label,
                       '00000000-0000-0000-0000-000000000000',
                       (res) => {
+
                         if (res.data.Result == true) {
-                          dispatch(getSingleCostingDetails(res.data.Data.CostingId,
-                            (res) => {
-                              // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
-                              if (res.data.Data) {
-                                let dataFromAPI = res.data.Data
-                                const tempObj = formViewData(dataFromAPI)
-                                dispatch(setCostingViewData(tempObj))
-                              }
-                            },
+                          dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
+                            // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
+                            if (res.data.Data) {
+
+                              let dataFromAPI = res.data.Data
+                              // if (Object.keys(dataFromAPI).length === 0) {
+
+                              // }
+                              const tempObj = formViewData(dataFromAPI)
+                              dispatch(setCostingViewData(tempObj))
+                            } else {
+
+                            }
+                          },
                           ),
                           )
                         } else {
+
+                          setShowWarningMsg(true)
                           dispatch(setCostingViewData(temp))
                         }
                       },
@@ -256,13 +268,14 @@ function CostingSummary(props) {
   */
   const resetData = () => {
     reset()
-    setTechnology([])
     setPart([])
+    setTechnology([])
     setTimeout(() => {
-      getValues('Technology', [])
-      getValues('Part', [])
+      setValue('Technology', '')
+      setValue('Part', '')
     }, 200);
     setDisabled(false)
+    setEffectiveDate('')
     dispatch(storePartNumber(''))
     dispatch(setCostingViewData([]))
     dispatch(getPartSelectListByTechnology('', () => { }))
@@ -521,7 +534,7 @@ function CostingSummary(props) {
           </Col>
         </Row>
       </div>
-      {partNumber !== "" && <CostingSummaryTable resetData={resetData} showDetail={props.showDetail} technologyId={TechnologyId} />}
+      {partNumber !== "" && <CostingSummaryTable resetData={resetData} showDetail={props.showDetail} technologyId={TechnologyId} showWarningMsg={showWarningMsg} />}
       {IsBulkOpen && <BOMUpload
         isOpen={IsBulkOpen}
         closeDrawer={closeBulkUploadDrawer}

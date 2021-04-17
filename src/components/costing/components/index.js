@@ -6,14 +6,16 @@ import CostingDetails from './CostingDetails';
 import CostingSummaryTable from './CostingSummaryTable';
 import CostingSummary from './CostingSummary';
 import { storePartNumber } from '../actions/Costing';
+import { reactLocalStorage } from 'reactjs-localstorage';
+import { useHistory } from "react-router-dom";
 
 function Costing(props) {
 
+  let history = useHistory();
   const [activeTab, setActiveTab] = useState('1');
   const [hideRow, setHideRow] = useState(false)
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [costingData, setCostingData] = useState({});
-
   const partNumber = useSelector(state => state.costing.partNo);
 
   /**
@@ -23,18 +25,27 @@ function Costing(props) {
   const toggle = (tab) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
+      // history.push('/costing')
     }
   }
 
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(storePartNumber(''))
+    if (reactLocalStorage.get('location') === '/costing-summary') {
+      //setActiveTab("2")
+      toggle("2");
+    } else {
+      //setActiveTab("1")
+      toggle("1");
+    }
   }, [])
 
   const showDetail = (partInfo, costingInfo) => {
     setPartInfo(partInfo)
     setCostingData(costingInfo)
     toggle("1");
+    // history.push("/costing");
   }
 
   /**
@@ -53,6 +64,7 @@ function Costing(props) {
                 className={classnames({ active: activeTab === "1" })}
                 onClick={() => {
                   toggle("1");
+                  history.push("/costing");
                 }}
               >
                 Costing Details
@@ -63,6 +75,7 @@ function Costing(props) {
                 className={classnames({ active: activeTab === "2" })}
                 onClick={() => {
                   toggle("2");
+                  history.push("/costing-summary");
                 }}
               >
                 Costing Summary

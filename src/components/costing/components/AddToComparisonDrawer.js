@@ -54,7 +54,9 @@ function AddToComparisonDrawer(props) {
 
   /* constant for checkbox rendering condition */
   const [isZbcSelected, setIsZbcSelected] = useState(true)
+  console.log('isZbcSelected: ', isZbcSelected);
   const [isVbcSelected, setIsVbcSelected] = useState(false)
+  console.log('isVbcSelected: ', isVbcSelected);
   const [isCbcSelected, setisCbcSelected] = useState(false)
 
   /* For vendor dropdown */
@@ -86,16 +88,17 @@ function AddToComparisonDrawer(props) {
     }
     /******FIRST TIME RENDER EDIT TO COMPARISION******/
     if (isEditFlag) {
+      console.log(typeOfCosting, "typeOfCosting");
       if (typeOfCosting === 0) { //ZBC COSTING CONDITION
-        setTimeout(() => {
-          setIsZbcSelected(true)
-          setIsVbcSelected(false)
-          setisCbcSelected(false)
-        }, 100);
+        console.log("COMING ?");
+
+        setIsZbcSelected(true)
+
         dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => { }))
         dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
         dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
       } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
+        console.log("COMING VBC?");
         setIsZbcSelected(false)
         setIsVbcSelected(true)
         setisCbcSelected(false)
@@ -114,9 +117,9 @@ function AddToComparisonDrawer(props) {
   useEffect(() => {
     dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
     dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
-    setIsZbcSelected(false)
-    setIsVbcSelected(true)
-    setisCbcSelected(false)
+    // setIsZbcSelected(false)
+    // setIsVbcSelected(true)
+    // setisCbcSelected(false)
   }, [vendorSelectList])
 
   /**
@@ -276,9 +279,9 @@ function AddToComparisonDrawer(props) {
           obj.freight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightCost !== null ? dataFromAPI.CostingPartDetails.NetFreightCost : 0
           obj.nPackagingAndFreight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightPackagingCost ? dataFromAPI.CostingPartDetails.NetFreightPackagingCost : 0
 
-          // obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.ToolMaintenanceCost : 0
-          // obj.toolPrice = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.ToolCost !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.ToolCost : 0
-          // obj.amortizationQty = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.Life !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.Life : 0
+
+          obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails.BOPHandlingCharges : 0
+          obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails.BOPHandlingPercentage : 0
 
           obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost : 0
           obj.toolPrice = dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost : 0
@@ -310,6 +313,8 @@ function AddToComparisonDrawer(props) {
           obj.netBOPCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingBoughtOutPartCost : []
           // //COnversion Cost
           obj.netConversionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingConversionCost : '-'
+          obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.TransportationDetails : ''
+          obj.surfaceTreatmentDetails = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.SurfaceTreatmentDetails : []
           // //OverheadCost and Profit
           obj.netOverheadCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingOverheadDetail : '-'
           obj.netProfitCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingProfitDetail : '-'

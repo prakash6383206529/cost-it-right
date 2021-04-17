@@ -524,7 +524,7 @@ function Pipe(props) {
     console.log(weight, "Weight");
     setTimeout(() => {
       setValue('FinishWeight', weight)
-      setFinishWeight(weight)
+      setFinishWeights(weight)
     }, 200);
   }
 

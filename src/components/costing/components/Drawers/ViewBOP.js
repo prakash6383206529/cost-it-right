@@ -8,10 +8,11 @@ import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
   const { viewBOPData } = props
+  const { BOPData, bopPHandlingCharges, bopHandlingPercentage } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   useEffect(() => {
-    setviewBOPCost(viewBOPData)
+    setviewBOPCost(BOPData)
   }, [])
 
   /**
@@ -110,22 +111,17 @@ function ViewBOP(props) {
                     </tr>
                   </thead>
                   <tbody>
-                    {viewBOPCost &&
-                      viewBOPCost.map((item, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>{item.BOPPercentage ? item.BOPPercentage : 0}</td>
-                            <td>{checkForDecimalAndNull(item.BOPCharge, initialConfiguration.NoOfDecimalForPrice)}</td>
-                          </tr>
-                        )
-                      })}
-                    {viewBOPCost.length === 0 && (
+                    <tr>
+                      <td>{bopHandlingPercentage ? bopHandlingPercentage : 0}</td>
+                      <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
+                    </tr>
+                    {/* {Object.keys(bopHandlingPercentage).length === 0 && (
                       <tr>
                         <td colSpan={7}>
                           <NoContentFound title={CONSTANT.EMPTY_DATA} />
                         </td>
                       </tr>
-                    )}
+                    )} */}
                   </tbody>
                 </Table>
               </Col>
