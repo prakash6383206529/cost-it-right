@@ -1466,7 +1466,7 @@ function CostingDetails(props) {
                             <h6 className="dark-blue-text sec-heading">VBC:</h6>
                           </Col>
                           <Col md="6" className={"mb-2 mt-3"}>
-                            {vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                            {vbcVendorGrid && vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
                               <button
                                 type="button"
                                 className={"user-btn"}
