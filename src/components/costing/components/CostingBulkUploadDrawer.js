@@ -37,60 +37,6 @@ class CostingBulkUploadDrawer extends Component {
     handleChangeStatus = ({ meta, file }, status) => {
 
         const { files } = this.state
-        let fileObj = files[0];
-        let fileHeads = [];
-
-        let data = new FormData()
-        data.append('file', fileObj)
-
-        ExcelRenderer(fileObj, (err, resp) => {
-            if (err) {
-
-            } else {
-
-                fileHeads = resp.rows[0];
-
-                const check = fileHeads.includes(CostingBulkUpload)
-
-                if (check === false) {
-                    toastr.error('Please check your data.')
-                }
-                else {
-                    // fileHeads = resp.rows[0];
-                    // let fileData = [];
-                    // resp.rows.map((val, index) => {
-                    //     if (index > 0) {
-
-                    //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                    //         const i = val.findIndex(e => e === undefined);
-                    //         if (i !== -1) {
-                    //             val[i] = '';
-                    //         }
-
-                    //         let obj = {}
-                    //         val.map((el, i) => {
-                    //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                    //                 el = getJsDateFromExcel(el)
-                    //             }
-                    //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                    //                 el = parseInt(el)
-                    //             }
-                    //             obj[fileHeads[i]] = el;
-                    //             return null;
-                    //         })
-                    //         fileData.push(obj)
-                    //         obj = {}
-
-                    //     }
-                    //     console.log(fileData, "FD");
-                    //     return null;
-                    // })
-
-                };
-            }
-        });
-
-
 
         if (status === 'removed') {
             const removedFileName = file.name
@@ -174,81 +120,55 @@ class CostingBulkUploadDrawer extends Component {
             let data = new FormData()
             data.append('file', fileObj)
 
-            ExcelRenderer(fileObj, (err, resp) => {
-                if (err) {
+            // ExcelRenderer(fileObj, (err, resp) => {
+            //     if (err) {
 
-                } else {
+            //     } else {
 
-                    // CostingBulkUpload && CostingBulkUpload.map(item => {
-                    //     const check = fileHeads.includes(item.label)
-                    //     if (check === false) {
-                    //         toastr.error('Please check your data.')
-                    //     }
-                    //   });
+            //         fileHeads = resp.rows[0];
 
-                    let flag = 0
+            //         const check = fileHeads.includes(CostingBulkUpload)
+            //         this.setState({
+            //             //   fileData: fileObj,
+            //             uploadfileName: uploadfileName,
+            //         });
+            //         if (check === false) {
+            //             toastr.error('Please check your data.')
+            //         }
+            //         else {
+            //             // fileHeads = resp.rows[0];
+            //             // let fileData = [];
+            //             // resp.rows.map((val, index) => {
+            //             //     if (index > 0) {
 
-                    fileHeads = resp.rows[0];
-<<<<<<< HEAD
+            //             //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+            //             //         const i = val.findIndex(e => e === undefined);
+            //             //         if (i !== -1) {
+            //             //             val[i] = '';
+            //             //         }
 
-                    const check = fileHeads.includes(CostingBulkUpload)
-                    this.setState({
-                        //   fileData: fileObj,
-                        uploadfileName: uploadfileName,
-                    });
-                    if (check === false) {
-                        toastr.error('Please check your data.')
-                    }
-                    else {
-                        // fileHeads = resp.rows[0];
-                        // let fileData = [];
-                        // resp.rows.map((val, index) => {
-                        //     if (index > 0) {
+            //             //         let obj = {}
+            //             //         val.map((el, i) => {
+            //             //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+            //             //                 el = getJsDateFromExcel(el)
+            //             //             }
+            //             //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+            //             //                 el = parseInt(el)
+            //             //             }
+            //             //             obj[fileHeads[i]] = el;
+            //             //             return null;
+            //             //         })
+            //             //         fileData.push(obj)
+            //             //         obj = {}
 
-                        //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                        //         const i = val.findIndex(e => e === undefined);
-                        //         if (i !== -1) {
-                        //             val[i] = '';
-                        //         }
+            //             //     }
+            //             //     console.log(fileData, "FD");
+            //             //     return null;
+            //             // })
 
-                        //         let obj = {}
-                        //         val.map((el, i) => {
-                        //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                        //                 el = getJsDateFromExcel(el)
-                        //             }
-                        //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                        //                 el = parseInt(el)
-                        //             }
-                        //             obj[fileHeads[i]] = el;
-                        //             return null;
-                        //         })
-                        //         fileData.push(obj)
-                        //         obj = {}
-
-                        //     }
-                        //     console.log(fileData, "FD");
-                        //     return null;
-                        // })
-
-=======
-                    console.log(fileHeads, "FILE HEADS");
-                    CostingBulkUpload && CostingBulkUpload.map(item => {
-                        const check = fileHeads.includes(item.label)
-                        if (check === false) {
-                            toastr.error('Please re-upload the file with correct data.')
-                            flag = flag + 1
-                        }
-                    });
-                    if (flag > 0) { return null }
-                    else {
-                        this.setState({
-                            fileData: fileObj,
-                            uploadfileName: uploadfileName,
-                        });
->>>>>>> 95b271d3dd5e24e404148922c970ee8b3f64aaa3
-                    };
-                }
-            });
+            //         };
+            //     }
+            // });
         }
     }
 
