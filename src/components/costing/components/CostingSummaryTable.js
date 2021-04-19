@@ -507,7 +507,7 @@ const CostingSummaryTable = (props) => {
                                   data.status === DRAFT &&
                                   <div class="custom-check1 d-inline-block">
                                     <label
-                                      className="custom-checkbox"
+                                      className="custom-checkbox pl-0 mb-0"
                                       onChange={() => moduleHandler(data.costingId)}
                                     >
                                       {''}
@@ -967,7 +967,7 @@ const CostingSummaryTable = (props) => {
                                         : ''
                                       const fileURL = `${FILE_URL}${withOutTild}`
                                       return (
-                                        <div className={"attachment images"}>
+                                        <div className={"single-attachment images"}>
                                           <a href={fileURL} target="_blank">
                                             {f.OriginalFileName}
                                           </a>

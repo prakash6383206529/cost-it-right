@@ -1433,7 +1433,7 @@ button.user-btn.pull-right {
   }
 }
 [class$=hdxg-control]{
-  min-height: 40px !important;
+  min-height: 38px !important;
  }
  .cr-process-costwrap{padding-left: 15px;padding-right:15px;background-color:#fff;border:1px solid #C2CBE8;}
  .cr-innertool-cost.row{background-color: #E7F2FC;color:#3D4465;border-bottom:1px solid #C2CBE8;    margin-bottom: 15px;}
@@ -1530,6 +1530,9 @@ $roboto: "Roboto", sans-serif;
 			}
 		}
 	}
+}
+.date-section + .fa-calendar{
+  margin-top: 35px;
 }
 .w-40{width: 40%;}
 .w-60{width: 60%;}
@@ -2706,6 +2709,12 @@ opacity: 0.5;
       visibility: visible;
     }
   }
+}
+
+.refresh-icon.tooltip-n{
+   .tooltiptext{
+    left: -130px;
+   }
 }
 // ========tooltip css=============
 
