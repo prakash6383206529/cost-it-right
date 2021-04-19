@@ -586,17 +586,14 @@ export function formViewData(costingSummary) {
   obj.aValue = { applicability: 'Applicability', value: 'Value', }
   obj.overheadOn = {
     overheadTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadApplicability : '-',
-    overheadValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) : 0 +
-      (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost,) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost,) : 0),
+    overheadValue: dataFromAPI.CostingPartDetails.CostingOverheadDetail && checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadCCTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadBOPTotalCost) +
+      checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadRMTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingOverheadDetail.OverheadFixedTotalCost),
   }
   obj.profitOn = {
     profitTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability !== null ? dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitApplicability : '-',
-    profitValue: dataFromAPI.CostingPartDetails && (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost) : 0) +
-      (dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost !== null ? parseInt(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost) : 0),
+    profitValue: dataFromAPI.CostingPartDetails && checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitCCTotalCost) +
+      checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitBOPTotalCost) + checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitRMTotalCost) +
+      checkForNull(dataFromAPI.CostingPartDetails.CostingProfitDetail.ProfitFixedTotalCost)
   }
   obj.rejectionOn = {
     rejectionTitle: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI.CostingPartDetails.CostingRejectionDetail.RejectionApplicability : '-',
@@ -617,10 +614,8 @@ export function formViewData(costingSummary) {
   obj.freight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightCost !== null ? dataFromAPI.CostingPartDetails.NetFreightCost : 0
   obj.nPackagingAndFreight = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.NetFreightPackagingCost ? dataFromAPI.CostingPartDetails.NetFreightPackagingCost : 0
 
-  // obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.ToolMaintenanceCost : 0
-  // obj.toolPrice = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.ToolCost !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.ToolCost : 0
-  // obj.amortizationQty = dataFromAPI.CostingPartDetails.OverAllApplicability && dataFromAPI.CostingPartDetails.OverAllApplicability.Life !== null ? dataFromAPI.CostingPartDetails.OverAllApplicability.Life : 0
-
+  obj.bopPHandlingCharges = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingCharges !== null ? dataFromAPI.CostingPartDetails.BOPHandlingCharges : 0
+  obj.bopHandlingPercentage = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.BOPHandlingPercentage !== null ? dataFromAPI.CostingPartDetails.BOPHandlingPercentage : 0
 
   obj.toolMaintenanceCost = dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolMaintenanceCost : 0
   obj.toolPrice = dataFromAPI.CostingPartDetails.CostingToolCostResponse.length > 0 && dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost !== null ? dataFromAPI.CostingPartDetails.CostingToolCostResponse[0].ToolCost : 0
@@ -651,6 +646,8 @@ export function formViewData(costingSummary) {
   obj.netBOPCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingBoughtOutPartCost : []
   // //COnversion Cost
   obj.netConversionCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingConversionCost : '-'
+  obj.netTransportationCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.TransportationDetails : ''
+  obj.surfaceTreatmentDetails = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.SurfaceTreatmentDetails : []
   // //OverheadCost and Profit
   obj.netOverheadCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingOverheadDetail : '-'
   obj.netProfitCostView = dataFromAPI.CostingPartDetails ? dataFromAPI.CostingPartDetails.CostingProfitDetail : '-'
@@ -686,7 +683,6 @@ export function formViewData(costingSummary) {
 /*VOLUME AND DENSITY BASED ON DIAMETER*/
 export function getVolume(innerDiameter, outerDiameter, height) {
   const value = (Math.PI / 4) * (Math.pow(outerDiameter, 2) - Math.pow(innerDiameter, 2)) * height
-  console.log(value, "value");
   return checkForNull(value)
 }
 
@@ -707,7 +703,6 @@ export function calculateWeight(density, length, width, thickness) {
 }
 
 export const applySuperScripts = (cell) => {
-  console.log(cell, "CELL");
   if (cell && cell !== '') {
     const capIndex = cell && cell.indexOf('^');
     const superNumber = cell.substring(capIndex + 1, capIndex + 2);
@@ -723,15 +718,18 @@ export function convertmmTocm(value) {
   return value / 10
 }
 
+/**g to kg,mg**/
 export function setValueAccToUOM(value, UOM) {
   switch (UOM) {
     case G:
-      return value
+      return checkForNull(value)
     case KG:
-      return value / 1000
+      return checkForNull(value / 1000)
     case MG:
-      return value * 1000
+      return checkForNull(value * 1000)
     default:
       break;
   }
 }
+
+

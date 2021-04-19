@@ -33,7 +33,7 @@ function TabPackagingFreight(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData !== undefined && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
+    let TopHeaderValues = PackageAndFreightTabData && PackageAndFreightTabData.length > 0 && PackageAndFreightTabData[0].CostingPartDetails !== undefined ? PackageAndFreightTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       NetFreightPackagingCost: TopHeaderValues && checkForNull(TopHeaderValues.NetFreightPackagingCost),
     }
@@ -184,7 +184,7 @@ function TabPackagingFreight(props) {
                     <Table className="table cr-brdr-main mb-0 " size="sm">
                       <thead>
                         <tr>
-                          <th className="py-4 align-middle" style={{ width: "100px" }}>{``}</th>
+                          <th className="py-4 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
                           <th className="py-4 align-middle" style={{ width: "100px" }}>{`Net Packaging Cost`}</th>
                           <th className="py-4 align-middle" style={{ width: "150px" }}>{`Net Freight Cost`}</th>
                         </tr>

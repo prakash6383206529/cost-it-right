@@ -35,7 +35,7 @@ function TabOverheadProfit(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData !== undefined && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
+    let TopHeaderValues = OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].CostingPartDetails !== undefined ? OverheadProfitTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       NetOverheadProfitCost: TopHeaderValues && (checkForNull(TopHeaderValues.OverheadCost) +
         checkForNull(TopHeaderValues.ProfitCost) +
@@ -523,7 +523,7 @@ function TabOverheadProfit(props) {
                     <Table className="table cr-brdr-main" size="sm">
                       <thead>
                         <tr>
-                          <th className="py-3 align-middle" style={{ width: "100px" }}>{``}</th>
+                          <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Net Overheads`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Net Profit`}</th>

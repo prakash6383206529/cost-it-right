@@ -46,7 +46,7 @@ export default function VishualAdDrawer(props) {
     */
     return (
         <div>
-            <Drawer anchor={props.anchor} open={props.isOpen} 
+            <Drawer anchor={props.anchor} open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
                 <Container>

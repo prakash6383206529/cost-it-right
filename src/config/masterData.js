@@ -1567,7 +1567,7 @@ export const CostingBulkUpload = [
     { label: "L3Total", value: "L3Total" }
 ]
 
-export const CostingBulkUploadTempData = [
+export const CostingBulkUloadTempData = [
     {
         "SlNo": "0",
         "Class": "\u0000",
@@ -1669,3 +1669,52 @@ export const FASTNERS = 12
 export const ASSEMBLY = 13
 export const MACHINING = 14
 export const FABRICATION = 15
+
+
+export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation"]
+
+export const RMDomesticSimulation = [
+    { label: "CostingHead", value: "CostingHead" },
+    { label: "RawMaterial", value: "RawMaterial" },
+    { label: "RMGrade", value: "RMGrade" },
+    // { label: "RMSpec", value: "RMSpec" },
+    // { label: "Category", value: "Category" },
+    // { label: "TechnologyName", value: "TechnologyName" },
+    // { label: "Material", value: "Material" },
+    // { label: "Plant", value: "Plant" },
+    // { label: "VendorName", value: "VendorName" },
+    // { label: "VendorCode", value: "VendorCode" },
+    // { label: "VendorLocation", value: "VendorLocation" },
+    // { label: "HasDifferentSource", value: "HasDifferentSource" },
+    // { label: "Source", value: "Source" },
+    // { label: "SourceLocation", value: "SourceLocation" },
+    // { label: "UOM", value: "UOM" },
+    // { label: "BasicRate", value: "BasicRate" },
+    // { label: "ScrapRate", value: "ScrapRate" },
+    // { label: "Remark", value: "Remark" },
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
+// export const RMDomesticZBCTempData = [
+//     {
+//         //"CostingHead": "ZBC",
+//         "RawMaterial": "RawMaterial Name",
+//         "RMGrade": "1",
+//         // "RMSpec": "2",
+//         // "Category": "Category Name",
+//         // "TechnologyName": "Technology Name",
+//         // "Material": "Material Name",
+//         // "Plant": "Plant Name",
+//         // "VendorName": "Vendor Name",
+//         // "VendorCode": "Vendor123",
+//         // "VendorLocation": "Vendor Location",
+//         // "HasDifferentSource": "YES or NO",
+//         // "Source": "Source Name",
+//         // "SourceLocation": "Source Location",
+//         // "UOM": "Kilogram or Litre",
+//         // "BasicRate": "0",
+//         // "ScrapRate": "0",
+//         // "Remark": "Remark Content",
+//         // "EffectiveDate": moment().format('DD-MM-YYYY'),
+//     }
+// ]

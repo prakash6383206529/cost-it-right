@@ -4,6 +4,7 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
+import { useSelector } from 'react-redux'
 
 function ViewConversionCost(props) {
 
@@ -21,17 +22,14 @@ function ViewConversionCost(props) {
     props.closeDrawer('')
   }
   const { viewConversionCostData } = props
-  const {
-    CostingOperationCostResponse,
-    CostingProcessCostResponse,
-    CostingToolsCostResponse,
-    IsShowToolCost,
-  } = viewConversionCostData
-
+  const { conversionData, netTransportationCostView, surfaceTreatmentDetails } = viewConversionCostData
+  const { CostingOperationCostResponse, CostingProcessCostResponse, CostingToolsCostResponse, IsShowToolCost, } = conversionData
   const [costingProcessCost, setCostingProcessCost] = useState([])
   const [costingOperationCost, setCostingOperationCostResponse] = useState([])
   const [isShowToolCost, setIsShowToolCost] = useState(false)
   const [costingToolsCost, setcostingToolsCost] = useState(false)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+
   useEffect(() => {
     if (IsShowToolCost) {
       setIsShowToolCost(IsShowToolCost)
@@ -45,14 +43,14 @@ function ViewConversionCost(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container className="view-conversion-cost-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Conversion Cost'}</h3>
+                  <h3>{'View Conversion Cost:'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -71,7 +69,6 @@ function ViewConversionCost(props) {
               </Row>
               <Row>
                 {/*PROCESS COST GRID */}
-
                 <Col md="12">
                   <Table className="table cr-brdr-main" size="sm">
                     <thead>
@@ -94,28 +91,17 @@ function ViewConversionCost(props) {
                         costingProcessCost.map((item, index) => {
                           return (
                             <tr key={index}>
-                              <td>
-                                {item.ProcessName ? item.ProcessName : '-'}
-                              </td>
-                              <td>
-                                {item.ProcessDescription
-                                  ? item.ProcessDescription
-                                  : '-'}
-                              </td>
-                              <td>
-                                {item.MachineName ? item.MachineName : '-'}
-                              </td>
+                              <td>{item.ProcessName ? item.ProcessName : '-'}</td>
+                              <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
+                              <td>{item.MachineName ? item.MachineName : '-'}</td>
                               <td>{item.Tonnage ? item.Tonnage : '-'}</td>
                               <td>{item.UOM ? item.UOM : '-'}</td>
                               <td>{item.MHR ? item.MHR : '-'}</td>
                               <td>{item.CycleTime ? item.CycleTime : '-'}</td>
-                              <td>{item.Efficiency ? item.Efficiency : '-'}</td>
+                              <td>{item.Efficiency ? checkForDecimalAndNull(item.Efficiency, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                               <td>{item.Cavity ? item.Cavity : '-'}</td>
-                              <td>{item.Quantity ? item.Quantity : '-'}</td>
-                              <td>
-                                {item.ProcessCost
-                                  ? checkForDecimalAndNull(item.ProcessCost, 2)
-                                  : 0}
+                              <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+                              <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </td>
                             </tr>
                           )
@@ -162,21 +148,17 @@ function ViewConversionCost(props) {
                             return (
                               <tr key={index}>
                                 <td>
-                                  {item.OperationName
-                                    ? item.OperationName
-                                    : '-'}
+                                  {item.OperationName ? item.OperationName : '-'}
                                 </td>
                                 <td>
-                                  {item.OperationCode
-                                    ? item.OperationCode
-                                    : '-'}
+                                  {item.OperationCode ? item.OperationCode : '-'}
                                 </td>
                                 <td>{item.UOM ? item.UOM : '-'}</td>
                                 <td>{item.Rate ? item.Rate : '-'}</td>
                                 <td>{item.Quantity ? item.Quantity : '-'}</td>
                                 <td>
                                   {item.IsLabourRateExist
-                                    ? checkForDecimalAndNull(item.LabourRate, 2)
+                                    ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)
                                     : '-'}
                                 </td>
                                 <td>
@@ -186,9 +168,7 @@ function ViewConversionCost(props) {
                                 </td>
                                 {/* <td>{netCost(item.OperationCost)}</td> */}
                                 <td>
-                                  {item.OperationCost
-                                    ? item.OperationCost
-                                    : '-'}
+                                  {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                                 </td>
                               </tr>
                             )
@@ -216,7 +196,6 @@ function ViewConversionCost(props) {
                   </Row>
                   <Row>
                     {/*TOOL COST GRID */}
-
                     <Col md="12">
                       <Table className="table cr-brdr-main" size="sm">
                         <thead>
@@ -239,15 +218,10 @@ function ViewConversionCost(props) {
                                   <td>{item.ToolCategory ? item.ToolCategory : '-'}</td>
                                   <td>{item.ToolName ? item.ToolName : '-'}</td>
                                   <td>{item.Quantity ? item.Quantity : '-'}</td>
-                                  <td>{item.ToolCost ? item.ToolCost : '-'}</td>
+                                  <td>{item.ToolCost ? checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                                   <td>{item.Life ? item.Life : '-'}</td>
                                   <td>
-                                    {item.NetToolCost
-                                      ? checkForDecimalAndNull(
-                                        item.NetToolCost,
-                                        2,
-                                      )
-                                      : 0}
+                                    {item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                                   </td>
                                 </tr>
                               )
@@ -265,6 +239,86 @@ function ViewConversionCost(props) {
                   </Row>
                 </div>
               )}
+              <hr />
+              <Row>
+                <Col md="12">
+                  <div className="left-border">{'Surface Treatment Cost:'}</div>
+                </Col>
+              </Row>
+              <Row>
+                {/*PROCESS COST GRID */}
+                <Col md="12">
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th>{`Operation Name`}</th>
+                        <th>{`Surface Area`}</th>
+                        <th>{`UOM`}</th>
+                        <th>{`Rate/UOM`}</th>
+                        <th className="costing-border-right">{`Cost`}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {surfaceTreatmentDetails &&
+                        surfaceTreatmentDetails.map((item, index) => {
+                          return (
+                            <tr key={index}>
+                              <td>{item.OperationName ? item.OperationName : '-'}</td>
+                              <td>{item.SurfaceArea ? item.SurfaceArea : '-'}</td>
+                              <td>{item.UOM ? item.UOM : '-'}</td>
+                              <td>{item.RatePerUOM ? checkForDecimalAndNull(item.RatePerUOM, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+                              <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+
+                            </tr>
+                          )
+                        })}
+                      {surfaceTreatmentDetails && surfaceTreatmentDetails.length === 0 && (
+                        <tr>
+                          <td colSpan={12}>
+                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </Col>
+              </Row>
+              <hr />
+              <Row>
+                <Col md="12">
+                  <div className="left-border">{'Transportation Cost::'}</div>
+                </Col>
+              </Row>
+              <Row>
+                {/*TRANSPORTATION COST GRID */}
+                <Col md="12">
+                  <Table className="table cr-brdr-main" size="sm">
+                    <thead>
+                      <tr>
+                        <th>{`UOM`}</th>
+                        <th>{`Rate`}</th>
+                        <th>{`Quantity`}</th>
+                        <th className="costing-border-right">{`Cost`}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{netTransportationCostView && netTransportationCostView.UOM ? netTransportationCostView.UOM : '-'}</td>
+                        <td>{netTransportationCostView && netTransportationCostView.Rate ? checkForDecimalAndNull(netTransportationCostView.Rate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                        <td>{netTransportationCostView && netTransportationCostView.Quantity ? checkForDecimalAndNull(netTransportationCostView.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
+                        <td>{netTransportationCostView && netTransportationCostView.TransportationCost ? checkForDecimalAndNull(netTransportationCostView.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                      </tr>
+                      {netTransportationCostView && Object.keys(netTransportationCostView).length === 0 && (
+                        <tr>
+                          <td colSpan={12}>
+                            <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </Col>
+              </Row>
             </div>
           </div>
         </Container>

@@ -37,7 +37,7 @@ function TabToolCost(props) {
 
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
-    let TopHeaderValues = ToolTabData && ToolTabData !== undefined && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
+    let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
     }

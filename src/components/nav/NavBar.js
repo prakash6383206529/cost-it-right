@@ -2,11 +2,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toastr } from "react-redux-toastr";
 import { Link, Redirect, } from "react-router-dom";
-import { NavbarToggler, Nav, Dropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
+import { NavbarToggler, Nav, Dropdown, DropdownToggle } from "reactstrap";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
-  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName,
+  logoutUserAPI, getMenuByUser, getModuleSelectList, getLeftMenu, getPermissionByUser, getModuleIdByPathName, getMenu
 } from '../../actions/auth/AuthActions';
 import "./NavBar.scss";
 import { Loader } from "../common/Loader";
@@ -142,13 +142,27 @@ class SideBar extends Component {
       // }
     });
   };
+
+
+  setLeftMenuAccToMenu = (pathname) => {
+    this.props.getModuleIdByPathName(pathname, res => {
+      this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
+    })
+  }
+
+  setModuleId = (ModuleId) => {
+    reactLocalStorage.set('ModuleId', ModuleId)
+  }
+
   /**
     * @method setLeftMenu
     * @description Used to set left menu and Redirect to first menu.
     */
   SetMenu = (ModuleId) => {
+    if (ModuleId !== reactLocalStorage.get("ModuleId")) {
+      this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
+    }
     reactLocalStorage.set("ModuleId", ModuleId);
-    this.props.getLeftMenu(ModuleId, loggedInUserId(), (res) => { });
   };
   /**
    * @method renderDashboard
@@ -197,7 +211,7 @@ class SideBar extends Component {
    * @description Render master menu.
    */
   renderMaster = (module) => {
-    const { menusData, leftMenuData } = this.props
+    const { menusData, leftMenuData, menuData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -205,12 +219,15 @@ class SideBar extends Component {
           return (
             <>
               <li className="nav-item dropdown"
-                onMouseOver={() => this.SetMenu(el.ModuleId)}
+                onMouseOver={(e) => {
+                  //e.stopPropagation()
+                  this.SetMenu(el.ModuleId)
+                }}
               >
                 <Link
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  // onMouseOver={() => this.setLeftMenu(el.ModuleId)}
+                  //   onMouseOver={() => this.setLeftMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -231,25 +248,37 @@ class SideBar extends Component {
                 <div className="dropdown-menu sub-menu">
                   <ul>
                     {
-                      leftMenuData && leftMenuData.map((el, i) => {
-                        if (el.Sequence === 22) return false
+                      menuData && menuData.map((item, i) => {
+                        if (item.Sequence === 22) return false
                         return (
-                          <li key={i}>
+                          <li key={i} className={`mb5`}>
                             <Link
-                              className="dropdown-item"
+                              onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
                               to={{
-                                pathname: el.NavigationURL,
-                                state: {
-                                  ModuleId: el.PageId,
-                                  PageName: el.PageName,
-                                  PageURL: el.NavigationURL,
-                                },
+                                pathname: item.NavigationURL,
+                                state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
-                            >
-                              - {el.PageName}
-                            </Link>
+                            >{item.PageName}</Link>
                           </li>
                         )
+                        // return (
+                        //   <li key={i}>
+                        //     <Link
+                        //       className="dropdown-item"
+                        //       // onClick={this.setLeftMenuAccToMenu(menu.NavigationURL)}
+                        //       to={{
+                        //         pathname: menu.NavigationURL,
+                        //         state: {
+                        //           ModuleId: menu.PageId,
+                        //           PageName: menu.PageName,
+                        //           PageURL: menu.NavigationURL,
+                        //         },
+                        //       }}
+                        //     >
+                        //       - {menu.PageName}
+                        //     </Link>
+                        //   </li>
+                        // )
                       })
                     }
                   </ul>
@@ -268,7 +297,7 @@ class SideBar extends Component {
    * @description Render Addtional master menu.
    */
   renderAdditionalMaster = (module) => {
-    const { menusData, leftMenuData } = this.props
+    const { menusData, leftMenuData, menuData } = this.props
     return (
       menusData &&
       menusData.map((el, i) => {
@@ -300,24 +329,36 @@ class SideBar extends Component {
                 <div className="dropdown-menu sub-menu">
                   <ul>
                     {
-                      leftMenuData && leftMenuData.map((el, i) => {
+                      menuData && menuData.map((item, i) => {
                         return (
-                          <li key={i}>
+                          <li key={i} className={`mb5`}>
                             <Link
-                              className="dropdown-item"
+                              onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
                               to={{
-                                pathname: el.NavigationURL,
-                                state: {
-                                  ModuleId: el.PageId,
-                                  PageName: el.PageName,
-                                  PageURL: el.NavigationURL,
-                                },
+                                pathname: item.NavigationURL,
+                                state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
-                            >
-                              - {el.PageName}
-                            </Link>
+                            >{item.PageName}</Link>
                           </li>
                         )
+                        // return (
+                        //   <li key={i}>
+                        //     <Link
+                        //       className="dropdown-item"
+                        //       //     onClick={this.setLeftMenuAccToMenu(menu.NavigationURL)}
+                        //       to={{
+                        //         pathname: menu.NavigationURL,
+                        //         state: {
+                        //           ModuleId: menu.PageId,
+                        //           PageName: menu.PageName,
+                        //           PageURL: menu.NavigationURL,
+                        //         },
+                        //       }}
+                        //     >
+                        //       - {menu.PageName}
+                        //     </Link>
+                        //   </li>
+                        // )
                       })
                     }
                   </ul>
@@ -375,7 +416,7 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { menusData, location } = this.props
+    const { menusData, location, menuData } = this.props
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
@@ -386,6 +427,7 @@ class SideBar extends Component {
                 isActive={location && location.pathname === '/costing' ? true : false}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
+                onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
                   pathname: "/costing",
                   state: {
@@ -404,7 +446,24 @@ class SideBar extends Component {
               </Link>
               <div className="dropdown-menu sub-menu">
                 <ul>
-                  <li>
+                  {/* UNCOMMENT IT WHEN DONE FROM KAMAL SIR END */}
+                  {
+                    menuData && menuData.map((item, i) => {
+                      if (item.Sequence !== 0) return false
+                      return (
+                        <li key={i} className={`mb5`}>
+                          <Link
+                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                            to={{
+                              pathname: item.NavigationURL,
+                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                            }}
+                          >{item.PageName}</Link>
+                        </li>
+                      )
+                    })
+                  }
+                  {/* <li>
                     <Link
                       className="dropdown-item "
                       to={{
@@ -418,7 +477,7 @@ class SideBar extends Component {
                     >
                       - Approval
                   </Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </li>
@@ -434,22 +493,23 @@ class SideBar extends Component {
    * @description Render Simulation.
    */
   renderSimulation = (module) => {
-    const { menusData } = this.props
+    const { menusData, menuData } = this.props
     return (
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li>
+            <li className={'nav-item dropdown'}>
               <Link
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
+                onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  pathname: "/simulation",
+                  pathname: el.LandingPageURL,
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
-                    PageURL: "/simulation",
+                    PageURL: el.LandingPageURL,
                   },
                 }}
               >
@@ -460,6 +520,41 @@ class SideBar extends Component {
                 />
                 <span>Simulation</span>
               </Link>
+              <div className="dropdown-menu sub-menu">
+                <ul>
+                  {
+                    menuData && menuData.map((item, i) => {
+                      if (item.Sequence !== 0) return false
+                      return (
+                        <li key={i} className={`mb5`}>
+                          <Link
+                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                            to={{
+                              pathname: item.NavigationURL,
+                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                            }}
+                          >{item.PageName}</Link>
+                        </li>
+                      )
+                    })
+                  }
+                  {/* <li>
+                    <Link
+                      className="dropdown-item "
+                      to={{
+                        pathname: "/approval-listing",
+                        state: {
+                          ModuleId: 1,
+                          PageName: "Costing",
+                          PageURL: "/approval-listing",
+                        },
+                      }}
+                    >
+                      - Approval
+                  </Link>
+                  </li> */}
+                </ul>
+              </div>
             </li>
           );
         }
@@ -555,13 +650,13 @@ class SideBar extends Component {
     return (
       <nav>
         {isLoader && <Loader />}
-        {isLeftMenuRendered && leftMenuData[0] !== undefined && (
+        {/* {isLeftMenuRendered && leftMenuData[0] !== undefined && (
           <Redirect
             to={{
               pathname: leftMenuData[0].NavigationURL,
             }}
           />
-        )}
+        )} */}
         <div>
           <div className="flex-conatiner sign-social ">
             <NavbarToggler
@@ -779,8 +874,8 @@ class SideBar extends Component {
  * @return object{}
  */
 function mapStateToProps({ auth }) {
-  const { loading, userData, leftMenuData, menusData, moduleSelectList } = auth
-  return { loading, userData, leftMenuData, menusData, moduleSelectList }
+  const { loading, userData, leftMenuData, menusData, moduleSelectList, menuData } = auth
+  return { loading, userData, leftMenuData, menusData, moduleSelectList, menuData }
 }
 
 /**
@@ -796,4 +891,5 @@ export default connect(mapStateToProps, {
   getLeftMenu,
   getPermissionByUser,
   getModuleIdByPathName,
+  getMenu
 })(SideBar)

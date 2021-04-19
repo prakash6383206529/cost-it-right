@@ -29,7 +29,8 @@ import {
     LOGIN_PAGE_INIT_CONFIGURATION,
     config,
     GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
-    GET_LEVEL_BY_TECHNOLOGY
+    GET_LEVEL_BY_TECHNOLOGY,
+    GET_MENU_BY_MODULE_ID_AND_USER
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -1328,5 +1329,27 @@ export function getLevelByTechnology(technologyId, callback) {
             callback();
 
         }
+    };
+}
+
+/**
+ * @method getLeftMenu
+ * @description GET LEFT MENU BY MODULEID AND USER
+ */
+export function getMenu(ModuleId, UserId, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.getLeftMenu}/${ModuleId}/${UserId}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_MENU_BY_MODULE_ID_AND_USER,
+                    payload: response.data.Data,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+        });
     };
 }

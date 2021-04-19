@@ -163,7 +163,7 @@ function OperationCost(props) {
 
   const netCost = (item) => {
     const cost = checkForNull(item.Rate * item.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
-    return checkForDecimalAndNull(cost, 2);
+    return checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
   }
 
   const OperationGridFields = 'OperationGridFields';
@@ -253,9 +253,11 @@ function OperationCost(props) {
                               }
                             </td>
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure && <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>}
+                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              <td>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure && <td style={{ width: 200 }}>
+                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              <td style={{ width: 200 }}>
                                 {
 
                                   item.IsLabourRateExist ?
@@ -303,11 +305,10 @@ function OperationCost(props) {
                             <td style={{ width: 200 }}>{item.Quantity}</td>
                             {initialConfiguration &&
                               initialConfiguration.IsOperationLabourRateConfigure &&
-                              <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, 2) : '-'}</td>}
+                              <td style={{ width: 200 }}>{item.IsLabourRateExist ? checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>}
                             {initialConfiguration &&
-                              initialConfiguration.IsOperationLabourRateConfigure && <td>{
-                                item.IsLabourRateExist ? item.LabourQuantity : '-'
-                              }</td>}
+                              initialConfiguration.IsOperationLabourRateConfigure &&
+                              <td>{item.IsLabourRateExist ? item.LabourQuantity : '-'}</td>}
                             <td>{netCost(item)}</td>
                             <td>
                               {!CostingViewMode && <button className="Edit  mr-2 mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}

@@ -51,6 +51,7 @@ import {
   GET_PART_COSTING_VENDOR_SELECT_LIST,
   GET_PART_SELECTLIST_BY_TECHNOLOGY,
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
+  SET_EXCHANGE_RATE_CURRENCY_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -446,7 +447,6 @@ export function getVBCDetailByVendorId(data, callback) {
  */
 export function getRMCCTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getRMCCTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
@@ -824,7 +824,6 @@ export function saveAssemblyCostingRMCCTab(data, callback) {
  */
 export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getSurfaceTreatmentTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
@@ -953,7 +952,10 @@ export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
  */
 export function getOverheadProfitTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_OVERHEAD_PROFIT_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getOverheadProfitTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (IsUseReducer && response.data.Result) {
@@ -1106,7 +1108,10 @@ export function getPaymentTermsDataByHeads(data, callback) {
  */
 export function getPackageFreightTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_PACKAGE_AND_FREIGHT_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getPackageFreightTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
@@ -1233,7 +1238,10 @@ export function getRateByCapacityCriteria(data, callback) {
  */
 export function getToolTabData(data, IsUseReducer, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
+    dispatch({
+      type: SET_TOOL_TAB_DATA,
+      payload: [],
+    });
     const request = axios.get(`${API.getToolTabData}/${data.CostingId}/${data.PartId}`, headers);
     request.then((response) => {
       if (response.data.Result) {
@@ -1318,6 +1326,10 @@ export function getExchangeRateByCurrency(Currency, EffectiveDate, callback) {
     const request = axios.get(`${API.getExchangeRateByCurrency}/${Currency}/${EffectiveDate}`, headers);
     request.then((response) => {
       if (response.data.Result) {
+        dispatch({
+          type: SET_EXCHANGE_RATE_CURRENCY_DATA,
+          payload: response.data.Data,
+        });
         callback(response);
       }
     }).catch((error) => {

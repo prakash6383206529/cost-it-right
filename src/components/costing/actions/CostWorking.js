@@ -835,7 +835,7 @@ export function getCostingBulkUploadList(callback) {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getCostingBulkUploadList}`, headers);
     request.then((response) => {
-      console.log(response, "REQUEST");
+
       if (response.data.Result) {
         dispatch({
           type: GET_BULKUPLOAD_COSTING_LIST,

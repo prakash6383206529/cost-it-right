@@ -66,7 +66,6 @@ class AddZBCPlant extends Component {
             const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
             const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
             const CompanyObj = companySelectList && companySelectList.find(item => item.Value === Data.CompanyId)
-            console.log(CompanyObj, "CompanyObj");
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -290,7 +289,7 @@ class AddZBCPlant extends Component {
         <Drawer
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
             <div className={"drawer-wrapper drawer-700px"}>
@@ -554,7 +553,6 @@ class AddZBCPlant extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, plant, auth }) {
-  console.log(auth, "AUTH");
   const { countryList, stateList, cityList } = comman;
   const { plantUnitDetail, companySelectList } = plant;
   const { initialConfiguration } = auth

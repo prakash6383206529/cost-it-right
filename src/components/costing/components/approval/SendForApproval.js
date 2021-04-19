@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import DatePicker from 'react-datepicker'
 import { toastr } from 'react-redux-toastr'
 import Drawer from '@material-ui/core/Drawer'
-import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, } from '../../actions/Approval'
 import { userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
@@ -14,11 +14,15 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import moment from 'moment'
 import WarningMessage from '../../../common/WarningMessage'
+import { renderDatePicker } from '../../../layout/FormInputs'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
   const dispatch = useDispatch()
-  const { register, handleSubmit, control, setValue, getValues, reset, errors, setError } = useForm()
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, setError } = useForm({
+    mode: 'onBlur',
+    reValidateMode: 'onChange',
+  })
 
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
@@ -32,6 +36,8 @@ const SendForApproval = (props) => {
   const [financialYear, setFinancialYear] = useState('')
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
+  const [showErrorMsg, setShowErrorMsg] = useState(false)
+  const [approver, setApprover] = useState('')
   const userData = userDetails()
 
   useEffect(() => {
@@ -76,6 +82,8 @@ const SendForApproval = (props) => {
   const handleDepartmentChange = (newValue) => {
     const tempDropdownList = []
     if (newValue && newValue !== '') {
+      setValue('approver', '')
+      setSelectedApprover('')
       dispatch(
         getAllApprovalUserFilterByDepartment({
           LoggedInUserId: userData.LoggedInUserId,
@@ -201,6 +209,7 @@ const SendForApproval = (props) => {
    * @description This method is called on the submission of the form for send for approval
    */
   const onSubmit = (data) => {
+
     let count = 0
     viewApprovalData.map((item) => {
       if (item.effectiveDate == '') {
@@ -306,10 +315,9 @@ const SendForApproval = (props) => {
 
     obj.CostingsList = temp
 
-
     dispatch(
       sendForApprovalBySender(obj, (res) => {
-        toastr.success('Data is sent for approval!')
+        toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
         dispatch(setCostingViewData([]))
@@ -318,7 +326,7 @@ const SendForApproval = (props) => {
   }
 
   const handleApproverChange = (data) => {
-
+    setApprover(data.label)
     setSelectedApprover(data.value)
     setSelectedApproverLevelId({ levelName: data.levelName, levelId: data.levelId })
   }
@@ -336,6 +344,8 @@ const SendForApproval = (props) => {
     props.closeDrawer('', 'Cancel')
   }
   const reasonField = 'reasonField'
+  const dateField = 'dateField'
+
   return (
     <Fragment>
       <Drawer
@@ -343,94 +353,101 @@ const SendForApproval = (props) => {
         open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       ><div className="container">
-        <div className={"drawer-wrapper drawer-md"}>
-          <Row className="drawer-heading ">
-            <Col>
-              <div className={"header-wrapper left"}>
-                <h3>{"Send for Approval"}</h3>
-              </div>
-              <div
-                onClick={(e) => toggleDrawer(e)}
-                className={"close-button right"}
-              ></div>
-            </Col>
-          </Row>
-          {viewApprovalData &&
-            viewApprovalData.map((data, index) => {
-              return (
-                <div className="pr-3">
-                  <Row className="px-3">
-                    <Col md="12">
-                      <h6 className="left-border d-inline-block mr-3">
-                        {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
-                      </h6>
-                      <div className="text-small d-inline-block mr-3">
-                        {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
-                        <span className="small-grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
-                      </div>
-                      <div className="text-small d-inline-block">
-                        {`Costing Id:`}{" "}
-                        <span className="small-grey-text">{`${data.costingName}`}</span>
-                      </div>
-                    </Col>
-                  </Row>
-                  <div className="px-3">
-                    <div className="border-box border p-3 mb-4">
-                      <Row>
-                        <Col md="4">
-                          <SearchableSelectHookForm
-                            label={"Reason"}
-                            // name={"reason"}
-                            name={`${reasonField}[${index}]reason`}
-                            placeholder={"-Select-"}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: true }}
-                            register={register}
-                            defaultValue={data.reason != "" ? { label: data.reason, value: data.reasonId } : ""}
-                            options={renderDropdownListing("Reason")}
-                            mandatory={true}
-                            handleChange={(e) => {
-                              handleReasonChange(e, index);
-                            }}
-                            errors={errors.reason}
+          <div className={"drawer-wrapper drawer-md"}>
+            <Row className="drawer-heading ">
+              <Col>
+                <div className={"header-wrapper left"}>
+                  <h3>{"Send for Approval"}</h3>
+                </div>
+                <div
+                  onClick={(e) => toggleDrawer(e)}
+                  className={"close-button right"}
+                ></div>
+              </Col>
+            </Row>
+            {viewApprovalData &&
+              viewApprovalData.map((data, index) => {
 
-                          />
-                        </Col>
-                        <Col md="4">
-                          <TextFieldHookForm
-                            label="ECN Ref No"
-                            name={"encNumber"}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            rules={{ required: false }}
-                            mandatory={false}
-                            handleChange={(e) => {
-                              handleECNNoChange(e.target.value, index);
-                            }}
-                            defaultValue={data.ecnNo != "" ? data.ecnNo : ""}
-                            className=""
-                            customClassName={"withBorder"}
-                            errors={errors.encNumber}
-                          // disabled={true}
-                          />
-                        </Col>
-                        <Col md="4">
-                          <div className="form-group">
-                            <label>Effective Date</label>
+                return (
+                  <div className="pr-3" key={index}>
+                    <Row className="px-3">
+                      <Col md="12">
+                        <h6 className="left-border d-inline-block mr-3">
+                          {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
+                        </h6>
+                        <div className="text-small d-inline-block mr-3">
+                          {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
+                          <span className="small-grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                        </div>
+                        <div className="text-small d-inline-block">
+                          {`Costing Id:`}{" "}
+                          <span className="small-grey-text">{`${data.costingName}`}</span>
+                        </div>
+                      </Col>
+                    </Row>
+                    <div className="px-3">
+                      <div className="border-box border p-3 mb-4">
+                        <Row>
+                          <Col md="4">
+                            <SearchableSelectHookForm
+                              label={"Reason"}
+                              // name={"reason"}
+                              name={`${reasonField}reason[${index}]`}
+                              placeholder={"-Select-"}
+                              Controller={Controller}
+                              control={control}
+                              rules={{ required: true }}
+                              register={register}
+                              defaultValue={data.reason != "" ? { label: data.reason, value: data.reasonId } : ""}
+                              options={renderDropdownListing("Reason")}
+                              mandatory={true}
+                              handleChange={(e) => {
+                                handleReasonChange(e, index);
+                              }}
+                              errors={errors && errors.reasonFieldreason && errors.reasonFieldreason !== undefined ? errors.reasonFieldreason[index] : ""}
+                            // errors={`${errors}.${reasonField}[${index}]reason`}
+
+                            />
+                          </Col>
+                          <Col md="4">
+                            <TextFieldHookForm
+                              label="ECN Ref No"
+                              name={"encNumber"}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              rules={{ required: false }}
+                              mandatory={false}
+                              handleChange={(e) => {
+                                handleECNNoChange(e.target.value, index);
+                              }}
+                              defaultValue={data.ecnNo != "" ? data.ecnNo : ""}
+                              className=""
+                              customClassName={"withBorder"}
+                              errors={errors.encNumber}
+                            // disabled={true}
+                            />
+                          </Col>
+                          <Col md="4">
+                            {/* <div className="form-group"> */}
+                            {/* <label>Effective Date</label> */}
                             <div className="d-flex">
                               <div className="inputbox date-section">
-                                <DatePicker
-                                  name="EffectiveDate"
+                                <DatePickerHookForm
+                                  name={`${dateField}EffectiveDate[${index}]`}
+                                  label={'Effective Date'}
                                   selected={
                                     data.effectiveDate != ""
                                       ? moment(data.effectiveDate)._isValid ? moment(data.effectiveDate)._d : ''
                                       : ""
                                   }
-                                  onChange={(date) => {
+                                  handleChange={(date) => {
                                     handleEffectiveDateChange(date, index);
                                   }}
+                                  rules={{ required: true }}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
                                   showMonthDropdown
                                   showYearDropdown
                                   dateFormat="dd/MM/yyyy"
@@ -442,70 +459,71 @@ const SendForApproval = (props) => {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={false}
-                                  required={true}
+                                  mandatory={true}
+                                  errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
                                 />
                               </div>
-                              <i className="fa fa-calendar icon-small-primary ml-2"></i>
+                              <i className="fa fa-calendar icon-small-primary ml-2 mt-4"></i>
                             </div>
-                          </div>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md="4">
-                          <label>Old/Current Price</label>
-                          <label className="form-control bg-grey">
-                            {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
-                          </label>
-                        </Col>
-                        <Col md="4">
-                          <label>Revised Price</label>
-                          <label className="form-control bg-grey">
-                            {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
-                          </label>
-                        </Col>
-                        <Col md="4">
-                          <label>Variance</label>
-                          <label className="form-control bg-grey">
-                            {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
-                          </label>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md="4">
-                          <label>Consumed Quantity</label>
-                          <div className="d-flex align-items-center">
+                            {/* </div> */}
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col md="4">
+                            <label>Old/Current Price</label>
                             <label className="form-control bg-grey">
-                              {data.consumptionQty ? checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
-                            {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
-                          </div>
-                        </Col>
-                        <Col md="4">
-                          <label>Remaining Budgeted Quantity</label>
-                          <label className="form-control bg-grey">
-                            {data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
-                          </label>
-                        </Col>
-                        <Col md="4">
-                          <label>Annual Impact</label>
-                          <label className="form-control bg-grey">
-                            {data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                          </label>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md="4">
-                          <label>Impact for the Year</label>
-                          <label className="form-control bg-grey">
-                            {data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                          </label>
-                        </Col>
-                      </Row>
+                          </Col>
+                          <Col md="4">
+                            <label>Revised Price</label>
+                            <label className="form-control bg-grey">
+                              {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </Col>
+                          <Col md="4">
+                            <label>Variance</label>
+                            <label className="form-control bg-grey">
+                              {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col md="4">
+                            <label>Consumed Quantity</label>
+                            <div className="d-flex align-items-center">
+                              <label className="form-control bg-grey">
+                                {data.consumptionQty ? checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                              {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                            </div>
+                          </Col>
+                          <Col md="4">
+                            <label>Remaining Budgeted Quantity</label>
+                            <label className="form-control bg-grey">
+                              {data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </Col>
+                          <Col md="4">
+                            <label>Annual Impact</label>
+                            <label className="form-control bg-grey">
+                              {data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col md="4">
+                            <label>Impact for the Year</label>
+                            <label className="form-control bg-grey">
+                              {data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                            </label>
+                          </Col>
+                        </Row>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
             <div className="pr-3">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Row className="px-3">
@@ -548,8 +566,8 @@ const SendForApproval = (props) => {
                     />
                   </Col>
                   {
-                      showValidation && <span className="warning-top"><WarningMessage  message={'Level for this user/technology is not yet added!'} /></span>
-                    }
+                    showValidation && <span className="warning-top"><WarningMessage message={'Level for this user/technology is not yet added!'} /></span>
+                  }
                   <Col md="12">
                     <TextAreaHookForm
                       label="Remarks"
@@ -605,7 +623,7 @@ const SendForApproval = (props) => {
                 </Row>
               </form>
             </div>
-        </div>
+          </div>
         </div>
       </Drawer>
     </Fragment>

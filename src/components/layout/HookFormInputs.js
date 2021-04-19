@@ -1,7 +1,7 @@
 import React from "react";
 import Select from "react-select";
 import "./formInputs.css";
-import DatePicker from 'react-datepicker'
+import ReactDatePicker from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
 
@@ -80,6 +80,7 @@ export const TextFieldHookForm = (field) => {
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
     isClearable, control, errors, register, isLoading } = field;
+
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading === true) ? true : false;
 
@@ -172,86 +173,63 @@ export const TextAreaHookForm = (field) => {
   )
 }
 
-// /*
-// @method: YearPickerHookForm
-// @desc: Render yearPicker input
-// */
-// export const YearPickerHookForm = (field) => {
-//   const {
-//     label,
-//     input,
-//     Controller,
-//     dateFormat,
-//     control,
-//     register,
-//     name,
-//     defaultValue,
-//     mandatory,
-//     errors,
-//     rules,
-//     placeholder,
-//     handleChange,
-//   } = field
-//   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-//   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''
-//     }`
-//   const InputClassName = `form-control ${field.className ? field.className : ''
-//     }`
-//   const isDisabled = field.disabled === true ? true : false
-//   return (
-//     <React.Fragment>
-//       <div className={className}>
-//         <label>
-//           {label}
-//           {mandatory && mandatory === true ? (
-//             <span className="asterisk-required">*</span>
-//           ) : (
-//               ''
-//             )}{' '}
-//         </label>
-//         <Controller
-//           name={name}
-//           control={control}
-//           rules={rules}
-//           ref={register}
-//           defaultValue={defaultValue}
-//           render={({ onChange, onBlur, value, name }) => {
-//             return (
-//               <DatePicker
-//                 {...field}
-//                 name={name}
-//                 value={value}
-//                 dateFormat={dateFormat}
-//                 placeholderText={placeholder}
-//                 //maxDate={new Date()}
-//                 //minDate={new Date()}
-//                 showMonthDropdown
-//                 showYearPicker
-//                 showYearDropdown
-//                 readonly="readonly"
-//                 onBlur={() => null}
-//                 // selected={input.value ? new Date(input.value) : null}
-//                 className={field.className}
-//                 onChange={(e) => {
-//                   onChange(e)
-//                   handleChange(e)
-//                 }}
-//                 autoComplete={field.autoComplete}
-//                 disabledKeyboardNavigation
-//                 disabled={isDisabled}
-//               />
-//             )
-//           }}
-//         />
-//         {errors && (errors.message || errors.type) ? (
-//           <div className="text-help">{errors.message || errors.type}</div>
-//         ) : (
-//             ''
-//           )}
-//       </div>
-//     </React.Fragment>
-//   )
-// }
+/*
+@method: YearPickerHookForm
+@desc: Render yearPicker input
+*/
+export const DatePickerHookForm = (field) => {
+  const {
+    label, Controller, dateFormat, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, } = field
+  //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
+  const InputClassName = `form-control ${field.className ? field.className : ''}`
+  const isDisabled = field.disabled === true ? true : false
+  return (
+    <React.Fragment>
+      <div className={className}>
+        <label>
+          {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
+        </label>
+        <Controller
+          name={name}
+          control={control}
+          rules={rules}
+          ref={register}
+          defaultValue={defaultValue}
+          render={({ onChange, onBlur, value, name }) => (
+            // return (
+            <ReactDatePicker
+              {...field}
+              name={name}
+              value={value}
+              dateFormat="dd/MM/yyyy"
+              placeholderText={placeholder}
+              //maxDate={new Date()}
+              //minDate={new Date()}
+              showMonthDropdown
+              showYearDropdown
+              readonly="readonly"
+              onBlur={() => null}
+              selected={value}
+              className={field.className}
+              onChange={(e) => {
+                onChange(e)
+                handleChange(e)
+                // onselect(e)
+              }}
+              autoComplete={field.autoComplete}
+              disabledKeyboardNavigation
+              disabled={isDisabled}
+            />
+            // )
+          )}
+        />
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+      </div>
+    </React.Fragment>
+  )
+}
 
 /**
 * @method:RadioHookForm

@@ -4,12 +4,15 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
+import { useSelector } from 'react-redux'
 
 function ViewBOP(props) {
   const { viewBOPData } = props
+  const { BOPData, bopPHandlingCharges, bopHandlingPercentage } = viewBOPData
   const [viewBOPCost, setviewBOPCost] = useState([])
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   useEffect(() => {
-    setviewBOPCost(viewBOPData)
+    setviewBOPCost(BOPData)
   }, [])
 
   /**
@@ -30,14 +33,14 @@ function ViewBOP(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={'drawer-wrapper drawer-1500px'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'View BOP'}</h3>
+                  <h3>{'View BOP Cost:'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -73,16 +76,11 @@ function ViewBOP(props) {
                             <td>{item.BOPPartName}</td>
                             <td>{item.Currency}</td>
                             <td>
-                              {checkForDecimalAndNull(item.LandedCostINR, 2)}
+                              {checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}
                             </td>
                             <td> {item.Quantity}</td>
                             <td>
-                              {item.NetBoughtOutPartCost !== undefined
-                                ? checkForDecimalAndNull(
-                                  item.NetBoughtOutPartCost,
-                                  2,
-                                )
-                                : 0}
+                              {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
                             </td>
                           </tr>
                         )
@@ -94,6 +92,36 @@ function ViewBOP(props) {
                         </td>
                       </tr>
                     )}
+                  </tbody>
+                </Table>
+              </Col>
+            </Row>
+            <Row className="mx-0">
+              <Col md="12">
+                <Row>
+                  <Col md="12">
+                    <div className="left-border">{'BOP Handling Charge:'}</div>
+                  </Col>
+                </Row>
+                <Table className="table cr-brdr-main" size="sm">
+                  <thead>
+                    <tr>
+                      <th>{`Percentage`}</th>
+                      <th className="costing-border-right">{`Handling Charges`}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{bopHandlingPercentage ? bopHandlingPercentage : 0}</td>
+                      <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
+                    </tr>
+                    {/* {Object.keys(bopHandlingPercentage).length === 0 && (
+                      <tr>
+                        <td colSpan={7}>
+                          <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                        </td>
+                      </tr>
+                    )} */}
                   </tbody>
                 </Table>
               </Col>

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { Container, Row, Col, Table } from 'reactstrap'
+import { useDispatch } from 'react-redux'
+import { Row, Col, Table } from 'reactstrap'
 import { checkVendorPlantConfigurable, formViewData, loggedInUserId } from '../../../../helper'
-import { CONSTANT } from '../../../../helper/AllConastant'
-import NoContentFound from '../../../common/NoContentFound'
 import { getApprovalSummary } from '../../actions/Approval'
-import { setCostingViewData } from '../../actions/Costing'
+import { setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -16,8 +14,6 @@ import ViewDrawer from './ViewDrawer'
 import PushButtonDrawer from './PushButtonDrawer'
 
 function ApprovalSummary(props) {
-  // const approvalNumber = props.approvalNumber 
-  // const approvalProcessId = props.approvalProcessId 
   const { approvalNumber, approvalProcessId } = props
   const loggedInUser = loggedInUserId()
 
@@ -27,21 +23,15 @@ function ApprovalSummary(props) {
   const [rejectDrawer, setRejectDrawer] = useState(false)
   const [partDetail, setPartDetail] = useState({})
   const [approvalDetails, setApprovalDetails] = useState({})
-
   const [costingSummary, setCostingSummary] = useState(false)
   const [approvalLevelStep, setApprovalLevelStep] = useState([])
   const [approvalData, setApprovalData] = useState('')
-  /**NEED TO REMOVE THIS 2 VARIABLE**/
-  const [showButton, setShowButton] = useState(true)
-  const [isFinalApproval, setIsFinalApproval] = useState(false)
-
   const [isApprovalDone, setIsApprovalDone] = useState(false) // this is for hiding approve and  reject button when costing is approved and  send for futher approval
   const [showListing, setShowListing] = useState(false)
   const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false) //This is for showing approve ,reject and approve and push button when costing approval is at final level for aaproval
   const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
   const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
   const [showPushDrawer, setShowPushDrawer] = useState(false)
-
   const [viewButton, setViewButton] = useState(false)
   const [pushButton, setPushButton] = useState(false)
 
@@ -53,7 +43,8 @@ function ApprovalSummary(props) {
         const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId, ApprovalProcessSummaryId,
           ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow } = res.data.Data.Costings[0]
         const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
-
+        const partNumber = PartDetails.PartNumber
+        dispatch(storePartNumber({ partNumber: PartDetails.PartNumber }))
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails[0])
         setApprovalLevelStep(ApprovalLevelStep)
@@ -116,9 +107,9 @@ function ApprovalSummary(props) {
                 <Col md="4" className="text-right">
                   <div className="right-border">
                     <button type={'button'} className="apply mr5" onClick={() => setShowListing(true)}>
-                    <div className={'check-icon'}><img src={require('../../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
-                    {'Back '}
-                     </button>
+                      <div className={'check-icon'}><img src={require('../../../../assests/images/back.png')} alt='check-icon.jpg' /> </div>
+                      {'Back '}
+                    </button>
                     <button type={'button'} className="apply " onClick={() => setViewButton(true)}>
                       View All
                       </button>

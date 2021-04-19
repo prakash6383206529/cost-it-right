@@ -36,7 +36,6 @@ function CostingDetails(props) {
   const [part, setPart] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
-  const [isSOBEnabled, setEnableSOBField] = useState(true);
   const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
   const [isVBCSOBEnabled, setVBCEnableSOBField] = useState(true);
 
@@ -78,6 +77,7 @@ function CostingDetails(props) {
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
+
   }, [])
 
   useEffect(() => {
@@ -92,6 +92,12 @@ function CostingDetails(props) {
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
 
+  useEffect(() => {
+    if (partNumber.isChanged === false) {
+      setStepOne(false)
+      setStepTwo(true)
+    }
+  }, [partNumber.isChanged])
 
   useEffect(() => {
     if (Object.keys(partNumber).length > 0) {
@@ -125,6 +131,7 @@ function CostingDetails(props) {
   }, [partNumber])
 
   useEffect(() => {
+
     if (Object.keys(technology).length > 0 && Object.keys(partNumber).length > 0) {
       nextToggle()
     }
@@ -256,7 +263,9 @@ function CostingDetails(props) {
    * @description DISPLAY FORM ONCLICK NEXT BUTTON
    */
   const nextToggle = () => {
+
     if (Object.keys(technology).length > 0 && Object.keys(part).length > 0) {
+
       dispatch(getZBCExistingCosting(part.value, (res) => {
         if (res.data.Result) {
           let Data = res.data.DataList
@@ -394,7 +403,7 @@ function CostingDetails(props) {
    */
   const closeVendorDrawer = (e = '', vendorData = {}) => {
     if (Object.keys(vendorData).length > 0) {
-      let tempArr = [...vbcVendorGrid, vendorData]
+      let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
       setVBCVendorGrid(tempArr)
     }
     setIsVendorDrawerOpen(false)
@@ -1075,8 +1084,6 @@ function CostingDetails(props) {
 
     ZBCAvailableIndex = zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => el.CostingOptions.length > 0)
     VBCAvailableIndex = vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => el.CostingOptions.length > 0)
-    // console.log('Indexxxxx ZBCAvailableIndex: ', ZBCAvailableIndex);
-    // console.log('Indexxxxx VBCAvailableIndex: ', VBCAvailableIndex);
     return (ZBCAvailableIndex !== -1 || VBCAvailableIndex !== -1) ? true : false;
   }
 
@@ -1355,7 +1362,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Plant Code`}</th>
                                   <th style={{}}>{`Plant Name`}</th>
-                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} /></th>
+                                  <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
@@ -1492,7 +1499,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor Code`}</th>
                                   <th style={{}}>{`Vendor Name`}</th>
-                                  <th style={{}}>{`SOB`}<button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} /></th>
+                                  <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>

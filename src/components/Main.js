@@ -37,13 +37,14 @@ import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
-  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD
+  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
 import SimulationHistory from './simulation/components/SimulationHistory'
 import Simulation from './simulation/components/Simulation'
+import CostingSummary from './costing/components/CostingSummary'
 
 class Main extends Component {
   constructor(props) {
@@ -94,7 +95,7 @@ class Main extends Component {
     const { location } = this.props
     let isLogin = false
     let checkLogin = reactLocalStorage.getObject('isUserLoggedIn')
-
+    reactLocalStorage.set('location', location.pathname)
     if (typeof checkLogin == 'object') {
       isLogin = false
     }
@@ -108,7 +109,8 @@ class Main extends Component {
       location.pathname === COSTING_PATH ||
         location.pathname === APPROVAL_LISTING_PATH ||
         location.pathname === APPROVAL_SUMMARY_PATH ||
-        location.pathname === COSTING_BULK_UPLOAD
+        location.pathname === COSTING_BULK_UPLOAD ||
+        location.pathname === COSTING_SUMMARY
         ? 'w-100'
         : ''
 
@@ -151,6 +153,7 @@ class Main extends Component {
                 location.pathname !== APPROVAL_SUMMARY_PATH &&
                 location.pathname !== APPROVAL_LISTING_PATH &&
                 location.pathname !== COSTING_BULK_UPLOAD &&
+                location.pathname !== COSTING_SUMMARY &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -204,6 +207,7 @@ class Main extends Component {
 
                     <Route path="/costing" component={CostingRoutes} />
 
+                    <Route path="/costing-summary" component={CostingRoutes} />
                     {/*Temporary  */}
                     <Route path="/approval-summary" component={ApprovalSummary} />
 

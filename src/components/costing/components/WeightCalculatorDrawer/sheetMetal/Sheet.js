@@ -107,7 +107,6 @@ function Sheet(props) {
 
     const setFinishWeight = (e) => {
         const FinishWeightOfSheet = e.target.value
-        console.log('FinishWeightOfSheet: ', FinishWeightOfSheet);
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -296,7 +295,6 @@ function Sheet(props) {
         setValue('UOMDimension', { label: value.label, value: value.value })
         setUOMDimension(value)
         let grossWeight = GrossWeight
-        console.log(grossWeight, 'GW', setValueAccToUOM(grossWeight, value.label));
         // let finishWeight = FinishWeightOfSheet
         setUnit(value.label)
         setDataToSend(prevState => ({ ...prevState, newGrossWeight: setValueAccToUOM(grossWeight, value.label), newFinishWeight: setValueAccToUOM(FinishWeightOfSheet, value.label) }))
@@ -535,7 +533,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Total number of Components`}
+                                        label={`Total Components/Sheet`}
                                         name={'NoOfComponent'}
                                         Controller={Controller}
                                         control={control}

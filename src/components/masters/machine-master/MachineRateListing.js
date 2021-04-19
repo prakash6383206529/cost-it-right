@@ -22,7 +22,7 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj } from '../../../config/masterData';
+import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
 
@@ -87,7 +87,7 @@ class MachineRateListing extends Component {
         const temp = [];
 
         if (label === 'costingHead') {
-            return costingHeadObj;
+            return costingHeadObjs;
         }
 
         if (label === 'plant') {

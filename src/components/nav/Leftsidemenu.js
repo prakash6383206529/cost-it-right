@@ -5,6 +5,7 @@ import { loggedInUserId } from '../../helper/auth';
 import { Link } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import "./LeftMenu.scss";
+import { SIMULATION_LEFT_MENU_NOT_INCLUDED } from "../../config/masterData";
 
 class Leftmenu extends Component {
 	constructor(props) {
@@ -23,6 +24,7 @@ class Leftmenu extends Component {
 		//07-10-2020 COMMENTED, FOR LEFT MENU RENDER WHEN DIRECT URL HIT
 		const { location } = this.props;
 		if (location && location !== undefined) {
+
 			this.props.getModuleIdByPathName(location.pathname, res => {
 				this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
 			})
@@ -49,9 +51,11 @@ class Leftmenu extends Component {
 									item.PageName === 'Role' ||
 									item.PageName === 'Permisson' ||
 									item.PageName === 'Levels' ||
-									item.PageName === 'Department'
+									item.PageName === 'Department' ||
+									SIMULATION_LEFT_MENU_NOT_INCLUDED.includes(item.PageName)
 								) return false;
 								return (
+
 									<li key={i} className={`${activeURL === item.NavigationURL ? 'active' : null} mb5`}>
 										<Link
 											onClick={() => this.setModuleId(ModuleId)}

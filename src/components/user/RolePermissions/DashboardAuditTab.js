@@ -185,7 +185,7 @@ class DashboardAuditTab extends Component {
               <label htmlFor="normal-switch">
                 <Switch
                   onChange={() => this.actionCheckHandler(parentIndex, index)}
-                  // checked={item.IsChecked}
+                  checked={item.IsChecked}
                   value={item.ActionId}
                   id="normal-switch"
                   onColor="#4DC771"
@@ -282,7 +282,7 @@ class DashboardAuditTab extends Component {
                               <input
                                 type="checkbox"
                                 value={"All"}
-                                // disabled={true}
+                                disabled={true}
                                 checked={this.isCheckModule(item.Actions)}
                               />
                               <span
@@ -308,7 +308,7 @@ class DashboardAuditTab extends Component {
                                   index,
                                   item.Actions
                                 )}
-                                // disabled={true}
+                                disabled={true}
                                 onClick={() =>
                                   this.selectAllHandler(index, item.Actions)
                                 }

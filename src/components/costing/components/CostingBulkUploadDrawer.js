@@ -12,6 +12,8 @@ import { CostingBulkUpload, CostingBulkUploadTempData } from '../../../config/ma
 import { fileUploadRMDomestic, } from '../../masters/actions/Material'
 import { FILE_URL } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
+import { ExcelRenderer } from 'react-excel-renderer';
+import { getJsDateFromExcel } from "../../../helper/validation";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -103,17 +105,81 @@ class CostingBulkUploadDrawer extends Component {
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} />)}
         </ExcelSheet>);
     }
+    fileHandler = event => {
 
+        let fileObj = event.target.files[0];
+        let fileHeads = [];
+        let uploadfileName = fileObj.name;
+        let fileType = uploadfileName.substr(uploadfileName.indexOf('.'));
 
-    onSubmit = () => {
+        //pass the fileObj as parameter
+        if (fileType !== '.xls' && fileType !== '.xlsx') {
+            toastr.warning('File type should be .xls or .xlsx')
+        } else {
+
+            let data = new FormData()
+            data.append('file', fileObj)
+
+            ExcelRenderer(fileObj, (err, resp) => {
+                if (err) {
+
+                } else {
+
+                    fileHeads = resp.rows[0];
+
+                    const check = fileHeads.includes(CostingBulkUpload)
+
+                    if (check === false) {
+                        toastr.error('Please check your data.')
+                    }
+                    else {
+                        // fileHeads = resp.rows[0];
+                        // let fileData = [];
+                        // resp.rows.map((val, index) => {
+                        //     if (index > 0) {
+
+                        //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+                        //         const i = val.findIndex(e => e === undefined);
+                        //         if (i !== -1) {
+                        //             val[i] = '';
+                        //         }
+
+                        //         let obj = {}
+                        //         val.map((el, i) => {
+                        //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+                        //                 el = getJsDateFromExcel(el)
+                        //             }
+                        //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+                        //                 el = parseInt(el)
+                        //             }
+                        //             obj[fileHeads[i]] = el;
+                        //             return null;
+                        //         })
+                        //         fileData.push(obj)
+                        //         obj = {}
+
+                        //     }
+                        //     console.log(fileData, "FD");
+                        //     return null;
+                        // })
+                        this.setState({
+                            fileData: fileObj,
+                            uploadfileName: uploadfileName,
+                        });
+                    };
+                }
+            });
+        }
+    }
+
+    onSubmit = (value) => {
+
         const { fileData } = this.state
 
-        let data = new FormData()
-        data.append('file', fileData)
-
+        // let data = new FormData()
+        // data.append('file', fileData)
         let obj = {
-            file: data,
-            LoggedInUserId: loggedInUserId(),
+            file: fileData
         }
 
         this.props.bulkUploadCosting(obj, (res) => {
@@ -131,7 +197,7 @@ class CostingBulkUploadDrawer extends Component {
                 <Drawer
                     anchor={this.props.anchor}
                     open={this.props.isOpen}
-                    // onClose={(e) => this.toggleDrawer(e)}
+                // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container>
                         <div className={"drawer-wrapper"}>
@@ -154,12 +220,27 @@ class CostingBulkUploadDrawer extends Component {
                                     </Col>
                                 </Row>
                                 <Row className="pl-12">
-                                    <Col md="12">
+                                    {/* <Col md="12">
                                         <ExcelFile fileExtension={'.xls'} filename={"Costing"} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button>}>
                                             {this.returnExcelColumn(CostingBulkUpload, CostingBulkUploadTempData)}
                                         </ExcelFile>
-                                    </Col>
+                                    </Col> */}
                                     <Col md="12">
+                                        <div className="input-group mt25 col-md-12 input-withouticon " >
+                                            <div className="file-uploadsection">
+                                                <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../../assests/images/uploadcloud.png')} ></img> </label>
+                                                <input
+                                                    type="file"
+                                                    name="File"
+                                                    onChange={this.fileHandler}
+                                                    //accept="xls/*"
+                                                    className="" placeholder="bbb" />
+                                                <p> {this.state.uploadfileName}</p>
+                                            </div>
+                                        </div>
+
+                                    </Col>
+                                    {/* <Col md="12">
                                         <label>Upload File</label>
                                         {this.state.fileName !== "" ? (
                                             <div class="alert alert-danger" role="alert">
@@ -170,7 +251,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 getUploadParams={this.getUploadParams}
                                                 onChangeStatus={this.handleChangeStatus}
                                                 PreviewComponent={this.Preview}
-                                                //onSubmit={this.handleSubmit}
+                                                onChange={this.fileHandler}
                                                 accept=".xlsx"
                                                 initialFiles={this.state.initialFiles}
                                                 maxFiles={1}
@@ -203,7 +284,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 classNames="draper-drop"
                                             />
                                         )}
-                                    </Col>
+                                    </Col> */}
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12 pl-3 pr-3">

@@ -296,7 +296,6 @@ class AddRMImport extends Component {
     const { fieldsObj } = this.props
     const { currency, effectiveDate } = this.state
     const netCost = checkForNull(Number(fieldsObj.BasicRate ? fieldsObj.BasicRate : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
-    console.log('netCost: ', netCost);
 
     if (currency === INR) {
       this.setState({ currencyValue: 1, netCost: checkForNull(netCost * this.state.currencyValue) }, () => {
@@ -306,7 +305,6 @@ class AddRMImport extends Component {
       this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('DD-MM-YYYY'), res => {
         this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
         this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
-        console.log("COST CURRENCY", netCost * res.data.Data.CurrencyExchangeRate);
         this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
       })
     }
