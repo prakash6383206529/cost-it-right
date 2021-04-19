@@ -110,7 +110,7 @@ function PackageCost(props) {
                   <thead>
                     <tr>
                       <th>{`Packaging Description`}</th>
-                      <th>{`Packaging Type`}</th>
+                      <th>{`Packaging Type/Percentage`}</th>
                       <th>{`Cost`}</th>
                       <th style={{ width: "130px" }} className="costing-border-right"  >{`Action`}</th>
                     </tr>
