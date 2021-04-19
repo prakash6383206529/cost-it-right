@@ -374,7 +374,7 @@ class BOMViewer extends Component {
                       width: "100%",
                       overflow: "auto",
                       maxWidth: "100vw",
-                      maxHeight: "calc(100vh - 165px)",
+                      maxHeight: "calc(100vh - 137px)",
                     }}
                     onClick={(e) => this.setState({ selected_point: null })}
                     selected={this.state.selected_point}

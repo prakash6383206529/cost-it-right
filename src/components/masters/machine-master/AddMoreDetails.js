@@ -1830,9 +1830,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      </Row>
-
-                      <Row>
+                      
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
@@ -1954,9 +1952,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      </Row>
-
-                      <Row>
+                      
                         <Col md="3">
                           <Field
                             label={`Machine Cost (INR)`}

@@ -764,6 +764,20 @@
         }
       }
 
+    .MuiDrawer-paper{:not(.login-container.signup-form) {
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: table-cell;
+                        width: auto;
+                    }
+                }
+            }
+        }
+      }
+    }
+
     body .approval-listing-page{
         .react-bs-table-container{
             .react-bs-table{
@@ -797,6 +811,20 @@
             }
         }
       }
+
+      .MuiDrawer-paper{:not(.login-container.signup-form) {
+        .react-bs-table-container{
+            .react-bs-table{
+                .react-bs-container-body{
+                    .react-bs-table-no-data{
+                        display: table-cell;
+                        width: auto;
+                    }
+                }
+            }
+        }
+      }
+    }
     
       body .approval-listing-page{
         .react-bs-table-container{
