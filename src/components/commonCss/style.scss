@@ -1433,13 +1433,14 @@ button.user-btn.pull-right {
   }
 }
 [class$=hdxg-control]{
-  min-height: 40px !important;
+  min-height: 38px !important;
  }
  .cr-process-costwrap{padding-left: 15px;padding-right:15px;background-color:#fff;border:1px solid #C2CBE8;}
  .cr-innertool-cost.row{background-color: #E7F2FC;color:#3D4465;border-bottom:1px solid #C2CBE8;    margin-bottom: 15px;}
  .cr-tbl-label{color:#A4ABC5;font-size:16px}
  .cr-bg-tbl{background-color: #E7F2FC;}
  .cr-brdr-main tbody td{color:#8A91AC;font-size:15px;font-weight: normal;}
+ .cr-brdr-main tbody .cr-tbl-label{font-size: 15px;}
  .cr-subtabs-head{background-color: #E0E9F5;}
  .content-page .cr-subtabs-head.nav-tabs .nav-link{font-size: 16px;padding: 10px 15px;border-top:2px solid transparent}
  .content-page .cr-subtabs-head.nav-tabs .nav-link.active,.content-page .cr-subtabs-head.nav-tabs .nav-link:hover{border-top: #d62c8c 2px solid;border-radius: 0;border-bottom: 0;background-color: #fff; }
@@ -1529,6 +1530,9 @@ $roboto: "Roboto", sans-serif;
 			}
 		}
 	}
+}
+.date-section + .fa-calendar{
+  margin-top: 35px;
 }
 .w-40{width: 40%;}
 .w-60{width: 60%;}
@@ -2235,7 +2239,11 @@ input:disabled{
   background-color: #E2E2E2 !important;
   border-color: #e6e6e6 !important;
 }
-
+.MuiDrawer-paper{
+  .sf-btn-footer {
+    .bluefooter-butn{padding-top: 0px !important;}
+  }
+}
 .bom-drawer-form{
   display: flex;
   flex-direction: column;
@@ -2269,6 +2277,11 @@ input:disabled{
 }
 .add-min-height {
   min-height: calc(100vh - 322px);
+}
+.role-permision-page{
+  .add-min-height {
+    min-height: calc(100vh - 298px);
+  } 
 }
 .remove-double-border{
   .inputbox.input-group{
@@ -2696,6 +2709,12 @@ opacity: 0.5;
       visibility: visible;
     }
   }
+}
+
+.refresh-icon.tooltip-n{
+   .tooltiptext{
+    left: -130px;
+   }
 }
 // ========tooltip css=============
 
@@ -3357,9 +3376,12 @@ body{
   z-index: 12;
 }
 
-.role-permision-page{
+.pr-tab-content,.manageuser,.role-permision-page{
   .table-bordered{
     position: relative;
+    tr{
+      &:last-child{border-bottom: none !important;}
+    }
     &:before{
       content: "";
       width: 1px;
@@ -3382,6 +3404,16 @@ body{
     }
     tr{
       border: 1px solid #dfe6f1 !important;
+      &:after{
+        content: "";
+        height: 1px;
+        border-bottom: 1px solid #dfe6f1 !important;
+        position: absolute;
+        bottom: -1px;
+        right: 0;
+        left: 0;
+        width: 100%;
+      }
     }
   }
 }
@@ -4160,6 +4192,7 @@ body{
         .Pushed,
         .Draft,
         [class^="Pending"],
+        [class^="Awaiting"],
         .Approved,
         .Rejected,
         .History {
@@ -4285,10 +4318,10 @@ body{
         }      
       }
     }
-  // // input range slider 'Net Landed Range (INR)' css 
-  .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}
-  .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span:after{top: -4px;}
-  // // input range slider 'Net Landed Range (INR)' css  end
+  // // // input range slider 'Net Landed Range (INR)' css 
+  // .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span{top: -3px;}
+  // .input-range .input-range__slider-container:nth-child(2) .input-range__label--value span:after{top: -4px;}
+  // // // input range slider 'Net Landed Range (INR)' css  end
   
   //fire-fox css
   @-moz-document url-prefix() {

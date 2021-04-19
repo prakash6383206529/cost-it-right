@@ -39,19 +39,19 @@ function Attachament(props) {
 
             <Row>
               <Col md="12">
-                <Row>
+                <Row className="mx-0">
                   <Col md="12">
                     <div className="left-border">{'View Attachments:'}</div>
                   </Col>
                 </Row>
               </Col>
             </Row>
-            <Row>
+            <Row className="mx-0">
               <Col md="12">
                 {viewCostingData &&
                   viewCostingData.map((data) => {
                     return (
-                      <td>
+                      <>
                         {data.attachment &&
                           data.attachment.map((f) => {
                             const withOutTild = f.FileURL
@@ -59,14 +59,14 @@ function Attachament(props) {
                               : ''
                             const fileURL = `${FILE_URL}${withOutTild}`
                             return (
-                              <div className={"attachment images"}>
+                              <div className={"attachment-row"}>
                                 <a href={fileURL} target="_blank">
                                   {f.OriginalFileName}
                                 </a>
                               </div>
                             )
                           })}
-                      </td>
+                      </>
                     )
                   })}
               </Col>
