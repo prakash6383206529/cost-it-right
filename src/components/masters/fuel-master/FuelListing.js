@@ -19,6 +19,7 @@ import moment from 'moment';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 class FuelListing extends Component {
     constructor(props) {
@@ -139,7 +140,10 @@ class FuelListing extends Component {
     renderSerialNumber = () => {
         return <>Sr. <br />No. </>
     }
-
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -400,9 +404,11 @@ class FuelListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ fuel }) {
+function mapStateToProps({ fuel, auth }) {
     const { fuelComboSelectList, fuelDataList } = fuel;
-    return { fuelComboSelectList, fuelDataList }
+    const { initialConfiguration } = auth;
+
+    return { fuelComboSelectList, fuelDataList, initialConfiguration }
 }
 
 /**

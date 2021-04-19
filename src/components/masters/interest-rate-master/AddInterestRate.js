@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, reset } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, } from "../../../helper/validation";
+import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
 import { updateInterestRate, createInterestRate, getPaymentTermsAppliSelectList, getICCAppliSelectList, getInterestRateData, } from '../actions/InterestRateMaster';
 import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
@@ -394,7 +394,7 @@ class AddInterestRate extends Component {
                           name={"ICCPercent"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber]}
+                          validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
                           max={100}
                           component={renderText}
                           required={true}
@@ -454,7 +454,7 @@ class AddInterestRate extends Component {
                           name={"PaymentTermPercent"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber]}
+                          validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
                           component={renderText}
                           max={100}
                           required={true}

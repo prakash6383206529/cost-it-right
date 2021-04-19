@@ -37,6 +37,60 @@ class CostingBulkUploadDrawer extends Component {
     handleChangeStatus = ({ meta, file }, status) => {
 
         const { files } = this.state
+        let fileObj = files[0];
+        let fileHeads = [];
+
+        let data = new FormData()
+        data.append('file', fileObj)
+
+        // ExcelRenderer(fileObj, (err, resp) => {
+        //     if (err) {
+
+        //     } else {
+
+        //         fileHeads = resp.rows[0];
+
+        //         const check = fileHeads.includes(CostingBulkUpload)
+
+        //         if (check === false) {
+        //             toastr.error('Please check your data.')
+        //         }
+        //         else {
+        //             // fileHeads = resp.rows[0];
+        //             // let fileData = [];
+        //             // resp.rows.map((val, index) => {
+        //             //     if (index > 0) {
+
+        //             //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+        //             //         const i = val.findIndex(e => e === undefined);
+        //             //         if (i !== -1) {
+        //             //             val[i] = '';
+        //             //         }
+
+        //             //         let obj = {}
+        //             //         val.map((el, i) => {
+        //             //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+        //             //                 el = getJsDateFromExcel(el)
+        //             //             }
+        //             //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+        //             //                 el = parseInt(el)
+        //             //             }
+        //             //             obj[fileHeads[i]] = el;
+        //             //             return null;
+        //             //         })
+        //             //         fileData.push(obj)
+        //             //         obj = {}
+
+        //             //     }
+        //             //     console.log(fileData, "FD");
+        //             //     return null;
+        //             // })
+
+        //         };
+        //     }
+        // });
+
+
 
         if (status === 'removed') {
             const removedFileName = file.name
@@ -120,69 +174,70 @@ class CostingBulkUploadDrawer extends Component {
             let data = new FormData()
             data.append('file', fileObj)
 
-            ExcelRenderer(fileObj, (err, resp) => {
-                if (err) {
+            // ExcelRenderer(fileObj, (err, resp) => {
+            //     if (err) {
 
-                } else {
+            //     } else {
 
-                    fileHeads = resp.rows[0];
+            //         fileHeads = resp.rows[0];
 
-                    const check = fileHeads.includes(CostingBulkUpload)
+            //         const check = fileHeads.includes(CostingBulkUpload)
+            //         this.setState({
+            //             //   fileData: fileObj,
+            //             uploadfileName: uploadfileName,
+            //         });
+            //         if (check === false) {
+            //             toastr.error('Please check your data.')
+            //         }
+            //         else {
+            //             // fileHeads = resp.rows[0];
+            //             // let fileData = [];
+            //             // resp.rows.map((val, index) => {
+            //             //     if (index > 0) {
 
-                    if (check === false) {
-                        toastr.error('Please check your data.')
-                    }
-                    else {
-                        // fileHeads = resp.rows[0];
-                        // let fileData = [];
-                        // resp.rows.map((val, index) => {
-                        //     if (index > 0) {
+            //             //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+            //             //         const i = val.findIndex(e => e === undefined);
+            //             //         if (i !== -1) {
+            //             //             val[i] = '';
+            //             //         }
 
-                        //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                        //         const i = val.findIndex(e => e === undefined);
-                        //         if (i !== -1) {
-                        //             val[i] = '';
-                        //         }
+            //             //         let obj = {}
+            //             //         val.map((el, i) => {
+            //             //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+            //             //                 el = getJsDateFromExcel(el)
+            //             //             }
+            //             //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+            //             //                 el = parseInt(el)
+            //             //             }
+            //             //             obj[fileHeads[i]] = el;
+            //             //             return null;
+            //             //         })
+            //             //         fileData.push(obj)
+            //             //         obj = {}
 
-                        //         let obj = {}
-                        //         val.map((el, i) => {
-                        //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                        //                 el = getJsDateFromExcel(el)
-                        //             }
-                        //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                        //                 el = parseInt(el)
-                        //             }
-                        //             obj[fileHeads[i]] = el;
-                        //             return null;
-                        //         })
-                        //         fileData.push(obj)
-                        //         obj = {}
+            //             //     }
+            //             //     console.log(fileData, "FD");
+            //             //     return null;
+            //             // })
 
-                        //     }
-                        //     console.log(fileData, "FD");
-                        //     return null;
-                        // })
-                        this.setState({
-                            fileData: fileObj,
-                            uploadfileName: uploadfileName,
-                        });
-                    };
-                }
-            });
+            //         };
+            //     }
+            // });
         }
     }
 
     onSubmit = (value) => {
+        console.log('value: ', value);
 
         const { fileData } = this.state
-
-        // let data = new FormData()
-        // data.append('file', fileData)
+        console.log(fileData, "fileData");
+        let data = new FormData()
+        data.append('file', fileData)
         let obj = {
-            file: fileData
+            file: data
         }
 
-        this.props.bulkUploadCosting(obj, (res) => {
+        this.props.bulkUploadCosting(data, (res) => {
             let Data = res.data[0]
             const { files } = this.state
             files.push(Data)
@@ -225,7 +280,7 @@ class CostingBulkUploadDrawer extends Component {
                                             {this.returnExcelColumn(CostingBulkUpload, CostingBulkUploadTempData)}
                                         </ExcelFile>
                                     </Col> */}
-                                    <Col md="12">
+                                    {/* <Col md="12">
                                         <div className="input-group mt25 col-md-12 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../../assests/images/uploadcloud.png')} ></img> </label>
@@ -239,8 +294,8 @@ class CostingBulkUploadDrawer extends Component {
                                             </div>
                                         </div>
 
-                                    </Col>
-                                    {/* <Col md="12">
+                                    </Col> */}
+                                    <Col md="12">
                                         <label>Upload File</label>
                                         {this.state.fileName !== "" ? (
                                             <div class="alert alert-danger" role="alert">
@@ -284,7 +339,7 @@ class CostingBulkUploadDrawer extends Component {
                                                 classNames="draper-drop"
                                             />
                                         )}
-                                    </Col> */}
+                                    </Col>
                                 </Row>
                                 <Row className="sf-btn-footer no-gutters justify-content-between">
                                     <div className="col-md-12 pl-3 pr-3">

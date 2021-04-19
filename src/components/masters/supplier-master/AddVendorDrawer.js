@@ -640,7 +640,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                            validate={[ acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //  required={true}
                                             maxLength={26}

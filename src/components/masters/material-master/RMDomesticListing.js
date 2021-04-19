@@ -7,7 +7,7 @@ import {
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
     getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList,
 } from '../actions/Material';
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -22,8 +22,9 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
-
-
+import { costingHeadObjs } from '../../../config/masterData';
+import { getPlantSelectListByType } from '../../../actions/Common'
+import { ZBC } from '../../../config/constants'
 
 class RMDomesticListing extends Component {
     constructor(props) {
@@ -35,6 +36,7 @@ class RMDomesticListing extends Component {
             RawMaterial: [],
             RMGrade: [],
             vendorName: [],
+            costingHead: [],
             value: { min: 0, max: 0 },
             maxRange: 0,
             isBulkUpload: false,
@@ -78,6 +80,8 @@ class RMDomesticListing extends Component {
         this.props.getRawMaterialFilterSelectList(() => { })
 
         this.getDataList()
+        this.props.getPlantSelectListByType(ZBC, () => { })
+
     }
 
     /**
@@ -243,6 +247,11 @@ class RMDomesticListing extends Component {
         return <>Net <br />Cost(INR) </>
     }
 
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    }
+
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -260,8 +269,18 @@ class RMDomesticListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { filterRMSelectList } = this.props;
+        const { filterRMSelectList, plantSelectList } = this.props;
         const temp = [];
+        if (label === 'costingHead') {
+            return costingHeadObjs;
+        }
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+            });
+            return temp;
+        }
         if (label === 'material') {
             filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
                 if (item.Value === '0') return false;
@@ -286,7 +305,6 @@ class RMDomesticListing extends Component {
             });
             return temp;
         }
-
     }
 
     /**
@@ -349,12 +367,14 @@ class RMDomesticListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { RawMaterial, RMGrade, vendorName } = this.state;
+        const { costingHead, RawMaterial, RMGrade, vendorName } = this.state;
+
+        const costingHeadTemp = costingHead ? costingHead.value : '';
         const RMid = RawMaterial ? RawMaterial.value : null;
         const RMGradeid = RMGrade ? RMGrade.value : null;
         const Vendorid = vendorName ? vendorName.value : null;
 
-        this.getDataList(RMid, RMGradeid, Vendorid)
+        this.getDataList(costingHeadTemp, RMid, RMGradeid, Vendorid)
     }
 
     /**
@@ -363,6 +383,7 @@ class RMDomesticListing extends Component {
     */
     resetFilter = () => {
         this.setState({
+            costingHead: [],
             RawMaterial: [],
             RMGrade: [],
             vendorName: [],
@@ -403,7 +424,13 @@ class RMDomesticListing extends Component {
         };
         return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
     }
-
+    handleHeadChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ costingHead: newValue, });
+        } else {
+            this.setState({ costingHead: [], })
+        }
+    };
     /**
     * @method confirmDensity
     * @description confirm density popup.
@@ -449,6 +476,38 @@ class RMDomesticListing extends Component {
                                 <div className="d-inline-flex justify-content-start align-items-top w100">
                                     <div className="flex-fills">
                                         <h5>{`Filter By:`}</h5>
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="costingHead"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Costing Head'}
+                                            isClearable={false}
+                                            options={this.renderListing('costingHead')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.costingHead == null || this.state.costingHead.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleHeadChange}
+                                            valueDescription={this.state.costingHead}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="plant"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Plant'}
+                                            isClearable={false}
+                                            options={this.renderListing('plant')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.plant == null || this.state.plant.length === 0) ? [required] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handlePlantChange}
+                                            valueDescription={this.state.plant}
+                                        />
                                     </div>
                                     <div className="flex-fill">
                                         <Field
@@ -607,7 +666,7 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="BasicRate" searchable={false} >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="ScrapRate" searchable={false} >{this.renderScrapRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" dataField="NetLandedCost" searchable={false} >{this.renderNetCost()}</TableHeaderColumn>
+                            <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" dataField="NetLandedCost" searchable={false} dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
                             {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
@@ -638,10 +697,13 @@ class RMDomesticListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ material, comman, }) {
+function mapStateToProps({ material, comman, auth }) {
     const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading } = material;
+    const { initialConfiguration } = auth;
+    const { plantSelectList } = comman;
+    
+    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList }
 
-    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading }
 }
 
 /**
@@ -664,6 +726,8 @@ export default connect(mapStateToProps, {
     getVendorFilterByGradeSelectList,
     getRawMaterialFilterByVendorSelectList,
     getGradeFilterByVendorSelectList,
+    getPlantSelectListByType,
+
 })(reduxForm({
     form: 'RMDomesticListing',
     enableReinitialize: true,
