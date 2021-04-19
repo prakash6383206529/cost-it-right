@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthFour, decimalLengthsix } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -1049,7 +1049,7 @@ class AddRMImport extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {!this.state.IsVendor && (
+                          {/* {!this.state.IsVendor && ( */}
                             <Col md="4">
                               <Field
                                 label="Plant"
@@ -1066,9 +1066,10 @@ class AddRMImport extends Component {
                                 mendatory={true}
                                 required={true}
                                 className="multiselect-with-border"
-                                disabled={this.state.IsVendor || isEditFlag ? true : false} />
+                                // disabled={this.state.IsVendor || isEditFlag ? true : false} 
+                                />
                             </Col>
-                          )}
+                          {/* )} */}
                         </Row>
 
 
@@ -1257,7 +1258,7 @@ class AddRMImport extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber]}
+                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderText}
                               required={true}
                               disabled={false}
@@ -1272,7 +1273,7 @@ class AddRMImport extends Component {
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber]}
+                              validate={[required, positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderText}
                               required={true}
                               className=""
@@ -1286,7 +1287,7 @@ class AddRMImport extends Component {
                               name={"FreightCharge"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber]}
+                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1300,7 +1301,7 @@ class AddRMImport extends Component {
                               name={"ShearingCost"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber]}
+                              validate={[positiveAndDecimalNumber, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""

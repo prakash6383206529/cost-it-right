@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -203,6 +203,11 @@ class BOPImportListing extends Component {
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         return cell ? 'Vendor Based' : 'Zero Based';
+    }
+
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
     /**
@@ -512,7 +517,7 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="left"  >{this.renderNetLandedCost()}</TableHeaderColumn>
+                            <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="left" dataFormat={this.costFormatter} >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataAlign="right" dataField="BoughtOutPartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
@@ -537,11 +542,13 @@ class BOPImportListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, comman, supplier }) {
+function mapStateToProps({ boughtOutparts, comman, supplier, auth }) {
     const { bopCategorySelectList, vendorAllSelectList, bopImportList } = boughtOutparts;
     const { plantSelectList, } = comman;
     const { vendorWithVendorCodeSelectList } = supplier;
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, vendorWithVendorCodeSelectList }
+    const { initialConfiguration } = auth;
+
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, vendorWithVendorCodeSelectList, initialConfiguration }
 }
 
 /**

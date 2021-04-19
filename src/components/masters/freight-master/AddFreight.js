@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from "reactstrap";
-import { required, checkForNull, number, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull } from "../../../helper/validation";
+import { required, checkForNull, number, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLengthFour } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { fetchSupplierCityDataAPI } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
@@ -708,14 +708,14 @@ class AddFreight extends Component {
                               />
                             </label>
                           </Col>
-                          {this.state.IsLoadingUnloadingApplicable && (
+                          {/* {this.state.IsLoadingUnloadingApplicable && ( */}
                             <Col md="3" className="hide-label-inside hide-text-help-mb-0">
                               <Field
                                 label={``}
                                 name={"LoadingUnloadingCharges"}
                                 type="text"
                                 placeholder={"Enter"}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                 component={renderText}
                                 //required={true}
                                 disabled={false}
@@ -723,7 +723,7 @@ class AddFreight extends Component {
                                 customClassName=" withBorder mn-height-auto"
                               />
                             </Col>
-                          )}
+                          {/* )} */}
                         </Row>
                         <Row>
                           <Col md="12">
@@ -737,7 +737,7 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerKilogram"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderText}
                               disabled={false}
                               className=" "
@@ -750,7 +750,7 @@ class AddFreight extends Component {
                               name={"PartTruckLoadRatePerCubicFeet"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                               component={renderText}
                               disabled={false}
                               className=" "

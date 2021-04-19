@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import $ from "jquery";
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -371,7 +371,7 @@ class OperationListing extends Component {
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         return cell ? 'Vendor Based' : 'Zero Based';
     }
-
+    
     onExportToCSV = (row) => {
         // ...
         return this.state.userData; // must return the data which you want to be exported
@@ -655,8 +655,8 @@ class OperationListing extends Component {
 */
 function mapStateToProps({ otherOperation, auth }) {
     const { loading, filterOperation, operationList } = otherOperation;
-    const { leftMenuData } = auth;
-    return { loading, filterOperation, leftMenuData, operationList };
+    const { leftMenuData, initialConfiguration } = auth;
+    return { loading, filterOperation, leftMenuData, operationList, initialConfiguration };
 }
 
 /**

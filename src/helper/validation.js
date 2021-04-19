@@ -189,14 +189,24 @@ export const decimalLength = max => value =>
         ? `Only ${max} decimal allowed.`
         : undefined;
 
-export const decimalLength4 = max => value =>
-    value && !/^[0-9]\d{0,12}(\.\d{1,4})?%?$/i.test(value)
+export const decimalLength3 = max => value =>
+    value && !/^[0-9]\d{0,15}(\.\d{1,3})?%?$/i.test(value)
         ? `Only ${max} decimal allowed.`
         : undefined;
 
+export const decimalLength4 = max => value =>
+    value && !/^[0-9]\d{0,15}(\.\d{1,4})?%?$/i.test(value)
+        ? `Only ${max} decimal allowed.`
+        : undefined;
+
+export const decimalLength6 = max => value =>
+    value && !/^[0-9]\d{0,12}(\.\d{1,6})?%?$/i.test(value)
+        ? `Only ${max} decimal allowed.`
+        : undefined;
 export const decimalLength2 = decimalLength(2);
-export const decimalLength3 = decimalLength(3);
+export const decimalLengthThree = decimalLength3(3);
 export const decimalLengthFour = decimalLength4(4);
+export const decimalLengthsix = decimalLength6(6);
 
 export const getNameBetweenBraces = (name) => {
     const firstIndex = name.indexOf('(');

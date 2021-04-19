@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, } from "../../../helper/validation";
+import { required, number, positiveAndDecimalNumber, maxLength10, checkPercentageValue, decimalLengthsix, decimalLengthThree, } from "../../../helper/validation";
 import { createExchangeRate, getExchangeRateData, updateExchangeRate, getCurrencySelectList, } from '../actions/ExchangeRateMaster';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
@@ -262,7 +262,7 @@ class AddExchangeRate extends Component {
                           name={"CurrencyExchangeRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[required, positiveAndDecimalNumber, maxLength10]}
+                          validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           required={true}
                           disabled={false}
@@ -276,7 +276,7 @@ class AddExchangeRate extends Component {
                           name={"BankRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           disabled={false}
                           className=" "
@@ -289,7 +289,7 @@ class AddExchangeRate extends Component {
                           name={"BankCommissionPercentage"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                           component={renderText}
                           max={100}
                           disabled={false}
@@ -304,7 +304,7 @@ class AddExchangeRate extends Component {
                           name={"CustomRate"}
                           type="text"
                           placeholder={"Enter"}
-                          validate={[positiveAndDecimalNumber, maxLength10]}
+                          validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                           component={renderText}
                           disabled={false}
                           className=" "

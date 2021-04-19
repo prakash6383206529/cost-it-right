@@ -179,7 +179,17 @@ class CostingBulkUploadDrawer extends Component {
 
                 } else {
 
+                    // CostingBulkUpload && CostingBulkUpload.map(item => {
+                    //     const check = fileHeads.includes(item.label)
+                    //     if (check === false) {
+                    //         toastr.error('Please check your data.')
+                    //     }
+                    //   });
+
+                    let flag = 0
+
                     fileHeads = resp.rows[0];
+<<<<<<< HEAD
 
                     const check = fileHeads.includes(CostingBulkUpload)
                     this.setState({
@@ -220,6 +230,22 @@ class CostingBulkUploadDrawer extends Component {
                         //     return null;
                         // })
 
+=======
+                    console.log(fileHeads, "FILE HEADS");
+                    CostingBulkUpload && CostingBulkUpload.map(item => {
+                        const check = fileHeads.includes(item.label)
+                        if (check === false) {
+                            toastr.error('Please re-upload the file with correct data.')
+                            flag = flag + 1
+                        }
+                    });
+                    if (flag > 0) { return null }
+                    else {
+                        this.setState({
+                            fileData: fileObj,
+                            uploadfileName: uploadfileName,
+                        });
+>>>>>>> 95b271d3dd5e24e404148922c970ee8b3f64aaa3
                     };
                 }
             });
