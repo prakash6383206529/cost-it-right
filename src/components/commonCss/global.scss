@@ -2053,6 +2053,15 @@ body {
   justify-content: space-between;
   padding: 5px 0;
 }
+.attachment-row{
+  border-bottom: 1px solid #e6e3e3;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
 ul.bread-list.d-inline-flex {
   li.active {
     font-size: 14px;
