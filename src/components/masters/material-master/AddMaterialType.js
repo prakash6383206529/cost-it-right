@@ -152,7 +152,7 @@ class AddMaterialType extends Component {
                       name={"CalculatedDensityValue"}
                       type="text"
                       placeholder={""}
-                      validate={[required, positiveAndDecimalNumber]}
+                      validate={[required, positiveAndDecimalNumber, decimalLengthFour]}
                       component={renderText}
                       required={true}
                       className=" withoutBorder"

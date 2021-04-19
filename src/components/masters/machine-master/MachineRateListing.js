@@ -25,6 +25,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -649,11 +650,15 @@ class MachineRateListing extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
+    
     const { comman, process, machine, } = state;
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;
     const { machineDatalist } = machine
-    return { technologySelectList, filterSelectList, machineDatalist }
+    const { auth } = state;
+    const { initialConfiguration } = auth;
+
+    return { technologySelectList, filterSelectList, machineDatalist, initialConfiguration }
 }
 
 /**

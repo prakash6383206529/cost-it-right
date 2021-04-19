@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, trimTwoDecimalPlace, maxLength100, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, checkPercentageValue
+  maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix
 } from "../../../helper/validation";
 import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError } from "../../layout/FormInputs";
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -798,12 +798,12 @@ class AddMoreDetails extends Component {
     let depreciationAmount = 0;
     if (depreciationType.value === SLM) {
       //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear Or (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
-      depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear;
+      depreciationAmount = (TotalCost - checkForNull(CastOfScrap)) / checkForNull(LifeOfAssetPerYear);
       // depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage) //TODO
     }
 
     if (depreciationType.value === WDM) {
-      depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
+      depreciationAmount = (TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)
     }
     //this.props.change('DepreciationAmount', Math.round(depreciationAmount))
     machineFullValue.depreciationAmount = depreciationAmount
@@ -1963,7 +1963,7 @@ class AddMoreDetails extends Component {
                             name={"MachineCost"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[required, positiveAndDecimalNumber, maxLength20]}
+                            validate={[required, positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
                             component={renderText}
                             required={true}
                             disabled={isEditFlag ? true : false}
@@ -1977,7 +1977,7 @@ class AddMoreDetails extends Component {
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength20]}
+                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
                             component={renderText}
                             //required={true}
                             disabled={isEditFlag ? true : false}
@@ -1991,7 +1991,7 @@ class AddMoreDetails extends Component {
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength20]}
+                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
                             component={renderText}
                             //required={true}
                             disabled={isEditFlag ? true : false}
@@ -2037,7 +2037,7 @@ class AddMoreDetails extends Component {
                                 name={"LoanPercentage"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                 component={renderText}
                                 //required={true}
                                 disabled={false}
@@ -2051,7 +2051,7 @@ class AddMoreDetails extends Component {
                                 name={"EquityPercentage"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                 component={renderText}
                                 //required={true}
                                 disabled={false}
@@ -2066,7 +2066,7 @@ class AddMoreDetails extends Component {
                                 name={"RateOfInterestPercentage"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                 component={renderText}
                                 //required={true}
                                 disabled={false}
@@ -2161,7 +2161,7 @@ class AddMoreDetails extends Component {
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength3]}
+                                validate={[positiveAndDecimalNumber, maxLength3, decimalLength2]}
                                 component={renderText}
                                 required={false}
                                 disabled={false}
@@ -2175,7 +2175,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfWorkingDaysPerYear"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength3]}
+                                validate={[positiveAndDecimalNumber, maxLength3, decimalLength2]}
                                 component={renderText}
                                 required={false}
                                 disabled={false}
@@ -2265,7 +2265,7 @@ class AddMoreDetails extends Component {
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={this.state.depreciationType.value === WDM ? [required, positiveAndDecimalNumber, maxLength10] : []}
+                                  validate={this.state.depreciationType.value === WDM ? [required, positiveAndDecimalNumber, maxLength10, decimalLengthThree] : [decimalLengthThree]}
                                   component={renderText}
                                   required={this.state.depreciationType.value === WDM ? true : false}
                                   disabled={false}
@@ -2295,7 +2295,7 @@ class AddMoreDetails extends Component {
                                 name={"CastOfScrap"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                 component={renderText}
                                 //required={true}
                                 disabled={false}
@@ -2391,7 +2391,7 @@ class AddMoreDetails extends Component {
                                   name={"AnnualMaintancePercentage"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                   component={renderText}
                                   //required={true}
                                   disabled={false}
@@ -2405,7 +2405,7 @@ class AddMoreDetails extends Component {
                                 name={"AnnualMaintanceAmount"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                 component={renderText}
                                 //required={true}
                                 disabled={this.state.IsAnnualMaintenanceFixed ? true : false}
@@ -2441,7 +2441,7 @@ class AddMoreDetails extends Component {
                                   name={"AnnualConsumablePercentage"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={false}
@@ -2455,7 +2455,7 @@ class AddMoreDetails extends Component {
                                 name={"AnnualConsumableAmount"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                 component={renderText}
                                 //required={true}
                                 disabled={this.state.IsAnnualConsumableFixed ? true : false}
@@ -2492,7 +2492,7 @@ class AddMoreDetails extends Component {
                                   name={"AnnualInsurancePercentage"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                   component={renderNumberInputField}
                                   //required={true}
                                   disabled={false}
@@ -2506,7 +2506,7 @@ class AddMoreDetails extends Component {
                                 name={"AnnualInsuranceAmount"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                 component={renderText}
                                 //required={true}
                                 disabled={this.state.IsInsuranceFixed ? true : false}
@@ -2562,7 +2562,7 @@ class AddMoreDetails extends Component {
                                 name={"OtherYearlyCost"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                 component={renderText}
                                 //required={true}
                                 disabled={false}
@@ -2664,7 +2664,7 @@ class AddMoreDetails extends Component {
                                   name={"ConsumptionPerYear"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                   component={renderText}
                                   //required={true}
                                   disabled={false}
@@ -2696,7 +2696,7 @@ class AddMoreDetails extends Component {
                                   name={"UtilizationFactorPercentage"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                   component={renderText}
                                   //required={true}
                                   disabled={false}
@@ -2710,7 +2710,7 @@ class AddMoreDetails extends Component {
                                   name={"PowerRatingPerKW"}
                                   type="text"
                                   placeholder={'Enter'}
-                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
                                   component={renderText}
                                   //required={true}
                                   disabled={isEditFlag ? true : false}
@@ -2824,7 +2824,7 @@ class AddMoreDetails extends Component {
                                 name={"NumberOfLabour"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[maxLength10]}
+                                validate={[maxLength10, decimalLengthThree]}
                                 component={renderNumberInputField}
                                 //onChange={this.handleLabourCalculation}
                                 //required={true}
@@ -2985,7 +2985,7 @@ class AddMoreDetails extends Component {
                                 name={"OutputPerHours"}
                                 type="text"
                                 placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10]}
+                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                 component={renderText}
                                 //required={true}
                                 disabled={false}
@@ -3014,7 +3014,7 @@ class AddMoreDetails extends Component {
                                   name={"MachineRate"}
                                   type="text"
                                   placeholder={''}
-                                  validate={[positiveAndDecimalNumber, maxLength10]}
+                                  validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                                   component={renderText}
                                   onChange={this.handleMachineRate}
                                   //required={true}

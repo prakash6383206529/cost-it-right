@@ -116,21 +116,8 @@ class BOMUpload extends Component {
 
   responseHandler = (res) => {
     const { messageLabel, } = this.props;
-    if (res.data.Data) {
-      let Data = res.data.Data;
-
-      if (Data.CountSucceeded > 0) {
-        toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
-      }
-
-      if (Data.CountFailed > 0) {
-        toastr.warning(res.data.Message);
-        this.setState({
-          failedData: Data.FaildRecords,
-          faildRecords: true,
-        })
-      }
-
+    if (res && res.data.Result === true) {
+        toastr.success(`BOM uploaded successfully.`)
     }
     this.toggleDrawer('')
   }
