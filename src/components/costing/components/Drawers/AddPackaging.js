@@ -42,7 +42,7 @@ function AddPackaging(props) {
   });
 
   useEffect(() => {
-    if (applicability) {
+    if (applicability && applicability.value !== undefined) {
       calculateApplicabilityCost(applicability.value)
     }
   }, [fieldValues]);
@@ -195,7 +195,7 @@ function AddPackaging(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
