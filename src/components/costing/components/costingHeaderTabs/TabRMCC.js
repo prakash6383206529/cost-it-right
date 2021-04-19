@@ -69,6 +69,22 @@ function TabRMCC(props) {
   }
 
   /**
+  * @method getRMTotalCostForAssemblySkipChildren
+  * @description GET RM TOTAL COST FOR ASSEMBLY SKIP CHILDREN
+  */
+  const getRMTotalCostForAssemblySkipChildren = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
+        return accummlator + checkForNull(GridTotalCost);
+      } else {
+        return accummlator + 0;
+      }
+    }, 0)
+    return NetCost;
+  }
+
+  /**
   * @method getRMTotalCostForAssemblyWithQuantity
   * @description GET RM TOTAL COST FOR ASSEMBLY WITH QUANTITY
   */
@@ -297,6 +313,7 @@ function TabRMCC(props) {
   }
 
   const setRMCostInDataList = (rmGrid, params, arr) => {
+    console.log('setRMCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map((i) => {
@@ -334,7 +351,7 @@ function TabRMCC(props) {
   }
 
   /**
-  * @method getRMTotalCostForAssembly
+  * @method getRMCostWithQuantity
   * @description GET RM TOTAL COST FOR ASSEMBLY
   */
   const getRMCostWithQuantity = (arr, GridTotalCost, params) => {
@@ -371,6 +388,7 @@ function TabRMCC(props) {
   }
 
   const setBOPCostInDataList = (bopGrid, params, arr) => {
+    console.log('setBOPCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -415,6 +433,7 @@ function TabRMCC(props) {
   }
 
   const setBOPHandlingCostInDataList = (bopGrid, BOPHandlingFields, params, arr) => {
+    console.log('setBOPHandlingCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -491,6 +510,7 @@ function TabRMCC(props) {
   }
 
   const setProcessCostInDataList = (conversionGrid, params, arr) => {
+    console.log('setProcessCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -560,6 +580,7 @@ function TabRMCC(props) {
   }
 
   const setOperationCostInDataList = (operationGrid, params, arr) => {
+    console.log('setOperationCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -608,6 +629,7 @@ function TabRMCC(props) {
   }
 
   const setToolCostInDataList = (toolGrid, params, arr) => {
+    console.log('setToolCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -649,6 +671,7 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const setAssembly = (BOMLevel, PartNumber, Children, RMCCTabData) => {
+    console.log('setAssembly')
     let tempArr = [];
     try {
 
@@ -662,7 +685,7 @@ function TabRMCC(props) {
           i.CostingChildPartDetails = BOMLevel !== LEVEL0 ? ChangeBOMLeveL(Children.CostingChildPartDetails, BOMLevel) : i.CostingChildPartDetails;
           i.CostingPartDetails = Children.CostingPartDetails;
 
-          i.CostingPartDetails.TotalRawMaterialsCost = getRMTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalRawMaterialsCost, params);
+          i.CostingPartDetails.TotalRawMaterialsCost = getRMTotalCostForAssemblySkipChildren(CostingChildPartDetails, Children.CostingPartDetails.TotalRawMaterialsCost, params);
           i.CostingPartDetails.TotalBoughtOutPartCost = getBOPTotalCostForAssembly(CostingChildPartDetails, Children.CostingPartDetails.TotalBoughtOutPartCost, params);
           i.CostingPartDetails.TotalProcessCost = getProcessTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalProcessCost, params);
           i.CostingPartDetails.TotalOperationCost = getOperationTotalCost(CostingChildPartDetails, Children.CostingPartDetails.TotalOperationCost, params);
@@ -682,7 +705,7 @@ function TabRMCC(props) {
           // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = (getTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails, 'ALL', 0, params)) +
           //   checkForNull(CostingPartDetails.TotalOperationCostPerAssembly);
 
-          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getRMTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalRawMaterialsCost, params) +
+          i.CostingPartDetails.TotalCalculatedRMBOPCCCost = getRMTotalCostForAssemblySkipChildren(CostingChildPartDetails, CostingPartDetails.TotalRawMaterialsCost, params) +
             getBOPTotalCostForAssembly(CostingChildPartDetails, CostingPartDetails.TotalBoughtOutPartCost, params) +
             getProcessTotalCost(CostingChildPartDetails, CostingPartDetails.TotalProcessCost, params) +
             getOperationTotalCost(CostingChildPartDetails, CostingPartDetails.TotalOperationCost, params) +
@@ -750,6 +773,7 @@ function TabRMCC(props) {
   * @description FORMATE DATA FOR SET PART DETAILS
   */
   const formatData = (BOMLevel, PartNumber, Data, RMCCTabData) => {
+    console.log('formatData')
     let tempArr = [];
     try {
       tempArr = RMCCTabData && RMCCTabData.map(i => {
@@ -757,6 +781,8 @@ function TabRMCC(props) {
         if (i.IsAssemblyPart === true) {
           // i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalConversionCost) +
           // getCCTotalCostForAssembly(i.CostingChildPartDetails, checkForNull(Data.CostingConversionCost.NetConversionCost), params);
+
+          i.CostingPartDetails.TotalRawMaterialsCost = getRMTotalCostForAssemblySkipChildren(i.CostingChildPartDetails, Data.TotalRawMaterialsCost, params);
 
           i.CostingPartDetails.TotalConversionCost = checkForNull(i.CostingPartDetails.TotalOperationCostPerAssembly) +
             checkForNull(i.CostingPartDetails.TotalToolCostPerAssembly) +
@@ -803,6 +829,7 @@ function TabRMCC(props) {
   }
 
   const setAssemblyOperationCostInDataList = (OperationGrid, params, arr, IsGridChanged) => {
+    console.log('setAssemblyOperationCost: ');
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -871,6 +898,7 @@ function TabRMCC(props) {
   }
 
   const setAssemblyToolCostInDataList = (ToolGrid, params, arr) => {
+    console.log('setAssemblyToolCostInDataList: ');
     let tempArr = [];
     try {
 
