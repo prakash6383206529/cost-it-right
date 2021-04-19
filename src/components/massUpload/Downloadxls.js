@@ -15,7 +15,7 @@ import {
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
     VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
-    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData,
+    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticSimulation, RMDomesticSimulationTempData,
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable } from "../../helper";
 
@@ -133,7 +133,7 @@ class Downloadxls extends React.Component {
     */
     returnExcelColumn = (data = [], TempData) => {
         const { fileName, failedData, isFailedFlag } = this.props;
-
+        console.log("COMING IN EXCEL COLUMN11111111111111111", TempData);
         if (isFailedFlag) {
 
             //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
@@ -143,9 +143,10 @@ class Downloadxls extends React.Component {
                 data.push(addObj)
             }
         }
-        
+        console.log("COMING IN EXCEL COLUMN2222222222222222222222222222222222222");
+
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} style={ele.style}/>)}
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} style={ele.style} />)}
         </ExcelSheet>);
     }
 
@@ -155,6 +156,7 @@ class Downloadxls extends React.Component {
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
         if (isFailedFlag && (costingHead === 'ZBC' || costingHead === 'ZBC_MACHINE_MORE') && (fileName === 'RMDomestic' || fileName === 'RMImport' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOPDomestic' || fileName === 'BOPImport' || fileName === 'ActualVolume' || fileName === 'BudgetedVolume' || fileName === 'InterestRate')) {
+
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}ZBC`} fileExtension={'.xls'} >
                     {isMachineMoreTemplate ? this.renderZBCSwitch(costingHead) : this.renderZBCSwitch(fileName)}

@@ -191,7 +191,8 @@ class RMDomesticListing extends Component {
     * @description Renders Costing head
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell ? 'Vendor Based' : 'Zero Based';
+        console.log(cell, "CELLLL");
+        return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
     }
 
     /**
@@ -519,12 +520,7 @@ class RMDomesticListing extends Component {
                                             isClearable={false}
                                             options={this.renderListing("material")}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                                            validate={
-                                                this.state.RawMaterial == null ||
-                                                    this.state.RawMaterial.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
+                                            validate={this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.handleRMChange}
                                             valueDescription={this.state.RawMaterial}
@@ -541,11 +537,7 @@ class RMDomesticListing extends Component {
                                             options={this.renderListing("grade")}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                             validate={
-                                                this.state.RMGrade == null ||
-                                                    this.state.RMGrade.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
+                                                this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.handleGradeChange}
                                             valueDescription={this.state.RMGrade}
@@ -562,11 +554,7 @@ class RMDomesticListing extends Component {
                                             options={this.renderListing("VendorNameList")}
                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                             validate={
-                                                this.state.vendorName == null ||
-                                                    this.state.vendorName.length === 0
-                                                    ? [required]
-                                                    : []
-                                            }
+                                                this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                                             required={true}
                                             handleChangeDescription={this.handleVendorName}
                                             valueDescription={this.state.vendorName}
@@ -701,7 +689,7 @@ function mapStateToProps({ material, comman, auth }) {
     const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading } = material;
     const { initialConfiguration } = auth;
     const { plantSelectList } = comman;
-    
+
     return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList }
 
 }

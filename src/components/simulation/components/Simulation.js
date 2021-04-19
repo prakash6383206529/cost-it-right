@@ -10,22 +10,11 @@ import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import {
-    Fuel, FuelTempData,
-    RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
-    RMImportZBC, RMImportZBCTempData, RMImportVBC, RMImportVBCTempData,
-    RMSpecification, RMSpecificationXLTempData,
-    Vendor, VendorTempData,
-    Labour, LabourTempData,
-    Overhead, OverheadTempData, Profit, ProfitTempData,
-    ZBCOperation, ZBCOperationTempData, VBCOperation, VBCOperationTempData,
-    MachineZBC, MachineZBCTempData, MachineVBC, MachineVBCTempData, MHRMoreZBC, MHRMoreZBCTempData,
-    PartComponent, PartComponentTempData,
-    BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData, BOP_VBC_DOMESTIC, BOP_VBC_DOMESTIC_TempData,
-    BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
-    VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
-    VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
-    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData,
+    RMDomesticSimulation, RMDomesticSimulationTempData,
+    RMImportSimulation
 } from '../../../config/masterData';
+import { toastr } from 'react-redux-toastr';
+import Downloadxls from '../../massUpload/Downloadxls';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -45,41 +34,71 @@ function Simulation(props) {
     })
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
+    const rmImportListing = useSelector(state => state.material.rmImportDataList)
     const [master, setMaster] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
+    // const [fileName ,setFileName] = useState('')
 
+    // useEffect(() => {
+
+    // }, [rmDomesticListing, rmImportListing])
     const handleMasterChange = (value) => {
         setMaster(value)
         setShowMasterList(true)
+
+
+    }
+    const returnExcelColumn = (data = [], TempData) => {
+        //  const { fileName, failedData, isFailedFlag } = this.props;
+        console.log(data, "COMING IN EXCEL COLUMN11111111111111111", TempData);
+        let temp = []
+        temp = TempData.map((item) => {
+            if (item.CostingHead === true) {
+                item.CostingHead = 'Vendor Based'
+            } else if (item.CostingHead === false) {
+                item.CostingHead = 'Zero Based'
+            }
+            return item
+        })
+        // if (isFailedFlag) {
+
+        //     //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
+        //     let isContentReason = data.filter(d => d.label === 'Reason')
+        //     if (isContentReason.length === 0) {
+        //         let addObj = { label: 'Reason', value: 'Reason' }
+        //         data.push(addObj)
+        //     }
+        // }
+
+
+        return (<ExcelSheet data={temp} name={master.label}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+        </ExcelSheet>);
     }
 
     const renderModule = (value) => {
         switch (value.label) {
             case RMDOMESTIC:
-                return (
-                    <RMDomesticListing isSimulation={true} />
-                )
+                return (<RMDomesticListing isSimulation={true} />)
             case RMIMPORT:
-                return (
-                    <RMImportListing isSimulation={true} />
-                )
+                return (<RMImportListing isSimulation={true} />)
             default:
                 break;
         }
     }
 
-    const handleExcel = () => {
-        let data = RMDomesticZBC
-        //data = data.splice(10, { label: 'New Basic Rate', value: 'New Basic Rate' })
-        let obj = { label: 'New Basic Rate', value: 'New Basic Rate' }
-        data.push(obj)
-        console.log(data, "DATA");
-        return (
-            <ExcelSheet data={rmDomesticListing} name={'RMName'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-            </ExcelSheet>)
 
+
+    const renderColumn = (fileName) => {
+        switch (fileName) {
+            case RMDOMESTIC:
+                return returnExcelColumn(RMDomesticSimulation, rmDomesticListing && rmDomesticListing.length > 0 ? rmDomesticListing : [])
+            case RMIMPORT:
+                return returnExcelColumn(RMImportSimulation, rmImportListing && rmImportListing.length > 0 ? rmImportListing : [])
+            default:
+                return 'foo';
+        }
     }
 
     const renderListing = (label) => {
@@ -141,9 +160,16 @@ function Simulation(props) {
                     <div>
                         <button type="button" className={"user-btn edit-btn mt2 mr5"}>
                             <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
-                        <ExcelFile filename={'RM'} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>Download File</button>}>
-                            {() => handleExcel()}
+                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>Download File</button>}>
+                            {renderColumn(master.label)}
                         </ExcelFile>
+                        {/* <Downloadxls
+                            isZBCVBCTemplate={false}
+                            isMachineMoreTemplate={false}
+                            fileName={'RMSimulationDomestic'}
+                            isFailedFlag={false}
+                            costingHead={''}
+                        /> */}
                         {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
                         <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>Bulk Upload </button>
                     </div>
