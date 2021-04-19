@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Field, reduxForm, formValueSelector } from 'redux-form'
 import { Row, Col, Table } from 'reactstrap'
-import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLength2 } from '../../../helper/validation'
+import { required, checkForNull, positiveAndDecimalNumber, maxLength10, checkForDecimalAndNull, decimalLength2, decimalLengthsix } from '../../../helper/validation'
 import { renderText, searchableSelect } from '../../layout/FormInputs'
 import { getFuelComboData, getPlantListByState } from '../actions/Fuel'
 import { createLabour, getLabourData, updateLabour, labourTypeVendorSelectList, getLabourTypeByMachineTypeSelectList, } from '../actions/Labour'
@@ -353,8 +353,8 @@ class AddLabour extends Component {
       return false;
     }
 
-    if (decimalLength2(Number(fieldsObj))) {
-      // toastr.warning('Please enter valid value.')
+    if (decimalLengthsix(Number(fieldsObj))) {
+      toastr.warning('Decimal value should not be more than 6')
       return false;
     }
 
@@ -809,7 +809,7 @@ class AddLabour extends Component {
                             name={"LabourRate"}
                             type="text"
                             placeholder={"Enter"}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLength2]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                             component={renderText}
                             required={true}
                             disabled={false}

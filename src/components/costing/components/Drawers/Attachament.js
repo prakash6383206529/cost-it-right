@@ -22,13 +22,9 @@ function Attachament(props) {
   }
   return (
     <Fragment>
-      <Drawer
-        anchor={props.anchor}
-        open={props.isOpen}
-      // onClose={(e) => toggleDrawer(e)}
-      >
+      <Drawer anchor={props.anchor} open={props.isOpen}       >
         <Container>
-          <div className={'drawer-wrapper drawer-1500px'}>
+          <div className={'drawer-wrapper'}>
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
@@ -51,27 +47,29 @@ function Attachament(props) {
               </Col>
             </Row>
             <Row>
-              {viewCostingData &&
-                viewCostingData.map((data) => {
-                  return (
-                    <td>
-                      {data.attachment &&
-                        data.attachment.map((f) => {
-                          const withOutTild = f.FileURL
-                            ? f.FileURL.replace('~', '')
-                            : ''
-                          const fileURL = `${FILE_URL}${withOutTild}`
-                          return (
-                            <div className={"attachment images"}>
-                              <a href={fileURL} target="_blank">
-                                {f.OriginalFileName}
-                              </a>
-                            </div>
-                          )
-                        })}
-                    </td>
-                  )
-                })}
+              <Col md="12">
+                {viewCostingData &&
+                  viewCostingData.map((data) => {
+                    return (
+                      <td>
+                        {data.attachment &&
+                          data.attachment.map((f) => {
+                            const withOutTild = f.FileURL
+                              ? f.FileURL.replace('~', '')
+                              : ''
+                            const fileURL = `${FILE_URL}${withOutTild}`
+                            return (
+                              <div className={"attachment images"}>
+                                <a href={fileURL} target="_blank">
+                                  {f.OriginalFileName}
+                                </a>
+                              </div>
+                            )
+                          })}
+                      </td>
+                    )
+                  })}
+              </Col>
             </Row>
           </div>
         </Container>

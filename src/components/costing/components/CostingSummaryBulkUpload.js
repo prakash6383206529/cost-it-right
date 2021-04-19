@@ -197,11 +197,11 @@ class CostingSummaryBulkUpload extends Component {
                         tableHeaderClass='my-custom-header client-table'
                         className={'client-table'}
                         pagination>
-                        <TableHeaderColumn dataField="CostingStatus" dataAlign="left" >{'Status'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="NoOfCorrectRow" dataAlign="left" >{'No. of Correct Row'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="NoOfIncorrectRow" dataAlign="left" >{'No. of Incorrect Row'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="FileName" dataAlign="left" >{'File Name'}</TableHeaderColumn>
-                        <TableHeaderColumn width={400} className="action" searchable={false} dataField="FileNameId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                        <TableHeaderColumn dataField="FileUploadStatus" dataAlign="left" >{'Status'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CorrectCostingCount" dataAlign="left" >{'No. of Correct Row'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="IncorrectCostingCount" dataAlign="left" >{'No. of Incorrect Row'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="OriginalFileName" dataAlign="left" >{'File Name'}</TableHeaderColumn>
+                        <TableHeaderColumn width={400} className="action" searchable={false} dataField="CostingBulkUploadFileId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
 
                 </div>

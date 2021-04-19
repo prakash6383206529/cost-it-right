@@ -958,44 +958,41 @@ const CostingSummaryTable = (props) => {
                               {data.attachment && data.attachment.length == 0 ? (
                                 'No attachment found'
                               ) : data.attachment.length == 1 ? (
-                                data.attachment &&
-                                data.attachment.map((f) => {
-                                  const withOutTild = f.FileURL
-                                    ? f.FileURL.replace('~', '')
-                                    : ''
-                                  const fileURL = `${FILE_URL}${withOutTild}`
-                                  return (
-                                    <td>
-                                      {data.attachment &&
-                                        data.attachment.map((f) => {
-                                          const withOutTild = f.FileURL
-                                            ? f.FileURL.replace('~', '')
-                                            : ''
-                                          const fileURL = `${FILE_URL}${withOutTild}`
-                                          return (
-                                            <div className={"attachment images"}>
-                                              <a href={fileURL} target="_blank">
-                                                {f.OriginalFileName}
-                                              </a>
-                                            </div>
-                                          )
-                                        })}
-                                    </td>
-                                  )
-                                })
-                              ) : (
-                                // <img
-                                //   src={require('../../../assests/images/times.png')}
-                                //   alt="cancel-icon.jpg"
-                                // />
-                                <button
-                                  onClick={() => {
-                                    setAttachment(true)
-                                  }}
-                                >
-                                  View Attachment
-                                </button>
-                              )}
+
+                                <td>
+                                  {data.attachment &&
+                                    data.attachment.map((f) => {
+                                      const withOutTild = f.FileURL
+                                        ? f.FileURL.replace('~', '')
+                                        : ''
+                                      const fileURL = `${FILE_URL}${withOutTild}`
+                                      return (
+                                        <div className={"attachment images"}>
+                                          <a href={fileURL} target="_blank">
+                                            {f.OriginalFileName}
+                                          </a>
+                                        </div>
+                                      )
+                                    })}
+                                </td>
+                              )
+                                : (
+                                  // <img
+                                  //   src={require('../../../assests/images/times.png')}
+                                  //   alt="cancel-icon.jpg"
+                                  // />
+                                  // <button
+                                  //   onClick={() => {
+                                  //     setAttachment(true)
+                                  //   }}
+                                  // >
+                                  //   View Attachment
+                                  // </button>
+                                  <a
+                                    href="javascript:void(0)"
+                                    onClick={() => setAttachment(true)}
+                                  > View Attachment</a>
+                                )}
                             </td>
                           )
                         })}

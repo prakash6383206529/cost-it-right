@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, maxLength100, getVendorCode, number, positiveAndDecimalNumber, maxLength15, checkPercentageValue } from "../../../helper/validation";
+import { required, maxLength100, getVendorCode, number, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
@@ -751,7 +751,7 @@ class AddOverhead extends Component {
                                 !isOverheadPercent ? "Enter" : ""
                               }
                               validate={
-                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15] : []
+                                !isOverheadPercent ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []
                               }
                               component={renderText}
                               onBlur={this.handlePercent}
@@ -771,7 +771,7 @@ class AddOverhead extends Component {
                               name={"OverheadRMPercentage"}
                               type="text"
                               placeholder={!isRM ? "Enter" : ""}
-                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15] : []}
+                              validate={!isRM ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isRM ? true : false}
@@ -788,7 +788,7 @@ class AddOverhead extends Component {
                               name={"OverheadMachiningCCPercentage"}
                               type="text"
                               placeholder={!isCC ? "Enter" : ""}
-                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15] : []}
+                              validate={!isCC ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isCC ? true : false}
@@ -805,7 +805,7 @@ class AddOverhead extends Component {
                               name={"OverheadBOPPercentage"}
                               type="text"
                               placeholder={!isBOP ? "Enter" : ""}
-                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15] : []}
+                              validate={!isBOP ? [required, positiveAndDecimalNumber, maxLength15, decimalLengthThree] : []}
                               component={renderText}
                               //onChange={this.handleCalculation}
                               required={!isBOP ? true : false}

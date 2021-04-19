@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, acceptAllExceptSingleSpecialCharacter, checkForDecimalAndNull, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, checkPercentageValue } from "../../../helper/validation";
+import { required, number, acceptAllExceptSingleSpecialCharacter, checkForDecimalAndNull, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
@@ -258,7 +258,7 @@ class AddTaxDetails extends Component {
                     name={"Rate"}
                     type="text"
                     placeholder={"Enter"}
-                    validate={[required, positiveAndDecimalNumber]}
+                    validate={[required, positiveAndDecimalNumber, decimalLengthThree]}
                     max='100'
                     component={renderText}
                     required={true}

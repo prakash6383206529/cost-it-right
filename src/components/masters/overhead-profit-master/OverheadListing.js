@@ -148,13 +148,25 @@ class OverheadListing extends Component {
     */
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         let headText = '';
-        if (!cell && row.VendorName === '-') {
+        if (cell === 'ZBC') {
             headText = 'Zero Based';
-        } else if (cell && row.VendorName !== '-') {
+        } else if (cell === 'VBC') {
             headText = 'Vendor Based';
-        } else if ((cell || cell == null) && row.ClientName !== '-') {
+        } else if (cell === 'CBC') {
             headText = 'Client Based';
         }
+
+        
+        
+        
+        
+        // if (!cell && row.VendorName === '-') {
+        //     headText = 'Zero Based';
+        // } else if (cell && row.VendorName !== '-') {
+        //     headText = 'Vendor Based';
+        // } else if ((cell || cell == null) && row.ClientName !== '-') {
+        //     headText = 'Client Based';
+        // }
         return headText;
     }
 
@@ -542,7 +554,7 @@ class OverheadListing extends Component {
                             ref={'table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="IsVendor" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="TypeOfHead" width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={120} columnTitle={true} dataAlign="left" >{this.renderVendor()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ClientName" width={120} columnTitle={true} dataAlign="left" >{this.renderClient()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ModelType" width={100} columnTitle={true} dataAlign="left" >{this.renderModelType()}</TableHeaderColumn>
