@@ -426,7 +426,7 @@ class AddMachineRate extends Component {
   */
   moreDetailsToggler = (Id, editFlag) => {
     const { selectedTechnology } = this.state;
-    if (selectedTechnology == null || selectedTechnology.length === 0) {
+    if (selectedTechnology == null || selectedTechnology.length === 0 || Object.keys(selectedTechnology).length < 0) {
       toastr.warning('Technology should not be empty.')
       return false;
     }

@@ -636,8 +636,8 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate" dataFormat={this.costFormatter} >{this.renderBasicRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" dataFormat={this.costFormatter} >{this.renderScrapRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate"  >{this.renderBasicRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
               <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
               {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}

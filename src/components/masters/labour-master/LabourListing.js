@@ -398,10 +398,7 @@ class LabourListing extends Component {
   dashFormatter = (cell, row, enumObject, rowIndex) => {
     return cell !== 'NA' ? cell : '-'
   }
-  costFormatter = (cell, row, enumObject, rowIndex) => {
-    const { initialConfiguration } = this.props
-    return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
-}
+
   /**
    * @method effectiveDateFormatter
    * @description Renders buttons
@@ -784,7 +781,6 @@ class LabourListing extends Component {
               columnTitle={true}
               width={120}
               dataAlign="left"
-              dataFormat={this.costFormatter} 
             >
               {this.renderRatePerPerson()}
             </TableHeaderColumn>

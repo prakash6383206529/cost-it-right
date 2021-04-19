@@ -527,7 +527,7 @@ class BOPDomesticListing extends Component {
                             <TableHeaderColumn width={100} dataField="Plants" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" searchable={false} columnTitle={true} dataAlign="left"  >{'No. of Pcs'}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter} >{'Basic Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BasicRate" searchable={false} columnTitle={true} dataAlign="left" >{'Basic Rate'}</TableHeaderColumn>
                             <TableHeaderColumn width={120} dataField="NetLandedCost" searchable={false} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}  >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="BoughtOutPartId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

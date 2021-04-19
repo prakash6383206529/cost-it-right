@@ -664,8 +664,8 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorLocation" searchable={false} >{this.renderVendorLocation()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="BasicRate" searchable={false} dataFormat={this.costFormatter}>{this.renderBasicRate()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="ScrapRate" searchable={false} dataFormat={this.costFormatter}>{this.renderScrapRate()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="BasicRate" searchable={false} >{this.renderBasicRate()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="ScrapRate" searchable={false} >{this.renderScrapRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" dataField="NetLandedCost" searchable={false} dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}

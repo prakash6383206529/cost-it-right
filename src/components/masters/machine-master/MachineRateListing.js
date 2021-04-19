@@ -285,11 +285,6 @@ class MachineRateListing extends Component {
         return <GridTotalFormate start={start} to={to} total={total} />
     }
 
-    costFormatter = (cell, row, enumObject, rowIndex) => {
-        const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
-    }
-
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -629,7 +624,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="MachineTypeName" width={110} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="ProcessName" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderProcessName()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costFormatter} >{this.renderMachineRate()}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MachineRate" searchable={false} width={80} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineRate()}</TableHeaderColumn>
                             <TableHeaderColumn dataAlign="right" width={140} dataField="MachineId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>
                     </Col>

@@ -399,10 +399,10 @@ class ExchangeRateListing extends Component {
                         tableHeaderClass='my-custom-header'
                         pagination>
                         <TableHeaderColumn dataField="Currency" width={90} columnTitle={true} dataAlign="left" dataSort={true} >{'Currency'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={120} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter} >{this.renderExchangeRate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}>{this.renderBankRate()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="left" dataFormat={this.inputOutputFormatter} >{this.renderBankCommision()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="left" dataFormat={this.costFormatter}>{this.renderCustomrate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CurrencyExchangeRate" width={120} columnTitle={true} dataAlign="left" >{this.renderExchangeRate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankRate" width={110} columnTitle={true} dataAlign="left" >{this.renderBankRate()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="BankCommissionPercentage" width={160} columnTitle={true} dataAlign="left" >{this.renderBankCommision()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CustomRate" width={150} columnTitle={true} dataAlign="left" >{this.renderCustomrate()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="EffectiveDate" width={160} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="DateOfModification" width={130} columnTitle={true} dataAlign="left" dataFormat={this.effectiveDateFormatter} >{this.renderDateOfModification()}</TableHeaderColumn>
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={100} dataField="ExchangeRateId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

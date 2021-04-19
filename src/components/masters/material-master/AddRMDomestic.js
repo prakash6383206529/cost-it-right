@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, isValid, isInvalid } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthFour, decimalLength6, decimalLengthsix } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { AcceptableRMUOM } from '../../../config/masterData'
 import {
@@ -1239,7 +1239,7 @@ class AddRMDomestic extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength15]}
+                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               // onChange={thishandleBasicRate.}
                               required={true}
@@ -1255,7 +1255,7 @@ class AddRMDomestic extends Component {
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength15]}
+                              validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={true}
                               className=""
@@ -1270,7 +1270,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               // onChange={this.handleFreightCharges}
-                              validate={[positiveAndDecimalNumber, maxLength15]}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""
@@ -1285,7 +1285,7 @@ class AddRMDomestic extends Component {
                               type="text"
                               placeholder={"Enter"}
                               // onChange={this.handleFreightCharges}
-                              validate={[positiveAndDecimalNumber, maxLength15]}
+                              validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix]}
                               component={renderText}
                               required={false}
                               className=""
