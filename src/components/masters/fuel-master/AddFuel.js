@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, decimalLength2, number, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10 } from "../../../helper/validation";
+import { required, decimalLength2, number, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../helper/validation";
 import {
   renderNumberInputField, searchableSelect, focusOnError, renderText,
 } from "../../layout/FormInputs";
@@ -160,13 +160,16 @@ class AddFuel extends Component {
     const { fieldsObj } = this.props;
     const Rate = fieldsObj && fieldsObj !== undefined ? fieldsObj : 0;
     const tempArray = [];
-
+    if (decimalLengthsix(Rate)) {
+      toastr.warning("Decimal value should not be more than 6")
+      return false
+    }
     if (!this.checkForSpecialCharacter(Rate)) {
       toastr.warning("Enter valid value")
       return false
 
     } else {
-      if (StateName.length === 0 || effectiveDate === '' || Rate === 0 ) {
+      if (StateName.length === 0 || effectiveDate === '' || Rate === 0) {
         toastr.warning('Fields should not be empty');
         return false;
       }
@@ -529,7 +532,7 @@ class AddFuel extends Component {
                               name={"Rate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[positiveAndDecimalNumber, maxLength10]}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderText}
                               required={true}
                               className=""

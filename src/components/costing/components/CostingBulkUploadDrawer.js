@@ -174,55 +174,55 @@ class CostingBulkUploadDrawer extends Component {
             let data = new FormData()
             data.append('file', fileObj)
 
-            ExcelRenderer(fileObj, (err, resp) => {
-                if (err) {
+            // ExcelRenderer(fileObj, (err, resp) => {
+            //     if (err) {
 
-                } else {
+            //     } else {
 
-                    fileHeads = resp.rows[0];
+            //         fileHeads = resp.rows[0];
 
-                    const check = fileHeads.includes(CostingBulkUpload)
-                    this.setState({
-                        //   fileData: fileObj,
-                        uploadfileName: uploadfileName,
-                    });
-                    if (check === false) {
-                        toastr.error('Please check your data.')
-                    }
-                    else {
-                        // fileHeads = resp.rows[0];
-                        // let fileData = [];
-                        // resp.rows.map((val, index) => {
-                        //     if (index > 0) {
+            //         const check = fileHeads.includes(CostingBulkUpload)
+            //         this.setState({
+            //             //   fileData: fileObj,
+            //             uploadfileName: uploadfileName,
+            //         });
+            //         if (check === false) {
+            //             toastr.error('Please check your data.')
+            //         }
+            //         else {
+            //             // fileHeads = resp.rows[0];
+            //             // let fileData = [];
+            //             // resp.rows.map((val, index) => {
+            //             //     if (index > 0) {
 
-                        //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                        //         const i = val.findIndex(e => e === undefined);
-                        //         if (i !== -1) {
-                        //             val[i] = '';
-                        //         }
+            //             //         // BELOW CODE FOR HANDLE EMPTY CELL VALUE
+            //             //         const i = val.findIndex(e => e === undefined);
+            //             //         if (i !== -1) {
+            //             //             val[i] = '';
+            //             //         }
 
-                        //         let obj = {}
-                        //         val.map((el, i) => {
-                        //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
-                        //                 el = getJsDateFromExcel(el)
-                        //             }
-                        //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
-                        //                 el = parseInt(el)
-                        //             }
-                        //             obj[fileHeads[i]] = el;
-                        //             return null;
-                        //         })
-                        //         fileData.push(obj)
-                        //         obj = {}
+            //             //         let obj = {}
+            //             //         val.map((el, i) => {
+            //             //             if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
+            //             //                 el = getJsDateFromExcel(el)
+            //             //             }
+            //             //             if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
+            //             //                 el = parseInt(el)
+            //             //             }
+            //             //             obj[fileHeads[i]] = el;
+            //             //             return null;
+            //             //         })
+            //             //         fileData.push(obj)
+            //             //         obj = {}
 
-                        //     }
-                        //     console.log(fileData, "FD");
-                        //     return null;
-                        // })
+            //             //     }
+            //             //     console.log(fileData, "FD");
+            //             //     return null;
+            //             // })
 
-                    };
-                }
-            });
+            //         };
+            //     }
+            // });
         }
     }
 

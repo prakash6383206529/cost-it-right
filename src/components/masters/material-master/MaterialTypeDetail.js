@@ -10,7 +10,7 @@ import { toastr } from 'react-redux-toastr';
 
 class MaterialTypeDetail extends Component {
     constructor(props) {
-        super(props);
+        super(props); 
         this.state = {
             isOpen: false,
             isEditFlag: false,

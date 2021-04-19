@@ -23,6 +23,7 @@ import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import { checkForDecimalAndNull } from '../../../helper';
 
 class InterestRateListing extends Component {
   constructor(props) {
@@ -617,11 +618,11 @@ class InterestRateListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ material, auth, interestRate, comman }) {
-  const { leftMenuData } = auth;
+  const { leftMenuData, initialConfiguration } = auth;
   const { vendorListByVendorType } = material;
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateDataList } = interestRate;
   const { vendorWithVendorCodeSelectList } = comman;
-  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList };
+  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList, initialConfiguration };
 }
 
 /**

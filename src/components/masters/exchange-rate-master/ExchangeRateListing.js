@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -141,7 +141,14 @@ class ExchangeRateListing extends Component {
             }
         });
     }
-
+    costFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+    }
+    inputOutputFormatter = (cell, row, enumObject, rowIndex) => {
+        const { initialConfiguration } = this.props
+        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForInputOutput) : '';
+    }
     /**
     * @method effectiveDateFormatter
     * @description Renders buttons
@@ -413,8 +420,8 @@ class ExchangeRateListing extends Component {
 */
 function mapStateToProps({ exchangeRate, auth }) {
     const { currencySelectList, exchangeRateDataList } = exchangeRate;
-    const { leftMenuData } = auth;
-    return { leftMenuData, currencySelectList, exchangeRateDataList };
+    const { leftMenuData, initialConfiguration } = auth;
+    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration };
 }
 
 /**

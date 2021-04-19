@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
-  postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength
+  postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthFour, decimalLengthsix
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
@@ -918,7 +918,7 @@ class AddBOPImport extends Component {
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10]}
+                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
                               component={renderText}
                               required={true}
                               disabled={false}
