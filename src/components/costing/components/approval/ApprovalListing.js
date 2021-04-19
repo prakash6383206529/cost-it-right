@@ -20,6 +20,7 @@ import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
 import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
 import { APPROVED, PENDING, WAITING_FOR_APPROVAL } from '../../../../config/constants'
+import { toastr } from 'react-redux-toastr'
 
 function ApprovalListing() {
   const loggedUser = loggedInUserId()
@@ -254,6 +255,10 @@ function ApprovalListing() {
   }
 
   const sendForApproval = () => {
+    if (selectedRowData.length === 0) {
+      toastr.warning('Please select atleast one approval to send for approval.')
+      return false
+    }
     setApproveDrawer(true)
   }
 

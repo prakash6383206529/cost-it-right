@@ -871,6 +871,7 @@ export function getErrorFile(costingId, callback) {
 */
 
 export function bulkUploadCosting(data, callback) {
+  console.log('data: ', data);
   return (dispatch) => {
     const request = axios.post(API.uploadCosting, data, headers);
     request.then((response) => {
