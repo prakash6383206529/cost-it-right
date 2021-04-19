@@ -1598,7 +1598,7 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between">
                         <div className="col-sm-12 text-right">
-                          <button type={"button"} className="reset mr15 cancel-btn" onClick={cancel} >
+                          <button type={"button"} className="reset  cancel-btn" onClick={cancel} >
                             <div className={"cross-icon"}>
                               <img
                                 src={require("../../../assests/images/times.png")}
@@ -1608,7 +1608,7 @@ function CostingDetails(props) {
                             {"Clear"}
                           </button>
                           {IsShowNextBtn &&
-                            <button type="button" className="submit-button save-btn" onClick={nextToggle} >
+                            <button type="button" className="submit-button save-btn ml15" onClick={nextToggle} >
                               {"Next"}
                               <div className={"check-icon ml-1"}>
                                 <img
