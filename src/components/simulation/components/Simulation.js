@@ -122,43 +122,44 @@ function Simulation(props) {
     }
 
     return (
-        <div>
+        <div className="container-fluid simulation-page">
             <Row>
                 <Col sm="4">
                     <h1>{`Simulation`}</h1>
                 </Col>
             </Row>
-            <Row>
-                <Col md="1">
-                    <div>Masters:</div>
-                </Col>
-                <Col md="3">
-                    <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                            label={''}
-                            name={'Masters'}
-                            placeholder={'Masters'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            // defaultValue={plant.length !== 0 ? plant : ''}
-                            options={renderListing('masters')}
-                            mandatory={false}
-                            handleChange={handleMasterChange}
-                            errors={errors.Masters}
-                        />
+            <Row >
+                <Col md="12" className="filter-block">
+                    <div className="d-inline-flex justify-content-start align-items-center w100">
+                        <div className="flex-fills">Masters:</div>
+                        <div className="hide-label flex-fills pl-0">
+                            <SearchableSelectHookForm
+                                label={''}
+                                name={'Masters'}
+                                placeholder={'Masters'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={plant.length !== 0 ? plant : ''}
+                                options={renderListing('masters')}
+                                mandatory={false}
+                                handleChange={handleMasterChange}
+                                errors={errors.Masters}
+                            />
+                        </div>
                     </div>
-                </Col>
+                </Col>                
             </Row>
             {/* <RMDomesticListing isSimulation={true} /> */}
             {
                 showMasterList && renderModule(master)
             }
-            <Col md="12" lg="12" className="mb-3">
+            <Row>
+            <Col md="12" lg="12" className="mt-2">
                 <div className="d-flex justify-content-end bd-highlight w100">
                     <div>
-                        <button type="button" className={"user-btn edit-btn mt2 mr5"}>
+                        <button type="button" className={"edit-btn mt2 mr5"}>
                             <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
                         <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>Download File</button>}>
                             {renderColumn(master.label)}
@@ -175,6 +176,7 @@ function Simulation(props) {
                     </div>
                 </div>
             </Col>
+            </Row>
 
             {
                 showUploadDrawer &&

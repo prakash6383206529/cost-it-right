@@ -504,7 +504,7 @@ function CostingSummary(props) {
                         </div>
                       </Col>
                     </Row>
-                    <Row>
+                    <Row className="btn-row">
                       <Col className="col-md-12 text-right mb-3">
                         {/* <button
                           type="button"
@@ -516,7 +516,7 @@ function CostingSummary(props) {
                           type="button"
                           //disabled={pristine || submitting}
                           onClick={resetData}
-                          className="cancel-btn"
+                          className="reset-btn"
                         ><div className={"cross-icon"}>
                             <img
                               src={require("../../../assests/images/times.png")}
