@@ -1603,9 +1603,9 @@ function CostingDetails(props) {
                     )}
 
                     {!IsOpenVendorSOBDetails &&
-                      <Row className="justify-content-between">
+                      <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
-                          <button type={"button"} className="reset  cancel-btn" onClick={cancel} >
+                          <button type={"button"} className="reset-btn" onClick={cancel} >
                             <div className={"cross-icon"}>
                               <img
                                 src={require("../../../assests/images/times.png")}
