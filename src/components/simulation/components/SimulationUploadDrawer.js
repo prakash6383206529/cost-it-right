@@ -129,17 +129,21 @@ class SimulationUploadDrawer extends Component {
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
+                    let count = 0
                     resp.rows.map((val, index) => {
                         if (index > 0) {
 
+                            console.log(val, "VAL");
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                            const i = val.findIndex(e => e === undefined);
-                            if (i !== -1) {
-                                val[i] = '';
-                            }
-
+                            // const i = val.findIndex(e => e === '');
+                            // console.log(i, "I VALUE");
+                            // if (i !== -1) {
+                            //     val[i] = '';
+                            // }
+                            // if(val[])
                             let obj = {}
                             val.map((el, i) => {
+                                console.log(el, "EL");
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
