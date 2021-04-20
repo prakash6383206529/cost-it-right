@@ -472,7 +472,6 @@ class AddAssemblyPart extends Component {
         Attachements: updatedFiles,
         ChildParts: childPartArray,
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
-        IsForceUpdate: false,
       }
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
@@ -493,14 +492,11 @@ class AddAssemblyPart extends Component {
     } else {
 
       let formData = {
-        AssemblyPartId: '',
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
         ChildParts: childPartArray,
         LoggedInUserId: loggedInUserId(),
         BOMNumber: values.BOMNumber,
-        BOMLevel: 0,
-        Quantity: 1,
         Remark: values.Remark,
         Description: values.Description,
         ECNNumber: values.ECNNumber,

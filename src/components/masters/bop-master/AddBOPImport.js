@@ -539,7 +539,6 @@ class AddBOPImport extends Component {
       let requestData = {
         Currency: currency.label,
         BoughtOutPartId: BOPID,
-        Part: partArray.length > 0 ? partArray : [],
         Source: values.Source,
         SourceLocation: values.sourceLocation,
         BasicRate: values.BasicRate,
@@ -569,10 +568,8 @@ class AddBOPImport extends Component {
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
-        Part: partArray.length > 0 ? partArray : [],
         Specification: values.Specification,
         Vendor: vendorName.value,
-        VendorLocation: '',
         Source: values.Source,
         SourceLocation: sourceLocation.value,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),

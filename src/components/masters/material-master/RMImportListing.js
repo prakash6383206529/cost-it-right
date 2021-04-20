@@ -40,6 +40,7 @@ class RMImportListing extends Component {
       value: { min: 0, max: 0 },
       maxRange: 0,
       isBulkUpload: false,
+      shown: this.props.isSimulation ? true : false
     }
   }
 
@@ -199,8 +200,10 @@ class RMImportListing extends Component {
   * @description Renders Costing head
   */
   costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'Vendor Based' : 'Zero Based';
+
+    return (cell === true || cell === 'Vendor Based') ? 'Vendor Based' : 'Zero Based';
   }
+
 
   /**
   * @method indexFormatter
@@ -522,11 +525,7 @@ class RMImportListing extends Component {
                       options={this.renderListing("grade")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
-                        this.state.RMGrade == null ||
-                          this.state.RMGrade.length === 0
-                          ? [required]
-                          : []
-                      }
+                        this.state.RMGrade == null || this.state.RMGrade.length === 0 ? [required] : []}
                       required={true}
                       handleChangeDescription={this.handleGradeChange}
                       valueDescription={this.state.RMGrade}
@@ -543,11 +542,7 @@ class RMImportListing extends Component {
                       options={this.renderListing("VendorNameList")}
                       //onKeyUp={(e) => this.changeItemDesc(e)}
                       validate={
-                        this.state.vendorName == null ||
-                          this.state.vendorName.length === 0
-                          ? [required]
-                          : []
-                      }
+                        this.state.vendorName == null || this.state.vendorName.length === 0 ? [required] : []}
                       required={true}
                       handleChangeDescription={this.handleVendorName}
                       valueDescription={this.state.vendorName}
@@ -584,32 +579,35 @@ class RMImportListing extends Component {
                 </div>
               </Col>
             )}
-            <Col lg="6" md="6" className="search-user-block mb-3">
-              <div className="d-flex justify-content-end bd-highlight w100">
-                <div>
-                  {this.state.shown ? (
-                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                      <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                  ) : (
-                    <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                  )}
-                  {BulkUploadAccessibility && (
-                    <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
-                      <div className={"upload"}></div>Bulk Upload
-                    </button>
-                  )}
-                  {AddAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn"}
-                      onClick={this.formToggle}
-                    >
-                      <div className={"plus"}></div>ADD
-                    </button>
-                  )}
+            {
+              !this.props.isSimulation &&
+              <Col lg="6" md="6" className="search-user-block mb-3">
+                <div className="d-flex justify-content-end bd-highlight w100">
+                  <div>
+                    {this.state.shown ? (
+                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                        <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                    ) : (
+                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    )}
+                    {BulkUploadAccessibility && (
+                      <button type="button" className={"user-btn mr5"} onClick={this.bulkToggle}>
+                        <div className={"upload"}></div>Bulk Upload
+                      </button>
+                    )}
+                    {AddAccessibility && (
+                      <button
+                        type="button"
+                        className={"user-btn"}
+                        onClick={this.formToggle}
+                      >
+                        <div className={"plus"}></div>ADD
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </Col>
+              </Col>
+            }
 
           </Row>
         </form>
@@ -634,7 +632,7 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="Category" >Category</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
-              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn>
+              {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn> */}
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate"  >{this.renderBasicRate()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>

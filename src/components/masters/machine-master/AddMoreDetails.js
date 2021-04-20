@@ -1440,7 +1440,6 @@ class AddMoreDetails extends Component {
       AccessoriesCost: values.AccessoriesCost,
       InstallationCharges: values.InstallationCharges,
       TotalCost: machineFullValue.totalCost,
-      MachineIdRef: "",
       OwnershipIsPurchased: this.state.IsPurchased,
       DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
       DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
@@ -1495,13 +1494,11 @@ class AddMoreDetails extends Component {
       MachineTypeId: machineType ? machineType.value : '',
       TonnageCapacity: values.TonnageCapacity,
       Description: data.fieldsObj.Description,
-      IsActive: true,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
       Technology: technologyArray,
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
-      VendorPlant: [],
       Attachements: updatedFiles,
     }
 
@@ -1541,7 +1538,6 @@ class AddMoreDetails extends Component {
         AccessoriesCost: values.AccessoriesCost,
         InstallationCharges: values.InstallationCharges,
         TotalCost: machineFullValue.totalCost,
-        MachineIdRef: '',
         OwnershipIsPurchased: this.state.IsPurchased,
         DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
         DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
@@ -1596,13 +1592,11 @@ class AddMoreDetails extends Component {
         MachineTypeId: machineType ? machineType.value : '',
         TonnageCapacity: values.TonnageCapacity,
         Description: data.fieldsObj.Description,
-        IsActive: true,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: technologyArray,
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
-        VendorPlant: [],
         Attachements: files
       }
 
@@ -1830,7 +1824,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      
+
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
@@ -1952,7 +1946,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      
+
                         <Col md="3">
                           <Field
                             label={`Machine Cost (INR)`}
