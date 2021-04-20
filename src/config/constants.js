@@ -442,7 +442,6 @@ export const API = {
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
 
-
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-raw-materials-detail`,
   getRMDrawerVBCDataList: `${BASE_URL}/costing/get-vbc-costing-raw-materials-detail`,
