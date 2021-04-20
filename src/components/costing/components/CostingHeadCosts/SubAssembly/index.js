@@ -25,11 +25,9 @@ function AssemblyPart(props) {
       const data = {
         CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",
         PartId: item.PartId,
-        //PlantId: costData.PlantId,
       }
       dispatch(getRMCCTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
-          //let Data = res.data.DataList[0].CostingChildPartDetails;
           let Data = res.data.DataList[0];
           props.toggleAssembly(BOMLevel, PartNumber, Data)
         }
@@ -145,13 +143,10 @@ function AssemblyPart(props) {
         </td>
       </tr>
 
-      {/* {IsOpen && nestedPartComponent} */}
       {item.IsOpen && nestedPartComponent}
 
-      {/* {IsOpen && nestedBOP} */}
       {item.IsOpen && nestedBOP}
 
-      {/* {IsOpen && nestedAssembly} */}
       {item.IsOpen && nestedAssembly}
 
       {IsDrawerOpen && <AddAssemblyOperation

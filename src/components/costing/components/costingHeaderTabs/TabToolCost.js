@@ -40,6 +40,7 @@ function TabToolCost(props) {
     let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
     let topHeaderData = {
       ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
+      IsApplicableProcessWise: IsApplicableProcessWise,
     }
     props.setHeaderCost(topHeaderData)
   }, [ToolTabData]);
@@ -81,8 +82,8 @@ function TabToolCost(props) {
 * @method setToolCost
 * @description SET TOOL COST
 */
-  const setToolCost = (ToolGrid) => {
-    let arr = dispatchToolCost(ToolGrid, ToolTabData)
+  const setToolCost = (ToolGrid, IsChanged) => {
+    let arr = dispatchToolCost(ToolGrid, IsChanged, ToolTabData)
     dispatch(setToolTabData(arr, () => { }))
   }
 
@@ -90,7 +91,7 @@ function TabToolCost(props) {
   * @method dispatchToolCost
   * @description SET TOOL COST
   */
-  const dispatchToolCost = (ToolGrid, arr) => {
+  const dispatchToolCost = (ToolGrid, IsChanged, arr) => {
     let tempArr = [];
     try {
 
@@ -99,6 +100,7 @@ function TabToolCost(props) {
         i.CostingPartDetails.CostingToolCostResponse = ToolGrid;
         i.CostingPartDetails.TotalToolCost = getTotalCost(ToolGrid);
         //i.CostingPartDetails.OverAllApplicability = {};
+        i.IsChanged = IsChanged;
 
         return i;
       });
@@ -165,13 +167,6 @@ function TabToolCost(props) {
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
-              {/* <Row>
-                <Col md="6">
-                  <div className="form-heading mb-0">
-                    <h2>{""}</h2>
-                  </div>
-                </Col>
-              </Row> */}
 
               <Row className="m-0  costing-border border-bottom-0 align-items-center ">
                 <Col md="9" className="px-30 py-4 ">
@@ -209,49 +204,52 @@ function TabToolCost(props) {
                 className="form"
                 onSubmit={handleSubmit(onSubmit)}
               >
-                <Row>
-                  <Col md="12">
-                    <Table className="table cr-brdr-main" size="sm">
-                      {/* <thead>
-                        <tr>
-                          <th style={{ width: '100px' }}>{``}</th>
-                          <th style={{ width: '150px' }}>{`200`}</th>
-                        </tr>
-                      </thead> */}
-                      <tbody>
-                        {ToolTabData && ToolTabData.map((item, index) => {
-                          return (
-                            <>
-                              <tr className="accordian-row" key={index}>
-                                <td style={{ width: '75%' }}>
-                                  <span class="cr-prt-link1">
-                                    {item.PartName}
-                                  </span>
-                                </td>
-                                <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                              </tr>
-                              <tr>
-                                <td colSpan={2} className="cr-innerwrap-td pb-3">
-                                  <div>
-                                    <Tool
-                                      index={index}
-                                      IsApplicableProcessWise={item.CostingPartDetails.IsToolCostProcessWise}
-                                      data={item}
-                                      // headCostRMCCBOPData={props.headCostRMCCBOPData}
-                                      setOverAllApplicabilityCost={setOverAllApplicabilityCost}
-                                      setToolCost={setToolCost}
-                                      saveCosting={saveCosting}
-                                    />
-                                  </div>
-                                </td>
-                              </tr>
-                            </>
-                          );
-                        })}
-                      </tbody>
-                    </Table>
-                  </Col>
-                </Row>
+
+                {!IsApplicableProcessWise &&
+                  <Row>
+                    <Col md="12">
+                      <Table className="table cr-brdr-main" size="sm">
+                        <tbody>
+                          {ToolTabData && ToolTabData.map((item, index) => {
+                            return (
+                              <>
+                                <tr className="accordian-row" key={index}>
+                                  <td style={{ width: '75%' }}>
+                                    <span class="cr-prt-link1">
+                                      {item.PartName}
+                                    </span>
+                                  </td>
+                                  <td className="pl10">{checkForDecimalAndNull(item.CostingPartDetails.TotalToolCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                </tr>
+                                <tr>
+                                  <td colSpan={2} className="cr-innerwrap-td pb-3">
+                                    <div>
+                                      <Tool
+                                        index={index}
+                                        IsApplicableProcessWise={item.CostingPartDetails.IsToolCostProcessWise}
+                                        data={item}
+                                        // headCostRMCCBOPData={props.headCostRMCCBOPData}
+                                        setOverAllApplicabilityCost={setOverAllApplicabilityCost}
+                                        setToolCost={setToolCost}
+                                        saveCosting={saveCosting}
+                                      />
+                                    </div>
+                                  </td>
+                                </tr>
+                              </>
+                            );
+                          })}
+                        </tbody>
+                      </Table>
+                    </Col>
+                  </Row>}
+
+                {/* {IsApplicableProcessWise &&
+                  <Row>
+                    <Col md="12">
+                    </Col>
+                  </Row>} */}
+
               </form>
             </div>
           </Col>

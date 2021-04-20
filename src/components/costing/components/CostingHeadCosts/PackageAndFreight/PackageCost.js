@@ -10,6 +10,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 function PackageCost(props) {
 
   const [gridData, setGridData] = useState(props.data && props.data.length > 0 ? props.data : [])
+  const [OldGridData, setOldGridData] = useState(props.data && props.data.length > 0 ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editIndex, setEditIndex] = useState('')
@@ -18,7 +19,7 @@ function PackageCost(props) {
   const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
-    props.setPackageCost(gridData, 0)
+    props.setPackageCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
   }, [gridData]);
 
   /**
