@@ -120,7 +120,7 @@ function ApprovalSummary(props) {
               <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} />
 
               <Row>
-                <Col md="8">
+                <Col md="12">
                   <div className="left-border">{'Part Details:'}</div>
                 </Col>
               </Row>
@@ -201,7 +201,7 @@ function ApprovalSummary(props) {
                 </Col>
               </Row>
               <Row>
-                <Col md="8">
+                <Col md="12">
                   <div className="left-border">{'Approval Details:'}</div>
                 </Col>
               </Row>
@@ -329,7 +329,7 @@ function ApprovalSummary(props) {
                 </Col>
               </Row>
               <Row className="mb-4">
-                <Col md="12">
+                <Col md="12" className="costing-summary-row">
                   {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} />}
                 </Col>
               </Row>
