@@ -101,6 +101,7 @@ function SheetMetalBaicDrawer(props) {
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
 
+
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
         obj.ProcessCalculationId = res.data.Identity

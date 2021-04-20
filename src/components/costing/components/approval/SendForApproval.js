@@ -369,19 +369,19 @@ const SendForApproval = (props) => {
               viewApprovalData.map((data, index) => {
 
                 return (
-                  <div className="pr-3" key={index}>
+                  <div className="" key={index}>
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-3">
                           {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
                         </h6>
-                        <div className="text-small d-inline-block mr-3">
+                        <div className=" d-inline-block mr-3">
                           {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="small-grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                          <span className="grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                         </div>
-                        <div className="text-small d-inline-block">
+                        <div className=" d-inline-block">
                           {`Costing Id:`}{" "}
-                          <span className="small-grey-text">{`${data.costingName}`}</span>
+                          <span className="grey-text">{`${data.costingName}`}</span>
                         </div>
                       </Col>
                     </Row>
@@ -454,6 +454,7 @@ const SendForApproval = (props) => {
                                   //maxDate={new Date()}
                                   dropdownMode="select"
                                   placeholderText="Select date"
+                                  customClassName="withBorder"
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
@@ -463,7 +464,7 @@ const SendForApproval = (props) => {
                                   errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
                                 />
                               </div>
-                              <i className="fa fa-calendar icon-small-primary ml-2 mt-4"></i>
+                              <i className="fa fa-calendar icon-small-primary ml-2"></i>
                             </div>
                             {/* </div> */}
                           </Col>
@@ -524,7 +525,7 @@ const SendForApproval = (props) => {
                   </div>
                 );
               })}
-            <div className="pr-3">
+            <div className="">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Row className="px-3">
                   <Col md="4">

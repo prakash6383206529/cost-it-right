@@ -1285,6 +1285,7 @@ export const PENDING = 'PendingForApproval'
 export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
+export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 
 //DECIMAL VALUES FOR PRICE

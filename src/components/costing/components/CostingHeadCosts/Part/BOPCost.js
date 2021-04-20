@@ -324,7 +324,7 @@ function BOPCost(props) {
               </Col>
             </Row>
             <Row className="m-0">
-              <Col md="3" className="px-30 py-4 ">
+              <Col md="12" className="px-3 py-3 pl-0 ">
                 <label
                   className={`custom-checkbox mb-0`}
                   onChange={onPressApplyBOPCharges}
