@@ -480,7 +480,7 @@ const CostingSummaryTable = (props) => {
               )}
               <button
                 type="button"
-                className={'user-btn mb-2'}
+                className={'user-btn mb-2 comparison-btn'}
                 onClick={addComparisonDrawerToggle}
               >
                 <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
@@ -569,7 +569,7 @@ const CostingSummaryTable = (props) => {
                                 {
                                   !viewMode &&
                                   <a
-                                    class="text-primary d-inline-block"
+                                    class="text-primary d-inline-block change-version-block"
                                     onClick={() => editHandler(index)}
                                   >
                                     <small>Change version</small>

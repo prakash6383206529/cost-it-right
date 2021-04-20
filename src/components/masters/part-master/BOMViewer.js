@@ -306,15 +306,15 @@ class BOMViewer extends Component {
                 className="form bom-drawer-form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
               >
-                <Row className="bom-action-row">
+                <Row className="bom-action-row justify-content-end m-0">
                   {(!isEditFlag || initialConfiguration.IsBOMEditable) &&
                     !isFromVishualAd && (
-                      <Col md="12" >
+                      <Col md="auto" className="bg-white" >
                         {  flowpoints.length > 1 &&
                           <>
                             <button
                               type={"button"}
-                              className="reset-btn  pull-right mt10 btn-danger"
+                              className="pull-right mt10 btn-danger"
                               onClick={() =>
                                 this.setState({
                                   displayDeleteIcon: !this.state
@@ -339,7 +339,7 @@ class BOMViewer extends Component {
                                   displayDeleteIcon: false,
                                 })
                               }
-                              className={"user-btn edit-btn mr15 pull-right mt10"}
+                              className={"edit-btn mr15 pull-right mt10"}
                             >
                               <div className={"cross-icon"}>
                                 <img
@@ -374,7 +374,7 @@ class BOMViewer extends Component {
                       width: "100%",
                       overflow: "auto",
                       maxWidth: "100vw",
-                      maxHeight: "calc(100vh - 137px)",
+                      maxHeight: "calc(100vh - 125px)",
                     }}
                     onClick={(e) => this.setState({ selected_point: null })}
                     selected={this.state.selected_point}
