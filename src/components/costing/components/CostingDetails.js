@@ -17,7 +17,7 @@ import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROV
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
-  setOverheadProfitData
+  setOverheadProfitData, setComponentOverheadItemData,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -902,7 +902,10 @@ function CostingDetails(props) {
    */
   const backToFirstStep = () => {
     dispatch(getZBCCostingByCostingId('', (res) => { }))
-    dispatch(setOverheadProfitData([], () => { }))
+
+    dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
+    dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
+
     setStepOne(true);
     setStepTwo(false);
     setZBCPlantGrid([])

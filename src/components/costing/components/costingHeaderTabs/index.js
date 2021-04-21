@@ -37,6 +37,7 @@ function CostingHeaderTabs(props) {
   const ComponentItemPackageFreightData = useSelector(state => state.costing.ComponentItemPackageFreightData)
   const ComponentItemToolData = useSelector(state => state.costing.ComponentItemToolData)
   const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  const IsIncludedSurfaceInOverheadProfit = useSelector(state => state.costing.IsIncludedSurfaceInOverheadProfit)
 
   useEffect(() => {
 
@@ -83,8 +84,10 @@ function CostingHeaderTabs(props) {
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
+      console.log('ComponentItemOverheadData: ', ComponentItemOverheadData);
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
         "LoggedInUserId": loggedInUserId(),
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
@@ -96,7 +99,7 @@ function CostingHeaderTabs(props) {
           checkForNull(ComponentItemOverheadData.CostingPartDetails.PaymentTermCost),
         "CostingPartDetails": ComponentItemOverheadData.CostingPartDetails
       }
-      dispatch(saveComponentOverheadProfitTab(reqData, res => {
+      dispatch(saveComponentOverheadProfitTab({ ...reqData, ExtraCall: true }, res => {
         dispatch(setComponentOverheadItemData({}, () => { }))
       }))
     }

@@ -25,11 +25,11 @@ function TabSurfaceTreatment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
 
-  const filteredUsers = React.useMemo(() => {
-    setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
-    dispatch(setSurfaceCostInOverheadProfit(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
-  }, [SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]
-  );
+  // const filteredUsers = React.useMemo(() => {
+  //   setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+  //   dispatch(setSurfaceCostInOverheadProfit(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
+  // }, [SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]
+  // );
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -528,10 +528,10 @@ function TabSurfaceTreatment(props) {
   * @method onPressIncludeSurfaceTreatment
   * @description SET INCLUDE SURFACE TREATMENT
   */
-  const onPressIncludeSurfaceTreatment = () => {
-    dispatch(setSurfaceCostInOverheadProfit(!isIncludeSurfaceTreatment, () => { }))
-    setIsIncludeSurfaceTreatment(!isIncludeSurfaceTreatment)
-  }
+  // const onPressIncludeSurfaceTreatment = () => {
+  //   dispatch(setSurfaceCostInOverheadProfit(!isIncludeSurfaceTreatment, () => { }))
+  //   setIsIncludeSurfaceTreatment(!isIncludeSurfaceTreatment)
+  // }
 
   /**
   * @method saveCosting
@@ -558,7 +558,7 @@ function TabSurfaceTreatment(props) {
           <Col md="12">
             <div className="shadow-lgg login-formg">
 
-              <Row className="m-0">
+              {/* <Row className="m-0">
                 <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                   <label
                     className={`custom-checkbox mb-0`}
@@ -577,7 +577,7 @@ function TabSurfaceTreatment(props) {
                     />
                   </label>
                 </Col>
-              </Row>
+              </Row> */}
 
               <form
                 noValidate

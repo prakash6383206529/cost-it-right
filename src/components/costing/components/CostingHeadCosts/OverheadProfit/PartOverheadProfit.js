@@ -67,7 +67,7 @@ function PartOverheadProfit(props) {
       "IsSurfaceTreatmentApplicable": true,
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
-      //"IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
+      "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
       "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
         checkForNull(item.CostingPartDetails.ProfitCost) +
         checkForNull(item.CostingPartDetails.RejectionCost) +
@@ -78,6 +78,7 @@ function PartOverheadProfit(props) {
     dispatch(saveComponentOverheadProfitTab(reqData, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+        dispatch(setComponentOverheadItemData({}, () => { }))
       }
     }))
   }
