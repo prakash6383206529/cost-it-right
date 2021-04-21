@@ -68,6 +68,7 @@ function PartOverheadProfit(props) {
       "IsSurfaceTreatmentApplicable": true,
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
+      //"IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
       "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
         checkForNull(item.CostingPartDetails.ProfitCost) +
         checkForNull(item.CostingPartDetails.RejectionCost) +
