@@ -406,11 +406,6 @@ class UsersListing extends Component {
 		const options = {
 			clearSearch: true,
 			noDataText: (this.props.userDataList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
-			// defaultSortName: 'FullName',  // default sort column name
-			// defaultSortOrder: 'desc', // default sort order
-			//exportCSVText: 'Download Excel',
-			//onExportToCSV: this.onExportToCSV,
-			//paginationShowsTotal: true,
 			paginationShowsTotal: this.renderPaginationShowsTotal,
 			prePage: <span className="prev-page-pg"></span>, // Previous page button text
 			nextPage: <span className="next-page-pg"></span>, // Next page button text

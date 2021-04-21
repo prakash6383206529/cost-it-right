@@ -576,6 +576,9 @@ a:hover {
   .react-bs-table-pagination {
     border-top: 1px solid #ccc;
     .col-md-6 {
+      > span:nth-child(1){
+        order: 2;
+      }
       display: flex;
 
       &:nth-last-child(1) {

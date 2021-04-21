@@ -751,6 +751,7 @@ button.add-btn {
   padding-left: 10px;
   line-height: initial;
   font-size: 17px;
+  font-weight: 500;
 }
 
 .bottom-border {
@@ -1542,12 +1543,17 @@ $roboto: "Roboto", sans-serif;
 	font-size: 14px;
 	color: #3D4465;
   min-width: 980px;
+  font-weight: 500;
+  .small-grey-text{
+    font-weight: 400;
+  }
   thead{
     .main-row{
       th{
         width: 33%;
         min-width: 410px;
         vertical-align: middle;
+        font-weight: 500;
       }
     }
   }
@@ -1561,6 +1567,7 @@ $roboto: "Roboto", sans-serif;
 				border-radius: 4px;
 				padding: 10px;
 				height: auto;
+        font-weight: 400;
 			}
 		}
 	}
@@ -1959,6 +1966,20 @@ html {
         >span{
           color: #95A5BA;
           font-size: 14px;
+          .dropdown-toggle{
+            &:after{
+              top: 0px;
+            }
+          }
+        }
+        .dropdown-item{
+          &.active,&:active{
+            background-color: #f8f9fa;
+          }
+          >a{
+            width: 100%;
+            display: block;
+          }
         }
       }
     }
@@ -2191,7 +2212,7 @@ html {
 			.input-range__label--value {
         right: 0px;
 				span {
-          right: 12px;
+          right: -8px;
           color: #3D4465;
           font-family: "Roboto", sans-serif;;
           font-size: 10px;
@@ -3401,6 +3422,7 @@ body{
   }
 }
 .zindex-15{z-index: 15;}
+.zindex-12{z-index: 12;}
 .switch {
  .left-title,.right-title{vertical-align: middle;} 
  >.switch-level > div{
@@ -3575,6 +3597,9 @@ body{
 
 // simulation page
 .simulation-page{
+  .filter-row-large,.react-bs-table-tool-bar {
+    display: none;
+  }
   .filter-block{
     .flex-fills{
       .mb-15.form-group-searchable-select{
@@ -3790,6 +3815,17 @@ body{
 
     // right side .content-page
     body{
+
+      // drawer css starts
+      .drawer-wrapper{
+        .drawer-body{
+          .right-details,.left-details{
+            font-size: calc(16px * 80 / 100);
+          }
+        }
+      }
+      // drawer css End
+
       .nodate-section {
         margin: calc(30px * 80 / 100) 0;
         h5{
@@ -4036,6 +4072,9 @@ body{
               font-size: calc(14px * 80 /100);
               margin-right: calc(20px * 80 /100);
               padding: 0;
+              &:after{
+                top: 0;
+              }
             }
           }
           .row{
@@ -4259,7 +4298,7 @@ body{
           }
         }
       }
-      // top menu bar drop down css starts end
+      // top menu bar drop down css end
 
       .costing-page-tabs{
         .right-actions{

@@ -1,4 +1,14 @@
-:not(.login-container.signup-form) {
+:not(.login-container.signup-form){
+    .simulation-history-page{
+        .react-bs-table-container{
+            .react-bs-table{
+                margin-top: 0px;
+                .react-bs-container-body{
+                    min-height: calc(100vh - 326px);
+                }
+            }
+        }
+    }
     .react-bs-table-container{
         .react-bs-table{
             .react-bs-container-body{
@@ -800,6 +810,15 @@
         }
     }
     :not(.login-container.signup-form) {
+        .simulation-history-page{
+            .react-bs-table-container{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        min-height: calc(100vh - 295px);
+                    }
+                }
+            }
+        }
         .react-bs-table-container{
             .react-bs-table{
                 .react-bs-container-body{

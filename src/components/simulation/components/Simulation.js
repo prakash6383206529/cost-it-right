@@ -129,7 +129,7 @@ function Simulation(props) {
                 </Col>
             </Row>
             <Row >
-                <Col md="12" className="filter-block">
+                <Col md="12" className="filter-block zindex-12">
                     <div className="d-inline-flex justify-content-start align-items-center w100">
                         <div className="flex-fills">Masters:</div>
                         <div className="hide-label flex-fills pl-0">
