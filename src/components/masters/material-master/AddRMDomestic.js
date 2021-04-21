@@ -374,7 +374,7 @@ class AddRMDomestic extends Component {
               remarks: Data.Remark,
               files: Data.FileList,
             })
-          }, 500)
+          }, 1000)
         }
       })
     } else {
@@ -1068,26 +1068,26 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           {/* {!this.state.IsVendor && ( */}
-                            <Col md="4">
-                              <Field
-                                label="Plant"
-                                name="SourceSupplierPlantId"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                                options={this.renderListing("plant")}
-                                selectionChanged={this.handleSourceSupplierPlant}
-                                validate={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                                required={true}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                              />
-                            </Col>
+                          <Col md="4">
+                            <Field
+                              label="Plant"
+                              name="SourceSupplierPlantId"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                              options={this.renderListing("plant")}
+                              selectionChanged={this.handleSourceSupplierPlant}
+                              validate={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                              required={true}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                            />
+                          </Col>
                           {/* )} */}
 
                         </Row>
