@@ -505,7 +505,7 @@ function TabOverheadProfit(props) {
 
               <Row className="m-0">
                 {costData.IsAssemblyPart &&
-                  <Col md="6" className="px-30 py-4 costing-border-x border-bottom-0">
+                  <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                     <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                     <div className="switch d-inline-flex">
                       <label className="switch-level d-inline-flex w-auto">

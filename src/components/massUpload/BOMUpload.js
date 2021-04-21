@@ -166,7 +166,7 @@ class BOMUpload extends Component {
       // onClose={(e) => this.toggleDrawer(e)}
       >
         <Container>
-          <div className={'drawer-wrapper WIDTH-400 yhi-h'}>
+          <div className={'drawer-wrapper WIDTH-400'}>
             <form
               noValidate
               className="form"
