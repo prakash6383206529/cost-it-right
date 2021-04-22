@@ -781,7 +781,7 @@ class VolumeListing extends Component {
             <TableHeaderColumn dataField="VendorName" columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
             <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'Part No.'}</TableHeaderColumn>
             <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={true} >{'Part Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PlantCode" columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn>
             <TableHeaderColumn dataField="BudgetedQuantity" width={150} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
             <TableHeaderColumn dataField="ApprovedQuantity" width={150} columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
             <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
