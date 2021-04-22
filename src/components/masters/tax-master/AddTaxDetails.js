@@ -42,7 +42,7 @@ class AddTaxDetails extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
-          let countryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
+          let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
 
           setTimeout(() => {
             this.setState({
@@ -194,7 +194,7 @@ class AddTaxDetails extends Component {
       <Drawer
         anchor={this.props.anchor}
         open={this.props.isOpen}
-        // onClose={(e) => this.toggleDrawer(e)}
+      // onClose={(e) => this.toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>

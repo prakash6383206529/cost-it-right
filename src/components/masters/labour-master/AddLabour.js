@@ -82,24 +82,11 @@ class AddLabour extends Component {
           this.props.getPlantListByState(Data.StateId, () => { })
 
           setTimeout(() => {
-            const {
-              fuelComboSelectList,
-              VendorLabourTypeSelectList,
-              plantSelectList,
-            } = this.props
-            let stateObj =
-              fuelComboSelectList &&
-              fuelComboSelectList.States.find((el) => el.Value === Data.StateId)
-            const vendorObj =
-              VendorLabourTypeSelectList &&
-              VendorLabourTypeSelectList.find(
-                (item) => item.Value === Data.VendorId,
-              )
+            const { fuelComboSelectList, VendorLabourTypeSelectList, plantSelectList, } = this.props
+            let stateObj = fuelComboSelectList && fuelComboSelectList.States.find((el) => Number(el.Value) === Data.StateId)
+            const vendorObj = VendorLabourTypeSelectList && VendorLabourTypeSelectList.find((item) => item.Value === Data.VendorId,)
             const plantObj =
-              plantSelectList &&
-              plantSelectList.find(
-                (item) => item.Value === Data.Plants[0].PlantId,
-              )
+              plantSelectList && plantSelectList.find((item) => item.Value === Data.Plants[0].PlantId,)
 
             let GridArray =
               Data &&
@@ -340,7 +327,7 @@ class AddLabour extends Component {
       toastr.warning('Fields should not be empty')
       return false
     }
-    if(Number(fieldsObj) === 0 || Number(fieldsObj) === ''){
+    if (Number(fieldsObj) === 0 || Number(fieldsObj) === '') {
       toastr.warning('Please enter value.')
       return false;
     }

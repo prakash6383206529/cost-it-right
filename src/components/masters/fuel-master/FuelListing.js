@@ -4,8 +4,7 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
     getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI,
-    getStateListByFuel,
-    getFuelListByState,
+    getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
@@ -42,7 +41,7 @@ class FuelListing extends Component {
         this.getDataList('', '')
     }
 
-    getDataList = (fuelName = '', stateName = '') => {
+    getDataList = (fuelName = 0, stateName = 0) => {
         const filterData = {
             fuelName: fuelName,
             stateName: stateName,
@@ -142,7 +141,7 @@ class FuelListing extends Component {
     }
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
     }
     /**
     * @method effectiveDateFormatter
@@ -216,8 +215,8 @@ class FuelListing extends Component {
     */
     filterList = () => {
         const { StateName, fuel } = this.state;
-        const fuelID = fuel ? fuel.value : null;
-        const stateId = StateName ? StateName.value : null;
+        const fuelID = fuel ? fuel.value : 0;
+        const stateId = StateName ? StateName.value : 0;
 
         this.getDataList(fuelID, stateId)
     }
@@ -344,8 +343,8 @@ class FuelListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}

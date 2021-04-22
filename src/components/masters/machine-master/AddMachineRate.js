@@ -209,7 +209,7 @@ class AddMachineRate extends Component {
             const plantObj = Data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
-            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === Data.MachineTypeId)
+            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
 
             this.setState({
               isEditFlag: true,

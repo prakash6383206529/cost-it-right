@@ -333,9 +333,9 @@ class AddRMDomestic extends Component {
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
             const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
-            const categoryObj = categoryList && categoryList.find((item) => item.Value === Data.Category)
+            const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
 
-            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId)
+            const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
 
             let plantArray = []
             Data && Data.Plant.map((item) => {
@@ -351,7 +351,7 @@ class AddRMDomestic extends Component {
               return vendorPlantArray
             })
 
-            const sourceLocationObj = cityList && cityList.find((item) => item.Value === Data.SourceLocation)
+            const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
             const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
             this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             this.setState({
@@ -374,7 +374,7 @@ class AddRMDomestic extends Component {
               remarks: Data.Remark,
               files: Data.FileList,
             })
-          }, 500)
+          }, 1000)
         }
       })
     } else {
@@ -1068,26 +1068,26 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           {/* {!this.state.IsVendor && ( */}
-                            <Col md="4">
-                              <Field
-                                label="Plant"
-                                name="SourceSupplierPlantId"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                                options={this.renderListing("plant")}
-                                selectionChanged={this.handleSourceSupplierPlant}
-                                validate={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                                required={true}
-                                optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                className="multiselect-with-border"
-                                // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                              />
-                            </Col>
+                          <Col md="4">
+                            <Field
+                              label="Plant"
+                              name="SourceSupplierPlantId"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                              options={this.renderListing("plant")}
+                              selectionChanged={this.handleSourceSupplierPlant}
+                              validate={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                              required={true}
+                              optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                            />
+                          </Col>
                           {/* )} */}
 
                         </Row>

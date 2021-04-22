@@ -274,9 +274,9 @@ class AddVendorDrawer extends Component {
                     setTimeout(() => {
                         const { countryList, stateList, cityList } = this.props;
 
-                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
+                        const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
+                        const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
 
                         this.setState({
                             isEditFlag: true,
@@ -433,7 +433,7 @@ class AddVendorDrawer extends Component {
         const { country, isOpenVendorPlant } = this.state;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container >
@@ -640,7 +640,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[ acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //  required={true}
                                             maxLength={26}
