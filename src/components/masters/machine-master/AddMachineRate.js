@@ -926,7 +926,7 @@ class AddMachineRate extends Component {
                 <div className="shadow-lgg login-formg">
                   <div className="row">
                     <div className="col-md-6">
-                      <div className="form-heading">
+                      <div className="form-heading mb-0">
                         <h2>{isEditFlag ? `Update Machine Rate` : `Add Machine Rate`}</h2>
                       </div>
                     </div>

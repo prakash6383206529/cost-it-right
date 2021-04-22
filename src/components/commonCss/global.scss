@@ -204,6 +204,13 @@ a:hover {
   }
 }
 
+.approval-btn{
+  img{
+    height: 16px;
+    object-fit: contain;
+  }
+}
+
 
 //tried half working
 // .approve-hover-btn {
@@ -353,6 +360,10 @@ a:hover {
   transition: all ease 0.3s;
   text-transform: uppercase;
   border: 1px solid #4dc771;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
   img {
     width: 16px;
     height: auto;

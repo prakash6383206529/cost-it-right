@@ -251,7 +251,7 @@ class Role extends Component {
 														component={renderText}
 														required={true}
 														maxLength={26}
-														customClassName={'withBorder mb-0 mn-height-auto'}
+														customClassName={'withBorder mb-0 mn-height-auto hide-text-help-mb-0'}
 													/>
 												</div>
 											</div>

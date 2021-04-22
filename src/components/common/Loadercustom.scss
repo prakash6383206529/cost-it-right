@@ -772,7 +772,25 @@
                 }
             }
         }
-      }
+    }
+
+    // firefox css start
+    @-moz-document url-prefix() {
+        :not(.login-container.signup-form) {
+            .react-bs-table-container{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        .react-bs-table-no-data{
+                            display: inline-block;
+                            width: 1255px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // firefox css end
+
 
     .MuiDrawer-paper{:not(.login-container.signup-form) {
         .react-bs-table-container{
@@ -799,6 +817,22 @@
             }
         }
     }
+
+    // firefox css start
+    @-moz-document url-prefix() {
+        body .approval-listing-page{
+            .react-bs-table-container{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        .react-bs-table-no-data{
+                            width:1460px !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    // firefox css end
 }
 
 @media(max-width:1366px){
@@ -824,11 +858,24 @@
                 .react-bs-container-body{
                     min-height: calc(100vh - 360px);
                     .react-bs-table-no-data{
-                        width: 1040px;
+                        width: 1075px;
                     }
                 }
             }
         }
+        // firefox css start
+        @-moz-document url-prefix() {
+            .react-bs-table-container{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        .react-bs-table-no-data{
+                            width: 1070px;
+                        }
+                    }
+                }
+            }
+        }
+        // firefox css end
       }
 
       .MuiDrawer-paper{:not(.login-container.signup-form) {
@@ -845,12 +892,27 @@
       }
     }
     
-      body .approval-listing-page{
+    body .approval-listing-page{
         .react-bs-table-container{
             .react-bs-table{
                 .react-bs-container-body{
                     .react-bs-table-no-data{
                         width:1250px !important;
+                    }
+                }
+            }
+        }
+    }
+
+    // firefox css start
+    @-moz-document url-prefix() {
+        body .approval-listing-page{
+            .react-bs-table-container{
+                .react-bs-table{
+                    .react-bs-container-body{
+                        .react-bs-table-no-data{
+                            width:1233px !important;
+                        }
                     }
                 }
             }

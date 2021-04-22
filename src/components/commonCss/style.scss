@@ -1938,6 +1938,9 @@ html {
 
 // ============issues fixing =============
 // scrollbar styling
+*{
+  scrollbar-width: thin;
+}
 ::-webkit-scrollbar {
 	background-color: #fff;
 	width: 10px;
@@ -2281,6 +2284,11 @@ input:disabled{
 .MuiDrawer-paper{
   .sf-btn-footer {
     .bluefooter-butn{padding-top: 0px !important;}
+  }
+}
+.bom-viewer-main{
+  .drawer-heading{
+    z-index: 1;
   }
 }
 .bom-drawer-form{
@@ -4083,7 +4091,7 @@ body{
       .react-bs-table-container {
           th,td{
             >input[type=checkbox]{
-              min-width: 13px;
+              min-width: 21px;
             }
           }
         .react-bs-table {
@@ -4399,6 +4407,10 @@ body{
             }
           }
         }
+      }
+
+      .dropdown-menu{
+        font-size: calc(1rem * 80 / 100);
       }
 
       td {

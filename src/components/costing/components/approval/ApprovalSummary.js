@@ -130,52 +130,52 @@ function ApprovalSummary(props) {
                     <thead>
                       <tr>
                         <th>
-                          <span className="d-block grey-text text-small">{`Technology:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Technology:`}</span>
+                          <span className="d-block">
                             {partDetail.Technology ? partDetail.Technology : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Assembly No./Part No.`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Assembly No./Part No.`}</span>
+                          <span className="d-block">
                             {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Assembly Name/Part Name`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Assembly Name/Part Name`}</span>
+                          <span className="d-block">
                             {partDetail.PartName ? partDetail.PartName : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Assembly Description/Part Description`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Assembly Description/Part Description`}</span>
+                          <span className="d-block">
                             {partDetail.Description ? partDetail.Description : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`ECO No:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`ECO No:`}</span>
+                          <span className="d-block">
                             {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Drawing No:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Drawing No:`}</span>
+                          <span className="d-block">
                             {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Revision No:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Revision No:`}</span>
+                          <span className="d-block">
                             {partDetail.RevisionNumber
                               ? partDetail.RevisionNumber
                               : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Effective Date:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Effective Date:`}</span>
+                          <span className="d-block">
                             {partDetail.EffectiveDate ? moment(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
                           </span>
                         </th>
