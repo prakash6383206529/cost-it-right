@@ -17,7 +17,12 @@ export const config = {
 //hosting url for api of cost-it-right
 //const BASE_URL = 'http://10.10.1.100:8081/CIRLite';
 //const BASE_URL = 'http://10.10.1.100:8090/api/v1';
+
+// DEVELOPMENT
 const BASE_URL = 'http://10.10.1.100:1002/api/v1';
+
+//STAGING
+// const BASE_URL = 'http://10.10.1.10:1002/api/v1';
 export const FILE_URL = 'http://10.10.1.100:1002/';
 
 /** Export API */
@@ -441,7 +446,6 @@ export const API = {
   getVBCCostingByCostingId: `${BASE_URL}/costing/get-vbc-costing-detail-by-id`,
   deleteDraftCosting: `${BASE_URL}/costing/delete-draft-costing`,
   //getRMCCTabData: `${BASE_URL}/costing/get-zbc-costing-rm-bop-cc-detail-for-tab-grid`,
-
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-zbc-costing-raw-materials-detail`,
@@ -1285,6 +1289,7 @@ export const PENDING = 'PendingForApproval'
 export const WAITING_FOR_APPROVAL = 'AwaitingApproval'
 export const APPROVED = 'Approved'
 export const REJECTED = 'Rejected'
+export const HISTORY = 'History'
 export const FINAL_APPROVAL = 'Final Approval'
 
 //DECIMAL VALUES FOR PRICE

@@ -137,12 +137,18 @@ class AddBOPDomestic extends Component {
       $('html, body').animate({ scrollTop: 0 }, 'slow');
       this.props.getBOPDomesticById(data.Id, res => {
         if (res && res.data && res.data.Result) {
-
+          let vendorObj
           const Data = res.data.Data;
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => { })
+            this.props.getVendorWithVendorCodeSelectList(() => {
+              // const { vendorWithVendorCodeSelectList } = this.props;
+              // vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
+            })
           } else {
-            this.props.getVendorTypeBOPSelectList(() => { })
+            this.props.getVendorTypeBOPSelectList(() => {
+              // const { vendorWithVendorCodeSelectList } = this.props;
+              // vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
+            })
           }
 
           this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -153,6 +159,7 @@ class AddBOPDomestic extends Component {
 
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.CategoryId)
             let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
+            console.log('vendorObj: ', vendorObj);
             let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
@@ -164,7 +171,7 @@ class AddBOPDomestic extends Component {
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPartAssembly: partArray,
-              selectedPlants: { label: Data && Data.Plant[0].PlantName, value: Data && Data.Plant[0].PlantId },
+              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
@@ -172,7 +179,7 @@ class AddBOPDomestic extends Component {
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
             })
-          }, 200)
+          }, 500)
         }
       })
     } else {
@@ -476,12 +483,14 @@ class AddBOPDomestic extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
+
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
     const { initialConfiguration } = this.props;
+    console.log(selectedPlants, "selectedPlants");
 
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
-    let plantArray = { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }
+    let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map(item => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (selectedPlants.length === 0 && !this.state.IsVendor) {
@@ -500,8 +509,8 @@ class AddBOPDomestic extends Component {
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
-        Part: partArray.length > 0 ? partArray.length : [],
-        Plant: [plantArray],
+        Part: partArray.length > 0 ? partArray : [],
+        Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
       }
@@ -521,7 +530,7 @@ class AddBOPDomestic extends Component {
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
-        Part: partArray.length > 0 ? partArray.length : [],
+        Part: partArray.length > 0 ? partArray : [],
         Specification: values.Specification,
         UnitOfMeasurementId: UOM.value,
         Vendor: vendorName.value,

@@ -120,7 +120,7 @@ function ApprovalSummary(props) {
               <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} />
 
               <Row>
-                <Col md="8">
+                <Col md="12">
                   <div className="left-border">{'Part Details:'}</div>
                 </Col>
               </Row>
@@ -130,52 +130,52 @@ function ApprovalSummary(props) {
                     <thead>
                       <tr>
                         <th>
-                          <span className="d-block grey-text text-small">{`Technology:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Technology:`}</span>
+                          <span className="d-block">
                             {partDetail.Technology ? partDetail.Technology : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Assembly No./Part No.`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Assembly No./Part No.`}</span>
+                          <span className="d-block">
                             {partDetail.PartNumber ? partDetail.PartNumber : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Assembly Name/Part Name`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Assembly Name/Part Name`}</span>
+                          <span className="d-block">
                             {partDetail.PartName ? partDetail.PartName : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Assembly Description/Part Description`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Assembly Description/Part Description`}</span>
+                          <span className="d-block">
                             {partDetail.Description ? partDetail.Description : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`ECO No:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`ECO No:`}</span>
+                          <span className="d-block">
                             {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Drawing No:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Drawing No:`}</span>
+                          <span className="d-block">
                             {partDetail.DrawingNumber ? partDetail.DrawingNumber : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Revision No:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Revision No:`}</span>
+                          <span className="d-block">
                             {partDetail.RevisionNumber
                               ? partDetail.RevisionNumber
                               : '-'}
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`Effective Date:`}</span>
-                          <span className="d-block text-small">
+                          <span className="d-block grey-text">{`Effective Date:`}</span>
+                          <span className="d-block">
                             {partDetail.EffectiveDate ? moment(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
                           </span>
                         </th>
@@ -201,7 +201,7 @@ function ApprovalSummary(props) {
                 </Col>
               </Row>
               <Row>
-                <Col md="8">
+                <Col md="12">
                   <div className="left-border">{'Approval Details:'}</div>
                 </Col>
               </Row>
@@ -329,7 +329,7 @@ function ApprovalSummary(props) {
                 </Col>
               </Row>
               <Row className="mb-4">
-                <Col md="12">
+                <Col md="12" className="costing-summary-row">
                   {costingSummary && <CostingSummaryTable viewMode={true} costingID={approvalDetails.CostingId} />}
                 </Col>
               </Row>

@@ -480,7 +480,7 @@ const CostingSummaryTable = (props) => {
               )}
               <button
                 type="button"
-                className={'user-btn mb-2'}
+                className={'user-btn mb-2 comparison-btn'}
                 onClick={addComparisonDrawerToggle}
               >
                 <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
@@ -507,7 +507,7 @@ const CostingSummaryTable = (props) => {
                                   data.status === DRAFT &&
                                   <div class="custom-check1 d-inline-block">
                                     <label
-                                      className="custom-checkbox"
+                                      className="custom-checkbox pl-0 mb-0"
                                       onChange={() => moduleHandler(data.costingId)}
                                     >
                                       {''}
@@ -569,7 +569,7 @@ const CostingSummaryTable = (props) => {
                                 {
                                   !viewMode &&
                                   <a
-                                    class="text-primary d-inline-block"
+                                    class="text-primary d-inline-block change-version-block"
                                     onClick={() => editHandler(index)}
                                   >
                                     <small>Change version</small>
@@ -967,7 +967,7 @@ const CostingSummaryTable = (props) => {
                                         : ''
                                       const fileURL = `${FILE_URL}${withOutTild}`
                                       return (
-                                        <div className={"attachment images"}>
+                                        <div className={"single-attachment images"}>
                                           <a href={fileURL} target="_blank">
                                             {f.OriginalFileName}
                                           </a>

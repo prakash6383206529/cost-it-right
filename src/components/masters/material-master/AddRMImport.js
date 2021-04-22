@@ -405,7 +405,7 @@ class AddRMImport extends Component {
               // FreightCharge:Data.FreightCharge
               // netCost:Data
             })
-          }, 500);
+          }, 1000);
         }
       })
     } else {

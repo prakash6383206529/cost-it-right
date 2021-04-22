@@ -44,8 +44,8 @@ function TabPackagingFreight(props) {
   * @method setPackageCost
   * @description SET PACKAGE COST
   */
-  const setPackageCost = (GridData, GridIndex) => {
-    let arr = dispatchPackageCost(GridData, GridIndex, PackageAndFreightTabData)
+  const setPackageCost = (GridData, IsChanged) => {
+    let arr = dispatchPackageCost(GridData, IsChanged, PackageAndFreightTabData)
     dispatch(setPackageAndFreightData(arr, () => { }))
   }
 
@@ -53,7 +53,7 @@ function TabPackagingFreight(props) {
   * @method dispatchPackageCost
   * @description SET PACKAGE COST
   */
-  const dispatchPackageCost = (GridData, GridIndex, arr) => {
+  const dispatchPackageCost = (GridData, IsChanged, arr) => {
     let tempArr = [];
     try {
 
@@ -62,6 +62,7 @@ function TabPackagingFreight(props) {
         i.CostingPartDetails.PackagingNetCost = packageTotalCost(GridData);
         i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.FreightNetCost + packageTotalCost(GridData);
         i.CostingPartDetails.CostingPackagingDetail = GridData;
+        i.IsChanged = IsChanged;
 
         return i;
       });
@@ -89,8 +90,8 @@ function TabPackagingFreight(props) {
   * @method setFreightCost
   * @description SET FREIGHT COST
   */
-  const setFreightCost = (GridData, GridIndex) => {
-    let arr = dispatchFreightCost(GridData, GridIndex, PackageAndFreightTabData)
+  const setFreightCost = (GridData, IsChanged) => {
+    let arr = dispatchFreightCost(GridData, IsChanged, PackageAndFreightTabData)
     dispatch(setPackageAndFreightData(arr, () => { }))
   }
 
@@ -98,7 +99,7 @@ function TabPackagingFreight(props) {
   * @method dispatchFreightCost
   * @description SET FREIGHT COST
   */
-  const dispatchFreightCost = (GridData, GridIndex, arr) => {
+  const dispatchFreightCost = (GridData, IsChanged, arr) => {
     let tempArr = [];
     try {
 
@@ -107,6 +108,7 @@ function TabPackagingFreight(props) {
         i.CostingPartDetails.FreightNetCost = freightTotalCost(GridData);
         i.CostingPartDetails.NetFreightPackagingCost = i.CostingPartDetails.PackagingNetCost + freightTotalCost(GridData);
         i.CostingPartDetails.CostingFreightDetail = GridData;
+        i.IsChanged = IsChanged;
 
         return i;
       });

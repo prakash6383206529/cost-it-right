@@ -32,7 +32,7 @@ function AddPackaging(props) {
 
   const headCostData = useContext(netHeadCostContext)
 
-  const [applicability, setApplicability] = useState([]);
+  const [applicability, setApplicability] = useState(isEditFlag ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : []);
   const [PackageType, setPackageType] = useState(isEditFlag ? rowObjData.IsPackagingCostFixed : true);
   //const [formData, setFormData] = useState({});
 
@@ -42,7 +42,7 @@ function AddPackaging(props) {
   });
 
   useEffect(() => {
-    if (applicability) {
+    if (applicability && applicability.value !== undefined) {
       calculateApplicabilityCost(applicability.value)
     }
   }, [fieldValues]);
@@ -98,14 +98,17 @@ function AddPackaging(props) {
    * @description APPLICABILITY CALCULATION
    */
   const calculateApplicabilityCost = (Text) => {
+    console.log('Text: ', Text);
     const { NetRawMaterialsCost, NetBoughtOutPartCost, NetConversionCost, NetTotalRMBOPCC } = headCostData;
     const PackagingCostPercentage = getValues('PackagingCostPercentage');
 
     switch (Text) {
       case 'RM':
         if (!PackageType) {
+          console.log('ifffff')
           setValue('PackagingCost', '')
         } else {
+          console.log('ellllssee')
           setValue('PackagingCost', checkForDecimalAndNull(NetRawMaterialsCost * calculatePercentage(PackagingCostPercentage), 2))
         }
         break;
@@ -195,7 +198,7 @@ function AddPackaging(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>

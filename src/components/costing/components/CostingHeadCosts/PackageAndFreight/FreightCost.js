@@ -8,7 +8,8 @@ import { ViewCostingContext } from '../../CostingDetails';
 
 function FreightCost(props) {
 
-  const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(props.data && props.data.length > 0 ? props.data : [])
+  const [OldGridData, setOldGridData] = useState(props.data && props.data.length > 0 ? props.data : [])
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isEditFlag, setIsEditFlag] = useState(false)
@@ -17,7 +18,7 @@ function FreightCost(props) {
   const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
-    props.setFreightCost(gridData, props.index)
+    props.setFreightCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
   }, [gridData]);
 
   /**

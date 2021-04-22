@@ -2,23 +2,27 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, setOverheadProfitData, saveCostingOverheadProfitTab, } from '../../actions/Costing';
+import { getOverheadProfitTabData, setOverheadProfitData, saveCostingOverheadProfitTab, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
 import Switch from "react-switch";
 import PartOverheadProfit from '../CostingHeadCosts/OverheadProfit/PartOverheadProfit';
 import AssemblyOverheadProfit from '../CostingHeadCosts/OverheadProfit/AssemblyOverheadProfit';
 import { LEVEL0 } from '../../../../helper/AllConastant';
+import { ViewCostingContext } from '../CostingDetails';
 
 function TabOverheadProfit(props) {
 
   const { handleSubmit, } = useForm();
 
   const [IsApplicableForChildParts, setIsApplicableForChildParts] = useState(false);
+  const [IsIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
 
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext);
+  const CostingViewMode = useContext(ViewCostingContext);
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
@@ -45,6 +49,12 @@ function TabOverheadProfit(props) {
     }
     props.setHeaderCost(topHeaderData)
   }, [OverheadProfitTabData]);
+
+  // const filteredUsers = React.useMemo(() => {
+  //   setIsIncludeSurfaceTreatment(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
+  //   dispatch(setSurfaceCostInOverheadProfit(OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
+  // }, [OverheadProfitTabData && OverheadProfitTabData.length > 0 && OverheadProfitTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]
+  // );
 
   /**
   * @method setPartDetails
@@ -447,6 +457,15 @@ function TabOverheadProfit(props) {
   }
 
   /**
+  * @method onPressIncludeSurfaceTreatment
+  * @description SET INCLUDE SURFACE TREATMENT
+  */
+  const onPressIncludeSurfaceTreatment = () => {
+    dispatch(setSurfaceCostInOverheadProfit(!IsIncludeSurfaceTreatment, () => { }))
+    setIsIncludeSurfaceTreatment(!IsIncludeSurfaceTreatment)
+  }
+
+  /**
   * @method saveCosting
   * @description SAVE COSTING
   */
@@ -484,8 +503,8 @@ function TabOverheadProfit(props) {
           <Col md="12">
             <div className="shadow-lgg login-formg">
 
-              {costData.IsAssemblyPart &&
-                <Row className="m-0">
+              <Row className="m-0">
+                {costData.IsAssemblyPart &&
                   <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                     <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                     <div className="switch d-inline-flex">
@@ -514,8 +533,27 @@ function TabOverheadProfit(props) {
                         </span>
                       </label>
                     </div>
-                  </Col>
-                </Row>}
+                  </Col>}
+
+                {/* <Col md="6" className="px-30 py-4 costing-border-x border-bottom-0">
+                  <label
+                    className={`custom-checkbox mb-0`}
+                    onChange={onPressIncludeSurfaceTreatment}
+                  >
+                    Include Surface Treatment Cost in Overhead & Profit
+                    <input
+                      type="checkbox"
+                      checked={IsIncludeSurfaceTreatment}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsIncludeSurfaceTreatment}
+                      onChange={onPressIncludeSurfaceTreatment}
+                    />
+                  </label>
+                </Col> */}
+              </Row>
 
               <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
                 <Row>
@@ -542,6 +580,7 @@ function TabOverheadProfit(props) {
                                 <PartOverheadProfit
                                   index={index}
                                   item={item}
+                                  IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   setPartDetails={setPartDetails}
                                   setOverheadDetail={setOverheadDetail}
                                   setProfitDetail={setProfitDetail}
@@ -559,6 +598,7 @@ function TabOverheadProfit(props) {
                                   index={index}
                                   item={item}
                                   children={item.CostingChildPartDetails}
+                                  IsIncludeSurfaceTreatment={IsIncludeSurfaceTreatment}
                                   setPartDetails={setPartDetails}
                                   toggleAssembly={toggleAssembly}
                                   setOverheadDetail={setOverheadDetail}

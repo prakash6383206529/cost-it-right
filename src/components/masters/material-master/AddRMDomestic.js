@@ -374,7 +374,7 @@ class AddRMDomestic extends Component {
               remarks: Data.Remark,
               files: Data.FileList,
             })
-          }, 500)
+          }, 1000)
         }
       })
     } else {

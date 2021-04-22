@@ -7,7 +7,7 @@ import { getPlantSelectListByType, getVendorWithVendorCodeSelectList, getPlantBy
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
-import { ZBC, VBC, VIEW_COSTING_DATA, APPROVED } from '../../../config/constants'
+import { ZBC, VBC, VIEW_COSTING_DATA, APPROVED, REJECTED, HISTORY } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 import { isUserLoggedIn } from '../../../helper/auth'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -444,7 +444,7 @@ function AddToComparisonDrawer(props) {
     if (label === 'costing') {
       if (viewMode === true) {
         costingSelectList && costingSelectList.map((item) => {
-          if (item.status === APPROVED) {
+          if (item.Status === APPROVED || item.Status === REJECTED || item.Status === HISTORY) {
             temp.push({ label: item.DisplayCostingNumber, value: item.CostingId })
             return null
           }

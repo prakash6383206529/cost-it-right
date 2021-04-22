@@ -144,7 +144,7 @@ class PermissionsTabIndex extends Component {
                         <div className="col-md-12">
                             <div className="shadow-lgg login-formg ">
 
-                                <Nav tabs className="subtabs">
+                                <Nav tabs className="subtabs pr-tab">
                                     {
                                         this.state.dashoard.length > 0 &&
                                         <NavItem>
@@ -210,7 +210,7 @@ class PermissionsTabIndex extends Component {
                                         </NavItem>
                                     }
                                 </Nav>
-                                <TabContent activeTab={this.state.activeTab}>
+                                <TabContent className="pr-tab-content" activeTab={this.state.activeTab}>
 
                                     <TabPane tabId="1">
                                         <DashboardAuditTab

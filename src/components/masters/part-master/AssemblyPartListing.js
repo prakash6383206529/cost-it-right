@@ -105,7 +105,7 @@ class AssemblyPartListing extends Component {
         });
     }
 
-    
+
 
     /**
     * @method effectiveDateFormatter
@@ -316,14 +316,12 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="BOMNumber" width={'100'} >BOM NO.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartNumber" width={'100'} >Part No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartName" width={'100'}>Name</TableHeaderColumn>
-                    {/* <TableHeaderColumn dataField="Plants" searchable={false} width={'100'} >Plant</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="NumberOfParts" searchable={false} width={'100'}>{this.renderNumberOfParts()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="BOMLevelCount" searchable={false} width={'100'}>{this.renderBOMLevelCount()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} >ECN No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'}  dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
-                    {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
+                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
                     <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
                     <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>
@@ -355,7 +353,7 @@ class AssemblyPartListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ part , auth }) {
+function mapStateToProps({ part, auth }) {
     const { partsListing } = part
     const { initialConfiguration } = auth;
 

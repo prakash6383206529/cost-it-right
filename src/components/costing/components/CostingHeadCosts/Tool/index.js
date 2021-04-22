@@ -32,7 +32,8 @@ function Tool(props) {
     defaultValues: IsApplicableProcessWise === false ? defaultValues : {},
   });
 
-  const [gridData, setGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse)
+  const [gridData, setGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])
+  const [OldGridData, setOldGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -41,7 +42,7 @@ function Tool(props) {
   const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
-    props.setToolCost(gridData)
+    props.setToolCost(gridData, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
   }, [gridData]);
 
   useEffect(() => {

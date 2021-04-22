@@ -59,7 +59,7 @@ function ViewOverheadProfit(props) {
               </Col>
             </Row>
 
-            <div className="input-group form-group col-md-12 input-withouticon">
+            <div className="input-group form-group col-md-4 input-withouticon">
               <TextFieldHookForm
                 label="Model Type for Overhead/Profit"
                 name={"modeltype"}

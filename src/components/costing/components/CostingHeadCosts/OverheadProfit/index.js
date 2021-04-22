@@ -111,7 +111,7 @@ function OverheadProfit(props) {
       setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
     }
     setTimeout(() => {
-      includeSurfaceTreatment()
+      IncludeSurfaceTreatmentCall()
     }, 3000)
   }, []);
 
@@ -453,7 +453,7 @@ function OverheadProfit(props) {
 
       /**
        *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY) FROM SURFACE TAB, IS NOT IS USE THEN UNCOMMENT BELOW LINE
-       *  AND COMMENT THIS FUNCTION includeSurfaceTreatment()
+       *  AND COMMENT THIS FUNCTION IncludeSurfaceTreatmentCall()
        */
       // setValue('OverheadCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(OverheadCCPercentage), initialConfiguration.NoOfDecimalForPrice))
     }
@@ -568,7 +568,7 @@ function OverheadProfit(props) {
 
       /**
        *  IF INCLUDE SURFACE TREATMENT(CHECKBOX FUNCTIONALITY) FROM SURFACE TAB, IS NOT IS USE THEN UNCOMMENT BELOW LINE
-       *  AND COMMENT THIS FUNCTION includeSurfaceTreatment()
+       *  AND COMMENT THIS FUNCTION IncludeSurfaceTreatmentCall()
        */
       //setValue('ProfitCCTotalCost', checkForDecimalAndNull(headerCosts.NetConversionCost * calculatePercentage(ProfitCCPercentage), initialConfiguration.NoOfDecimalForPrice))
     }
@@ -1134,10 +1134,10 @@ function OverheadProfit(props) {
   }
 
   /**
-  * @method includeSurfaceTreatment
+  * @method IncludeSurfaceTreatmentCall
   * @description INCLUDE SURFACE TREATMENT IN TO OVERHEAD AND PROFIT
   */
-  const includeSurfaceTreatment = () => {
+  const IncludeSurfaceTreatmentCall = () => {
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
       const { OverheadCCPercentage } = overheadObj;
@@ -1237,7 +1237,9 @@ function OverheadProfit(props) {
                 <label>
                   {''}
                 </label>
-                <button type="button" className={'refresh-icon my-1'} onClick={() => includeSurfaceTreatment()} />
+                <button type="button" className={'refresh-icon mt-2 tooltip-n'} onClick={() => IncludeSurfaceTreatmentCall()}>
+                  <span class="tooltiptext">Refresh to update Overhead and Profit cost</span>
+                </button>
               </Col>
 
               <Col md="3">

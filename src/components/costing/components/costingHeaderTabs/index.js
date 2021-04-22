@@ -81,7 +81,7 @@ function CostingHeaderTabs(props) {
       }))
     }
 
-    // USED FOR SURFACE TREATMENT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
+    // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
@@ -102,7 +102,7 @@ function CostingHeaderTabs(props) {
     }
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && activeTab !== '4') {
+    if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4') {
       const data = {
         "CostingId": costData.CostingId,
         "PartId": costData.PartId,
@@ -118,8 +118,8 @@ function CostingHeaderTabs(props) {
       }))
     }
 
-    // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && activeTab !== '5') {
+    // USED FOR TOOL TAB WHEN CLICKED ON OTHER TABS WITHOUT SAVING
+    if (!CostingViewMode && Object.keys(ComponentItemToolData).length > 0 && ComponentItemToolData.IsChanged === true && activeTab !== '5') {
       const data = {
         "IsToolCostProcessWise": false,
         "CostingId": costData.CostingId,

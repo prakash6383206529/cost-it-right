@@ -8,6 +8,7 @@ import { loggedInUserId } from '../../../helper/auth'
 import { Badge } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
 import { CONSTANT } from '../../../helper/AllConastant'
+import { GridTotalFormate } from '../../common/TableGridFunctions'
 import moment from 'moment'
 import { checkForDecimalAndNull } from '../../../helper'
 import { getSimulationHistory } from '../actions/History'
@@ -40,10 +41,12 @@ function SimulationHistory(props) {
         )
     }
 
+    
+
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="View mr5" type={'button'} onClick={() => { }} />
+                <button className="View" type={'button'} onClick={() => { }} />
             </>
         )
     }
@@ -53,34 +56,39 @@ function SimulationHistory(props) {
     }
 
     const renderVendorName = () => {
-        return <>Vendor <br />Name</>
+        return <>Vendor Name</>
     }
     const renderImpactCosting = () => {
-        return <>Impact <br />Costing </>
+        return <>Impact Costing </>
     }
     const renderImpactParts = () => {
-        return <>Impact <br />Parts </>
+        return <>Impact Parts </>
     }
     const renderSimulatedBy = () => {
-        return <>Simulated <br />By </>
+        return <>Simulated By </>
     }
     const renderSimulatedOn = () => {
-        return <>Simulated <br />On </>
+        return <>Simulated On </>
     }
     const renderApprovedOn = () => {
-        return <>Approved <br />On </>
+        return <>Approved On </>
     }
     const renderApprovedBy = () => {
-        return <>Approved <br />By </>
+        return <>Approved By </>
     }
 
     useEffect(() => {
         dispatch(getSimulationHistory(() => { }))
     }, [])
 
+    const renderPaginationShowsTotal = (start, to, total) => {
+        return <GridTotalFormate start={start} to={to} total={total} />
+    }
+
     const options = {
         clearSearch: true,
         noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        paginationShowsTotal: renderPaginationShowsTotal(),
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
         firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -92,10 +100,10 @@ function SimulationHistory(props) {
 
     }
     return (
-        <div>
+        <div className="container-fluid simulation-history-page">
             <Row>
-                <Col sm="4">
-                    <h1>{`Simulation History`}</h1>
+                <Col sm="4" >
+                    <h1 className="mb-0">{`Simulation History`}</h1>
                 </Col>
             </Row>
             <BootstrapTable
@@ -112,17 +120,17 @@ function SimulationHistory(props) {
                 pagination
             >
                 <TableHeaderColumn dataField="TokenNumber" columnTitle={true} dataAlign="left" dataSort={true} dataFormat={linkableFormatter} >{`Token No.`}</TableHeaderColumn>
-                <TableHeaderColumn dataField="CostingHead" width={140} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingHead" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Head'}</TableHeaderColumn>
                 <TableHeaderColumn dataField="Technology" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Technology'}</TableHeaderColumn>
-                <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false}>{renderVendorName()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="ImpactCosting" columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactCosting()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="ImpactParts" columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactParts()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="SimulatedBy" columnTitle={true} dataAlign="left" dataSort={false} >{renderSimulatedBy()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="SimulatedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={simulatedOnFormatter} >{renderSimulatedOn()} </TableHeaderColumn>
-                <TableHeaderColumn dataField="ApprovedBy" columnTitle={true} dataAlign="left" dataSort={false}>{renderApprovedOn()} </TableHeaderColumn>
-                <TableHeaderColumn dataField="ApprovedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={approvedOnFormatter}> {renderApprovedBy()}</TableHeaderColumn>
-                <TableHeaderColumn dataField="CostingStatus" width={200} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
-                <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="SimulationId" export={false} isKey={true} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                <TableHeaderColumn dataField="VendorName" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderVendorName()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="ImpactCosting" width={120} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactCosting()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="ImpactParts" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderImpactParts()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="SimulatedBy" width={110} columnTitle={true} dataAlign="left" dataSort={false} >{renderSimulatedBy()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="SimulatedOn" width={160} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={simulatedOnFormatter} >{renderSimulatedOn()} </TableHeaderColumn>
+                <TableHeaderColumn dataField="ApprovedBy" width={110} columnTitle={true} dataAlign="left" dataSort={false}>{renderApprovedBy()} </TableHeaderColumn>
+                <TableHeaderColumn dataField="ApprovedOn" width={160} columnTitle={true} dataAlign="left" dataSort={false} dataFormat={approvedOnFormatter}> {renderApprovedOn()}</TableHeaderColumn>
+                <TableHeaderColumn dataField="CostingStatus" width={180} dataAlign="center" dataFormat={statusFormatter} export={false} >  Status  </TableHeaderColumn>
+                <TableHeaderColumn dataAlign="right" searchable={false} width={80} dataField="SimulationId" export={false} isKey={true} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
         </div>
     );

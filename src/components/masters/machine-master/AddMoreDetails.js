@@ -1719,7 +1719,7 @@ class AddMoreDetails extends Component {
                 <div className="shadow-lgg login-formg">
                   <div className="row">
                     <div className="col-md-6">
-                      <div className="form-heading">
+                      <div className="form-heading mb-0">
                         <h2>{isEditFlag ? `Update More Details` : `Add More Details`}</h2>
                       </div>
                     </div>
@@ -1835,9 +1835,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      </Row>
-
-                      <Row>
+                      
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
@@ -1959,9 +1957,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      </Row>
-
-                      <Row>
+                      
                         <Col md="3">
                           <Field
                             label={`Machine Cost (INR)`}

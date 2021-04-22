@@ -239,7 +239,6 @@ function ViewConversionCost(props) {
                   </Row>
                 </div>
               )}
-              <hr />
               <Row>
                 <Col md="12">
                   <div className="left-border">{'Surface Treatment Cost:'}</div>

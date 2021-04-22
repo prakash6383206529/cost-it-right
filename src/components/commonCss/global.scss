@@ -204,6 +204,13 @@ a:hover {
   }
 }
 
+.approval-btn{
+  img{
+    height: 16px;
+    object-fit: contain;
+  }
+}
+
 
 //tried half working
 // .approve-hover-btn {
@@ -324,7 +331,6 @@ a:hover {
   margin-bottom: 8px;
   img {
     width: 13px;
-    height: auto;
     object-fit: contain;
   }
 }
@@ -354,6 +360,10 @@ a:hover {
   transition: all ease 0.3s;
   text-transform: uppercase;
   border: 1px solid #4dc771;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
   img {
     width: 16px;
     height: auto;
@@ -422,19 +432,27 @@ a:hover {
 
 .cross-icon,
 .check-icon {
-  width: 25px;
+  width: 20px;
+  padding-right: 3px;
   vertical-align: middle;
-  font-size: 17px;
+  font-size: 11px;
   font-weight: 300;
   margin-right: 0 !important;
-  height: 17px !important;
-  line-height: 17px !important;
+  height: 11px !important;
+  line-height: 11px !important;
   display: inline-flex;
   justify-content: center;
   align-items: center;
 }
 
+.cross-icon{
+  img{
+    height: inherit;
+  }
+}
 .check-icon {
+  height: 13px !important;
+  line-height:13px !important;
   width: 28px;
 }
 
@@ -576,6 +594,9 @@ a:hover {
   .react-bs-table-pagination {
     border-top: 1px solid #ccc;
     .col-md-6 {
+      > span:nth-child(1){
+        order: 2;
+      }
       display: flex;
 
       &:nth-last-child(1) {
@@ -2053,6 +2074,15 @@ body {
   justify-content: space-between;
   padding: 5px 0;
 }
+.attachment-row{
+  border-bottom: 1px solid #e6e3e3;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
 ul.bread-list.d-inline-flex {
   li.active {
     font-size: 14px;
@@ -2395,4 +2425,32 @@ body {
   background: transparent url('../../assests/images/refresh_icon.svg') 0% 0%
     no-repeat padding-box;
   border: none;
+}
+
+
+@media(max-width:1366px){
+  /* Drawer Css */
+  .drawer-wrapper {
+    width: calc(486px * 80 / 100);
+  }
+  .drawer-1500px {
+    width: 100%;
+  }
+  .drawer-700px {
+    width: 100%;
+    max-width: calc(700px * 80 / 100);
+  }
+  .drawer-600px {
+    width: 100%;
+    max-width: calc(600px * 80 / 100);
+  }
+  .drawer-500px {
+    width: 100%;
+    max-width: calc(500px * 80 / 100);
+  }
+  .drawer-full-width {
+    width: 100%;
+    max-width: 100%;
+  }
+  /* Drawer Css End */
 }

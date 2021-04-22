@@ -171,7 +171,7 @@ class AddBOPImport extends Component {
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPartAssembly: partArray,
-              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data && Data.Plant[0].PlantName, value: Data && Data.Plant[0].PlantId } : [],
+              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
@@ -180,7 +180,7 @@ class AddBOPImport extends Component {
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
             })
-          }, 200)
+          }, 500)
         }
       })
     } else {
@@ -539,14 +539,14 @@ class AddBOPImport extends Component {
       let requestData = {
         Currency: currency.label,
         BoughtOutPartId: BOPID,
-        Part: partArray.length > 0 ? partArray.length : [],
+        Part: partArray.length > 0 ? partArray : [],
         Source: values.Source,
         SourceLocation: values.sourceLocation,
         BasicRate: values.BasicRate,
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
+        Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
 
@@ -569,7 +569,7 @@ class AddBOPImport extends Component {
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
-        Part: partArray.length > 0 ? partArray.length : [],
+        Part: partArray.length > 0 ? partArray : [],
         Specification: values.Specification,
         Vendor: vendorName.value,
         VendorLocation: '',

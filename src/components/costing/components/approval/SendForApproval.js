@@ -369,19 +369,19 @@ const SendForApproval = (props) => {
               viewApprovalData.map((data, index) => {
 
                 return (
-                  <div className="pr-3" key={index}>
+                  <div className="" key={index}>
                     <Row className="px-3">
                       <Col md="12">
                         <h6 className="left-border d-inline-block mr-3">
                           {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
                         </h6>
-                        <div className="text-small d-inline-block mr-3">
+                        <div className=" d-inline-block mr-3">
                           {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
-                          <span className="small-grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
+                          <span className="grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                         </div>
-                        <div className="text-small d-inline-block">
+                        <div className=" d-inline-block">
                           {`Costing Id:`}{" "}
-                          <span className="small-grey-text">{`${data.costingName}`}</span>
+                          <span className="grey-text">{`${data.costingName}`}</span>
                         </div>
                       </Col>
                     </Row>
@@ -454,6 +454,7 @@ const SendForApproval = (props) => {
                                   //maxDate={new Date()}
                                   dropdownMode="select"
                                   placeholderText="Select date"
+                                  customClassName="withBorder"
                                   className="withBorder"
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
@@ -463,60 +464,74 @@ const SendForApproval = (props) => {
                                   errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
                                 />
                               </div>
-                              <i className="fa fa-calendar icon-small-primary ml-2 mt-4"></i>
+                              <i className="fa fa-calendar icon-small-primary ml-2"></i>
                             </div>
                             {/* </div> */}
                           </Col>
                         </Row>
                         <Row>
                           <Col md="4">
+                            <div className="form-group">
                             <label>Old/Current Price</label>
-                            <label className="form-control bg-grey">
+                            <label className="form-control bg-grey input-form-control">
                               {data.oldPrice && data.oldPrice !== '-' ? checkForDecimalAndNull(data.oldPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
+                          </div>
                           </Col>
                           <Col md="4">
+                            <div className="form-group">
                             <label>Revised Price</label>
-                            <label className="form-control bg-grey">
+                            <label className="form-control bg-grey input-form-control">
                               {data.revisedPrice ? checkForDecimalAndNull(data.revisedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
+                          </div>
                           </Col>
                           <Col md="4">
+                            <div className="form-group">
                             <label>Variance</label>
-                            <label className="form-control bg-grey">
+                            <label className={`form-control bg-grey input-form-control ${data.variance < 0 ? 'green-value' : 'red-value'}`}>
                               {data.variance ? checkForDecimalAndNull(data.variance, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
+                          </div>
                           </Col>
                         </Row>
                         <Row>
                           <Col md="4">
+                            <div className="form-group">
                             <label>Consumed Quantity</label>
                             <div className="d-flex align-items-center">
-                              <label className="form-control bg-grey">
+                              <label className="form-control bg-grey input-form-control">
                                 {data.consumptionQty ? checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                               {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
                             </div>
+                          </div>
                           </Col>
                           <Col md="4">
+                            <div className="form-group">
                             <label>Remaining Budgeted Quantity</label>
-                            <label className="form-control bg-grey">
+                            <label className="form-control bg-grey input-form-control">
                               {data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
+                          </div>
                           </Col>
                           <Col md="4">
+                            <div className="form-group">
                             <label>Annual Impact</label>
-                            <label className="form-control bg-grey">
+                            <label className={`form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
                               {data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
+                          </div>
                           </Col>
                         </Row>
                         <Row>
                           <Col md="4">
+                            <div className="form-group">
                             <label>Impact for the Year</label>
-                            <label className="form-control bg-grey">
+                            <label className={`form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
                               {data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
+                          </div>
                           </Col>
                         </Row>
                       </div>
@@ -524,7 +539,7 @@ const SendForApproval = (props) => {
                   </div>
                 );
               })}
-            <div className="pr-3">
+            <div className="">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Row className="px-3">
                   <Col md="4">

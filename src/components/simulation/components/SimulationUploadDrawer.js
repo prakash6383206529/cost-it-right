@@ -211,7 +211,7 @@ class SimulationUploadDrawer extends Component {
                                         ></div>
                                     </Col>
                                 </Row>
-                                <Row className="pl-12">
+                                <Row className="pl-3">
                                     {/* <Col md="12">
                                         <ExcelFile fileExtension={'.xls'} filename={"Costing"} element={<button type="button" className={'btn btn-primary pull-right'}><img alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button>}>
                                             {this.returnExcelColumn(CostingBulkUpload, CostingBulkUploadTempData)}
@@ -219,7 +219,7 @@ class SimulationUploadDrawer extends Component {
                                     </Col> */}
                                     <Col md="12">
                                         <label>Upload</label>
-                                        <div className="input-group mt25 col-md-12 input-withouticon " >
+                                        <div className="input-group mt-1 input-withouticon " >
                                             <div className="file-uploadsection">
                                                 <label>Drag a file here or<span className="blue-text">Browse</span> for a file to upload <img alt={''} src={require('../../../assests/images/uploadcloud.png')} ></img> </label>
                                                 <input
