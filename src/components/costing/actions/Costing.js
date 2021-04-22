@@ -52,6 +52,7 @@ import {
   GET_PART_SELECTLIST_BY_TECHNOLOGY,
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
   SET_EXCHANGE_RATE_CURRENCY_DATA,
+  SET_TOOL_PROCESS_WISE_DATALIST,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1255,6 +1256,34 @@ export function getToolTabData(data, IsUseReducer, callback) {
         } else {
           callback(response);
         }
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method getToolsProcessWiseDataListByCostingID
+ * @description GET TOOLS PROCESS WISE DATALIST BY COSTINGID
+ */
+export function getToolsProcessWiseDataListByCostingID(CostingId, callback) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_TOOL_PROCESS_WISE_DATALIST,
+      payload: [],
+    });
+    const request = axios.get(`${API.getToolsProcessWiseDataListByCostingID}/${CostingId}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        let TabData = response.data.DataList;
+        dispatch({
+          type: SET_TOOL_PROCESS_WISE_DATALIST,
+          payload: TabData,
+        });
+        callback(response);
       }
     }).catch((error) => {
       dispatch({ type: API_FAILURE });

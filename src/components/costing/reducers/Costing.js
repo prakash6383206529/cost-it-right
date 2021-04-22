@@ -52,6 +52,7 @@ import {
   GET_PART_SELECTLIST_BY_TECHNOLOGY,
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
   SET_EXCHANGE_RATE_CURRENCY_DATA,
+  SET_TOOL_PROCESS_WISE_DATALIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -444,6 +445,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ExchangeRateData: action.payload
+      }
+    case SET_TOOL_PROCESS_WISE_DATALIST:
+      return {
+        ...state,
+        loading: false,
+        ToolsDataList: action.payload
       }
     default:
       return state

@@ -482,6 +482,7 @@ export const API = {
 
   getToolTabData: `${BASE_URL}/costing/get-costing-detail-for-tools-cost`,
   saveToolTab: `${BASE_URL}/costing/save-costing-detail-for-tool-cost`,
+  getToolsProcessWiseDataListByCostingID: `${BASE_URL}/costing/get-tools-cost-process-wise-list-by-costing`,
 
   getDiscountOtherCostTabData: `${BASE_URL}/costing/get-costing-detail-for-other-cost`,
   saveDiscountOtherCostTab: `${BASE_URL}/costing/save-costing-detail-for-other-cost`,
@@ -1148,6 +1149,7 @@ export const SET_SURFACE_TAB_DATA = 'SET_SURFACE_TAB_DATA';
 export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
 export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
+export const SET_TOOL_PROCESS_WISE_DATALIST = 'SET_TOOL_PROCESS_WISE_DATALIST';
 export const SET_OTHER_DISCOUNT_TAB_DATA = 'SET_OTHER_DISCOUNT_TAB_DATA';
 export const SET_EXCHANGE_RATE_CURRENCY_DATA = 'SET_EXCHANGE_RATE_CURRENCY_DATA';
 export const SET_COMPONENT_ITEM_DATA = 'SET_COMPONENT_ITEM_DATA';

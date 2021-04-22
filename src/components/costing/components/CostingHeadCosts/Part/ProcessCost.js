@@ -409,26 +409,20 @@ function ProcessCost(props) {
    * @method setToolCost
    * @description SET TOOL COST
    */
-  const setToolCost = (toolGrid, index) => {
+  const setToolCost = (toolGrid, Params) => {
     let ToolsCostTotal = 0
     ToolsCostTotal = toolGrid && toolGrid.reduce((accummlator, el) => {
       return accummlator + checkForNull(el.TotalToolCost)
     }, 0)
 
-    let tempArr = {
+    let tempObj = {
       ...tabData,
       //NetConversionCost: ToolsCostTotal + checkForNull(tabData && tabData.ProcessCostTotal !== null ? tabData.ProcessCostTotal : 0),
       IsShowToolCost: true,
       ToolsCostTotal: checkForDecimalAndNull(ToolsCostTotal, initialConfiguration.NoOfDecimalForPrice),
       CostingToolsCostResponse: toolGrid,
     }
-    // setTabData(tempArr)
-    const Params = {
-      index: props.index,
-      BOMLevel: props.item.BOMLevel,
-      PartNumber: props.item.PartNumber,
-    }
-    props.setToolCost(tempArr, Params)
+    props.setToolCost(tempObj, Params)
   }
 
   const ProcessGridFields = 'ProcessGridFields'
