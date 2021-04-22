@@ -154,7 +154,7 @@ function ApprovalSummary(props) {
                           </span>
                         </th>
                         <th>
-                          <span className="d-block grey-text text-small">{`ECO No:`}</span>
+                          <span className="d-block grey-text text-small">{`ECN No:`}</span>
                           <span className="d-block text-small">
                             {partDetail.ECNNumber ? partDetail.ECNNumber : '-'}
                           </span>
@@ -221,6 +221,7 @@ function ApprovalSummary(props) {
                           </th>
                         }
                         <th>{`SOB`}</th>
+                        <th>{`ECN Ref No`}</th>
                         <th>{`Old/Current Price`}</th>
                         <th>{`New/Revised Price:`}</th>
                         <th>{`Variance`}</th>
@@ -229,6 +230,7 @@ function ApprovalSummary(props) {
                         <th>{`Annual Impact`}</th>
                         <th>{`Impact of The Year`}</th>
                         <th>{`Effective Date`}</th>
+
                       </tr>
                     </thead>
                     <tbody>
@@ -249,6 +251,9 @@ function ApprovalSummary(props) {
                         }
                         <td>
                           {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
+                        </td>
+                        <td>
+                          {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}
                         </td>
                         <td>
                           {approvalDetails.OldPOPrice !== null ? approvalDetails.OldPOPrice : '-'}

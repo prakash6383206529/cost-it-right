@@ -402,6 +402,7 @@ const CostingSummaryTable = (props) => {
           obj.reason = ''
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
+          obj.partNo = viewCostingData[index].partId
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
