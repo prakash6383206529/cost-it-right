@@ -423,7 +423,11 @@ class AddVendorDrawer extends Component {
         }
 
     }
-
+    handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
     /**
     * @method render
     * @description Renders the component
@@ -433,7 +437,7 @@ class AddVendorDrawer extends Component {
         const { country, isOpenVendorPlant } = this.state;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container >
@@ -442,6 +446,7 @@ class AddVendorDrawer extends Component {
                                 noValidate
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                             >
                                 <Row className="drawer-heading">
                                     <Col>
@@ -640,7 +645,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={''}
-                                            validate={[ acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
                                             component={renderText}
                                             //  required={true}
                                             maxLength={26}

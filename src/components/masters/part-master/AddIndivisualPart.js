@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
@@ -60,7 +60,7 @@ class AddIndivisualPart extends Component {
           const Data = res.data.Data;
 
           let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-
+          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -90,7 +90,7 @@ class AddIndivisualPart extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: date, });
+    this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
   };
 
   /**
@@ -267,7 +267,11 @@ class AddIndivisualPart extends Component {
     }
   }
 
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   /**
   * @method render
@@ -299,7 +303,8 @@ class AddIndivisualPart extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    >
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                      >
                       <div className="add-min-height">
                         <Row>
                           <Col md="3">
@@ -422,12 +427,12 @@ class AddIndivisualPart extends Component {
 
                           <Col md="3">
                             <div className="form-group">
-                              <label>
+                              {/* <label>
                                 Effective Date
                                     <span className="asterisk-required">*</span>
-                              </label>
+                              </label> */}
                               <div className="inputbox date-section">
-                                <DatePicker
+                                {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -442,7 +447,27 @@ class AddIndivisualPart extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={false}
+                                /> */}
+
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  placeholder="Enter"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  // changeHandler={(e) => {
+                                    // e.preventDefault()
+                                  // }}
+                                  // disabled={isEditFlag ? true : false}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                //minDate={moment()}
                                 />
+
                               </div>
                             </div>
                           </Col>

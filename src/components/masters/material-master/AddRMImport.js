@@ -864,6 +864,12 @@ class AddRMImport extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -894,6 +900,7 @@ class AddRMImport extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -1050,25 +1057,25 @@ class AddRMImport extends Component {
                             />
                           </Col>
                           {/* {!this.state.IsVendor && ( */}
-                            <Col md="4">
-                              <Field
-                                label="Plant"
-                                name="SourceSupplierPlantId"
-                                placeholder={"Select"}
-                                selection={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                                options={this.renderListing("plant")}
-                                selectionChanged={this.handleSourceSupplierPlant}
-                                validate={
-                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []} optionValue={(option) => option.Value}
-                                optionLabel={(option) => option.Text}
-                                component={renderMultiSelectField}
-                                mendatory={true}
-                                required={true}
-                                className="multiselect-with-border"
-                                // disabled={this.state.IsVendor || isEditFlag ? true : false} 
-                                />
-                            </Col>
+                          <Col md="4">
+                            <Field
+                              label="Plant"
+                              name="SourceSupplierPlantId"
+                              placeholder={"Select"}
+                              selection={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                              options={this.renderListing("plant")}
+                              selectionChanged={this.handleSourceSupplierPlant}
+                              validate={
+                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []} optionValue={(option) => option.Value}
+                              optionLabel={(option) => option.Text}
+                              component={renderMultiSelectField}
+                              mendatory={true}
+                              required={true}
+                              className="multiselect-with-border"
+                            // disabled={this.state.IsVendor || isEditFlag ? true : false} 
+                            />
+                          </Col>
                           {/* )} */}
                         </Row>
 

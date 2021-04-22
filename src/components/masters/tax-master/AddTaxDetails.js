@@ -183,7 +183,12 @@ class AddTaxDetails extends Component {
       });
     }
   }
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      // cb();
+    }
+  };
   /**
   * @method render
   * @description Renders the component
@@ -202,6 +207,7 @@ class AddTaxDetails extends Component {
               noValidate
               className="form"
               onSubmit={handleSubmit(this.onSubmit.bind(this))}
+              onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
             >
               <Row className="drawer-heading">
                 <Col>

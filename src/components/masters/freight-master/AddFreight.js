@@ -525,6 +525,13 @@ class AddFreight extends Component {
       });
     }
   };
+
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
    * @method render
    * @description Renders the component
@@ -556,7 +563,8 @@ class AddFreight extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                    >
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                      >
                       <div className="add-min-height">
                         <Row>
                           <Col md="4" className="switch mb15">
@@ -709,7 +717,7 @@ class AddFreight extends Component {
                             </label>
                           </Col>
                           {/* {this.state.IsLoadingUnloadingApplicable && ( */}
-                            <Col md="3" className="hide-label-inside hide-text-help-mb-0">
+                            <Col md="3" className="hide-label-inside">
                               <Field
                                 label={``}
                                 name={"LoadingUnloadingCharges"}

@@ -340,7 +340,7 @@ class AddLabour extends Component {
       toastr.warning('Fields should not be empty')
       return false
     }
-    if(Number(fieldsObj) === 0 || Number(fieldsObj) === ''){
+    if (Number(fieldsObj) === 0 || Number(fieldsObj) === '') {
       toastr.warning('Please enter value.')
       return false;
     }
@@ -614,6 +614,12 @@ class AddLabour extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -643,6 +649,7 @@ class AddLabour extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>
