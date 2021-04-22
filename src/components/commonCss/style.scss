@@ -851,11 +851,13 @@ input.form-control{
 }
 .edit-details-btn {
   width: 32px;
-  height: 16px;
+  height: 13px;
   background: transparent url("../../assests/images/pencil-icon.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   border: none;
   cursor: pointer;
+  vertical-align: text-top;
+  background-size: contain;
 }
 .Delete {
   width: 32px;
@@ -3724,6 +3726,44 @@ body{
     list-style: calc(14px * 80 / 100) !important;
   }
   .table.cr-brdr-main{font-size: calc(14px * 80 / 100);}
+  .cr-brdr-main {
+    tbody {
+      .cr-tbl-label,td{font-size:calc(15px * 80 / 100);}
+    }
+  }
+
+  // tooltip css start
+  .tooltip-n {
+    .tooltiptext {
+      min-width: 240px;
+      left: -111px;
+      font-size: calc(14px * 80 / 100);
+    }
+  }
+  .refresh-icon.tooltip-n{
+    .tooltiptext{
+     left: -102px;
+    }
+ }
+  // tooltip css end
+
+  .height152-label{
+    .dzu-dropzone{
+      label{height: 130px;}
+    }
+  }
+
+  .date-section + .fa-calendar {
+    margin-top: 26.5px;
+  }
+  .add-to-comparison-drawer{
+    .radio-button-list{
+      .p-3{
+        padding: calc(1rem * 80 / 100) 1rem !important;
+      }
+    }
+  }
+
   .table-responsive{
     .cr-brdr-main {
       tbody{
@@ -3846,6 +3886,28 @@ body{
 
     // right side .content-page
     body{
+
+      .Add,
+      .Edit,
+      .Delete,
+      .View,
+      .Download,
+      .Bulk,
+      .Activate,
+      .Create,
+      .Copy,
+      .Approve,
+      .Run,
+      .Save,
+      .Add-file,
+      .SaveIcon,
+      .CancelIcon,
+      .CalculatorIcon,
+      .Copy.All{
+        width: calc(32px * 80 / 100) ;
+        height: calc(32px * 80 / 100) ;
+        background-size: contain ;
+      }
 
       // drawer css starts
       .drawer-wrapper{
@@ -4311,7 +4373,7 @@ body{
       
       .switch-level{
         .left-title + div{
-          transform: scale(0.8);
+          transform: scale(0.81);
         }
       }
       .cr-tbl-label{

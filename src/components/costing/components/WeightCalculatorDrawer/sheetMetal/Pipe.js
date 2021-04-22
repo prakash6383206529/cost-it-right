@@ -544,7 +544,7 @@ function Pipe(props) {
                   />
                 </Col>
               </Row>
-              <Row className={'mt15'}>
+              <Row className={''}>
                 {/* <Col md="3">
                   <SearchableSelectHookForm
                     label={'UOM for Dimension'}
@@ -741,7 +741,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={'mt15'}>
+              <Row className={''}>
                 <Col md="3">
                   <TextFieldHookForm
                     label={`Weight of Sheet(gm)`}
@@ -819,7 +819,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={'mt15'}>
+              <Row className={'mt-15'}>
                 <Col md="12">
                   <HeaderTitle className="border-bottom"
                     title={'Surface Area'}
@@ -828,7 +828,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={'mt-15'}>
+              <Row className={''}>
                 <Col md="4" className="switch">
                   <label className="switch-level">
                     <div className={'left-title'}>{'One Side'}</div>

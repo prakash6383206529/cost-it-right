@@ -157,7 +157,7 @@ class LevelTechnologyListing extends Component {
 							tableHeaderClass='my-custom-header'
 							pagination>
 							<TableHeaderColumn dataField="Technology" isKey={true} dataAlign="left" dataSort={true}>Technology</TableHeaderColumn>
-							<TableHeaderColumn dataField="Level" dataAlign="center" dataSort={true}>Highest Approval Level</TableHeaderColumn>
+							<TableHeaderColumn dataField="Level" dataAlign="left" dataSort={true}>Highest Approval Level</TableHeaderColumn>
 							<TableHeaderColumn dataAlign="right" dataField="LevelId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 						</BootstrapTable>
 					</Col>

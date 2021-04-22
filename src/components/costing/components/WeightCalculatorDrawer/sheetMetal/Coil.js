@@ -340,7 +340,7 @@ function Coil(props) {
                                     />
                                 </Col>
                             </Row>
-                            <Row className={'mt15'}>
+                            <Row className={''}>
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Strip Width(cm)`}

@@ -999,7 +999,6 @@ class AddRMDomestic extends Component {
                           <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
-                                <TooltipCustom />
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
@@ -1033,6 +1032,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="4">
+                          <TooltipCustom />
                             <Field
                               name="CategoryId"
                               type="text"
@@ -1168,7 +1168,6 @@ class AddRMDomestic extends Component {
                             this.state.IsVendor) && (
                               <>
                                 <Col md="4">
-                                  <TooltipCustom />
                                   <Field
                                     label={`Source`}
                                     name={"Source"}

@@ -431,7 +431,7 @@ function Sheet(props) {
                                 </Col>
                             </Row>
                             <Row>
-                                <Col md="12" className={'mt25'}>
+                                <Col md="12" className={''}>
                                     <HeaderTitle className="border-bottom"
                                         title={'Blank Specification'}
                                         customClass={'underLine-title'}

@@ -467,7 +467,7 @@ function AddToComparisonDrawer(props) {
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={"drawer-wrapper"}>
+          <div className={"drawer-wrapper add-to-comparison-drawer"}>
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
