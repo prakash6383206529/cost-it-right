@@ -356,7 +356,7 @@ class BulkUpload extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
+        const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate} = this.props;
         const { faildRecords, failedData, costingHead } = this.state;
 
         if (faildRecords) {
@@ -394,6 +394,7 @@ class BulkUpload extends Component {
                             <Row className="pl-3">
                                 {isZBCVBCTemplate &&
                                     <Col md="12">
+                                        {fileName != 'InterestRate' &&
                                         <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                             <input
                                                 type="radio"
@@ -403,11 +404,12 @@ class BulkUpload extends Component {
                                             />{' '}
                                             <span>Zero Based</span>
                                         </Label>
+                                }
                                         <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                             <input
                                                 type="radio"
                                                 name="costingHead"
-                                                checked={costingHead === 'VBC' ? true : false}
+                                                checked={costingHead === 'VBC' ? true : fileName === 'InterestRate' ? true : false }
                                                 onClick={() => this.onPressHeads('VBC')}
                                             />{' '}
                                             <span>Vendor Based</span>
@@ -423,7 +425,7 @@ class BulkUpload extends Component {
                                                 <span>ZBC More Details</span>
                                             </Label>}
                                     </Col>}
-
+ 
                                 <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                                     <Downloadxls
                                         isZBCVBCTemplate={isZBCVBCTemplate}
