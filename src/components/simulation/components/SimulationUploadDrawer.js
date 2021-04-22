@@ -58,13 +58,15 @@ class SimulationUploadDrawer extends Component {
     }
 
     toggleDrawer = (event) => {
+        const { fileData } = this.state
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('')
+        this.props.closeDrawer('', fileData)
     };
 
     cancel = () => {
+
         this.toggleDrawer('')
     }
 
@@ -129,21 +131,27 @@ class SimulationUploadDrawer extends Component {
                     // fileHeads = ["SerialNumber", "BillNumber"]
 
                     let fileData = [];
-                    let count = 0
+                    let basicRateCount = 0
+                    let scrapRateCount = 0
                     resp.rows.map((val, index) => {
                         if (index > 0) {
 
-                            console.log(val, "VAL");
+
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
                             // const i = val.findIndex(e => e === '');
-                            // console.log(i, "I VALUE");
+                            // 
                             // if (i !== -1) {
                             //     val[i] = '';
                             // }
-                            // if(val[])
+                            if (val[10] !== '') {
+                                basicRateCount = basicRateCount + 1
+                            }
+                            if (val[12] !== '') {
+                                scrapRateCount = scrapRateCount + 1
+                            }
+
                             let obj = {}
                             val.map((el, i) => {
-                                console.log(el, "EL");
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
@@ -159,6 +167,15 @@ class SimulationUploadDrawer extends Component {
                         }
                         return null;
                     })
+
+                    if (basicRateCount === 0) {
+                        toastr.warning('Please fill at least one basic rate.')
+                        return false
+                    }
+                    if (scrapRateCount === 0) {
+                        toastr.warning('Please fill at least one scrap rate.')
+                        return false
+                    }
                     this.setState({
                         fileData: fileData,
                         uploadfileName: uploadfileName,
@@ -178,11 +195,11 @@ class SimulationUploadDrawer extends Component {
             LoggedInUserId: loggedInUserId(),
         }
 
-        this.props.bulkUploadCosting(obj, (res) => {
-            let Data = res.data[0]
-            const { files } = this.state
-            files.push(Data)
-        })
+        // this.props.bulkUploadCosting(obj, (res) => {
+        //     let Data = res.data[0]
+        //     const { files } = this.state
+        //     files.push(Data)
+        // })
         this.cancel()
     }
     render() {

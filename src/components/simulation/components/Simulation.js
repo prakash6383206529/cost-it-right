@@ -41,6 +41,8 @@ function Simulation(props) {
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
     const [showEditTable, setShowEditTable] = useState(false)
+    const [isbulkUpload, setIsBulkUpload] = useState(false)
+    const [tableData, setTableData] = useState([])
 
     const handleMasterChange = (value) => {
         setMaster(value)
@@ -100,12 +102,23 @@ function Simulation(props) {
         }
     }
 
+    const cancelEditPage = () => {
+        setShowEditTable(false)
+        setIsBulkUpload(false)
+    }
+
     /**
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
    */
-    const closeDrawer = (e = '') => {
+    const closeDrawer = (e = '', tableData = {}) => {
         setShowDrawer(false)
+        if (Object.keys(tableData).length > 0) {
+            console.log(tableData, "tableData");
+            setTableData(tableData)
+            setShowEditTable(true)
+            setIsBulkUpload(true)
+        }
     }
 
     const editTable = () => {
@@ -115,9 +128,9 @@ function Simulation(props) {
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} list={rmDomesticListing} />
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} list={tableData.length > 0 ? tableData : rmDomesticListing} />
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} list={rmImportListing} />
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} list={tableData.length > 0 ? tableData : rmImportListing} />
 
             default:
                 break;

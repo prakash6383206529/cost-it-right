@@ -11,7 +11,7 @@ import Simulation from '../Simulation';
 import { Fragment } from 'react';
 
 function RMSimulation(props) {
-    const { isDomestic, list } = props
+    const { isDomestic, list, isbulkUpload } = props
     const [showSimulation, setShowSimulation] = useState(false)
 
     const renderCostingHead = () => {
@@ -70,7 +70,7 @@ function RMSimulation(props) {
     const newBasicRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className="form-control" >{cell}</span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell}</span>
             </>
         )
     }
@@ -78,7 +78,7 @@ function RMSimulation(props) {
     const newScrapRateFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <span className="form-control" >{cell}</span>
+                <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell}</span>
             </>
         )
     }
@@ -116,6 +116,24 @@ function RMSimulation(props) {
         return checkForDecimalAndNull(row.NewBasicRate, 2)
     }
 
+    const runSimulation = () => {
+        let basicRateCount = 0
+        let basicScrapCount = 0
+        list && list.map((li) => {
+            if (li.BasicRate === li.NewBasicRate) {
+                basicRateCount = basicRateCount + 1
+            }
+            if (li.ScrapRate === li.NewScrapRate) {
+                basicScrapCount = basicScrapCount + 1
+            }
+
+            if (basicRateCount === list.length || basicScrapCount === list.length) {
+                toastr.warning('There is no changes in new value.Please correct the data ,then run simulation')
+            }
+
+        })
+    }
+
     const options = {
         clearSearch: true,
         noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
@@ -128,7 +146,7 @@ function RMSimulation(props) {
     };
 
     const cancel = () => {
-        setShowSimulation(true)
+        props.cancelEditPage()
     }
     const cellEditProp = {
         mode: 'click',
@@ -165,9 +183,9 @@ function RMSimulation(props) {
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >{renderBasicRate()}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} editable={true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">{renderNewBasicRate()}</TableHeaderColumn>
+                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">{renderNewBasicRate()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >{renderScrapRate()}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} editable={true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">{renderNewScrapRate()}</TableHeaderColumn>
+                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">{renderNewScrapRate()}</TableHeaderColumn>
                                 <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >{renderNetCost()}</TableHeaderColumn>
                                 <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >{renderNewNetCost()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
@@ -187,7 +205,7 @@ function RMSimulation(props) {
                                 </div>{" "}
                                 {"CANCEL"}
                             </button>
-                            <button type="submit" className="user-btn mr5 save-btn"                    >
+                            <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}

@@ -1760,9 +1760,9 @@ export const RMDomesticSimulation = [
     // { label: "Plant", value: "Plant" },
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
-    { label: 'New Basic Rate', value: 'New Basic Rate' },
+    { label: 'NewBasicRate', value: 'NewBasicRate' },
     { label: "ScrapRate", value: "ScrapRate" },
-    { label: 'New Scrap Rate', value: 'New Scrap Rate' },
+    { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
@@ -1779,9 +1779,9 @@ export const RMImportSimulation = [
     { label: "VendorLocation", value: "VendorLocation" },
     { label: "UOM", value: "UOM" },
     { label: "BasicRate", value: "BasicRate" },
-    { label: 'New Basic Rate', value: 'New Basic Rate' },
+    { label: 'NewBasicRate', value: 'NewBasicRate' },
     { label: "ScrapRate", value: "ScrapRate" },
-    { label: 'New Scrap Rate', value: 'New Scrap Rate' },
+    { label: 'NewScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
