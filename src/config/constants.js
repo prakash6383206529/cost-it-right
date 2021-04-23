@@ -8,9 +8,9 @@ export const config = {
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    'Auth-Token': getAuthToken(),
+    'authorization': `Bearer ${getAuthToken()}`,
     'Access-From': 'WEB',
-    'Api-Key': `${process.env.REACT_APP_API_KEY}`,
+    //'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },
 }
 

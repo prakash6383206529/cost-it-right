@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector, } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID } from '../../actions/Costing';
+import {
+  getToolTabData, saveToolTab, setToolTabData, getToolsProcessWiseDataListByCostingID,
+  setComponentToolItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
+} from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import Switch from "react-switch";
@@ -27,6 +30,7 @@ function TabToolCost(props) {
   const ToolTabData = useSelector(state => state.costing.ToolTabData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ToolsDataList = useSelector(state => state.costing.ToolsDataList)
+  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -164,9 +168,17 @@ function TabToolCost(props) {
     dispatch(saveToolTab(data, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.TOOL_TAB_COSTING_SAVE_SUCCESS);
+        dispatch(setComponentToolItemData({}, () => { }))
+        InjectDiscountAPICall()
       }
     }))
 
+  }
+
+  const InjectDiscountAPICall = () => {
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    }))
   }
 
   /**
