@@ -19,6 +19,7 @@ import Attachament from './Drawers/Attachament'
 import { DRAFT, FILE_URL, REJECTED, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
+import moment from 'moment'
 
 const CostingSummaryTable = (props) => {
   const { viewMode, showDetail, technologyId, costingID, showWarningMsg } = props
@@ -566,7 +567,7 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-flex justify-content-between bg-grey">
-                                {data.costingName}{' '}
+                                {`${moment(data.costingDate).format('DD/MM/YYYY')}-${data.CostingNumber}`}{' '}
                                 {
                                   !viewMode &&
                                   <a
