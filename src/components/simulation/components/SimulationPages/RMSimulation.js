@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import moment from 'moment';
@@ -9,10 +9,22 @@ import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import Simulation from '../Simulation';
 import { Fragment } from 'react';
+import { TextFieldHookForm } from '../../../layout/HookFormInputs';
+import { useForm, Controller } from 'react-hook-form'
 
 function RMSimulation(props) {
-    const { isDomestic, list, isbulkUpload } = props
+    const { isDomestic, list, isbulkUpload, rowCount } = props
     const [showSimulation, setShowSimulation] = useState(false)
+
+    const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    })
+
+    useEffect(() => {
+        setValue('NoOfCorrectRow', rowCount.correctRow)
+        setValue('NoOfInCorrectRow', rowCount.incorrectRow)
+    }, [])
 
     const renderCostingHead = () => {
         return <>Costing <br />Head </>
@@ -159,6 +171,52 @@ function RMSimulation(props) {
             {
                 !showSimulation &&
                 <Fragment>
+                    {
+                        isbulkUpload &&
+                        <Row className="filter-row-large pt-4">
+                            <Col md="6" lg="6" className="search-user-block mb-3">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
+                                        <div className="d-flex">
+                                            <div class="pr-2 mt-4">No of rows with changes:</div>
+                                            <TextFieldHookForm
+                                                label=""
+                                                name={'NoOfCorrectRow'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.NoOfCorrectRow}
+                                                disabled={true}
+                                            />
+                                            <div class="pr-2 mt-4">No of rows without changes:</div>
+                                            <TextFieldHookForm
+                                                label=""
+                                                name={'NoOfInCorrectRow'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                rules={{ required: false }}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.NoOfInCorrectRow}
+                                                disabled={true}
+                                            />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
+                    }
                     <Row>
                         <Col>
                             <BootstrapTable

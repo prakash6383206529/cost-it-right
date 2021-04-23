@@ -9,13 +9,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import {
-    RMDomesticSimulation, RMDomesticSimulationTempData,
-    RMImportSimulation
-} from '../../../config/masterData';
+import { RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
-import Downloadxls from '../../massUpload/Downloadxls';
 import RMSimulation from './SimulationPages/RMSimulation';
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -43,6 +40,7 @@ function Simulation(props) {
     const [showEditTable, setShowEditTable] = useState(false)
     const [isbulkUpload, setIsBulkUpload] = useState(false)
     const [tableData, setTableData] = useState([])
+    const [rowCount, setRowCount] = useState({})
 
     const handleMasterChange = (value) => {
         setMaster(value)
@@ -105,32 +103,69 @@ function Simulation(props) {
     const cancelEditPage = () => {
         setShowEditTable(false)
         setIsBulkUpload(false)
+        setTableData([])
     }
 
     /**
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
    */
-    const closeDrawer = (e = '', tableData = {}) => {
+    const closeDrawer = (e = '', tableData = {}, correctRow = 0, incorrectRow = 0) => {
         setShowDrawer(false)
         if (Object.keys(tableData).length > 0) {
             console.log(tableData, "tableData");
             setTableData(tableData)
+            setRowCount({ correctRow: correctRow, incorrectRow: incorrectRow })
             setShowEditTable(true)
             setIsBulkUpload(true)
         }
     }
 
     const editTable = () => {
+        let flag;
         setShowEditTable(true)
+        // switch (master.label) {
+        //     case RMDOMESTIC:
+        //         console.log("COMING HERE");
+        //         rmDomesticListing.forEach((element, index) => {
+        //             if (element.CostingHead !== rmDomesticListing[index + 1]) {
+        //                 console.log("COMING HERE");
+        //                 toastr.warning('Please select either ZBC or VBC costing head at a time.')
+        //                 flag = false
+        //                 return false
+        //             }
+        //             return true
+        //         });
+        //         if (flag === true) {
+        //             setShowEditTable(true)
+        //         }
+        //         break;
+        //     case RMIMPORT:
+        //         rmImportListing.forEach((element, index) => {
+        //             if (element.CostingHead !== rmImportListing[index + 1]) {
+        //                 toastr.warning('Please select either ZBC or VBC costing head at a time.')
+        //                 flag = false
+        //                 return false
+        //             }
+        //             return true
+        //         })
+        //         if (flag === true) {
+        //             setShowEditTable(true)
+        //         }
+        //         break;
+
+        //     default:
+        //         break;
+        // }
+
     }
 
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} list={tableData.length > 0 ? tableData : rmDomesticListing} />
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} />
             case RMIMPORT:
-                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} list={tableData.length > 0 ? tableData : rmImportListing} />
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
 
             default:
                 break;

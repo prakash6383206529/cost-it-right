@@ -570,6 +570,7 @@ export function formViewData(costingSummary) {
   obj.zbc = dataFromAPI.TypeOfCosting
   obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
   obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
+  obj.costingDate = dataFromAPI.CostingDate ? dataFromAPI.CostingDate : '-'
   obj.CostingNumber = dataFromAPI.CostingNumber ? dataFromAPI.CostingNumber : '-'
   obj.status = dataFromAPI.CostingStatus ? dataFromAPI.CostingStatus : '-'
   obj.rm = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRawMaterialsCost.length > 0 ? dataFromAPI.CostingPartDetails.CostingRawMaterialsCost[0].RMName : '-'

@@ -24,7 +24,9 @@ class SimulationUploadDrawer extends Component {
         this.state = {
             files: [],
             fileData: '',
-            fileName: ''
+            fileName: '',
+            correctRowCount: '',
+            incorrectRowCount: ''
         }
     }
 
@@ -58,11 +60,11 @@ class SimulationUploadDrawer extends Component {
     }
 
     toggleDrawer = (event) => {
-        const { fileData } = this.state
+        const { fileData, correctRowCount, incorrectRowCount } = this.state
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
-        this.props.closeDrawer('', fileData)
+        this.props.closeDrawer('', fileData, correctRowCount, incorrectRowCount)
     };
 
     cancel = () => {
@@ -133,23 +135,21 @@ class SimulationUploadDrawer extends Component {
                     let fileData = [];
                     let basicRateCount = 0
                     let scrapRateCount = 0
+                    let correctRowCount = 0
+                    let incorrectRowCount = 0
                     resp.rows.map((val, index) => {
                         if (index > 0) {
-
-
-                            // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                            // const i = val.findIndex(e => e === '');
-                            // 
-                            // if (i !== -1) {
-                            //     val[i] = '';
-                            // }
                             if (val[10] !== '') {
                                 basicRateCount = basicRateCount + 1
                             }
                             if (val[12] !== '') {
                                 scrapRateCount = scrapRateCount + 1
                             }
-
+                            if (val[10] === '' && val[12] === '') {
+                                incorrectRowCount = incorrectRowCount + 1
+                                return false
+                            }
+                            correctRowCount = correctRowCount + 1
                             let obj = {}
                             val.map((el, i) => {
                                 if (fileHeads[i] === 'EffectiveDate' && typeof el == 'number') {
@@ -172,6 +172,7 @@ class SimulationUploadDrawer extends Component {
                         toastr.warning('Please fill at least one basic rate.')
                         return false
                     }
+                    console.log(scrapRateCount, "scrapRateCount");
                     if (scrapRateCount === 0) {
                         toastr.warning('Please fill at least one scrap rate.')
                         return false
@@ -179,6 +180,8 @@ class SimulationUploadDrawer extends Component {
                     this.setState({
                         fileData: fileData,
                         uploadfileName: uploadfileName,
+                        correctRowCount: correctRowCount,
+                        incorrectRowCount: incorrectRowCount
                     });
                 }
             });
