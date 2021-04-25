@@ -6,7 +6,7 @@ import {
   renderText
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
-import { loginUserAPI, getMenuByUser, getLeftMenu, } from "../../actions/auth/AuthActions";
+import { loginUserAPI, getMenuByUser, getLeftMenu, TokenAPI } from "../../actions/auth/AuthActions";
 import { maxLength70, maxLength25, required, email } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";
@@ -55,6 +55,14 @@ class Login extends Component {
    */
   onSubmit(values) {
 
+    let reqParams = {
+      username: 'superadmin@costitright.com',
+      password: 'Adm!n@296#',
+      grant_type: 'password',
+    }
+    // this.props.TokenAPI(reqParams, (response) => {
+    //   console.log('Token res:', response)
+    // })
     this.props.loginUserAPI(values, (res) => {
       if (res && res.data && res.data.Result) {
         this.setState({ isLoader: false, isSubmitted: false });
@@ -108,7 +116,7 @@ class Login extends Component {
                         component={renderEmailInputField}
                         isDisabled={false}
                         placeholder={"Email"}
-                        onClickCapture={(e) => this.setState({flag: false})}
+                        onClickCapture={(e) => this.setState({ flag: false })}
                         validate={[required, email, maxLength70]}
                         required={true}
                       // maxLength={71}
@@ -122,13 +130,13 @@ class Login extends Component {
                         validate={[required, maxLength70]}
                         component={renderText}
                         required={true}
-                        onClickCapture={(e) => this.setState({flag: false})}
+                        onClickCapture={(e) => this.setState({ flag: false })}
                         // maxLength={26}
                         customClassName={'withBorder'}
                       />
                     }
                   </div>
-                  <div className="input-group phone" onClickCapture={(e) => this.setState({flag: false})}>
+                  <div className="input-group phone" onClickCapture={(e) => this.setState({ flag: false })}>
                     <Field
                       name="Password"
                       // label="Password"
@@ -220,4 +228,5 @@ export default reduxForm({
   loginUserAPI,
   getMenuByUser,
   getLeftMenu,
+  TokenAPI,
 })(Login));

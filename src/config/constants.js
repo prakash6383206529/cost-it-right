@@ -8,9 +8,10 @@ export const config = {
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    'authorization': `Bearer ${getAuthToken()}`,
+    //'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer pswHFnDhkrPy8jxGvjgbex583tSzH7-5uAAYoZsjwy63sr8pdmNAyOVmv-vBIBsUTwsNcd1oiq0Mo-jWaDaZA31K9Au6w8g6ycldNcSyfLEImhODgvkP7HAs0EeupDbB1w6MCjXzdhnfP-zIy2sAzGm8jcfZST-ps89mss9V4FE7is958vLY7gO2uYhdz4Piyyngp9c8P1dqe-NEJof_uQwWfAje-gI22jsUQPDDZfmrlYZukrbjMcRF4Vm9WACN`,
     'Access-From': 'WEB',
-    //'Api-Key': `${process.env.REACT_APP_API_KEY}`,
+    'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },
 }
 
@@ -20,6 +21,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = 'http://10.10.1.100:1002/api/v1';
+//const BASE_URL = 'http://10.10.10.43/CostingEngine.Application.CostItRight/api/v1';
 
 //STAGING
 // const BASE_URL = 'http://10.10.1.10:1002/api/v1';
@@ -563,6 +565,7 @@ export const API = {
 
   //LOGIN API
   login: `${BASE_URL}/user/login`,
+  tokenAPI: `${BASE_URL}/token`,
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
   getLoginPageInit: `${BASE_URL}/user/page-init`,
