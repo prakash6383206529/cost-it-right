@@ -1715,7 +1715,7 @@ export function reassignCostingAPI(CostingId, callback) {
   return (dispatch) => {
     //dispatch({ type: AUTH_API_REQUEST });
     axios
-      .put(`${API.reassignCosting}/${CostingId}`, { headers })
+      .put(`${API.reassignCosting}/${CostingId}`, headers)
       .then((response) => {
         if (response.data.Result) {
           callback(response)
@@ -1737,7 +1737,7 @@ export function cancelCostingAPI(CostingId, callback) {
   return (dispatch) => {
     //dispatch({ type: AUTH_API_REQUEST });
     axios
-      .post(`${API.cancelCosting}/${CostingId}`, { headers })
+      .post(`${API.cancelCosting}/${CostingId}`, headers)
       .then((response) => {
         if (response.data.Result) {
           callback(response)

@@ -39,7 +39,7 @@ export function createExchangeRate(data, callback) {
 export function getExchangeRateDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, { headers })
+        axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({

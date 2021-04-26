@@ -60,9 +60,9 @@ class Login extends Component {
       password: 'Adm!n@296#',
       grant_type: 'password',
     }
-    // this.props.TokenAPI(reqParams, (response) => {
-    //   console.log('Token res:', response)
-    // })
+    this.props.TokenAPI(reqParams, (response) => {
+      console.log('Token res:', response)
+    })
     this.props.loginUserAPI(values, (res) => {
       if (res && res.data && res.data.Result) {
         this.setState({ isLoader: false, isSubmitted: false });

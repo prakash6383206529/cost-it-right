@@ -85,7 +85,7 @@ export function getClientDataList(filterData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const QueryParams = `clientName=${filterData.clientName}&companyName=${filterData.companyName}`
-        axios.get(`${API.getClientDataList}?${QueryParams}`, { headers })
+        axios.get(`${API.getClientDataList}?${QueryParams}`, headers)
             .then((response) => {
                 if (response.status === 204 && response.data === '') {
                     dispatch({

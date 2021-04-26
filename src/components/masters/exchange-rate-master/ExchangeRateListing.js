@@ -68,7 +68,7 @@ class ExchangeRateListing extends Component {
     * @method getTableListData
     * @description Get list data
     */
-    getTableListData = (currencyId = '') => {
+    getTableListData = (currencyId = 0) => {
         let filterData = {
             currencyId: currencyId,
         }
@@ -143,11 +143,11 @@ class ExchangeRateListing extends Component {
     }
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForPrice) : '';
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
     }
     inputOutputFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell,initialConfiguration.NoOfDecimalForInputOutput) : '';
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForInputOutput) : '';
     }
     /**
     * @method effectiveDateFormatter
@@ -372,8 +372,8 @@ class ExchangeRateListing extends Component {
                                             <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => this.setState({ shown: !this.state.shown })}>
                                                 <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                         ) : (
-                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                            )}
+                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                        )}
                                         {AddAccessibility && <button
                                             type="button"
                                             className={'user-btn'}
