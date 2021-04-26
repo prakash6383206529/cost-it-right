@@ -173,7 +173,7 @@ a:hover {
   justify-content: center;
   vertical-align: middle;
   font-size: 14px;
-  line-height: 14px;
+  line-height: initial;
 }
 
 .disabled-button {
@@ -403,6 +403,13 @@ a:hover {
   height: 12px;
   background: transparent url('../../assests/images/Path 15286.svg') 0% 0%
     no-repeat padding-box;
+}
+.download{
+  width: 14px;
+  height: 14px;
+  background: transparent url('../../assests/images/download.png') 0% 0% no-repeat
+    padding-box;
+    margin-right: 5px;
 }
 .upload {
   width: 14px;

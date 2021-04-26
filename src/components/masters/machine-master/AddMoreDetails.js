@@ -2854,7 +2854,7 @@ class AddMoreDetails extends Component {
 
                                   <button
                                     type="button"
-                                    className={'reset-btn mt30 pull-left'}
+                                    className={'reset-btn reset mt30 pull-left'}
                                     onClick={this.resetLabourGridData}
                                   >Cancel</button>
                                 </>
@@ -2867,7 +2867,7 @@ class AddMoreDetails extends Component {
                                     <div className={'plus'}></div>ADD</button>
                                   <button
                                     type="button"
-                                    className={'btn reset-btn mt30 pull-left'}
+                                    className={'reset-btn mt30 pull-left'}
                                     onClick={this.resetLabourGridData}
                                   >Reset</button>
                                 </>}

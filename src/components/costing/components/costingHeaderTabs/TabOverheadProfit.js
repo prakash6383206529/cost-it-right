@@ -573,7 +573,7 @@ function TabOverheadProfit(props) {
                     </div>
                   </Col>}
 
-                <Col md="6" className="px-30 py-4 costing-border-x border-bottom-0">
+                <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressIncludeSurfaceTreatment}

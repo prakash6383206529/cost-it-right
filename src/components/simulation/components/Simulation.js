@@ -180,31 +180,31 @@ function Simulation(props) {
                 !showEditTable &&
                 <>
                     <Row>
-                        <Col sm="4">
+                        <Col sm="12">
                             <h1>{`Simulation`}</h1>
                         </Col>
                     </Row>
 
                     <Row>
-                        <Col md="1">
-                            <div>Masters:</div>
-                        </Col>
-                        <Col md="3">
-                            <div className="flex-fill filled-small hide-label">
-                                <SearchableSelectHookForm
-                                    label={''}
-                                    name={'Masters'}
-                                    placeholder={'Masters'}
-                                    Controller={Controller}
-                                    control={control}
-                                    rules={{ required: false }}
-                                    register={register}
-                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                    options={renderListing('masters')}
-                                    mandatory={false}
-                                    handleChange={handleMasterChange}
-                                    errors={errors.Masters}
-                                />
+                        <Col md="12" className="filter-block zindex-12">
+                            <div className="d-inline-flex justify-content-start align-items-center w100">
+                                <div className="flex-fills">Masters:</div>
+                                <div className="hide-label flex-fills pl-0">
+                                    <SearchableSelectHookForm
+                                        label={''}
+                                        name={'Masters'}
+                                        placeholder={'Masters'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        register={register}
+                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        options={renderListing('masters')}
+                                        mandatory={false}
+                                        handleChange={handleMasterChange}
+                                        errors={errors.Masters}
+                                    />
+                                </div>
                             </div>
                         </Col>
                     </Row>
@@ -215,20 +215,18 @@ function Simulation(props) {
                     {
                         showMasterList &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                            <div className="col-sm-12 text-right bluefooter-butn">
-                                <Col md="12" lg="12" className="mb-3">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        <div>
-                                            <button type="button" className={"user-btn edit-btn mt2 mr5"} onClick={editTable}>
-                                                <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
-                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary mr-2'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>DOWNLOAD</button>}>
-                                                {renderColumn(master.label)}
-                                            </ExcelFile>
-                                            <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
-                                            {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
-                                        </div>
+                            <div className="col-sm-12 text-right bluefooter-butn mt-3">
+                                <div className="d-flex justify-content-end bd-highlight w100 my-2">
+                                    <div>
+                                        <button type="button" className={"edit-btn mt2 mr5"} onClick={editTable}>
+                                            <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
+                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><img className="download" alt={''} src={require('../../../assests/images/download.png')}></img>DOWNLOAD</button>}>
+                                            {renderColumn(master.label)}
+                                        </ExcelFile>
+                                        <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                        {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
                                     </div>
-                                </Col>
+                                </div>
                             </div>
                         </Row>
                     }

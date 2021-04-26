@@ -173,52 +173,51 @@ function RMSimulation(props) {
                 <Fragment>
                     {
                         isbulkUpload &&
-                        <Row className="filter-row-large pt-4">
-                            <Col md="6" lg="6" className="search-user-block mb-3">
-                                <div className="d-flex justify-content-end bd-highlight w100">
-                                    <div>
-                                        <div className="d-flex">
-                                            <div class="pr-2 mt-4">No of rows with changes:</div>
-                                            <TextFieldHookForm
-                                                label=""
-                                                name={'NoOfCorrectRow'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.NoOfCorrectRow}
-                                                disabled={true}
-                                            />
-                                            <div class="pr-2 mt-4">No of rows without changes:</div>
-                                            <TextFieldHookForm
-                                                label=""
-                                                name={'NoOfInCorrectRow'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                rules={{ required: false }}
-                                                mandatory={false}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.NoOfInCorrectRow}
-                                                disabled={true}
-                                            />
-                                        </div>
-
-                                    </div>
+                        <Row className="sm-edit-row justify-content-end">
+                            <Col md="6">
+                                <div className="d-flex align-items-center">
+                                    <label>No of rows with changes:</label>
+                                    <TextFieldHookForm
+                                        label=""
+                                        name={'NoOfCorrectRow'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{ required: false }}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                        errors={errors.NoOfCorrectRow}
+                                        disabled={true}
+                                    />
+                                </div>
+                            </Col>
+                                <Col md="6">
+                                <div className="d-flex align-items-center">
+                                    <label>No of rows without changes:</label>
+                                    <TextFieldHookForm
+                                        label=""
+                                        name={'NoOfInCorrectRow'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        rules={{ required: false }}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                        errors={errors.NoOfInCorrectRow}
+                                        disabled={true}
+                                    />
                                 </div>
                             </Col>
                         </Row>
                     }
                     <Row>
-                        <Col>
+                        <Col className="add-min-height mb-3">
                             <BootstrapTable
                                 data={list}
                                 striped={false}
@@ -264,7 +263,7 @@ function RMSimulation(props) {
                                 {"CANCEL"}
                             </button>
                             <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
-                                <div className={"Run"}>
+                                <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button>
