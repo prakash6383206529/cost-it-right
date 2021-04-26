@@ -44,7 +44,7 @@ export function createMachineType(data, callback) {
 export function getMachineTypeListAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getMachineTypeListAPI, { headers })
+        axios.get(API.getMachineTypeListAPI, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -172,7 +172,7 @@ export function getMachineDataList(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `costing_head=${data.costing_head}&technology_id=${data.technology_id}&vendor_id=${data.vendor_id}&machine_type_id=${data.machine_type_id}&process_id=${data.process_id}&plant_id=${data.plant_id}`
-        axios.get(`${API.getMachineDataList}?${queryParams}`, { headers })
+        axios.get(`${API.getMachineDataList}?${queryParams}`, headers)
             .then((response) => {
                 if (response.data.Result === true || response.status === 204) {
                     dispatch({
@@ -420,7 +420,7 @@ export function getFuelUnitCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `fuelId=${data.fuelId}&plantId=${data.plantId}`
-        axios.get(`${API.getFuelUnitCost}?${queryParams}`, { headers })
+        axios.get(`${API.getFuelUnitCost}?${queryParams}`, headers)
             .then((response) => {
                 if (response && response.data && response.data.Result === true) {
                     callback(response);
@@ -441,7 +441,7 @@ export function getLabourCost(data, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const queryParams = `labourTypeId=${data.labourTypeId}&machineTypeId=${data.machineTypeId}`
-        axios.get(`${API.getLabourCost}?${queryParams}`, { headers })
+        axios.get(`${API.getLabourCost}?${queryParams}`, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -461,7 +461,7 @@ export function getLabourCost(data, callback) {
 export function getPowerCostUnit(plantId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, { headers })
+        axios.get(`${API.getPowerCostUnit}?plantId=${plantId}`, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);

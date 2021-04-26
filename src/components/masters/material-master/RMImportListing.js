@@ -415,6 +415,23 @@ class RMImportListing extends Component {
     return toastr.confirm(`Recently Created Material's Density is not created, Do you want to create?`, toastrConfirmOptions);
   }
 
+  handleHeadChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ costingHead: newValue, });
+    } else {
+      this.setState({ costingHead: [], })
+    }
+  };
+
+  handlePlantChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ plant: newValue })
+    } else {
+      this.setState({ plant: [] })
+    }
+  }
+
+
   /**
   * @method confirmDensity
   * @description confirm density popup.
@@ -462,7 +479,7 @@ class RMImportListing extends Component {
                   </div>
                   <div className="flex-fill">
                     <Field
-                      name="costingHead"
+                      name="CostingHead"
                       type="text"
                       label=""
                       component={searchableSelect}
@@ -478,7 +495,7 @@ class RMImportListing extends Component {
                   </div>
                   <div className="flex-fill">
                     <Field
-                      name="plant"
+                      name="Plant"
                       type="text"
                       label=""
                       component={searchableSelect}

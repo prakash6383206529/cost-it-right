@@ -8,7 +8,8 @@ export const config = {
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    'Auth-Token': getAuthToken(),
+    //'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer coJurdgQ-TYXEz6UZSKsIC0joElQ2Emjs7E0ERziewWm0K4aqhtVpqARcH6w_WT3lIWw8Tu4Z3wpIgFSP34FRTPHnvH5dsJNq6H9BXugTRUk2BUMZpRrmVs7Q6Uy4xGCZlUXqOcekRKeLqlm28n8gMNhPwR6NP58dcOC-EnarBUeDHSRLYpLNPCrBDSC-uosDM5Hb9PLqeZdfQZHE4YNz2zyeCD8bcww1XD2BC3sgRQyj-pBmv5jBylJTD-39Z3P`,
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },

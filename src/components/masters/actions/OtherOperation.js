@@ -33,7 +33,7 @@ const headers = config
 export function getOperationsAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getOtherOperationsAPI, { headers })
+        axios.get(API.getOtherOperationsAPI, headers)
             .then((response) => {
                 dispatch({
                     type: GET_OTHER_OPERATION_SUCCESS,
@@ -157,7 +157,7 @@ export function createCEDOtherOperationsAPI(data, callback) {
 export function getCEDOtherOperationsAPI(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getCEDOtherOperationsAPI, { headers })
+        axios.get(API.getCEDOtherOperationsAPI, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({
@@ -252,7 +252,7 @@ export function getOperationsDataList(filterData, callback) {
         let payload
         //dispatch({ type: API_REQUEST });
         const QueryParams = `operation_for=${filterData.operation_for}&operation_Name_id=${filterData.operation_Name_id}&technology_id=${filterData.technology_id}&vendor_id=${filterData.vendor_id}`
-        axios.get(`${API.getOperationsDataList}?${QueryParams}`, { headers })
+        axios.get(`${API.getOperationsDataList}?${QueryParams}`, headers)
 
             .then((response) => {
 
@@ -448,7 +448,7 @@ export function getCEDOtherOperationBySupplierID(supplierId, callback) {
 export function getOperationSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(API.getOperationSelectList, { headers })
+        axios.get(API.getOperationSelectList, headers)
             .then((response) => {
                 if (response.data.Result === true) {
                     dispatch({

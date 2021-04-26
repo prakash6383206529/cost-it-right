@@ -433,6 +433,15 @@ class RMDomesticListing extends Component {
             this.setState({ costingHead: [], })
         }
     };
+
+    handlePlantChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ plant: newValue })
+        } else {
+            this.setState({ plant: [] })
+        }
+    }
+
     /**
     * @method confirmDensity
     * @description confirm density popup.
@@ -481,7 +490,7 @@ class RMDomesticListing extends Component {
                                     </div>
                                     <div className="flex-fill">
                                         <Field
-                                            name="costingHead"
+                                            name="CostingHead"
                                             type="text"
                                             label=""
                                             component={searchableSelect}
@@ -497,7 +506,7 @@ class RMDomesticListing extends Component {
                                     </div>
                                     <div className="flex-fill">
                                         <Field
-                                            name="plant"
+                                            name="Plant"
                                             type="text"
                                             label=""
                                             component={searchableSelect}

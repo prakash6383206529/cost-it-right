@@ -47,7 +47,7 @@ export function createReasonAPI(data, callback) {
 export function getAllReasonAPI(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.get(API.getAllReasonAPI, { headers })
+        axios.get(API.getAllReasonAPI, headers)
             .then((response) => {
                 dispatch({
                     type: GET_REASON_DATA_SUCCESS,

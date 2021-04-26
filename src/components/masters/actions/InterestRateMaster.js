@@ -40,7 +40,7 @@ export function getInterestRateDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         let queryParams = `vendor=${data.vendor}&icc_applicability=${data.icc_applicability}&payment_term_applicability=${data.payment_term_applicability}`
-        axios.get(`${API.getInterestRateDataList}?${queryParams}`, { headers })
+        axios.get(`${API.getInterestRateDataList}?${queryParams}`, headers)
             .then((response) => {
                 if (response.data.Result || response.status === 204)
                     dispatch({

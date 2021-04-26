@@ -1365,6 +1365,7 @@ function CostingDetails(props) {
                                   <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
+                                  <th style={{}}>{`Price`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
@@ -1442,6 +1443,7 @@ function CostingDetails(props) {
                                             {item.DisplayStatus}
                                           </div>
                                         </td>
+                                        <td>{item.Price ? item.Price : ''}</td>
                                         <td style={{ width: "250px" }}>
                                           <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />
                                           {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
@@ -1502,6 +1504,7 @@ function CostingDetails(props) {
                                   <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
+                                  <th style={{}}>{`Price`}</th>
                                   <th style={{ minWidth: "260px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
@@ -1576,6 +1579,7 @@ function CostingDetails(props) {
                                           {item.DisplayStatus}
                                         </div>
                                       </td>
+                                      <td>{item.Price ? item.Price : ''}</td>
                                       <td>
                                         <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBC)} />
                                         {!item.IsNewCosting && item.Status !== '' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBC)} />)}

@@ -75,7 +75,7 @@ class AddOperation extends Component {
     this.props.getVendorWithVendorCodeSelectList()
     this.getDetail()
     if (initialConfiguration && initialConfiguration.IsOperationCodeConfigure && data.isEditFlag === false) {
-      this.props.checkAndGetOperationCode('', res => {
+      this.props.checkAndGetOperationCode('', (res) => {
         let Data = res.data.DynamicData;
         this.props.change('OperationCode', Data.OperationCode)
       })
