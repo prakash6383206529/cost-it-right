@@ -19,6 +19,7 @@ import Attachament from './Drawers/Attachament'
 import { DRAFT, FILE_URL, REJECTED, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
+import moment from 'moment'
 
 const CostingSummaryTable = (props) => {
   const { viewMode, showDetail, technologyId, costingID, showWarningMsg } = props
@@ -402,6 +403,7 @@ const CostingSummaryTable = (props) => {
           obj.reason = ''
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
+          obj.partNo = viewCostingData[index].partId
           temp.push(obj)
         }
         dispatch(setCostingApprovalData(temp))
@@ -504,7 +506,7 @@ const CostingSummaryTable = (props) => {
                             <th scope="col">
                               <div class="element w-60 d-inline-flex align-items-center">
                                 {
-                                  data.status === DRAFT &&
+                                  (data.status === DRAFT || data.status === REJECTED) &&
                                   <div class="custom-check1 d-inline-block">
                                     <label
                                       className="custom-checkbox pl-0 mb-0"
@@ -565,7 +567,7 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-flex justify-content-between bg-grey">
-                                {data.costingName}{' '}
+                                {`${moment(data.costingDate).format('DD/MM/YYYY')}-${data.CostingNumber}`}{' '}
                                 {
                                   !viewMode &&
                                   <a

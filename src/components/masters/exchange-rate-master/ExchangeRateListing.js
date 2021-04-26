@@ -243,7 +243,7 @@ class ExchangeRateListing extends Component {
     */
     filterList = () => {
         const { currency, } = this.state;
-        const currencyTemp = currency ? currency.value : null;
+        const currencyTemp = currency ? currency.value : 0;
         this.getTableListData(currencyTemp)
     }
 

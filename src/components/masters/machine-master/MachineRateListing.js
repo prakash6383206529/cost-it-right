@@ -3,16 +3,10 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import {
-    getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList,
-    getInitialVendorWithVendorCodeSelectList,
-    getMachineTypeSelectListByPlant,
-    getVendorSelectListByTechnology,
-    getMachineTypeSelectListByTechnology,
-    getMachineTypeSelectListByVendor,
-    getProcessSelectListByMachineType,
+    getInitialPlantSelectList, getInitialMachineTypeSelectList, getInitialProcessesSelectList, getInitialVendorWithVendorCodeSelectList, getMachineTypeSelectListByPlant,
+    getVendorSelectListByTechnology, getMachineTypeSelectListByTechnology, getMachineTypeSelectListByVendor, getProcessSelectListByMachineType,
 } from '../actions/Process';
 import { getMachineDataList, deleteMachine, copyMachine, } from '../actions/MachineMaster';
 import { getTechnologySelectList, } from '../../../actions/Common';
@@ -22,10 +16,9 @@ import { toastr } from 'react-redux-toastr';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull } from '../../../helper';
 
 class MachineRateListing extends Component {
     constructor(props) {
@@ -58,7 +51,7 @@ class MachineRateListing extends Component {
         this.getDataList()
     }
 
-    getDataList = (costing_head = '', technology_id = '', vendor_id = '', machine_type_id = '', process_id = '', plant_id = '') => {
+    getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '') => {
         const filterData = {
             costing_head: costing_head,
             technology_id: technology_id,
@@ -384,9 +377,9 @@ class MachineRateListing extends Component {
         const { costingHead, plant, technology, vendorName, processName, machineType } = this.state;
 
         const costingId = costingHead ? costingHead.value : '';
-        const technologyId = technology ? technology.value : '';
+        const technologyId = technology ? technology.value : 0;
         const vendorId = vendorName ? vendorName.value : '';
-        const machineTypeId = machineType ? machineType.value : '';
+        const machineTypeId = machineType ? machineType.value : 0;
         const processId = processName ? processName.value : '';
         const plantId = plant ? plant.value : '';
 
@@ -584,8 +577,8 @@ class MachineRateListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    )}
                                     {BulkUploadAccessibility && <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -650,7 +643,7 @@ class MachineRateListing extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-    
+
     const { comman, process, machine, } = state;
     const { technologySelectList, } = comman;
     const { filterSelectList } = process;

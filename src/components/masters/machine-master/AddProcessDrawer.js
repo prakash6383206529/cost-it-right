@@ -157,8 +157,6 @@ class AddProcessDrawer extends Component {
         ProcessId: ID,
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        Plants: plantArray,
-        Machines: isMachineShow ? machineArray : [],
         LoggedInUserId: loggedInUserId(),
       }
       this.props.reset()
@@ -174,8 +172,6 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
-        Plants: plantArray.length > 0 ? plantArray : [],
-        Machines: isMachineShow ? machineArray : [],
         LoggedInUserId: loggedInUserId(),
       }
 

@@ -140,15 +140,9 @@ class AddBOPDomestic extends Component {
           let vendorObj
           const Data = res.data.Data;
           if (Data.IsVendor) {
-            this.props.getVendorWithVendorCodeSelectList(() => {
-              // const { vendorWithVendorCodeSelectList } = this.props;
-              // vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
-            })
+            this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
-            this.props.getVendorTypeBOPSelectList(() => {
-              // const { vendorWithVendorCodeSelectList } = this.props;
-              // vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
-            })
+            this.props.getVendorTypeBOPSelectList(() => { })
           }
 
           this.props.getPlantBySupplier(Data.Vendor, () => { })
@@ -157,12 +151,12 @@ class AddBOPDomestic extends Component {
           setTimeout(() => {
             const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, UOMSelectList } = this.props;
 
-            let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => item.Value === Data.CategoryId)
+            let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
             let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
             console.log('vendorObj: ', vendorObj);
             let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-            let sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
+            let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
 
             this.setState({
@@ -487,7 +481,6 @@ class AddBOPDomestic extends Component {
       selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
 
     const { initialConfiguration } = this.props;
-    console.log(selectedPlants, "selectedPlants");
 
     let partArray = selectedPartAssembly && selectedPartAssembly.map(item => ({ PartNumber: item.Text, PartId: item.Value }))
     let plantArray = selectedPlants !== undefined ? { PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' } : {}
@@ -509,7 +502,6 @@ class AddBOPDomestic extends Component {
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
-        Part: partArray.length > 0 ? partArray : [],
         Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
@@ -526,15 +518,12 @@ class AddBOPDomestic extends Component {
 
       const formData = {
         IsVendor: IsVendor,
-        EntryType: 0,
         BoughtOutPartNumber: values.BoughtOutPartNumber,
         BoughtOutPartName: values.BoughtOutPartName,
         CategoryId: BOPCategory.value,
-        Part: partArray.length > 0 ? partArray : [],
         Specification: values.Specification,
         UnitOfMeasurementId: UOM.value,
         Vendor: vendorName.value,
-        VendorLocation: '',
         Source: values.Source,
         SourceLocation: sourceLocation.value,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),

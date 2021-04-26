@@ -129,16 +129,19 @@ function Sheet(props) {
     }
 
     const setWeightOfSheet = () => {
+        console.log("WEIGHT OF SHEEEEEEEEEEEEEEEEEEEEEEEEEEET");
         let data = {
             density: rmRowData.Density,
             thickness: getValues('SheetThickness'),
             length: length,
             width: SheetWidth
         }
-        const getWeightSheet = calculateWeight(data.density, data.length, data.width, data.thickness) / 1000000
-
+        console.log((calculateWeight(data.density, data.length, data.width, data.thickness) / 1000000).toFixed(15), "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+        const getWeightSheet = ((calculateWeight(data.density, data.length, data.width, data.thickness)) / 1000000).toFixed(6)
+        const updatedValue = dataToSend
+        updatedValue.WeightOfSheet = getWeightSheet
         setTimeout(() => {
-            setDataToSend({ ...dataToSend, WeightOfSheet: getWeightSheet })
+            setDataToSend(updatedValue)
             setValue('SheetWeight', checkForDecimalAndNull(getWeightSheet, localStorage.NoOfDecimalForInputOutput))
         }, 200);
     }
@@ -171,7 +174,7 @@ function Sheet(props) {
     const setGrossWeight = () => {
 
         let grossWeight
-        const sheetWeight = getValues('SheetWeight')
+        const sheetWeight = dataToSend.WeightOfSheet
         const noOfComponent = getValues('NoOfComponent')
         const cavity = getValues('Cavity')
 

@@ -61,9 +61,9 @@ class AddVBCPlant extends Component {
           setTimeout(() => {
             const { countryList, stateList, cityList, supplierSelectList } = this.props;
 
-            const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
-            const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
-            const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
+            const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
+            const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
+            const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityIdRef)
             const VendorObj = supplierSelectList && supplierSelectList.find(item => item.Value === Data.VendorId)
 
             this.setState({
@@ -289,7 +289,7 @@ class AddVBCPlant extends Component {
         <Drawer
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
             <div className={"drawer-wrapper drawer-700px"}>

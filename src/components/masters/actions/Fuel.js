@@ -84,7 +84,7 @@ export function getFuelDetailDataList(data, callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getFuelDetailDataList}?fuelName=${data.fuelName}&stateName=${data.stateName}`, headers);
         request.then((response) => {
-            if (response && response.status === 200) {
+            if (response && response.data.Result === true) {
                 dispatch({
                     type: GET_FUEL_DATALIST_SUCCESS,
                     payload: response.data.DataList,

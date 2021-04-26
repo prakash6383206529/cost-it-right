@@ -321,7 +321,8 @@ class AssemblyPartListing extends Component {
                     <TableHeaderColumn dataField="ECNNumber" searchable={false} width={'90'} >ECN No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="RevisionNumber" searchable={false} width={'110'} >Revision No.</TableHeaderColumn>
                     <TableHeaderColumn dataField="DrawingNumber" searchable={false} width={'105'} >Drawing No.</TableHeaderColumn>
-                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
+                    <TableHeaderColumn dataField="EffectiveDate" searchable={false} width={'110'} dataFormat={this.effectiveDateFormatter} dataSort={true}>{this.renderEffectiveDate()}</TableHeaderColumn>
+                    {/* <TableHeaderColumn dataField="IsActive" dataFormat={this.statusButtonFormatter}>Status</TableHeaderColumn> */}
                     <TableHeaderColumn dataField="PartId" searchable={false} width={'90'} dataFormat={this.visualAdFormatter}>View BOM</TableHeaderColumn>
                     <TableHeaderColumn dataAlign="right" className="action" dataField="PartId" width={'100'} searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                 </BootstrapTable>

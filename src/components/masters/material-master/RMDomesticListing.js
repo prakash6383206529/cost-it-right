@@ -41,6 +41,7 @@ class RMDomesticListing extends Component {
             value: { min: 0, max: 0 },
             maxRange: 0,
             isBulkUpload: false,
+            shown: this.props.isSimulation ? true : false
         }
     }
 
@@ -433,6 +434,15 @@ class RMDomesticListing extends Component {
             this.setState({ costingHead: [], })
         }
     };
+
+    handlePlantChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ plant: newValue })
+        } else {
+            this.setState({ plant: [] })
+        }
+    }
+
     /**
     * @method confirmDensity
     * @description confirm density popup.
@@ -481,7 +491,7 @@ class RMDomesticListing extends Component {
                                     </div>
                                     <div className="flex-fill">
                                         <Field
-                                            name="costingHead"
+                                            name="CostingHead"
                                             type="text"
                                             label=""
                                             component={searchableSelect}
@@ -497,7 +507,7 @@ class RMDomesticListing extends Component {
                                     </div>
                                     <div className="flex-fill">
                                         <Field
-                                            name="plant"
+                                            name="Plant"
                                             type="text"
                                             label=""
                                             component={searchableSelect}
@@ -594,38 +604,41 @@ class RMDomesticListing extends Component {
                             </Col>
                             // ) : ("")
                         }
-                        <Col md="6" lg="6" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
-                                    <>
-                                        {this.state.shown ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                                <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
-                                        ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
-                                        {BulkUploadAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={this.bulkToggle}
-                                            >
-                                                <div className={"upload"}></div>Bulk Upload
-                                            </button>
-                                        )}
-                                        {AddAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn"}
-                                                onClick={this.formToggle}
-                                            >
-                                                <div className={"plus"}></div>ADD
-                                            </button>
-                                        )}
-                                    </>
+                        {
+                            !this.props.isSimulation &&
+                            <Col md="6" lg="6" className="search-user-block mb-3">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div>
+                                        <>
+                                            {this.state.shown ? (
+                                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
+                                                    <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
+                                            ) : (
+                                                <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                >
+                                                    <div className={"upload"}></div>Bulk Upload
+                                                </button>
+                                            )}
+                                            {AddAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn"}
+                                                    onClick={this.formToggle}
+                                                >
+                                                    <div className={"plus"}></div>ADD
+                                                </button>
+                                            )}
+                                        </>
+                                    </div>
                                 </div>
-                            </div>
-                        </Col>
+                            </Col>
+                        }
                     </Row>
                 </form >
                 <Row>
@@ -651,7 +664,7 @@ class RMDomesticListing extends Component {
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
 
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
-                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorLocation" searchable={false} >{this.renderVendorLocation()}</TableHeaderColumn>
+                            {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorLocation" searchable={false} >{this.renderVendorLocation()}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="BasicRate" searchable={false} >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="ScrapRate" searchable={false} >{this.renderScrapRate()}</TableHeaderColumn>

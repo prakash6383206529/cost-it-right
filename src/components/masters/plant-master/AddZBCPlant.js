@@ -62,10 +62,10 @@ class AddZBCPlant extends Component {
           setTimeout(() => {
             const { countryList, stateList, cityList, companySelectList } = this.props;
 
-            const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
-            const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
-            const CityObj = cityList && cityList.find(item => item.Value === Data.CityIdRef)
-            const CompanyObj = companySelectList && companySelectList.find(item => item.Value === Data.CompanyId)
+            const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
+            const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
+            const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityIdRef)
+            const CompanyObj = companySelectList && companySelectList.find(item => Number(item.Value) === Data.CompanyId)
             this.setState({
               isEditFlag: true,
               isLoader: false,

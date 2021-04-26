@@ -38,6 +38,7 @@ export function createLabour(data, callback) {
  * @description get labour list
  */
 export function getLabourDataList(data, callback) {
+    console.log('data: ', data);
     return (dispatch) => {
         const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}`;
         const request = axios.get(`${API.getLabourDataList}?${queryParams}`, headers);

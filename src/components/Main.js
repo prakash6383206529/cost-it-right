@@ -45,6 +45,7 @@ import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpl
 import SimulationHistory from './simulation/components/SimulationHistory'
 import Simulation from './simulation/components/Simulation'
 import CostingSummary from './costing/components/CostingSummary'
+import SimulationUpload from './simulation/components/SimulationUpload'
 
 class Main extends Component {
   constructor(props) {
@@ -231,6 +232,8 @@ class Main extends Component {
                     <Route path="/simulation-history" component={SimulationHistory} />
 
                     <Route path="/simulation" component={Simulation} />
+
+                    <Route path="/simulation-upload" component={SimulationUpload} />
 
                     <Route
                       render={(props) => (

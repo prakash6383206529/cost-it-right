@@ -9,12 +9,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { RMDOMESTIC, RMIMPORT } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import {
-    RMDomesticSimulation, RMDomesticSimulationTempData,
-    RMImportSimulation
-} from '../../../config/masterData';
+import { RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
-import Downloadxls from '../../massUpload/Downloadxls';
+import RMSimulation from './SimulationPages/RMSimulation';
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -26,6 +24,7 @@ function Simulation(props) {
 
     useEffect(() => {
         dispatch(getSelectListOfMasters(() => { }))
+        setShowEditTable(false)
     }, [])
 
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
@@ -38,11 +37,11 @@ function Simulation(props) {
     const [master, setMaster] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
-    // const [fileName ,setFileName] = useState('')
+    const [showEditTable, setShowEditTable] = useState(false)
+    const [isbulkUpload, setIsBulkUpload] = useState(false)
+    const [tableData, setTableData] = useState([])
+    const [rowCount, setRowCount] = useState({})
 
-    // useEffect(() => {
-
-    // }, [rmDomesticListing, rmImportListing])
     const handleMasterChange = (value) => {
         setMaster(value)
         setShowMasterList(true)
@@ -50,8 +49,6 @@ function Simulation(props) {
 
     }
     const returnExcelColumn = (data = [], TempData) => {
-        //  const { fileName, failedData, isFailedFlag } = this.props;
-        console.log(data, "COMING IN EXCEL COLUMN11111111111111111", TempData);
         let temp = []
         temp = TempData.map((item) => {
             if (item.CostingHead === true) {
@@ -61,16 +58,6 @@ function Simulation(props) {
             }
             return item
         })
-        // if (isFailedFlag) {
-
-        //     //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
-        //     let isContentReason = data.filter(d => d.label === 'Reason')
-        //     if (isContentReason.length === 0) {
-        //         let addObj = { label: 'Reason', value: 'Reason' }
-        //         data.push(addObj)
-        //     }
-        // }
-
 
         return (<ExcelSheet data={temp} name={master.label}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -113,78 +100,150 @@ function Simulation(props) {
         }
     }
 
+    const cancelEditPage = () => {
+        setShowEditTable(false)
+        setIsBulkUpload(false)
+        setTableData([])
+    }
+
     /**
    * @method closeGradeDrawer
    * @description  used to toggle grade Popup/Drawer
    */
-    const closeDrawer = (e = '') => {
+    const closeDrawer = (e = '', tableData = {}, correctRow = 0, incorrectRow = 0) => {
         setShowDrawer(false)
+        if (Object.keys(tableData).length > 0) {
+            console.log(tableData, "tableData");
+            setTableData(tableData)
+            setRowCount({ correctRow: correctRow, incorrectRow: incorrectRow })
+            setShowEditTable(true)
+            setIsBulkUpload(true)
+        }
     }
+
+    const editTable = () => {
+        let flag;
+        setShowEditTable(true)
+        // switch (master.label) {
+        //     case RMDOMESTIC:
+        //         console.log("COMING HERE");
+        //         rmDomesticListing.forEach((element, index) => {
+        //             if (element.CostingHead !== rmDomesticListing[index + 1]) {
+        //                 console.log("COMING HERE");
+        //                 toastr.warning('Please select either ZBC or VBC costing head at a time.')
+        //                 flag = false
+        //                 return false
+        //             }
+        //             return true
+        //         });
+        //         if (flag === true) {
+        //             setShowEditTable(true)
+        //         }
+        //         break;
+        //     case RMIMPORT:
+        //         rmImportListing.forEach((element, index) => {
+        //             if (element.CostingHead !== rmImportListing[index + 1]) {
+        //                 toastr.warning('Please select either ZBC or VBC costing head at a time.')
+        //                 flag = false
+        //                 return false
+        //             }
+        //             return true
+        //         })
+        //         if (flag === true) {
+        //             setShowEditTable(true)
+        //         }
+        //         break;
+
+        //     default:
+        //         break;
+        // }
+
+    }
+
+    const editMasterPage = (page) => {
+        switch (page) {
+            case RMDOMESTIC:
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} />
+            case RMIMPORT:
+                return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
+
+            default:
+                break;
+        }
+    }
+
+
 
     return (
         <div className="container-fluid simulation-page">
-            <Row>
-                <Col sm="4">
-                    <h1>{`Simulation`}</h1>
-                </Col>
-            </Row>
-            <Row >
-                <Col md="12" className="filter-block zindex-12">
-                    <div className="d-inline-flex justify-content-start align-items-center w100">
-                        <div className="flex-fills">Masters:</div>
-                        <div className="hide-label flex-fills pl-0">
-                            <SearchableSelectHookForm
-                                label={''}
-                                name={'Masters'}
-                                placeholder={'Masters'}
-                                Controller={Controller}
-                                control={control}
-                                rules={{ required: false }}
-                                register={register}
-                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                options={renderListing('masters')}
-                                mandatory={false}
-                                handleChange={handleMasterChange}
-                                errors={errors.Masters}
-                            />
-                        </div>
-                    </div>
-                </Col>                
-            </Row>
-            {/* <RMDomesticListing isSimulation={true} /> */}
             {
-                showMasterList && renderModule(master)
-            }
-            <Row>
-            <Col md="12" lg="12" className="mt-2">
-                <div className="d-flex justify-content-end bd-highlight w100">
-                    <div>
-                        <button type="button" className={"edit-btn mt2 mr5"}>
-                            <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
-                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>Download File</button>}>
-                            {renderColumn(master.label)}
-                        </ExcelFile>
-                        {/* <Downloadxls
-                            isZBCVBCTemplate={false}
-                            isMachineMoreTemplate={false}
-                            fileName={'RMSimulationDomestic'}
-                            isFailedFlag={false}
-                            costingHead={''}
-                        /> */}
-                        {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
-                        <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>Bulk Upload </button>
-                    </div>
-                </div>
-            </Col>
-            </Row>
+                !showEditTable &&
+                <>
+                    <Row>
+                        <Col sm="4">
+                            <h1>{`Simulation`}</h1>
+                        </Col>
+                    </Row>
 
+                    <Row>
+                        <Col md="1">
+                            <div>Masters:</div>
+                        </Col>
+                        <Col md="3">
+                            <div className="flex-fill filled-small hide-label">
+                                <SearchableSelectHookForm
+                                    label={''}
+                                    name={'Masters'}
+                                    placeholder={'Masters'}
+                                    Controller={Controller}
+                                    control={control}
+                                    rules={{ required: false }}
+                                    register={register}
+                                    // defaultValue={plant.length !== 0 ? plant : ''}
+                                    options={renderListing('masters')}
+                                    mandatory={false}
+                                    handleChange={handleMasterChange}
+                                    errors={errors.Masters}
+                                />
+                            </div>
+                        </Col>
+                    </Row>
+                    {/* <RMDomesticListing isSimulation={true} /> */}
+                    {
+                        showMasterList && renderModule(master)
+                    }
+                    {
+                        showMasterList &&
+                        <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                            <div className="col-sm-12 text-right bluefooter-butn">
+                                <Col md="12" lg="12" className="mb-3">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        <div>
+                                            <button type="button" className={"user-btn edit-btn mt2 mr5"} onClick={editTable}>
+                                                <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
+                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary mr-2'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img>DOWNLOAD</button>}>
+                                                {renderColumn(master.label)}
+                                            </ExcelFile>
+                                            <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                            {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
+                                        </div>
+                                    </div>
+                                </Col>
+                            </div>
+                        </Row>
+                    }
+                    {
+                        showUploadDrawer &&
+                        <SimulationUploadDrawer
+                            isOpen={showUploadDrawer}
+                            closeDrawer={closeDrawer}
+                            anchor={"right"}
+                        />
+                    }
+                </>
+            }
             {
-                showUploadDrawer &&
-                <SimulationUploadDrawer
-                    isOpen={showUploadDrawer}
-                    closeDrawer={closeDrawer}
-                    anchor={"right"}
-                />
+                showEditTable && editMasterPage(master.label)
             }
         </div>
     );

@@ -4,7 +4,6 @@ import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import { getVendorListByVendorType, } from '../actions/Material';
@@ -51,7 +50,7 @@ class FreightListing extends Component {
   * @method getDataList
   * @description GET DETAILS OF BOP DOMESTIC
   */
-  getDataList = (freight_for = '', vendor_id = '', source_city_id = '', destination_city_id = '',) => {
+  getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
@@ -273,8 +272,8 @@ class FreightListing extends Component {
 
     const costingHeadTemp = costingHead ? costingHead.value : '';
     const vendorTemp = vendor ? vendor.value : '';
-    const sourceTemp = sourceLocation ? sourceLocation.value : '';
-    const destinationTemp = destinationLocation ? destinationLocation.value : '';
+    const sourceTemp = sourceLocation ? sourceLocation.value : 0;
+    const destinationTemp = destinationLocation ? destinationLocation.value : 0;
 
     this.getDataList(costingHeadTemp, vendorTemp, sourceTemp, destinationTemp)
   }

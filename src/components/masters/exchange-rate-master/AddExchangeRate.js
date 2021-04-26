@@ -12,8 +12,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import moment from 'moment';
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
-const 
-selector = formValueSelector('AddExchangeRate');
+const
+  selector = formValueSelector('AddExchangeRate');
 
 class AddExchangeRate extends Component {
   constructor(props) {
@@ -108,7 +108,7 @@ class AddExchangeRate extends Component {
           setTimeout(() => {
             const { currencySelectList } = this.props;
 
-            const currencyObj = currencySelectList && currencySelectList.find(item => item.Value === Data.CurrencyId)
+            const currencyObj = currencySelectList && currencySelectList.find(item => Number(item.Value) === Data.CurrencyId)
 
             this.setState({
               isEditFlag: true,
@@ -229,9 +229,9 @@ class AddExchangeRate extends Component {
                 <form
                   noValidate
                   className="form"
-                  
+
                   onSubmit={handleSubmit((e) => this.onSubmit(e))}
-                  // onSubmit={handleSubmit(this.onSubmit.bind(this))}                  
+                // onSubmit={handleSubmit(this.onSubmit.bind(this))}                  
                 >
                   <div className="add-min-height">
                     <Row>
@@ -420,7 +420,7 @@ function mapStateToProps(state) {
 
     }
   }
- 
+
   return { exchangeRateData, currencySelectList, filedObj, initialValues }
 }
 
