@@ -272,6 +272,7 @@ class AddAssemblyPart extends Component {
     //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
     let isAvailable = BOMViewerData && BOMViewerData.findIndex(el => el.Level === 'L0')
 
+    console.log('isAvailable: ', isAvailable);
     if (isAvailable === -1) {
       tempArray.push(...BOMViewerData, {
         PartType: ASSEMBLY,
@@ -284,7 +285,7 @@ class AddAssemblyPart extends Component {
         Level: 'L0',
         Input: '',
       })
-
+      console.log(tempArray, "tempArray");
       this.setState({ BOMViewerData: tempArray, isOpenBOMViewerDrawer: true, })
 
     } else {
@@ -494,6 +495,7 @@ class AddAssemblyPart extends Component {
       let formData = {
         AssemblyPartNumber: values.AssemblyPartNumber,
         AssemblyPartName: values.AssemblyPartName,
+        AssemblyPartId: '',
         ChildParts: childPartArray,
         LoggedInUserId: loggedInUserId(),
         BOMNumber: values.BOMNumber,

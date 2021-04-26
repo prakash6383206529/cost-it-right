@@ -241,6 +241,8 @@ class AddIndivisualPart extends Component {
 
       let formData = {
         LoggedInUserId: loggedInUserId(),
+        BOMLevel: 0,
+        Quantity: 1,
         Remark: values.Remark,
         PartNumber: values.PartNumber,
         PartName: values.PartName,
