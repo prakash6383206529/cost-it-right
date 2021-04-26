@@ -496,10 +496,11 @@ class AddMachineRate extends Component {
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
+    console.log('UOM: ', UOM);
     const { fieldsObj } = this.props;
     const tempArray = [];
 
-    if (processName.length === 0 || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
+    if (processName.length === 0 || UOM === undefined || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
       toastr.warning('Fields should not be empty');
       return false;
     }
@@ -1171,7 +1172,7 @@ class AddMachineRate extends Component {
                                 disabled={false}
                               />
                             </div>
-                            {!isEditFlag && <div
+                            {(!isEditFlag || this.state.isViewFlag) && <div
                               onClick={this.processToggler}
                               className={'plus-icon-square mr5 right'}>
                             </div>}
@@ -1186,7 +1187,7 @@ class AddMachineRate extends Component {
                             placeholder={'Select'}
                             options={this.renderListing('UOM')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [] : []}
                             //required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}

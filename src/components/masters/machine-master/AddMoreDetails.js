@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
-  required, checkForNull, number, trimTwoDecimalPlace, maxLength100, acceptAllExceptSingleSpecialCharacter, maxLength10,
+  required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
   maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix
 } from "../../../helper/validation";
@@ -130,6 +130,7 @@ class AddMoreDetails extends Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.props.data) {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
+
 
       if (selectedPlants.length !== 0) {
         this.handlePlants(selectedPlants)
@@ -1415,11 +1416,14 @@ class AddMoreDetails extends Component {
   */
   onSubmit = (values) => {
 
+
+
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid, machineFullValue } = this.state;
 
     if (this.state.processGrid.length === 0) {
+
       toastr.warning('Please add atleast one process')
       return false
     }
@@ -1428,7 +1432,7 @@ class AddMoreDetails extends Component {
 
     const userDetail = userDetails()
 
-    let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
+    let technologyArray = selectedTechnology && { Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value, }
 
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
@@ -1497,7 +1501,7 @@ class AddMoreDetails extends Component {
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
-      Technology: technologyArray,
+      Technology: [technologyArray],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
       Attachements: updatedFiles,
     }
@@ -1531,6 +1535,7 @@ class AddMoreDetails extends Component {
 
     } else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+
       const formData = {
         Manufacture: values.Manufacture,
         YearOfManufacturing: values.YearOfManufacturing,
@@ -1595,10 +1600,11 @@ class AddMoreDetails extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: technologyArray,
+        Technology: [technologyArray],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         Attachements: files
       }
+
 
       this.props.reset()
       this.props.createMachineDetails(formData, (res) => {
