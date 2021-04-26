@@ -110,10 +110,16 @@ function OverheadProfit(props) {
       setPaymentTermsApplicability({ label: PaymentTermDetail.PaymentTermApplicability, value: PaymentTermDetail.PaymentTermApplicability })
       setPaymentTermInterestRateId(PaymentTermDetail.InterestRateId)
     }
+
     setTimeout(() => {
       IncludeSurfaceTreatmentCall()
     }, 3000)
+
   }, []);
+
+  useEffect(() => {
+    IncludeSurfaceTreatmentCall()
+  }, [IsIncludedSurfaceInOverheadProfit])
 
   /**
   * @method UpdateForm

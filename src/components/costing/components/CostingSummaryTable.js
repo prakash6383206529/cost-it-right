@@ -59,7 +59,7 @@ const CostingSummaryTable = (props) => {
   const [index, setIndex] = useState('')
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
-  console.log('viewCostingData: ', viewCostingData);
+
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partInfo = useSelector((state) => state.costing.partInfo)
   const partNumber = useSelector(state => state.costing.partNo);

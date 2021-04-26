@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm, } from 'react-hook-form';
-import { saveComponentCostingSurfaceTab, setSurfaceCostInOverheadProfit } from '../../../actions/Costing';
+import { saveComponentCostingSurfaceTab, saveDiscountOtherCostTab, setComponentDiscountOtherItemData } from '../../../actions/Costing';
 import SurfaceTreatmentCost from './SurfaceTreatmentCost';
 import TransportationCost from './TransportationCost';
 import Drawer from '@material-ui/core/Drawer';
@@ -21,7 +21,10 @@ function SurfaceTreatment(props) {
   });
 
   const dispatch = useDispatch()
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+
   const costData = useContext(costingInfoContext);
 
   /**
@@ -77,6 +80,7 @@ function SurfaceTreatment(props) {
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
+          InjectDiscountAPICall()
         }
         props.closeDrawer('')
       }))
@@ -85,7 +89,7 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
+        // "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
@@ -103,11 +107,17 @@ function SurfaceTreatment(props) {
       dispatch(saveComponentCostingSurfaceTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.SURFACE_TREATMENT_COSTING_SAVE_SUCCESS);
-          setSurfaceCostInOverheadProfit(props.isIncludeSurfaceTreatment, () => { })
+          InjectDiscountAPICall()
         }
         props.closeDrawer('')
       }))
     }
+  }
+
+  const InjectDiscountAPICall = () => {
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    }))
   }
 
   /**

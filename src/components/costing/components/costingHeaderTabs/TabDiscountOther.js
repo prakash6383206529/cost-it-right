@@ -45,10 +45,11 @@ function TabDiscountOther(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const ExchangeRateData = useSelector(state => state.costing.ExchangeRateData)
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   useEffect(() => {
     if (props.activeTab !== '6') {
-      setValue('NetPOPriceINR', DiscountTabData !== undefined && (props.netPOPrice - props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
+      setValue('NetPOPriceINR', DiscountTabData !== undefined && checkForDecimalAndNull((props.netPOPrice - props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)), initialConfiguration.NoOfDecimalForPrice))
       setValue('HundiOrDiscountValue', DiscountTabData !== undefined && (props.netPOPrice * calculatePercentage(DiscountTabData.HundiOrDiscountPercentage)))
 
       let topHeaderData = {
@@ -66,50 +67,54 @@ function TabDiscountOther(props) {
 
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
-    let updatedFiles = files.map((file) => {
-      return { ...file, ContextId: costData.CostingId }
-    })
-    let data = {
-      "CostingId": costData.CostingId,
-      "PartId": costData.PartId,
-      "PartNumber": costData.PartNumber,
-      "NetPOPrice": props.netPOPrice,
-      "LoggedInUserId": loggedInUserId(),
-      "CostingPartDetails": {
-        "CostingDetailId": costData.CostingId,
+    setTimeout(() => {
+
+      let updatedFiles = files.map((file) => {
+        return { ...file, ContextId: costData.CostingId }
+      })
+      let data = {
+        "CostingId": costData.CostingId,
         "PartId": costData.PartId,
-        "PartTypeId": "00000000-0000-0000-0000-000000000000",
-        "Type": costData.VendorType,
         "PartNumber": costData.PartNumber,
-        "PartName": costData.PartName,
-        "Quantity": 1,
-        "IsOpen": true,
-        "IsPrimary": true,
-        "Sequence": 0,
-        "TotalCost": getValues('NetPOPriceINR'),
-        "NetDiscountsAndOtherCost": getValues('HundiOrDiscountValue'),
-        "OtherCostDetails": {
-          "OtherCostDetailId": '',
-          "HundiOrDiscountPercentage": getValues('HundiOrDiscountValue'),
-          "HundiOrDiscountValue": getValues('HundiOrDiscountValue'),
-          "AnyOtherCost": getValues('AnyOtherCost'),
-          "OtherCostPercentage": getValues('OtherCostPercentage'),
-          "TotalOtherCost": getValues('TotalOtherCost'),
-          "TotalDiscount": getValues('TotalDiscount'),
-          "IsChangeCurrency": IsCurrencyChange,
-          "NetPOPriceINR": getValues('NetPOPriceINR'),
-          "NetPOPriceOtherCurrency": getValues('NetPOPriceOtherCurrency'),
-          "CurrencyId": currency.value,
-          "Currency": currency.label,
-          "Remark": getValues('Remarks'),
-          "OtherCostDescription": getValues('OtherCostDescription'),
-          "CurrencyExchangeRate": CurrencyExchangeRate,
-          "EffectiveDate": effectiveDate,
-        }
-      },
-      "Attachements": updatedFiles
-    }
-    dispatch(setComponentDiscountOtherItemData(data, () => { }))
+        "NetPOPrice": props.netPOPrice,
+        "LoggedInUserId": loggedInUserId(),
+        "CostingPartDetails": {
+          "CostingDetailId": costData.CostingId,
+          "PartId": costData.PartId,
+          "PartTypeId": "00000000-0000-0000-0000-000000000000",
+          "Type": costData.VendorType,
+          "PartNumber": costData.PartNumber,
+          "PartName": costData.PartName,
+          "Quantity": 1,
+          "IsOpen": true,
+          "IsPrimary": true,
+          "Sequence": 0,
+          "NetDiscountsCost": getValues('HundiOrDiscountValue'),
+          "TotalCost": getValues('NetPOPriceINR'),
+          "NetOtherCost": getValues('AnyOtherCost'),
+          "OtherCostDetails": {
+            "OtherCostDetailId": '',
+            "HundiOrDiscountPercentage": getValues('HundiOrDiscountPercentage'),
+            "HundiOrDiscountValue": getValues('HundiOrDiscountValue'),
+            "AnyOtherCost": getValues('AnyOtherCost'),
+            "TotalOtherCost": getValues('TotalOtherCost'),
+            "TotalDiscount": getValues('HundiOrDiscountValue'),
+            "IsChangeCurrency": IsCurrencyChange,
+            "NetPOPriceINR": getValues('NetPOPriceINR'),
+            "NetPOPriceOtherCurrency": getValues('NetPOPriceOtherCurrency'),
+            "CurrencyId": currency.value,
+            "Currency": currency.label,
+            "Remark": getValues('Remarks'),
+            "OtherCostDescription": getValues('OtherCostDescription'),
+            "CurrencyExchangeRate": CurrencyExchangeRate,
+            "EffectiveDate": effectiveDate,
+          }
+        },
+        "Attachements": updatedFiles,
+        "IsChanged": true,
+      }
+      dispatch(setComponentDiscountOtherItemData(data, () => { }))
+    }, 1000)
   }, [props])
 
   useEffect(() => {
@@ -132,7 +137,7 @@ function TabDiscountOther(props) {
 
             setValue('HundiOrDiscountPercentage', OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '')
             setValue('OtherCostDescription', OtherCostDetails.OtherCostDescription !== null ? OtherCostDetails.OtherCostDescription : '')
-            setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '')
+            setValue('NetPOPriceINR', OtherCostDetails.NetPOPriceINR !== null ? checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : '')
             setValue('HundiOrDiscountValue', OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '')
             setValue('AnyOtherCost', OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '')
             setValue('Currency', OtherCostDetails.Currency !== null ? { label: OtherCostDetails.Currency, value: OtherCostDetails.CurrencyId } : [])
@@ -142,9 +147,9 @@ function TabDiscountOther(props) {
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
-              NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', 2),
-              HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', 2),
-              AnyOtherCost: checkForDecimalAndNull(OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '', 2),
+              NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', initialConfiguration.NoOfDecimalForPrice),
+              HundiOrDiscountValue: checkForDecimalAndNull(OtherCostDetails.HundiOrDiscountValue !== null ? OtherCostDetails.HundiOrDiscountValue : '', initialConfiguration.NoOfDecimalForPrice),
+              AnyOtherCost: checkForDecimalAndNull(OtherCostDetails.AnyOtherCost !== null ? OtherCostDetails.AnyOtherCost : '', initialConfiguration.NoOfDecimalForPrice),
               HundiOrDiscountPercentage: OtherCostDetails.HundiOrDiscountPercentage !== null ? OtherCostDetails.HundiOrDiscountPercentage : '',
             }
             dispatch(setDiscountCost(discountValues, () => { }))
@@ -158,11 +163,11 @@ function TabDiscountOther(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     const { DiscountTabData } = props;
-    setValue('NetPOPriceINR', DiscountTabData && DiscountTabData.NetPOPriceINR)
+    setValue('NetPOPriceINR', DiscountTabData && checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice))
     setValue('HundiOrDiscountValue', DiscountTabData && DiscountTabData.HundiOrDiscountValue)
 
     if (IsCurrencyChange && ExchangeRateData !== undefined && ExchangeRateData.CurrencyExchangeRate !== undefined) {
-      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && DiscountTabData.NetPOPriceINR / ExchangeRateData.CurrencyExchangeRate), 2))
+      setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((DiscountTabData && DiscountTabData.NetPOPriceINR / ExchangeRateData.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
     }
   }, [props]);
 
@@ -174,7 +179,7 @@ function TabDiscountOther(props) {
     if (!isNaN(event.target.value)) {
 
       let topHeaderData = {
-        DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
+        DiscountsAndOtherCost: checkForDecimalAndNull(getValues('HundiOrDiscountValue'), initialConfiguration.NoOfDecimalForPrice),
         HundiOrDiscountPercentage: checkForNull(event.target.value),
         AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
       }
@@ -225,7 +230,7 @@ function TabDiscountOther(props) {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
-          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
           setCurrencyExchangeRate(Data.CurrencyExchangeRate)
         }
       }))
@@ -247,7 +252,7 @@ function TabDiscountOther(props) {
           if (res && res.data && res.data.Result) {
             let Data = res.data.Data;
             const NetPOPriceINR = getValues('NetPOPriceINR');
-            setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), 2))
+            setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
             setCurrencyExchangeRate(Data.CurrencyExchangeRate)
           }
         }))
@@ -358,19 +363,17 @@ function TabDiscountOther(props) {
         "Quantity": 1,
         "IsOpen": true,
         "IsPrimary": true,
-        "Sequence": 0,
-        "NetDiscountsCost": values.TotalDiscount,
+        "Sequence": '0',
+        "NetDiscountsCost": values.HundiOrDiscountValue,
         "TotalCost": values.NetPOPriceINR,
-        "NetDiscountsAndOtherCost": values.HundiOrDiscountValue,
         "NetOtherCost": values.AnyOtherCost,
         "OtherCostDetails": {
           "OtherCostDetailId": '',
           "HundiOrDiscountPercentage": values.HundiOrDiscountPercentage,
           "HundiOrDiscountValue": values.HundiOrDiscountValue,
           "AnyOtherCost": values.AnyOtherCost,
-          "OtherCostPercentage": values.OtherCostPercentage,
           "TotalOtherCost": values.TotalOtherCost,
-          "TotalDiscount": values.TotalDiscount,
+          "TotalDiscount": values.HundiOrDiscountValue,
           "IsChangeCurrency": IsCurrencyChange,
           "NetPOPriceINR": values.NetPOPriceINR,
           "NetPOPriceOtherCurrency": values.NetPOPriceOtherCurrency,
@@ -388,6 +391,7 @@ function TabDiscountOther(props) {
     dispatch(saveDiscountOtherCostTab(data, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
         if (GoToNext) {
           props.toggle('2')
           history.push('/costing-summary')
@@ -409,9 +413,9 @@ function TabDiscountOther(props) {
                     <Table className="table cr-brdr-main cr-bg-tbl mt-1" size="sm" >
                       <thead>
                         <tr>
-                          <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? DiscountTabData.NetPOPriceINR : 0}`}</th>
+                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>
                     </Table>

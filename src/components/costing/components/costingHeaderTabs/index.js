@@ -37,6 +37,7 @@ function CostingHeaderTabs(props) {
   const ComponentItemPackageFreightData = useSelector(state => state.costing.ComponentItemPackageFreightData)
   const ComponentItemToolData = useSelector(state => state.costing.ComponentItemToolData)
   const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  const IsIncludedSurfaceInOverheadProfit = useSelector(state => state.costing.IsIncludedSurfaceInOverheadProfit)
 
   useEffect(() => {
 
@@ -78,6 +79,7 @@ function CostingHeaderTabs(props) {
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         setIsCalledAPI(false)
+        InjectDiscountAPICall()
       }))
     }
 
@@ -85,6 +87,7 @@ function CostingHeaderTabs(props) {
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3') {
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
+        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": IsIncludedSurfaceInOverheadProfit,
         "LoggedInUserId": loggedInUserId(),
         "IsSurfaceTreatmentApplicable": true,
         "IsApplicableForChildParts": false,
@@ -98,6 +101,7 @@ function CostingHeaderTabs(props) {
       }
       dispatch(saveComponentOverheadProfitTab(reqData, res => {
         dispatch(setComponentOverheadItemData({}, () => { }))
+        InjectDiscountAPICall()
       }))
     }
 
@@ -115,6 +119,7 @@ function CostingHeaderTabs(props) {
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         dispatch(setComponentPackageFreightItemData({}, () => { }))
+        InjectDiscountAPICall()
       }))
     }
 
@@ -131,19 +136,22 @@ function CostingHeaderTabs(props) {
       }
       dispatch(saveToolTab(data, res => {
         dispatch(setComponentToolItemData({}, () => { }))
+        InjectDiscountAPICall()
       }))
     }
 
-    // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
-    if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && activeTab !== '6') {
-      // setTimeout(() => {
-      //   dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
-      //     dispatch(setComponentDiscountOtherItemData({}, () => { }))
-      //   }))
-      // }, 1000)
-    }
+    // USED FOR SAVE OTHER DISCOUNT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
+    InjectDiscountAPICall()
 
   }, [activeTab])
+
+  const InjectDiscountAPICall = () => {
+    if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && ComponentItemDiscountData.IsChanged === true && activeTab !== '6') {
+      dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
+      }))
+    }
+  }
 
   /**
   * @method toggle

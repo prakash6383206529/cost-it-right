@@ -214,7 +214,7 @@ export function partComponentBulkUpload(data, callback) {
  */
 export function activeInactivePartStatus(requestData, callback) {
     return (dispatch) => {
-        axios.put(API.activeInactivePartStatus, requestData, { headers })
+        axios.put(API.activeInactivePartStatus, requestData, headers)
             .then((response) => {
                 callback(response);
             })
