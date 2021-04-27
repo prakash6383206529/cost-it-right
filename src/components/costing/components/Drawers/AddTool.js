@@ -107,7 +107,7 @@ function AddTool(props) {
     props.closeDrawer('', {})
   }
 
-  const onSubmit = data => {
+  const onSubmitForm = data => {
     let formData = {
       ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
       ProcessOrOperation: data.ProcessOrOperation,
@@ -127,7 +127,7 @@ function AddTool(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
@@ -144,7 +144,7 @@ function AddTool(props) {
                 </div>
               </Col>
             </Row>
-            <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
+            <form noValidate className="form" onSubmit={handleSubmit(onSubmitForm)} >
               <>
                 <Row className="pl-3">
                   <Col md="12">
@@ -328,7 +328,8 @@ function AddTool(props) {
                     <button
                       type={'submit'}
                       className="submit-button save-btn"
-                      onClick={addRow} >
+                    // onClick={addRow} 
+                    >
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                       {'Save'}
                     </button>

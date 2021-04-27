@@ -1156,7 +1156,7 @@ function OverheadProfit(props) {
         OverheadCCTotalCost: checkForDecimalAndNull((getValues('OverheadCCCost') * calculatePercentage(OverheadCCPercentage)), initialConfiguration.NoOfDecimalForPrice),
       })
 
-    } else if (!IsIncludedSurfaceInOverheadProfit) {
+    } else if (!IsIncludedSurfaceInOverheadProfit && overheadObj && overheadObj.IsOverheadCCApplicable) {
 
       const { OverheadCCPercentage } = overheadObj;
       setValue('OverheadCCCost', headerCosts !== undefined ? headerCosts.NetConversionCost : 0)
@@ -1171,6 +1171,7 @@ function OverheadProfit(props) {
     }
 
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && profitObj && profitObj.IsProfitCCApplicable) {
+
       const { ProfitCCPercentage } = profitObj;
       setValue('ProfitCCCost', getValues('ProfitCCCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
       setValue('ProfitCCTotalCost', checkForDecimalAndNull(getValues('ProfitCCCost') * calculatePercentage(ProfitCCPercentage), initialConfiguration.NoOfDecimalForPrice))
@@ -1180,7 +1181,9 @@ function OverheadProfit(props) {
         ProfitCCCost: getValues('ProfitCCCost'),
         ProfitCCTotalCost: checkForDecimalAndNull(getValues('ProfitCCCost') * calculatePercentage(ProfitCCPercentage), initialConfiguration.NoOfDecimalForPrice),
       })
-    } else if (!IsIncludedSurfaceInOverheadProfit) {
+
+    } else if (!IsIncludedSurfaceInOverheadProfit && profitObj && profitObj.IsProfitCCApplicable) {
+
       const { ProfitCCPercentage } = profitObj;
       setValue('ProfitCCCost', headerCosts !== undefined ? headerCosts.NetConversionCost : 0)
       setValue('ProfitCCTotalCost', checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(ProfitCCPercentage), initialConfiguration.NoOfDecimalForPrice))
@@ -1190,6 +1193,7 @@ function OverheadProfit(props) {
         ProfitCCCost: headerCosts !== undefined ? headerCosts.NetConversionCost : 0,
         ProfitCCTotalCost: checkForDecimalAndNull((headerCosts !== undefined ? headerCosts.NetConversionCost : 0) * calculatePercentage(ProfitCCPercentage), initialConfiguration.NoOfDecimalForPrice),
       })
+
     }
 
   }
