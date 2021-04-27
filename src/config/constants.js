@@ -6,12 +6,12 @@ import { getAuthToken } from '../helper/auth'
 
 export const config = {
   headers: {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': 'true',
-  //'Authorization': `Bearer ${getAuthToken()}`,
-  'Authorization': `Bearer pswHFnDhkrPy8jxGvjgbex583tSzH7-5uAAYoZsjwy63sr8pdmNAyOVmv-vBIBsUTwsNcd1oiq0Mo-jWaDaZA31K9Au6w8g6ycldNcSyfLEImhODgvkP7HAs0EeupDbB1w6MCjXzdhnfP-zIy2sAzGm8jcfZST-ps89mss9V4FE7is958vLY7gO2uYhdz4Piyyngp9c8P1dqe-NEJof_uQwWfAje-gI22jsUQPDDZfmrlYZukrbjMcRF4Vm9WACN`,
-  'Access-From': 'WEB',
-  'Api-Key': `${process.env.REACT_APP_API_KEY}`,
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true',
+    //'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer pswHFnDhkrPy8jxGvjgbex583tSzH7-5uAAYoZsjwy63sr8pdmNAyOVmv-vBIBsUTwsNcd1oiq0Mo-jWaDaZA31K9Au6w8g6ycldNcSyfLEImhODgvkP7HAs0EeupDbB1w6MCjXzdhnfP-zIy2sAzGm8jcfZST-ps89mss9V4FE7is958vLY7gO2uYhdz4Piyyngp9c8P1dqe-NEJof_uQwWfAje-gI22jsUQPDDZfmrlYZukrbjMcRF4Vm9WACN`,
+    'Access-From': 'WEB',
+    'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },
 }
 
@@ -1419,6 +1419,7 @@ export const VIEW_COSTING_DATA = {
   attachment: 'Attachment',
   approvalButton: '',
 }
+
 
 //UOM ENUMS (Need to change name)
 export const KG = "Kilogram"
