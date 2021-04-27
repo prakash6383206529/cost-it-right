@@ -1405,6 +1405,15 @@ button.user-btn.pull-right {
   opacity: 1;
   border: none;
 }
+.Run-icon {
+  width: 30px;
+  height: 30px;
+  background: transparent url("../../assests/images/run-icon.svg") 0% 0% no-repeat padding-box;
+  opacity: 1;
+  border: none;
+  filter: brightness(100);
+  background-size: contain;
+}
 .Save {
   width: 32px;
   height: 32px;
@@ -1518,7 +1527,7 @@ button.user-btn.pull-right {
   }
 }
 
-// =================costing summary table page=========================
+// =================costing summary table page start=========================
 $sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
 $FontAwesome: 'FontAwesome';
 $roboto: "Roboto", sans-serif;
@@ -1713,7 +1722,7 @@ body {
 		margin-top: 6px;
 	}
 }
-// =================costing summary table page=========================
+// =================costing summary table page end =========================
 
 // =================Costing Approval=========================
 .hide-label {
@@ -1888,16 +1897,19 @@ html {
 			padding: 8px 12px;
       min-width: 96px;
       vertical-align: middle;
+      line-height: initial;
 		}
 		.cancel-btn {
 			width: auto;
 			padding: 8px 12px;
       min-width: 96px;
       vertical-align: middle;
+      line-height: initial;
     }
     .sf-btn-footer,.MuiPaper-root{
       .save-btn,.cancel-btn{
         vertical-align: middle;
+        line-height: initial;
       }
     }
 	}
@@ -2318,6 +2330,8 @@ input:disabled{
   border-radius: 4px;
   height: 32px;
   font-size: 14px;
+  font-weight: 500;
+  line-height: initial;
   &:hover{
     background-color:#fbd2d9;
     border-color:#fbd2d9 ;
@@ -2464,6 +2478,14 @@ button:disabled{pointer-events: none;}
 
 //=============== costing details page only
 .costing-details-page{
+  .tool-cost-tab-process-table{
+    .react-bs-table{
+      margin-top: 0px;
+      .react-bs-container-body{
+        min-height: unset !important;
+      }
+    }
+  }
   .sepration-box{
     margin: 15px 0;
     padding: 10px;
@@ -3288,10 +3310,31 @@ body {
   }
 }
 body{
-    .css-1fhf3k1-control{
+  .css-f0arjc-control{
+    align-items: center;
+    background-color: rgb(242, 242, 242);
+    border-color: rgb(230, 230, 230);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    cursor: default;
+    display: flex;
+    flex-wrap: wrap;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    min-height: 38px;
+    position: relative;
+    transition: all 100ms ease 0s;
+    box-sizing: border-box;
+    box-shadow: none;
+  }
+}
+body{
+    .css-1fhf3k1-control,.css-f0arjc-control{
     background-color: #e6e6e6;
   }
 }
+
 .login-container.signup-form,.drawer-wrapper{
   .nodate-section{
     margin: 20px 0;
@@ -3614,6 +3657,23 @@ body{
       }
     }
   }
+  .sm-edit-row{
+    margin-bottom: -56px;
+    z-index: 12;
+    position: relative;
+    width: 50%;
+    float: right;
+    label{
+      text-align: right;
+      padding-right: 15px;
+      margin-bottom: 0 !important;
+    }
+    .form-control{
+      max-width: 110px;
+      height: 32px;
+      padding: 6px 10px !important;
+    }
+  }
 }
 // simulation page
 
@@ -3795,6 +3855,31 @@ body{
     }
     .mt30.reset-btn,.mt30.btn-primary,.user-btn.mt30{margin-top: calc(27px * 80 / 100);}
   }
+
+  // simulation page
+  .simulation-page{
+    .sf-btn-footer{
+      margin: 0 -27px -12px;
+    }
+    .sm-edit-row{
+      margin-bottom: -56px;
+      z-index: 12;
+      position: relative;
+      width: 50%;
+      float: right;
+      label{
+        text-align: right;
+        padding-right: 15px;
+        margin-bottom: 0 !important;
+      }
+      .form-control{
+        max-width: 110px;
+        height: 32px;
+        padding: 6px 10px !important;
+      }
+    }
+  }
+  // simulation page
 
 
   .sf-mainheader{
@@ -4125,8 +4210,8 @@ body{
           height: calc(14px * 80 /100);
         }
       }
-      .upload{
-        width: calc(14px * 80 /100);
+      .upload,.download{
+        width: calc(14px * 80 /100) !important;
         height: calc(14px * 80 /100);
         background-size: contain;
       }
@@ -4240,6 +4325,7 @@ body{
               height:  calc(40px * 80 / 100);
               min-height:  calc(40px * 80 / 100);
               padding: calc(12px * 80 / 100) !important;
+              font-size: calc(14px * 80 / 100);
               &:disabled{
                 font-size:  calc(14px * 80 / 100);
               }
@@ -4263,7 +4349,7 @@ body{
         }
       }
 
-      .css-1fhf3k1-control{
+      .css-1fhf3k1-control,.css-f0arjc-control{
         min-height: calc(38px * 80 / 100);
       }
 
@@ -4333,10 +4419,10 @@ body{
       font-size: calc(14px * 80 / 100);
       padding: calc(10px * 80 / 100) calc(15px * 80 / 100);
      }
-     .css-yk16xz-control{
+     .css-yk16xz-control,.css-1pahdxg-control{
         min-height: calc(40px * 80 / 100) !important;
         height: calc(40px * 80 / 100) !important;
-        .css-tlfecz-indicatorContainer{
+        .css-1gtu0rj-indicatorContainer,.css-tlfecz-indicatorContainer{
           svg{
             height: calc(20px * 80 / 100);
             width: calc(20px * 80 / 100);
@@ -4799,6 +4885,7 @@ body{
           &:nth-child(3){width: 20%;}
           &:nth-child(4){width: 25%;}
           &:nth-child(5){width: 15%;}
+          &:nth-child(7){min-width: 200px !important;}
         }// th
       }// tr
     }// thead

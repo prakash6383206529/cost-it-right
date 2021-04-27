@@ -219,8 +219,8 @@ function TabToolCost(props) {
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
                       <div className={"left-title"}>{"Overall"}</div>
-                      <span className="cr-sw-level">
-                        <span className="cr-switch-icon">
+                      <span className="cr-sw-level h-auto">
+                        <span className="d-inline-block">
                           <Switch
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
@@ -234,10 +234,11 @@ function TabToolCost(props) {
                             checkedIcon={false}
                             height={20}
                             width={46}
+                            className="align-middle"
                           />
                         </span>
-                        <div className={"right-title"}>{"Process Wise"}</div>
                       </span>
+                      <div className={"right-title"}>{"Process Wise"}</div>
                     </label>
                   </div>
                 </Col>
@@ -298,12 +299,13 @@ function TabToolCost(props) {
                         hover={false}
                         bordered={false}
                         options={options}
-                      //search
-                      // exportCSV
-                      //ignoreSinglePage
-                      //ref={'table'}
-                      //pagination
-                      >
+                        className="table cr-brdr-main table-sm tool-cost-tab-process-table"
+                        //search
+                        // exportCSV
+                        //ignoreSinglePage
+                        //ref={'table'}
+                        //pagination
+                        >
                         <TableHeaderColumn dataField="ToolOperationId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="BOMLevel" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'BOMLevel'}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="PartNumber" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Part Number'}</TableHeaderColumn>

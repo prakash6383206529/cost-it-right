@@ -1378,8 +1378,8 @@ function CostingDetails(props) {
                                   <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
-                                  <th style={{}}>{`Price`}</th>
-                                  <th style={{ minWidth: "260px" }}>{`Actions`}</th>
+                                  <th style={{ minWidth: "160px" }}>{`Price`}</th>
+                                  <th style={{ minWidth: "255px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1469,7 +1469,7 @@ function CostingDetails(props) {
                                   })}
                                 {zbcPlantGrid && zbcPlantGrid.length === 0 && (
                                   <tr>
-                                    <td colSpan={6}>
+                                    <td colSpan={7}>
                                       <NoContentFound
                                         title={CONSTANT.EMPTY_DATA}
                                       />
@@ -1517,8 +1517,8 @@ function CostingDetails(props) {
                                   <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
-                                  <th style={{}}>{`Price`}</th>
-                                  <th style={{ minWidth: "260px" }}>{`Actions`}</th>
+                                  <th style={{ minWidth: "160px" }}>{`Price`}</th>
+                                  <th style={{ minWidth: "255px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1605,7 +1605,7 @@ function CostingDetails(props) {
                                 })}
                                 {vbcVendorGrid.length === 0 && (
                                   <tr>
-                                    <td colSpan={6}>
+                                    <td colSpan={7}>
                                       <NoContentFound
                                         title={CONSTANT.EMPTY_DATA}
                                       />
