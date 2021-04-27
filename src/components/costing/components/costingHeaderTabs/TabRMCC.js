@@ -49,7 +49,7 @@ function TabRMCC(props) {
       NetBoughtOutPartCost: TopHeaderValues !== null && TopHeaderValues.TotalBoughtOutPartCost !== null ? TopHeaderValues.TotalBoughtOutPartCost : 0,
       // NetBoughtOutPartCost: TopHeaderValues !== null && TopHeaderValues.TotalBoughtOutPartCostWithQuantity !== null ? TopHeaderValues.TotalBoughtOutPartCostWithQuantity : 0,
       NetConversionCost: TopHeaderValues !== null && TopHeaderValues.TotalConversionCost !== null ? TopHeaderValues.TotalConversionCost : 0,
-      NetToolsCost: TopHeaderValues !== null && TopHeaderValues.ToolsCostTotal !== null ? TopHeaderValues.ToolsCostTotal : 0,
+      NetToolsCost: TopHeaderValues !== null && TopHeaderValues.TotalToolCost !== null ? TopHeaderValues.TotalToolCost : 0,
       NetTotalRMBOPCC: TopHeaderValues !== null && TopHeaderValues.TotalCalculatedRMBOPCCCost !== null ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
       // NetTotalRMBOPCC: TopHeaderValues !== null && TopHeaderValues.TotalCalculatedRMBOPCCCostWithQuantity !== null ? TopHeaderValues.TotalCalculatedRMBOPCCCostWithQuantity : 0,
     }

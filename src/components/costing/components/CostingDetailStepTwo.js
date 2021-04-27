@@ -33,6 +33,7 @@ function CostingDetailStepTwo(props) {
   const DiscountCostData = useSelector(state => state.costing.DiscountCostData)
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -53,12 +54,14 @@ function CostingDetailStepTwo(props) {
 
     let OverAllCost = 0;
     if (tempData && tempData !== undefined) {
+      //CONDITION FOR OVERALL & PROCESS WISE TOOL COST.
+      const ApplyCost = IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost);
       OverAllCost =
         data.NetTotalRMBOPCC +
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        tempData.ToolCost - checkForNull(tempData.NetDiscountsCost)
+        ApplyCost - checkForNull(tempData.NetDiscountsCost)
     }
 
     tempData = {
@@ -67,7 +70,7 @@ function CostingDetailStepTwo(props) {
       NetBOPCost: data.NetBoughtOutPartCost,
       NetConversionCost: data.NetConversionCost,
       NetTotalRMBOPCC: data.NetTotalRMBOPCC,
-      //ToolCost: data.ToolCost,
+      ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
       TotalCost: OverAllCost,
     }
 
@@ -202,17 +205,19 @@ function CostingDetailStepTwo(props) {
 
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
+        const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
         OverAllCost =
           tempData.NetTotalRMBOPCC +
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
           tempData.NetPackagingAndFreight +
-          data.ToolCost - checkForNull(tempData.NetDiscountsCost)
+          ApplyCost - checkForNull(tempData.NetDiscountsCost)
       }
 
       tempData = {
         ...tempData,
-        ToolCost: data.ToolCost,
+        // ToolCost: data.ToolCost,
+        ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
         TotalCost: OverAllCost,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })

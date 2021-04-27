@@ -53,6 +53,7 @@ import {
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
   SET_EXCHANGE_RATE_CURRENCY_DATA,
   SET_TOOL_PROCESS_WISE_DATALIST,
+  SET_IS_TOOLCOST_USED,
 } from '../../../config/constants';
 
 const initialState = {
@@ -451,6 +452,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ToolsDataList: action.payload
+      }
+    case SET_IS_TOOLCOST_USED:
+      return {
+        ...state,
+        loading: false,
+        IsToolCostApplicable: action.payload
       }
     default:
       return state

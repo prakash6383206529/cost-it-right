@@ -14,6 +14,7 @@ import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
+import { setIsToolCostUsed } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function ProcessCost(props) {
@@ -148,6 +149,10 @@ function ProcessCost(props) {
   const onToolToggle = () => {
     setIsOpen(!isOpen)
   }
+
+  useEffect(() => {
+    dispatch(setIsToolCostUsed(isOpen))
+  }, [isOpen])
 
   /**
    * @method DrawerToggle
@@ -459,7 +464,7 @@ function ProcessCost(props) {
                   background="#4DC771"
                   onColor="#4DC771"
                   onHandleColor="#ffffff"
-                  offColor="#4DC771"
+                  offColor="#CCC"
                   uncheckedIcon={false}
                   checkedIcon={false}
                   height={20}

@@ -53,6 +53,7 @@ import {
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
   SET_EXCHANGE_RATE_CURRENCY_DATA,
   SET_TOOL_PROCESS_WISE_DATALIST,
+  SET_IS_TOOLCOST_USED,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2057,3 +2058,16 @@ export function getPartSelectListByTechnology(technologyId, callback) {
     }
   }
 }
+
+/**
+ * @method setIsToolCostUsed
+ * @description SET TOOL COST APPLICABLE
+ */
+export function setIsToolCostUsed(IsApplicable) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_IS_TOOLCOST_USED,
+      payload: IsApplicable,
+    })
+  }
+};
