@@ -333,9 +333,9 @@ class AddRMDomestic extends Component {
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
             const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
-            const categoryObj = categoryList && categoryList.find((item) => item.Value === Data.Category)
+            const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
 
-            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId)
+            const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
 
             let plantArray = []
             Data && Data.Plant.map((item) => {
@@ -351,7 +351,7 @@ class AddRMDomestic extends Component {
               return vendorPlantArray
             })
 
-            const sourceLocationObj = cityList && cityList.find((item) => item.Value === Data.SourceLocation)
+            const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
             const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
             this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             this.setState({
@@ -1006,7 +1006,6 @@ class AddRMDomestic extends Component {
                           <Col md="4">
                             <div className="d-flex justify-space-between align-items-center inputwith-icon">
                               <div className="fullinput-icon">
-                                <TooltipCustom />
                                 <Field
                                   name="RawMaterialSpecificationId"
                                   type="text"
@@ -1040,6 +1039,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="4">
+                          <TooltipCustom />
                             <Field
                               name="CategoryId"
                               type="text"
@@ -1175,7 +1175,6 @@ class AddRMDomestic extends Component {
                             this.state.IsVendor) && (
                               <>
                                 <Col md="4">
-                                  <TooltipCustom />
                                   <Field
                                     label={`Source`}
                                     name={"Source"}

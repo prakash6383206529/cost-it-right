@@ -209,7 +209,7 @@ class AddMachineRate extends Component {
             const plantObj = Data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
-            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === Data.MachineTypeId)
+            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
 
             this.setState({
               isEditFlag: true,
@@ -496,10 +496,11 @@ class AddMachineRate extends Component {
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
+    console.log('UOM: ', UOM);
     const { fieldsObj } = this.props;
     const tempArray = [];
 
-    if (processName.length === 0 || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
+    if (processName.length === 0 || UOM === undefined || UOM.length === 0 || fieldsObj.MachineRate === undefined) {
       toastr.warning('Fields should not be empty');
       return false;
     }
@@ -803,7 +804,6 @@ class AddMachineRate extends Component {
           MachineTypeId: machineType.value,
           TonnageCapacity: values.TonnageCapacity,
           Description: values.Description,
-          IsActive: true,
           LoggedInUserId: loggedInUserId(),
           MachineProcessRates: processGrid,
           Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
@@ -833,7 +833,6 @@ class AddMachineRate extends Component {
         MachineTypeId: machineType.value,
         TonnageCapacity: values.TonnageCapacity,
         Description: values.Description,
-        IsActive: true,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
         Technology: technologyArray,
@@ -1178,7 +1177,7 @@ class AddMachineRate extends Component {
                                 disabled={false}
                               />
                             </div>
-                            {!isEditFlag && <div
+                            {(!isEditFlag || this.state.isViewFlag) && <div
                               onClick={this.processToggler}
                               className={'plus-icon-square mr5 right'}>
                             </div>}
@@ -1193,7 +1192,7 @@ class AddMachineRate extends Component {
                             placeholder={'Select'}
                             options={this.renderListing('UOM')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
-                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [required] : []}
+                            validate={(this.state.UOM == null || this.state.UOM.length == 0) ? [] : []}
                             //required={true}
                             handleChangeDescription={this.handleUOM}
                             valueDescription={this.state.UOM}

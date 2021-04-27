@@ -355,8 +355,8 @@ class AddRMImport extends Component {
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
-            const categoryObj = categoryList && categoryList.find(item => item.Value === Data.Category)
-            const technologyObj = technologySelectList && technologySelectList.find((item) => item.Value === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+            const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
+            const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
             // this.props.change('FreightCharge',Data.FreightCharge)
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
@@ -379,7 +379,7 @@ class AddRMImport extends Component {
             })
 
             //const vendorLocationObj = filterCityListBySupplier && filterCityListBySupplier.find(item => item.Value == Data.VendorLocation)
-            const sourceLocationObj = cityList && cityList.find(item => item.Value === Data.SourceLocation)
+            const sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UOM)
 
             this.setState({

@@ -6,11 +6,12 @@ import { getAuthToken } from '../helper/auth'
 
 export const config = {
   headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': 'true',
-    'Auth-Token': getAuthToken(),
-    'Access-From': 'WEB',
-    'Api-Key': `${process.env.REACT_APP_API_KEY}`,
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': 'true',
+  //'Authorization': `Bearer ${getAuthToken()}`,
+  'Authorization': `Bearer pswHFnDhkrPy8jxGvjgbex583tSzH7-5uAAYoZsjwy63sr8pdmNAyOVmv-vBIBsUTwsNcd1oiq0Mo-jWaDaZA31K9Au6w8g6ycldNcSyfLEImhODgvkP7HAs0EeupDbB1w6MCjXzdhnfP-zIy2sAzGm8jcfZST-ps89mss9V4FE7is958vLY7gO2uYhdz4Piyyngp9c8P1dqe-NEJof_uQwWfAje-gI22jsUQPDDZfmrlYZukrbjMcRF4Vm9WACN`,
+  'Access-From': 'WEB',
+  'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },
 }
 
@@ -20,6 +21,7 @@ export const config = {
 
 // DEVELOPMENT
 const BASE_URL = 'http://10.10.1.100:1002/api/v1';
+//const BASE_URL = 'http://10.10.10.43/CostingEngine.Application.CostItRight/api/v1';
 
 //STAGING
 // const BASE_URL = 'http://10.10.1.10:1002/api/v1';
@@ -482,6 +484,7 @@ export const API = {
 
   getToolTabData: `${BASE_URL}/costing/get-costing-detail-for-tools-cost`,
   saveToolTab: `${BASE_URL}/costing/save-costing-detail-for-tool-cost`,
+  getToolsProcessWiseDataListByCostingID: `${BASE_URL}/costing/get-tools-cost-process-wise-list-by-costing`,
 
   getDiscountOtherCostTabData: `${BASE_URL}/costing/get-costing-detail-for-other-cost`,
   saveDiscountOtherCostTab: `${BASE_URL}/costing/save-costing-detail-for-other-cost`,
@@ -562,6 +565,7 @@ export const API = {
 
   //LOGIN API
   login: `${BASE_URL}/user/login`,
+  tokenAPI: `${BASE_URL}/token`,
   logout: `${BASE_URL}/user/logout`,
   register: `${BASE_URL}/user/register`,
   getLoginPageInit: `${BASE_URL}/user/page-init`,
@@ -1148,6 +1152,7 @@ export const SET_SURFACE_TAB_DATA = 'SET_SURFACE_TAB_DATA';
 export const SET_OVERHEAD_PROFIT_TAB_DATA = 'SET_OVERHEAD_PROFIT_TAB_DATA';
 export const SET_PACKAGE_AND_FREIGHT_TAB_DATA = 'SET_PACKAGE_AND_FREIGHT_TAB_DATA';
 export const SET_TOOL_TAB_DATA = 'SET_TOOL_TAB_DATA';
+export const SET_TOOL_PROCESS_WISE_DATALIST = 'SET_TOOL_PROCESS_WISE_DATALIST';
 export const SET_OTHER_DISCOUNT_TAB_DATA = 'SET_OTHER_DISCOUNT_TAB_DATA';
 export const SET_EXCHANGE_RATE_CURRENCY_DATA = 'SET_EXCHANGE_RATE_CURRENCY_DATA';
 export const SET_COMPONENT_ITEM_DATA = 'SET_COMPONENT_ITEM_DATA';

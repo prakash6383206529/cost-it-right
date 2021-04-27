@@ -19,6 +19,7 @@ import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 function Pipe(props) {
 
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
+  console.log('WeightCalculatorRequest: ', WeightCalculatorRequest);
 
 
   const { rmRowData, isEditFlag } = props
@@ -70,13 +71,17 @@ function Pipe(props) {
   const tempOldObj = WeightCalculatorRequest
   const [GrossWeight, setGrossWeights] = useState('')
   const [FinishWeight, setFinishWeights] = useState('')
-
+  console.log('FinishWeight: ', FinishWeight);
+  const [useFinishWeight, setUseFinishWeight] = useState(false)
+  console.log(useFinishWeight, "in  finish Weight");
 
 
   const fieldValues = useWatch({
     control,
     name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
   })
+
+
 
   const dispatch = useDispatch()
 
@@ -101,7 +106,12 @@ function Pipe(props) {
           }
           : { label: kgObj.Text, value: kgObj.Value })
       }, 100);
-
+      if (WeightCalculatorRequest.FinishWeight !== null || WeightCalculatorRequest.FinishWeight !== undefined) {
+        console.log("ENTERD IN IF");
+        setUseFinishWeight(false)
+      } else {
+        setUseFinishWeight(true)
+      }
     }))
     setFinishWeights(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : 0)
   }, [])
@@ -284,37 +294,20 @@ function Pipe(props) {
    * @description SET GROSS WEIGHT
    */
   const setGrossWeight = () => {
-
     let WeightofPart
+    const updatedValue = dataToSend
     if (rmRowData.RawMaterialCategory === STD) {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
       setGrossWeights(dataToSend.WeightofPart + (dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
+      updatedValue.GrossWeight = WeightofPart
+      setDataToSend(updatedValue)
     } else {
       WeightofPart = setValueAccToUOM(dataToSend.WeightofPart, UOMDimension.label)
       setGrossWeights(dataToSend.WeightofPart)
+      updatedValue.GrossWeight = WeightofPart
+      setDataToSend(updatedValue)
     }
-    const updatedValue = dataToSend
     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
-    // switch (UOMDimension.label) {
-    //   case G:
-    //     updatedValue.GrossWeight = WeightofPart
-    //     setDataToSend(updatedValue)
-    //     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart, localStorage.NoOfDecimalForInputOutput))
-    //     break;
-    //   case KG:
-    //     updatedValue.GrossWeight = WeightofPart / 1000
-    //     setDataToSend(updatedValue)
-    //     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart / 1000, localStorage.NoOfDecimalForInputOutput))
-    //     break;
-    //   case MG:
-    //     updatedValue.GrossWeight = WeightofPart * 1000
-    //     setDataToSend(updatedValue)
-    //     setValue('GrossWeight', checkForDecimalAndNull(WeightofPart * 1000, localStorage.NoOfDecimalForInputOutput))
-    //     break;
-
-    //   default:
-    //     break;
-    // }
   }
 
   /**
@@ -322,30 +315,17 @@ function Pipe(props) {
    * @description SET FINISH WEIGHT
    */
   const setFinishWeight = () => {
-    const FinishWeight = setValueAccToUOM(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
+    console.log(useFinishWeight, "in set finish Weight");
+    if (!useFinishWeight) return false
+    console.log("COMING IN FINISH ");
+    const FinishWeight = checkForNull(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet), UOMDimension.label)
     const updatedValue = dataToSend
+
     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, localStorage.NoOfDecimalForInputOutput))
-    //setFinishWeight(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
+    updatedValue.FinishWeight = FinishWeight
+    setDataToSend(updatedValue)
     setFinishWeights(dataToSend.WeightofPart - checkForNull(dataToSend.WeightofScrap / dataToSend.NumberOfPartsPerSheet))
-    // switch (UOMDimension.label) {
-    //   case G:
-    //     updatedValue.FinishWeight = FinishWeight
-    //     setDataToSend(updatedValue)
-    //     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, localStorage.NoOfDecimalForInputOutput))
-    //     break;
-    //   case KG:
-    //     updatedValue.FinishWeight = FinishWeight / 1000
-    //     setDataToSend(updatedValue)
-    //     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight / 1000, localStorage.NoOfDecimalForInputOutput))
-    //     break;
-    //   case MG:
-    //     updatedValue.FinishWeight = FinishWeight * 1000
-    //     setDataToSend(updatedValue)
-    //     setValue('FinishWeight', checkForDecimalAndNull(FinishWeight * 1000, localStorage.NoOfDecimalForInputOutput))
-    //     break;
-    //   default:
-    //     break;
-    // }
+
   }
 
   /**
@@ -472,10 +452,10 @@ function Pipe(props) {
     setValue('UOMDimension', { label: value.label, value: value.value })
     setUOMDimension(value)
     let grossWeight = GrossWeight
-
-    let finishWeight = FinishWeight
+    // let finishWeight = setValueAccToUOM(getValues('FinishWeight'), value.label)
+    //console.log(finishWeight, "FW");
     grossWeight = setValueAccToUOM(grossWeight, value.label)
-    finishWeight = setValueAccToUOM(finishWeight, value.label)
+    let finishWeight = setValueAccToUOM(FinishWeight, value.label)
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 
     setUnit(value.label)
@@ -484,33 +464,12 @@ function Pipe(props) {
     //   case KG:
     //     grossWeight = grossWeight / 1000
     //     finishWeight = finishWeight / 1000
-    //     setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
+    setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
     setTimeout(() => {
       setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
       setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
     }, 100);
-    //     break;
-    //   case G:
-    //     grossWeight = grossWeight
-    //     finishWeight = finishWeight
-    //     setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-    //     setTimeout(() => {
-    //       setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-    //       setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-    //     }, 100);
-    //     break;
-    //   case MG:
-    //     grossWeight = grossWeight * 1000
-    //     finishWeight = finishWeight * 1000
-    //     setDataToSend(prevState => ({ ...prevState, newGrossWeight: grossWeight, newFinishWeight: finishWeight }))
-    //     setTimeout(() => {
-    //       setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
-    //       setValue('FinishWeight', checkForDecimalAndNull(finishWeight, localStorage.NoOfDecimalForInputOutput))
-    //     }, 100);
-    //     break;
-    //   default:
-    //     break;
-    // }
+
   }
 
   const UnitFormat = () => {
@@ -519,11 +478,30 @@ function Pipe(props) {
   }
 
   const onFinishChange = (e) => {
-    const weight = checkForNull(e.target.value)
-    setTimeout(() => {
-      setValue('FinishWeight', weight)
-      setFinishWeights(weight)
-    }, 200);
+    // if(e.target.value > getValues())
+    setUseFinishWeight(false)
+    console.log(Number(e.target.value), "FinishWeight");
+    if (UOMDimension.label === KG) {
+      setFinishWeights(Number(e.target.value) * 1000)
+      let updatedValue = dataToSend
+      updatedValue.FinishWeight = Number(e.target.value) * 1000
+      setDataToSend(updatedValue)
+    } else if (UOMDimension.label === MG) {
+      setFinishWeights(Number(e.target.value) / 1000)
+      let updatedValue = dataToSend
+      updatedValue.FinishWeight = Number(e.target.value) / 1000
+      setDataToSend(updatedValue)
+    } else {
+      setFinishWeights(Number(e.target.value))
+      let updatedValue = dataToSend
+      updatedValue.FinishWeight = Number(e.target.value)
+      setDataToSend(updatedValue)
+
+    }
+  }
+
+  const changeManualEntrystate = () => {
+    setUseFinishWeight(true)
   }
 
   /**
@@ -544,7 +522,7 @@ function Pipe(props) {
                   />
                 </Col>
               </Row>
-              <Row className={'mt15'}>
+              <Row className={''}>
                 {/* <Col md="3">
                   <SearchableSelectHookForm
                     label={'UOM for Dimension'}
@@ -579,7 +557,7 @@ function Pipe(props) {
                       },
                       // maxLength: 4,
                     }}
-                    handleChange={() => { }}
+                    handleChange={changeManualEntrystate}
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}
@@ -604,7 +582,7 @@ function Pipe(props) {
                       },
                       // maxLength: 4,
                     }}
-                    handleChange={() => { }}
+                    handleChange={changeManualEntrystate}
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}
@@ -656,7 +634,7 @@ function Pipe(props) {
                       },
                       // maxLength: 4,
                     }}
-                    handleChange={() => { }}
+                    handleChange={changeManualEntrystate}
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}
@@ -681,7 +659,7 @@ function Pipe(props) {
                       },
                       // maxLength: 4,
                     }}
-                    handleChange={() => { }}
+                    handleChange={changeManualEntrystate}
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}
@@ -741,7 +719,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={'mt15'}>
+              <Row className={''}>
                 <Col md="3">
                   <TextFieldHookForm
                     label={`Weight of Sheet(gm)`}
@@ -819,7 +797,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={'mt15'}>
+              <Row className={'mt-15'}>
                 <Col md="12">
                   <HeaderTitle className="border-bottom"
                     title={'Surface Area'}
@@ -828,7 +806,7 @@ function Pipe(props) {
                 </Col>
               </Row>
 
-              <Row className={'mt-15'}>
+              <Row className={''}>
                 <Col md="4" className="switch">
                   <label className="switch-level">
                     <div className={'left-title'}>{'One Side'}</div>
@@ -936,7 +914,7 @@ function Pipe(props) {
                       // },
                       // maxLength: 4,
                     }}
-                    handleChange={(e) => { onFinishChange(e) }}
+                    handleChange={onFinishChange}
                     defaultValue={''}
                     className=""
                     customClassName={'withBorder'}

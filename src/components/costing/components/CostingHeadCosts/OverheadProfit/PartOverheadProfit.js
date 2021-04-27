@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
-import { getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData } from '../../../actions/Costing';
+import {
+  getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData
+} from '../../../actions/Costing';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import { toastr } from 'react-redux-toastr';
@@ -15,6 +18,7 @@ function PartOverheadProfit(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
 
   const costData = useContext(costingInfoContext);
 
@@ -67,7 +71,7 @@ function PartOverheadProfit(props) {
       "IsSurfaceTreatmentApplicable": true,
       "IsApplicableForChildParts": false,
       "CostingNumber": costData.CostingNumber,
-      //"IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
+      "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
       "NetOverheadAndProfitCost": checkForNull(item.CostingPartDetails.OverheadCost) +
         checkForNull(item.CostingPartDetails.ProfitCost) +
         checkForNull(item.CostingPartDetails.RejectionCost) +
@@ -78,7 +82,15 @@ function PartOverheadProfit(props) {
     dispatch(saveComponentOverheadProfitTab(reqData, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
+        dispatch(setComponentOverheadItemData({}, () => { }))
+        InjectDiscountAPICall()
       }
+    }))
+  }
+
+  const InjectDiscountAPICall = () => {
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }
 

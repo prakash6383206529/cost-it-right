@@ -3,7 +3,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { getPlantSelectListByType, getVendorWithVendorCodeSelectList, getPlantBySupplier, } from '../../../actions/Common'
+import { getPlantBySupplier, } from '../../../actions/Common'
 import { getClientSelectList } from '../../masters/actions/Client'
 import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, getPartCostingPlantSelectList, getPartCostingVendorSelectList, getSingleCostingDetails, setCostingViewData, storePartNumber, } from '../actions/Costing'
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
@@ -235,6 +235,7 @@ function AddToComparisonDrawer(props) {
           obj.zbc = dataFromAPI.TypeOfCosting
           obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
           obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
+          obj.costingDate = dataFromAPI.CostingDate ? dataFromAPI.CostingDate : '-'
           obj.CostingNumber = dataFromAPI.CostingNumber ? dataFromAPI.CostingNumber : '-'
           obj.status = dataFromAPI.CostingStatus ? dataFromAPI.CostingStatus : '-'
           obj.rm = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.CostingRawMaterialsCost.length > 0 ? dataFromAPI.CostingPartDetails.CostingRawMaterialsCost[0].RMName : '-'
@@ -467,7 +468,7 @@ function AddToComparisonDrawer(props) {
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
-          <div className={"drawer-wrapper"}>
+          <div className={"drawer-wrapper add-to-comparison-drawer"}>
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>

@@ -8,12 +8,7 @@ import { fetchSupplierCityDataAPI } from "../../../actions/Common";
 import { getVendorWithVendorCodeSelectList } from "../actions/Supplier";
 import { getVendorListByVendorType } from "../actions/Material";
 import {
-  createFreight,
-  updateFright,
-  getFreightData,
-  getFreightModeSelectList,
-  getFreigtFullTruckCapacitySelectList,
-  getFreigtRateCriteriaSelectList,
+  createFreight, updateFright, getFreightData, getFreightModeSelectList, getFreigtFullTruckCapacitySelectList, getFreigtRateCriteriaSelectList,
 } from "../actions/Freight";
 import { toastr } from "react-redux-toastr";
 import { MESSAGES } from "../../../config/message";
@@ -99,25 +94,14 @@ class AddFreight extends Component {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
           setTimeout(() => {
-            const {
-              cityList,
-              vendorListByVendorType,
-              freightModeSelectList,
-            } = this.props;
+            const { cityList, vendorListByVendorType, freightModeSelectList, } = this.props;
             let modeObj =
-              freightModeSelectList &&
-              freightModeSelectList.find((item) => item.Value === Data.Mode);
+              freightModeSelectList && freightModeSelectList.find((item) => item.Value === Data.Mode);
             let vendorObj =
-              vendorListByVendorType &&
-              vendorListByVendorType.find(
-                (item) => item.Value === Data.VendorId
-              );
+              vendorListByVendorType && vendorListByVendorType.find((item) => item.Value === Data.VendorId);
             let sourceLocationObj =
-              cityList &&
-              cityList.find((item) => item.Value === Data.SourceCityId);
-            let destinationLocationObj =
-              cityList &&
-              cityList.find((item) => item.Value === Data.DestinationCityId);
+              cityList && cityList.find((item) => Number(item.Value) === Data.SourceCityId);
+            let destinationLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.DestinationCityId);
             let GridArray =
               Data &&
               Data.FullTruckLoadDetails.map((item) => {
@@ -171,13 +155,7 @@ class AddFreight extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label) => {
-    const {
-      vendorListByVendorType,
-      cityList,
-      freightModeSelectList,
-      freightFullTruckCapacitySelectList,
-      freightRateCriteriaSelectList,
-    } = this.props;
+    const { vendorListByVendorType, cityList, freightModeSelectList, freightFullTruckCapacitySelectList, freightRateCriteriaSelectList, } = this.props;
     const temp = [];
     if (label === "VendorNameList") {
       vendorListByVendorType &&
@@ -354,13 +332,7 @@ class AddFreight extends Component {
    * @description Used to handle update grid
    */
   updateGrid = () => {
-    const {
-      FullTruckCapacity,
-      RateCriteria,
-      gridTable,
-      effectiveDate,
-      gridEditIndex,
-    } = this.state;
+    const { FullTruckCapacity, RateCriteria, gridTable, effectiveDate, gridEditIndex, } = this.state;
     const { fieldsObj } = this.props;
     const Rate =
       fieldsObj && fieldsObj !== undefined ? checkForNull(fieldsObj) : 0;
@@ -472,16 +444,8 @@ class AddFreight extends Component {
    */
   onSubmit = (values) => {
     const {
-      IsVendor,
-      TransPortMood,
-      vendorName,
-      IsLoadingUnloadingApplicable,
-      sourceLocation,
-      destinationLocation,
-      FreightID,
-      gridTable,
-      isEditFlag,
-    } = this.state;
+      IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
+      FreightID, gridTable, isEditFlag, } = this.state;
     const userDetail = userDetails();
     if (isEditFlag) {
       let requestData = {
@@ -504,9 +468,7 @@ class AddFreight extends Component {
       const formData = {
         IsVendor: IsVendor,
         Mode: TransPortMood.label,
-        VendorId: IsVendor
-          ? vendorName.value
-          : userDetail.ZBCSupplierInfo.VendorId,
+        VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
         SourceCityId: sourceLocation.value,
         DestinationCityId: destinationLocation.value,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
@@ -873,15 +835,15 @@ class AddFreight extends Component {
                                 </button>
                                 </>
                               ) : (
-                                  <button
-                                    type="button"
-                                    className={"user-btn mt30 pull-left"}
-                                    onClick={this.gridHandler}
-                                  >
-                                    <div className={"plus"}></div>
+                                <button
+                                  type="button"
+                                  className={"user-btn mt30 pull-left"}
+                                  onClick={this.gridHandler}
+                                >
+                                  <div className={"plus"}></div>
                                 ADD
-                                  </button>
-                                )}
+                                </button>
+                              )}
                             </div>
                           </Col>
                         </Row>

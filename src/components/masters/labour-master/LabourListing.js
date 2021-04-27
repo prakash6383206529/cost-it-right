@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { focusOnError, searchableSelect } from "../../layout/FormInputs";
-import { checkForDecimalAndNull, required } from "../../../helper/validation";
+import { required } from "../../../helper/validation";
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -95,13 +95,8 @@ class LabourListing extends Component {
    * @method getTableListData
    * @description Get Data List
    */
-  getTableListData = (
-    employment_terms = '',
-    state = '',
-    plant = '',
-    labour_type = '',
-    machine_type = '',
-  ) => {
+  getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0) => {
+    console.log(state, "state");
     let filterData = {
       employment_terms: employment_terms,
       state: state,
@@ -109,6 +104,7 @@ class LabourListing extends Component {
       labour_type: labour_type,
       machine_type: machine_type,
     }
+    console.log(filterData, "FD");
     this.props.getLabourDataList(filterData, (res) => {
       if (res.status === 204 && res.data === '') {
         this.setState({ tableData: [] })
@@ -444,17 +440,12 @@ class LabourListing extends Component {
    */
   filterList = () => {
     const {
-      EmploymentTerms,
-      StateName,
-      plant,
-      labourType,
-      machineType,
-    } = this.state
+      EmploymentTerms, StateName, plant, labourType, machineType, } = this.state
     const ETerms = EmploymentTerms ? EmploymentTerms.value : ''
-    const State = StateName ? StateName.value : ''
+    const State = StateName ? StateName.value : 0
     const Plant = plant ? plant.value : ''
-    const labour = labourType ? labourType.value : ''
-    const machine = machineType ? machineType.value : ''
+    const labour = labourType ? labourType.value : 0
+    const machine = machineType ? machineType.value : 0
     this.getTableListData(ETerms, State, Plant, labour, machine)
   }
 
@@ -694,8 +685,8 @@ class LabourListing extends Component {
                       <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => this.setState({ shown: !this.state.shown })}>
                         <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                     ) : (
-                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                      )}
+                      <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                    )}
                     {BulkUploadAccessibility && (
                       <button
                         type="button"

@@ -52,7 +52,7 @@ class BOPImportListing extends Component {
     * @method getDataList
     * @description GET DATALIST OF IMPORT BOP
     */
-    getDataList = (bopFor = '', CategoryId = '', vendorId = '', plantId = '',) => {
+    getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '',) => {
         const filterData = {
             bop_for: bopFor,
             category_id: CategoryId,
@@ -317,7 +317,7 @@ class BOPImportListing extends Component {
         const { costingHead, BOPCategory, plant, vendor } = this.state;
 
         const costingHeadTemp = costingHead ? costingHead.value : '';
-        const categoryTemp = BOPCategory ? BOPCategory.value : '';
+        const categoryTemp = BOPCategory ? BOPCategory.value : 0;
         const vendorTemp = vendor ? vendor.value : '';
         const plantTemp = plant ? plant.value : '';
 

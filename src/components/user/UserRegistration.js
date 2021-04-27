@@ -8,15 +8,10 @@ import {
   minLength3, minLength6, maxLength11, maxLength12, required, email, minLength7, maxLength18,
   maxLength10, maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength3, acceptAllExceptSingleSpecialCharacter
 } from "../../helper/validation";
+import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, } from "../layout/FormInputs";
 import {
-  renderPasswordInputField, focusOnError, renderEmailInputField, renderText,
-  searchableSelect,
-} from "../layout/FormInputs";
-import {
-  registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI,
-  updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission,
-  setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
+  registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
+  getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting, getLevelByTechnology
 } from "../../actions/auth/AuthActions";
 import { getAllCities } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -173,9 +168,10 @@ class UserRegistration extends Component {
     const temp = [];
 
     if (label === 'role') {
-      roleList && roleList.map(item =>
+      roleList && roleList.map(item => {
+        if (item.RoleName === 'SuperAdmin') return false
         temp.push({ label: item.RoleName, value: item.RoleId })
-      );
+      });
       return temp;
     }
 
@@ -427,7 +423,7 @@ class UserRegistration extends Component {
    */
   technologyHandler = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ technology: newValue });
+      this.setState({ technology: newValue, level: [] });
       this.props.getLevelByTechnology(newValue.value, res => { })
     } else {
       this.setState({ technology: [] });

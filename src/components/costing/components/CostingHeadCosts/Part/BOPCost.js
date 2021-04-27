@@ -68,8 +68,8 @@ function BOPCost(props) {
           BOPPartName: el.BoughtOutPartName,
           Currency: el.Currency,
           LandedCostINR: el.NetLandedCost,
-          Quantity: '',
-          NetBoughtOutPartCost: '',
+          Quantity: 1,
+          NetBoughtOutPartCost: el.NetLandedCost * 1,
         }
       })
 

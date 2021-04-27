@@ -376,6 +376,10 @@ const SendForApproval = (props) => {
                           {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
                         </h6>
                         <div className=" d-inline-block mr-3">
+                          {`Part No.:`}{" "}
+                          <span className="grey-text">{`${partNo.partNumber}`}</span>
+                        </div>
+                        <div className=" d-inline-block mr-3">
                           {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
                           <span className="grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                         </div>
@@ -383,6 +387,7 @@ const SendForApproval = (props) => {
                           {`Costing Id:`}{" "}
                           <span className="grey-text">{`${data.costingName}`}</span>
                         </div>
+
                       </Col>
                     </Row>
                     <div className="px-3">

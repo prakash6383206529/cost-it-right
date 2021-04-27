@@ -1033,9 +1033,6 @@ export function getRMDomesticDataList(data, callback) {
  */
 export function fileUploadRMDomestic(data, callback) {
     return (dispatch) => {
-        let multipartHeaders = {
-            'Content-Type': 'multipart/form-data;'
-        };
         const request = axios.post(API.fileUploadRMDomestic, data, headers);
         request.then((response) => {
             if (response && response.status === 200) {

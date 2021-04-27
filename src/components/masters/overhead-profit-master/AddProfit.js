@@ -7,8 +7,7 @@ import { renderText, searchableSelect, renderTextAreaField } from "../../layout/
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
-  createProfit, updateProfit, getProfitData, fileUploadProfit,
-  fileDeleteProfit,
+  createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit,
 } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import { toastr } from 'react-redux-toastr';
@@ -119,8 +118,8 @@ class AddProfit extends Component {
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
 
-            const modelObj = modelTypes && modelTypes.find(item => item.Value === Data.ModelTypeId)
-            const AppliObj = costingHead && costingHead.find(item => item.Value === Data.ProfitApplicabilityId)
+            const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
+            const AppliObj = costingHead && costingHead.find(item => Number(item.Value) === Data.ProfitApplicabilityId)
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const clientObj = clientSelectList && clientSelectList.find(item => item.Value === Data.ClientId)
 

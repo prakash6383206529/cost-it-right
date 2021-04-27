@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
-  required, checkForNull, number, trimTwoDecimalPlace, maxLength100, acceptAllExceptSingleSpecialCharacter, maxLength10,
+  required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
   maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix
 } from "../../../helper/validation";
@@ -131,6 +131,7 @@ class AddMoreDetails extends Component {
     if (nextProps.data !== this.props.data) {
       const { fieldsObj, machineType, selectedPlants, selectedTechnology } = nextProps.data;
 
+
       if (selectedPlants.length !== 0) {
         this.handlePlants(selectedPlants)
       }
@@ -197,7 +198,7 @@ class AddMoreDetails extends Component {
 
             let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
             const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
-            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => item.Value === Data.MachineTypeId)
+            const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => item.Value == Data.WorkingShift)
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
             const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuleId)
@@ -1415,11 +1416,14 @@ class AddMoreDetails extends Component {
   */
   onSubmit = (values) => {
 
+
+
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
       labourGrid, processGrid, machineFullValue } = this.state;
 
     if (this.state.processGrid.length === 0) {
+
       toastr.warning('Please add atleast one process')
       return false
     }
@@ -1428,7 +1432,7 @@ class AddMoreDetails extends Component {
 
     const userDetail = userDetails()
 
-    let technologyArray = selectedTechnology && selectedTechnology.map((item) => ({ Technology: item.Text, TechnologyId: item.Value, }))
+    let technologyArray = selectedTechnology && { Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value, }
 
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
@@ -1440,7 +1444,6 @@ class AddMoreDetails extends Component {
       AccessoriesCost: values.AccessoriesCost,
       InstallationCharges: values.InstallationCharges,
       TotalCost: machineFullValue.totalCost,
-      MachineIdRef: "",
       OwnershipIsPurchased: this.state.IsPurchased,
       DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
       DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
@@ -1495,13 +1498,11 @@ class AddMoreDetails extends Component {
       MachineTypeId: machineType ? machineType.value : '',
       TonnageCapacity: values.TonnageCapacity,
       Description: data.fieldsObj.Description,
-      IsActive: true,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       MachineProcessRates: processGrid,
-      Technology: technologyArray,
+      Technology: [technologyArray],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
-      VendorPlant: [],
       Attachements: updatedFiles,
     }
 
@@ -1534,6 +1535,7 @@ class AddMoreDetails extends Component {
 
     } else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
+
       const formData = {
         Manufacture: values.Manufacture,
         YearOfManufacturing: values.YearOfManufacturing,
@@ -1541,7 +1543,6 @@ class AddMoreDetails extends Component {
         AccessoriesCost: values.AccessoriesCost,
         InstallationCharges: values.InstallationCharges,
         TotalCost: machineFullValue.totalCost,
-        MachineIdRef: '',
         OwnershipIsPurchased: this.state.IsPurchased,
         DepreciationTypeId: this.state.depreciationType ? this.state.depreciationType.value : '',
         DepreciationType: this.state.depreciationType ? this.state.depreciationType.value : '',
@@ -1596,15 +1597,14 @@ class AddMoreDetails extends Component {
         MachineTypeId: machineType ? machineType.value : '',
         TonnageCapacity: values.TonnageCapacity,
         Description: data.fieldsObj.Description,
-        IsActive: true,
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         MachineProcessRates: processGrid,
-        Technology: technologyArray,
+        Technology: [technologyArray],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
-        VendorPlant: [],
         Attachements: files
       }
+
 
       this.props.reset()
       this.props.createMachineDetails(formData, (res) => {
@@ -1835,7 +1835,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      
+
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
                             <div className="fullinput-icon">
@@ -1957,7 +1957,7 @@ class AddMoreDetails extends Component {
                             customClassName="withBorder"
                           />
                         </Col>
-                      
+
                         <Col md="3">
                           <Field
                             label={`Machine Cost (INR)`}

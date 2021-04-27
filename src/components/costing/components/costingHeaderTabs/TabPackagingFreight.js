@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFreightData } from '../../actions/Costing';
+import {
+  getPackageFreightTabData, saveCostingPackageFreightTab, setPackageAndFreightData,
+  setComponentPackageFreightItemData, saveDiscountOtherCostTab, setComponentDiscountOtherItemData
+} from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
@@ -20,6 +23,7 @@ function TabPackagingFreight(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const PackageAndFreightTabData = useSelector(state => state.costing.PackageAndFreightTabData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -151,9 +155,18 @@ function TabPackagingFreight(props) {
     dispatch(saveCostingPackageFreightTab(data, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
+        dispatch(setComponentPackageFreightItemData({}, () => { }))
+        InjectDiscountAPICall()
       }
     }))
 
+  }
+
+
+  const InjectDiscountAPICall = () => {
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    }))
   }
 
   /**

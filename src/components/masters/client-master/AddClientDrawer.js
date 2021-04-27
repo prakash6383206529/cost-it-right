@@ -138,9 +138,9 @@ class AddClientDrawer extends Component {
                     setTimeout(() => {
                         const { countryList, stateList, cityList } = this.props;
 
-                        const CountryObj = countryList && countryList.find(item => item.Value === Data.CountryId)
-                        const StateObj = stateList && stateList.find(item => item.Value === Data.StateId)
-                        const CityObj = cityList && cityList.find(item => item.Value === Data.CityId)
+                        const CountryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
+                        const StateObj = stateList && stateList.find(item => Number(item.Value) === Data.StateId)
+                        const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
 
                         this.setState({
                             isLoader: false,
@@ -249,7 +249,7 @@ class AddClientDrawer extends Component {
         const { country } = this.state;
         return (
             <div>
-                <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+                <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
                     <Container >

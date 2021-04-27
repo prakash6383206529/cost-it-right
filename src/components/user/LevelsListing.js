@@ -380,9 +380,9 @@ class LevelsListing extends Component {
 										trClassName={'userlisting-row'}
 										tableHeaderClass={'my-custom-header'}
 										pagination>
-										<TableHeaderColumn dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
-										<TableHeaderColumn dataField="Level" isKey={true} dataAlign="center" dataSort={true}>Level</TableHeaderColumn>
-										<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="right">Users</TableHeaderColumn>
+										<TableHeaderColumn  dataField="Technology" dataAlign="left">Technology</TableHeaderColumn>
+										<TableHeaderColumn  dataField="Level" isKey={true} dataAlign="left" dataSort={true}>Level</TableHeaderColumn>
+										<TableHeaderColumn dataField="Users" columnTitle={true} dataAlign="left">Users</TableHeaderColumn>
 										{/* <TableHeaderColumn dataField="IsActive" dataAlign="left" dataFormat={this.statusButtonFormatter}>Conditional Approval</TableHeaderColumn>
 										<TableHeaderColumn dataField="Condition" dataAlign="left" dataFormat={this.TextFormatter}>Condition</TableHeaderColumn>
 
