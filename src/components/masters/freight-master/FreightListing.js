@@ -27,7 +27,7 @@ class FreightListing extends Component {
       isEditFlag: false,
       tableData: [],
       isBulkUpload: false,
-
+      shown:false,
       costingHead: [],
       destinationLocation: [],
       sourceLocation: [],

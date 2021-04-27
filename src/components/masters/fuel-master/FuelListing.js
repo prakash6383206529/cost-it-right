@@ -25,6 +25,7 @@ class FuelListing extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
+            shown:false,
             tableData: [],
             isBulkUpload: false,
             fuel: [],

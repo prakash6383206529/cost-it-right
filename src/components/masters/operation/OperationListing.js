@@ -40,7 +40,7 @@ class OperationListing extends Component {
         super(props);
         this.state = {
             tableData: [],
-
+            shown:false,
             costingHead: [],
             selectedTechnology: [],
             vendorName: [],

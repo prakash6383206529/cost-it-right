@@ -26,7 +26,7 @@ class SOBListing extends Component {
       isEditFlag: false,
       ID: '',
       tableData: [],
-
+      shown:false,
       costingHead: [],
       BOPCategory: [],
       plant: [],

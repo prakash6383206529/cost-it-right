@@ -31,6 +31,7 @@ class UsersListing extends Component {
 		super(props);
 		this.state = {
 			isEditFlag: false,
+			shown:false,
 			RoleId: '',
 			userData: [],
 			departmentType: {},
@@ -508,6 +509,7 @@ class UsersListing extends Component {
 					search
 					// exportCSV
 					// ignoreSinglePage
+
 					ref={"table"}
 					trClassName={"userlisting-row"}
 					tableHeaderClass="my-custom-header"

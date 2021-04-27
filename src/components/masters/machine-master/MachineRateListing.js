@@ -26,7 +26,7 @@ class MachineRateListing extends Component {
         this.state = {
             isEditFlag: false,
             tableData: [],
-
+            shown:false,
             costingHead: [],
             plant: [],
             technology: [],

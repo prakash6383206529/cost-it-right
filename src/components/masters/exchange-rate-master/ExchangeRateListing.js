@@ -28,7 +28,7 @@ class ExchangeRateListing extends Component {
             tableData: [],
             currency: [],
             toggleForm: false,
-
+            shown:false,
             data: { isEditFlag: false, ID: '' },
 
             ViewAccessibility: false,

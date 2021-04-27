@@ -23,6 +23,7 @@ class ZBCPlantListing extends Component {
         this.state = {
             isEditFlag: false,
             isOpenVendor: false,
+            shown:false,
             ID: '',
             tableData: [],
             city: [],

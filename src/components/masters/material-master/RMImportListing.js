@@ -33,6 +33,7 @@ class RMImportListing extends Component {
     this.state = {
       isOpen: false,
       isEditFlag: false,
+      shown:false,
       tableData: [],
       RawMaterial: [],
       RMGrade: [],

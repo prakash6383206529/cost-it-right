@@ -27,7 +27,7 @@ class OverheadListing extends Component {
             isEditFlag: false,
             tableData: [],
             IsVendor: false,
-
+            shown:false,
             costingHead: [],
             ModelType: [],
             vendorName: [],

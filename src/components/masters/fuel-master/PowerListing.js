@@ -30,7 +30,7 @@ class PowerListing extends Component {
       isEditFlag: false,
       IsVendor: false,
       tableData: [],
-
+      shown:false,
       StateName: [],
       plant: [],
       vendorName: [],

@@ -231,7 +231,7 @@ class UOMMaster extends Component {
               <h1 className="mb-0">{`Unit of Measurement Master`}</h1>
             </Col>
           </Row>
-          <Row className="no-filter-row mt-4">
+          <Row className="no-filter-row pt-4">
             {AddAccessibility && (
               <>
                 <Col md={6} className="text-right filter-block"></Col>

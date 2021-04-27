@@ -220,7 +220,7 @@ function Simulation(props) {
                                     <div>
                                         <button type="button" className={"edit-btn mt2 mr5"} onClick={editTable}>
                                             <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
-                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><img className="download" alt={''} src={require('../../../assests/images/download.png')}></img>DOWNLOAD</button>}>
+                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                             {renderColumn(master.label)}
                                         </ExcelFile>
                                         <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>

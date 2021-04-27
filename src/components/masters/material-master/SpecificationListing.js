@@ -28,6 +28,7 @@ class SpecificationListing extends Component {
         super(props);
         this.state = {
             isOpen: false,
+            shown:false,
             isEditFlag: false,
             isBulkUpload: false,
             ID: '',

@@ -28,7 +28,7 @@ class BOPImportListing extends Component {
             isEditFlag: false,
             tableData: [],
             isBulkUpload: false,
-
+            shown:false,
             costingHead: [],
             BOPCategory: [],
             plant: [],

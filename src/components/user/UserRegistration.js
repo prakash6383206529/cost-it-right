@@ -786,7 +786,7 @@ class UserRegistration extends Component {
                     <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
                   </div>}
                 </div>
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser" onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}>
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser form" onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}>
                   <div className="add-min-height">
                     <HeaderTitle
                       title={'Personal Details:'}

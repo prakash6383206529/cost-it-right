@@ -30,7 +30,7 @@ class LabourListing extends Component {
     super(props)
     this.state = {
       tableData: [],
-
+      shown:false,
       EmploymentTerms: [],
       vendorName: [],
       stateName: [],
