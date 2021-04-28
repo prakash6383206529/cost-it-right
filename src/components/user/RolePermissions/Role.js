@@ -235,7 +235,7 @@ class Role extends Component {
 								<div className="form-headingg">
 									<h2>{isEditFlag ? 'Update Role' : 'Add Role'}</h2>
 								</div>
-								<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
+								<form className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
 									<div className="add-min-height">
 										<div className="row role-form mb-0">
 											<div className="col-md-6 ">

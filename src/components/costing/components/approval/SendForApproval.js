@@ -372,14 +372,14 @@ const SendForApproval = (props) => {
                   <div className="" key={index}>
                     <Row className="px-3">
                       <Col md="12">
-                        <h6 className="left-border d-inline-block mr-3">
+                        <h6 className="left-border d-inline-block mr-4">
                           {data.typeOfCosting === 0 ? 'ZBC' : `${data.vendorName}`}
                         </h6>
-                        <div className=" d-inline-block mr-3">
+                        <div className=" d-inline-block mr-4">
                           {`Part No.:`}{" "}
                           <span className="grey-text">{`${partNo.partNumber}`}</span>
                         </div>
-                        <div className=" d-inline-block mr-3">
+                        <div className=" d-inline-block mr-4">
                           {data.typeOfCosting === 0 ? `Plant Code:` : `Vendor Code`}{" "}
                           <span className="grey-text">{data.typeOfCosting === 0 ? `${data.plantCode}` : `${data.vendorCode}`}</span>
                         </div>
