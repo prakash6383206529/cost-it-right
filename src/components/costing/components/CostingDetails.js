@@ -24,6 +24,7 @@ import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
+import { getPlantSelectListByType } from '../../../actions/Common';
 
 export const ViewCostingContext = React.createContext()
 
@@ -48,6 +49,7 @@ function CostingDetails(props) {
   const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
+  const [DestinationPlant, setDestinationPlant] = useState([]);
 
   const [stepOne, setStepOne] = useState(Object.keys(props.costingData).length > 0 ? false : true);
   const [stepTwo, setStepTwo] = useState(Object.keys(props.costingData).length > 0 ? true : false);
@@ -79,6 +81,7 @@ function CostingDetails(props) {
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
   }, [])
 
   useEffect(() => {
@@ -92,6 +95,7 @@ function CostingDetails(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
+  const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
   useEffect(() => {
     if (partNumber.isChanged === false) {
@@ -162,6 +166,15 @@ function CostingDetails(props) {
       })
       return temp
     }
+
+    if (label === 'DestinationPlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
   }
 
   /**
@@ -205,6 +218,7 @@ function CostingDetails(props) {
       setIsTechnologySelected(false)
     }
   }
+
   /**
    * @method handlePartChange
    * @description  USED TO HANDLE PART CHANGE
@@ -248,6 +262,16 @@ function CostingDetails(props) {
     } else {
       setPart([])
       dispatch(getPartInfo('', () => { }))
+    }
+  }
+
+  /**
+  * @method handleDestinationPlantChange
+  * @description  USED TO HANDLE DESTINATION PLANT CHANGE
+  */
+  const handleDestinationPlantChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setDestinationPlant(newValue)
     }
   }
 
@@ -1452,7 +1476,7 @@ function CostingDetails(props) {
                                           />
                                         </td>
                                         <td className="text-center">
-                                          <div className={item.Status}>
+                                          <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
                                             {item.DisplayStatus}
                                           </div>
                                         </td>
@@ -1486,9 +1510,28 @@ function CostingDetails(props) {
                     {IsOpenVendorSOBDetails && (
                       <>
                         <Row className="align-items-center">
-                          <Col md="6" className={"mb-2 mt-3"}>
+                          <Col md={initialConfiguration?.IsDestinationPlantConfigure ? '1' : '6'} className={"mb-2 mt-3"}>
                             <h6 className="dark-blue-text sec-heading">VBC:</h6>
                           </Col>
+                          {initialConfiguration?.IsDestinationPlantConfigure && <Col md="2" className={"mb-2 mt-3"}>
+                            {'Destination Plant'}
+                          </Col>}
+                          {initialConfiguration?.IsDestinationPlantConfigure && <Col md="3" className={"mb-2 mt-3"}>
+                            <SearchableSelectHookForm
+                              label={""}
+                              name={"DestinationPlant"}
+                              placeholder={"Select"}
+                              Controller={Controller}
+                              control={control}
+                              rules={{ required: true }}
+                              register={register}
+                              defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                              options={renderListing("DestinationPlant")}
+                              mandatory={false}
+                              handleChange={handleDestinationPlantChange}
+                              errors={errors.DestinationPlant}
+                            />
+                          </Col>}
                           <Col md="6" className={"mb-2 mt-3"}>
                             {vbcVendorGrid && vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
                               <button
@@ -1588,7 +1631,7 @@ function CostingDetails(props) {
                                         />
                                       </td>
                                       <td className="text-center">
-                                        <div className={item.Status}>
+                                        <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
                                           {item.DisplayStatus}
                                         </div>
                                       </td>

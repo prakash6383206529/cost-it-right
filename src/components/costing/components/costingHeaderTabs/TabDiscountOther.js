@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller, useWatch } from "react-hook-form";
+import { useForm, Controller, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Table } from 'reactstrap';
+import { Row, Col, Table, } from 'reactstrap';
 import {
   getDiscountOtherCostTabData, saveDiscountOtherCostTab, fileUploadCosting, fileDeleteCosting,
   getExchangeRateByCurrency, setDiscountCost, setComponentDiscountOtherItemData,
@@ -226,7 +226,7 @@ function TabDiscountOther(props) {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
       //let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
-      dispatch(getExchangeRateByCurrency(newValue.label, moment(effectiveDate).local().format('DD-MM-YYYY'), res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
@@ -247,16 +247,16 @@ function TabDiscountOther(props) {
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
     if (Object.keys(currency).length > 0) {
-      setTimeout(() => {
-        dispatch(getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
-          if (res && res.data && res.data.Result) {
-            let Data = res.data.Data;
-            const NetPOPriceINR = getValues('NetPOPriceINR');
-            setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
-            setCurrencyExchangeRate(Data.CurrencyExchangeRate)
-          }
-        }))
-      }, 500)
+      // setTimeout(() => {
+      //   dispatch(getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
+      //     if (res && res.data && res.data.Result) {
+      //       let Data = res.data.Data;
+      //       const NetPOPriceINR = getValues('NetPOPriceINR');
+      //       setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+      //       setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+      //     }
+      //   }))
+      // }, 500)
     }
   }
 
@@ -334,7 +334,7 @@ function TabDiscountOther(props) {
     const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
-        {/* {Math.round(percent)}% */}
+        {Math.round(percent)}%
       </span>
     )
   }
@@ -541,7 +541,29 @@ function TabDiscountOther(props) {
                         disabled={CostingViewMode ? true : false}
                       />
                     </Col>
-                    <Col md="4">{''}</Col>
+                    <Col md="4">
+                      <div className="form-group">
+                        <label>Effective Date</label>
+                        <div className="inputbox date-section">
+                          <DatePicker
+                            name="EffectiveDate"
+                            selected={effectiveDate}
+                            onChange={handleEffectiveDateChange}
+                            showMonthDropdown
+                            showYearDropdown
+                            dateFormat="dd/MM/yyyy"
+                            //maxDate={new Date()}
+                            dropdownMode="select"
+                            placeholderText="Select date"
+                            className="withBorder"
+                            autoComplete={"off"}
+                            disabledKeyboardNavigation
+                            onChangeRaw={(e) => e.preventDefault()}
+                            disabled={CostingViewMode ? true : false}
+                          />
+                        </div>
+                      </div>
+                    </Col>
                   </Row>
 
                   <Row className="mx-0">
@@ -563,31 +585,10 @@ function TabDiscountOther(props) {
                         />
                       </label>
                     </Col>
+                    <Col md="2">{''}</Col>
                     {IsCurrencyChange && (
                       <>
-                        <Col md="2">
-                          <div className="form-group">
-                            <label>Effective Date</label>
-                            <div className="inputbox date-section">
-                              <DatePicker
-                                name="EffectiveDate"
-                                selected={effectiveDate}
-                                onChange={handleEffectiveDateChange}
-                                showMonthDropdown
-                                showYearDropdown
-                                dateFormat="dd/MM/yyyy"
-                                //maxDate={new Date()}
-                                dropdownMode="select"
-                                placeholderText="Select date"
-                                className="withBorder"
-                                autoComplete={"off"}
-                                disabledKeyboardNavigation
-                                onChangeRaw={(e) => e.preventDefault()}
-                                disabled={CostingViewMode ? true : false}
-                              />
-                            </div>
-                          </div>
-                        </Col>
+
                         <Col md="4">
                           <SearchableSelectHookForm
                             label={"Select Currency"}

@@ -23,10 +23,12 @@ function TabToolCost(props) {
 
   const { handleSubmit, } = useForm();
 
-  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
-  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(false);
-
   const dispatch = useDispatch()
+  const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
+
+  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(IsToolCostApplicable);
+  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
+
   const ToolTabData = useSelector(state => state.costing.ToolTabData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ToolsDataList = useSelector(state => state.costing.ToolsDataList)
@@ -34,6 +36,15 @@ function TabToolCost(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+
+  const dispense = () => {
+    setIsApplicableProcessWise(IsToolCostApplicable)
+  }
+  const dispenseCallback = React.useCallback(dispense, [IsToolCostApplicable])
+
+  useEffect(() => {
+    dispenseCallback()
+  }, [IsToolCostApplicable])
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -144,11 +155,23 @@ function TabToolCost(props) {
 
   useEffect(() => {
 
-    if (IsApplicableProcessWise) {
+    if (IsApplicableProcessWise && props.activeTab === '5') {
       dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, () => { }))
     }
 
-  }, [IsApplicableProcessWise])
+  }, [IsApplicableProcessWise, props.activeTab])
+
+  /**
+  * @method getTotal
+  * @description GET TOTAL COST
+  */
+  const getTotal = () => {
+    let cost = 0;
+    cost = ToolsDataList && ToolsDataList.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.NetToolCost);
+    }, 0)
+    return cost;
+  }
 
   /**
   * @method saveCosting
@@ -225,7 +248,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={IsApplicablilityDisable || CostingViewMode}
+                            disabled={IsApplicablilityDisable || IsApplicableProcessWise || CostingViewMode}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
@@ -244,6 +267,13 @@ function TabToolCost(props) {
                 </Col>
                 <Col md="3" className="px-30 py-4 text-dark-blue pl10">{"Net Tool Cost"}</Col>
               </Row>
+
+              {IsApplicableProcessWise && <Row>
+                <Col md="9">{''}</Col>
+                <Col md="3">
+                  {getTotal()}
+                </Col>
+              </Row>}
 
               <form
                 noValidate
