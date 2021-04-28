@@ -32,7 +32,7 @@ class RMDomesticListing extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            shown:false,
+            shown: false,
             tableData: [],
             RawMaterial: [],
             RMGrade: [],
@@ -252,7 +252,7 @@ class RMDomesticListing extends Component {
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice) : '';
     }
 
     /**
