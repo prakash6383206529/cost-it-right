@@ -17,6 +17,7 @@ function VerifySimulation(props) {
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
+    const [simulationId, setSimualtionId] = useState('')
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
 
@@ -30,8 +31,9 @@ function VerifySimulation(props) {
     useEffect(() => {
         dispatch(getVerifySimulationList(props.token, (res) => {
             if (res.data.Result) {
-                const tokenNo = res.data.DynamicData
-                setTokenNo(tokenNo)
+                const data = res.data.Data
+                setTokenNo(data.TokenId)
+                setSimualtionId(data.SimulationId)
             }
         }))
     }, [])

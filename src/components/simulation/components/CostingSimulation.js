@@ -10,13 +10,14 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getVerifySimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
-
+import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 function CostingSimulation(props) {
 
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationDrawer, setSimulationDrawer] = useState(false)
+    const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
 
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
@@ -126,6 +127,13 @@ function CostingSimulation(props) {
         lastPage: <span className="last-page-pg"></span>,
     };
 
+    const sendForApproval = () => {
+        setIsApprovalDrawer(true)
+    }
+
+    const closeDrawer = () => {
+        setIsApprovalDrawer(false)
+    }
 
     return (
         <div>
@@ -237,8 +245,8 @@ function CostingSimulation(props) {
                         <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{NewPO()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="RMOldCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="RMNewCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="OldNetLandedCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="NewNetLandedCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
 
@@ -247,7 +255,7 @@ function CostingSimulation(props) {
             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                 <div className="col-sm-12 text-right bluefooter-butn">
 
-                    <button class="user-btn approval-btn mr-3" onClick={() => { }}>
+                    <button class="user-btn approval-btn mr-3" onClick={sendForApproval}>
                         <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
                         {'Send For Approval'}
                     </button>
@@ -262,7 +270,18 @@ function CostingSimulation(props) {
                     </button>
                 </div>
             </Row>
+            {
+                isApprovalDrawer &&
+                <ApproveRejectDrawer
+                    isOpen={isApprovalDrawer}
+                    anchor={'right'}
+                    approvalData={[]}
+                    type={'Approve'}
+                    closeDrawer={closeDrawer}
+                />
+            }
         </div>
+
     );
 }
 

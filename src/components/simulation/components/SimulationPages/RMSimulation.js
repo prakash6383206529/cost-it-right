@@ -82,13 +82,13 @@ function RMSimulation(props) {
         })
         obj.SimulationRawMaterials = tempArr
         console.log(obj, "OBJ");
-        // dispatch(runVerifySimulation(obj, res => {
-        //     console.log(res, "RESP");
-        //     if (res.data.Result) {
-        //         setToken(res.data.Identity)
-        //         setShowVerifyPage(true)
-        //     }
-        // }))
+        dispatch(runVerifySimulation(obj, res => {
+            console.log(res, "RESP");
+            if (res.data.Result) {
+                setToken(res.data.Identity)
+                setShowVerifyPage(true)
+            }
+        }))
         setShowVerifyPage(true)
 
     }

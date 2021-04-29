@@ -5,6 +5,7 @@ import {
     API_FAILURE,
     GET_SELECTLIST_MASTERS,
     GET_VERIFY_SIMULATION_LIST,
+    GET_COSTING_SIMULATION_LIST,
     config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
@@ -165,4 +166,36 @@ export function getVerifySimulationList(token, callback) {
             apiErrors(error);
         })
     }
+}
+
+export function getCostingSimulationList(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostingSimulationList}/${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.data.DataList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
 }
