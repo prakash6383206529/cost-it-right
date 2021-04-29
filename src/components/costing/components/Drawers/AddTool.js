@@ -24,7 +24,7 @@ function AddTool(props) {
     TotalToolCost: rowObjData && rowObjData.TotalToolCost !== undefined ? rowObjData.TotalToolCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
@@ -40,7 +40,6 @@ function AddTool(props) {
     control,
     name: ['Quantity', 'ToolCost', 'Life'],
   });
-
 
   useEffect(() => {
     getNetToolCost()
@@ -95,7 +94,20 @@ function AddTool(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    //toggleDrawer('')
+
+    if (Object.keys(errors).length > 0) return false;
+
+    let formData = {
+      ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
+      ProcessOrOperation: getValues('ProcessOrOperation'),
+      ToolCategory: tool.label,
+      ToolName: getValues('ToolName'),
+      Quantity: getValues('Quantity'),
+      ToolCost: getValues('ToolCost'),
+      Life: getValues('Life'),
+      TotalToolCost: getValues('TotalToolCost'),
+    }
+    toggleDrawer('', formData)
   }
 
   /**
@@ -144,7 +156,7 @@ function AddTool(props) {
                 </div>
               </Col>
             </Row>
-            <form noValidate className="form" onSubmit={handleSubmit(onSubmitForm)} >
+            <form noValidate className="form" onSubmit={handleSubmit(onSubmitForm)}>
               <>
                 <Row className="pl-3">
                   <Col md="12">
@@ -326,9 +338,9 @@ function AddTool(props) {
                     </button>
 
                     <button
-                      type={'submit'}
+                      type={'button'}
                       className="submit-button save-btn"
-                    // onClick={addRow} 
+                      onClick={addRow}
                     >
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                       {'Save'}

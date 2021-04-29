@@ -1000,6 +1000,7 @@ function TabRMCC(props) {
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        console.log('Called Parent Form')
         if (res.data.Result) {
           toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
           InjectDiscountAPICall()

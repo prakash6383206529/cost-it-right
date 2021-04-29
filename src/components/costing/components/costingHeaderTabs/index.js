@@ -78,6 +78,7 @@ function CostingHeaderTabs(props) {
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        console.log('Called Parent Form Head')
         setIsCalledAPI(false)
         InjectDiscountAPICall()
       }))

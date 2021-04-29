@@ -131,7 +131,6 @@ function RawMaterialCost(props) {
     setInputDiameter(weightData.Diameter)
     setWeight(weightData, originalWeight)
     setWeightDrawerOpen(false)
-
   }
 
   /**
@@ -142,29 +141,32 @@ function RawMaterialCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (Number(event.target.value) <= 0) {
+    if (Number(event.target.value)) {
 
-      const GrossWeight = checkForNull(event.target.value)
-      const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
+      if (IsFinishWeightValid(event.target.value, tempData.FinishWeight)) {
+        const GrossWeight = checkForNull(event.target.value)
+        const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
 
-      const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
-      const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
-      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
-      setGridData(tempArr)
-      //toastr.warning('Please enter valid weight.')
+        const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+        const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
+        tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        setGridData(tempArr)
+        setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
+      } else {
+        const GrossWeight = checkForNull(event.target.value)
+        const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
 
-    } else {
-      const GrossWeight = checkForNull(event.target.value)
-      const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
-
-      const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
-      const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
-      tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
-      tempArr = Object.assign([...gridData], { [index]: tempData })
-      setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
-      setGridData(tempArr)
+        // const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+        const ApplicableFinishWeight = 0;
+        const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
+        tempData = { ...tempData, GrossWeight: GrossWeight, FinishWeight: 0, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
+        tempArr = Object.assign([...gridData], { [index]: tempData })
+        setGridData(tempArr)
+        setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
+        setValue(`${rmGridFields}[${index}]FinishWeight`, 0)
+        toastr.warning('Gross Weight should not be less than Finish Weight')
+      }
 
     }
   }
@@ -185,8 +187,8 @@ function RawMaterialCost(props) {
       const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
       tempArr = Object.assign([...gridData], { [index]: tempData })
-      setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
       setGridData(tempArr)
+      setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
       //toastr.warning('Please enter valid weight.')
 
     } else {
@@ -198,8 +200,8 @@ function RawMaterialCost(props) {
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
         tempData = { ...tempData, FinishWeight: FinishWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
         tempArr = Object.assign([...gridData], { [index]: tempData })
-        setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
         setGridData(tempArr)
+        setValue(`${rmGridFields}[${index}]FinishWeight`, FinishWeight)
 
       } else {
 
@@ -382,7 +384,7 @@ function RawMaterialCost(props) {
                                   required: true,
                                   pattern: {
                                     value: /^[0-9]\d*(\.\d+)?$/i,
-                                    // value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
+                                    //value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
                                     message: 'Invalid Number.',
                                   },
                                 }}
