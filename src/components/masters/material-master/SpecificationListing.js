@@ -3,11 +3,8 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial,
-    getGradeSelectList, getRawMaterialNameChild,
-    getRawMaterialFilterSelectList,
-    getGradeFilterByRawMaterialSelectList,
-    getRawMaterialFilterByGradeSelectList,
+    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList, getRawMaterialNameChild,
+    getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
 } from '../actions/Material';
 import { searchableSelect } from "../../layout/FormInputs";
 import { required } from "../../../helper/validation";
@@ -409,11 +406,9 @@ class SpecificationListing extends Component {
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
                             <TableHeaderColumn dataField="RMName" dataAlign="left" dataSort={true}>Raw Material</TableHeaderColumn>
-                            <TableHeaderColumn searchable={false} dataField="RawMaterial" dataAlign="left" >Material</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="RMGrade" dataAlign="left" >Grade</TableHeaderColumn>
                             <TableHeaderColumn dataField="RMSpec" dataAlign="left">Specification</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="SpecificationId" export={false} isKey={true} dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
-
                         </BootstrapTable>
                     </Col>
                 </Row>

@@ -10,7 +10,6 @@ import {
 import { getPlantBySupplier } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -30,7 +29,7 @@ class PowerListing extends Component {
       isEditFlag: false,
       IsVendor: false,
       tableData: [],
-      shown:false,
+      shown: false,
       StateName: [],
       plant: [],
       vendorName: [],
@@ -189,10 +188,17 @@ class PowerListing extends Component {
   renderSerialNumber = () => {
     return <>Sr. <br />No. </>
   }
+
   costFormatter = (cell, row, enumObject, rowIndex) => {
     const { initialConfiguration } = this.props
     return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
   }
+
+  costFormatterForVBC = (cell, row, enumObject, rowIndex) => {
+    const { initialConfiguration } = this.props
+    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+  }
+
   /**
   * @method effectiveDateFormatter
   * @description Renders buttons
@@ -558,7 +564,7 @@ class PowerListing extends Component {
             {/* VENDOR POWER LISTING */}
             {this.state.IsVendor &&
               <BootstrapTable
-                data={this.props.powerDataList}
+                data={this.props.vendorPowerDataList}
                 striped={false}
                 hover={false}
                 bordered={false}
@@ -571,7 +577,7 @@ class PowerListing extends Component {
                 {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                 <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
                 {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && <TableHeaderColumn dataField="VendorPlantName" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor Plant'}</TableHeaderColumn>}
-                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costFormatter} >{'Net Cost Per Unit'}</TableHeaderColumn>
+                <TableHeaderColumn searchable={false} dataField="NetPowerCostPerUnit" columnTitle={true} dataAlign="center" dataSort={true} dataFormat={this.costFormatterForVBC} >{'Net Cost Per Unit'}</TableHeaderColumn>
                 <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="PowerDetailId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
               </BootstrapTable>}
 
@@ -588,11 +594,11 @@ class PowerListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ fuel, comman, supplier, auth }) {
-  const { plantSelectList, stateSelectList, powerDataList } = fuel;
+  const { plantSelectList, stateSelectList, powerDataList, vendorPowerDataList } = fuel;
   const { vendorWithVendorCodeSelectList } = supplier;
   const { filterPlantList, } = comman;
   const { initialConfiguration } = auth;
-  return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList, powerDataList, initialConfiguration }
+  return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList, powerDataList, initialConfiguration, vendorPowerDataList }
 }
 
 /**

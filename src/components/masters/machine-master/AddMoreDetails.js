@@ -26,7 +26,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL, WDM, SLM, ZBC } from '../../../config/constants';
+import { FILE_URL, WDM, SLM, ZBC, HOUR } from '../../../config/constants';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddMachineTypeDrawer from './AddMachineTypeDrawer';
 import AddProcessDrawer from './AddProcessDrawer';
@@ -95,7 +95,8 @@ class AddMoreDetails extends Component {
       isVariableCostOpen: false,
       isPowerOpen: false,
       isLabourOpen: false,
-      isProcessOpen: false
+      isProcessOpen: false,
+      UOM: []
     }
   }
 
@@ -1122,7 +1123,7 @@ class AddMoreDetails extends Component {
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
     const { fieldsObj } = this.props
-    const OutputPerHours = fieldsObj.OutputPerHours
+    const OutputPerHours = this.state.UOM.label === HOUR ? 0 : fieldsObj.OutputPerHours
 
     if (processName.length === 0 || UOM.length === 0 || fieldsObj.OutputPerHours === '') {
       toastr.warning('Fields should not be empty');
@@ -1148,13 +1149,13 @@ class AddMoreDetails extends Component {
       return false;
     }
 
-
-
-
-
+    let MachineRate
     const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
-    const MachineRate = TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear);
-
+    if (UOM.label === HOUR) {
+      MachineRate = TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear // THIS IS FOR HOUR CALCUALTION
+    } else {
+      MachineRate = TotalMachineCostPerAnnum / OutputPerYear; // THIS IS FOR ALL UOM EXCEPT HOUR
+    }
 
     const tempArray = [];
 
@@ -1504,6 +1505,7 @@ class AddMoreDetails extends Component {
       Technology: [technologyArray],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
       Attachements: updatedFiles,
+      VendorPlant: []
     }
 
     if (editDetails.isIncompleteMachine) {
@@ -1602,7 +1604,8 @@ class AddMoreDetails extends Component {
         MachineProcessRates: processGrid,
         Technology: [technologyArray],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
-        Attachements: files
+        Attachements: files,
+        VendorPlant: []
       }
 
 
@@ -2975,34 +2978,41 @@ class AddMoreDetails extends Component {
                                 disabled={false}
                               />
                             </Col>
-                            <Col md="1">
-                              <Field
-                                label={`Output/Hr`}
-                                name={"OutputPerHours"}
-                                type="text"
-                                placeholder={'Enter'}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
-                                component={renderText}
-                                //required={true}
-                                disabled={false}
-                                className=" "
-                                customClassName="withBorder"
-                              />
-                            </Col>
-                            <Col md="1">
-                              <Field
-                                label={`Output/Yr`}
-                                name={"OutputPerYear"}
-                                type="text"
-                                placeholder={'Enter'}
-                                //validate={[required]}
-                                component={renderNumberInputField}
-                                //required={true}
-                                disabled={true}
-                                className=" "
-                                customClassName="withBorder"
-                              />
-                            </Col>
+                            {
+                              // (this.state.UOM && (this.state.UOM.label !== HOUR || this.state.UOM.length === 0)) &&.la
+                              (this.state.UOM.length === 0 || this.state.UOM.label !== HOUR) &&
+                              <>
+                                <Col md="1">
+                                  <Field
+                                    label={`Output/Hr`}
+                                    name={"OutputPerHours"}
+                                    type="text"
+                                    placeholder={'Enter'}
+                                    validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                                    component={renderText}
+                                    //required={true}
+                                    disabled={false}
+                                    className=" "
+                                    customClassName="withBorder"
+                                  />
+                                </Col>
+                                <Col md="1">
+                                  <Field
+                                    label={`Output/Yr`}
+                                    name={"OutputPerYear"}
+                                    type="text"
+                                    placeholder={'Enter'}
+                                    //validate={[required]}
+                                    component={renderNumberInputField}
+                                    //required={true}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName="withBorder"
+                                  />
+                                </Col>
+                              </>
+
+                            }
                             <Col className="d-flex col-auto">
                               <div className="machine-rate-filed pr-3">
                                 <Field

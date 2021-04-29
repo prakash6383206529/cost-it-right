@@ -2,9 +2,9 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
-import { required, decimalLength2, number, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../helper/validation";
+import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix } from "../../../helper/validation";
 import {
-  renderNumberInputField, searchableSelect, focusOnError, renderText,
+  searchableSelect, focusOnError, renderText,
 } from "../../layout/FormInputs";
 import { getUOMSelectList } from '../../../actions/Common';
 import { getFuelComboData, createFuelDetail, updateFuelDetail, getFuelDetailData, } from '../actions/Fuel';
@@ -76,7 +76,7 @@ class AddFuel extends Component {
           setTimeout(() => {
             const { fuelComboSelectList } = this.props;
 
-            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => item.Value === Data.FuelId)
+            const fuelObj = fuelComboSelectList && fuelComboSelectList.Fuels.find(item => Number(item.Value) === Data.FuelId)
             //const StateObj = fuelComboSelectList && fuelComboSelectList.States.find(item => item.Value == Data.StateId)
             const UOMObj = fuelComboSelectList && fuelComboSelectList.UnitOfMeasurements.find(item => item.Value === Data.UnitOfMeasurementId)
 

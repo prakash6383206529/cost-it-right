@@ -1,0 +1,265 @@
+import React, { useState } from 'react';
+import { useForm, Controller, useWatch } from 'react-hook-form'
+import { Row, Col, } from 'reactstrap';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRMDomesticDataList } from '../../masters/actions/Material';
+import NoContentFound from '../../common/NoContentFound';
+import { CONSTANT } from '../../../helper/AllConastant';
+import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
+import { getVerifySimulationList } from '../actions/Simulation';
+import RunSimulationDrawer from './RunSimulationDrawer';
+
+function CostingSimulation(props) {
+
+    const [selectedRowData, setSelectedRowData] = useState([]);
+    const [selectedIds, setSelectedIds] = useState('')
+    const [tokenNo, setTokenNo] = useState('')
+    const [simulationDrawer, setSimulationDrawer] = useState(false)
+
+    const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
+        mode: 'onBlur',
+        reValidateMode: 'onChange',
+    })
+
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        // dispatch(getVerifySimulationList(props.token, (res) => {
+        //     if (res.data.Result) {
+        //         const tokenNo = res.data.DynamicData
+        //         setTokenNo(tokenNo)
+        //     }
+        // }))
+    }, [])
+
+
+    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+
+    const renderVendorName = () => {
+        return <>Vendor <br />Name </>
+    }
+    const renderPlantCode = () => {
+        return <>Plant<br />Code </>
+    }
+
+    const renderDescription = () => {
+        return <>Part <br />Description </>
+    }
+
+    const renderECN = () => {
+        return <>ECN <br />No.</>
+    }
+
+    const revisionNumber = () => {
+        return <>Revision <br />No.</>
+    }
+
+    const OldPo = () => {
+        return <>PO Price <br />Old </>
+    }
+
+    const NewPO = () => {
+        return <>PO Price <br />New </>
+    }
+
+    const RMName = () => {
+        return <>RM <br />Name </>
+    }
+
+    const renderOldRM = () => {
+        return <>RM <br />Cost Old</>
+    }
+
+    const renderNewRM = () => {
+        return <>RM <br />Cost New</>
+    }
+
+
+
+    const buttonFormatter = (cell, row, enumObject, rowIndex) => {
+        return (
+            <>
+                <button className="View" type={'button'} onClick={() => { }} />
+            </>
+        )
+    }
+
+    const onRowSelect = (row, isSelected, e) => {
+        if (isSelected) {
+            let tempArr = [...selectedRowData, row]
+            setSelectedRowData(tempArr)
+        } else {
+            const CostingId = row.CostingId;
+            let tempArr = selectedRowData && selectedRowData.filter(el => el.CostingId !== CostingId)
+            setSelectedRowData(tempArr)
+        }
+    }
+
+    const onSelectAll = (isSelected, rows) => {
+        if (isSelected) {
+            setSelectedRowData(rows)
+        } else {
+            setSelectedRowData([])
+        }
+    }
+
+    const renderDropdownListing = (label) => {
+
+    }
+    const selectRowProp = {
+        mode: 'checkbox',
+        clickToSelect: true,
+        unselectable: selectedIds,
+        onSelect: onRowSelect,
+        onSelectAll: onSelectAll,
+    };
+
+    const options = {
+        clearSearch: true,
+        noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+        // paginationShowsTotal: renderPaginationShowsTotal(),
+        prePage: <span className="prev-page-pg"></span>, // Previous page button text
+        nextPage: <span className="next-page-pg"></span>, // Next page button text
+        firstPage: <span className="first-page-pg"></span>, // First page button text
+        lastPage: <span className="last-page-pg"></span>,
+    };
+
+
+    return (
+        <div>
+            <Row>
+                <h5>Token No:{tokenNo}</h5>
+            </Row>
+            <Col lg="10" md="12" className="filter-block">
+                <div className="d-inline-flex justify-content-start align-items-top w100">
+                    <div className="flex-fills">
+                        <h5>{`Filter By:`}</h5>
+                    </div>
+
+                    <div className="flex-fill filled-small hide-label">
+                        <SearchableSelectHookForm
+                            label={''}
+                            name={'partNo'}
+                            placeholder={'Part No.'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: false }}
+                            register={register}
+                            // defaultValue={plant.length !== 0 ? plant : ''}
+                            options={renderDropdownListing('PartList')}
+                            mandatory={false}
+                            handleChange={() => { }}
+                            errors={errors.partNo}
+                        />
+                    </div>
+                    <div className="flex-fill filled-small hide-label">
+                        <SearchableSelectHookForm
+                            label={''}
+                            name={'plantCode'}
+                            placeholder={'Plant Code'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: false }}
+                            register={register}
+                            // defaultValue={plant.length !== 0 ? plant : ''}
+                            options={renderDropdownListing('plantCode')}
+                            mandatory={false}
+                            handleChange={() => { }}
+                            errors={errors.plantCode}
+                        />
+                    </div>
+                    <div className="flex-fill filled-small hide-label">
+                        <SearchableSelectHookForm
+                            label={''}
+                            name={'rawMaterial'}
+                            placeholder={'Raw Material'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: false }}
+                            register={register}
+                            // defaultValue={plant.length !== 0 ? plant : ''}
+                            options={renderDropdownListing('rm')}
+                            mandatory={false}
+                            handleChange={() => { }}
+                            errors={errors.rawMaterial}
+                        />
+                    </div>
+
+                    <div className="flex-fill filled-small hide-label">
+                        <button
+                            type="button"
+                            //disabled={pristine || submitting}
+                            onClick={() => { }}
+                            className="reset mr10"
+                        >
+                            {'Reset'}
+                        </button>
+                        <button
+                            type="button"
+                            //disabled={pristine || submitting}
+                            onClick={() => { }}
+                            className="apply mr5"
+                        >
+                            {'Apply'}
+                        </button>
+                    </div>
+                </div>
+            </Col>
+            <Row>
+                <Col>
+                    <BootstrapTable
+                        data={verifyList}
+                        striped={false}
+                        bordered={false}
+                        hover={false}
+                        options={options}
+                        search
+                        // cellEdit={cellEditProp}
+                        // exportCSV
+                        //ignoreSinglePage
+                        selectRow={selectRowProp}
+                        className="add-volume-table"
+                        pagination>
+                        <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{NewPO()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="RMOldCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="RMNewCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                    </BootstrapTable>
+
+                </Col>
+            </Row>
+            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                <div className="col-sm-12 text-right bluefooter-butn">
+
+                    <button class="user-btn approval-btn mr-3" onClick={() => { }}>
+                        <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
+                        {'Send For Approval'}
+                    </button>
+                    <button type="submit" className="user-btn mr5 save-btn">
+                        <div className={"check-icon"}>
+                            <img
+                                src={require("../../../assests/images/check.png")}
+                                alt="check-icon.jpg"
+                            />
+                        </div>{" "}
+                        {"Save Simulation"}
+                    </button>
+                </div>
+            </Row>
+        </div>
+    );
+}
+
+export default CostingSimulation;

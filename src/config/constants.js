@@ -179,6 +179,7 @@ export const API = {
   bulkUploadRMDomesticZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-domestic-json`,
   bulkUploadRMDomesticVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-domestic-json`,
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
+  getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -207,7 +208,7 @@ export const API = {
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
-
+  createAssociation: `${BASE_URL}/masters-raw-material/associate-raw-material`,
   getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-all-raw-materials`,
 
   //RM GRADE
@@ -791,7 +792,9 @@ export const API = {
 
   //SIMULATION
   getSimulationHistory: `${BASE_URL}/`,
-  getSelectListOfSimulationMaster: `${BASE_URL}/`
+  getSelectListOfSimulationMaster: `${BASE_URL}/`,
+  runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
+  getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
 }
 
 //Api constants
@@ -890,6 +893,7 @@ export const GET_RM_DOMESTIC_LIST = 'GET_RM_DOMESTIC_LIST'
 export const GET_RM_IMPORT_LIST = 'GET_RM_IMPORT_LIST'
 export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
+export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS'
@@ -998,6 +1002,7 @@ export const GET_ZBC_PLANT_SELECTLIST = 'GET_ZBC_PLANT_SELECTLIST'
 export const GET_STATE_SELECTLIST = 'GET_STATE_SELECTLIST'
 export const GET_ZBC_POWER_DATA_SUCCESS = 'GET_ZBC_POWER_DATA_SUCCESS'
 export const GET_POWER_DATA_LIST = 'GET_POWER_DATA_LIST'
+export const GET_POWER_VENDOR_DATA_LIST = 'GET_POWER_VENDOR_DATA_LIST'
 
 //OTHER OPERATION MASTER
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS'
@@ -1287,6 +1292,7 @@ export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 //SIMULATION
 export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
+export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'

@@ -41,7 +41,7 @@ function SimulationHistory(props) {
         )
     }
 
-    
+
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
@@ -112,6 +112,7 @@ function SimulationHistory(props) {
                 hover={false}
                 bordered={false}
                 options={options}
+                search
                 // exportCSV
                 //ignoreSinglePage
                 //ref={'table'}
