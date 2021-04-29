@@ -795,6 +795,8 @@ export const API = {
   getSelectListOfSimulationMaster: `${BASE_URL}/`,
   runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
+  runSimulationOnSelectedCosting: `${BASE_URL}/simulation/draft-simulation-raw-material/run-simulation-on-selected-costing`,
+  getCostingSimulationList: `${BASE_URL}/`
 }
 
 //Api constants
@@ -1293,7 +1295,7 @@ export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
 export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
-
+export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
 export const DRAFT = 'Draft'
@@ -1426,7 +1428,6 @@ export const VIEW_COSTING_DATA = {
   approvalButton: '',
 }
 
-
 //UOM ENUMS (Need to change name)
 export const KG = "Kilogram"
 export const HOUR = "Hours"
@@ -1457,6 +1458,7 @@ export const DIMENSIONLESS = 'Dimensionless'
 
 //UOM CATEGORY
 export const STD = 'STD'
+
 
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = 'Raw Material(Domestic)'

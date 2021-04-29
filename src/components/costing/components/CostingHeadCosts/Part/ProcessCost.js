@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import Switch from "react-switch";
 import OperationCost from './OperationCost';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
@@ -21,7 +21,7 @@ function ProcessCost(props) {
   const { data } = props
 
   const { register, control, errors, setValue } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
@@ -359,13 +359,13 @@ function ProcessCost(props) {
     let tempArr = []
     let tempData = gridData[index]
 
-    if (!isNaN(event.target.value)) {
+    if (!isNaN(event.target.value) && event.target.value !== '') {
       const ProcessCost = tempData.MHR * event.target.value
       tempData = {
         ...tempData,
         Quantity: event.target.value,
         IsCalculatedEntry: false,
-        ProcessCost: ProcessCost,
+        ProcessCost: checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice),
       }
       let gridTempArr = Object.assign([...gridData], { [index]: tempData })
 
@@ -385,6 +385,34 @@ function ProcessCost(props) {
       setGridData(gridTempArr)
       setValue(`${ProcessGridFields}[${index}]ProcessCost`, ProcessCost)
     } else {
+
+      const ProcessCost = tempData.MHR * 0
+      tempData = {
+        ...tempData,
+        Quantity: 0,
+        IsCalculatedEntry: false,
+        ProcessCost: checkForDecimalAndNull(ProcessCost, initialConfiguration.NoOfDecimalForPrice),
+      }
+      let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+
+      let ProcessCostTotal = 0
+      ProcessCostTotal = gridTempArr && gridTempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
+
+      tempArr = {
+        ...tabData,
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
+        ProcessCostTotal: ProcessCostTotal,
+        CostingProcessCostResponse: gridTempArr,
+      }
+
+      setTabData(tempArr)
+      setGridData(gridTempArr)
+      setTimeout(() => {
+        setValue(`${ProcessGridFields}[${index}]Quantity`, 0)
+        setValue(`${ProcessGridFields}[${index}]ProcessCost`, 0)
+      }, 200)
       toastr.warning('Please enter valid number.')
     }
   }
@@ -684,20 +712,20 @@ function ProcessCost(props) {
                           <td style={{ width: 150 }}>
                             <span className="d-inline-block w90px mr-2">
                               {
-                                <TextFieldHookForm
+                                <NumberFieldHookForm
                                   label=""
                                   name={`${ProcessGridFields}[${index}]Quantity`}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  // rules={{
-                                  //   //required: true,
-                                  //   pattern: {
-                                  //     value: /^[0-9]\d*(\.\d+)?$/i,
-                                  //     message: 'Invalid Number.',
-                                  //   },
-                                  // }}
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^[0-9]\d*(\.\d+)?$/i,
+                                      message: 'Invalid Number.',
+                                    },
+                                  }}
                                   defaultValue={item.Quantity ? checkForDecimalAndNull(item.Quantity, trimForMeasurment,) : '1'}
                                   className=""
                                   customClassName={'withBorder'}
@@ -808,7 +836,6 @@ function ProcessCost(props) {
               setToolCost={setToolCost}
               item={props.item}
               IsAssemblyCalculation={false}
-
             />
           )}
         </div>
