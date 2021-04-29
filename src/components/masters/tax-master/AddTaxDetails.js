@@ -37,21 +37,20 @@ class AddTaxDetails extends Component {
 
     if (isEditFlag) {
       this.props.getTaxDetailsData(ID, res => {
-        const { countryList } = this.props;
+        this.props.fetchCountryDataAPI(() => {
+          const { countryList } = this.props;
+          if (res && res.data && res.data.Data) {
+            let Data = res.data.Data;
+            let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
+            setTimeout(() => {
+              this.setState({
+                country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
+                effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
+              })
+            }, 500)
 
-        if (res && res.data && res.data.Data) {
-          let Data = res.data.Data;
-
-          let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
-
-          setTimeout(() => {
-            this.setState({
-              country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-            })
-          }, 500)
-
-        }
+          }
+        })
       })
     } else {
       this.props.getTaxDetailsData('', res => { })

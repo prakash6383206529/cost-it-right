@@ -15,7 +15,8 @@ import {
     GET_STATE_SELECTLIST,
     GET_ZBC_POWER_DATA_SUCCESS,
     config,
-    GET_POWER_DATA_LIST
+    GET_POWER_DATA_LIST,
+    GET_POWER_VENDOR_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 
@@ -409,7 +410,7 @@ export function getVendorPowerDetailDataList(data, callback) {
         request.then((response) => {
             if (response && response.status === 200) {
                 dispatch({
-                    type: GET_POWER_DATA_LIST,
+                    type: GET_POWER_VENDOR_DATA_LIST,
                     payload: response.data.DataList
                 })
                 callback(response);

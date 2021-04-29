@@ -43,14 +43,8 @@ class AddProcessDrawer extends Component {
     if (isEditFlag) {
       this.props.getProcessData(ID, res => {
         let Data = res.data.Data
-
-        let PlantArray = Data && Data.Plants.length > 0 ? Data.Plants.map((el) => ({ Text: el.PlantName, Value: el.PlantId })) : []
-        let MachineArray = Data && Data.Machines.length > 0 ? Data.Machines.map((el) => ({ Text: el.Machine, Value: el.MachineId })) : []
-
         this.setState({
-          ProcessId: Data.ProcessId,
-          selectedPlants: PlantArray,
-          selectedMachine: MachineArray,
+          ProcessId: Data.ProcessId
         })
       })
     } else {

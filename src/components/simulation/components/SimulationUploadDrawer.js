@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactExport from 'react-export-excel';
-import { Field, reduxForm } from "redux-form";
+import { reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting } from '../../costing/actions/CostWorking'
-import { CostingBulkUpload, CostingBulkUploadTempData } from '../../../config/masterData'
-import { FILE_URL } from '../../../config/constants';
 import { loggedInUserId } from '../../../helper';
 import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
@@ -142,9 +138,6 @@ class SimulationUploadDrawer extends Component {
                             if (val[10] !== '') {
                                 basicRateCount = basicRateCount + 1
                             }
-                            if (val[12] !== '') {
-                                scrapRateCount = scrapRateCount + 1
-                            }
                             if (val[10] === '' && val[12] === '') {
                                 incorrectRowCount = incorrectRowCount + 1
                                 return false
@@ -170,11 +163,6 @@ class SimulationUploadDrawer extends Component {
 
                     if (basicRateCount === 0) {
                         toastr.warning('Please fill at least one basic rate.')
-                        return false
-                    }
-                    console.log(scrapRateCount, "scrapRateCount");
-                    if (scrapRateCount === 0) {
-                        toastr.warning('Please fill at least one scrap rate.')
                         return false
                     }
                     this.setState({

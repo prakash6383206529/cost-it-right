@@ -37,7 +37,7 @@ import {
     config,
     GET_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { toastr } from 'react-redux-toastr'
@@ -342,6 +342,26 @@ export function createRMSpecificationAPI(data, callback) {
         });
     };
 }
+
+/**
+ * @method createRMSpecificationAPI
+ * @description create row material specification master
+ */
+export function createAssociation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createAssociation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({ type: CREATE_MATERIAL_SUCCESS, });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
 
 /**
  * @method getRMSpecificationDataAPI
@@ -934,6 +954,30 @@ export function getRawMaterialNameChild(callback) {
 
 /**
  * @method getRawMaterialNameChild
+ * @description get raw material name child
+ */
+export function getUnassociatedRawMaterail(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getUnassociatedRawMaterial}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_UNASSOCIATED_RM_NAME_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
+
+
+/**
+ * @method getRawMaterialNameChild
  * @description get grade list by raw material name child
  */
 export function getGradeListByRawMaterialNameChild(ID, callback) {
@@ -1005,7 +1049,7 @@ export function getRMDomesticDataList(data, callback) {
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const queryParams = `material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const queryParams = `CostingHead=${data.costingHead}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMDomesticDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1116,7 +1160,7 @@ export function getRMImportDataById(data, isValid, callback) {
  */
 export function getRMImportDataList(data, callback) {
     return (dispatch) => {
-        const queryParams = `material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
+        const queryParams = `CostingHead=${data.costingHead}&PlantId=${data.plantId}&material_id=${data.material_id}&grade_id=${data.grade_id}&vendor_id=${data.vendor_id}&technology_id=${data.technologyId}&net_landed_min_range=${data.net_landed_min_range}&net_landed_max_range=${data.net_landed_max_range}`
         const request = axios.get(`${API.getRMImportDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {

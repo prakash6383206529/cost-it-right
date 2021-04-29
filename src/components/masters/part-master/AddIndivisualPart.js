@@ -59,13 +59,10 @@ class AddIndivisualPart extends Component {
 
           const Data = res.data.Data;
 
-          let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               isLoader: false,
-              selectedPlants: plantArray,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
             })
@@ -225,7 +222,7 @@ class AddIndivisualPart extends Component {
         GroupCode: values.GroupCode,
         Remark: values.Remark,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
-        Plants: [],
+        // Plants: [],
         Attachements: updatedFiles
       }
 
@@ -252,7 +249,7 @@ class AddIndivisualPart extends Component {
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
-        Plants: [],
+        // Plants: [],
         Attachements: files
       }
 

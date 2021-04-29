@@ -70,14 +70,12 @@ class AddAssemblyPart extends Component {
       })
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
-
           const Data = res.data.Data;
-          let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
+
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               isLoader: false,
-              selectedPlants: plantArray,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,

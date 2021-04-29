@@ -43,7 +43,7 @@ class SOBListing extends Component {
     this.props.getBOPCategorySelectList(() => { })
     this.props.getPlantSelectList(() => { })
     this.props.getAllVendorSelectList(() => { })
-    this.props.getInitialFilterData('', () => { })
+    // this.props.getInitialFilterData('', () => { })
     this.getDataList()
   }
 
@@ -51,9 +51,10 @@ class SOBListing extends Component {
   * @method getDataList
   * @description GET DATALIST OF IMPORT BOP
   */
-  getDataList = (boughtOutPartNumber = '') => {
+  getDataList = (boughtOutPartNumber = null, plant_id = null) => {
     const filterData = {
       boughtOutPartNumber: boughtOutPartNumber,
+      plant_id: plant_id
     }
     this.props.getManageBOPSOBDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -288,8 +289,8 @@ class SOBListing extends Component {
                   <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
                     <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                 ) : (
-                    <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                  )}
+                  <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                )}
               </div>
             </Col>
           </Row>

@@ -15,7 +15,7 @@ import {
 } from '../actions/Material';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, checkVendorPlantConfigurable } from "../../../helper/auth";
+import { loggedInUserId, checkVendorPlantConfigurable, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import AddSpecification from './AddSpecification';
 import AddGrade from './AddGrade';
@@ -79,8 +79,8 @@ class AddRMImport extends Component {
       currencyValue: 1,
       showCurrency: false,
       netCost: '',
-      netCurrencyCost: ''
-
+      netCurrencyCost: '',
+      singlePlantSelected: []
     }
   }
 
@@ -302,7 +302,7 @@ class AddRMImport extends Component {
         this.props.change('NetLandedCost', checkForDecimalAndNull(netCost * this.state.currencyValue, this.props.initialConfiguration.NoOfDecimalForPrice))
       })
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('DD-MM-YYYY'), res => {
+      this.props.getExchangeRateByCurrency(currency.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
         this.props.change('NetLandedCost', checkForDecimalAndNull(netCost, this.props.initialConfiguration.NoOfDecimalForPrice))
         this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netCost * res.data.Data.CurrencyExchangeRate, this.props.initialConfiguration.NoOfDecimalForPrice))
         this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), netCost: checkForNull(netCost), netCurrencyCost: checkForNull(netCost * res.data.Data.CurrencyExchangeRate) })
@@ -350,15 +350,17 @@ class AddRMImport extends Component {
 
           setTimeout(() => {
             const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList,
-              vendorListByVendorType, currencySelectList, technologySelectList } = this.props;
+              vendorListByVendorType, currencySelectList, technologySelectList, plantSelectList } = this.props;
 
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find(item => item.Value === Data.RawMaterial)
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
+            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.value === Data.DestinationPlantId)
             const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-            // this.props.change('FreightCharge',Data.FreightCharge)
+            this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
+            this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
             this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             // this.props.change('NetLandedCost')
@@ -402,6 +404,7 @@ class AddRMImport extends Component {
               currency: currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               remarks: Data.Remark,
               files: Data.FileList,
+              singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
               // FreightCharge:Data.FreightCharge
               // netCost:Data
             })
@@ -589,6 +592,14 @@ class AddRMImport extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
     }
     if (label === 'VendorNameList') {
       vendorListByVendorType && vendorListByVendorType.map(item => {
@@ -782,7 +793,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -815,8 +826,9 @@ class AddRMImport extends Component {
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
-        // netCurrencyCost:netCurrencyCost
-        // FreightCharge:values.FreightCharge
+        NetLandedCostConversion: netCurrencyCost,
+        RMFreightCost: values.FreightCharge,
+        RMShearingCost: values.ShearingCost,
       }
       this.props.reset()
       this.props.updateRMImportAPI(requestData, (res) => {
@@ -851,8 +863,10 @@ class AddRMImport extends Component {
         Attachements: files,
         Currency: currency.label,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
-        // netCurrencyCost:netCurrencyCost,
-        // FreightCharge:values.FreightCharge
+        NetLandedCostConversion: netCurrencyCost,
+        RMFreightCost: values.FreightCharge,
+        RMShearingCost: values.ShearingCost,
+        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
       }
       this.props.reset()
       this.props.createRMImport(formData, (res) => {
@@ -864,6 +878,9 @@ class AddRMImport extends Component {
     }
   }
 
+  handleSinglePlant = (newValue) => {
+    this.setState({ singlePlantSelected: newValue })
+  }
   /**
   * @method render
   * @description Renders the component
@@ -1049,27 +1066,51 @@ class AddRMImport extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {/* {!this.state.IsVendor && ( */}
-                          <Col md="4">
-                            <Field
-                              label="Plant"
-                              name="SourceSupplierPlantId"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                              options={this.renderListing("plant")}
-                              selectionChanged={this.handleSourceSupplierPlant}
-                              validate={
-                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []} optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              required={true}
-                              className="multiselect-with-border"
-                            // disabled={this.state.IsVendor || isEditFlag ? true : false} 
-                            />
-                          </Col>
-                          {/* )} */}
+                          {(this.state.IsVendor === false && (
+                            <Col md="4">
+                              <Field
+                                label="Plant"
+                                name="SourceSupplierPlantId"
+                                placeholder={"Select"}
+                                selection={
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                options={this.renderListing("plant")}
+                                selectionChanged={this.handleSourceSupplierPlant}
+                                validate={
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                required={true}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              />
+                            </Col>)
+                          )}
+                          {
+                            (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                            <Col md="4">
+                              <Field
+                                label={'Destination Plant'}
+                                name="DestinationPlant"
+                                placeholder={"Select"}
+                                // selection={
+                                //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                options={this.renderListing("singlePlant")}
+                                handleChangeDescription={this.handleSinglePlant}
+                                validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                                required={true}
+                                // optionValue={(option) => option.Value}
+                                // optionLabel={(option) => option.Text}
+                                component={searchableSelect}
+                                valueDescription={this.state.singlePlantSelected}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              />
+                            </Col>
+                          }
                         </Row>
 
 

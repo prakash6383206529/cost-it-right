@@ -16,6 +16,8 @@ import $ from 'jquery'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import { ZBC } from '../../../config/constants'
+import DatePicker from "react-datepicker";
+import 'react-datepicker/dist/react-datepicker.css'
 
 // const initialTableData = [
 //   {
@@ -278,9 +280,52 @@ class AddVolume extends Component {
     )
   }
 
+  createRegionsEditor = (onUpdate, props) => (
+    // <DatePicker
+    //   name={'ApprovedQuantity'}
+    //   className="form-control"
+    //   // selected={new Date()}
+    //   onChange={onUpdate}
+    //   showMonthDropdown
+    //   showYearDropdown
+    //   dateFormat="dd/MM/yyyy"
+    //   //maxDate={new Date()}
+    //   dropdownMode="select"
+    //   placeholderText="Select date"
+    //   className="withBorder"
+    //   autoComplete={'off'}
+    //   disabledKeyboardNavigation
+    //   onChangeRaw={(e) => e.preventDefault()}
+    //   //onUpdate={onUpdate}
+    //   {...props}
+    //   disabled={true}
+    // />
+    <DatePicker
+      selected={new Date()}
+      onChange={date => { console.log("Date"); }}
+      dropdownMode="select" />
+  )
+
   ActualFormatter = (cell, row, enumObject, rowIndex) => {
     return (
       <>
+        {/* <DatePicker
+          name={row.ApprovedQuantity}
+          className="form-control"
+          selected={cell}
+          //  onChange={handleEffectiveDateChange}
+          showMonthDropdown
+          showYearDropdown
+          dateFormat="dd/MM/yyyy"
+          //maxDate={new Date()}
+          dropdownMode="select"
+          placeholderText="Select date"
+          className="withBorder"
+          autoComplete={'off'}
+          disabledKeyboardNavigation
+          onChangeRaw={(e) => e.preventDefault()}
+          disabled={true}
+        /> */}
         <span className="form-control" >{cell}</span>
       </>
     )
@@ -765,7 +810,7 @@ class AddVolume extends Component {
                           >
                             <TableHeaderColumn dataField="Month" editable={false} > Month  </TableHeaderColumn>
                             <TableHeaderColumn dataField="BudgetedQuantity" editable={true} dataFormat={this.budgetFormatter}>Budgeted Quantity </TableHeaderColumn>
-                            <TableHeaderColumn dataField="ApprovedQuantity" editable={true} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
+                            <TableHeaderColumn dataField="ApprovedQuantity" editable={true} customEditor={{ getElement: this.createRegionsEditor }} dataFormat={this.ActualFormatter}>Actual Quantity  </TableHeaderColumn>
 
                             <TableHeaderColumn dataField="VolumeApprovedDetailId" hidden  > Volume Approv Id </TableHeaderColumn>
                             <TableHeaderColumn dataField="VolumeBudgetedDetailId" hidden  > Vol Budget Id    </TableHeaderColumn>

@@ -95,8 +95,7 @@ class AddReason extends Component {
         ReasonId: ReasonId,
         Reason: values.Reason,
         IsActive: this.state.IsActive,
-        CreatedBy: loggedInUserId(),
-        CreatedDate: '',
+        LoggedInUserId: loggedInUserId(),
       }
       this.props.reset()
       this.props.updateReasonAPI(formData, (res) => {
@@ -108,8 +107,8 @@ class AddReason extends Component {
       /** Add detail for creating new UOM  */
       //values.IsActive = this.state.IsActive;
       values.IsActive = true;
-      values.CreatedBy = loggedInUserId();
-      values.CreatedDate = '';
+      values.LoggedInUserId = loggedInUserId();
+
 
       this.props.reset()
       this.props.createReasonAPI(values, (res) => {
@@ -132,7 +131,7 @@ class AddReason extends Component {
       <Drawer
         anchor={this.props.anchor}
         open={this.props.isOpen}
-        // onClose={(e) => this.toggleDrawer(e)}
+      // onClose={(e) => this.toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
@@ -87,8 +87,8 @@ function Pipe(props) {
 
   useEffect(() => {
     //UNIT TYPE ID OF DIMENSIONS
-    const UnitTypeId = '305e0874-0a2d-4eab-9781-4fe397b16fcc' // static
-    dispatch(getUOMListByUnitType(UnitTypeId, (res) => { }))
+    // const UnitTypeId = '305e0874-0a2d-4eab-9781-4fe397b16fcc' // static
+    // dispatch(getUOMListByUnitType(UnitTypeId, (res) => { }))
     dispatch(getUOMSelectList(res => {
       const Data = res.data.Data
       const kgObj = Data.find(el => el.Text === G)

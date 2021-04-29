@@ -1,25 +1,20 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
-import { Badge } from 'reactstrap'
-import { values } from 'lodash'
 import ApprovalSummary from './ApprovalSummary'
-import {
-  getAllPartSelectList,
-  getCostingStatusSelectList,
-} from '../../actions/Costing'
+import { getAllPartSelectList, getCostingStatusSelectList, } from '../../actions/Costing'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
 import moment from 'moment'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
 import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
-import { APPROVED, PENDING, WAITING_FOR_APPROVAL } from '../../../../config/constants'
+import { PENDING } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 
 function ApprovalListing() {
@@ -251,7 +246,6 @@ function ApprovalListing() {
     //onExportToCSV: this.onExportToCSV,
     //paginationShowsTotal: true,
     //paginationShowsTotal: this.renderPaginationShowsTotal,
-
   }
 
   const sendForApproval = () => {

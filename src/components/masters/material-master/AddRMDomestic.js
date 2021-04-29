@@ -16,7 +16,7 @@ import {
 } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { loggedInUserId, checkVendorPlantConfigurable, } from '../../../helper/auth'
+import { loggedInUserId, checkVendorPlantConfigurable, getConfigurationKey, } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddSpecification from './AddSpecification'
 import AddGrade from './AddGrade'
@@ -77,7 +77,8 @@ class AddRMDomestic extends Component {
       imageURL: '',
 
       netLandedCost: '',
-      freightCost: ''
+      freightCost: '',
+      singlePlantSelected: []
     }
   }
   /**
@@ -106,7 +107,7 @@ class AddRMDomestic extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-
+    console.log(getConfigurationKey().IsDestinationPlantConfigure, "CONFIGURE KEY");
   }
 
   componentDidUpdate(prevProps) {
@@ -324,18 +325,19 @@ class AddRMDomestic extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
           this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
-          // this.props.change('FreightCharge',Data.FreightCharge)
-          // this.props.change('ShearingCost',Data.ShearingCost)
+          this.props.change('FreightCharge', Data.FreightCharge ? Data.RMFreightCost : '')
+          this.props.change('ShearingCost', Data.ShearingCost ? Data.RMShearingCost : '')
 
           setTimeout(() => {
-            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList } = this.props
+            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
 
             const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
             const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
-
+            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.value === Data.DestinationPlantId)
             const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
+
 
             let plantArray = []
             Data && Data.Plant.map((item) => {
@@ -373,6 +375,7 @@ class AddRMDomestic extends Component {
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               remarks: Data.Remark,
               files: Data.FileList,
+              singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
             })
           }, 1000)
         }
@@ -594,6 +597,15 @@ class AddRMDomestic extends Component {
       return temp
     }
 
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+
     if (label === 'VendorNameList') {
       vendorListByVendorType && vendorListByVendorType.map((item) => {
         if (item.Value === '0') return false
@@ -793,7 +805,7 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected } = this.state
     const { initialConfiguration } = this.props
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
@@ -820,8 +832,8 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         Remark: remarks,
         BasicRatePerUOM: values.BasicRate,
-        // FrieghtCharge:values.FrieghtCharge,
-        // ShearingCost:values.ShearingCost,
+        RMFreightCost: values.FrieghtCharge,
+        RMShearingCost: values.ShearingCost,
         ScrapRate: values.ScrapRate,
         NetLandedCost: netLandedCost,
         LoggedInUserId: loggedInUserId(),
@@ -850,8 +862,8 @@ class AddRMDomestic extends Component {
         SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
         UOM: UOM.value,
         BasicRatePerUOM: values.BasicRate,
-        // FrieghtCharge:values.FrieghtCharge,
-        // ShearingCost:values.ShearingCost,
+        RMFreightCost: values.FrieghtCharge,
+        RMShearingCost: values.ShearingCost,
         ScrapRate: values.ScrapRate,
         NetLandedCost: values.NetLandedCost,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
@@ -861,7 +873,7 @@ class AddRMDomestic extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
-
+        DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
       }
       this.props.reset()
       this.props.createRMDomestic(formData, (res) => {
@@ -875,6 +887,11 @@ class AddRMDomestic extends Component {
     }
   }
 
+
+  handleSinglePlant = (newValue) => {
+    this.setState({ singlePlantSelected: newValue })
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -882,6 +899,7 @@ class AddRMDomestic extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state
+    console.log(!this.state.IsVendor || getConfigurationKey().IsDestinationPlantConfigure, "SSSSSSSSSSSSSSSSSSSSSS")
 
     return (
       <>
@@ -1032,7 +1050,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="4">
-                          <TooltipCustom />
+                            <TooltipCustom />
                             <Field
                               name="CategoryId"
                               type="text"
@@ -1067,28 +1085,51 @@ class AddRMDomestic extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {/* {!this.state.IsVendor && ( */}
-                          <Col md="4">
-                            <Field
-                              label="Plant"
-                              name="SourceSupplierPlantId"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                              options={this.renderListing("plant")}
-                              selectionChanged={this.handleSourceSupplierPlant}
-                              validate={
-                                this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                              required={true}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              mendatory={true}
-                              className="multiselect-with-border"
-                            // disabled={this.state.IsVendor || isEditFlag ? true : false}
-                            />
-                          </Col>
-                          {/* )} */}
+                          {(this.state.IsVendor === false && (
+                            <Col md="4">
+                              <Field
+                                label="Plant"
+                                name="SourceSupplierPlantId"
+                                placeholder={"Select"}
+                                selection={
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                options={this.renderListing("plant")}
+                                selectionChanged={this.handleSourceSupplierPlant}
+                                validate={
+                                  this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                required={true}
+                                optionValue={(option) => option.Value}
+                                optionLabel={(option) => option.Text}
+                                component={renderMultiSelectField}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              />
+                            </Col>)
+                          )}
+                          {
+                            (this.state.IsVendor === true && getConfigurationKey().IsDestinationPlantConfigure) &&
+                            <Col md="4">
+                              <Field
+                                label={'Destination Plant'}
+                                name="DestinationPlant"
+                                placeholder={"Select"}
+                                // selection={
+                                //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                options={this.renderListing("singlePlant")}
+                                handleChangeDescription={this.handleSinglePlant}
+                                validate={this.state.singlePlantSelected == null || this.state.singlePlantSelected.length === 0 ? [required] : []}
+                                required={true}
+                                // optionValue={(option) => option.Value}
+                                // optionLabel={(option) => option.Text}
+                                component={searchableSelect}
+                                valueDescription={this.state.singlePlantSelected}
+                                mendatory={true}
+                                className="multiselect-with-border"
+                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                              />
+                            </Col>
+                          }
 
                         </Row>
 
