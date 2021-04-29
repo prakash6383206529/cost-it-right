@@ -4290,10 +4290,19 @@ body{
         }
       }
 
-      .react-bs-table-container {
+      .MuiDrawer-paper{
+        .react-bs-table-container {
           th,td{
             >input[type=checkbox]{
               min-width: 14px;
+            }
+          }
+        }
+      }
+      .react-bs-table-container {
+          th,td{
+            >input[type=checkbox]{
+              min-width: 21px;
             }
           }
         .react-bs-table {

@@ -102,8 +102,8 @@ function SimulationHistory(props) {
     return (
         <div className="container-fluid simulation-history-page">
             <Row>
-                <Col sm="4" >
-                    <h1 className="mb-0">{`Simulation History`}</h1>
+                <Col sm="12" >
+                    <h1 className="mb-4">{`Simulation History`}</h1>
                 </Col>
             </Row>
             <BootstrapTable
