@@ -3678,6 +3678,9 @@ body{
 }
 // simulation page
 .simulation-page{
+  .filter-row-large{
+    z-index: 12;
+  }
   .filter-block{
     .flex-fills{
       .mb-15.form-group-searchable-select{
@@ -4287,10 +4290,19 @@ body{
         }
       }
 
-      .react-bs-table-container {
+      .MuiDrawer-paper{
+        .react-bs-table-container {
           th,td{
             >input[type=checkbox]{
               min-width: 14px;
+            }
+          }
+        }
+      }
+      .react-bs-table-container {
+          th,td{
+            >input[type=checkbox]{
+              min-width: 21px;
             }
           }
         .react-bs-table {

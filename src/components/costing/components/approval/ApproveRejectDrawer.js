@@ -160,7 +160,8 @@ function ApproveRejectDrawer(props) {
               </Row>
 
               <Row className="ml-0">
-                {type === 'Approve' && IsFinalLevel && (
+                {/* {type === 'Approve' && IsFinalLevel && ( */}
+                {type === 'Approve' && (
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
                       label={'Approver'}
