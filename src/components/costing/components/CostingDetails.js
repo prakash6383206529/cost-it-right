@@ -915,6 +915,30 @@ function CostingDetails(props) {
   }
 
   /**
+* @method deleteRowItem
+* @description CONFIRM DELETE COSTINGS
+*/
+  const deleteRowItem = (index, type) => {
+
+    if (type === ZBC) {
+      let tempArr = zbcPlantGrid && zbcPlantGrid.filter((el, i) => {
+        if (i === index) return false;
+        return true;
+      })
+      setZBCPlantGrid(tempArr)
+    }
+
+    if (type === VBC) {
+      let tempArr = vbcVendorGrid && vbcVendorGrid.filter((el, i) => {
+        if (i === index) return false;
+        return true;
+      })
+      setVBCVendorGrid(tempArr)
+    }
+
+  }
+
+  /**
    * @method cancel
    * @description used to Reset form
    */
@@ -1414,6 +1438,7 @@ function CostingDetails(props) {
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "160px" }}>{`Price`}</th>
                                   <th style={{ minWidth: "255px" }}>{`Actions`}</th>
+                                  <th>{``}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1497,6 +1522,7 @@ function CostingDetails(props) {
                                           {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
                                           {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
                                         </td>
+                                        <td>{item?.CostingOptions?.length === 0 && <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => deleteRowItem(index, ZBC)} />}</td>
                                       </tr>
                                     );
                                   })}
@@ -1552,6 +1578,7 @@ function CostingDetails(props) {
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "160px" }}>{`Price`}</th>
                                   <th style={{ minWidth: "255px" }}>{`Actions`}</th>
+                                  <th>{``}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1572,7 +1599,7 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1)}</td>}
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label ? item?.DestinationPlant?.label?.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1) : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <TextFieldHookForm
                                           label=""
@@ -1633,6 +1660,7 @@ function CostingDetails(props) {
                                         {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBC)} />)}
                                         {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBC)} />)}
                                       </td>
+                                      <td>{item?.CostingOptions?.length === 0 && <button className="CancelIcon mb-0 align-middle" type={'button'} onClick={() => deleteRowItem(index, VBC)} />}</td>
                                     </tr>
                                   );
                                 })}
