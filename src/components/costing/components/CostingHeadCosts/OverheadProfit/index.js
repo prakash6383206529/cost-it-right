@@ -1243,7 +1243,7 @@ function OverheadProfit(props) {
                 <label>
                   {''}
                 </label>
-                <button type="button" className={'refresh-icon mt-2 tooltip-n'} onClick={() => IncludeSurfaceTreatmentCall()}>
+                <button type="button" className={'refresh-icon mt9 tooltip-n'} onClick={() => IncludeSurfaceTreatmentCall()}>
                   <span class="tooltiptext">Refresh to update Overhead and Profit cost</span>
                 </button>
               </Col>
