@@ -95,22 +95,27 @@ function RunSimulationDrawer(props) {
                                         ></div>
                                     </Col>
                                 </Row>
-                                <label
-                                    className="custom-checkbox"
-                                    onChange={handleProfitChange}
-                                >
-                                    {'Profit'}
-                                    <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        checked={isProfitChecked}
-                                    />
-                                    <span
-                                        className=" before-box"
-                                        checked={isProfitChecked}
-                                        onChange={handleProfitChange}
-                                    />
-                                </label>
+                                <Row className="ml-0 pt-3">
+                                    <Col md="12" className="mb-3">
+                                        <label
+                                            className="custom-checkbox"
+                                            onChange={handleProfitChange}
+                                        >
+                                            {'Profit'}
+                                            <input
+                                                type="checkbox"
+                                                value={"All"}
+                                                checked={isProfitChecked}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={isProfitChecked}
+                                                onChange={handleProfitChange}
+                                            />
+                                        </label>
+                                    </Col>
+
+                                    <Col md="12" className="mb-3">
                                 <label
                                     className="custom-checkbox"
                                     onChange={handleOverheadChange}
@@ -127,6 +132,9 @@ function RunSimulationDrawer(props) {
                                         onChange={handleOverheadChange}
                                     />
                                 </label>
+                                </Col>
+
+                                <Col md="12" className="mb-3">
                                 <label
                                     className="custom-checkbox"
                                     onChange={handleICCChange}
@@ -143,6 +151,8 @@ function RunSimulationDrawer(props) {
                                         onChange={handleICCChange}
                                     />
                                 </label>
+                                </Col>
+                                <Col md="12" className="mb-3">
                                 <label
                                     className="custom-checkbox"
                                     onChange={handleRejectionChange}
@@ -159,6 +169,8 @@ function RunSimulationDrawer(props) {
                                         onChange={handleRejectionChange}
                                     />
                                 </label>
+                                </Col>
+                                <Col md="12" className="mb-3">
                                 <label
                                     className="custom-checkbox"
                                     onChange={handlePaymentChange}
@@ -175,12 +187,14 @@ function RunSimulationDrawer(props) {
                                         onChange={handlePaymentChange}
                                     />
                                 </label>
+                                </Col>
+                                </Row>
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
-                                <div className="col-md-12 pl-3 pr-3">
-                                    <div className="text-right ">
+                                <div className="col-md-12 px-3">
+                                    <div className="text-right px-3">
                                         <button onClick={runSimulationCosting} type="submit" className="user-btn mr5 save-btn">
-                                            <div className={"Run"}>
+                                            <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"RUN SIMULATION"}
                                         </button>

@@ -222,8 +222,9 @@ function Simulation(props) {
 
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
-                            <div className="d-inline-flex justify-content-start align-items-center w100">
-                                <div className="flex-fills">Masters:</div>
+                            
+                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                <div className="flex-fills label">Masters:</div>
                                 <div className="hide-label flex-fills pl-0">
                                     <SearchableSelectHookForm
                                         label={''}
@@ -241,27 +242,26 @@ function Simulation(props) {
                                     />
                                 </div>
                             </div>
-                        </Col>
-                        <Col md="1">
-                            <div>Technology:</div>
-                        </Col>
-                        <Col md="3">
-                            <div className="flex-fill filled-small hide-label">
-                                <SearchableSelectHookForm
-                                    label={''}
-                                    name={'Technology'}
-                                    placeholder={'Technology'}
-                                    Controller={Controller}
-                                    control={control}
-                                    rules={{ required: false }}
-                                    register={register}
-                                    // defaultValue={plant.length !== 0 ? plant : ''}
-                                    options={renderListing('technology')}
-                                    mandatory={false}
-                                    handleChange={handleTechnologyChange}
-                                    errors={errors.Masters}
-                                />
-                            </div>
+
+                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                <div className="flex-fills label">Technology:</div>
+                                <div className="flex-fills hide-label pl-0">
+                                    <SearchableSelectHookForm
+                                        label={''}
+                                        name={'Technology'}
+                                        placeholder={'Technology'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        register={register}
+                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        options={renderListing('technology')}
+                                        mandatory={false}
+                                        handleChange={handleTechnologyChange}
+                                        errors={errors.Masters}
+                                    />
+                                </div>
+                        </div>
                         </Col>
                     </Row>
                     {/* <RMDomesticListing isSimulation={true} /> */}

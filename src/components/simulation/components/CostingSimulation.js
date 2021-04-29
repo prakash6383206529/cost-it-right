@@ -130,83 +130,87 @@ function CostingSimulation(props) {
     return (
         <div>
             <Row>
-                <h5>Token No:{tokenNo}</h5>
+                <Col sm="12">
+                <h1 class="mb-0">Token No:{tokenNo}</h1>
+                </Col>
             </Row>
-            <Col lg="10" md="12" className="filter-block">
-                <div className="d-inline-flex justify-content-start align-items-top w100">
-                    <div className="flex-fills">
-                        <h5>{`Filter By:`}</h5>
-                    </div>
+            <Row className="filter-row-large pt-4">
+                <Col lg="10" md="12" className="filter-block">
+                    <div className="d-inline-flex justify-content-start align-items-top w100">
+                        <div className="flex-fills">
+                            <h5>{`Filter By:`}</h5>
+                        </div>
 
-                    <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                            label={''}
-                            name={'partNo'}
-                            placeholder={'Part No.'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            // defaultValue={plant.length !== 0 ? plant : ''}
-                            options={renderDropdownListing('PartList')}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            errors={errors.partNo}
-                        />
-                    </div>
-                    <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                            label={''}
-                            name={'plantCode'}
-                            placeholder={'Plant Code'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            // defaultValue={plant.length !== 0 ? plant : ''}
-                            options={renderDropdownListing('plantCode')}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            errors={errors.plantCode}
-                        />
-                    </div>
-                    <div className="flex-fill filled-small hide-label">
-                        <SearchableSelectHookForm
-                            label={''}
-                            name={'rawMaterial'}
-                            placeholder={'Raw Material'}
-                            Controller={Controller}
-                            control={control}
-                            rules={{ required: false }}
-                            register={register}
-                            // defaultValue={plant.length !== 0 ? plant : ''}
-                            options={renderDropdownListing('rm')}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            errors={errors.rawMaterial}
-                        />
-                    </div>
+                        <div className="flex-fill filled-small hide-label">
+                            <SearchableSelectHookForm
+                                label={''}
+                                name={'partNo'}
+                                placeholder={'Part No.'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={plant.length !== 0 ? plant : ''}
+                                options={renderDropdownListing('PartList')}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.partNo}
+                            />
+                        </div>
+                        <div className="flex-fill filled-small hide-label">
+                            <SearchableSelectHookForm
+                                label={''}
+                                name={'plantCode'}
+                                placeholder={'Plant Code'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={plant.length !== 0 ? plant : ''}
+                                options={renderDropdownListing('plantCode')}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.plantCode}
+                            />
+                        </div>
+                        <div className="flex-fill filled-small hide-label">
+                            <SearchableSelectHookForm
+                                label={''}
+                                name={'rawMaterial'}
+                                placeholder={'Raw Material'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                // defaultValue={plant.length !== 0 ? plant : ''}
+                                options={renderDropdownListing('rm')}
+                                mandatory={false}
+                                handleChange={() => { }}
+                                errors={errors.rawMaterial}
+                            />
+                        </div>
 
-                    <div className="flex-fill filled-small hide-label">
-                        <button
-                            type="button"
-                            //disabled={pristine || submitting}
-                            onClick={() => { }}
-                            className="reset mr10"
-                        >
-                            {'Reset'}
-                        </button>
-                        <button
-                            type="button"
-                            //disabled={pristine || submitting}
-                            onClick={() => { }}
-                            className="apply mr5"
-                        >
-                            {'Apply'}
-                        </button>
+                        <div className="flex-fill filled-small hide-label">
+                            <button
+                                type="button"
+                                //disabled={pristine || submitting}
+                                onClick={() => { }}
+                                className="reset mr10"
+                            >
+                                {'Reset'}
+                            </button>
+                            <button
+                                type="button"
+                                //disabled={pristine || submitting}
+                                onClick={() => { }}
+                                className="apply mr5"
+                            >
+                                {'Apply'}
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </Col>
+                </Col>
+            </Row>
             <Row>
                 <Col>
                     <BootstrapTable

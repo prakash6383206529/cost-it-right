@@ -99,56 +99,56 @@ function RMSimulation(props) {
     }
 
     const renderCostingHead = () => {
-        return <>Costing <br />Head </>
+        return <>Costing Head </>
     }
 
     const renderRawMaterial = () => {
-        return <>Raw <br />Material </>
+        return <>Raw Material </>
     }
 
     const renderRMGrade = () => {
-        return <>RM <br />Grade </>
+        return <>RM Grade </>
     }
 
     const renderRMSpec = () => {
-        return <>RM <br />Spec </>
+        return <>RM Spec </>
     }
 
     const renderBasicRate = () => {
-        return <>Basic <br />Rate(INR) </>
+        return <>Basic <br/> Rate(INR) </>
     }
 
     const rendorFreightRate = () => {
-        return <>RM Freight <br /> Cost</>
+        return <>RM Freight <br/> Cost</>
     }
 
     const renderShearingCost = () => {
-        return <>Shearing <br /> Cost</>
+        return <>Shearing <br/> Cost</>
     }
 
     const renderNewBasicRate = () => {
-        return <>New Basic <br />Rate(INR) </>
+        return <>New Basic <br/>  Rate(INR) </>
     }
 
 
     const renderScrapRate = () => {
-        return <>Scrap <br />Rate(INR) </>
+        return <>Scrap <br/> Rate(INR) </>
     }
 
     const renderNewScrapRate = () => {
-        return <>New Scrap <br />Rate(INR) </>
+        return <>New Scrap <br/> Rate(INR) </>
     }
 
     const renderNetCost = () => {
-        return <>Net <br />Cost(INR) </>
+        return <>Net <br/> Cost(INR) </>
     }
 
     const renderNewNetCost = () => {
-        return <>New Net <br />Cost(INR) </>
+        return <>New Net <br/> Cost(INR) </>
     }
 
     const renderEffectiveDate = () => {
-        return <>Effective <br />Date</>
+        return <>Effective <br/> Date</>
     }
 
     /**
@@ -351,22 +351,22 @@ function RMSimulation(props) {
                                 className="add-volume-table"
                                 pagination>
                                 {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
-                                <TableHeaderColumn dataField="CostingHead" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true} dataFormat={costingHeadFormatter}>{renderCostingHead()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingHead" width={110} columnTitle={true} editable={false} dataAlign="left" dataSort={true} dataFormat={costingHeadFormatter}>{renderCostingHead()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="Category" >Category</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >{renderBasicRate()}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">{renderNewBasicRate()}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >{renderScrapRate()}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">{renderNewScrapRate()}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
-                                <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
-                                <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >{renderNetCost()}</TableHeaderColumn>
-                                <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >{renderNewNetCost()}</TableHeaderColumn>
+                                <TableHeaderColumn width={150} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn>
+                                <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
+                                <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >{renderBasicRate()}</TableHeaderColumn>
+                                <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">{renderNewBasicRate()}</TableHeaderColumn>
+                                <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="ScrapRate" >{renderScrapRate()}</TableHeaderColumn>
+                                <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">{renderNewScrapRate()}</TableHeaderColumn>
+                                <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
+                                <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
+                                <TableHeaderColumn width={130} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >{renderNetCost()}</TableHeaderColumn>
+                                <TableHeaderColumn width={130} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >{renderNewNetCost()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
                             </BootstrapTable>
