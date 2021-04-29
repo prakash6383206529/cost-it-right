@@ -208,7 +208,7 @@ export const API = {
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
-  createAssociation: `${BASE_URL}/masters-raw-material/associate-raw-material`,
+  createAssociation: `${BASE_URL}/masters-material/associate-raw-material`,
   getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-all-raw-materials`,
 
   //RM GRADE
