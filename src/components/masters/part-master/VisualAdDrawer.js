@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { TextFieldHookForm } from '../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { yupResolver } from '@hookform/resolvers';
 import * as yup from "yup";
 
@@ -15,7 +15,9 @@ const schema = yup.object().shape({
 export default function VishualAdDrawer(props) {
 
     const { register, handleSubmit, watch, errors, control } = useForm({
-        resolver: yupResolver(schema)
+        resolver: yupResolver(schema),
+        mode: 'onChange',
+        reValidateMode: 'onChange',
     });
 
     // watch input value by passing the name of it
@@ -67,7 +69,7 @@ export default function VishualAdDrawer(props) {
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <Row>
                                 <Col md="12">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label="Quantity"
                                         name={'quantity'}
                                         Controller={Controller}
@@ -77,10 +79,13 @@ export default function VishualAdDrawer(props) {
                                             required: true,
                                             pattern: {
                                                 value: !/^\+?(0|[0-9]\d*)$/,
-                                                //value: /^[0-9]\d*(\.\d+)?$/i,
+                                                //value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
                                                 message: 'Invalid Number.',
                                             },
-                                            min: 1,
+                                            min: {
+                                                value: 1,
+                                                message: 'Quantity should not be less than 1.'
+                                            },
 
                                         }}
                                         mandatory={true}

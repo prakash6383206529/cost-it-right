@@ -10,10 +10,10 @@ import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import AddVendorDrawer from './AddVendorDrawer';
 import { toastr } from 'react-redux-toastr';
-import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
+import { checkForNull, checkPermission, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
+import { APPROVED, SHEET_METAL, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
@@ -24,7 +24,8 @@ import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { MESSAGES } from '../../../config/message';
 import BOMUpload from '../../massUpload/BOMUpload';
-import { getPlantSelectListByType } from '../../../actions/Common';
+import { getLeftMenu } from '../../../actions/auth/AuthActions';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 export const ViewCostingContext = React.createContext()
 
@@ -49,7 +50,6 @@ function CostingDetails(props) {
   const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
   const [vbcVendorOldArray, setvbcVendorOldArray] = useState([]);
-  const [DestinationPlant, setDestinationPlant] = useState([]);
 
   const [stepOne, setStepOne] = useState(Object.keys(props.costingData).length > 0 ? false : true);
   const [stepTwo, setStepTwo] = useState(Object.keys(props.costingData).length > 0 ? true : false);
@@ -65,6 +65,13 @@ function CostingDetails(props) {
   const [isCopyCostingDrawer, setIsCopyCostingDrawer] = useState(false)
   const [costingIdForCopy, setCostingIdForCopy] = useState({})
 
+  //ROLE AND PERMISSION
+  const [ViewAccessibility, setViewAccessibility] = useState(true)
+  const [AddAccessibility, setAddAccessibility] = useState(true)
+  const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
+  const [CopyAccessibility, setCopyAccessibility] = useState(true)
+
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(false)
 
@@ -76,26 +83,47 @@ function CostingDetails(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    InjectRolePermission()
     dispatch(storePartNumber(''))
     dispatch(getCostingTechnologySelectList(() => { }))
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
-    dispatch(getPlantSelectListByType(ZBC, () => { }))
   }, [])
+
+  const technologySelectList = useSelector((state) => state.costing.technologySelectList)
+  const partInfo = useSelector((state) => state.costing.partInfo)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
+  const partNumber = useSelector(state => state.costing.partNo);
+  const leftMenuData = useSelector(state => state.auth.leftMenuData);
+
+  /**
+   * @method InjectRolePermission
+   * @description SET ROLE AND PERMISSION
+  */
+  const InjectRolePermission = () => {
+    let ModuleId = reactLocalStorage.get('ModuleId');
+    dispatch(getLeftMenu(ModuleId, loggedInUserId(), (res) => {
+      if (leftMenuData !== undefined) {
+        let Data = leftMenuData;
+        const accessData = Data && Data.find(el => el.PageName === SHEET_METAL)
+        const permmisionData = accessData?.Actions && checkPermission(accessData.Actions)
+        if (permmisionData !== undefined) {
+          setViewAccessibility(permmisionData?.View ? permmisionData.View : false)
+          setAddAccessibility(permmisionData?.Add ? permmisionData.Add : false)
+          setEditAccessibility(permmisionData?.Edit ? permmisionData.Edit : false)
+          setDeleteAccessibility(permmisionData?.Delete ? permmisionData.Delete : false)
+          setCopyAccessibility(permmisionData?.Copy ? permmisionData.Copy : false)
+        }
+      }
+    }))
+  }
 
   useEffect(() => {
     setStepOne(Object.keys(props.costingData).length > 0 ? false : true);
     setStepTwo(Object.keys(props.costingData).length > 0 ? true : false);
   }, [props.costingData])
-
-  const technologySelectList = useSelector((state) => state.costing.technologySelectList)
-  const partSelectList = useSelector((state) => state.costing.partSelectList)
-  const partInfo = useSelector((state) => state.costing.partInfo)
-  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-  const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
-  const partNumber = useSelector(state => state.costing.partNo);
-  const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
   useEffect(() => {
     if (partNumber.isChanged === false) {
@@ -167,14 +195,7 @@ function CostingDetails(props) {
       return temp
     }
 
-    if (label === 'DestinationPlant') {
-      plantSelectList && plantSelectList.map((item) => {
-        if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
-        return null
-      })
-      return temp
-    }
+
   }
 
   /**
@@ -262,16 +283,6 @@ function CostingDetails(props) {
     } else {
       setPart([])
       dispatch(getPartInfo('', () => { }))
-    }
-  }
-
-  /**
-  * @method handleDestinationPlantChange
-  * @description  USED TO HANDLE DESTINATION PLANT CHANGE
-  */
-  const handleDestinationPlantChange = (newValue) => {
-    if (newValue && newValue !== '') {
-      setDestinationPlant(newValue)
     }
   }
 
@@ -1397,8 +1408,7 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Plant Code`}</th>
-                                  <th style={{}}>{`Plant Name`}</th>
+                                  <th style={{}}>{`Plant`}</th>
                                   <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
@@ -1424,8 +1434,7 @@ function CostingDetails(props) {
 
                                     return (
                                       <tr key={index}>
-                                        <td>{item.PlantCode}</td>
-                                        <td>{item.PlantName}</td>
+                                        <td>{`${item.PlantName}(${item.PlantCode})`}</td>
                                         <td className="cr-select-height w-100px">
                                           <TextFieldHookForm
                                             label={""}
@@ -1482,11 +1491,11 @@ function CostingDetails(props) {
                                         </td>
                                         <td>{item.Price ? item.Price : ''}</td>
                                         <td style={{ width: "250px" }}>
-                                          <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />
-                                          {!item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
-                                          {!item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
-                                          {!item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
-                                          {!item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
+                                          {AddAccessibility && <button className="Add-file mr-2 my-1" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBC)} />}
+                                          {ViewAccessibility && !item.IsNewCosting && item.Status !== '-' && (<button className="View mr-2 my-1" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBC)} />)}
+                                          {EditAccessibility && !item.IsNewCosting && displayEditBtn && (<button className="Edit mr-2 my-1" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBC)} />)}
+                                          {CopyAccessibility && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All mr-2 my-1" type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBC)} />)}
+                                          {DeleteAccessibility && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All my-1" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBC)} />)}
                                         </td>
                                       </tr>
                                     );
@@ -1510,28 +1519,9 @@ function CostingDetails(props) {
                     {IsOpenVendorSOBDetails && (
                       <>
                         <Row className="align-items-center">
-                          <Col md={initialConfiguration?.IsDestinationPlantConfigure ? '1' : '6'} className={"mb-2 mt-3"}>
+                          <Col md={'6'} className={"mb-2 mt-3"}>
                             <h6 className="dark-blue-text sec-heading">VBC:</h6>
                           </Col>
-                          {initialConfiguration?.IsDestinationPlantConfigure && <Col md="2" className={"mb-2 mt-3"}>
-                            {'Destination Plant'}
-                          </Col>}
-                          {initialConfiguration?.IsDestinationPlantConfigure && <Col md="3" className={"mb-2 mt-3"}>
-                            <SearchableSelectHookForm
-                              label={""}
-                              name={"DestinationPlant"}
-                              placeholder={"Select"}
-                              Controller={Controller}
-                              control={control}
-                              rules={{ required: true }}
-                              register={register}
-                              defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
-                              options={renderListing("DestinationPlant")}
-                              mandatory={false}
-                              handleChange={handleDestinationPlantChange}
-                              errors={errors.DestinationPlant}
-                            />
-                          </Col>}
                           <Col md="6" className={"mb-2 mt-3"}>
                             {vbcVendorGrid && vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
                               <button
@@ -1555,8 +1545,8 @@ function CostingDetails(props) {
                             >
                               <thead>
                                 <tr>
-                                  <th style={{}}>{`Vendor Code`}</th>
-                                  <th style={{}}>{`Vendor Name`}</th>
+                                  <th style={{}}>{`Vendor`}</th>
+                                  {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
                                   <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
@@ -1581,8 +1571,8 @@ function CostingDetails(props) {
 
                                   return (
                                     <tr key={index}>
-                                      <td>{item.VendorCode}</td>
-                                      <td>{item.VendorName}</td>
+                                      <td>{`${item.VendorName}(${item.VendorCode})`}</td>
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1)}</td>}
                                       <td className="w-100px cr-select-height">
                                         <TextFieldHookForm
                                           label=""

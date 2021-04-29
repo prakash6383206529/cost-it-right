@@ -143,7 +143,6 @@ class SideBar extends Component {
     });
   };
 
-
   setLeftMenuAccToMenu = (pathname) => {
     this.props.getModuleIdByPathName(pathname, res => {
       this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
@@ -155,15 +154,16 @@ class SideBar extends Component {
   }
 
   /**
-    * @method setLeftMenu
-    * @description Used to set left menu and Redirect to first menu.
-    */
+  * @method setLeftMenu
+  * @description Used to set left menu and Redirect to first menu.
+  */
   SetMenu = (ModuleId) => {
     if (ModuleId !== reactLocalStorage.get("ModuleId")) {
       this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
     }
     reactLocalStorage.set("ModuleId", ModuleId);
   };
+
   /**
    * @method renderDashboard
    * @description Render dashboard menu.

@@ -331,7 +331,7 @@ function TabRMCC(props) {
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getRMCostWithQuantity(i.CostingChildPartDetails, checkForNull(netRMCost(rmGrid)), params);
           i.CostingPartDetails.TotalRawMaterialsCostWithQuantity = getRMTotalCostForAssemblyWithQuantity(i.CostingChildPartDetails, checkForNull(netRMCost(rmGrid)), params);
 
-          setRMCostInDataList(rmGrid, params, i.CostingChildPartDetails)
+          setRMCostInDataList(rmGrid, params, i.CostingChildPartDetails) //TODO :OPTIMAZATION
 
         } else if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
 
@@ -1000,6 +1000,7 @@ function TabRMCC(props) {
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        console.log('Called Parent Form')
         if (res.data.Result) {
           toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
           InjectDiscountAPICall()
