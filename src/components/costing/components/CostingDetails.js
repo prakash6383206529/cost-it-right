@@ -1004,7 +1004,9 @@ function CostingDetails(props) {
   useEffect(() => {
     if (isZBCSOBEnabled && zbcPlantGrid.length > 0) {
 
-      if (CheckIsCostingAvailable() === false) {
+      if (!checkSOBTotal()) {
+        toastr.warning('SOB Should not be greater than 100.')
+      } else if (CheckIsCostingAvailable() === false) {
         let tempArr = []
         //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
         zbcPlantGrid && zbcPlantGrid.map((el) => {
@@ -1110,7 +1112,9 @@ function CostingDetails(props) {
   useEffect(() => {
     if (isVBCSOBEnabled && vbcVendorGrid.length > 0) {
 
-      if (CheckIsCostingAvailable() === false) {
+      if (!checkSOBTotal()) {
+        toastr.warning('SOB Should not be greater than 100.')
+      } else if (CheckIsCostingAvailable() === false) {
 
         let tempArr = []
         //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
