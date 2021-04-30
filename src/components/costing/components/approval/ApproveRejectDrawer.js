@@ -16,7 +16,7 @@ import PushButtonDrawer from './PushButtonDrawer'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -178,6 +178,25 @@ function ApproveRejectDrawer(props) {
                     />
                   </div>
                 )}
+                {
+                  isSimulation &&
+                  <div className="input-group form-group col-md-12 input-withouticon">
+                    <SearchableSelectHookForm
+                      label={'Approver'}
+                      name={'approver'}
+                      placeholder={'-Select-'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      //defaultValue={isEditFlag ? plantName : ''}
+                      options={approvalDropDown}
+                      mandatory={true}
+                      handleChange={() => { }}
+                      errors={errors.approver}
+                    />
+                  </div>
+                }
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <TextAreaHookForm
                     label="Remark"

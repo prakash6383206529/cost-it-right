@@ -65,6 +65,7 @@ function RMSimulation(props) {
             let tempObj = {}
             tempObj.CostingHead = item.CostingHead
             tempObj.RawMaterialName = item.RawMaterial
+            tempObj.MaterialType = item.MaterialType
             tempObj.RawMaterialGrade = item.RMGrade
             tempObj.RawMaterialSpecification = item.RMSpec
             tempObj.RawMaterialCategory = item.Category
@@ -89,8 +90,6 @@ function RMSimulation(props) {
                 setShowVerifyPage(true)
             }
         }))
-        setShowVerifyPage(true)
-
     }
 
     const cancelVerifyPage = () => {
@@ -115,40 +114,40 @@ function RMSimulation(props) {
     }
 
     const renderBasicRate = () => {
-        return <>Basic <br/> Rate(INR) </>
+        return <>Basic <br /> Rate(INR) </>
     }
 
     const rendorFreightRate = () => {
-        return <>RM Freight <br/> Cost</>
+        return <>RM Freight <br /> Cost</>
     }
 
     const renderShearingCost = () => {
-        return <>Shearing <br/> Cost</>
+        return <>Shearing <br /> Cost</>
     }
 
     const renderNewBasicRate = () => {
-        return <>New Basic <br/>  Rate(INR) </>
+        return <>New Basic <br />  Rate(INR) </>
     }
 
 
     const renderScrapRate = () => {
-        return <>Scrap <br/> Rate(INR) </>
+        return <>Scrap <br /> Rate(INR) </>
     }
 
     const renderNewScrapRate = () => {
-        return <>New Scrap <br/> Rate(INR) </>
+        return <>New Scrap <br /> Rate(INR) </>
     }
 
     const renderNetCost = () => {
-        return <>Net <br/> Cost(INR) </>
+        return <>Net <br /> Cost(INR) </>
     }
 
     const renderNewNetCost = () => {
-        return <>New Net <br/> Cost(INR) </>
+        return <>New Net <br /> Cost(INR) </>
     }
 
     const renderEffectiveDate = () => {
-        return <>Effective <br/> Date</>
+        return <>Effective <br /> Date</>
     }
 
     /**
@@ -156,7 +155,7 @@ function RMSimulation(props) {
      * @description Renders buttons
      */
     const shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? { cell } : '-';
+        return cell != null ? cell : '-';
     }
 
     /**
@@ -164,7 +163,7 @@ function RMSimulation(props) {
     * @description Renders buttons
     */
     const freightCostFormatter = (cell, row, enumObject, rowIndex) => {
-        return cell != null ? { cell } : '-';
+        return cell != null ? cell : '-';
     }
 
 
@@ -196,9 +195,9 @@ function RMSimulation(props) {
     // const colorCheck = 
 
     const costFormatter = (cell, row, enumObject, rowIndex) => {
-        // console.log('rowCost formatter: ', row);
-        console.log(row.NewBasicRate, "ddddddddddddddd", row.RMFreightCost, "aaaaaaaaaaaa", row.RMShearingCost, "llll", row.NetLandedCost);
-        return cell != null ? <span className={row.NewBasicRate}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
+        const classGreen = (tempA > row.NetLandedCost) ? 'red-value' : (tempA < row.NetLandedCost) ? 'green-value' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const renderPaginationShowsTotal = (start, to, total) => {
@@ -222,7 +221,8 @@ function RMSimulation(props) {
         }
     }
 
-    const afterSaveCell = (row, cellName, cellValue) => {
+    const afterSaveCell = (row, cellName, cellValue, index) => {
+        console.log('index: ', index);
         if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
             setColorClass('red-value')
         } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
@@ -230,14 +230,15 @@ function RMSimulation(props) {
         } else {
             setColorClass('form-class')
         }
+        return false
 
     }
 
     const NewcostFormatter = (cell, row, enumObject, rowIndex) => {
-        console.log('row: ', row);
-        console.log('cell: ', cell);
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
-        return checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
+        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value' : (NewBasicRate < row.NetLandedCost) ? 'green-value' : 'form-class'
+        return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     const runSimulation = () => {
@@ -355,6 +356,7 @@ function RMSimulation(props) {
                                 <TableHeaderColumn dataField="RawMaterial" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRawMaterial()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RMGrade" width={110} columnTitle={true} editable={false} dataAlign="left" >{renderRMGrade()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} dataField="RMSpec" >{renderRMSpec()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="MaterialType" width={100} columnTitle={true} dataAlign="left" >{'Material'}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="Category" >Category</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
                                 <TableHeaderColumn width={150} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn>
@@ -365,7 +367,7 @@ function RMSimulation(props) {
                                 <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newScrapRateFormatter} dataField="NewScrapRate">{renderNewScrapRate()}</TableHeaderColumn>
                                 <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
                                 <TableHeaderColumn width={110} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
-                                <TableHeaderColumn width={130} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >{renderNetCost()}</TableHeaderColumn>
+                                <TableHeaderColumn width={130} columnTitle={false} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >{renderNetCost()}</TableHeaderColumn>
                                 <TableHeaderColumn width={130} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >{renderNewNetCost()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
                                 <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>

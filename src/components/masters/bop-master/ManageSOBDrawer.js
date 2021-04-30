@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import HeaderTitle from '../../common/HeaderTitle';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -50,10 +50,24 @@ function ManageSOBDrawer(props) {
 
         if (Data.BoughtOutPartVendorList.length === 1) {
           setIsDisable(true)
+          // let tempArray = [];
+          // let tempData = GridData[0];
+          // tempData = {
+          //   ...tempData,
+          //   ShareOfBusinessPercentage: 100,
+          //   WeightedCost: tempData.WeightedCost
+          // }
+          // tempArray = Object.assign([...GridData], { [0]: tempData })
+          // setData(Data)
+          // setGridData(tempArray)
+          // setGridDataOldArray(tempArray)
         }
+        // else {
+
         setData(Data)
         setGridData(Data.BoughtOutPartVendorList)
         setGridDataOldArray(Data.BoughtOutPartVendorList)
+        // }
       }
     }))
 
@@ -193,6 +207,7 @@ function ManageSOBDrawer(props) {
       "LoggedInUserId": loggedInUserId(),
       "BoughtOutPartSOBDetailId": Data.BoughtOutPartSOBDetailId,
       "WeightedNetLandedCost": WeightedCost,
+      "AveragShareOfBusinessPercentage": sum,
       "BoughtOutPartVendorList": GridData
     }
     reset()
@@ -278,7 +293,7 @@ function ManageSOBDrawer(props) {
                                     },
                                   }}
 
-                                  defaultValue={item.ShareOfBusinessPercentage}
+                                  defaultValue={GridData.length === 1 ? 100 : item.ShareOfBusinessPercentage}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
