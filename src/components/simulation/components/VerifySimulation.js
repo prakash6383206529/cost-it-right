@@ -17,6 +17,7 @@ function VerifySimulation(props) {
     const { cancelVerifyPage } = props
     console.log(props.token, "TOKEN");
     const [selectedRowData, setSelectedRowData] = useState([]);
+    console.log('selectedRowData: ', selectedRowData);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
@@ -145,6 +146,7 @@ function VerifySimulation(props) {
     };
 
     const runSimulation = () => {
+
         setSimulationDrawer(true)
     }
     const closeDrawer = (e = '', mode) => {

@@ -6,6 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 // import { runSimulation } from '../actions/Simulation'
 import { useDispatch } from 'react-redux';
 import CostingSimulation from './CostingSimulation';
+import { runSimulationOnSelectedCosting } from '../actions/Simulation';
 
 
 function RunSimulationDrawer(props) {
@@ -59,16 +60,17 @@ function RunSimulationDrawer(props) {
 
     const onSubmit = () => {
         let obj = {}
-        obj.ProfitChange = isProfitChecked
-        obj.RejectionChange = isRejectionChecked
-        obj.IccChange = isICCChecked
-        obj.OverheadChange = isOverheadChecked
-        obj.PaymentChange = isPaymentChecked
-        // dispatch(runSimulation(obj, (res) => {
-        //     if (res.data.Result) {
-        //         toastr.success('Simulation process has been run successfully.')
-        //     }
-        // }))
+        // obj.ProfitChange = isProfitChecked
+        // obj.RejectionChange = isRejectionChecked
+        // obj.IccChange = isICCChecked
+        // obj.OverheadChange = isOverheadChecked
+        // obj.PaymentChange = isPaymentChecked
+        dispatch(runSimulationOnSelectedCosting(obj, (res) => {
+            if (res.data.Result) {
+                toastr.success('Simulation process has been run successfully.')
+                runSimulationCosting()
+            }
+        }))
     }
 
     return (
@@ -116,84 +118,84 @@ function RunSimulationDrawer(props) {
                                     </Col>
 
                                     <Col md="12" className="mb-3">
-                                <label
-                                    className="custom-checkbox"
-                                    onChange={handleOverheadChange}
-                                >
-                                    {'Overhead'}
-                                    <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        checked={isOverheadChecked}
-                                    />
-                                    <span
-                                        className=" before-box"
-                                        checked={isOverheadChecked}
-                                        onChange={handleOverheadChange}
-                                    />
-                                </label>
-                                </Col>
+                                        <label
+                                            className="custom-checkbox"
+                                            onChange={handleOverheadChange}
+                                        >
+                                            {'Overhead'}
+                                            <input
+                                                type="checkbox"
+                                                value={"All"}
+                                                checked={isOverheadChecked}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={isOverheadChecked}
+                                                onChange={handleOverheadChange}
+                                            />
+                                        </label>
+                                    </Col>
 
-                                <Col md="12" className="mb-3">
-                                <label
-                                    className="custom-checkbox"
-                                    onChange={handleICCChange}
-                                >
-                                    {'ICC'}
-                                    <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        checked={isICCChecked}
-                                    />
-                                    <span
-                                        className=" before-box"
-                                        checked={isICCChecked}
-                                        onChange={handleICCChange}
-                                    />
-                                </label>
-                                </Col>
-                                <Col md="12" className="mb-3">
-                                <label
-                                    className="custom-checkbox"
-                                    onChange={handleRejectionChange}
-                                >
-                                    {'Rejection'}
-                                    <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        checked={isRejectionChecked}
-                                    />
-                                    <span
-                                        className=" before-box"
-                                        checked={isRejectionChecked}
-                                        onChange={handleRejectionChange}
-                                    />
-                                </label>
-                                </Col>
-                                <Col md="12" className="mb-3">
-                                <label
-                                    className="custom-checkbox"
-                                    onChange={handlePaymentChange}
-                                >
-                                    {'Payment Terms'}
-                                    <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        checked={isPaymentChecked}
-                                    />
-                                    <span
-                                        className=" before-box"
-                                        checked={isPaymentChecked}
-                                        onChange={handlePaymentChange}
-                                    />
-                                </label>
-                                </Col>
+                                    <Col md="12" className="mb-3">
+                                        <label
+                                            className="custom-checkbox"
+                                            onChange={handleICCChange}
+                                        >
+                                            {'ICC'}
+                                            <input
+                                                type="checkbox"
+                                                value={"All"}
+                                                checked={isICCChecked}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={isICCChecked}
+                                                onChange={handleICCChange}
+                                            />
+                                        </label>
+                                    </Col>
+                                    <Col md="12" className="mb-3">
+                                        <label
+                                            className="custom-checkbox"
+                                            onChange={handleRejectionChange}
+                                        >
+                                            {'Rejection'}
+                                            <input
+                                                type="checkbox"
+                                                value={"All"}
+                                                checked={isRejectionChecked}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={isRejectionChecked}
+                                                onChange={handleRejectionChange}
+                                            />
+                                        </label>
+                                    </Col>
+                                    <Col md="12" className="mb-3">
+                                        <label
+                                            className="custom-checkbox"
+                                            onChange={handlePaymentChange}
+                                        >
+                                            {'Payment Terms'}
+                                            <input
+                                                type="checkbox"
+                                                value={"All"}
+                                                checked={isPaymentChecked}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={isPaymentChecked}
+                                                onChange={handlePaymentChange}
+                                            />
+                                        </label>
+                                    </Col>
                                 </Row>
                             </form>
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">
                                     <div className="text-right px-3">
-                                        <button onClick={runSimulationCosting} type="submit" className="user-btn mr5 save-btn">
+                                        <button onClick={() => { }} type="submit" className="user-btn mr5 save-btn">
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"RUN SIMULATION"}
