@@ -26,7 +26,7 @@ class SOBListing extends Component {
       isEditFlag: false,
       ID: '',
       tableData: [],
-      shown:false,
+      shown: false,
       costingHead: [],
       BOPCategory: [],
       plant: [],
@@ -51,9 +51,9 @@ class SOBListing extends Component {
   * @method getDataList
   * @description GET DATALIST OF IMPORT BOP
   */
-  getDataList = (boughtOutPartNumber = null, plant_id = null) => {
+  getDataList = (bought_out_part_id = null, plant_id = null) => {
     const filterData = {
-      boughtOutPartNumber: boughtOutPartNumber,
+      bought_out_part_id: bought_out_part_id,
       plant_id: plant_id
     }
     this.props.getManageBOPSOBDataList(filterData, (res) => {

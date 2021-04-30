@@ -158,7 +158,7 @@ function AddVendorDrawer(props) {
   * @description used to Reset form
   */
   const cancel = () => {
-    toggleDrawer('')
+    props.closeDrawer('', {})
   }
 
   const onSubmit = data => {
@@ -184,7 +184,7 @@ function AddVendorDrawer(props) {
                   <h3>{"ADD VENDOR"}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={cancel}
                   className={"close-button right"}
                 ></div>
               </Col>

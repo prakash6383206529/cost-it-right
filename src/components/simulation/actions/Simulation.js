@@ -151,6 +151,7 @@ export function runVerifySimulation(data, callback) {
 }
 
 export function getVerifySimulationList(token, callback) {
+    console.log('token in action: ', token);
     return (dispatch) => {
         const request = axios.get(`${API.getVerifySimulationList}/${token}`, headers);
         request.then((response) => {

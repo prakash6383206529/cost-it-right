@@ -325,8 +325,8 @@ class AddRMDomestic extends Component {
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
           this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
-          this.props.change('FreightCharge', Data.FreightCharge ? Data.RMFreightCost : '')
-          this.props.change('ShearingCost', Data.ShearingCost ? Data.RMShearingCost : '')
+          this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
+          this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
 
           setTimeout(() => {
             const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
@@ -335,7 +335,8 @@ class AddRMDomestic extends Component {
             const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
-            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.value === Data.DestinationPlantId)
+            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
+            console.log('destinationPlantObj: ', destinationPlantObj);
             const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
 
 

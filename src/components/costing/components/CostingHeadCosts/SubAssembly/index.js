@@ -135,11 +135,18 @@ function AssemblyPart(props) {
           {costData.IsAssemblyPart && <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         </div>
         <td>
-          <button
-            type="button"
-            className={'user-btn add-oprn-btn'}
-            onClick={DrawerToggle}>
-            <div className={'plus'}></div>Add Operation</button>
+          {item?.CostingPartDetails?.TotalOperationCostPerAssembly !== 0 ?
+            <button
+              type="button"
+              className={'user-btn add-oprn-btn'}
+              onClick={DrawerToggle}>
+              <div className={'fa fa-eye pr-1'}></div>View Operation</button>
+            :
+            <button
+              type="button"
+              className={'user-btn add-oprn-btn'}
+              onClick={DrawerToggle}>
+              <div className={'plus'}></div>Add Operation</button>}
         </td>
       </tr>
 
