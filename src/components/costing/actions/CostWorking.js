@@ -863,7 +863,7 @@ export function bulkUploadCosting(data, callback) {
 
 export function sendForApprovalFromBulkUpload(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.sendStatusForApproval, data, headers);
+    const request = axios.put(API.sendStatusForApproval, data, headers);
     request.then((response) => {
       if (response.status === 200) {
         callback(response);
