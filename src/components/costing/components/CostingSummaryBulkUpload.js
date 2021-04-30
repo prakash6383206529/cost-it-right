@@ -11,6 +11,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import CostingBulkUploadDrawer from './CostingBulkUploadDrawer';
 import { toastr } from 'react-redux-toastr';
 import { loggedInUserId } from '../../../helper';
+import { PENDING } from '../../../config/constants';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -57,20 +58,20 @@ class CostingSummaryBulkUpload extends Component {
    * @description Renders buttons
    */
     buttonFormatter = (cell, row, enumObject, rowIndex) => {
-        if (row.CostingStatus === "Pending For Approval") {
+        if (row.FileUploadStatus === PENDING) {
             return (
                 <>
-                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.FileNameId, true)} type={'button'}>Approve</button>
-                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.FileNameId, false)} type={'button'}>Reject</button>
-                    {row.NoOfIncorrectRow > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.FileNameId)} type={'button'}>Download Error File</button>}
+                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.CostingBulkUploadFileId, true)} type={'button'}>Approve</button>
+                    <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(row.CostingBulkUploadFileId, false)} type={'button'}>Reject</button>
+                    {row.NoOfIncorrectRow > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>}
                 </>
             )
         }
-        else if (row.CostingStatus === "Error") {
-            return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.FileNameId)} type={'button'}>Download Error File</button>
+        else if (row.FileUploadStatus === "Error") {
+            return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
         }
         else if (row.NoOfIncorrectRow > 0) {
-            return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.FileNameId)} type={'button'}>Download Error File</button>
+            return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
         }
 
     }

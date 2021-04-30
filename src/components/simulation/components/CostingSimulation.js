@@ -8,9 +8,10 @@ import { getRMDomesticDataList } from '../../masters/actions/Material';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
 import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
-import { getVerifySimulationList } from '../actions/Simulation';
+import { getCostingSimulationList, getVerifySimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 function CostingSimulation(props) {
 
     const [selectedRowData, setSelectedRowData] = useState([]);
@@ -27,16 +28,16 @@ function CostingSimulation(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        // dispatch(getVerifySimulationList(props.token, (res) => {
-        //     if (res.data.Result) {
-        //         const tokenNo = res.data.DynamicData
-        //         setTokenNo(tokenNo)
-        //     }
-        // }))
+        dispatch(getCostingSimulationList(props.token, (res) => {
+            if (res.data.Result) {
+                const tokenNo = res.data.DynamicData
+                setTokenNo(tokenNo)
+            }
+        }))
     }, [])
 
 
-    const verifyList = useSelector(state => state.simulation.simulationVerifyList)
+    const costingList = useSelector(state => state.simulation.costingSimulationList)
 
     const renderVendorName = () => {
         return <>Vendor <br />Name </>
@@ -70,11 +71,11 @@ function CostingSimulation(props) {
     }
 
     const renderOldRM = () => {
-        return <>RM <br />Cost Old</>
+        return <>RM Cost<br /> Old</>
     }
 
     const renderNewRM = () => {
-        return <>RM <br />Cost New</>
+        return <>RM Cost<br /> New</>
     }
 
 
@@ -135,11 +136,30 @@ function CostingSimulation(props) {
         setIsApprovalDrawer(false)
     }
 
+    const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value' : 'no-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newPOFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value' : 'no-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+    const oldRMFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewNetLandedCost > row.OldNetLandedCost) ? 'red-value' : (row.NewNetLandedCost < row.OldNetLandedCost) ? 'green-value' : 'no-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newRMFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value' : 'no-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
     return (
         <div>
             <Row>
                 <Col sm="12">
-                <h1 class="mb-0">Token No:{tokenNo}</h1>
+                    <h1 class="mb-0">Token No:{tokenNo}</h1>
                 </Col>
             </Row>
             <Row className="filter-row-large pt-4">
@@ -222,7 +242,7 @@ function CostingSimulation(props) {
             <Row>
                 <Col>
                     <BootstrapTable
-                        data={verifyList}
+                        data={costingList}
                         striped={false}
                         bordered={false}
                         hover={false}
@@ -245,8 +265,8 @@ function CostingSimulation(props) {
                         <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{NewPO()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="OldNetLandedCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="NewNetLandedCost" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="OldNetLandedCost" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="NewNetLandedCost" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                         <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>
 
@@ -278,6 +298,7 @@ function CostingSimulation(props) {
                     approvalData={[]}
                     type={'Approve'}
                     closeDrawer={closeDrawer}
+                    isSimulation={true}
                 />
             }
         </div>

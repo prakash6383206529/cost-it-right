@@ -475,7 +475,7 @@ export function getInitialFilterData(boughtOutPartNumber, callback) {
 export function getManageBOPSOBDataList(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `boughtOutPartNumber=${data.boughtOutPartNumber}&plant_id=${data.plant_id}`
+        const queryParams = `bought_out_part_id=${data.bought_out_part_id}&plant_id=${data.plant_id}`
         const request = axios.get(`${API.getManageBOPSOBDataList}?${queryParams}`, headers);
         request.then((response) => {
             if (response.data.Result || response.status === 204) {

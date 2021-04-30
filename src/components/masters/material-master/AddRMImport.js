@@ -356,7 +356,7 @@ class AddRMImport extends Component {
             const gradeObj = gradeSelectList && gradeSelectList.find(item => item.Value === Data.RMGrade)
             const specObj = rmSpecification && rmSpecification.find(item => item.Value === Data.RMSpec)
             const categoryObj = categoryList && categoryList.find(item => Number(item.Value) === Data.Category)
-            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.value === Data.DestinationPlantId)
+            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
             const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId) //NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
             const currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
             this.props.change('FreightCharge', Data.RMFreightCost ? Data.RMFreightCost : '')

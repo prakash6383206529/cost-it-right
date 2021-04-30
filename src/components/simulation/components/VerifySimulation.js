@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { Row, Col, } from 'reactstrap';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { useEffect } from 'react';
@@ -10,11 +10,14 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getVerifySimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifySimulation(props) {
     const { cancelVerifyPage } = props
+    console.log(props.token, "TOKEN");
     const [selectedRowData, setSelectedRowData] = useState([]);
+    console.log('selectedRowData: ', selectedRowData);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
@@ -92,6 +95,15 @@ function VerifySimulation(props) {
             </>
         )
     }
+    const newBRFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value' : 'no-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
+
+    const newSRFormatter = (cell, row, enumObject, rowIndex) => {
+        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value' : 'no-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+    }
 
     const onRowSelect = (row, isSelected, e) => {
         if (isSelected) {
@@ -134,6 +146,7 @@ function VerifySimulation(props) {
     };
 
     const runSimulation = () => {
+
         setSimulationDrawer(true)
     }
     const closeDrawer = (e = '', mode) => {
@@ -152,7 +165,7 @@ function VerifySimulation(props) {
                 <>
                     <Row>
                         <Col sm="12">
-                        <h1 class="mb-0">Token No:{tokenNo}</h1>
+                            <h1 class="mb-0">Token No:{tokenNo}</h1>
                         </Col>
                     </Row>
                     <Row className="filter-row-large pt-4">
@@ -258,9 +271,9 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldBR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={true} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldSR()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={true} editable={false} dataFormat={newSRFormatter} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
 
 
                             </BootstrapTable>
