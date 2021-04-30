@@ -54,6 +54,7 @@ import {
   SET_EXCHANGE_RATE_CURRENCY_DATA,
   SET_TOOL_PROCESS_WISE_DATALIST,
   SET_IS_TOOLCOST_USED,
+  TOOL_CATEGORY_SELECTLIST,
 } from '../../../config/constants';
 
 const initialState = {
@@ -458,6 +459,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         IsToolCostApplicable: action.payload
+      }
+    case TOOL_CATEGORY_SELECTLIST:
+      return {
+        ...state,
+        loading: false,
+        ToolCategoryList: action.payload
       }
     default:
       return state

@@ -10,12 +10,21 @@ import AddTool from '../../Drawers/AddTool';
 
 function ToolCost(props) {
 
+  const { item, data } = props;
+
   const { register, control, errors } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
   });
 
-  const [gridData, setGridData] = useState(props.data)
+  let ProcessCostArray = item?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
+    return { label: el.ProcessName, value: el.ProcessName };
+  })
+  let OperationCostArray = item?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
+    return { label: el.OperationName, value: el.OperationName };
+  });
+
+  const [gridData, setGridData] = useState(data)
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
@@ -173,6 +182,8 @@ function ToolCost(props) {
         editIndex={editIndex}
         rowObjData={rowObjData}
         anchor={'right'}
+        ProcessOperationArray={[...ProcessCostArray, ...OperationCostArray]}
+        gridData={data}
       />}
     </ >
   );

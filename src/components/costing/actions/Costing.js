@@ -9,7 +9,7 @@ import {
   SET_SURFACE_TAB_DATA, SET_OVERHEAD_PROFIT_TAB_DATA, SET_PACKAGE_AND_FREIGHT_TAB_DATA, SET_TOOL_TAB_DATA, SET_COMPONENT_ITEM_DATA, SET_COMPONENT_OVERHEAD_ITEM_DATA,
   SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA, SET_COMPONENT_TOOL_ITEM_DATA, SET_COMPONENT_DISCOUNT_ITEM_DATA, GET_RM_DRAWER_DATA_LIST, GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_PLANT_SELECTLIST, GET_PART_COSTING_VENDOR_SELECT_LIST, GET_PART_SELECTLIST_BY_TECHNOLOGY, SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA, SET_EXCHANGE_RATE_CURRENCY_DATA,
-  SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, config,
+  SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, config,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2024,3 +2024,28 @@ export function setIsToolCostUsed(IsApplicable) {
     })
   }
 };
+
+/**
+ * @method getToolCategoryList
+ * @description GET BOP DATA IN COSTING DETAIL
+ */
+export function getToolCategoryList(callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const request = axios.get(`${API.getToolCategoryList}`, headers);
+    request.then((response) => {
+      if (response.data.Result) {
+        let ToolList = response.data.SelectList;
+        dispatch({
+          type: TOOL_CATEGORY_SELECTLIST,
+          payload: ToolList,
+        })
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
