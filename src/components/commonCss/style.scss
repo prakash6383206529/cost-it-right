@@ -1020,14 +1020,14 @@ input.form-control{
 }
 
 .edit-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   background: transparent url("../../assests/images/Union 1.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
   float: left;
   position: $positio-relative;
   // top: 3px;
-  margin-right: 8px;
+  margin-right: 5px;
 }
 
 .drawer-wrapper button.user-btn {
@@ -2344,6 +2344,13 @@ input:disabled{
     color: #fc5774 ;
   }
 }
+.btn-danger{
+  .cross-icon{
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
 .edit-btn{
   background-color: #feeccc;
   border: #feeccc;
@@ -2875,18 +2882,28 @@ opacity: 0.5;
 .add-volume-table{
   td{
     .form-control{
-      border: 1px solid #c2cbe8;
-      max-width: 250px;
-      line-height: initial;
-      font-size: 14px;
-      font-weight: 400;
-      height: 40px;
-      padding: 12px;
+    border: 1px solid #c2cbe8;
+    max-width: 250px;
+    line-height: initial;
+    font-size: 14px;
+    font-weight: 400;
+    height: 40px;
+    padding: 12px;
     border-radius: 4px;
     color: #495057;
     background-color: #fff;
     background-clip: padding-box;
     transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    .green-value{
+      background-color: #DBF4E2;
+      border-color: #DBF4E2;
+      color: #4DC771;
+    }
+    .red-value{
+      background-color: #FEDCE2;
+      border-color: #FEDCE2;;
+      color: #FC5774;
     }
   }
 }
@@ -3159,6 +3176,11 @@ body {
 }
 .weight-drawer-costing{
   .drawer-1500px{
+    .subtabs{
+      .nav-link{
+        text-align: center;
+      }
+    }
     width: 870px;
     min-width: unset;
     >.row{
@@ -3723,6 +3745,49 @@ body{
 }
 //fire-fox css
 
+.simulation-costing-details-drawers{
+  .costing-summary-table{
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+
+
+.sm-headrgroup-table{
+  .react-bs-table-pagination{
+    border-top: 0px !important;
+  }
+  .table{ 
+    thead{
+      tr{
+        th{
+          vertical-align: middle !important;
+          border-bottom-width: 1px !important;
+          font-weight: 500;
+        }
+        &:nth-child(2){
+          th{
+            font-size: 13px;
+            padding: 0.4rem 0.75rem;
+          }
+        }
+      }
+    }
+  }
+  th:nth-child(9),th:nth-child(10),th:nth-child(11){
+    min-width: 220px;
+    width: 220px;
+  }
+  th:nth-child(12),th:nth-child(13),th:nth-child(14),td:nth-child(15),td:nth-child(16){
+    min-width: 110px;
+    width: 110px;
+  }
+  td:nth-child(9),td:nth-child(10),td:nth-child(11),td:nth-child(12),td:nth-child(13),td:nth-child(14){
+    min-width: 110px;
+    width: 110px;
+  }
+}
 
 
 // responsive media query start

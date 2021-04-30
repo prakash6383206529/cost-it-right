@@ -11,11 +11,13 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getVerifySimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
+import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 function CostingSimulation(props) {
 
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
+    const [CostingDetailDrawer, setCostingDetailDrawer] = useState(false)
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
 
@@ -76,7 +78,19 @@ function CostingSimulation(props) {
     const renderNewRM = () => {
         return <>RM <br />Cost New</>
     }
+    
+    const runCostingDetailSimulation = () => {
+        setCostingDetailDrawer(true)
+    }
 
+    const closeDrawer2 = (e = '', mode) => {
+        if (mode === true) {
+            setCostingDetailDrawer(false)
+        } else {
+            setCostingDetailDrawer(false)
+        }
+
+    }
 
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
@@ -259,7 +273,7 @@ function CostingSimulation(props) {
                         <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
                         {'Send For Approval'}
                     </button>
-                    <button type="submit" className="user-btn mr5 save-btn">
+                    <button type="submit" className="user-btn mr5 save-btn" onClick={runCostingDetailSimulation}>
                         <div className={"check-icon"}>
                             <img
                                 src={require("../../../assests/images/check.png")}
@@ -278,6 +292,15 @@ function CostingSimulation(props) {
                     approvalData={[]}
                     type={'Approve'}
                     closeDrawer={closeDrawer}
+                />
+            }
+
+            {
+                CostingDetailDrawer &&
+                <CostingDetailSimulationDrawer
+                    isOpen={CostingDetailSimulationDrawer}
+                    closeDrawer={closeDrawer2}
+                    anchor={"right"}
                 />
             }
         </div>

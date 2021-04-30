@@ -274,8 +274,8 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2">
                                     <div>
-                                        <button type="button" className={"edit-btn mt2 mr5"} onClick={editTable}>
-                                            <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
+                                        <button type="button" className={"user-btn mt2 mr5"} onClick={editTable}>
+                                            <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                         <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                             {renderColumn(master.label)}
                                         </ExcelFile>
