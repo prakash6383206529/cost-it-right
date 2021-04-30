@@ -797,6 +797,14 @@ function OverheadProfit(props) {
 
           setRejectionObj(Data.CostingRejectionDetail)
           setIsSurfaceTreatmentAdded(false)
+
+          // setTimeout(() => {
+          //   UpdateForm()
+          // }, 500)
+
+          // setTimeout(() => {
+          //   IncludeSurfaceTreatmentCall()
+          // }, 5000)
         }
       }))
     } else {
@@ -1144,8 +1152,8 @@ function OverheadProfit(props) {
   * @description INCLUDE SURFACE TREATMENT IN TO OVERHEAD AND PROFIT
   */
   const IncludeSurfaceTreatmentCall = () => {
+    console.log('Calling from delayed 5000', IsIncludedSurfaceInOverheadProfit, IsSurfaceTreatmentAdded, overheadObj)
     if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && overheadObj && overheadObj.IsOverheadCCApplicable) {
-
       const { OverheadCCPercentage } = overheadObj;
       setValue('OverheadCCCost', getValues('OverheadCCCost') + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
       setValue('OverheadCCTotalCost', checkForDecimalAndNull((getValues('OverheadCCCost') * calculatePercentage(OverheadCCPercentage)), initialConfiguration.NoOfDecimalForPrice))
