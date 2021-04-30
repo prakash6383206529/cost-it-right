@@ -237,7 +237,7 @@ function TabToolCost(props) {
             <div className="shadow-lgg login-formg">
 
               <Row className="m-0  costing-border border-bottom-0 align-items-center ">
-                <Col md="9" className="px-30 py-4 ">
+                <Col md="9" className="px-30 py-4 border-section">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
@@ -265,15 +265,11 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="px-30 py-4 text-dark-blue pl10">{"Net Tool Cost"}</Col>
+                <Col md="3" className="px-30 py-4 border-section text-dark-blue pl10">
+                  {"Net Tool Cost"}
+                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{getTotal()}</span> }
+                  </Col>
               </Row>
-
-              {IsApplicableProcessWise && <Row>
-                <Col md="9">{''}</Col>
-                <Col md="3">
-                  {getTotal()}
-                </Col>
-              </Row>}
 
               <form
                 noValidate
