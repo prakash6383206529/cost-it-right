@@ -796,8 +796,8 @@ export const API = {
   getSelectListOfSimulationMaster: `${BASE_URL}/`,
   runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
-  runSimulationOnSelectedCosting: `${BASE_URL}/simulation/draft-simulation-raw-material/run-simulation-on-selected-costing`,
-  getCostingSimulationList: `${BASE_URL}/`
+  runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
+  getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`
 }
 
 //Api constants

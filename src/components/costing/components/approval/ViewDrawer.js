@@ -1,7 +1,7 @@
 import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
-import { REJECTED } from '../../../../config/constants'
+import { APPROVED, PENDING, REJECTED } from '../../../../config/constants'
 
 function ViewDrawer(props) {
   const { approvalLevelStep } = props
@@ -72,10 +72,10 @@ function ViewDrawer(props) {
                       <>
 
                         <div key={index} className="col-lg-3 col-md-6 col-sm-12 ">
-                          <div className={`card-border  ${item.Title.split(' ')[0] === REJECTED ? 'card-red' : 'card-green'}`}>
+                          <div className={`card-border  ${item.Title.split(' ')[0] === REJECTED ? 'card-red' : item.Title.split(' ')[0] === APPROVED ? 'card-green' : 'card-yellow'}`}>
                             <div className="top d-flex">
                               <div className="left text-center">
-                                <b>{item.FlowStepSequence ? item.FlowStepSequence : ''}</b>
+                                <b>{item.Level ? item.Level.split('-')[1] : 0}</b>
                                 <span className="d-block">Level</span>
                               </div>
                               <div className="right">

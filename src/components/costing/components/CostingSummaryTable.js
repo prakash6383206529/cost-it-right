@@ -395,6 +395,8 @@ const CostingSummaryTable = (props) => {
           obj.costingId = viewCostingData[index].costingId
           obj.oldPrice = viewCostingData[index].oldPoPrice
           obj.revisedPrice = viewCostingData[index].poPrice
+          obj.nPOPriceWithCurrency = viewCostingData[index].nPOPriceWithCurrency
+          obj.currencyRate = viewCostingData[index].currency.currencyValue
           obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
           obj.consumptionQty = ''
           obj.remainingQty = ''

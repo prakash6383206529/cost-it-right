@@ -221,7 +221,7 @@ function ApprovalSummary(props) {
                           </th>
                         }
                         <th>{`SOB`}</th>
-                        <th>{`ECN Ref No`}</th>
+                        {/* <th>{`ECN Ref No`}</th> */}
                         <th>{`Old/Current Price`}</th>
                         <th>{`New/Revised Price:`}</th>
                         <th>{`Variance`}</th>
@@ -252,9 +252,9 @@ function ApprovalSummary(props) {
                         <td>
                           {approvalDetails.ShareOfBusiness !== null ? approvalDetails.ShareOfBusiness : '-'}
                         </td>
-                        <td>
+                        {/* <td>
                           {approvalDetails.ECNNumber !== null ? approvalDetails.ECNNumber : '-'}
-                        </td>
+                        </td> */}
                         <td>
                           {approvalDetails.OldPOPrice !== null ? approvalDetails.OldPOPrice : '-'}
                         </td>

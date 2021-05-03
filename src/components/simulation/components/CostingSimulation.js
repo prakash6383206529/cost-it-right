@@ -12,13 +12,16 @@ import { getCostingSimulationList, getVerifySimulationList } from '../actions/Si
 import RunSimulationDrawer from './RunSimulationDrawer';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
-function CostingSimulation(props) {
+import SimulationHistory from './SimulationHistory';
 
+function CostingSimulation(props) {
+    const { simulationId } = props
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
+    const [showApprovalHistory, setShowApprovalHistory] = useState(false)
 
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
@@ -28,9 +31,9 @@ function CostingSimulation(props) {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(getCostingSimulationList(props.token, (res) => {
+        dispatch(getCostingSimulationList(simulationId, (res) => {
             if (res.data.Result) {
-                const tokenNo = res.data.DynamicData
+                const tokenNo = res.data.Data.TokenId
                 setTokenNo(tokenNo)
             }
         }))
@@ -110,6 +113,11 @@ function CostingSimulation(props) {
     const renderDropdownListing = (label) => {
 
     }
+
+    const onSaveSiualtion = () => {
+        console.log("OnSubmit");
+        setShowApprovalHistory(true)
+    }
     const selectRowProp = {
         mode: 'checkbox',
         clickToSelect: true,
@@ -156,153 +164,161 @@ function CostingSimulation(props) {
     }
 
     return (
-        <div>
-            <Row>
-                <Col sm="12">
-                    <h1 class="mb-0">Token No:{tokenNo}</h1>
-                </Col>
-            </Row>
-            <Row className="filter-row-large pt-4">
-                <Col lg="10" md="12" className="filter-block">
-                    <div className="d-inline-flex justify-content-start align-items-top w100">
-                        <div className="flex-fills">
-                            <h5>{`Filter By:`}</h5>
-                        </div>
-
-                        <div className="flex-fill filled-small hide-label">
-                            <SearchableSelectHookForm
-                                label={''}
-                                name={'partNo'}
-                                placeholder={'Part No.'}
-                                Controller={Controller}
-                                control={control}
-                                rules={{ required: false }}
-                                register={register}
-                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                options={renderDropdownListing('PartList')}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                errors={errors.partNo}
-                            />
-                        </div>
-                        <div className="flex-fill filled-small hide-label">
-                            <SearchableSelectHookForm
-                                label={''}
-                                name={'plantCode'}
-                                placeholder={'Plant Code'}
-                                Controller={Controller}
-                                control={control}
-                                rules={{ required: false }}
-                                register={register}
-                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                options={renderDropdownListing('plantCode')}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                errors={errors.plantCode}
-                            />
-                        </div>
-                        <div className="flex-fill filled-small hide-label">
-                            <SearchableSelectHookForm
-                                label={''}
-                                name={'rawMaterial'}
-                                placeholder={'Raw Material'}
-                                Controller={Controller}
-                                control={control}
-                                rules={{ required: false }}
-                                register={register}
-                                // defaultValue={plant.length !== 0 ? plant : ''}
-                                options={renderDropdownListing('rm')}
-                                mandatory={false}
-                                handleChange={() => { }}
-                                errors={errors.rawMaterial}
-                            />
-                        </div>
-
-                        <div className="flex-fill filled-small hide-label">
-                            <button
-                                type="button"
-                                //disabled={pristine || submitting}
-                                onClick={() => { }}
-                                className="reset mr10"
-                            >
-                                {'Reset'}
-                            </button>
-                            <button
-                                type="button"
-                                //disabled={pristine || submitting}
-                                onClick={() => { }}
-                                className="apply mr5"
-                            >
-                                {'Apply'}
-                            </button>
-                        </div>
-                    </div>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <BootstrapTable
-                        data={costingList}
-                        striped={false}
-                        bordered={false}
-                        hover={false}
-                        options={options}
-                        search
-                        // cellEdit={cellEditProp}
-                        // exportCSV
-                        //ignoreSinglePage
-                        selectRow={selectRowProp}
-                        className="add-volume-table"
-                        pagination>
-                        <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="RMName" width={70} columnTitle={true} editable={false} dataAlign="left" >{RMName()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="POPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{NewPO()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="OldNetLandedCost" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="NewNetLandedCost" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
-                    </BootstrapTable>
-
-                </Col>
-            </Row>
-            <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                <div className="col-sm-12 text-right bluefooter-butn">
-
-                    <button class="user-btn approval-btn mr-3" onClick={sendForApproval}>
-                        <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
-                        {'Send For Approval'}
-                    </button>
-                    <button type="submit" className="user-btn mr5 save-btn">
-                        <div className={"check-icon"}>
-                            <img
-                                src={require("../../../assests/images/check.png")}
-                                alt="check-icon.jpg"
-                            />
-                        </div>{" "}
-                        {"Save Simulation"}
-                    </button>
-                </div>
-            </Row>
+        <>
             {
-                isApprovalDrawer &&
-                <ApproveRejectDrawer
-                    isOpen={isApprovalDrawer}
-                    anchor={'right'}
-                    approvalData={[]}
-                    type={'Approve'}
-                    closeDrawer={closeDrawer}
-                    isSimulation={true}
-                />
-            }
-        </div>
+                !showApprovalHistory &&
 
+                <div>
+                    <Row>
+                        <Col sm="12">
+                            <h1 class="mb-0">Token No:{tokenNo}</h1>
+                        </Col>
+                    </Row>
+                    <Row className="filter-row-large pt-4">
+                        <Col lg="10" md="12" className="filter-block">
+                            <div className="d-inline-flex justify-content-start align-items-top w100">
+                                <div className="flex-fills">
+                                    <h5>{`Filter By:`}</h5>
+                                </div>
+
+                                <div className="flex-fill filled-small hide-label">
+                                    <SearchableSelectHookForm
+                                        label={''}
+                                        name={'partNo'}
+                                        placeholder={'Part No.'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        register={register}
+                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        options={renderDropdownListing('PartList')}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        errors={errors.partNo}
+                                    />
+                                </div>
+                                <div className="flex-fill filled-small hide-label">
+                                    <SearchableSelectHookForm
+                                        label={''}
+                                        name={'plantCode'}
+                                        placeholder={'Plant Code'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        register={register}
+                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        options={renderDropdownListing('plantCode')}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        errors={errors.plantCode}
+                                    />
+                                </div>
+                                <div className="flex-fill filled-small hide-label">
+                                    <SearchableSelectHookForm
+                                        label={''}
+                                        name={'rawMaterial'}
+                                        placeholder={'Raw Material'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        register={register}
+                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        options={renderDropdownListing('rm')}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        errors={errors.rawMaterial}
+                                    />
+                                </div>
+
+                                <div className="flex-fill filled-small hide-label">
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={() => { }}
+                                        className="reset mr10"
+                                    >
+                                        {'Reset'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        //disabled={pristine || submitting}
+                                        onClick={() => { }}
+                                        className="apply mr5"
+                                    >
+                                        {'Apply'}
+                                    </button>
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <BootstrapTable
+                                data={costingList}
+                                striped={false}
+                                bordered={false}
+                                hover={false}
+                                options={options}
+                                search
+                                // cellEdit={cellEditProp}
+                                // exportCSV
+                                //ignoreSinglePage
+                                selectRow={selectRowProp}
+                                className="add-volume-table"
+                                pagination>
+                                <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{NewPO()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldRMCost" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewRMCost" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>
+                            </BootstrapTable>
+
+                        </Col>
+                    </Row>
+                    <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
+                        <div className="col-sm-12 text-right bluefooter-butn">
+
+                            <button class="user-btn approval-btn mr-3" onClick={sendForApproval}>
+                                <img class="mr-1" src={require('../../../assests/images/send-for-approval.svg')}></img>{' '}
+                                {'Send For Approval'}
+                            </button>
+                            <button type="submit" className="user-btn mr5 save-btn" onClick={onSaveSiualtion}>
+                                <div className={"check-icon"}>
+                                    <img
+                                        src={require("../../../assests/images/check.png")}
+                                        alt="check-icon.jpg"
+                                    />
+                                </div>{" "}
+                                {"Save Simulation"}
+                            </button>
+                        </div>
+                    </Row>
+                    {
+                        isApprovalDrawer &&
+                        <ApproveRejectDrawer
+                            isOpen={isApprovalDrawer}
+                            anchor={'right'}
+                            approvalData={[]}
+                            type={'Approve'}
+                            closeDrawer={closeDrawer}
+                            isSimulation={true}
+                        />
+                    }
+                </div>
+            }
+            {
+                showApprovalHistory &&
+                <SimulationHistory />
+            }
+        </>
     );
 }
 

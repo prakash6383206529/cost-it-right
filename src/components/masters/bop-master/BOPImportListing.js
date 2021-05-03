@@ -28,7 +28,7 @@ class BOPImportListing extends Component {
             isEditFlag: false,
             tableData: [],
             isBulkUpload: false,
-            shown:false,
+            shown: false,
             costingHead: [],
             BOPCategory: [],
             plant: [],
@@ -207,7 +207,7 @@ class BOPImportListing extends Component {
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
     /**
