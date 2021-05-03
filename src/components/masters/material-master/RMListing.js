@@ -197,7 +197,7 @@ class RMListing extends Component {
                         {AddAccessibility && (
                             <button
                                 type={"button"}
-                                className={"user-btn mr-5"}
+                                className={"user-btn mr5"}
                                 onClick={this.openAssociationModel}
                             >
                                 <div className={"plus"}></div>

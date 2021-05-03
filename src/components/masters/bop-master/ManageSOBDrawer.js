@@ -236,7 +236,7 @@ function ManageSOBDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <HeaderTitle title={'Update SOB %'} customClass={'underLine-title'} />
+                  <h3>Update SOB %</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}

@@ -898,13 +898,6 @@ class AddOverhead extends Component {
                                     <a href={fileURL} target="_blank">
                                       {f.OriginalFileName}
                                     </a>
-                                    {/* <a href={fileURL} target="_blank" download={f.FileName}>
-                                                                        <img src={fileURL} alt={f.OriginalFileName} width="104" height="142" />
-                                                                    </a> */}
-                                    {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
-                                                                        <img src={fileURL} height={50} width={100} />
-                                                                    </div> */}
-
                                     <img
                                       alt={""}
                                       className="float-right"

@@ -1407,7 +1407,7 @@ class AddRMImport extends Component {
                               rows="10"
                             />
                           </Col>
-                          <Col md="4">
+                          <Col md="3">
                             <label>
                               Upload Files (Upload up to 3 files)
                                 </label>

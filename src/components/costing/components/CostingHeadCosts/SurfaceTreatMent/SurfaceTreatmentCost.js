@@ -227,7 +227,7 @@ function SurfaceTreatmentCost(props) {
                                   }}
                                   defaultValue={item.SurfaceArea}
                                   className=""
-                                  customClassName={'withBorder'}
+                                  customClassName={'withBorder mn-height-auto mb-0 hide-label'}
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleSurfaceAreaChange(e, index)

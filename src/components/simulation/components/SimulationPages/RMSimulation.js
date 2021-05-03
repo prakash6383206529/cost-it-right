@@ -196,7 +196,7 @@ function RMSimulation(props) {
 
     const costFormatter = (cell, row, enumObject, rowIndex) => {
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
-        const classGreen = (tempA > row.NetLandedCost) ? 'red-value' : (tempA < row.NetLandedCost) ? 'green-value' : 'form-class'
+        const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
@@ -224,9 +224,9 @@ function RMSimulation(props) {
     const afterSaveCell = (row, cellName, cellValue, index) => {
         console.log('index: ', index);
         if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) > row.NetLandedCost) {
-            setColorClass('red-value')
+            setColorClass('red-value form-control')
         } else if ((Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)) < row.NetLandedCost) {
-            setColorClass('green-value')
+            setColorClass('green-value form-control')
         } else {
             setColorClass('form-class')
         }
@@ -236,7 +236,7 @@ function RMSimulation(props) {
 
     const NewcostFormatter = (cell, row, enumObject, rowIndex) => {
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
-        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value' : (NewBasicRate < row.NetLandedCost) ? 'green-value' : 'form-class'
+        const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
         return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
@@ -360,6 +360,8 @@ function RMSimulation(props) {
                                 <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={150} columnTitle={true} dataAlign="left" editable={false} dataField="VendorName" >Vendor</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={110} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
+                                <TableHeaderColumn row='0' rowSpan='2'  columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
+                                <TableHeaderColumn row='0' rowSpan='2'  columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' tdStyle={{minWidth:'200px',width:'200px'}} width={200} colSpan='2' dataAlign="center"   columnTitle={false}  editable={false} searchable={false} >Basic Rate (INR)</TableHeaderColumn>
                                 <TableHeaderColumn row='1'  columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="BasicRate"  >Old</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" searchable={false} editable={isbulkUpload ? false : true} dataFormat={newBasicRateFormatter} dataField="NewBasicRate">New</TableHeaderColumn>
@@ -369,8 +371,6 @@ function RMSimulation(props) {
                                 <TableHeaderColumn row='0' tdStyle={{minWidth:'200px',width:'200px'}} width={200} colSpan='2'  columnTitle={false} dataAlign="center" editable={false} searchable={false} >Net Cost (INR)</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NetLandedCost" dataFormat={costFormatter} >Old</TableHeaderColumn>
                                 <TableHeaderColumn row='1' columnTitle={true} dataAlign="left" editable={false} searchable={false} dataField="NewNetLandedCost" dataFormat={NewcostFormatter} >New</TableHeaderColumn>
-                                <TableHeaderColumn row='0' rowSpan='2'  columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={freightCostFormatter} searchable={false}>{rendorFreightRate()}</TableHeaderColumn>
-                                <TableHeaderColumn row='0' rowSpan='2'  columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={shearingCostFormatter} searchable={false}>{renderShearingCost()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={100} columnTitle={true} dataAlign="left" editable={false} searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={effectiveDateFormatter} >{renderEffectiveDate()}</TableHeaderColumn>
                                 <TableHeaderColumn row='0' rowSpan='2' width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true}>Actions</TableHeaderColumn>
                             </BootstrapTable>

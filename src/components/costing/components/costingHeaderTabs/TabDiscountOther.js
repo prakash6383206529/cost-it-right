@@ -413,8 +413,8 @@ function TabDiscountOther(props) {
                     <Table className="table cr-brdr-main cr-bg-tbl mt-1" size="sm" >
                       <thead>
                         <tr>
-                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
-                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500 py-3" style={{ width: "33.33%" }}>{``}</th>
+                          <th className="fs1 font-weight-500 py-3" style={{ width: "33%.33" }}>{``}</th>
                           <th className="fs1 font-weight-500 py-3" >{`Total Cost: ${DiscountTabData && DiscountTabData.NetPOPriceINR !== undefined ? checkForDecimalAndNull(DiscountTabData.NetPOPriceINR, initialConfiguration.NoOfDecimalForPrice) : 0}`}</th>
                         </tr>
                       </thead>

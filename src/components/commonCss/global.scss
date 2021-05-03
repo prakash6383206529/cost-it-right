@@ -827,7 +827,7 @@ a:hover {
 
 /* Drawer Css */
 .drawer-wrapper {
-  width: 460px;
+  width: 465px;
 
   .drawer-heading {
     background-color: #eaf0f9;
@@ -2335,6 +2335,11 @@ td {
   }
 }
 .table.cr-brdr-main{
+  &.costing-table-next{
+    td:last-child,th:last-child{
+      border-right: 1px solid #C2CBE8;
+    }
+  }
   border: 1px solid #C2CBE8;
   thead{
      th{

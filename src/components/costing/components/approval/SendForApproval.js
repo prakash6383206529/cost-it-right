@@ -415,25 +415,6 @@ const SendForApproval = (props) => {
                             />
                           </Col>
                           <Col md="4">
-                            <TextFieldHookForm
-                              label="ECN Ref No"
-                              name={"encNumber"}
-                              Controller={Controller}
-                              control={control}
-                              register={register}
-                              rules={{ required: false }}
-                              mandatory={false}
-                              handleChange={(e) => {
-                                handleECNNoChange(e.target.value, index);
-                              }}
-                              defaultValue={data.ecnNo != "" ? data.ecnNo : ""}
-                              className=""
-                              customClassName={"withBorder"}
-                              errors={errors.encNumber}
-                            // disabled={true}
-                            />
-                          </Col>
-                          <Col md="4">
                             {/* <div className="form-group"> */}
                             {/* <label>Effective Date</label> */}
                             <div className="d-flex">
@@ -473,8 +454,7 @@ const SendForApproval = (props) => {
                             </div>
                             {/* </div> */}
                           </Col>
-                        </Row>
-                        <Row>
+                        
                           <Col md="4">
                             <div className="form-group">
                               <label>Old/Current Price</label>
@@ -499,8 +479,7 @@ const SendForApproval = (props) => {
                               </label>
                             </div>
                           </Col>
-                        </Row>
-                        <Row>
+                        
                           <Col md="4">
                             <div className="form-group">
                               <label>Consumed Quantity</label>
@@ -528,8 +507,7 @@ const SendForApproval = (props) => {
                               </label>
                             </div>
                           </Col>
-                        </Row>
-                        <Row>
+
                           <Col md="4">
                             <div className="form-group">
                               <label>Impact for the Year</label>
