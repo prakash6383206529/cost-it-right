@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useForm, Controller, dispatch } from 'react-hook-form';
+import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -9,9 +9,11 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
+import { setRMCCErrors } from '../../../actions/Costing';
 
 function BOPCost(props) {
   const { item, data } = props;
+
   const { register, handleSubmit, control, errors, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -20,6 +22,8 @@ function BOPCost(props) {
       BOPHandlingCharges: item.CostingPartDetails.BOPHandlingCharges,
     }
   });
+
+  const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(data)
   const [rowObjData, setRowObjData] = useState({})
@@ -212,6 +216,14 @@ function BOPCost(props) {
   * @description Used to Submit the form
   */
   const onSubmit = (values) => { }
+
+  /**
+  * @method setRMCCErrors
+  * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+  */
+  if (Object.keys(errors).length > 0) {
+    //dispatch(setRMCCErrors(errors))
+  }
 
   /**
   * @method render

@@ -446,7 +446,7 @@ const CostingSummaryTable = (props) => {
   // }, [multipleCostings])
 
   // 
-  console.log(viewCostingData, " console.log(viewCostingData)")
+
   return (
 
     <Fragment>

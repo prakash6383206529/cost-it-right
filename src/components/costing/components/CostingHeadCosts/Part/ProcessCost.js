@@ -14,7 +14,7 @@ import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
-import { setIsToolCostUsed } from '../../../actions/Costing';
+import { setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 
 function ProcessCost(props) {
@@ -458,6 +458,14 @@ function ProcessCost(props) {
     props.setToolCost(tempObj, Params)
   }
 
+  /**
+   * @method setRMCCErrors
+   * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0) {
+    //dispatch(setRMCCErrors(errors))
+  }
+
   const ProcessGridFields = 'ProcessGridFields'
 
   /**
@@ -488,7 +496,7 @@ function ProcessCost(props) {
                   onChange={onToolToggle}
                   checked={isOpen}
                   id="normal-switch"
-                  disabled={false}
+                  disabled={CostingViewMode ? true : false}
                   background="#4DC771"
                   onColor="#4DC771"
                   onHandleColor="#ffffff"
@@ -740,11 +748,11 @@ function ProcessCost(props) {
                                 />
                               }
                             </span>
-                            <button
+                            {!CostingViewMode && <button
                               className="CalculatorIcon cr-cl-icon calc-icon-middle"
                               type={'button'}
                               onClick={() => toggleWeightCalculator(index)}
-                            />
+                            />}
                           </td>
                           {/* <td>
                             <span className={'mr-2'}>

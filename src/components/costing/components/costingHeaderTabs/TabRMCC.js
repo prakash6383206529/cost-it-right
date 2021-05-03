@@ -23,8 +23,9 @@ function TabRMCC(props) {
 
   const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
 
-  const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  // const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
+  // const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  const { ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -950,20 +951,9 @@ function TabRMCC(props) {
   * @description SAVE COSTING
   */
   const saveCosting = () => {
-    const data = {
 
-    }
+    if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
-    dispatch(
-      saveCostingRMCCTab(data, (res) => { }),
-    )
-  }
-
-  /**
-   * @method onSubmit
-   * @description Used to Submit the form
-   */
-  const onSubmit = (values) => {
     if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
@@ -1013,6 +1003,14 @@ function TabRMCC(props) {
     dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
+  }
+
+  /**
+   * @method onSubmit
+   * @description Used to Submit the form
+   */
+  const onSubmit = (values) => {
+
   }
 
   return (
@@ -1110,8 +1108,9 @@ function TabRMCC(props) {
                       {"Cancel"}
                     </button>
                     <button
-                      type={'submit'}
+                      type={'button'}
                       className="submit-button mr5 save-btn"
+                      onClick={saveCosting}
                     >
                       <div className={'check-icon'}>
                         <img

@@ -55,6 +55,7 @@ import {
   SET_TOOL_PROCESS_WISE_DATALIST,
   SET_IS_TOOLCOST_USED,
   TOOL_CATEGORY_SELECTLIST,
+  SET_RMCC_ERRORS,
 } from '../../../config/constants';
 
 const initialState = {
@@ -465,6 +466,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ToolCategoryList: action.payload
+      }
+    case SET_RMCC_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        ErrorObjRMCC: action.payload
       }
     default:
       return state
