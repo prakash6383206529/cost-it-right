@@ -10,7 +10,8 @@ import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { getVerifySimulationList } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
+import { toastr } from 'react-redux-toastr';
 
 
 function VerifySimulation(props) {
@@ -23,7 +24,7 @@ function VerifySimulation(props) {
     const [simulationId, setSimualtionId] = useState('')
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [costingPage, setSimulationCostingPage] = useState(false)
-
+    const [objs, setObj] = useState({})
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
         reValidateMode: 'onChange',
@@ -146,7 +147,22 @@ function VerifySimulation(props) {
     };
 
     const runSimulation = () => {
-
+        if (selectedRowData.length === 0) {
+            toastr.warning('Please select atleast one costing.')
+            return false
+        }
+        let obj = {};
+        obj.SimulationId = simulationId
+        obj.LoggedInUserId = loggedInUserId()
+        let tempArr = []
+        selectedRowData && selectedRowData.map(item => {
+            let tempObj = {}
+            tempObj.RawMaterialId = item.RawMaterialId
+            tempObj.CostingId = item.BaseCostingId
+            tempArr.push(tempObj)
+        })
+        obj.RunSimualtionCostingInfo = tempArr
+        setObj(obj)
         setSimulationDrawer(true)
     }
     const closeDrawer = (e = '', mode) => {
@@ -260,7 +276,7 @@ function VerifySimulation(props) {
                                 selectRow={selectRowProp}
                                 className="add-volume-table"
                                 pagination>
-                                <TableHeaderColumn dataField="CostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="BaseCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
@@ -274,7 +290,7 @@ function VerifySimulation(props) {
                                 <TableHeaderColumn dataField="NewBasicRate" width={100} columnTitle={true} editable={false} dataFormat={newBRFormatter} dataAlign="left" >{renderNewBR()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldScrapRate" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderOldSR()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewScrapRate" width={100} columnTitle={true} editable={false} dataFormat={newSRFormatter} dataAlign="left" >{renderNewSR()}</TableHeaderColumn>
-
+                                <TableHeaderColumn dataField="RawMaterialId" width={100} columnTitle={true} editable={false} hidden ></TableHeaderColumn>
 
                             </BootstrapTable>
 
@@ -313,13 +329,14 @@ function VerifySimulation(props) {
             }
             {
                 costingPage &&
-                <CostingSimulation />
+                <CostingSimulation simulationId={simulationId} />
             }
             {
                 simulationDrawer &&
                 <RunSimulationDrawer
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
+                    objs={objs}
                     anchor={"right"}
                 />
             }

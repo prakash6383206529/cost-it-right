@@ -248,7 +248,7 @@ class BOPDomesticListing extends Component {
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
     /**

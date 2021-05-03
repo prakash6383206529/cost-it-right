@@ -10,7 +10,8 @@ import { runSimulationOnSelectedCosting } from '../actions/Simulation';
 
 
 function RunSimulationDrawer(props) {
-
+    const { objs } = props
+    console.log('objs: ', objs);
 
     const [isProfitChecked, setIsProfitChecked] = useState(false)
     const [isOverheadChecked, setIsOverheadChecked] = useState(false)
@@ -59,13 +60,18 @@ function RunSimulationDrawer(props) {
     }
 
     const onSubmit = () => {
-        let obj = {}
-        // obj.ProfitChange = isProfitChecked
-        // obj.RejectionChange = isRejectionChecked
-        // obj.IccChange = isICCChecked
-        // obj.OverheadChange = isOverheadChecked
-        // obj.PaymentChange = isPaymentChecked
-        dispatch(runSimulationOnSelectedCosting(obj, (res) => {
+        // console.log("ENTERD IN ON SUBMITss");
+        // dispatch(runSimulationOnSelectedCosting(objs, (res) => {
+        //     if (res.data.Result) {
+        //         toastr.success('Simulation process has been run successfully.')
+        //         runSimulationCosting()
+        //     }
+        // }))
+    }
+
+    const SimulationRun = () => {
+        console.log("ENTERD IN ON SUBMITss");
+        dispatch(runSimulationOnSelectedCosting(objs, (res) => {
             if (res.data.Result) {
                 toastr.success('Simulation process has been run successfully.')
                 runSimulationCosting()
@@ -195,7 +201,7 @@ function RunSimulationDrawer(props) {
                             <Row className="sf-btn-footer no-gutters justify-content-between">
                                 <div className="col-md-12 px-3">
                                     <div className="text-right px-3">
-                                        <button onClick={() => { }} type="submit" className="user-btn mr5 save-btn">
+                                        <button onClick={SimulationRun} type="submit" className="user-btn mr5 save-btn">
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"RUN SIMULATION"}
