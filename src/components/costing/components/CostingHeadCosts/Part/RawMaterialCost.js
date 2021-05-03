@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useMemo } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Col, Row, Table } from 'reactstrap'
 import AddRM from '../../Drawers/AddRM'
@@ -13,6 +13,7 @@ import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, KG, MG } from '../../../../../config/constants'
+import { setRMCCErrors } from '../../../actions/Costing'
 
 function RawMaterialCost(props) {
 
@@ -77,7 +78,7 @@ function RawMaterialCost(props) {
     if (Object.keys(rowData).length > 0) {
       let tempObj = {
         RMName: rowData.RawMaterial,
-        RMRate: rowData.BasicRatePerUOM,
+        RMRate: rowData.NetLandedCost,
         MaterialType: rowData.MaterialType,
         Density: rowData.Density,
         UOM: rowData.UOM,
@@ -147,12 +148,13 @@ function RawMaterialCost(props) {
         const GrossWeight = checkForNull(event.target.value)
         const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
 
-        const ApplicableFinishWeight = (FinishWeight !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
+        const ApplicableFinishWeight = (checkForNull(tempData.FinishWeight) !== 0) ? (GrossWeight - FinishWeight) * tempData.ScrapRate : 0;
         const NetLandedCost = (GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
         tempData = { ...tempData, GrossWeight: GrossWeight, NetLandedCost: NetLandedCost, WeightCalculatorRequest: {}, WeightCalculationId: "00000000-0000-0000-0000-000000000000", IsCalculatedEntry: false, }
         tempArr = Object.assign([...gridData], { [index]: tempData })
         setGridData(tempArr)
         setValue(`${rmGridFields}[${index}]GrossWeight`, event.target.value)
+        setValue(`${rmGridFields}[${index}]FinishWeight`, checkForNull(tempData.FinishWeight))
       } else {
         const GrossWeight = checkForNull(event.target.value)
         const FinishWeight = tempData.FinishWeight !== undefined ? tempData.FinishWeight : 0
@@ -224,7 +226,7 @@ function RawMaterialCost(props) {
    * @description CHECK IS FINISH WEIGHT LESS THEN GROSS WEIGHT
    */
   const IsFinishWeightValid = (GrossWeight, FinishWeight) => {
-    return GrossWeight > FinishWeight ? true : false;
+    return GrossWeight >= FinishWeight ? true : false;
   }
 
   /**
@@ -284,7 +286,16 @@ function RawMaterialCost(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => { }
-  console.log('RM Errors', errors)
+  //console.log('RM Errors', errors)
+
+
+  /**
+   * @method setRMCCErrors
+   * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+   */
+  if (Object.keys(errors).length > 0) {
+    //dispatch(setRMCCErrors(errors))
+  }
 
   /**
    * @method render
