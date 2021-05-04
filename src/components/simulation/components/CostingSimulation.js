@@ -24,6 +24,7 @@ function CostingSimulation(props) {
     const [simulationDrawer, setSimulationDrawer] = useState(false)
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
+    const [id, setId] = useState('')
 
     const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
         mode: 'onBlur',
@@ -96,11 +97,15 @@ function CostingSimulation(props) {
 
     }
 
+    const viewCosting = (id) => {
+        setId(id)
+        runCostingDetailSimulation()
+    }
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
             <>
-                <button className="View" type={'button'} onClick={() => { }} />
+                <button className="View" type={'button'} onClick={() => { viewCosting(cell) }} />
             </>
         )
     }
@@ -159,21 +164,21 @@ function CostingSimulation(props) {
     }
 
     const oldPOFormatter = (cell, row, enumObject, rowIndex) => {
-        const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value' : 'no-class'
+        const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newPOFormatter = (cell, row, enumObject, rowIndex) => {
-        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value' : 'no-class'
+        const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
     const oldRMFormatter = (cell, row, enumObject, rowIndex) => {
-        const classGreen = (row.NewNetLandedCost > row.OldNetLandedCost) ? 'red-value' : (row.NewNetLandedCost < row.OldNetLandedCost) ? 'green-value' : 'no-class'
+        const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newRMFormatter = (cell, row, enumObject, rowIndex) => {
-        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value' : 'no-class'
+        const classGreen = (row.NewRMCost > row.OldRMCost) ? 'red-value form-control' : (row.NewRMCost < row.OldRMCost) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
@@ -288,8 +293,8 @@ function CostingSimulation(props) {
                                 <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="ECNNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderECN()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="RevisionNumber" width={100} columnTitle={true} editable={false} dataAlign="left" >{revisionNumber()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{OldPo()}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" >{NewPO()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="OldPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={oldPOFormatter} >{OldPo()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="NewPOPrice" width={100} columnTitle={true} editable={false} dataAlign="left" dataFormat={newPOFormatter} >{NewPO()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="OldRMCost" width={100} columnTitle={true} dataFormat={oldRMFormatter} editable={false} dataAlign="left" >{renderOldRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="NewRMCost" width={100} columnTitle={true} dataFormat={newRMFormatter} editable={false} dataAlign="left" >{renderNewRM()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="SimulationCostingId" width={100} columnTitle={true} editable={false} dataFormat={buttonFormatter}>Actions</TableHeaderColumn>

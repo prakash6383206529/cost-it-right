@@ -97,12 +97,12 @@ function VerifySimulation(props) {
         )
     }
     const newBRFormatter = (cell, row, enumObject, rowIndex) => {
-        const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value' : 'no-class'
+        const classGreen = (row.NewBasicRate > row.OldBasicRate) ? 'red-value form-control' : (row.NewBasicRate < row.OldBasicRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
     const newSRFormatter = (cell, row, enumObject, rowIndex) => {
-        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value' : 'no-class'
+        const classGreen = (row.NewScrapRate > row.OldScrapRate) ? 'red-value form-control' : (row.NewScrapRate < row.OldScrapRate) ? 'green-value form-control' : 'form-class'
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
