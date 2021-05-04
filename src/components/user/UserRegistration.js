@@ -24,6 +24,7 @@ import NoContentFound from "../common/NoContentFound";
 import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
+import ConfirmComponent from "../../helper/ConfirmComponent";
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -702,9 +703,8 @@ class UserRegistration extends Component {
           onOk: () => {
             this.confirmUpdateUser(updatedData, true)
           },
-          onCancel: () => {
-            this.confirmUpdateUser(updatedData, false)
-          }
+          onCancel: () => { this.confirmUpdateUser(updatedData, false) },
+          component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
 

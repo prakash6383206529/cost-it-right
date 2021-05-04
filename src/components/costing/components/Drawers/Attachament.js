@@ -36,16 +36,6 @@ function Attachament(props) {
                 ></div>
               </Col>
             </Row>
-
-            <Row>
-              <Col md="12">
-                <Row className="mx-0">
-                  <Col md="12">
-                    <div className="left-border">{'View Attachments:'}</div>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
             <Row className="mx-0">
               <Col md="12">
                 {viewCostingData &&

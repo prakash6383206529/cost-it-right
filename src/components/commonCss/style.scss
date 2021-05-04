@@ -2359,10 +2359,14 @@ html {
 .w-180{
   min-width: 180px;
 }
-
-
 .w-100px{
-  .form-control{width: 65px;}
+  .form-control{width: 100px;}
+}
+
+.costing-table-next{
+  .w-100px{
+    .form-control{width: 55px;}
+  }
 }
 
 .react-datepicker__input-container{

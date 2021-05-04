@@ -334,7 +334,7 @@ function TabDiscountOther(props) {
     const { name, percent, status } = meta
     return (
       <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
-        {Math.round(percent)}%
+        {/* {Math.round(percent)}% */}
       </span>
     )
   }
