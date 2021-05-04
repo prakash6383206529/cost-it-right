@@ -207,7 +207,7 @@ function ManageSOBDrawer(props) {
       "LoggedInUserId": loggedInUserId(),
       "BoughtOutPartSOBDetailId": Data.BoughtOutPartSOBDetailId,
       "WeightedNetLandedCost": WeightedCost,
-      "AveragShareOfBusinessPercentage": sum,
+      "AveragShareOfBusinessPercentage": GridData.length !== 1 ? sum : 100,
       "BoughtOutPartVendorList": GridData
     }
     reset()
@@ -274,24 +274,24 @@ function ManageSOBDrawer(props) {
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      //value: /^[0-9]*$/i,
-                                      // value: /^[0-9]\d*(\.\d+)?$/i,
-                                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                      message: 'Invalid Number.'
-                                    },
-                                    maxLength: {
-                                      value: 10,
-                                      message: 'Length should not be more than 10'
-                                    },
+                                  // rules={{
+                                  //   //required: true,
+                                  //   pattern: {
+                                  //     //value: /^[0-9]*$/i,
+                                  //     // value: /^[0-9]\d*(\.\d+)?$/i,
+                                  //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                  //     message: 'Invalid Number.'
+                                  //   },
+                                  //   maxLength: {
+                                  //     value: 10,
+                                  //     message: 'Length should not be more than 10'
+                                  //   },
 
-                                    max: {
-                                      value: 100,
-                                      message: "Should not be greater than 100"
-                                    },
-                                  }}
+                                  //   max: {
+                                  //     value: 100,
+                                  //     message: "Should not be greater than 100"
+                                  //   },
+                                  // }}
 
                                   defaultValue={GridData.length === 1 ? 100 : item.ShareOfBusinessPercentage}
                                   className=""

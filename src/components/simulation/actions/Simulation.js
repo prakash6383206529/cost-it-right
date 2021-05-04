@@ -158,7 +158,7 @@ export function getVerifySimulationList(token, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_VERIFY_SIMULATION_LIST,
-                    payload: response.data.DataList
+                    payload: response.data.Data.SimulationImpactedCostings
                 })
                 callback(response)
             }
@@ -176,7 +176,7 @@ export function getCostingSimulationList(token, callback) {
             if (response.data.Result) {
                 dispatch({
                     type: GET_COSTING_SIMULATION_LIST,
-                    payload: response.data.DataList
+                    payload: response.data.Data.SimulatedCosting
                 })
                 callback(response)
             }

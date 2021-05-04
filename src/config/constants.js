@@ -797,8 +797,8 @@ export const API = {
   getSelectListOfSimulationMaster: `${BASE_URL}/`,
   runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
   getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
-  runSimulationOnSelectedCosting: `${BASE_URL}/simulation/draft-simulation-raw-material/run-simulation-on-selected-costing`,
-  getCostingSimulationList: `${BASE_URL}/`
+  runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
+  getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`
 }
 
 //Api constants
@@ -1174,6 +1174,7 @@ export const GET_RM_DRAWER_DATA_LIST = 'GET_RM_DRAWER_DATA_LIST';
 export const GET_PROCESS_DRAWER_DATA_LIST = 'GET_PROCESS_DRAWER_DATA_LIST';
 export const SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA = 'SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA';
 export const TOOL_CATEGORY_SELECTLIST = 'TOOL_CATEGORY_SELECTLIST';
+export const SET_RMCC_ERRORS = 'SET_RMCC_ERRORS';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'

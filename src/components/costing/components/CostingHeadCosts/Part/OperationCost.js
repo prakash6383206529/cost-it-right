@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
@@ -9,6 +9,7 @@ import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
+import { setRMCCErrors } from '../../../actions/Costing';
 
 function OperationCost(props) {
 
@@ -16,6 +17,8 @@ function OperationCost(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+
+  const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(props.data)
   const [OldGridData, setOldGridData] = useState(props.data)
@@ -183,6 +186,14 @@ function OperationCost(props) {
   const netCost = (item) => {
     const cost = checkForNull(item.Rate * item.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
     return checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+  }
+
+  /**
+  * @method setRMCCErrors
+  * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+  */
+  if (Object.keys(errors).length > 0) {
+    //dispatch(setRMCCErrors(errors))
   }
 
   const OperationGridFields = 'OperationGridFields';

@@ -694,7 +694,7 @@ export function calculateVolume(length, width, thickness) {
 
 export function calculateWeight(density, length, width, thickness) {
   const value = density * calculateVolume(length, width, thickness)
-  console.log(value, "VALUE FROM DENSITY");
+
   return value
 }
 

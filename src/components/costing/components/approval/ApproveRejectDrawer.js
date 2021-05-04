@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment,
+  approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment,
 } from '../../../costing/actions/Approval'
 import {
   TextAreaHookForm,
@@ -22,7 +22,7 @@ function ApproveRejectDrawer(props) {
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, errors, handleSubmit } = useForm({
+  const { register, control, errors, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -30,39 +30,11 @@ function ApproveRejectDrawer(props) {
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
+  const deptList = useSelector((state) => state.approval.approvalDepartmentList)
 
   useEffect(() => {
-    let tempDropdownList = []
-    let obj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: approvalData[0] && approvalData[0].DepartmentId
-        ? approvalData[0].DepartmentId
-        : '00000000-0000-0000-0000-000000000000',
-      TechnologyId: approvalData[0] && approvalData[0].TechnologyId
-        ? approvalData[0].TechnologyId
-        : '00000000-0000-0000-0000-000000000000',
-    }
+    dispatch(getAllApprovalDepartment((res) => { }))
 
-    /* Problem here*/
-    dispatch(
-      getAllApprovalUserFilterByDepartment(obj, (res) => {
-
-
-        res.data.DataList &&
-          res.data.DataList.map((item) => {
-
-            if (item.Value === '0') return false;
-            tempDropdownList.push({
-              label: item.Text,
-              value: item.Value,
-              levelId: item.LevelId,
-              levelName: item.LevelName
-            })
-            return null
-          })
-        setApprovalDropDown(tempDropdownList)
-      }),
-    )
     // DO IT AFTER GETTING DATA
   }, [])
 
@@ -137,6 +109,48 @@ function ApproveRejectDrawer(props) {
       }))
     }
   }
+
+  const renderDropdownListing = (label) => {
+    const tempDropdownList = []
+    if (label === 'Dept') {
+      deptList &&
+        deptList.map((item) => {
+          if (item.Value === '0') return false
+          tempDropdownList.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return tempDropdownList
+    }
+  }
+
+  const handleDepartmentChange = (value) => {
+    setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+    let tempDropdownList = []
+    let obj = {
+      LoggedInUserId: loggedInUserId(), // user id
+      DepartmentId: value.value,
+      TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+    }
+
+    /* Problem here*/
+    dispatch(
+      getAllApprovalUserFilterByDepartment(obj, (res) => {
+        res.data.DataList &&
+          res.data.DataList.map((item) => {
+            if (item.Value === '0') return false;
+            tempDropdownList.push({
+              label: item.Text,
+              value: item.Value,
+              levelId: item.LevelId,
+              levelName: item.LevelName
+            })
+            return null
+          })
+        setApprovalDropDown(tempDropdownList)
+      }),
+    )
+  }
+
   return (
     <>
       <Drawer
@@ -161,41 +175,78 @@ function ApproveRejectDrawer(props) {
 
               <Row className="ml-0">
                 {type === 'Approve' && IsFinalLevel && (
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={'Approver'}
-                      name={'approver'}
-                      placeholder={'-Select-'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      //defaultValue={isEditFlag ? plantName : ''}
-                      options={approvalDropDown}
-                      mandatory={true}
-                      handleChange={() => { }}
-                      errors={errors.approver}
-                    />
-                  </div>
+                  <>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Department"}
+                        name={"dept"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderDropdownListing("Dept")}
+                        mandatory={true}
+                        handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                      />
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={'Approver'}
+                        name={'approver'}
+                        placeholder={'-Select-'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        //defaultValue={isEditFlag ? plantName : ''}
+                        options={approvalDropDown}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.approver}
+                      />
+                    </div>
+                  </>
                 )}
                 {
+                  // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
                   isSimulation &&
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={'Approver'}
-                      name={'approver'}
-                      placeholder={'-Select-'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      //defaultValue={isEditFlag ? plantName : ''}
-                      options={approvalDropDown}
-                      mandatory={true}
-                      handleChange={() => { }}
-                      errors={errors.approver}
-                    />
-                  </div>
+                  <>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Department"}
+                        name={"dept"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderDropdownListing("Dept")}
+                        mandatory={true}
+                        handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                      />
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={'Approver'}
+                        name={'approver'}
+                        placeholder={'-Select-'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        //defaultValue={isEditFlag ? plantName : ''}
+                        options={approvalDropDown}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.approver}
+                      />
+                    </div>
+                  </>
                 }
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <TextAreaHookForm

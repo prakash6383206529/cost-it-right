@@ -412,8 +412,7 @@ function Pipe(props) {
       // UOMDimension: values.UOMDimension,  where it is
       OuterDiameter: values.OuterDiameter,
       Thickness: values.Thickness,
-      InnerDiameter: dataToSend.InnerDiameter
-      ,
+      InnerDiameter: dataToSend.InnerDiameter,
       LengthOfSheet: values.SheetLength,
       LengthOfPart: values.PartLength,
       NumberOfPartsPerSheet: dataToSend.NumberOfPartsPerSheet,

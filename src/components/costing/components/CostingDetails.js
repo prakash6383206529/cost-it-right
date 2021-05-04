@@ -256,12 +256,12 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
-              setValue('PartName', Data.PartName)
-              setValue('Description', Data.Description)
-              setValue('ECNNumber', Data.ECNNumber)
-              setValue('DrawingNumber', Data.DrawingNumber)
-              setValue('RevisionNumber', Data.RevisionNumber)
-              setValue('ShareOfBusiness', Data.Price)
+              setValue('PartName', Data?.PartName ? Data.PartName : '')
+              setValue('Description', Data?.Description ? Data.Description : '')
+              setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
+              setValue('DrawingNumber', Data?.DrawingNumber ? Data.DrawingNumber : '')
+              setValue('RevisionNumber', Data?.RevisionNumber ? Data.RevisionNumber : '')
+              setValue('ShareOfBusiness', Data?.Price ? Data.Price : '')
               setEffectiveDate(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
               setShowNextBtn(true)
             }),
@@ -403,6 +403,7 @@ function CostingDetails(props) {
         Status: selectedOptionObj.Status,
         DisplayStatus: selectedOptionObj.DisplayStatus,
         CostingId: newValue.value,
+        Price: selectedOptionObj.Price,
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
       setZBCPlantGrid(tempArray)
@@ -419,6 +420,7 @@ function CostingDetails(props) {
         Status: selectedOptionObj.Status,
         DisplayStatus: selectedOptionObj.DisplayStatus,
         CostingId: newValue.value,
+        Price: selectedOptionObj.Price,
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
       setVBCVendorGrid(tempArray)
@@ -1004,7 +1006,9 @@ function CostingDetails(props) {
   useEffect(() => {
     if (isZBCSOBEnabled && zbcPlantGrid.length > 0) {
 
-      if (CheckIsCostingAvailable() === false) {
+      if (!checkSOBTotal()) {
+        toastr.warning('SOB Should not be greater than 100.')
+      } else if (CheckIsCostingAvailable() === false) {
         let tempArr = []
         //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
         zbcPlantGrid && zbcPlantGrid.map((el) => {
@@ -1110,7 +1114,9 @@ function CostingDetails(props) {
   useEffect(() => {
     if (isVBCSOBEnabled && vbcVendorGrid.length > 0) {
 
-      if (CheckIsCostingAvailable() === false) {
+      if (!checkSOBTotal()) {
+        toastr.warning('SOB Should not be greater than 100.')
+      } else if (CheckIsCostingAvailable() === false) {
 
         let tempArr = []
         //setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })

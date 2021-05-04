@@ -280,7 +280,7 @@ const SendForApproval = (props) => {
       tempObj.CostingNumber = data.costingName
       tempObj.ReasonId = data.reasonId
       tempObj.Reason = data.reason
-      tempObj.ECNNumber = data.ecNo
+      tempObj.ECNNumber = ''
       // tempObj.ECNNumber = 1;
       tempObj.EffectiveDate = data.effectiveDate
       tempObj.RevisionNumber = partNo.revisionNumber
@@ -292,6 +292,8 @@ const SendForApproval = (props) => {
       tempObj.FinancialYear = financialYear
       tempObj.OldPOPrice = data.oldPrice
       tempObj.NewPoPrice = data.revisedPrice
+      tempObj.POCurrency = data.nPOPriceWithCurrency
+      tempObj.CurrencyRate = data.currencyRate
       tempObj.Variance = data.variance
       tempObj.ConsumptionQuantity = data.consumptionQty
       tempObj.RemainingQuantity = data.remainingQty
@@ -414,6 +416,25 @@ const SendForApproval = (props) => {
 
                             />
                           </Col>
+                          {/* <Col md="4">
+                            <TextFieldHookForm
+                              label="ECN Ref No"
+                              name={"encNumber"}
+                              Controller={Controller}
+                              control={control}
+                              register={register}
+                              rules={{ required: false }}
+                              mandatory={false}
+                              handleChange={(e) => {
+                                handleECNNoChange(e.target.value, index);
+                              }}
+                              defaultValue={data.ecnNo != "" ? data.ecnNo : ""}
+                              className=""
+                              customClassName={"withBorder"}
+                              errors={errors.encNumber}
+                            // disabled={true}
+                            />
+                          </Col> */}
                           <Col md="4">
                             {/* <div className="form-group"> */}
                             {/* <label>Effective Date</label> */}
@@ -454,7 +475,7 @@ const SendForApproval = (props) => {
                             </div>
                             {/* </div> */}
                           </Col>
-                        
+
                           <Col md="4">
                             <div className="form-group">
                               <label>Old/Current Price</label>
@@ -479,7 +500,7 @@ const SendForApproval = (props) => {
                               </label>
                             </div>
                           </Col>
-                        
+
                           <Col md="4">
                             <div className="form-group">
                               <label>Consumed Quantity</label>
