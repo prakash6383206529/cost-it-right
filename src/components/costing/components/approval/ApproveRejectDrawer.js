@@ -7,12 +7,12 @@ import {
   approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment,
 } from '../../../costing/actions/Approval'
 import {
-  TextAreaHookForm,
-  SearchableSelectHookForm,
+  TextAreaHookForm, SearchableSelectHookForm,
 } from '../../../layout/HookFormInputs'
 import { loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
+
 
 function ApproveRejectDrawer(props) {
 
@@ -38,14 +38,14 @@ function ApproveRejectDrawer(props) {
     // DO IT AFTER GETTING DATA
   }, [])
 
-  const toggleDrawer = (event) => {
+  const toggleDrawer = (event, type = 'cancel') => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return
     }
-    props.closeDrawer('')
+    props.closeDrawer('', type)
   }
 
   const closePushButton = () => {
@@ -67,6 +67,8 @@ function ApproveRejectDrawer(props) {
         LoggedInUserId: userLoggedIn,
         SenderLevelId: userData.LoggedInLevelId,
         SenderLevel: userData.LoggedInLevel,
+        ApproverDepartmentId: data.dept && data.dept.value ? data.dept.value : '',
+        ApproverDepartmentName: data.dept && data.dept.label ? data.dept.label : '',
         Approver: data.approver && data.approver.value ? data.approver.value : '',
         ApproverLevelId: data.approver && data.approver.levelId ? data.approver.levelId : '',
         ApproverLevel: data.approver && data.approver.levelName ? data.approver.levelName : '',
@@ -76,14 +78,14 @@ function ApproveRejectDrawer(props) {
     })
 
     if (type === 'Approve') {
-      // if (IsPushDrawer) {
-      //   toastr.success('The costing has been approved')
-      //   setOpenPushButton(true)
+      if (IsPushDrawer) {
+        toastr.success('The costing has been approved')
+        setOpenPushButton(true)
 
-      // } else {
-      //   toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
-      //   props.closeDrawer()
-      // }
+      } else {
+        toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+        props.closeDrawer('', 'submit')
+      }
 
       dispatch(approvalRequestByApprove(Data, res => {
         if (res.data.Result) {
@@ -93,21 +95,24 @@ function ApproveRejectDrawer(props) {
 
           } else {
             toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
-            props.closeDrawer()
+            props.closeDrawer('', 'submit')
           }
           // toastr.success('Costing Approved')
           // props.closeDrawer()
         }
       }))
-      //  props.closeDrawer()
+      props.closeDrawer('')
     } else {
+      // REJECT CONDITION
       dispatch(rejectRequestByApprove(Data, res => {
         if (res.data.Result) {
           toastr.success('Costing Rejected')
-          props.closeDrawer()
+          props.closeDrawer('', 'submit')
         }
       }))
     }
+    //setOpenPushButton(true)
+    // props.closeDrawer()
   }
 
   const renderDropdownListing = (label) => {
@@ -255,7 +260,8 @@ function ApproveRejectDrawer(props) {
                     Controller={Controller}
                     control={control}
                     register={register}
-                    mandatory={false}
+                    mandatory={type === 'Approve' ? false : true}
+                    rules={{ required: true }}
                     handleChange={() => { }}
                     //defaultValue={viewRM.RMRate}
                     className=""
@@ -304,6 +310,7 @@ function ApproveRejectDrawer(props) {
         <PushButtonDrawer
           isOpen={openPushButton}
           closeDrawer={closePushButton}
+          approvalData={[approvalData]}
           anchor={'right'}
         />
       )}

@@ -83,6 +83,8 @@ function CostingDetails(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    setValue('Technology', '')
+    setValue('Part', '')
     InjectRolePermission()
     dispatch(storePartNumber(''))
     dispatch(getCostingTechnologySelectList(() => { }))

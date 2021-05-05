@@ -207,26 +207,20 @@ function CostingSummary(props) {
                       (res) => {
 
                         if (res.data.Result == true) {
-                          dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
-                            // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
-                            if (res.data.Data) {
-
-                              let dataFromAPI = res.data.Data
-                              // if (Object.keys(dataFromAPI).length === 0) {
-
-                              // }
-                              const tempObj = formViewData(dataFromAPI)
-                              dispatch(setCostingViewData(tempObj))
-                            } else {
-
-                            }
-                          },
-                          ),
-                          )
-                        } else {
-
-                          setShowWarningMsg(true)
-                          dispatch(setCostingViewData(temp))
+                          if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
+                            setShowWarningMsg(true)
+                            dispatch(setCostingViewData(temp))
+                          } else {
+                            dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
+                              // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
+                              if (res.data.Data) {
+                                let dataFromAPI = res.data.Data
+                                const tempObj = formViewData(dataFromAPI)
+                                dispatch(setCostingViewData(tempObj))
+                              }
+                            },
+                            ))
+                          }
                         }
                       },
                     ),
@@ -278,6 +272,7 @@ function CostingSummary(props) {
     setEffectiveDate('')
     dispatch(storePartNumber(''))
     dispatch(setCostingViewData([]))
+    setShowWarningMsg(false)
     dispatch(getPartSelectListByTechnology('', () => { }))
   }
 

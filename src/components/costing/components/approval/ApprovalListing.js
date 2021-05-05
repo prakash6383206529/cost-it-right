@@ -167,7 +167,7 @@ function ApprovalListing() {
   }
 
   const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? cell : '';
+    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
@@ -182,6 +182,14 @@ function ApprovalListing() {
     return <div className={cell}>{row.DisplayStatus}</div>
   }
 
+  const renderPlant = (cell, row, enumObject, rowIndex) => {
+    return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+  }
+
+  const renderVendor = (cell, row, enumObject, rowIndex) => {
+    return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+  }
+
   const viewDetails = (approvalNumber, approvalProcessId) => {
 
     setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
@@ -190,7 +198,7 @@ function ApprovalListing() {
       <ApprovalSummary
         approvalNumber={approvalNumber ? approvalNumber : '2345438'}
         approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
-      /> //TODO list
+      />
     )
   }
   /**
@@ -300,7 +308,7 @@ function ApprovalListing() {
                         <SearchableSelectHookForm
                           label={''}
                           name={'createdBy'}
-                          placeholder={'Created By'}
+                          placeholder={'Initiated By'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: false }}
@@ -440,6 +448,9 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="CostingNumber" width={140} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartNumber" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
+
               <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'Price'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedBy" columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>
