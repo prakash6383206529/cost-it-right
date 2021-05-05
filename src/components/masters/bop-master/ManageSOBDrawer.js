@@ -50,23 +50,26 @@ function ManageSOBDrawer(props) {
 
         if (Data.BoughtOutPartVendorList.length === 1) {
           setIsDisable(true)
-          // let tempArray = [];
-          // let tempData = GridData[0];
-          // tempData = {
-          //   ...tempData,
-          //   ShareOfBusinessPercentage: 100,
-          //   WeightedCost: tempData.WeightedCost
-          // }
-          // tempArray = Object.assign([...GridData], { [0]: tempData })
-          // setData(Data)
-          // setGridData(tempArray)
-          // setGridDataOldArray(tempArray)
+          setGridData(Data.BoughtOutPartVendorList)
+          setGridDataOldArray(Data.BoughtOutPartVendorList)
+        }
+        if (Data.BoughtOutPartVendorList.length > 1) {
+          let tempArray = [];
+          let tempData = Data.BoughtOutPartVendorList[0];
+          tempData = {
+            ...tempData,
+            ShareOfBusinessPercentage: 100
+
+          }
+          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
+          setGridData(tempArray)
+          setGridDataOldArray(tempArray)
         }
         // else {
 
         setData(Data)
-        setGridData(Data.BoughtOutPartVendorList)
-        setGridDataOldArray(Data.BoughtOutPartVendorList)
+        // setGridData(Data.BoughtOutPartVendorList)
+        // setGridDataOldArray(Data.BoughtOutPartVendorList)
         // }
       }
     }))
@@ -79,6 +82,7 @@ function ManageSOBDrawer(props) {
   // }
 
   useEffect(() => {
+
     calculateWeightedCost()
   }, [fieldValues, GridData]);
 
@@ -253,7 +257,7 @@ function ManageSOBDrawer(props) {
                     <thead>
                       <tr>
                         <th style={{ width: '100px' }}>{`Vendor Name`}</th>
-                        <th style={{ width: '165px' }}>{`Net Landed Cost/Unit`}</th>
+                        <th style={{ width: '165px' }}>{`Net Cost/Unit`}</th>
                         <th style={{ width: '155px' }}>{`SOB%`}</th>
                         <th style={{ width: '150px' }} >{`Weighted Cost`}</th>
                       </tr>
@@ -315,7 +319,7 @@ function ManageSOBDrawer(props) {
                         GridData && <tr className="sob-background">
                           <td>{'BOP Cost'}</td>
                           <td>{''}</td>
-                          <td>{`Net landed Cost(Weighted Average)`}</td>
+                          <td>{`Net Cost(Weighted Average)`}</td>
                           <td>{`:${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
                         </tr>
                       }
