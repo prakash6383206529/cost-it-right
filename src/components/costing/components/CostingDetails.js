@@ -13,7 +13,7 @@ import { toastr } from 'react-redux-toastr';
 import { checkForNull, checkPermission, checkVendorPlantConfigurable, loggedInUserId, userDetails } from '../../../helper';
 import moment from 'moment';
 import CostingDetailStepTwo from './CostingDetailStepTwo';
-import { APPROVED, SHEET_METAL, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC } from '../../../config/constants';
+import { APPROVED, SHEET_METAL, DRAFT, EMPTY_GUID, PENDING, REJECTED, VBC, WAITING_FOR_APPROVAL, ZBC, EMPTY_GUID_0 } from '../../../config/constants';
 import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
@@ -358,6 +358,7 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
+        ActualSOBPercent: tempData.ShareOfBusinessPercent,
         ShareOfBusinessPercent: parseInt(event.target.value),
         isSOBChanged: checkIsZBCSOBChanged(event, index),
       }
@@ -468,6 +469,7 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
+        ActualSOBPercent: tempData.ShareOfBusinessPercent,
         ShareOfBusinessPercent: parseInt(event.target.value),
         isSOBChanged: checkIsVBCSOBChanged(event, index),
       }
@@ -633,6 +635,9 @@ function CostingDetails(props) {
         VendorPlantCode: tempData.VendorPlantCode,
         VendorName: tempData.VendorName,
         VendorCode: tempData.VendorCode,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantId : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantName : '',
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? tempData.DestinationPlantCode : '',
         UserId: loggedInUserId(),
         LoggedInUserId: loggedInUserId(),
         ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
@@ -1367,7 +1372,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label={`Current Price(Approved SOB: ${partInfo && partInfo.Price !== undefined ? partInfo.Price : 0})`}
+                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB : 0})`}
                           name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
@@ -1605,7 +1610,8 @@ function CostingDetails(props) {
                                   return (
                                     <tr key={index}>
                                       <td>{`${item.VendorName}(${item.VendorCode})`}</td>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label ? item?.DestinationPlant?.label?.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1) : ''}</td>}
+                                      {/* {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlant?.label ? item?.DestinationPlant?.label?.substring(0, item?.DestinationPlant?.label.indexOf(")") + 1) : ''}</td>} */}
+                                      {initialConfiguration?.IsDestinationPlantConfigure && <td>{item?.DestinationPlantName ? item.DestinationPlantName : ''}</td>}
                                       <td className="w-100px cr-select-height">
                                         <TextFieldHookForm
                                           label=""

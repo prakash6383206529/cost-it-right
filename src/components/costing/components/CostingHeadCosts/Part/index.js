@@ -92,6 +92,7 @@ function PartCompoment(props) {
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
         }
       }))

@@ -294,7 +294,7 @@ function AddTool(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^[0-9]*$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         // maxLength: 4,
@@ -319,7 +319,7 @@ function AddTool(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^[0-9]*$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         // maxLength: 4,

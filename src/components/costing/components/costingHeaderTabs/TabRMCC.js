@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import {
-  getRMCCTabData, saveCostingRMCCTab, setRMCCData, saveComponentCostingRMCCTab, saveDiscountOtherCostTab,
-  setComponentDiscountOtherItemData
+  getRMCCTabData, saveCostingRMCCTab, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData
 } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
@@ -30,7 +30,6 @@ function TabRMCC(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
 
-
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
@@ -44,15 +43,26 @@ function TabRMCC(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     let TopHeaderValues = RMCCTabData && RMCCTabData.length > 0 && RMCCTabData[0].CostingPartDetails !== undefined ? RMCCTabData[0].CostingPartDetails : null;
-    let topHeaderData = {
-      NetRawMaterialsCost: TopHeaderValues !== null && TopHeaderValues.TotalRawMaterialsCost !== null ? TopHeaderValues.TotalRawMaterialsCost : 0,
-      // NetRawMaterialsCost: TopHeaderValues !== null && TopHeaderValues.TotalRawMaterialsCostWithQuantity !== null ? TopHeaderValues.TotalRawMaterialsCostWithQuantity : 0,
-      NetBoughtOutPartCost: TopHeaderValues !== null && TopHeaderValues.TotalBoughtOutPartCost !== null ? TopHeaderValues.TotalBoughtOutPartCost : 0,
-      // NetBoughtOutPartCost: TopHeaderValues !== null && TopHeaderValues.TotalBoughtOutPartCostWithQuantity !== null ? TopHeaderValues.TotalBoughtOutPartCostWithQuantity : 0,
-      NetConversionCost: TopHeaderValues !== null && TopHeaderValues.TotalConversionCost !== null ? TopHeaderValues.TotalConversionCost : 0,
-      NetToolsCost: TopHeaderValues !== null && TopHeaderValues.TotalToolCost !== null ? TopHeaderValues.TotalToolCost : 0,
-      NetTotalRMBOPCC: TopHeaderValues !== null && TopHeaderValues.TotalCalculatedRMBOPCCCost !== null ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
-      // NetTotalRMBOPCC: TopHeaderValues !== null && TopHeaderValues.TotalCalculatedRMBOPCCCostWithQuantity !== null ? TopHeaderValues.TotalCalculatedRMBOPCCCostWithQuantity : 0,
+
+    let topHeaderData = {};
+
+    if (costData.IsAssemblyPart) {
+      topHeaderData = {
+        NetRawMaterialsCost: TopHeaderValues?.TotalRawMaterialsCostWithQuantity ? TopHeaderValues.TotalRawMaterialsCostWithQuantity : 0,
+        NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCostWithQuantity ? TopHeaderValues.TotalBoughtOutPartCostWithQuantity : 0,
+        NetConversionCost: TopHeaderValues?.TotalConversionCost ? TopHeaderValues.TotalConversionCost : 0,
+        NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
+        //  NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
+        NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCostWithQuantity ? TopHeaderValues.TotalCalculatedRMBOPCCCostWithQuantity : 0,
+      }
+    } else {
+      topHeaderData = {
+        NetRawMaterialsCost: TopHeaderValues?.TotalRawMaterialsCost ? TopHeaderValues.TotalRawMaterialsCost : 0,
+        NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCost ? TopHeaderValues.TotalBoughtOutPartCost : 0,
+        NetConversionCost: TopHeaderValues?.TotalConversionCost ? TopHeaderValues.TotalConversionCost : 0,
+        NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
+        NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
+      }
     }
     props.setHeaderCost(topHeaderData)
   }, [RMCCTabData]);
@@ -954,7 +964,7 @@ function TabRMCC(props) {
 
     if (ErrorObjRMCC && Object.keys(ErrorObjRMCC).length > 0) return false;
 
-    if (ComponentItemData !== undefined && ComponentItemData.IsOpen !== false) {
+    if (Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -990,9 +1000,9 @@ function TabRMCC(props) {
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
-        console.log('Called Parent Form')
         if (res.data.Result) {
           toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
         }
       }))
@@ -1000,7 +1010,7 @@ function TabRMCC(props) {
   }
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 2 }, res => {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }
@@ -1111,6 +1121,7 @@ function TabRMCC(props) {
                       type={'button'}
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
+                    //disabled={Object.keys(ComponentItemData).length > 0 ? true : false}
                     >
                       <div className={'check-icon'}>
                         <img
