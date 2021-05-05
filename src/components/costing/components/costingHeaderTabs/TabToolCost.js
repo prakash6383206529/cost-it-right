@@ -199,7 +199,7 @@ function TabToolCost(props) {
   }
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }
@@ -267,8 +267,8 @@ function TabToolCost(props) {
                 </Col>
                 <Col md="3" className="px-30 py-4 border-section text-dark-blue pl10">
                   {"Net Tool Cost"}
-                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{getTotal()}</span> }
-                  </Col>
+                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{getTotal()}</span>}
+                </Col>
               </Row>
 
               <form
@@ -326,12 +326,12 @@ function TabToolCost(props) {
                         bordered={false}
                         options={options}
                         className="table cr-brdr-main table-sm tool-cost-tab-process-table"
-                        //search
-                        // exportCSV
-                        //ignoreSinglePage
-                        //ref={'table'}
-                        //pagination
-                        >
+                      //search
+                      // exportCSV
+                      //ignoreSinglePage
+                      //ref={'table'}
+                      //pagination
+                      >
                         <TableHeaderColumn dataField="ToolOperationId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="BOMLevel" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'BOMLevel'}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="PartNumber" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Part Number'}</TableHeaderColumn>

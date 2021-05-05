@@ -115,7 +115,7 @@ function TabDiscountOther(props) {
       }
       dispatch(setComponentDiscountOtherItemData(data, () => { }))
     }, 1000)
-  }, [props])
+  }, [props.DiscountTabData])
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -388,7 +388,7 @@ function TabDiscountOther(props) {
       "Attachements": updatedFiles
     }
 
-    dispatch(saveDiscountOtherCostTab(data, res => {
+    dispatch(saveDiscountOtherCostTab({ ...data, CallingFrom: 4 }, res => {
       if (res.data.Result) {
         toastr.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
         dispatch(setComponentDiscountOtherItemData({}, () => { }))

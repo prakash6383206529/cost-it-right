@@ -19,6 +19,7 @@ import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
+import { INR } from '../../../config/constants';
 
 class BOPImportListing extends Component {
     constructor(props) {
@@ -207,7 +208,7 @@ class BOPImportListing extends Component {
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+        return checkForDecimalAndNull(row.Currency === INR ? row.NetLandedCost : row.NetLandedCostConversion, initialConfiguration && initialConfiguration.NoOfDecimalForPrice);
     }
 
     /**
@@ -271,6 +272,8 @@ class BOPImportListing extends Component {
     renderMinQuantity = () => {
         return <>Minimum Order<br /> Quantity</>
     }
+
+
     /**
     * @method renderListing
     * @description Used to show type of listing
@@ -517,7 +520,7 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderMinQuantity()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
-                            <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} searchable={false} dataAlign="left" dataFormat={this.costFormatter} >{this.renderNetLandedCost()}</TableHeaderColumn>
+                            <TableHeaderColumn width={120} dataField="NetLandedCostConversion" columnTitle={true} searchable={false} dataAlign="left" dataFormat={this.costFormatter} >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataAlign="right" dataField="BoughtOutPartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>

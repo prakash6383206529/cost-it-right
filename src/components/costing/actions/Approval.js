@@ -371,3 +371,46 @@ export function getApprovalSummary(
       })
   }
 }
+
+
+
+/**
+ * @method isFinalApprover
+ * @description FOR FINDING WHETHER USER IS AT HIGHER LEVEL OR NOT
+ */
+export function isFinalApprover(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.isFinalApprover, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+/**
+ * @method pushedApprovedCosting
+ * @description FOR PUSHING APPROVED COSTING TO CRM/SCHEDULING (DEPEND ON DIFFERENT COMPANY)
+ */
+export function pushedApprovedCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.approvalPushed, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+

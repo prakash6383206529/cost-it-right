@@ -638,6 +638,8 @@ export const API = {
   approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approver`,
   rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
   getApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-costing-summary`,
+  isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approvar`,
+  approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -1389,6 +1391,7 @@ export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
+export const EMPTY_GUID_0 = "0"
 
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',
@@ -1462,6 +1465,7 @@ export const DIMENSIONLESS = 'Dimensionless'
 
 //UOM CATEGORY
 export const STD = 'STD'
+
 
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = 'Raw Material(Domestic)'

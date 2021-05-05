@@ -1,5 +1,6 @@
+import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { APPROVED, REJECTED } from '../../../../config/constants'
+import { APPROVED, REJECTED, PENDING } from '../../../../config/constants'
 
 function ApprovalWorkFlow(props) {
   const { approvalLevelStep } = props
@@ -44,8 +45,7 @@ function ApprovalWorkFlow(props) {
           return (
             <>
               <div key={index} className="col-lg-3 col-md-6 col-sm-12 ">
-
-                <div className={`card-border  ${item.Title.split(' ')[0] === REJECTED ? 'card-red' : item.Title.split(' ')[0] === APPROVED ? 'card-green' : 'card-yellow'}`}>
+                <div className={`card-border  ${item.Title.split(' ')[0] === REJECTED ? 'card-red' : item.Title.split(' ')[0] === APPROVED ? 'card-green' : item.Status === PENDING ? 'card-yellow' : ''}`}>
                   <div className="top d-flex">
                     <div className="left text-center">
                       <b>{item.Level ? item.Level.split('-')[1] : 0}</b>
@@ -60,7 +60,7 @@ function ApprovalWorkFlow(props) {
                   <div className="bottom">
                     <div className="d-flex mb-3">
                       <span className="small-grey-text left">Date:</span>
-                      <span className=" right">{item.Date ? item.Date : '-'}</span>
+                      <span className=" right">{item.Date ? moment(item.Date).format('DD/MM/YYYY') : '-'}</span>
                     </div>
                     <div className="d-flex">
                       <span className="small-grey-text left">Remark:</span>

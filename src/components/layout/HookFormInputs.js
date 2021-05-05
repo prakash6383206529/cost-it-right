@@ -39,6 +39,7 @@ export const TextFieldHookForm = (field) => {
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+
   return (
     <>
       <div className={className}>
@@ -211,7 +212,8 @@ export const TextAreaHookForm = (field) => {
           }
           }
         />
-        {errors && (errors.message || errors.type) ? <div className="text-help">{(errors.message || errors.type)}</div> : ""}
+        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
       </div>
     </>
   )

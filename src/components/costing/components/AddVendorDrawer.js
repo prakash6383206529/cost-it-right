@@ -6,8 +6,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
-import { checkVendorPlantConfigurable, } from '../../../helper';
-import { ZBC } from '../../../config/constants';
+import { checkVendorPlantConfigurable, getVendorCode, } from '../../../helper';
+import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 
 function AddVendorDrawer(props) {
 
@@ -48,7 +48,14 @@ function AddVendorDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('', { ...data, DestinationPlant: DestinationPlant })
+    props.closeDrawer('',
+      {
+        ...data,
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? getVendorCode(DestinationPlant.label) : '',
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.label : '',
+        DestinationPlant: DestinationPlant,
+      })
   };
 
   /**
