@@ -164,7 +164,7 @@ function TabPackagingFreight(props) {
 
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3 }, res => {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }

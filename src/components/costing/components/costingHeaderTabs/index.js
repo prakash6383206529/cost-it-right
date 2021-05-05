@@ -12,7 +12,7 @@ import TabToolCost from './TabToolCost';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
-  saveComponentCostingRMCCTab, saveComponentOverheadProfitTab, setComponentOverheadItemData,
+  saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
 } from '../../actions/Costing';
@@ -42,7 +42,7 @@ function CostingHeaderTabs(props) {
   useEffect(() => {
 
     // CALLED WHEN OTHER TAB CLICKED WITHOUT SAVING TO RMCC CURRENT TAB.
-    if (!CostingViewMode && ComponentItemData !== undefined && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
+    if (!CostingViewMode && Object.keys(ComponentItemData).length > 0 && ComponentItemData.IsOpen !== false && activeTab !== '1' && IsCalledAPI) {
       let requestData = {
         "NetRawMaterialsCost": ComponentItemData.CostingPartDetails.TotalRawMaterialsCost,
         "NetBoughtOutPartCost": ComponentItemData.CostingPartDetails.TotalBoughtOutPartCost,
@@ -78,7 +78,7 @@ function CostingHeaderTabs(props) {
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
-        console.log('Called Parent Form Head')
+        dispatch(setComponentItemData({}, () => { }))
         setIsCalledAPI(false)
         InjectDiscountAPICall()
       }))
@@ -148,7 +148,7 @@ function CostingHeaderTabs(props) {
 
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && Object.keys(ComponentItemDiscountData).length > 0 && ComponentItemDiscountData.IsChanged === true && activeTab !== '6') {
-      dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1 }, res => {
         dispatch(setComponentDiscountOtherItemData({}, () => { }))
       }))
     }

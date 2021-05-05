@@ -328,9 +328,9 @@ function CostingDetailStepTwo(props) {
                       <thead>
                         <tr>
                           <th style={{ width: '140px' }}>{``}</th>
-                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'RM Cost/Assembly' : 'RM Cost/Pc'}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'BOP Cost/Assembly' : 'BOP Cost/Pc'}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/Assembly' : 'RM Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/Assembly' : 'BOP Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net RM + CC Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
@@ -390,7 +390,6 @@ function CostingDetailStepTwo(props) {
                     <netHeadCostContext.Provider value={RMCCBOPCost} >
                       <SurfaceCostContext.Provider value={SurfaceCostData} >
                         <CostingHeadTabs
-                          //costData={costingData}
                           netPOPrice={NetPOPrice}
                           setHeaderCost={setHeaderCostRMCCTab}
                           setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}

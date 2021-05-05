@@ -59,15 +59,12 @@ import {
 } from '../../../config/constants';
 
 const initialState = {
+  ComponentItemData: {},
   ComponentItemOverheadData: {},
   ComponentItemPackageFreightData: {},
   ComponentItemToolData: {},
   ComponentItemDiscountData: {},
-  costingData: {
-    // supplierOne: {},
-    // supplierTwo: {},
-    // supplierThree: {},
-  },
+  costingData: {},
   singleCostingDetail: {},
   viewCostingDetailData: [],
   partNo: '',

@@ -1389,6 +1389,7 @@ export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
+export const EMPTY_GUID_0 = "0"
 
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',
