@@ -51,8 +51,8 @@ const SendForApproval = (props) => {
     dispatch(getAllApprovalDepartment((res) => { }))
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
-        // setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
-        setIsFinalApproverShow(false)
+        setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+        // setIsFinalApproverShow(false)
       }
     }))
   }, [])
