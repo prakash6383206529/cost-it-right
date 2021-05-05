@@ -122,11 +122,11 @@ class SOBListing extends Component {
   }
 
   renderweightnet = () => {
-    return <>Weighted Net <br />Landed Cost (INR)</>
+    return <>Weighted Net <br /> Cost (INR)</>
   }
 
   rendernetlandedCost = () => {
-    return <>Net <br />Landed Cost</>
+    return <>Net <br />Cost</>
   }
 
   renderbopNo = () => {
@@ -315,7 +315,7 @@ class SOBListing extends Component {
               <TableHeaderColumn width={90} dataField="Plant" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn>
+              {/* <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn> */}
               <TableHeaderColumn width={140} dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{this.renderweightnet()}</TableHeaderColumn>
               <TableHeaderColumn dataAlign="right" width={80} dataField="BoughtOutPartNumber" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>

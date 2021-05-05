@@ -178,7 +178,7 @@ class RMImportListing extends Component {
 
   costFormatter = (cell, row, enumObject, rowIndex) => {
     const { initialConfiguration } = this.props
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    return (cell != null && cell !== 0) ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, initialConfiguration.NoOfDecimalForPrice);
   }
 
   /**
@@ -693,7 +693,7 @@ class RMImportListing extends Component {
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={this.freightCostFormatter} searchable={false}>{this.rendorFreightRate()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={this.shearingCostFormatter} searchable={false}>{this.renderShearingCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
+              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCostConversion" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
               {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
               {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}

@@ -2,11 +2,10 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import DatePicker from 'react-datepicker'
 import { toastr } from 'react-redux-toastr'
 import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextFieldHookForm, TextAreaHookForm, DatePickerHookForm, } from '../../../layout/HookFormInputs'
-import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, } from '../../actions/Approval'
+import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, isFinalApprover, } from '../../actions/Approval'
 import { userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
@@ -29,6 +28,7 @@ const SendForApproval = (props) => {
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const partInfo = useSelector((state) => state.costing.partInfo)
 
   const [selectedDepartment, setSelectedDepartment] = useState('')
   const [selectedApprover, setSelectedApprover] = useState('')
@@ -37,12 +37,24 @@ const SendForApproval = (props) => {
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
   const [showErrorMsg, setShowErrorMsg] = useState(false)
+  const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
   const userData = userDetails()
 
   useEffect(() => {
+    let obj = {}
+    obj.TechnologyId = partInfo.TechnologyId
+    obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
+    obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
+    obj.LoggedInUserId = userDetails().LoggedInUserId
     dispatch(getReasonSelectList((res) => { }))
     dispatch(getAllApprovalDepartment((res) => { }))
+    dispatch(isFinalApprover(obj, res => {
+      if (res.data.Result) {
+        // setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+        setIsFinalApproverShow(false)
+      }
+    }))
   }, [])
   useEffect(() => {
 
@@ -282,7 +294,7 @@ const SendForApproval = (props) => {
       tempObj.Reason = data.reason
       tempObj.ECNNumber = ''
       // tempObj.ECNNumber = 1;
-      tempObj.EffectiveDate = data.effectiveDate
+      tempObj.EffectiveDate = moment(data.effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
       tempObj.RevisionNumber = partNo.revisionNumber
       tempObj.PartName = partNo.partName
       // tempObj.PartName = "Compressor"; // set data for this is in costing summary,will come here
@@ -369,7 +381,7 @@ const SendForApproval = (props) => {
             </Row>
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
-
+                console.log(data.effectiveDate, "DATE");
                 return (
                   <div className="" key={index}>
                     <Row className="px-3">
@@ -444,20 +456,19 @@ const SendForApproval = (props) => {
                                   name={`${dateField}EffectiveDate[${index}]`}
                                   label={'Effective Date'}
                                   selected={
-                                    data.effectiveDate != ""
-                                      ? moment(data.effectiveDate)._isValid ? moment(data.effectiveDate)._d : ''
-                                      : ""
+                                    data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""
                                   }
                                   handleChange={(date) => {
                                     handleEffectiveDateChange(date, index);
                                   }}
+                                  // defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                   rules={{ required: true }}
                                   Controller={Controller}
                                   control={control}
                                   register={register}
                                   showMonthDropdown
                                   showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
+                                  dateFormat="DD/MM/YYYY"
                                   //maxDate={new Date()}
                                   dropdownMode="select"
                                   placeholderText="Select date"
@@ -545,65 +556,88 @@ const SendForApproval = (props) => {
               })}
             <div className="">
               <form onSubmit={handleSubmit(onSubmit)}>
-                <Row className="px-3">
-                  <Col md="4">
-                    <div className="left-border">{"Approver"}</div>
-                  </Col>
-                </Row>
-                <Row className="px-3">
-                  <Col md="6">
-                    <SearchableSelectHookForm
-                      label={"Department"}
-                      name={"dept"}
-                      placeholder={"-Select-"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={renderDropdownListing("Dept")}
-                      mandatory={true}
-                      handleChange={handleDepartmentChange}
-                      errors={errors.dept}
-                    />
-                  </Col>
-                  <Col md="6">
+                {
+                  isFinalApproverShow === false ?
+                    <>
+                      <Row className="px-3">
+                        <Col md="4">
+                          <div className="left-border">{"Approver"}</div>
+                        </Col>
+                      </Row>
+                      <Row className="px-3">
+                        <Col md="6">
+                          <SearchableSelectHookForm
+                            label={"Department"}
+                            name={"dept"}
+                            placeholder={"-Select-"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={renderDropdownListing("Dept")}
+                            mandatory={true}
+                            handleChange={handleDepartmentChange}
+                            errors={errors.dept}
+                          />
+                        </Col>
+                        <Col md="6">
+                          <SearchableSelectHookForm
+                            label={"Approver"}
+                            name={"approver"}
+                            placeholder={"-Select-"}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            defaultValue={""}
+                            options={approvalDropDown}
+                            mandatory={true}
+                            handleChange={handleApproverChange}
+                            errors={errors.approver}
+                          />
+                        </Col>
+                        {
+                          showValidation && <span className="warning-top"><WarningMessage message={'Level for this user/technology is not yet added!'} /></span>
+                        }
 
-                    <SearchableSelectHookForm
-                      label={"Approver"}
-                      name={"approver"}
-                      placeholder={"-Select-"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={approvalDropDown}
-                      mandatory={true}
-                      handleChange={handleApproverChange}
-                      errors={errors.approver}
-                    />
-                  </Col>
-                  {
-                    showValidation && <span className="warning-top"><WarningMessage message={'Level for this user/technology is not yet added!'} /></span>
-                  }
-                  <Col md="12">
-                    <TextAreaHookForm
-                      label="Remarks"
-                      name={"remarks"}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={""}
-                      className=""
-                      customClassName={"withBorder"}
-                      errors={errors.remarks}
-                      disabled={false}
-                    />
-                  </Col>
-                </Row>
+                        <Col md="12">
+                          <TextAreaHookForm
+                            label="Remarks"
+                            name={"remarks"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            handleChange={() => { }}
+                            defaultValue={""}
+                            className=""
+                            customClassName={"withBorder"}
+                            errors={errors.remarks}
+                            disabled={false}
+                          />
+                        </Col>
+                      </Row>
+                    </> :
+                    <Row className="px-3">
+                      <Col md="12">
+                        <TextAreaHookForm
+                          label="Remarks"
+                          name={"remarks"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={"withBorder"}
+                          errors={errors.remarks}
+                          disabled={false}
+                        />
+                      </Col>
+                    </Row>
+                }
                 <Row className="mb-4">
                   <Col
                     md="12"

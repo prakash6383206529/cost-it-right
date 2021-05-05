@@ -41,7 +41,7 @@ function ApprovalSummary(props) {
       getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
         const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId, ApprovalProcessSummaryId,
-          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow } = res.data.Data.Costings[0]
+          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, CostingId } = res.data.Data.Costings[0]
         const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
         const partNumber = PartDetails.PartNumber
         dispatch(storePartNumber({ partNumber: PartDetails.PartNumber }))
@@ -58,6 +58,7 @@ function ApprovalSummary(props) {
           ApprovalProcessId: ApprovalProcessId,
           ApprovalProcessSummaryId: ApprovalProcessSummaryId,
           ApprovalNumber: ApprovalNumber,
+          CostingId: CostingId
         })
       }),
     )
@@ -68,10 +69,16 @@ function ApprovalSummary(props) {
     setApproveDrawer(true)
   }
 
-  const closeDrawer = (e = '') => {
-    setApproveDrawer(false)
-    setRejectDrawer(false)
-    setShowListing(true)
+  const closeDrawer = (e = '', type) => {
+    if (type === 'submit') {
+      setApproveDrawer(false)
+      setRejectDrawer(false)
+      setShowListing(true)
+    } else {
+      setApproveDrawer(false)
+      setRejectDrawer(false)
+      setShowListing(false)
+    }
   }
 
   const closeViewDrawer = (e = '') => {
@@ -313,19 +320,19 @@ function ApprovalSummary(props) {
                 </Col>
                 <Col md="2" className="text-right">
                   <div className="right-border">
-                    <button className="btn btn-small-primary-circle ml-1" type="button">
+                    <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setCostingSummary(!costingSummary) }}>
                       {costingSummary ? (
                         <i
-                          onClick={() => {
-                            setCostingSummary(false)
-                          }}
+                          // onClick={() => {
+                          //   setCostingSummary(false)
+                          // }}
                           className="fa fa-minus"
                         ></i>
                       ) : (
                         <i
-                          onClick={() => {
-                            setCostingSummary(true)
-                          }}
+                          // onClick={() => {
+                          //   setCostingSummary(true)
+                          // }}
                           className="fa fa-plus"
                         ></i>
                       )}
@@ -434,6 +441,7 @@ function ApprovalSummary(props) {
           isOpen={pushButton}
           closeDrawer={closePushButton}
           anchor={'right'}
+          approvalData={[approvalData]}
         />
       )}
 
