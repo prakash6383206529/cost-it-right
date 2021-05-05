@@ -1617,12 +1617,13 @@ $roboto: "Roboto", sans-serif;
 .w-60{width: 60%;}
 .costing-summary-table{
 	position: relative;
-	font-size: 14px;
+	font-size: 16px;
 	color: #3D4465;
   min-width: 980px;
   font-weight: 500;
   .small-grey-text{
     font-weight: 400;
+    font-size: 15px;
   }
   thead{
     .main-row{
@@ -4873,8 +4874,11 @@ body{
 
     }// body
     .costing-summary-table{
-      font-size: calc(14px * 80 / 100);
-      small,.small-grey-text{
+      font-size: calc(16px * 80 / 100);
+      .small-grey-text{
+        font-size: calc(15px * 80 / 100);
+      }
+      small{
         font-size: calc(14px * 80 / 100);
       }
     }
