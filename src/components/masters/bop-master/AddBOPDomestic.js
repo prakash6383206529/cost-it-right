@@ -26,6 +26,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
 import { AcceptableRMUOM } from '../../../config/masterData'
+import { applySuperScripts } from '../../../helper';
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -242,7 +243,7 @@ class AddBOPDomestic extends Component {
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: applySuperScripts(item.Display), value: item.Value })
         return null;
       });
       return temp;

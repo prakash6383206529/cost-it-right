@@ -77,7 +77,8 @@ class AddRMDomestic extends Component {
       imageURL: '',
 
       netLandedCost: '',
-      freightCost: ''
+      freightCost: '',
+      doEdit: false
     }
   }
   /**
@@ -111,6 +112,7 @@ class AddRMDomestic extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      this.setState({doEdit : true})
       this.calculateNetCost()
     }
   }
@@ -632,10 +634,11 @@ class AddRMDomestic extends Component {
 
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
+        console.log(UOMSelectList,'UOMSelectListUOMSelectList')
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null
       })
       return temp
@@ -807,9 +810,9 @@ class AddRMDomestic extends Component {
         vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return vendorPlantArray
       })
-
-    if (isEditFlag) {
-      let updatedFiles = files.map((file) => {
+    if (isEditFlag ) {
+      if(this.state.doEdit){
+        let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
       })
       let requestData = {
@@ -836,6 +839,10 @@ class AddRMDomestic extends Component {
           // this.cancel()
         }
       })
+    }
+    else{
+      return false
+    }
     } else {
       const formData = {
         IsVendor: IsVendor,

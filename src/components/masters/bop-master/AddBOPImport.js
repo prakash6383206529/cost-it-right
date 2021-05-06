@@ -251,7 +251,7 @@ class AddBOPImport extends Component {
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null;
       });
       return temp;

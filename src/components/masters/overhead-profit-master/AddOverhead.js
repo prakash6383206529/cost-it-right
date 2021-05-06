@@ -18,6 +18,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
+import { ProgressBar } from 'react-bootstrap';
 const selector = formValueSelector('AddOverhead');
 
 class AddOverhead extends Component {
@@ -49,6 +50,7 @@ class AddOverhead extends Component {
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
+      doEdit: false
     }
   }
 
@@ -222,9 +224,15 @@ class AddOverhead extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    if (prevProps.filedObj !== this.props.filedObj) {
-      const { filedObj } = this.props;
 
+    if (prevProps.filedObj !== this.props.filedObj) {
+      console.log(prevProps.filedObj, 'aaaaaaaaaaaaaa')
+      console.log(this.props.filedObj, 'bbbbbbbbbbbbbb')
+
+      this.setState({ doEdit: true })
+
+      const { filedObj } = this.props;
+      this.setState({ doEdit: true })
       if (this.props.filedObj.OverheadPercentage) {
         checkPercentageValue(this.props.filedObj.OverheadPercentage, "Overhead percentage should not be more than 100") ? this.props.change('OverheadPercentage', this.props.filedObj.OverheadPercentage) : this.props.change('OverheadPercentage', 0)
       }
@@ -404,7 +412,7 @@ class AddOverhead extends Component {
   }
 
   // called every time a file's `status` changes
-  handleChangeStatus = ({ meta, file }, status) => {
+  handleChangeStatus = ({ meta, file, remove }, status) => {
     const { files, } = this.state;
 
     if (status === 'removed') {
@@ -412,7 +420,6 @@ class AddOverhead extends Component {
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
       this.setState({ files: tempArr })
     }
-
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
@@ -422,6 +429,7 @@ class AddOverhead extends Component {
         files.push(Data)
         this.setState({ files: files })
       })
+      // remove()
     }
 
     if (status === 'rejected_file_type') {
@@ -464,7 +472,7 @@ class AddOverhead extends Component {
 
   Preview = ({ meta }) => {
     return (
-      <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+      <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontColor: 'WHITE' }}>
         {/* {Math.round(percent)}% */}
       </span>
     )
@@ -488,6 +496,15 @@ class AddOverhead extends Component {
     this.props.hideForm()
   }
 
+// options = {
+//   onUploadProgress: (progressEvent) => {
+//     const { loaded, total } = progressEvent
+//     let percent = Math.floor((loaded * 100) / total)
+//     console.log(` ${loaded}kb of ${total}kb | ${percent}% `)
+//   }
+//   {uploadPercentage > 0 <ProgressBar now={uploadPercentage} active label={`${uploadPercentage}%`}>}
+// }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
@@ -498,42 +515,46 @@ class AddOverhead extends Component {
     const userDetail = userDetails()
 
     if (isEditFlag) {
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: OverheadID }
-      })
-      let requestData = {
-        OverheadId: OverheadID,
-        VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
-        IsClient: costingHead === 'client' ? true : false,
-        ClientName: costingHead === 'client' ? client.label : '',
-        OverheadApplicabilityType: overheadAppli.label,
-        ModelType: ModelType.label,
-        IsVendor: IsVendor,
-        IsCombinedEntry: !isOverheadPercent ? true : false,
-        OverheadPercentage: values.OverheadPercentage,
-        OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
-        OverheadBOPPercentage: values.OverheadBOPPercentage,
-        OverheadRMPercentage: values.OverheadRMPercentage,
-        Remark: remarks,
-        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-        ClientId: costingHead === 'client' ? client.value : '',
-        OverheadApplicabilityId: overheadAppli.value,
-        ModelTypeId: ModelType.value,
-        IsActive: true,
-        CreatedDate: '',
-        CreatedBy: loggedInUserId(),
-        Attachements: updatedFiles,
-      }
-
-      this.props.reset()
-      this.props.updateOverhead(requestData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
-          this.cancel();
+      if (this.state.doEdit) {
+        let updatedFiles = files.map((file) => {
+          return { ...file, ContextId: OverheadID }
+        })
+        let requestData = {
+          OverheadId: OverheadID,
+          VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
+          IsClient: costingHead === 'client' ? true : false,
+          ClientName: costingHead === 'client' ? client.label : '',
+          OverheadApplicabilityType: overheadAppli.label,
+          ModelType: ModelType.label,
+          IsVendor: IsVendor,
+          IsCombinedEntry: !isOverheadPercent ? true : false,
+          OverheadPercentage: values.OverheadPercentage,
+          OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
+          OverheadBOPPercentage: values.OverheadBOPPercentage,
+          OverheadRMPercentage: values.OverheadRMPercentage,
+          Remark: remarks,
+          VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+          VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+          ClientId: costingHead === 'client' ? client.value : '',
+          OverheadApplicabilityId: overheadAppli.value,
+          ModelTypeId: ModelType.value,
+          IsActive: true,
+          CreatedDate: '',
+          CreatedBy: loggedInUserId(),
+          Attachements: updatedFiles,
         }
-      })
 
+        this.props.reset()
+        this.props.updateOverhead(requestData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
+            this.cancel();
+          }
+        })
+      }
+      else {
+        return false
+      }
     } else {
 
       const formData = {
@@ -856,8 +877,7 @@ class AddOverhead extends Component {
                             <Dropzone
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
-                              PreviewComponent={this.Preview}
-                              //onSubmit={this.handleSubmit}
+                              // PreviewComponent={this.Preview}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -880,12 +900,12 @@ class AddOverhead extends Component {
                                 )
                               }
                               styles={{
-                                dropzoneReject: {
-                                  borderColor: "red",
-                                  backgroundColor: "#DAA",
-                                },
-                                inputLabel: (files, extra) =>
-                                  extra.reject ? { color: "red" } : {},
+                                // dropzoneReject: {
+                                //   borderColor: "red",
+                                //   backgroundColor: "#DAA",
+                                // },
+                                dropzone: { minHeight: 200, maxHeight: 250 },
+                                dropzoneActive: { borderColor: 'green' },
                               }}
                               classNames="draper-drop"
                             />
@@ -911,7 +931,7 @@ class AddOverhead extends Component {
                                     {/* <div className={'image-viwer'} onClick={() => this.viewImage(fileURL)}>
                                                                         <img src={fileURL} height={50} width={100} />
                                                                     </div> */}
-
+                                    {/* <ProgressBar></ProgressBar> */}
                                     <img
                                       alt={""}
                                       className="float-right"
@@ -945,6 +965,7 @@ class AddOverhead extends Component {
                           </div>{" "}
                           {"Cancel"}
                         </button>
+                        {/* <button onClick={this.options}>13</button> */}
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"

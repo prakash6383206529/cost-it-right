@@ -35,7 +35,7 @@ class AddPower extends Component {
       isEditFlagForStateElectricity: false,
       PowerDetailID: '',
       IsVendor: false,
-
+      temp: 0,
       StateName: [],
 
       selectedPlants: [],
@@ -238,7 +238,7 @@ class AddPower extends Component {
         powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
       }
 
-      if (fieldsObj.SelfPowerContribution < 100 && powerContributionTotal > 100) {
+      if (fieldsObj.SelfPowerContribution > 100 && powerContributionTotal > 100) {
         this.setState({ checkPowerContribution: true })
         toastr.warning('Total power contribution should not be greater than 100%.')
       } else {
@@ -497,6 +497,22 @@ class AddPower extends Component {
     const { powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+        
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
+
     // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
     // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
 
@@ -567,6 +583,24 @@ class AddPower extends Component {
     const { powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
 
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+       
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
+
+
+
     // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
     // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
     const TotalUnitCharges = power.TotalUnitCharges !== undefined ? power.TotalUnitCharges : 0
@@ -601,8 +635,33 @@ class AddPower extends Component {
     const { source, UOM, powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
+
     if (source.length === 0 || (fieldsObj.UnitGeneratedPerAnnum === undefined ||
-      fieldsObj.SelfPowerContribution === undefined || fieldsObj.UnitGeneratedPerUnitOfFuel === undefined)) {
+      fieldsObj.SelfPowerContribution === undefined)) {
+      toastr.warning('Fields should not be empty');
+      return false;
+    }
+
+    // if (this.state.temp > 100) {
+    //   toastr.warning('Fields 100');
+    //   return false;
+    // }
+
+    if (source.label === 'Generator Diesel' && fieldsObj.UnitGeneratedPerUnitOfFuel === undefined) {
       toastr.warning('Fields should not be empty');
       return false;
     }
@@ -685,6 +744,23 @@ class AddPower extends Component {
   updatePowerGrid = () => {
     const { source, UOM, powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
+
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
+
+
 
     const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
     const AnnualCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AnnualCost : 0;
@@ -888,7 +964,7 @@ class AddPower extends Component {
         const accept = AcceptablePowerUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
 
       });
       return temp;
@@ -1088,7 +1164,7 @@ class AddPower extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue } = this.state;
-
+    let tempp = 0
     return (
       <>
         <div className="container-fluid">
@@ -1108,7 +1184,7 @@ class AddPower extends Component {
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                    >
+                  >
                     <div className="add-min-height">
                       <Row>
                         <Col md="4" className="switch mb15">
@@ -1667,7 +1743,7 @@ class AddPower extends Component {
                                     name={"SelfPowerContribution"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[ positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
+                                    validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                     component={renderText}
                                     required={true}
                                     className=""
@@ -1720,6 +1796,8 @@ class AddPower extends Component {
                                   {
                                     this.state.powerGrid &&
                                     this.state.powerGrid.map((item, index) => {
+                                      // tempp = Number(tempp) + Number(item.PowerContributionPercentage)
+                                      // this.state.temp = Number(this.state.temp) + Number(item.PowerContributionPercentage)
                                       return (
                                         <tr key={index}>
                                           <td>{item.SourcePowerType}</td>

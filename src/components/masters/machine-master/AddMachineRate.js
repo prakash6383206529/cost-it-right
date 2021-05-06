@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
@@ -329,7 +329,7 @@ class AddMachineRate extends Component {
         const accept = AcceptableMachineUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null;
       });
       return temp;
@@ -767,7 +767,7 @@ class AddMachineRate extends Component {
     }
     const { machineData } = this.props;
     const userDetail = userDetails()
-
+    console.log(this.props.untouch(selectedPlants))
     if (processGrid && processGrid.length === 0) {
       toastr.warning('Process Rate entry required.');
       return false;
@@ -776,50 +776,62 @@ class AddMachineRate extends Component {
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-
+    console.log(this.props.dirty, 'props.dirty')
     if (isEditFlag) {
 
       if (IsDetailedEntry) {
+        if (this.props.dirty) {
+          console.log('in if')
 
-        // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
-        let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
-        this.props.reset()
-        this.props.updateMachineDetails(detailedRequestData, (res) => {
-          if (res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-            this.cancel();
-          }
-        })
-
-      } else {
-
-        // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
-        let requestData = {
-          MachineId: MachineID,
-          IsVendor: IsVendor,
-          IsDetailedEntry: false,
-          VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-          MachineNumber: values.MachineNumber,
-          MachineName: values.MachineName,
-          MachineTypeId: machineType.value,
-          TonnageCapacity: values.TonnageCapacity,
-          Description: values.Description,
-          LoggedInUserId: loggedInUserId(),
-          MachineProcessRates: processGrid,
-          Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-          Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
-          VendorPlant: vendorPlantArray,
-          Remark: remarks,
-          Attachements: updatedFiles,
+          // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
+          let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
+          this.props.reset()
+          this.props.updateMachineDetails(detailedRequestData, (res) => {
+            if (res.data.Result) {
+              toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+              this.cancel();
+            }
+          })
         }
-
-        this.props.reset()
-        this.props.updateMachine(requestData, (res) => {
-          if (res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-            this.cancel();
+        else {
+          console.log('in else')
+          this.cancel();
+        }
+      } else {
+        if (this.props.dirty) {
+          console.log('in if 2')
+          // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
+          let requestData = {
+            MachineId: MachineID,
+            IsVendor: IsVendor,
+            IsDetailedEntry: false,
+            VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+            MachineNumber: values.MachineNumber,
+            MachineName: values.MachineName,
+            MachineTypeId: machineType.value,
+            TonnageCapacity: values.TonnageCapacity,
+            Description: values.Description,
+            LoggedInUserId: loggedInUserId(),
+            MachineProcessRates: processGrid,
+            Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+            Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+            VendorPlant: vendorPlantArray,
+            Remark: remarks,
+            Attachements: updatedFiles,
           }
-        })
+
+          this.props.reset()
+          this.props.updateMachine(requestData, (res) => {
+            if (res.data.Result) {
+              toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+              this.cancel();
+            }
+          })
+        }
+        else {
+          console.log('in else 2')
+          this.cancel();
+        }
       }
     } else {
 
@@ -1468,6 +1480,7 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
+  dirty: isDirty('AddMachineRate'),
   getTechnologySelectList,
   getVendorListByVendorType,
   getPlantSelectListByType,
@@ -1485,6 +1498,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },
