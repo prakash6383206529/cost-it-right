@@ -2,12 +2,13 @@ import React, { useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
-  getZBCCostingByCostingId, setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost,
+  setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
+import LoaderCustom from '../../common/LoaderCustom';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -18,10 +19,13 @@ function CostingDetailStepTwo(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const { costingInfo } = props;
-    // setTimeout(() => {
-    //   dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => { }))
-    // }, 500)
+
+    dispatch(showLoader())
+
+    setTimeout(() => {
+      dispatch(hideLoader())
+    }, 4000)
+
   }, []);
 
   const costingData = useSelector(state => state.costing.costingData)
@@ -34,6 +38,8 @@ function CostingDetailStepTwo(props) {
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
+  const showLoading = useSelector(state => state.costing.showLoading)
+  console.log('showLoading: ', showLoading);
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -235,6 +241,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data) => {
+
     const headerIndex = 0;
 
     let DataList = CostingDataList;
@@ -296,7 +303,7 @@ function CostingDetailStepTwo(props) {
 
   return (
     <>
-
+      {showLoading && <LoaderCustom />}
       <div className="login-container signup-form">
         <Row>
           <Col md="12">

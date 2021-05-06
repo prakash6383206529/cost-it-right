@@ -59,11 +59,13 @@ function TabToolCost(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
-    let topHeaderData = {
-      ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
-      IsApplicableProcessWise: IsApplicableProcessWise,
-    }
-    props.setHeaderCost(topHeaderData)
+    setTimeout(() => {
+      let topHeaderData = {
+        ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
+        IsApplicableProcessWise: IsApplicableProcessWise,
+      }
+      props.setHeaderCost(topHeaderData)
+    }, 1500)
   }, [ToolTabData]);
 
   /**

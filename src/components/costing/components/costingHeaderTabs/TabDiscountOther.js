@@ -145,6 +145,7 @@ function TabDiscountOther(props) {
             setValue('Remarks', OtherCostDetails.Remark !== null ? OtherCostDetails.Remark : '')
             setEffectiveDate(moment(OtherCostDetails.EffectiveDate)._isValid ? moment(OtherCostDetails.EffectiveDate)._d : '')
 
+
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
               NetPOPriceINR: checkForDecimalAndNull(OtherCostDetails.NetPOPriceINR !== null ? OtherCostDetails.NetPOPriceINR : '', initialConfiguration.NoOfDecimalForPrice),
@@ -154,6 +155,15 @@ function TabDiscountOther(props) {
             }
             dispatch(setDiscountCost(discountValues, () => { }))
 
+            setTimeout(() => {
+              let topHeaderData = {
+                DiscountsAndOtherCost: checkForNull(getValues('HundiOrDiscountValue'), 2),
+                HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
+                AnyOtherCost: checkForNull(getValues('AnyOtherCost')),
+              }
+              props.setHeaderCost(topHeaderData)
+
+            }, 1000)
           }
         }
       }))
