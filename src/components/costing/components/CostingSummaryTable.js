@@ -490,7 +490,7 @@ const CostingSummaryTable = (props) => {
                 <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
               Add To Comparison{' '}
               </button>
-              {showWarningMsg && <WarningMessage message={'Costing for this part/Assembly is not yet done!'} />}
+              {showWarningMsg && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
             </Col>
 
           </Row>
