@@ -9,7 +9,8 @@ import {
   SET_SURFACE_TAB_DATA, SET_OVERHEAD_PROFIT_TAB_DATA, SET_PACKAGE_AND_FREIGHT_TAB_DATA, SET_TOOL_TAB_DATA, SET_COMPONENT_ITEM_DATA, SET_COMPONENT_OVERHEAD_ITEM_DATA,
   SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA, SET_COMPONENT_TOOL_ITEM_DATA, SET_COMPONENT_DISCOUNT_ITEM_DATA, GET_RM_DRAWER_DATA_LIST, GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_PLANT_SELECTLIST, GET_PART_COSTING_VENDOR_SELECT_LIST, GET_PART_SELECTLIST_BY_TECHNOLOGY, SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA, SET_EXCHANGE_RATE_CURRENCY_DATA,
-  SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, config,
+  SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW,
+  CUSTOM_LOADER_HIDE, config,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -17,6 +18,26 @@ import { toastr } from 'react-redux-toastr'
 
 
 const headers = config
+
+/**
+ * @method showLoader
+ * @description SHOW LOADER 
+ */
+export function showLoader() {
+  return (dispatch) => {
+    dispatch({ type: CUSTOM_LOADER_SHOW })
+  }
+}
+
+/**
+ * @method hideLoader
+ * @description HIDE LOADER
+ */
+export function hideLoader() {
+  return (dispatch) => {
+    dispatch({ type: CUSTOM_LOADER_HIDE })
+  }
+}
 
 /**
  * @method getCostingTechnologySelectList
