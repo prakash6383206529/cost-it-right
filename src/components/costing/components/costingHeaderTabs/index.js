@@ -206,9 +206,9 @@ function CostingHeaderTabs(props) {
     <>
       <div className="user-page p-0">
 
-        <Row className="mx-0">
-          <Col md="2">
-            <div className="form-group">
+        <Row className="justify-content-between align-items-end">
+          <Col md="auto">
+            <div className="form-group mb-0">
               <label>Costing Effective Date</label>
               <div className="inputbox date-section">
                 <DatePicker
@@ -230,10 +230,10 @@ function CostingHeaderTabs(props) {
               </div>
             </div>
           </Col>
-        </Row>
+        
 
         {costData.IsAssemblyPart &&
-          <div className="text-right w-100">
+          <Col md="auto">
             <button
               type="button"
               onClick={() => setIsOpenViewHirarchy(true)}
@@ -241,7 +241,8 @@ function CostingHeaderTabs(props) {
               <img src={require("../../../../assests/images/hirarchy-icon.svg")} alt="hirarchy-icon.jpg" />
               <span>View BOM</span>
             </button>
-          </div>}
+          </Col>}
+        </Row>
 
         <div>
           <Nav tabs className="subtabs cr-subtabs-head">

@@ -303,7 +303,7 @@ function CostingDetailStepTwo(props) {
 
   return (
     <>
-      {showLoading && <LoaderCustom />}
+      {showLoading && <LoaderCustom customClass={'costing-loader'}/>}
       <div className="login-container signup-form">
         <Row>
           <Col md="12">
