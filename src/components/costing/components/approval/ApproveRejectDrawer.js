@@ -4,25 +4,25 @@ import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment,
+  approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment,
 } from '../../../costing/actions/Approval'
 import {
-  TextAreaHookForm,
-  SearchableSelectHookForm,
+  TextAreaHookForm, SearchableSelectHookForm,
 } from '../../../layout/HookFormInputs'
 import { loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
 
+
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
   const partNo = useSelector((state) => state.costing.partNo)
 
-  const { register, control, errors, handleSubmit } = useForm({
+  const { register, control, errors, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -30,50 +30,22 @@ function ApproveRejectDrawer(props) {
   const dispatch = useDispatch()
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [openPushButton, setOpenPushButton] = useState(false)
+  const deptList = useSelector((state) => state.approval.approvalDepartmentList)
 
   useEffect(() => {
-    let tempDropdownList = []
-    let obj = {
-      LoggedInUserId: loggedInUserId(), // user id
-      DepartmentId: approvalData[0] && approvalData[0].DepartmentId
-        ? approvalData[0].DepartmentId
-        : '00000000-0000-0000-0000-000000000000',
-      TechnologyId: approvalData[0] && approvalData[0].TechnologyId
-        ? approvalData[0].TechnologyId
-        : '00000000-0000-0000-0000-000000000000',
-    }
+    dispatch(getAllApprovalDepartment((res) => { }))
 
-    /* Problem here*/
-    dispatch(
-      getAllApprovalUserFilterByDepartment(obj, (res) => {
-
-
-        res.data.DataList &&
-          res.data.DataList.map((item) => {
-
-            if (item.Value === '0') return false;
-            tempDropdownList.push({
-              label: item.Text,
-              value: item.Value,
-              levelId: item.LevelId,
-              levelName: item.LevelName
-            })
-            return null
-          })
-        setApprovalDropDown(tempDropdownList)
-      }),
-    )
     // DO IT AFTER GETTING DATA
   }, [])
 
-  const toggleDrawer = (event) => {
+  const toggleDrawer = (event, type = 'cancel') => {
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return
     }
-    props.closeDrawer('')
+    props.closeDrawer('', type)
   }
 
   const closePushButton = () => {
@@ -95,6 +67,8 @@ function ApproveRejectDrawer(props) {
         LoggedInUserId: userLoggedIn,
         SenderLevelId: userData.LoggedInLevelId,
         SenderLevel: userData.LoggedInLevel,
+        ApproverDepartmentId: data.dept && data.dept.value ? data.dept.value : '',
+        ApproverDepartmentName: data.dept && data.dept.label ? data.dept.label : '',
         Approver: data.approver && data.approver.value ? data.approver.value : '',
         ApproverLevelId: data.approver && data.approver.levelId ? data.approver.levelId : '',
         ApproverLevel: data.approver && data.approver.levelName ? data.approver.levelName : '',
@@ -104,14 +78,14 @@ function ApproveRejectDrawer(props) {
     })
 
     if (type === 'Approve') {
-      // if (IsPushDrawer) {
-      //   toastr.success('The costing has been approved')
-      //   setOpenPushButton(true)
+      if (IsPushDrawer) {
+        toastr.success('The costing has been approved')
+        setOpenPushButton(true)
 
-      // } else {
-      //   toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
-      //   props.closeDrawer()
-      // }
+      } else {
+        toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+        props.closeDrawer('', 'submit')
+      }
 
       dispatch(approvalRequestByApprove(Data, res => {
         if (res.data.Result) {
@@ -121,22 +95,67 @@ function ApproveRejectDrawer(props) {
 
           } else {
             toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
-            props.closeDrawer()
+            props.closeDrawer('', 'submit')
           }
           // toastr.success('Costing Approved')
           // props.closeDrawer()
         }
       }))
-      //  props.closeDrawer()
+      props.closeDrawer('')
     } else {
+      // REJECT CONDITION
       dispatch(rejectRequestByApprove(Data, res => {
         if (res.data.Result) {
           toastr.success('Costing Rejected')
-          props.closeDrawer()
+          props.closeDrawer('', 'submit')
         }
       }))
     }
+    //setOpenPushButton(true)
+    // props.closeDrawer()
   }
+
+  const renderDropdownListing = (label) => {
+    const tempDropdownList = []
+    if (label === 'Dept') {
+      deptList &&
+        deptList.map((item) => {
+          if (item.Value === '0') return false
+          tempDropdownList.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return tempDropdownList
+    }
+  }
+
+  const handleDepartmentChange = (value) => {
+    setValue('approver', { label: '', value: '', levelId: '', levelName: '' })
+    let tempDropdownList = []
+    let obj = {
+      LoggedInUserId: loggedInUserId(), // user id
+      DepartmentId: value.value,
+      TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
+    }
+
+    /* Problem here*/
+    dispatch(
+      getAllApprovalUserFilterByDepartment(obj, (res) => {
+        res.data.DataList &&
+          res.data.DataList.map((item) => {
+            if (item.Value === '0') return false;
+            tempDropdownList.push({
+              label: item.Text,
+              value: item.Value,
+              levelId: item.LevelId,
+              levelName: item.LevelName
+            })
+            return null
+          })
+        setApprovalDropDown(tempDropdownList)
+      }),
+    )
+  }
+
   return (
     <>
       <Drawer
@@ -161,23 +180,79 @@ function ApproveRejectDrawer(props) {
 
               <Row className="ml-0">
                 {type === 'Approve' && IsFinalLevel && (
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={'Approver'}
-                      name={'approver'}
-                      placeholder={'-Select-'}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      //defaultValue={isEditFlag ? plantName : ''}
-                      options={approvalDropDown}
-                      mandatory={true}
-                      handleChange={() => { }}
-                      errors={errors.approver}
-                    />
-                  </div>
+                  <>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Department"}
+                        name={"dept"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderDropdownListing("Dept")}
+                        mandatory={true}
+                        handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                      />
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={'Approver'}
+                        name={'approver'}
+                        placeholder={'-Select-'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        //defaultValue={isEditFlag ? plantName : ''}
+                        options={approvalDropDown}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.approver}
+                      />
+                    </div>
+                  </>
                 )}
+                {
+                  // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
+                  isSimulation &&
+                  <>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={"Department"}
+                        name={"dept"}
+                        placeholder={"-Select-"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderDropdownListing("Dept")}
+                        mandatory={true}
+                        handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                      />
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={'Approver'}
+                        name={'approver'}
+                        placeholder={'-Select-'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        //defaultValue={isEditFlag ? plantName : ''}
+                        options={approvalDropDown}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.approver}
+                      />
+                    </div>
+                  </>
+                }
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <TextAreaHookForm
                     label="Remark"
@@ -185,7 +260,8 @@ function ApproveRejectDrawer(props) {
                     Controller={Controller}
                     control={control}
                     register={register}
-                    mandatory={false}
+                    mandatory={type === 'Approve' ? false : true}
+                    rules={{ required: true }}
                     handleChange={() => { }}
                     //defaultValue={viewRM.RMRate}
                     className=""
@@ -234,6 +310,7 @@ function ApproveRejectDrawer(props) {
         <PushButtonDrawer
           isOpen={openPushButton}
           closeDrawer={closePushButton}
+          approvalData={[approvalData]}
           anchor={'right'}
         />
       )}

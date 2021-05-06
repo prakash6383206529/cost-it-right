@@ -30,7 +30,7 @@ class BOPDomesticListing extends Component {
             isEditFlag: false,
             tableData: [],
             isBulkUpload: false,
-
+            shown: false,
             costingHead: [],
             BOPCategory: [],
             plant: [],
@@ -248,7 +248,7 @@ class BOPDomesticListing extends Component {
 
     costFormatter = (cell, row, enumObject, rowIndex) => {
         const { initialConfiguration } = this.props
-        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
     }
 
     /**
@@ -384,6 +384,12 @@ class BOPDomesticListing extends Component {
 
         };
 
+        const selectRow = {
+            mode: 'checkbox',  // multi select
+            clickToSelect: true,
+            hideSelectColumn: true,
+        };
+
         return (
             <div>
                 {/* {this.props.loading && <Loader />} */}
@@ -517,6 +523,7 @@ class BOPDomesticListing extends Component {
                             // exportCSV
                             //ignoreSinglePage
                             ref={'table'}
+                            // selectRow={selectRow}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={50} dataAlign="center" dataFormat={this.indexFormatter}>{this.renderSerialNumber()}</TableHeaderColumn> */}
                             <TableHeaderColumn width={100} dataField="IsVendor" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>

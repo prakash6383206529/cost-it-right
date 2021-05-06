@@ -99,6 +99,7 @@ class VolumeListing extends Component {
     this.state = {
       isEditFlag: false,
       isOpen: false,
+      shown:false,
       tableData: [],
       showVolumeForm: false,
       data: { isEditFlag: false, ID: '' },

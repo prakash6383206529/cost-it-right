@@ -495,7 +495,7 @@ class AddInterestRate extends Component {
                             <Field
                                   label="Effective Date"
                                   name="EffectiveDate"
-                                  placeholder="Enter"
+                                  placeholder="Select date"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"

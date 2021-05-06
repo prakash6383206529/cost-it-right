@@ -1,8 +1,15 @@
 import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
+import { useDispatch } from 'react-redux'
+import { pushedApprovedCosting } from '../../actions/Approval'
+import { loggedInUserId } from '../../../../helper'
 
 function PushButtonDrawer(props) {
+
+  const { approvalData } = props
+  console.log('approvalData: ', approvalData);
+  const dispatch = useDispatch()
 
   const toggleDrawer = (event) => {
     if (
@@ -15,7 +22,15 @@ function PushButtonDrawer(props) {
   }
 
   const closeDrawerAfterPush = () => {
-    props.closeDrawer('', 'Push')
+    let obj = {
+      LoggedInUserId: loggedInUserId(),
+      CostingId: approvalData[0].CostingId
+    }
+    dispatch(pushedApprovedCosting(obj, res => {
+      if (res.data.Result) {
+        props.closeDrawer('', 'Push')
+      }
+    }))
   }
 
   return (
@@ -56,9 +71,9 @@ function PushButtonDrawer(props) {
                   </button>
 
                   <button
-                    type="submit"
+                    type="button"
                     className="submit-button mr5 save-btn"
-                    onClick={() => closeDrawerAfterPush()}
+                    onClick={closeDrawerAfterPush}
                   >
                     <div className={'check-icon'}>
                       <img

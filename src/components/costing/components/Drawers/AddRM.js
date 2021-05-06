@@ -139,7 +139,7 @@ function AddRM(props) {
   }
 
   const renderNetLandedRate = () => {
-    return <>Net Landed <br />Cost INR/UOM</>
+    return <>Net Cost<br />INR/UOM</>
   }
 
   /**
@@ -179,7 +179,7 @@ function AddRM(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container className="costing-rm-drawer">

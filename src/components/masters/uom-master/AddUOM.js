@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength25, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
+import { required, minLength3, maxLength80, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import {
   createUnitOfMeasurementAPI, updateUnitOfMeasurementAPI, getOneUnitOfMeasurementAPI,
@@ -167,7 +167,7 @@ class AddUOM extends Component {
       <Drawer
         anchor={this.props.anchor}
         open={this.props.isOpen}
-        // onClose={(e) => this.toggleDrawer(e)}
+      // onClose={(e) => this.toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>

@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
-  maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix
+  maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, applySuperScript
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, } from '../../../actions/Common';
@@ -13,7 +13,7 @@ import { getPartSelectList } from '../actions/Part';
 import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { checkVendorPlantConfigurable, loggedInUserId } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -150,12 +150,17 @@ class AddBOPDomestic extends Component {
           //this.props.getCityBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, UOMSelectList } = this.props;
-
+            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, UOMSelectList, plantSelectList } = this.props;
+            let plantObj;
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
             let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
-            console.log('vendorObj: ', vendorObj);
-            let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
+            if (getConfigurationKey().IsDestinationPlantConfigure) {
+              let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
+              plantObj = { label: obj.Text, value: obj.Value }
+            } else {
+              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            }
+
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
@@ -165,8 +170,8 @@ class AddBOPDomestic extends Component {
               isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              selectedPartAssembly: partArray,
-              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
+              // selectedPartAssembly: partArray,
+              selectedPlants: plantObj,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               sourceLocation: sourceLocationObj && sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value } : [],
@@ -181,6 +186,18 @@ class AddBOPDomestic extends Component {
       this.props.getBOPDomesticById('', res => { })
     }
   }
+
+  applySuperScriptFormatter = (cell) => {
+    if (cell && cell.indexOf('^') !== -1) {
+      const capIndex = cell && cell.indexOf('^');
+      const superNumber = cell.substring(capIndex + 1, capIndex + 2);
+      const capWithNumber = cell.substring(capIndex, capIndex + 2);
+      return cell.replace(capWithNumber, superNumber.sup());
+    } else {
+      return cell;
+    }
+  }
+
 
   /**
   * @method renderListing
@@ -243,8 +260,9 @@ class AddBOPDomestic extends Component {
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: applySuperScripts(item.Display), value: item.Value })
-        return null;
+        let display = this.applySuperScriptFormatter(item.Display)
+        temp.push({ label: display, value: item.Value })
+        return null
       });
       return temp;
     }
@@ -280,7 +298,7 @@ class AddBOPDomestic extends Component {
   * @description Used handle Plant
   */
   handlePlant = (e) => {
-    console.log(e, "EVENT PLANT");
+
     this.setState({ selectedPlants: e })
   }
 
@@ -534,11 +552,14 @@ class AddBOPDomestic extends Component {
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
-        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
+        Plant: IsVendor === false ? [plantArray] : [],
+        DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
+        VendorPlant: getConfigurationKey().IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
       }
+
       this.props.reset()
+
       this.props.createBOPDomestic(formData, (res) => {
         if (res.data.Result) {
           toastr.success(MESSAGES.BOP_ADD_SUCCESS);
@@ -705,10 +726,10 @@ class AddBOPDomestic extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {!this.state.IsVendor && (
+                          {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
                             <Col md="3">
                               <Field
-                                label="Plant"
+                                label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                                 name="Plant"
                                 placeholder={"Select"}
                                 //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
@@ -775,7 +796,7 @@ class AddBOPDomestic extends Component {
                                                     </div>} */}
                             </div>
                           </Col>
-                          {checkVendorPlantConfigurable() && this.state.IsVendor && (
+                          {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"
@@ -974,7 +995,9 @@ class AddBOPDomestic extends Component {
                                   },
                                   inputLabel: (files, extra) =>
                                     extra.reject ? { color: "red" } : {},
-                                }}
+                                }
+                                  // { dropzone: { minHeight: 200, maxHeight: 250 } }
+                                }
                                 classNames="draper-drop"
                               />
                             )}

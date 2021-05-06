@@ -41,7 +41,7 @@ function SimulationHistory(props) {
         )
     }
 
-    
+
 
     const buttonFormatter = (cell, row, enumObject, rowIndex) => {
         return (
@@ -102,8 +102,8 @@ function SimulationHistory(props) {
     return (
         <div className="container-fluid simulation-history-page">
             <Row>
-                <Col sm="4" >
-                    <h1 className="mb-0">{`Simulation History`}</h1>
+                <Col sm="12" >
+                    <h1 className="mb-4">{`Simulation History`}</h1>
                 </Col>
             </Row>
             <BootstrapTable
@@ -112,6 +112,7 @@ function SimulationHistory(props) {
                 hover={false}
                 bordered={false}
                 options={options}
+                search
                 // exportCSV
                 //ignoreSinglePage
                 //ref={'table'}

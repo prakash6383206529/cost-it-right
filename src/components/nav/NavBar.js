@@ -143,7 +143,6 @@ class SideBar extends Component {
     });
   };
 
-
   setLeftMenuAccToMenu = (pathname) => {
     this.props.getModuleIdByPathName(pathname, res => {
       this.props.getLeftMenu(res.data.Data.ModuleId, loggedInUserId(), (res) => { })
@@ -155,15 +154,16 @@ class SideBar extends Component {
   }
 
   /**
-    * @method setLeftMenu
-    * @description Used to set left menu and Redirect to first menu.
-    */
+  * @method setLeftMenu
+  * @description Used to set left menu and Redirect to first menu.
+  */
   SetMenu = (ModuleId) => {
     if (ModuleId !== reactLocalStorage.get("ModuleId")) {
       this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
     }
     reactLocalStorage.set("ModuleId", ModuleId);
   };
+
   /**
    * @method renderDashboard
    * @description Render dashboard menu.
@@ -505,7 +505,8 @@ class SideBar extends Component {
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  pathname: el.LandingPageURL,
+                  // pathname: el.LandingPageURL, //COMMENT FOR NOW
+                  pathname: '/simulation',
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
@@ -525,6 +526,7 @@ class SideBar extends Component {
                   {
                     menuData && menuData.map((item, i) => {
                       if (item.Sequence !== 0) return false
+                      if (item.PageName === 'Simulation Upload') return false; //NEED TO REMOVE USED FOR NOW
                       return (
                         <li key={i} className={`mb5`}>
                           <Link

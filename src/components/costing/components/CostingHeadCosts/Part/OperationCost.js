@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import AddOperation from '../../Drawers/AddOperation';
 import { Col, Row, Table } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
+import { setRMCCErrors } from '../../../actions/Costing';
 
 function OperationCost(props) {
 
-  const { register, control, errors } = useForm({
-    mode: 'onBlur',
+  const { register, control, errors, setValue } = useForm({
+    mode: 'onChange',
     reValidateMode: 'onChange',
   });
+
+  const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(props.data)
   const [OldGridData, setOldGridData] = useState(props.data)
@@ -131,7 +134,7 @@ function OperationCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
 
-    if (!isNaN(event.target.value)) {
+    if (!isNaN(event.target.value) && event.target.value !== '') {
       const WithLaboutCost = checkForNull(tempData.Rate) * event.target.value;
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
@@ -140,7 +143,16 @@ function OperationCost(props) {
       setGridData(tempArr)
 
     } else {
+      const WithLaboutCost = checkForNull(tempData.Rate) * 0;
+      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * tempData.LabourQuantity : 0;
+      const OperationCost = WithLaboutCost + WithOutLabourCost;
+      tempData = { ...tempData, Quantity: 0, OperationCost: OperationCost }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setGridData(tempArr)
       toastr.warning('Please enter valid number.')
+      setTimeout(() => {
+        setValue(`${OperationGridFields}[${index}]Quantity`, 0)
+      }, 200)
     }
   }
 
@@ -148,7 +160,7 @@ function OperationCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
 
-    if (!isNaN(event.target.value)) {
+    if (!isNaN(event.target.value) && event.target.value !== '') {
       const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
       const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * event.target.value : 0;
       const OperationCost = WithLaboutCost + WithOutLabourCost;
@@ -157,13 +169,31 @@ function OperationCost(props) {
       setGridData(tempArr)
 
     } else {
+
+      const WithLaboutCost = checkForNull(tempData.Rate) * checkForNull(tempData.Quantity);
+      const WithOutLabourCost = tempData.IsLabourRateExist ? checkForNull(tempData.LabourRate) * 0 : 0;
+      const OperationCost = WithLaboutCost + WithOutLabourCost;
+      tempData = { ...tempData, LabourQuantity: 0, OperationCost: OperationCost }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setGridData(tempArr)
       toastr.warning('Please enter valid number.')
+      setTimeout(() => {
+        setValue(`${OperationGridFields}[${index}]LabourQuantity`, 0)
+      }, 200)
     }
   }
 
   const netCost = (item) => {
     const cost = checkForNull(item.Rate * item.Quantity) + checkForNull(item.LabourRate * item.LabourQuantity);
     return checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice);
+  }
+
+  /**
+  * @method setRMCCErrors
+  * @description CALLING TO SET RAWMATERIAL COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+  */
+  if (Object.keys(errors).length > 0) {
+    //dispatch(setRMCCErrors(errors))
   }
 
   const OperationGridFields = 'OperationGridFields';
@@ -225,7 +255,7 @@ function OperationCost(props) {
                             <td>{item.Rate}</td>
                             <td style={{ width: 200 }}>
                               {
-                                <TextFieldHookForm
+                                <NumberFieldHookForm
                                   label=""
                                   name={`${OperationGridFields}[${index}]Quantity`}
                                   Controller={Controller}
@@ -236,7 +266,7 @@ function OperationCost(props) {
                                     //required: true,
                                     pattern: {
                                       //value: /^[0-9]*$/i,
-                                      value: /^[0-9]\d*(\.\d+)?$/i,
+                                      value: /^\d*\.?\d*$/,
                                       message: 'Invalid Number.'
                                     },
                                   }}
@@ -259,9 +289,8 @@ function OperationCost(props) {
                               initialConfiguration.IsOperationLabourRateConfigure &&
                               <td style={{ width: 200 }}>
                                 {
-
                                   item.IsLabourRateExist ?
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                       label=""
                                       name={`${OperationGridFields}[${index}]LabourQuantity`}
                                       Controller={Controller}
@@ -271,8 +300,8 @@ function OperationCost(props) {
                                       rules={{
                                         //required: true,
                                         pattern: {
-                                          value: /^[0-9]*$/i,
-                                          //value: /^[0-9]\d*(\.\d+)?$/i,
+                                          //value: /^[0-9]*$/i,
+                                          value: /^\d*\.?\d*$/,
                                           message: 'Invalid Number.'
                                         },
                                       }}

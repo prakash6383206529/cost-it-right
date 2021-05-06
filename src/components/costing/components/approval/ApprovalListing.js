@@ -1,25 +1,20 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
-import { Badge } from 'reactstrap'
-import { values } from 'lodash'
 import ApprovalSummary from './ApprovalSummary'
-import {
-  getAllPartSelectList,
-  getCostingStatusSelectList,
-} from '../../actions/Costing'
+import { getAllPartSelectList, getCostingStatusSelectList, } from '../../actions/Costing'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
 import moment from 'moment'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { checkForDecimalAndNull } from '../../../../helper'
 import { getAllUserAPI } from '../../../../actions/auth/AuthActions'
-import { APPROVED, PENDING, WAITING_FOR_APPROVAL } from '../../../../config/constants'
+import { PENDING } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 
 function ApprovalListing() {
@@ -172,7 +167,7 @@ function ApprovalListing() {
   }
 
   const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? cell : '';
+    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
@@ -187,6 +182,14 @@ function ApprovalListing() {
     return <div className={cell}>{row.DisplayStatus}</div>
   }
 
+  const renderPlant = (cell, row, enumObject, rowIndex) => {
+    return (cell !== null && cell !== '-') ? `${cell}(${row.PlantCode})` : '-'
+  }
+
+  const renderVendor = (cell, row, enumObject, rowIndex) => {
+    return (cell !== null && cell !== '-') ? `${cell}(${row.VendorCode})` : '-'
+  }
+
   const viewDetails = (approvalNumber, approvalProcessId) => {
 
     setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
@@ -195,7 +198,7 @@ function ApprovalListing() {
       <ApprovalSummary
         approvalNumber={approvalNumber ? approvalNumber : '2345438'}
         approvalProcessId={approvalProcessId ? approvalProcessId : '1'}
-      /> //TODO list
+      />
     )
   }
   /**
@@ -251,7 +254,6 @@ function ApprovalListing() {
     //onExportToCSV: this.onExportToCSV,
     //paginationShowsTotal: true,
     //paginationShowsTotal: this.renderPaginationShowsTotal,
-
   }
 
   const sendForApproval = () => {
@@ -306,7 +308,7 @@ function ApprovalListing() {
                         <SearchableSelectHookForm
                           label={''}
                           name={'createdBy'}
-                          placeholder={'Created By'}
+                          placeholder={'Initiated By'}
                           Controller={Controller}
                           control={control}
                           rules={{ required: false }}
@@ -446,6 +448,9 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="CostingNumber" width={140} columnTitle={true} dataAlign="left" dataSort={false}>{'Costing Id'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartNumber" width={100} columnTitle={true} dataAlign="left" dataSort={false}>{'Part No.'}</TableHeaderColumn>
               <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={false}>{'Part Name'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="PlantName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderPlant}>{'Plant'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
+
               <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'Price'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedBy" columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>

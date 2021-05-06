@@ -10,7 +10,6 @@ import {
 import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { getSupplierList } from '../../../actions/Common';
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -33,10 +32,13 @@ class RMImportListing extends Component {
     this.state = {
       isOpen: false,
       isEditFlag: false,
+      shown: false,
       tableData: [],
       RawMaterial: [],
       RMGrade: [],
       vendorName: [],
+      costingHead: [],
+      plant: [],
       value: { min: 0, max: 0 },
       maxRange: 0,
       isBulkUpload: false,
@@ -55,9 +57,12 @@ class RMImportListing extends Component {
   getInitialRange = () => {
     const { value } = this.state;
     const filterData = {
+      costingHead: null,
+      plantId: null,
       material_id: null,
       grade_id: null,
       vendor_id: null,
+      technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
     }
@@ -91,12 +96,15 @@ class RMImportListing extends Component {
     this.getDataList()
   }
 
-  getDataList = (materialId = null, gradeId = null, vendorId = null) => {
+  getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null) => {
     const { value } = this.state;
     const filterData = {
+      costingHead: costingHead,
+      plantId: plantId,
       material_id: materialId,
       grade_id: gradeId,
       vendor_id: vendorId,
+      technologyId: this.props.isSimulation ? this.props.technology : 0,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
     }
@@ -155,7 +163,7 @@ class RMImportListing extends Component {
         //toastr.warning('The specification is associated in the system. Please remove the association to delete')
       } else if (res && res.data && res.data.Result === true) {
         toastr.success(MESSAGES.DELETE_RAW_MATERIAL_SUCCESS);
-        this.getDataList(null, null, null)
+        this.getDataList(null, null, null, null, null)
       }
     });
   }
@@ -170,7 +178,7 @@ class RMImportListing extends Component {
 
   costFormatter = (cell, row, enumObject, rowIndex) => {
     const { initialConfiguration } = this.props
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : '';
+    return (cell != null && cell !== 0) ? checkForDecimalAndNull(cell, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, initialConfiguration.NoOfDecimalForPrice);
   }
 
   /**
@@ -179,6 +187,22 @@ class RMImportListing extends Component {
   */
   effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  }
+
+  /**
+  * @method shearingCostFormatter
+  * @description Renders buttons
+  */
+  shearingCostFormatter = (cell, row, enumObject, rowIndex) => {
+    return cell != null ? cell : '-';
+  }
+
+  /**
+  * @method freightCostFormatter
+  * @description Renders buttons
+  */
+  freightCostFormatter = (cell, row, enumObject, rowIndex) => {
+    return cell != null ? cell : '-';
   }
 
   /**
@@ -250,6 +274,13 @@ class RMImportListing extends Component {
     return <>Basic <br />Rate(INR) </>
   }
 
+  rendorFreightRate = () => {
+    return <>RM Freight <br /> Cost</>
+  }
+
+  renderShearingCost = () => {
+    return <>Shearing <br /> Cost</>
+  }
   renderScrapRate = () => {
     return <>Scrap <br />Rate(INR) </>
   }
@@ -360,12 +391,16 @@ class RMImportListing extends Component {
   * @description Filter user listing on the basis of role and department
   */
   filterList = () => {
-    const { RawMaterial, RMGrade, vendorName } = this.state;
+    const { costingHead, RawMaterial, RMGrade, vendorName, plant } = this.state;
+    console.log('costingHead: ', costingHead);
+
+    const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
+    const plantId = plant ? plant.value : null;
     const RMid = RawMaterial ? RawMaterial.value : null;
     const RMGradeid = RMGrade ? RMGrade.value : null;
     const Vendorid = vendorName ? vendorName.value : null;
 
-    this.getDataList(RMid, RMGradeid, Vendorid)
+    this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid)
   }
 
   /**
@@ -374,6 +409,8 @@ class RMImportListing extends Component {
   */
   resetFilter = () => {
     this.setState({
+      costingHead: [],
+      plant: [],
       RawMaterial: [],
       RMGrade: [],
       vendorName: [],
@@ -646,14 +683,17 @@ class RMImportListing extends Component {
               <TableHeaderColumn dataField="RawMaterial" width={100} columnTitle={true} dataAlign="left" >{this.renderRawMaterial()}</TableHeaderColumn>
               <TableHeaderColumn dataField="RMGrade" width={70} columnTitle={true} dataAlign="left" >{this.renderRMGrade()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMSpec" >{this.renderRMSpec()}</TableHeaderColumn>
+              <TableHeaderColumn dataField="MaterialType" width={100} columnTitle={true} dataAlign="left" >{'Material'}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="Category" >Category</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="TechnologyName" searchable={false} >Technology</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="Plant" searchable={false} >{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="VendorName" >Vendor</TableHeaderColumn>
-              {/* <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="VendorLocation" >{this.renderVendorLocation()}</TableHeaderColumn> */}
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="UOM" >UOM</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="BasicRate"  >{this.renderBasicRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMFreightCost" dataFormat={this.freightCostFormatter} searchable={false}>{this.rendorFreightRate()}</TableHeaderColumn>
+              <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" dataField="RMShearingCost" dataFormat={this.shearingCostFormatter} searchable={false}>{this.renderShearingCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="ScrapRate" >{this.renderScrapRate()}</TableHeaderColumn>
-              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCost" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
+              <TableHeaderColumn width={120} columnTitle={true} dataAlign="left" searchable={false} dataField="NetLandedCostConversion" dataFormat={this.costFormatter} >{this.renderNetCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
               {!this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}
               {this.props.isSimulation && <TableHeaderColumn width={100} dataAlign="right" dataField="RawMaterialId" export={false} searchable={false} hidden isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>}

@@ -16,7 +16,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'
-import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -1000,6 +1000,23 @@ class AddMachineRate extends Component {
                           //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                           />
                         </Col>
+                        {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
+                          <Col md="3">
+                            <Field
+                              name="Plant"
+                              type="text"
+                              label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('plant')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handlePlants}
+                              valueDescription={this.state.selectedPlants}
+                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                            />
+                          </Col>)}
                         {this.state.IsVendor &&
                           <Col md="3">
                             <Field
@@ -1017,8 +1034,7 @@ class AddMachineRate extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>}
-                        {this.state.IsVendor &&
-                          checkVendorPlantConfigurable() &&
+                        {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                           <Col md="3">
                             <Field
                               label="Vendor Plant"
@@ -1034,24 +1050,8 @@ class AddMachineRate extends Component {
                               className="multiselect-with-border"
                               disabled={isEditFlag ? true : false}
                             />
-                          </Col>}
-                        {!this.state.IsVendor &&
-                          <Col md="3">
-                            <Field
-                              name="Plant"
-                              type="text"
-                              label="Plant"
-                              component={searchableSelect}
-                              placeholder={'Select'}
-                              options={this.renderListing('plant')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handlePlants}
-                              valueDescription={this.state.selectedPlants}
-                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
-                            />
-                          </Col>}
+                          </Col>)}
+
                         <Col md="3">
                           <Field
                             label={`Machine No.`}

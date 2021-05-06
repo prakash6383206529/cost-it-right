@@ -12,6 +12,7 @@ import ReactExport from 'react-export-excel';
 import { RMDomesticSimulation, RMImportSimulation } from '../../../config/masterData';
 import { toastr } from 'react-redux-toastr';
 import RMSimulation from './SimulationPages/RMSimulation';
+import { getCostingTechnologySelectList } from '../../costing/actions/Costing';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -24,6 +25,7 @@ function Simulation(props) {
 
     useEffect(() => {
         dispatch(getSelectListOfMasters(() => { }))
+        dispatch(getCostingTechnologySelectList(() => { }))
         setShowEditTable(false)
     }, [])
 
@@ -34,7 +36,10 @@ function Simulation(props) {
     const masterList = useSelector(state => state.simulation.masterSelectList)
     const rmDomesticListing = useSelector(state => state.material.rmDataList)
     const rmImportListing = useSelector(state => state.material.rmImportDataList)
+    const technologySelectList = useSelector(state => state.costing.technologySelectList)
+
     const [master, setMaster] = useState({})
+    const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
     const [showEditTable, setShowEditTable] = useState(false)
@@ -44,10 +49,18 @@ function Simulation(props) {
 
     const handleMasterChange = (value) => {
         setMaster(value)
-        setShowMasterList(true)
-
-
+        if (value !== '' && Object.keys(technology).length > 0) {
+            setShowMasterList(true)
+        }
     }
+
+    const handleTechnologyChange = (value) => {
+        setTechnology(value)
+        if (value !== '' && Object.keys(master).length > 0) {
+            setShowMasterList(true)
+        }
+    }
+
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
         temp = TempData.map((item) => {
@@ -67,9 +80,9 @@ function Simulation(props) {
     const renderModule = (value) => {
         switch (value.label) {
             case RMDOMESTIC:
-                return (<RMDomesticListing isSimulation={true} />)
+                return (<RMDomesticListing isSimulation={true} technology={technology.value} />)
             case RMIMPORT:
-                return (<RMImportListing isSimulation={true} />)
+                return (<RMImportListing isSimulation={true} technology={technology.value} />)
             default:
                 break;
         }
@@ -98,6 +111,15 @@ function Simulation(props) {
             })
             return temp
         }
+        if (label === 'technology') {
+
+            technologySelectList && technologySelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
     }
 
     const cancelEditPage = () => {
@@ -113,7 +135,6 @@ function Simulation(props) {
     const closeDrawer = (e = '', tableData = {}, correctRow = 0, incorrectRow = 0) => {
         setShowDrawer(false)
         if (Object.keys(tableData).length > 0) {
-            console.log(tableData, "tableData");
             setTableData(tableData)
             setRowCount({ correctRow: correctRow, incorrectRow: incorrectRow })
             setShowEditTable(true)
@@ -122,48 +143,62 @@ function Simulation(props) {
     }
 
     const editTable = () => {
-        let flag;
-        setShowEditTable(true)
-        // switch (master.label) {
-        //     case RMDOMESTIC:
-        //         console.log("COMING HERE");
-        //         rmDomesticListing.forEach((element, index) => {
-        //             if (element.CostingHead !== rmDomesticListing[index + 1]) {
-        //                 console.log("COMING HERE");
-        //                 toastr.warning('Please select either ZBC or VBC costing head at a time.')
-        //                 flag = false
-        //                 return false
-        //             }
-        //             return true
-        //         });
-        //         if (flag === true) {
-        //             setShowEditTable(true)
-        //         }
-        //         break;
-        //     case RMIMPORT:
-        //         rmImportListing.forEach((element, index) => {
-        //             if (element.CostingHead !== rmImportListing[index + 1]) {
-        //                 toastr.warning('Please select either ZBC or VBC costing head at a time.')
-        //                 flag = false
-        //                 return false
-        //             }
-        //             return true
-        //         })
-        //         if (flag === true) {
-        //             setShowEditTable(true)
-        //         }
-        //         break;
+        let flag = true;
+        let vendorFlag = true;
+        //  setShowEditTable(true)
+        switch (master.label) {
+            case RMDOMESTIC:
 
-        //     default:
-        //         break;
-        // }
+                rmDomesticListing.forEach((element, index) => {
+
+                    if (index !== 0) {
+                        if (element.CostingHead !== rmDomesticListing[index - 1].CostingHead) {
+                            toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            flag = false
+                            return false
+                        }
+                        if (element.VendorName !== rmDomesticListing[index - 1].VendorName) {
+                            toastr.warning('Please select one vendor at a time.')
+                            vendorFlag = false
+                            return false
+                        }
+                    }
+                });
+                if (flag === true && vendorFlag === true) {
+                    setShowEditTable(true)
+                }
+                break;
+            case RMIMPORT:
+                rmImportListing.forEach((element, index) => {
+
+                    if (index !== 0) {
+                        if (element.CostingHead !== rmImportListing[index - 1].CostingHead) {
+                            toastr.warning('Please select either ZBC or VBC costing head at a time.')
+                            flag = false
+                            return false
+                        }
+                        if (element.VendorName !== rmImportListing[index - 1].VendorName) {
+                            toastr.warning('Please select one vendor at a time.')
+                            vendorFlag = false
+                            return false
+                        }
+                    }
+                })
+                if (flag === true && vendorFlag === true) {
+                    setShowEditTable(true)
+                }
+                break;
+
+            default:
+                break;
+        }
 
     }
 
     const editMasterPage = (page) => {
         switch (page) {
             case RMDOMESTIC:
-                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} />
+                return <RMSimulation isDomestic={true} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmDomesticListing} technology={technology.label} master={master.label} />
             case RMIMPORT:
                 return <RMSimulation isDomestic={false} cancelEditPage={cancelEditPage} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : rmImportListing} />
 
@@ -187,8 +222,9 @@ function Simulation(props) {
 
                     <Row>
                         <Col md="12" className="filter-block zindex-12">
-                            <div className="d-inline-flex justify-content-start align-items-center w100">
-                                <div className="flex-fills">Masters:</div>
+                            
+                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                <div className="flex-fills label">Masters:</div>
                                 <div className="hide-label flex-fills pl-0">
                                     <SearchableSelectHookForm
                                         label={''}
@@ -206,6 +242,26 @@ function Simulation(props) {
                                     />
                                 </div>
                             </div>
+
+                            <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                <div className="flex-fills label">Technology:</div>
+                                <div className="flex-fills hide-label pl-0">
+                                    <SearchableSelectHookForm
+                                        label={''}
+                                        name={'Technology'}
+                                        placeholder={'Technology'}
+                                        Controller={Controller}
+                                        control={control}
+                                        rules={{ required: false }}
+                                        register={register}
+                                        // defaultValue={plant.length !== 0 ? plant : ''}
+                                        options={renderListing('technology')}
+                                        mandatory={false}
+                                        handleChange={handleTechnologyChange}
+                                        errors={errors.Masters}
+                                    />
+                                </div>
+                        </div>
                         </Col>
                     </Row>
                     {/* <RMDomesticListing isSimulation={true} /> */}
@@ -218,9 +274,9 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2">
                                     <div>
-                                        <button type="button" className={"edit-btn mt2 mr5"} onClick={editTable}>
-                                            <div className={"cross-icon"}> <img src={require("../../../assests/images/edit-yellow.svg")} alt="delete-icon.jpg" /> </div>  {"EDIT"} </button>
-                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><img className="download" alt={''} src={require('../../../assests/images/download.png')}></img>DOWNLOAD</button>}>
+                                        <button type="button" className={"user-btn mt2 mr5"} onClick={editTable}>
+                                            <div className={"edit-icon"}></div>  {"EDIT"} </button>
+                                        <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                             {renderColumn(master.label)}
                                         </ExcelFile>
                                         <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>

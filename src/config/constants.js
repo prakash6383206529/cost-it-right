@@ -6,12 +6,12 @@ import { getAuthToken } from '../helper/auth'
 
 export const config = {
   headers: {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': 'true',
-  //'Authorization': `Bearer ${getAuthToken()}`,
-  'Authorization': `Bearer pswHFnDhkrPy8jxGvjgbex583tSzH7-5uAAYoZsjwy63sr8pdmNAyOVmv-vBIBsUTwsNcd1oiq0Mo-jWaDaZA31K9Au6w8g6ycldNcSyfLEImhODgvkP7HAs0EeupDbB1w6MCjXzdhnfP-zIy2sAzGm8jcfZST-ps89mss9V4FE7is958vLY7gO2uYhdz4Piyyngp9c8P1dqe-NEJof_uQwWfAje-gI22jsUQPDDZfmrlYZukrbjMcRF4Vm9WACN`,
-  'Access-From': 'WEB',
-  'Api-Key': `${process.env.REACT_APP_API_KEY}`,
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true',
+    //'Authorization': `Bearer ${getAuthToken()}`,
+    'Authorization': `Bearer NRIsJAXFS-IgPMtfW05J1EiTwhv4z37BnFCk2TynvAdVYMuBIal7dTYyfboxRFjvPJ1zPl4r4LfQJ8_1fKDnSxTmGmThhl6YabKHaGvzp2WDQ7P0wFZs2wW10Mcmkt4Xb4ybDGzwSLt6fwRuI1uGNRuyNMxKQz-s533rIF5Qx08vwumo5ogN5x_oyi__b4KXJWbUU_0qLaJGLwISEf4o3_4CPBoP6Gv_tAGIO1W250SzOF3zwYpTxi8LwghOtQse`,
+    'Access-From': 'WEB',
+    'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },
 }
 
@@ -179,6 +179,7 @@ export const API = {
   bulkUploadRMDomesticZBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-zbc-domestic-json`,
   bulkUploadRMDomesticVBC: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-vbc-domestic-json`,
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
+  getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-not-associated-name-child`,
 
   //RAW MATERIAL IMPORT
   createRMImport: `${BASE_URL}/masters-raw-material/create-raw-material-import`,
@@ -207,7 +208,7 @@ export const API = {
   createRMCategoryAPI: `${BASE_URL}/masters-raw-material/create-category`,
   createRMGradeAPI: `${BASE_URL}/masters-raw-material/create-grade`,
   createRMSpecificationAPI: `${BASE_URL}/masters-raw-material/create-specification`,
-
+  createAssociation: `${BASE_URL}/masters-material/associate-raw-material`,
   getRMMaterialAPI: `${BASE_URL}/masters-raw-material/get-all-raw-materials`,
 
   //RM GRADE
@@ -462,6 +463,7 @@ export const API = {
   saveComponentCostingRMCCTab: `${BASE_URL}/costing/save-componenet-costing-detail-for-rm-bop-cc`,
   saveAssemblyCostingRMCCTab: `${BASE_URL}/costing/save-assembly-costing-detail-for-rm-bop-cc`,
   getBOPData: `${BASE_URL}/costing/get-costing-detail-for-assembly-part-bop`,
+  getToolCategoryList: `${BASE_URL}/costing/select-list-tool-category`,
 
   getSurfaceTreatmentTabData: `${BASE_URL}/costing/get-costing-detail-for-surface-treatment`,
   saveCostingSurfaceTreatmentTab: `${BASE_URL}/costing/save-costing-detail-for-surface-treatment`,
@@ -511,6 +513,7 @@ export const API = {
   saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
+
   //WEIGHT CALCULATION
   getWeightCalculationInfo: `${BASE_URL}/costing-sheet-metal/get-weight-calculation-info-by-costing`,
   AddCostingWeightCalculation: `${BASE_URL}/costing-sheet-metal/add-costing-weight-calculation`,
@@ -635,6 +638,8 @@ export const API = {
   approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approver`,
   rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
   getApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-costing-summary`,
+  isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approvar`,
+  approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -791,13 +796,20 @@ export const API = {
 
   //SIMULATION
   getSimulationHistory: `${BASE_URL}/`,
-  getSelectListOfSimulationMaster: `${BASE_URL}/`
+  getSelectListOfSimulationMaster: `${BASE_URL}/`,
+  runSimulation: `${BASE_URL}/simulation/draft-simulation-raw-material`,
+  getVerifySimulationList: `${BASE_URL}/simulation/get-all-impacted-simulation-costings`,
+  runSimulationOnSelectedCosting: `${BASE_URL}/simulation/run-simulation-on-selected-costing`,
+  getCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-costings`
 }
 
 //Api constants
 export const API_REQUEST = 'API_REQUEST'
 export const API_FAILURE = 'API_FAILURE'
 export const API_SUCCESS = 'API_SUCCESS'
+
+export const CUSTOM_LOADER_SHOW = 'CUSTOM_LOADER_SHOW'
+export const CUSTOM_LOADER_HIDE = 'CUSTOM_LOADER_HIDE'
 
 // Masters api constant
 export const FETCH_MATER_DATA_REQUEST = 'FETCH_MATER_DATA_REQUEST'
@@ -890,6 +902,7 @@ export const GET_RM_DOMESTIC_LIST = 'GET_RM_DOMESTIC_LIST'
 export const GET_RM_IMPORT_LIST = 'GET_RM_IMPORT_LIST'
 export const GET_MANAGE_SPECIFICATION = 'GET_MANAGE_SPECIFICATION'
 // export const GET_MANAGE_MATERIAL = 'GET_MANAGE_MATERIAL'
+export const GET_UNASSOCIATED_RM_NAME_SELECTLIST = 'GET_UNASSOCIATED_RM_NAME_SELECTLIST'
 
 //RM GRADE
 export const GET_GRADE_SUCCESS = 'GET_GRADE_SUCCESS'
@@ -998,6 +1011,7 @@ export const GET_ZBC_PLANT_SELECTLIST = 'GET_ZBC_PLANT_SELECTLIST'
 export const GET_STATE_SELECTLIST = 'GET_STATE_SELECTLIST'
 export const GET_ZBC_POWER_DATA_SUCCESS = 'GET_ZBC_POWER_DATA_SUCCESS'
 export const GET_POWER_DATA_LIST = 'GET_POWER_DATA_LIST'
+export const GET_POWER_VENDOR_DATA_LIST = 'GET_POWER_VENDOR_DATA_LIST'
 
 //OTHER OPERATION MASTER
 export const GET_OTHER_OPERATION_SUCCESS = 'GET_OTHER_OPERATION_SUCCESS'
@@ -1104,6 +1118,7 @@ export const SET_RMCCBOP_DATA = 'SET_RMCCBOP_DATA';
 export const SET_SURFACE_COST_DATA = 'SET_SURFACE_COST_DATA';
 export const SET_OVERHEAD_PROFIT_COST_DATA = 'SET_OVERHEAD_PROFIT_COST_DATA';
 export const SET_DISCOUNT_COST_DATA = 'SET_DISCOUNT_COST_DATA';
+export const SET_IS_TOOLCOST_USED = 'SET_IS_TOOLCOST_USED';
 export const GET_BULKUPLOAD_COSTING_LIST = 'GET_BULKUPLOAD_COSTING_LIST'
 export const GET_PART_SELECTLIST_BY_TECHNOLOGY = 'GET_PART_SELECTLIST_BY_TECHNOLOGY'
 
@@ -1163,6 +1178,8 @@ export const SET_COMPONENT_DISCOUNT_ITEM_DATA = 'SET_COMPONENT_DISCOUNT_ITEM_DAT
 export const GET_RM_DRAWER_DATA_LIST = 'GET_RM_DRAWER_DATA_LIST';
 export const GET_PROCESS_DRAWER_DATA_LIST = 'GET_PROCESS_DRAWER_DATA_LIST';
 export const SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA = 'SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA';
+export const TOOL_CATEGORY_SELECTLIST = 'TOOL_CATEGORY_SELECTLIST';
+export const SET_RMCC_ERRORS = 'SET_RMCC_ERRORS';
 
 //WEIGHT CALCULATION COSTING RM DRAWER
 export const GET_RAW_MATERIAL_CALCI_INFO = 'GET_RAW_MATERIAL_CALCI_INFO'
@@ -1286,7 +1303,8 @@ export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 //SIMULATION
 export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
-
+export const GET_VERIFY_SIMULATION_LIST = 'GET_VERIFY_SIMULATION_LIST'
+export const GET_COSTING_SIMULATION_LIST = 'GET_COSTING_SIMULATION_LIST'
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
 export const DRAFT = 'Draft'
@@ -1376,6 +1394,7 @@ export const APPROVAL_LISTING_PATH = '/approval-listing'
 export const COSTING_BULK_UPLOAD = "/costing-bulkUpload"
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
+export const EMPTY_GUID_0 = "0"
 
 export const VIEW_COSTING_DATA = {
   zbc: 'ZBC v/s VBC',
@@ -1449,6 +1468,7 @@ export const DIMENSIONLESS = 'Dimensionless'
 
 //UOM CATEGORY
 export const STD = 'STD'
+
 
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = 'Raw Material(Domestic)'

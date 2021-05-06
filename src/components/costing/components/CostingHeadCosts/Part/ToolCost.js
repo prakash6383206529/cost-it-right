@@ -1,25 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React, { useState, useEffect, useContext } from 'react';
+import { useForm, } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
-import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { checkForDecimalAndNull, } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
+import { ViewCostingContext } from '../../CostingDetails';
 
 function ToolCost(props) {
 
-  const { register, control, errors } = useForm({
-    mode: 'onBlur',
-    reValidateMode: 'onChange',
+  const { item, data } = props;
+
+  let ProcessCostArray = item?.CostingPartDetails?.CostingConversionCost?.CostingProcessCostResponse.map(el => {
+    return { label: el.ProcessName, value: el.ProcessName };
+  })
+  let OperationCostArray = item?.CostingPartDetails?.CostingConversionCost?.CostingOperationCostResponse.map(el => {
+    return { label: el.OperationName, value: el.OperationName };
   });
 
-  const [gridData, setGridData] = useState(props.data)
+  const [gridData, setGridData] = useState(data)
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [rowObjData, setRowObjData] = useState({})
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
     const Params = {
@@ -104,11 +109,11 @@ function ToolCost(props) {
               </div>
             </Col>
             <Col col={'2'}>
-              <button
+              {!CostingViewMode && <button
                 type="button"
                 className={'user-btn'}
                 onClick={DrawerToggle}>
-                <div className={'plus'}></div>ADD TOOL</button>
+                <div className={'plus'}></div>ADD TOOL</button>}
             </Col>
           </Row>
 
@@ -143,8 +148,8 @@ function ToolCost(props) {
                           <td>{item.Life}</td>
                           <td>{item.TotalToolCost ? checkForDecimalAndNull(item.TotalToolCost, 4) : 0}</td>
                           <td>
-                            <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />
-                            <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />
+                            {!CostingViewMode && <button className="Edit mt15 mr-2" type={'button'} onClick={() => editItem(index)} />}
+                            {!CostingViewMode && <button className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />}
                           </td>
                         </tr>
                       )
@@ -173,6 +178,8 @@ function ToolCost(props) {
         editIndex={editIndex}
         rowObjData={rowObjData}
         anchor={'right'}
+        ProcessOperationArray={[...ProcessCostArray, ...OperationCostArray]}
+        gridData={data}
       />}
     </ >
   );

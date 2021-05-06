@@ -34,7 +34,7 @@ class InterestRateListing extends Component {
       vendorName: [],
       ICCApplicability: [],
       PaymentTermsApplicability: [],
-
+      shown:false,
       data: { isEditFlag: false, ID: '' },
       toggleForm: false,
       isBulkUpload: false,

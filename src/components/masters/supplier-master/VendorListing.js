@@ -40,6 +40,7 @@ class VendorListing extends Component {
             isEditFlag: false,
             isOpenVendor: false,
             ID: '',
+            shown:false,
             isBulkUpload: false,
             tableData: [],
             vendorType: [],

@@ -4,9 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
-import { getVendorWithVendorCodeSelectList, getPlantBySupplier } from '../../../actions/Common';
+import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
-import { checkVendorPlantConfigurable, getVendorCode } from '../../../helper';
+import { checkVendorPlantConfigurable, getVendorCode, } from '../../../helper';
+import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 
 function AddVendorDrawer(props) {
 
@@ -16,14 +17,19 @@ function AddVendorDrawer(props) {
   const [vendorPlant, setVendorPlant] = useState([]);
   const [data, setData] = useState({});
   const [selectedVendors, setSelectedVendors] = useState([]);
+  const [DestinationPlant, setDestinationPlant] = useState([]);
 
   const dispatch = useDispatch()
+
   const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
   const filterPlantList = useSelector(state => state.comman.filterPlantList)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const plantSelectList = useSelector(state => state.comman.plantSelectList);
 
   useEffect(() => {
     const { vbcVendorGrid } = props;
     dispatch(getVendorWithVendorCodeSelectList(() => { }))
+    dispatch(getPlantSelectListByType(ZBC, () => { }))
 
     let tempArr = [];
     vbcVendorGrid && vbcVendorGrid.map(el => {
@@ -42,7 +48,14 @@ function AddVendorDrawer(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    props.closeDrawer('', data)
+    props.closeDrawer('',
+      {
+        ...data,
+        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? getVendorCode(DestinationPlant.label) : '',
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.label : '',
+        DestinationPlant: DestinationPlant,
+      })
   };
 
   /**
@@ -71,13 +84,22 @@ function AddVendorDrawer(props) {
       return temp;
     }
 
+    if (label === 'DestinationPlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+
   }
 
   /**
-  * @method handleChange
-  * @description  USED TO HANDLE CHANGE
+  * @method handleVendorChange
+  * @description  USED TO HANDLE VENDOR CHANGE
   */
-  const handleChange = (newValue) => {
+  const handleVendorChange = (newValue) => {
     if (newValue && newValue !== '') {
       setVendor(newValue)
       reset({ VendorPlant: '' })
@@ -108,6 +130,16 @@ function AddVendorDrawer(props) {
   }
 
   /**
+* @method handleDestinationPlantChange
+* @description  USED TO HANDLE DESTINATION PLANT CHANGE
+*/
+  const handleDestinationPlantChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setDestinationPlant(newValue)
+    }
+  }
+
+  /**
   * @method handleChangeVendorPlant
   * @description  USED TO HANDLE CHANGE
   */
@@ -133,7 +165,7 @@ function AddVendorDrawer(props) {
   * @description used to Reset form
   */
   const cancel = () => {
-    toggleDrawer('')
+    props.closeDrawer('', {})
   }
 
   const onSubmit = data => {
@@ -149,7 +181,7 @@ function AddVendorDrawer(props) {
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
-        // onClose={(e) => toggleDrawer(e)}
+      // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
           <div className={"drawer-wrapper"}>
@@ -159,7 +191,7 @@ function AddVendorDrawer(props) {
                   <h3>{"ADD VENDOR"}</h3>
                 </div>
                 <div
-                  onClick={(e) => toggleDrawer(e)}
+                  onClick={cancel}
                   className={"close-button right"}
                 ></div>
               </Col>
@@ -179,11 +211,30 @@ function AddVendorDrawer(props) {
                     defaultValue={vendor.length !== 0 ? vendor : ""}
                     options={renderListing("Vendor")}
                     mandatory={true}
-                    handleChange={handleChange}
+                    handleChange={handleVendorChange}
                     errors={errors.Vendor}
                   />
                 </Col>
-                {checkVendorPlantConfigurable() && (
+
+                {initialConfiguration?.IsDestinationPlantConfigure &&
+                  <Col md="12">
+                    <SearchableSelectHookForm
+                      label={"Destination Plant"}
+                      name={"DestinationPlant"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
+                      options={renderListing("DestinationPlant")}
+                      mandatory={false}
+                      handleChange={handleDestinationPlantChange}
+                      errors={errors.DestinationPlant}
+                    />
+                  </Col>}
+
+                {initialConfiguration?.IsVendorPlantConfigurable &&
                   <Col md="12">
                     <SearchableSelectHookForm
                       label={"Vendor Plant"}
@@ -199,8 +250,7 @@ function AddVendorDrawer(props) {
                       handleChange={handleChangeVendorPlant}
                       errors={errors.VendorPlant}
                     />
-                  </Col>
-                )}
+                  </Col>}
               </Row>
 
               <Row className="justify-content-between">

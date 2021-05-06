@@ -59,13 +59,10 @@ class AddIndivisualPart extends Component {
 
           const Data = res.data.Data;
 
-          let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
               isLoader: false,
-              selectedPlants: plantArray,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
             })

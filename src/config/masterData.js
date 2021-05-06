@@ -1746,7 +1746,7 @@ export const MACHINING = 14
 export const FABRICATION = 15
 
 
-export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation"]
+export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation"]
 
 export const RMDomesticSimulation = [
     { label: "CostingHead", value: "CostingHead" },

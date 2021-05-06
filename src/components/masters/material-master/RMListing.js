@@ -12,6 +12,7 @@ import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { applySuperScripts } from '../../../helper';
+import Association from './Association';
 
 class RMListing extends Component {
     constructor(props) {
@@ -20,6 +21,7 @@ class RMListing extends Component {
             isOpen: false,
             isEditFlag: false,
             ID: '',
+            isOpenAssociation: false
         }
     }
 
@@ -45,6 +47,17 @@ class RMListing extends Component {
     */
     closeDrawer = (e = '') => {
         this.setState({ isOpen: false }, () => {
+            this.getListData()
+        })
+    }
+
+
+    /**
+  * @method closeDrawer
+  * @description  used to cancel filter form
+  */
+    closeAssociationDrawer = (e = '') => {
+        this.setState({ isOpenAssociation: false }, () => {
             this.getListData()
         })
     }
@@ -99,6 +112,12 @@ class RMListing extends Component {
         this.setState({
             isOpen: true,
             isEditFlag: false
+        })
+    }
+
+    openAssociationModel = () => {
+        this.setState({
+            isOpenAssociation: true
         })
     }
 
@@ -178,7 +197,17 @@ class RMListing extends Component {
                         {AddAccessibility && (
                             <button
                                 type={"button"}
-                                className={"user-btn  "}
+                                className={"user-btn mr5"}
+                                onClick={this.openAssociationModel}
+                            >
+                                <div className={"plus"}></div>
+                                {`Association`}
+                            </button>
+                        )}
+                        {AddAccessibility && (
+                            <button
+                                type={"button"}
+                                className={"user-btn"}
                                 onClick={this.openModel}
                             >
                                 <div className={"plus"}></div>
@@ -186,6 +215,7 @@ class RMListing extends Component {
                             </button>
                         )}
                     </Col>
+
                 </Row>
 
                 <Row>
@@ -203,9 +233,11 @@ class RMListing extends Component {
                             className={'RM-table'}
                             pagination>
                             {/* <TableHeaderColumn dataField="" width={100} dataFormat={this.indexFormatter}>Sr. No.</TableHeaderColumn> */}
-                            <TableHeaderColumn dataField="MaterialType" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RawMaterial" dataAlign="left" dataSort={true}>Material</TableHeaderColumn>
                             <TableHeaderColumn dataField="Density" dataAlign="center" dataSort={true}>{this.renderDensity()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="MaterialTypeId" searchable={false} dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMName" dataAlign="center" dataSort={true}>{'Raw Material'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="RMGrade" dataAlign="center" dataSort={true}>{'Grade'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="MaterialId" searchable={false} dataAlign="right" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
 
                         </BootstrapTable>
                     </Col>
@@ -217,6 +249,12 @@ class RMListing extends Component {
                     ID={ID}
                     anchor={'right'}
                 />}
+                {
+                    this.state.isOpenAssociation && <Association
+                        isOpen={this.state.isOpenAssociation}
+                        closeDrawer={this.closeAssociationDrawer}
+                        anchor={'right'} />
+                }
             </div>
         );
     }

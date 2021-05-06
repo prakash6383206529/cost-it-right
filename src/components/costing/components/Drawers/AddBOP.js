@@ -119,7 +119,7 @@ function AddBOP(props) {
   };
 
   const renderNetLandedRate = () => {
-    return <>Net Landed Cost <br /> INR/UOM</>
+    return <>Net Cost<br /> INR/UOM</>
   }
 
   /**
@@ -151,7 +151,7 @@ function AddBOP(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container className="add-bop-drawer">

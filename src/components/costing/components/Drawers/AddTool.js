@@ -1,30 +1,29 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from "react-hook-form";
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
-import { getOperationDrawerDataList } from '../../actions/Costing';
+import { getToolCategoryList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
 import { checkForDecimalAndNull, checkForNull } from '../../../../helper';
 
 function AddTool(props) {
 
-  const { rowObjData, isEditFlag } = props;
+  const { rowObjData, isEditFlag, ProcessOperationArray, gridData } = props;
 
   const defaultValues = {
-    ToolOperationId: rowObjData && rowObjData.ToolOperationId !== undefined ? rowObjData.ToolOperationId : '',
-    ProcessOrOperation: rowObjData && rowObjData.ProcessOrOperation !== undefined ? rowObjData.ProcessOrOperation : '',
-    ToolCategory: rowObjData && rowObjData.ToolCategory !== undefined ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
-    ToolName: rowObjData && rowObjData.ToolName !== undefined ? rowObjData.ToolName : '',
-    Quantity: rowObjData && rowObjData.Quantity !== undefined ? rowObjData.Quantity : '',
-    ToolCost: rowObjData && rowObjData.ToolCost !== undefined ? rowObjData.ToolCost : '',
-    Life: rowObjData && rowObjData.Life !== undefined ? rowObjData.Life : '',
-    TotalToolCost: rowObjData && rowObjData.TotalToolCost !== undefined ? rowObjData.TotalToolCost : '',
+    ToolOperationId: rowObjData?.ToolOperationId ? rowObjData.ToolOperationId : '',
+    ProcessOrOperation: rowObjData?.ProcessOrOperation ? { label: rowObjData.ProcessOrOperation, value: rowObjData.ProcessOrOperation } : [],
+    ToolCategory: rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : [],
+    ToolName: rowObjData?.ToolName ? rowObjData.ToolName : '',
+    Quantity: rowObjData?.Quantity ? rowObjData.Quantity : '',
+    ToolCost: rowObjData?.ToolCost ? rowObjData.ToolCost : '',
+    Life: rowObjData?.Life ? rowObjData.Life : '',
+    TotalToolCost: rowObjData?.TotalToolCost ? rowObjData.TotalToolCost : '',
   }
 
-  const { register, handleSubmit, control, setValue, reset, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
@@ -33,13 +32,27 @@ function AddTool(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
-  const [tool, setTool] = useState([]);
-  //const [formData, setFormData] = useState({});
+  const [tool, setTool] = useState(isEditFlag && rowObjData?.ToolCategory ? { label: rowObjData.ToolCategory, value: rowObjData.ToolCategory } : []);
+  const [ToolForProcessOperation, setToolForProcessOperation] = useState(isEditFlag && rowObjData?.ProcessOrOperation ? { label: rowObjData.ProcessOrOperation, value: rowObjData.ProcessOrOperation } : []);
+  const [selectedTools, setSelectedTool] = useState();
 
   const fieldValues = useWatch({
     control,
     name: ['Quantity', 'ToolCost', 'Life'],
   });
+
+  useEffect(() => {
+    dispatch(getToolCategoryList(res => { }))
+
+    let tempArr = [];
+    gridData && gridData.map(el => {
+      tempArr.push(el.ProcessOrOperation)
+      return null;
+    })
+    setSelectedTool(tempArr)
+  }, [])
+
+  const ToolCategoryList = useSelector(state => state.costing.ToolCategoryList)
 
 
   useEffect(() => {
@@ -68,14 +81,38 @@ function AddTool(props) {
   * @description Used show listing of unit of measurement
   */
   const renderListing = (label) => {
+    let temp = [];
 
     if (label === 'ToolCategory') {
-      return [
-        { label: 'TOOL 1', value: 'TOOL 1' },
-        { label: 'TOOL 2', value: 'TOOL 2' },
-      ];
+      ToolCategoryList && ToolCategoryList.map((item) => {
+        if (item.Value === '') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
     }
 
+    if (label === 'ToolProcessOperation') {
+      ProcessOperationArray && ProcessOperationArray.map((item) => {
+        if (item.Value === '' || (selectedTools && selectedTools.includes(item.label))) return false
+        temp.push(item)
+        return null;
+      })
+      return temp
+    }
+
+  }
+
+  /**
+  * @method handleProcessOperationChange
+  * @description  TOOL CHANGE HANDLE
+  */
+  const handleProcessOperationChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setToolForProcessOperation(newValue)
+    } else {
+      setToolForProcessOperation([])
+    }
   }
 
   /**
@@ -95,7 +132,20 @@ function AddTool(props) {
   * @description ADD ROW IN TO RM COST GRID
   */
   const addRow = () => {
-    //toggleDrawer('')
+
+    if (Object.keys(errors).length > 0) return false;
+
+    let formData = {
+      ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
+      ProcessOrOperation: ToolForProcessOperation.label,
+      ToolCategory: tool.label,
+      ToolName: getValues('ToolName'),
+      Quantity: getValues('Quantity'),
+      ToolCost: getValues('ToolCost'),
+      Life: getValues('Life'),
+      TotalToolCost: getValues('TotalToolCost'),
+    }
+    toggleDrawer('', formData)
   }
 
   /**
@@ -107,10 +157,10 @@ function AddTool(props) {
     props.closeDrawer('', {})
   }
 
-  const onSubmit = data => {
+  const onSubmitForm = data => {
     let formData = {
       ToolOperationId: isEditFlag ? rowObjData.ToolOperationId : '',
-      ProcessOrOperation: data.ProcessOrOperation,
+      ProcessOrOperation: ToolForProcessOperation.label,
       ToolCategory: data.ToolCategory.label,
       ToolName: data.ToolName,
       Quantity: data.Quantity,
@@ -127,7 +177,7 @@ function AddTool(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
@@ -144,29 +194,22 @@ function AddTool(props) {
                 </div>
               </Col>
             </Row>
-            <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
+            <form noValidate className="form" onSubmit={handleSubmit(onSubmitForm)}>
               <>
                 <Row className="pl-3">
                   <Col md="12">
-                    <TextFieldHookForm
-                      label="Process/Operation"
+                    <SearchableSelectHookForm
+                      label={'Process/Operation'}
                       name={'ProcessOrOperation'}
+                      placeholder={'-Select-'}
                       Controller={Controller}
                       control={control}
+                      rules={{ required: true }}
                       register={register}
+                      defaultValue={ToolForProcessOperation.length !== 0 ? ToolForProcessOperation : ''}
+                      options={renderListing('ToolProcessOperation')}
                       mandatory={true}
-                      rules={{
-                        required: true,
-                        // pattern: {
-                        //   value: /^[0-9]*$/i,
-                        //   message: 'Invalid Number.'
-                        // },
-                        // maxLength: 4,
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={''}
-                      className=""
-                      customClassName={'withBorder'}
+                      handleChange={handleProcessOperationChange}
                       errors={errors.ProcessOrOperation}
                       disabled={isEditFlag ? true : false}
                     />
@@ -251,7 +294,7 @@ function AddTool(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^[0-9]*$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         // maxLength: 4,
@@ -276,7 +319,7 @@ function AddTool(props) {
                       rules={{
                         required: true,
                         pattern: {
-                          value: /^[0-9]*$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         // maxLength: 4,
@@ -326,9 +369,10 @@ function AddTool(props) {
                     </button>
 
                     <button
-                      type={'submit'}
+                      type={'button'}
                       className="submit-button save-btn"
-                      onClick={addRow} >
+                      onClick={addRow}
+                    >
                       <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                       {'Save'}
                     </button>

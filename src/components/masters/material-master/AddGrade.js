@@ -165,12 +165,15 @@ class AddGrade extends Component {
                     <button
                       type="submit"
                       // disabled={isSubmitted ? true : false}
-                      className="btn-primary save-btn"
+                      className="user-btn save-btn"
                     >
                       {" "}
                       <div className={"check-icon"}>
-                        <i class="fa fa-check" aria-hidden="true"></i>
-                      </div>
+                            <img
+                              alt={""}
+                              src={require("../../../assests/images/check.png")}
+                            ></img>
+                          </div>
                       {this.props.isEditFlag ? "UPDATE" : "SAVE"}
                     </button>
                   </div>

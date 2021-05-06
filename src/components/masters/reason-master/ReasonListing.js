@@ -258,9 +258,9 @@ class ReasonListing extends Component {
         <div className="container-fluid">
           {/* {this.props.loading && <Loader />} */}
           <Row>
-            <Col md={12}><h1>Reason Master</h1></Col>
+            <Col md={12}><h1 className="mb-0">Reason Master</h1></Col>
           </Row>
-          <Row className="no-filter-row">
+          <Row className="no-filter-row pt-4">
             <Col md={6} className="text-right filter-block"></Col>
             <Col md="6" className="text-right search-user-block pr-0">
               <div className="d-flex justify-content-end bd-highlight w100">

@@ -339,14 +339,9 @@ class BOMViewer extends Component {
                                   displayDeleteIcon: false,
                                 })
                               }
-                              className={"edit-btn mr15 pull-right mt10"}
+                              className={"user-btn mr15 pull-right mt10"}
                             >
-                              <div className={"cross-icon"}>
-                                <img
-                                  src={require("../../../assests/images/edit-yellow.svg")}
-                                  alt="delete-icon.jpg"
-                                />
-                              </div>
+                              <div className={"edit-icon"}></div>
                               {"EDIT"}
                             </button>
                           </>
@@ -374,7 +369,7 @@ class BOMViewer extends Component {
                       width: "100%",
                       overflow: "auto",
                       maxWidth: "100vw",
-                      maxHeight: "calc(100vh - 125px)",
+                      maxHeight: "calc(100vh - 135px)",
                     }}
                     onClick={(e) => this.setState({ selected_point: null })}
                     selected={this.state.selected_point}

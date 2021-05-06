@@ -23,10 +23,12 @@ function TabToolCost(props) {
 
   const { handleSubmit, } = useForm();
 
-  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(false);
-  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(false);
-
   const dispatch = useDispatch()
+  const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
+
+  const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(IsToolCostApplicable);
+  const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
+
   const ToolTabData = useSelector(state => state.costing.ToolTabData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ToolsDataList = useSelector(state => state.costing.ToolsDataList)
@@ -34,6 +36,15 @@ function TabToolCost(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+
+  const dispense = () => {
+    setIsApplicableProcessWise(IsToolCostApplicable)
+  }
+  const dispenseCallback = React.useCallback(dispense, [IsToolCostApplicable])
+
+  useEffect(() => {
+    dispenseCallback()
+  }, [IsToolCostApplicable])
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -48,11 +59,13 @@ function TabToolCost(props) {
   //MANIPULATE TOP HEADER COSTS
   useEffect(() => {
     let TopHeaderValues = ToolTabData && ToolTabData.length > 0 && ToolTabData[0].CostingPartDetails !== undefined ? ToolTabData[0].CostingPartDetails : null;
-    let topHeaderData = {
-      ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
-      IsApplicableProcessWise: IsApplicableProcessWise,
-    }
-    props.setHeaderCost(topHeaderData)
+    setTimeout(() => {
+      let topHeaderData = {
+        ToolCost: TopHeaderValues && TopHeaderValues.TotalToolCost,
+        IsApplicableProcessWise: IsApplicableProcessWise,
+      }
+      props.setHeaderCost(topHeaderData)
+    }, 1500)
   }, [ToolTabData]);
 
   /**
@@ -144,11 +157,23 @@ function TabToolCost(props) {
 
   useEffect(() => {
 
-    if (IsApplicableProcessWise) {
+    if (IsApplicableProcessWise && props.activeTab === '5') {
       dispatch(getToolsProcessWiseDataListByCostingID(costData.CostingId, () => { }))
     }
 
-  }, [IsApplicableProcessWise])
+  }, [IsApplicableProcessWise, props.activeTab])
+
+  /**
+  * @method getTotal
+  * @description GET TOTAL COST
+  */
+  const getTotal = () => {
+    let cost = 0;
+    cost = ToolsDataList && ToolsDataList.reduce((accummlator, el) => {
+      return accummlator + checkForNull(el.NetToolCost);
+    }, 0)
+    return cost;
+  }
 
   /**
   * @method saveCosting
@@ -176,7 +201,7 @@ function TabToolCost(props) {
   }
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => {
       dispatch(setComponentDiscountOtherItemData({}, () => { }))
     }))
   }
@@ -214,7 +239,7 @@ function TabToolCost(props) {
             <div className="shadow-lgg login-formg">
 
               <Row className="m-0  costing-border border-bottom-0 align-items-center ">
-                <Col md="9" className="px-30 py-4 ">
+                <Col md="9" className="px-30 py-4 border-section">
                   <span className="d-inline-block pr-2 text-dark-blue">Applicability:</span>
                   <div className="switch d-inline-flex">
                     <label className="switch-level d-inline-flex w-auto">
@@ -225,7 +250,7 @@ function TabToolCost(props) {
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
                             id="normal-switch"
-                            disabled={IsApplicablilityDisable || CostingViewMode}
+                            disabled={IsApplicablilityDisable || IsApplicableProcessWise || CostingViewMode}
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
@@ -242,7 +267,10 @@ function TabToolCost(props) {
                     </label>
                   </div>
                 </Col>
-                <Col md="3" className="px-30 py-4 text-dark-blue pl10">{"Net Tool Cost"}</Col>
+                <Col md="3" className="px-30 py-4 border-section text-dark-blue pl10">
+                  {"Net Tool Cost"}
+                  {IsApplicableProcessWise && <span className="d-inline-block pl-2 font-weight-500">{getTotal()}</span>}
+                </Col>
               </Row>
 
               <form
@@ -300,12 +328,12 @@ function TabToolCost(props) {
                         bordered={false}
                         options={options}
                         className="table cr-brdr-main table-sm tool-cost-tab-process-table"
-                        //search
-                        // exportCSV
-                        //ignoreSinglePage
-                        //ref={'table'}
-                        //pagination
-                        >
+                      //search
+                      // exportCSV
+                      //ignoreSinglePage
+                      //ref={'table'}
+                      //pagination
+                      >
                         <TableHeaderColumn dataField="ToolOperationId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="BOMLevel" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'BOMLevel'}</TableHeaderColumn>
                         <TableHeaderColumn width={100} dataField="PartNumber" searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Part Number'}</TableHeaderColumn>

@@ -227,6 +227,7 @@ class ProcessListing extends Component {
         this.confirmDelete(Id)
       },
       onCancel: () => { },
+      component: () => <ConfirmComponent />,
     }
     return toastr.confirm(
       `${MESSAGES.PROCESS_DELETE_ALERT}`,

@@ -52,6 +52,7 @@ class Leftmenu extends Component {
 									item.PageName === 'Permisson' ||
 									item.PageName === 'Levels' ||
 									item.PageName === 'Department' ||
+									item.PageName === 'Simulation Upload' ||
 									SIMULATION_LEFT_MENU_NOT_INCLUDED.includes(item.PageName)
 								) return false;
 								return (

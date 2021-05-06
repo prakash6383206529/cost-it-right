@@ -4,7 +4,10 @@ import { costingInfoContext } from '../../CostingDetailStepTwo';
 import BOPCost from './BOPCost';
 import ProcessCost from './ProcessCost';
 import RawMaterialCost from './RawMaterialCost';
-import { getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData } from '../../../actions/Costing';
+import {
+  getRMCCTabData, saveComponentCostingRMCCTab, setComponentItemData, saveDiscountOtherCostTab,
+  setComponentDiscountOtherItemData
+} from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import { LEVEL1 } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
@@ -19,11 +22,14 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
 
   const toggle = (BOMLevel, PartNumber) => {
+    // let IsLocked = true;
+    // if (IsLocked) return false;
     setIsOpen(!IsOpen)
     setCount(Count + 1)
     setTimeout(() => {
@@ -86,11 +92,19 @@ function PartCompoment(props) {
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+          dispatch(setComponentItemData({}, () => { }))
+          InjectDiscountAPICall()
         }
       }))
     }
 
   }, [IsOpen])
+
+  const InjectDiscountAPICall = () => {
+    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => {
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    }))
+  }
 
   /**
    * @method render

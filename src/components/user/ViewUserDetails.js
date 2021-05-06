@@ -201,7 +201,7 @@ class ViewUserDetails extends Component {
                     <div className={'right-details'}>{registerUserData ? registerUserData.PhoneNumber : ''}-{registerUserData ? registerUserData.Extension : ''}</div>
                   </Col>
                 </Row>
-                <Row className="mt-15">
+                <Row className="pt-3">
                   <Col md="12">
                     <HeaderTitle
                       title={'ID & Password:'}
@@ -224,7 +224,7 @@ class ViewUserDetails extends Component {
                       >Change Password</a></div>
                   </Col>
                 </Row>
-                <Row className="mt-15">
+                <Row className="pt-3">
                   <Col md="12">
                     <div className={'left-details'}>
                       <HeaderTitle
@@ -234,7 +234,7 @@ class ViewUserDetails extends Component {
                     <div className={'right-details'}>{address}</div>
                   </Col>
                 </Row>
-                <Row className="mt-15 drawer-table-sm">
+                <Row className="pt-3 drawer-table-sm">
                   <Col md="12">
                     <div className={'left-details'}>
                       <HeaderTitle
@@ -279,7 +279,7 @@ class ViewUserDetails extends Component {
 
                 </Row>
 
-                <Row className="mt-15 ">
+                <Row className="pt-3 ">
                   <Col md="12">
                     <div className={'left-details'}>
                       <HeaderTitle
@@ -319,7 +319,7 @@ class ViewUserDetails extends Component {
                     </Col>}
 
                 </Row>
-                <Row className="mt-15 drawer-table-sm">
+                <Row className="pt-3 drawer-table-sm">
                   <Col md="12">&nbsp;</Col>
                 </Row>
               </div>

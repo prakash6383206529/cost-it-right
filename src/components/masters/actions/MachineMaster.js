@@ -400,7 +400,7 @@ export function fileDeleteMachine(data, callback) {
  */
 export function checkAndGetMachineNumber(number, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetMachineNumber}?machineNumber=${number}`, headers);
+        const request = axios.post(`${API.checkAndGetMachineNumber}?machineNumber=${number}`, '', headers);
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);

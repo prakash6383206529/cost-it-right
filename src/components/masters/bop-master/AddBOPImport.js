@@ -16,7 +16,7 @@ import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '
 import { getPartSelectList } from '../actions/Part';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { checkVendorPlantConfigurable, loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Switch from "react-switch";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -63,7 +63,8 @@ class AddBOPImport extends Component {
 
       netLandedcost: '',
       currencyValue: 1,
-      showCurrency: false
+      showCurrency: false,
+      netLandedConverionCost: ''
     }
   }
 
@@ -153,25 +154,32 @@ class AddBOPImport extends Component {
           this.props.getPlantBySupplier(Data.Vendor, () => { })
 
           setTimeout(() => {
-            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, currencySelectList, UOMSelectList } = this.props;
-
+            const { cityList, bopCategorySelectList, vendorWithVendorCodeSelectList, currencySelectList, UOMSelectList, plantSelectList } = this.props;
+            let plantObj;
             let categoryObj = bopCategorySelectList && bopCategorySelectList.find(item => Number(item.Value) === Data.CategoryId)
             let vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.Vendor)
             let currencyObj = currencySelectList && currencySelectList.find(item => item.Text === Data.Currency)
-            let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
+            // let partArray = Data && Data.Part.map((item) => ({ Text: item.PartNumber, Value: item.PartId }))
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
             let sourceLocationObj = cityList && cityList.find(item => Number(item.Value) === Data.SourceLocation)
             let uomObject = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
             this.handleCurrency({ label: currencyObj.Text, value: currencyObj.Value })
             this.handleEffectiveDateChange(moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
 
+            if (getConfigurationKey().IsDestinationPlantConfigure) {
+              let obj = plantSelectList && plantSelectList.find(item => item.Value === Data.DestinationPlantId)
+              plantObj = { label: obj.Text, value: obj.Value }
+            } else {
+              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            }
+
+
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              selectedPartAssembly: partArray,
-              selectedPlants: Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : [],
+              selectedPlants: plantObj,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
@@ -390,9 +398,9 @@ class AddBOPImport extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
-    this.setState({ netLandedcost: (BasicRate / NoOfPieces) })
+    this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
     this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost), initialConfiguration.NoOfDecimalForPrice)
+    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
   }
 
   /**
@@ -410,7 +418,7 @@ class AddBOPImport extends Component {
       })
 
     } else {
-      this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
+      this.props.getExchangeRateByCurrency(currency.label, moment(date).local().format('YYYY-MM-DD'), res => {
         //this.props.change('NetLandedCost', (fieldsObj.BasicRate * res.data.Data.CurrencyExchangeRate))
         this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate), showCurrency: true }, () => {
           this.handleCalculation()
@@ -520,7 +528,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -545,10 +553,10 @@ class AddBOPImport extends Component {
         NetLandedCost: this.state.netLandedcost,
         Remark: values.Remark,
         LoggedInUserId: loggedInUserId(),
-        Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
+        Plant: IsVendor === false ? [plantArray] : [],
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
-
+        NetLandedCostConversion: netLandedConverionCost
       }
 
       this.props.reset()
@@ -579,10 +587,12 @@ class AddBOPImport extends Component {
         Remark: values.Remark,
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
-        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
+        Plant: IsVendor === false ? [plantArray] : [],
+        DestinationPlantId: selectedPlants.value ? selectedPlants.value : "00000000-0000-0000-0000-000000000000",
+        VendorPlant: getConfigurationKey().IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         Attachements: files,
         UnitOfMeasurementId: UOM.value,
+        NetLandedCostConversion: netLandedConverionCost
       }
       this.props.reset()
       this.props.createBOPImport(formData, (res) => {
@@ -752,10 +762,10 @@ class AddBOPImport extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>
-                          {!this.state.IsVendor && (
+                          {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
                             <Col md="3">
                               <Field
-                                label="Plant"
+                                label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                                 name="Plant"
                                 placeholder={"Select"}
                                 //   selection={ this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants} 
@@ -819,7 +829,7 @@ class AddBOPImport extends Component {
                                                     </div> */}
                             </div>
                           </Col>
-                          {checkVendorPlantConfigurable() && this.state.IsVendor && (
+                          {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
                             <Col md="3">
                               <Field
                                 label="Vendor Plant"

@@ -6,7 +6,6 @@ import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalciData } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import Switch from 'react-switch'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -18,7 +17,6 @@ import { AcceptableSheetMetalUOM } from '../../../../../config/masterData'
 
 function Coil(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
-
 
     const { rmRowData, isEditFlag } = props
 
@@ -43,14 +41,9 @@ function Coil(props) {
 
 
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
-
-    const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
     const [UOMDimension, setUOMDimension] = useState(
         WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
-            ? {
-                label: WeightCalculatorRequest.UOMForDimension,
-                value: WeightCalculatorRequest.UOMForDimensionId,
-            }
+            ? { label: WeightCalculatorRequest.UOMForDimension, value: WeightCalculatorRequest.UOMForDimensionId, }
             : [],
     )
     let extraObj = {}
@@ -138,17 +131,13 @@ function Coil(props) {
         }
         grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
         setGrossWeights(setValueAccToUOM(grossWeight, UOMDimension.label))
+        const updatedValue = dataToSend
+        updatedValue.GrossWeight = grossWeight
+        setDataToSend(updatedValue)
+        setGrossWeights(grossWeight)
         setValue('GrossWeight', checkForDecimalAndNull(setValueAccToUOM(grossWeight, UOMDimension.label), localStorage.NoOfDecimalForInputOutput))
     }
 
-
-    /**
-     * @method onSideToggle
-     * @description SIDE TOGGLE
-     */
-    const onSideToggle = () => {
-        setIsOneSide(!isOneSide)
-    }
 
     /**
      * @method renderListing
@@ -206,40 +195,26 @@ function Coil(props) {
             RawMaterialType: rmRowData.MaterialType,
             BasicRatePerUOM: rmRowData.RMRate,
             ScrapRate: rmRowData.ScrapRate,
-            NetLandedCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - dataToSend.FinishWeight) * rmRowData.ScrapRate,
+            NetLandedCost: dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - getValues('FinishWeight')) * rmRowData.ScrapRate,
             PartNumber: costData.PartNumber,
             TechnologyName: costData.TechnologyName,
             Density: rmRowData.Density,
             UOMForDimensionId: UOMDimension ? UOMDimension.value : '',
             UOMForDimension: UOMDimension ? UOMDimension.label : '',
-            // UOMDimension: values.UOMDimension,  where it is
-            OuterDiameter: values.OuterDiameter,
             Thickness: values.Thickness,
-            InnerDiameter: dataToSend.InnerDiameter,
-            LengthOfSheet: values.SheetLength,
-            LengthOfPart: values.PartLength,
-            NumberOfPartsPerSheet: dataToSend.NumberOfPartsPerSheet,
-            LengthOfScrap: dataToSend.ScrapLength,
-            WeightOfSheetInUOM: dataToSend.WeightofSheet,
-            WeightOfPartInUOM: dataToSend.WeightofPart,
-            WeightOfScrapInUOM: dataToSend.WeightofScrap
-            ,
+            StripWidth: values.StripWidth,
+            Cavity: values.Cavity,
+            Pitch: values.Pitch,
             // Side: isOneSide, why and where
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
-            IsOneSide: isOneSide,
-            SurfaceAreaSide: isOneSide ? 'Both Side' : 'One  Side',
-            NetSurfaceArea: dataToSend.NetSurfaceArea,
+            NetSurfaceArea: values.NetSurfaceArea,
             GrossWeight: (dataToSend.newGrossWeight === undefined || dataToSend.newGrossWeight === 0) ? GrossWeight : dataToSend.newGrossWeight,
             FinishWeight: getValues('FinishWeight'),
             LoggedInUserId: loggedInUserId()
         }
-
-        let obj = {
-            originalGrossWeight: GrossWeight,
-            originalFinishWeight: FinishWeight !== '' ? FinishWeight : getValues('FinsihWeight')
-        }
-
+        console.log(data, "DATA");
+        let obj = {}
         dispatch(saveRawMaterialCalciData(data, res => {
             if (res.data.Result) {
                 data.WeightCalculationId = res.data.Identity

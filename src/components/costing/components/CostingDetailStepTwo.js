@@ -2,12 +2,13 @@ import React, { useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
-  getZBCCostingByCostingId, setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost,
+  setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader,
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import moment from 'moment';
 import CostingHeadTabs from './CostingHeaderTabs/index'
+import LoaderCustom from '../../common/LoaderCustom';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -18,10 +19,13 @@ function CostingDetailStepTwo(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const { costingInfo } = props;
-    // setTimeout(() => {
-    //   dispatch(getZBCCostingByCostingId(costingInfo.costingId, (res) => { }))
-    // }, 500)
+
+    dispatch(showLoader())
+
+    setTimeout(() => {
+      dispatch(hideLoader())
+    }, 4000)
+
   }, []);
 
   const costingData = useSelector(state => state.costing.costingData)
@@ -33,6 +37,9 @@ function CostingDetailStepTwo(props) {
   const DiscountCostData = useSelector(state => state.costing.DiscountCostData)
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
+  const showLoading = useSelector(state => state.costing.showLoading)
+  console.log('showLoading: ', showLoading);
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -53,12 +60,14 @@ function CostingDetailStepTwo(props) {
 
     let OverAllCost = 0;
     if (tempData && tempData !== undefined) {
+      //CONDITION FOR OVERALL & PROCESS WISE TOOL COST.
+      const ApplyCost = IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost);
       OverAllCost =
         data.NetTotalRMBOPCC +
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
-        tempData.ToolCost - checkForNull(tempData.NetDiscountsCost)
+        ApplyCost - checkForNull(tempData.NetDiscountsCost)
     }
 
     tempData = {
@@ -67,7 +76,7 @@ function CostingDetailStepTwo(props) {
       NetBOPCost: data.NetBoughtOutPartCost,
       NetConversionCost: data.NetConversionCost,
       NetTotalRMBOPCC: data.NetTotalRMBOPCC,
-      //ToolCost: data.ToolCost,
+      ToolCost: IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost),
       TotalCost: OverAllCost,
     }
 
@@ -202,17 +211,19 @@ function CostingDetailStepTwo(props) {
 
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
+        const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
         OverAllCost =
           tempData.NetTotalRMBOPCC +
           tempData.NetSurfaceTreatmentCost +
           tempData.NetOverheadAndProfitCost +
           tempData.NetPackagingAndFreight +
-          data.ToolCost - checkForNull(tempData.NetDiscountsCost)
+          ApplyCost - checkForNull(tempData.NetDiscountsCost)
       }
 
       tempData = {
         ...tempData,
-        ToolCost: data.ToolCost,
+        // ToolCost: data.ToolCost,
+        ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
         TotalCost: OverAllCost,
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
@@ -230,6 +241,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data) => {
+
     const headerIndex = 0;
 
     let DataList = CostingDataList;
@@ -291,7 +303,7 @@ function CostingDetailStepTwo(props) {
 
   return (
     <>
-
+      {showLoading && <LoaderCustom />}
       <div className="login-container signup-form">
         <Row>
           <Col md="12">
@@ -323,9 +335,9 @@ function CostingDetailStepTwo(props) {
                       <thead>
                         <tr>
                           <th style={{ width: '140px' }}>{``}</th>
-                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'RM Cost/Assembly' : 'RM Cost/Pc'}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'BOP Cost/Assembly' : 'BOP Cost/Pc'}`}</span></th>
-                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingInfoContext.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
+                          <th style={{ width: '100px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'RM Cost/Assembly' : 'RM Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'BOP Cost/Assembly' : 'BOP Cost/Pc'}`}</span></th>
+                          <th style={{ width: '120px' }}><span className="font-weight-500">{`${costingData?.IsAssemblyPart ? 'Conversion Cost/Assembly' : 'Conversion Cost/Pc'}`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Net RM + CC Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Surface Treatment Cost`}</span></th>
                           <th style={{ width: '150px' }}><span className="font-weight-500">{`Overheads & Profits`}</span></th>
@@ -385,7 +397,6 @@ function CostingDetailStepTwo(props) {
                     <netHeadCostContext.Provider value={RMCCBOPCost} >
                       <SurfaceCostContext.Provider value={SurfaceCostData} >
                         <CostingHeadTabs
-                          //costData={costingData}
                           netPOPrice={NetPOPrice}
                           setHeaderCost={setHeaderCostRMCCTab}
                           setHeaderCostSurfaceTab={setHeaderCostSurfaceTab}

@@ -24,6 +24,7 @@ import NoContentFound from "../common/NoContentFound";
 import $ from 'jquery';
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
+import ConfirmComponent from "../../helper/ConfirmComponent";
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -702,9 +703,8 @@ class UserRegistration extends Component {
           onOk: () => {
             this.confirmUpdateUser(updatedData, true)
           },
-          onCancel: () => {
-            this.confirmUpdateUser(updatedData, false)
-          }
+          onCancel: () => { this.confirmUpdateUser(updatedData, false) },
+          component: () => <ConfirmComponent />,
         };
         return toastr.confirm(`${MESSAGES.COSTING_REJECT_ALERT}`, toastrConfirmOptions);
 
@@ -786,7 +786,7 @@ class UserRegistration extends Component {
                     <Button className={'user-btn'} onClick={() => this.setState({ isShowPwdField: !this.state.isShowPwdField })} >Change Password</Button>
                   </div>}
                 </div>
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser" onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}>
+                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate className="manageuser form" onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}>
                   <div className="add-min-height">
                     <HeaderTitle
                       title={'Personal Details:'}

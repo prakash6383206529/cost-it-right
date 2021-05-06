@@ -335,13 +335,7 @@ export function displayPublishOnDate(date) {
     'YYYY-MM-DD',
   )
   // convert date is valid or not
-  if (
-    Moment(
-      Moment(checkValidDate).format('YYYY-MM-DD'),
-      'YYYY-MM-DD',
-      true,
-    ).isValid()
-  ) {
+  if (Moment(Moment(checkValidDate).format('YYYY-MM-DD'), 'YYYY-MM-DD', true,).isValid()) {
     // check day difference is not less or grater then zero
     if (checkNumberOfDayDiff(checkValidDate, currentDate) === 0) {
       return Moment(date, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('hh:mm A')
@@ -363,11 +357,7 @@ export function displayPublishOnDate(date) {
 export function checkNumberOfDayDiff(date1, date2) {
   let dt1 = new Date(date1)
   let dt2 = new Date(date2)
-  return Math.floor(
-    (Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) -
-      Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) /
-    (1000 * 60 * 60 * 24),
-  )
+  return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate())) / (1000 * 60 * 60 * 24),)
 }
 
 /**
@@ -457,32 +447,36 @@ export function checkPermission(Data) {
     Download: false,
     BulkUpload: false,
     Activate: false,
+    Copy: false,
   }
 
-  Data &&
-    Data.map((item) => {
-      if (item.ActionName === 'Add' && item.IsChecked === true) {
-        setAccessibleData.Add = true
-      }
-      if (item.ActionName === 'Edit' && item.IsChecked === true) {
-        setAccessibleData.Edit = true
-      }
-      if (item.ActionName === 'Delete' && item.IsChecked === true) {
-        setAccessibleData.Delete = true
-      }
-      if (item.ActionName === 'View' && item.IsChecked === true) {
-        setAccessibleData.View = true
-      }
-      if (item.ActionName === 'Download' && item.IsChecked === true) {
-        setAccessibleData.Download = true
-      }
-      if (item.ActionName === 'Bulk Upload' && item.IsChecked === true) {
-        setAccessibleData.BulkUpload = true
-      }
-      if (item.ActionName === 'Activate' && item.IsChecked === true) {
-        setAccessibleData.Activate = true
-      }
-    })
+  Data && Data.map((item) => {
+    if ((item.ActionName === 'Add' || item.ActionName === 'Create') && item.IsChecked === true) {
+      setAccessibleData.Add = true
+    }
+    if ((item.ActionName === 'Edit' || item.ActionName === 'Edit All Costing') && item.IsChecked === true) {
+      setAccessibleData.Edit = true
+    }
+    if ((item.ActionName === 'Delete' || item.ActionName === 'Delete My Costing') && item.IsChecked === true) {
+      setAccessibleData.Delete = true
+    }
+    if ((item.ActionName === 'View' || item.ActionName === 'View All Costing') && item.IsChecked === true) {
+      setAccessibleData.View = true
+    }
+    if (item.ActionName === 'Download' && item.IsChecked === true) {
+      setAccessibleData.Download = true
+    }
+    if (item.ActionName === 'Bulk Upload' && item.IsChecked === true) {
+      setAccessibleData.BulkUpload = true
+    }
+    if (item.ActionName === 'Activate' && item.IsChecked === true) {
+      setAccessibleData.Activate = true
+    }
+    if (item.ActionName === 'Copy All Costing' && item.IsChecked === true) {
+      setAccessibleData.Copy = true
+    }
+    return null;
+  })
 
   return setAccessibleData
 }
@@ -672,7 +666,7 @@ export function formViewData(costingSummary) {
   obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : '-'
   obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : '-'
   obj.costingId = dataFromAPI.CostingId ? dataFromAPI.CostingId : '-'
-  obj.oldPoPrice = dataFromAPI.OldPOPrice ? dataFromAPI.OldPOPrice : '-'
+  obj.oldPoPrice = dataFromAPI.OldPOPrice ? dataFromAPI.OldPOPrice : 0
   obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
   obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
   obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
@@ -700,7 +694,7 @@ export function calculateVolume(length, width, thickness) {
 
 export function calculateWeight(density, length, width, thickness) {
   const value = density * calculateVolume(length, width, thickness)
-  console.log(value, "VALUE FROM DENSITY");
+
   return value
 }
 

@@ -53,18 +53,20 @@ import {
   SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA,
   SET_EXCHANGE_RATE_CURRENCY_DATA,
   SET_TOOL_PROCESS_WISE_DATALIST,
+  SET_IS_TOOLCOST_USED,
+  TOOL_CATEGORY_SELECTLIST,
+  SET_RMCC_ERRORS,
+  CUSTOM_LOADER_SHOW,
+  CUSTOM_LOADER_HIDE,
 } from '../../../config/constants';
 
 const initialState = {
+  ComponentItemData: {},
   ComponentItemOverheadData: {},
   ComponentItemPackageFreightData: {},
   ComponentItemToolData: {},
   ComponentItemDiscountData: {},
-  costingData: {
-    // supplierOne: {},
-    // supplierTwo: {},
-    // supplierThree: {},
-  },
+  costingData: {},
   singleCostingDetail: {},
   viewCostingDetailData: [],
   partNo: '',
@@ -89,6 +91,17 @@ export default function costingReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
+        error: true,
+      }
+    case CUSTOM_LOADER_SHOW:
+      return {
+        ...state,
+        showLoading: true,
+      }
+    case CUSTOM_LOADER_HIDE:
+      return {
+        ...state,
+        showLoading: false,
         error: true,
       }
     case GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS:
@@ -451,6 +464,24 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ToolsDataList: action.payload
+      }
+    case SET_IS_TOOLCOST_USED:
+      return {
+        ...state,
+        loading: false,
+        IsToolCostApplicable: action.payload
+      }
+    case TOOL_CATEGORY_SELECTLIST:
+      return {
+        ...state,
+        loading: false,
+        ToolCategoryList: action.payload
+      }
+    case SET_RMCC_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        ErrorObjRMCC: action.payload
       }
     default:
       return state

@@ -26,7 +26,7 @@ class SOBListing extends Component {
       isEditFlag: false,
       ID: '',
       tableData: [],
-
+      shown: false,
       costingHead: [],
       BOPCategory: [],
       plant: [],
@@ -43,7 +43,7 @@ class SOBListing extends Component {
     this.props.getBOPCategorySelectList(() => { })
     this.props.getPlantSelectList(() => { })
     this.props.getAllVendorSelectList(() => { })
-    this.props.getInitialFilterData('', () => { })
+    // this.props.getInitialFilterData('', () => { })
     this.getDataList()
   }
 
@@ -51,9 +51,10 @@ class SOBListing extends Component {
   * @method getDataList
   * @description GET DATALIST OF IMPORT BOP
   */
-  getDataList = (boughtOutPartNumber = '') => {
+  getDataList = (bought_out_part_id = null, plant_id = null) => {
     const filterData = {
-      boughtOutPartNumber: boughtOutPartNumber,
+      bought_out_part_id: bought_out_part_id,
+      plant_id: plant_id
     }
     this.props.getManageBOPSOBDataList(filterData, (res) => {
       if (res && res.status === 200) {
@@ -121,11 +122,11 @@ class SOBListing extends Component {
   }
 
   renderweightnet = () => {
-    return <>Weighted Net <br />Landed Cost (INR)</>
+    return <>Weighted Net <br /> Cost (INR)</>
   }
 
   rendernetlandedCost = () => {
-    return <>Net <br />Landed Cost</>
+    return <>Net <br />Cost</>
   }
 
   renderbopNo = () => {
@@ -288,8 +289,8 @@ class SOBListing extends Component {
                   <button type="button" className="user-btn filter-btn-top topminus88" onClick={() => this.setState({ shown: !this.state.shown })}>
                     <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                 ) : (
-                    <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                  )}
+                  <button type="button" className="user-btn" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                )}
               </div>
             </Col>
           </Row>
@@ -311,9 +312,10 @@ class SOBListing extends Component {
               <TableHeaderColumn width={100} dataField="BoughtOutPartCategory" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderbopCategory()}</TableHeaderColumn>
               <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
               <TableHeaderColumn width={90} dataField="NoOfVendors" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderNoOfVendor()}</TableHeaderColumn>
+              <TableHeaderColumn width={90} dataField="Plant" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
               <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn>
-              <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn>
+              {/* <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn> */}
               <TableHeaderColumn width={140} dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{this.renderweightnet()}</TableHeaderColumn>
               <TableHeaderColumn dataAlign="right" width={80} dataField="BoughtOutPartNumber" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>

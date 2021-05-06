@@ -96,8 +96,10 @@ function ViewBOP(props) {
                 </Table>
               </Col>
             </Row>
+            
             <Row className="mx-0">
               <Col md="12">
+                <hr />
                 <Row>
                   <Col md="12">
                     <div className="left-border">{'BOP Handling Charge:'}</div>

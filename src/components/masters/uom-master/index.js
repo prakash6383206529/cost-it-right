@@ -159,6 +159,10 @@ class UOMMaster extends Component {
     )
   }
 
+  // unitFormatter = (cell, row, enumObject, rowIndex) => {
+  //   return 
+  // }
+
   /**
   * @method statusButtonFormatter
   * @description Renders buttons
@@ -222,6 +226,8 @@ class UOMMaster extends Component {
       lastPage: <span className="last-page-pg"></span>,
 
     };
+
+
     return (
       <>
         <div className="container-fluid">
@@ -231,7 +237,7 @@ class UOMMaster extends Component {
               <h1 className="mb-0">{`Unit of Measurement Master`}</h1>
             </Col>
           </Row>
-          <Row className="no-filter-row mt-4">
+          <Row className="no-filter-row pt-4">
             {AddAccessibility && (
               <>
                 <Col md={6} className="text-right filter-block"></Col>
@@ -265,7 +271,8 @@ class UOMMaster extends Component {
                 tableHeaderClass="my-custom-class"
                 pagination
               >
-                <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}                >                  Unit                    </TableHeaderColumn>
+                <TableHeaderColumn dataField="Unit" isKey={true} dataAlign="left" dataSort={true} dataFormat={this.applySuperScriptFormatter}> Unit</TableHeaderColumn>
+                <TableHeaderColumn dataField="UnitSymbol" dataAlign="center" dataFormat={this.applySuperScriptFormatter} dataSort={true}>Unit Symbol</TableHeaderColumn>
                 <TableHeaderColumn dataField="UnitType" dataAlign="right" dataSort={true}>Unit Type</TableHeaderColumn>
                 {/* <TableHeaderColumn
                   dataField="IsActive"

@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useForm, Controller, dispatch } from 'react-hook-form';
+import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import AddBOP from '../../Drawers/AddBOP';
-import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
+import { setRMCCErrors } from '../../../actions/Costing';
 
 function BOPCost(props) {
   const { item, data } = props;
+
   const { register, handleSubmit, control, errors, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -20,6 +22,8 @@ function BOPCost(props) {
       BOPHandlingCharges: item.CostingPartDetails.BOPHandlingCharges,
     }
   });
+
+  const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(data)
   const [rowObjData, setRowObjData] = useState({})
@@ -31,9 +35,6 @@ function BOPCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const CostingViewMode = useContext(ViewCostingContext);
-
-  const BOPHandlingPercentage = getValues('BOPHandlingPercentage')
-  const BOPHandlingCharges = getValues('BOPHandlingCharges')
 
   useEffect(() => {
     setTimeout(() => {
@@ -133,13 +134,19 @@ function BOPCost(props) {
     let tempArr = [];
     let tempData = gridData[index];
 
-    if (!isNaN(event.target.value)) {
+    if (!isNaN(event.target.value) && event.target.value !== '') {
       const NetBoughtOutPartCost = tempData.LandedCostINR * parseInt(event.target.value);
       tempData = { ...tempData, Quantity: parseInt(event.target.value), NetBoughtOutPartCost: NetBoughtOutPartCost }
       tempArr = Object.assign([...gridData], { [index]: tempData })
       setGridData(tempArr)
-
     } else {
+      const NetBoughtOutPartCost = tempData.LandedCostINR * 0;
+      tempData = { ...tempData, Quantity: 0, NetBoughtOutPartCost: NetBoughtOutPartCost }
+      tempArr = Object.assign([...gridData], { [index]: tempData })
+      setGridData(tempArr)
+      setTimeout(() => {
+        setValue(`${bopGridFields}[${index}]Quantity`, 0)
+      }, 200)
       toastr.warning('Please enter valid number.')
     }
   }
@@ -211,6 +218,14 @@ function BOPCost(props) {
   const onSubmit = (values) => { }
 
   /**
+  * @method setRMCCErrors
+  * @description CALLING TO SET BOP COST FORM'S ERROR THAT WILL USE WHEN HITTING SAVE RMCC TAB API.
+  */
+  if (Object.keys(errors).length > 0) {
+    //dispatch(setRMCCErrors(errors))
+  }
+
+  /**
   * @method render
   * @description Renders the component
   */
@@ -262,7 +277,7 @@ function BOPCost(props) {
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
-                                  <TextFieldHookForm
+                                  <NumberFieldHookForm
                                     label=""
                                     name={`${bopGridFields}[${index}]Quantity`}
                                     Controller={Controller}

@@ -3,16 +3,16 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    GET_SELECTLIST_MASTERS
+    GET_SELECTLIST_MASTERS,
+    GET_VERIFY_SIMULATION_LIST,
+    GET_COSTING_SIMULATION_LIST,
+    config
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
 import { toastr } from 'react-redux-toastr'
 
-const headers = {
-    'Content-Type': 'application/json',
-    //Authorization:'Bearer 4lEZa54IiLSaAmloKW8YyBFpB5pX6dAqkKw3szUT8O8HaEgKB7G4LgbvYl9eBOu1e3tgvYOligAncfRb_4PUNwSrygdtmTvLdwMoJi5yQu9iIJAOu6J1U5iIKou92e9XLNAq953S1-R985Yc-BvLt9X9HJKYpgo4mu2DelbnHauQUdk-H-Rgv1umz56UhtnGcsPyzlHriGvJKhJjQtdPCA'
-};
+const headers = config
 
 export function getSelectListOfMasters(callback) {
     let JSON = {
@@ -133,5 +133,70 @@ export function getSelectListOfMasters(callback) {
         //     callback(error);
         //     apiErrors(error);
         //   });
+    };
+}
+
+export function runVerifySimulation(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulation, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
+
+export function getVerifySimulationList(token, callback) {
+    console.log('token in action: ', token);
+    return (dispatch) => {
+        const request = axios.get(`${API.getVerifySimulationList}/${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function getCostingSimulationList(token, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getCostingSimulationList}/${token}`, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.data.Data.SimulatedCosting
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function runSimulationOnSelectedCosting(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedCosting, data, headers);
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
     };
 }

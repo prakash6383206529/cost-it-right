@@ -1,16 +1,7 @@
 import axios from 'axios'
 import {
-  API,
-  API_REQUEST,
-  API_FAILURE,
-  GET_SEND_FOR_APPROVAL_SUCCESS,
-  GET_ALL_APPROVAL_DEPARTMENT,
-  GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
-  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT,
-  GET_ALL_REASON_SELECTLIST,
-  GET_APPROVAL_LIST,
-  config,
-  GET_APPROVAL_SUMMARY,
+  API, API_REQUEST, API_FAILURE, GET_SEND_FOR_APPROVAL_SUCCESS, GET_ALL_APPROVAL_DEPARTMENT, GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
+  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -84,11 +75,7 @@ export function getAllApprovalDepartment(callback) {
  */
 export function getAllApprovalUserByDepartment(data, callback) {
   return (dispatch) => {
-    const request = axios.post(
-      API.getAllApprovalUserByDepartment,
-      data,
-      headers,
-    )
+    const request = axios.post(API.getAllApprovalUserByDepartment, data, headers,)
     request
       .then((response) => {
         if (response.data.Result) {
@@ -119,11 +106,7 @@ export function getAllApprovalUserByDepartment(data, callback) {
  */
 export function getAllApprovalUserFilterByDepartment(data, callback) {
   return (dispatch) => {
-    const request = axios.post(
-      `${API.getAllApprovalUserFilterByDepartment}`,
-      data,
-      headers,
-    )
+    const request = axios.post(`${API.getAllApprovalUserFilterByDepartment}`, data, headers,)
 
     request
       .then((response) => {
@@ -287,9 +270,7 @@ export function getApprovalList(filterData, callback) {
 
   return (dispatch) => {
     const queryParameter = `logged_in_user_id=${filterData.loggedUser}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&part_number=${filterData.partNo}&created_by=${filterData.createdBy}&requested_by=${filterData.requestedBy}&status=${filterData.status}&type_of_costing=''`
-    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, {
-      headers,
-    })
+    const request = axios.get(`${API.getApprovalList}?${queryParameter}`, headers)
     request
       .then((response) => {
         if (response.data.Result) {
@@ -371,9 +352,7 @@ export function getApprovalSummary(
 ) {
   return (dispatch) => {
     const request = axios.get(
-      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`,
-      headers,
-    )
+      `${API.getApprovalSummaryByApprovalNo}/${approvalNumber}/${approvalProcessId}/${loggedInUserId}`, headers)
     request
       .then((response) => {
         if (response.data.Result) {
@@ -392,3 +371,46 @@ export function getApprovalSummary(
       })
   }
 }
+
+
+
+/**
+ * @method isFinalApprover
+ * @description FOR FINDING WHETHER USER IS AT HIGHER LEVEL OR NOT
+ */
+export function isFinalApprover(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.isFinalApprover, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+
+/**
+ * @method pushedApprovedCosting
+ * @description FOR PUSHING APPROVED COSTING TO CRM/SCHEDULING (DEPEND ON DIFFERENT COMPANY)
+ */
+export function pushedApprovedCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.approvalPushed, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}
+

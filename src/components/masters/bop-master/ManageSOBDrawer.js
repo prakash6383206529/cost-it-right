@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
 import HeaderTitle from '../../common/HeaderTitle';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, loggedInUserId, } from '../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -50,10 +50,27 @@ function ManageSOBDrawer(props) {
 
         if (Data.BoughtOutPartVendorList.length === 1) {
           setIsDisable(true)
+          setGridData(Data.BoughtOutPartVendorList)
+          setGridDataOldArray(Data.BoughtOutPartVendorList)
         }
+        if (Data.BoughtOutPartVendorList.length > 1) {
+          let tempArray = [];
+          let tempData = Data.BoughtOutPartVendorList[0];
+          tempData = {
+            ...tempData,
+            ShareOfBusinessPercentage: 100
+
+          }
+          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
+          setGridData(tempArray)
+          setGridDataOldArray(tempArray)
+        }
+        // else {
+
         setData(Data)
-        setGridData(Data.BoughtOutPartVendorList)
-        setGridDataOldArray(Data.BoughtOutPartVendorList)
+        // setGridData(Data.BoughtOutPartVendorList)
+        // setGridDataOldArray(Data.BoughtOutPartVendorList)
+        // }
       }
     }))
 
@@ -65,6 +82,7 @@ function ManageSOBDrawer(props) {
   // }
 
   useEffect(() => {
+
     calculateWeightedCost()
   }, [fieldValues, GridData]);
 
@@ -193,6 +211,7 @@ function ManageSOBDrawer(props) {
       "LoggedInUserId": loggedInUserId(),
       "BoughtOutPartSOBDetailId": Data.BoughtOutPartSOBDetailId,
       "WeightedNetLandedCost": WeightedCost,
+      "AveragShareOfBusinessPercentage": GridData.length !== 1 ? sum : 100,
       "BoughtOutPartVendorList": GridData
     }
     reset()
@@ -221,7 +240,7 @@ function ManageSOBDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <HeaderTitle title={'Update SOB %'} customClass={'underLine-title'} />
+                  <h3>Update SOB %</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
@@ -238,7 +257,7 @@ function ManageSOBDrawer(props) {
                     <thead>
                       <tr>
                         <th style={{ width: '100px' }}>{`Vendor Name`}</th>
-                        <th style={{ width: '165px' }}>{`Net Landed Cost/Unit`}</th>
+                        <th style={{ width: '165px' }}>{`Net Cost/Unit`}</th>
                         <th style={{ width: '155px' }}>{`SOB%`}</th>
                         <th style={{ width: '150px' }} >{`Weighted Cost`}</th>
                       </tr>
@@ -259,26 +278,26 @@ function ManageSOBDrawer(props) {
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  rules={{
-                                    //required: true,
-                                    pattern: {
-                                      //value: /^[0-9]*$/i,
-                                      // value: /^[0-9]\d*(\.\d+)?$/i,
-                                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                      message: 'Invalid Number.'
-                                    },
-                                    maxLength: {
-                                      value: 10,
-                                      message: 'Length should not be more than 10'
-                                    },
+                                  // rules={{
+                                  //   //required: true,
+                                  //   pattern: {
+                                  //     //value: /^[0-9]*$/i,
+                                  //     // value: /^[0-9]\d*(\.\d+)?$/i,
+                                  //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                  //     message: 'Invalid Number.'
+                                  //   },
+                                  //   maxLength: {
+                                  //     value: 10,
+                                  //     message: 'Length should not be more than 10'
+                                  //   },
 
-                                    max: {
-                                      value: 100,
-                                      message: "Should not be greater than 100"
-                                    },
-                                  }}
+                                  //   max: {
+                                  //     value: 100,
+                                  //     message: "Should not be greater than 100"
+                                  //   },
+                                  // }}
 
-                                  defaultValue={item.ShareOfBusinessPercentage}
+                                  defaultValue={GridData.length === 1 ? 100 : item.ShareOfBusinessPercentage}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
@@ -300,7 +319,7 @@ function ManageSOBDrawer(props) {
                         GridData && <tr className="sob-background">
                           <td>{'BOP Cost'}</td>
                           <td>{''}</td>
-                          <td>{`Net landed Cost(Weighted Average)`}</td>
+                          <td>{`Net Cost(Weighted Average)`}</td>
                           <td>{`:${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>
                         </tr>
                       }
