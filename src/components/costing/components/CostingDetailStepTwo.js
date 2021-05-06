@@ -241,7 +241,7 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data) => {
-    console.log('setHeaderDiscountTab: ', data);
+
     const headerIndex = 0;
 
     let DataList = CostingDataList;
