@@ -5191,11 +5191,11 @@ body{
 // responsive media query end
 
 .lock_icon {
-  width: 43px;
-  height: 35px;
+  width: 28px;
+  height: 26px;
   background: transparent url("../../assests/images/lock_icon.png") 0% 0% no-repeat padding-box;
   opacity: 1;
   cursor: pointer;
-  margin-top: 5px;
-  background-position: center right;
+  background-position: center;
+  display: inline-block;
 }
