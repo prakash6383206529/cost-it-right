@@ -615,10 +615,9 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewRM(index)}
                               >
-                                <i class="fa fa-eye"></i>
                               </button>
                             </td>
                           )
@@ -633,10 +632,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewBop(index)}
                               >
-                                <i class="fa fa-eye"></i>
+                                
                               </button>
                             </td>
                           )
@@ -682,10 +681,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewConversionCost(index)}
                               >
-                                <i class="fa fa-eye"></i>
+                                
                               </button>
                             </td>
                           )
@@ -775,10 +774,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => overHeadProfit(index)}
                               >
-                                <i class="fa fa-eye"></i>
+                                
                               </button>
                             </td>
                           )
@@ -812,10 +811,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewPackagingAndFrieghtData(index)}
                               >
-                                <i class="fa fa-eye"></i>
+                                
                               </button>
                             </td>
                           )
@@ -857,10 +856,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewToolCostData(index)}
                               >
-                                <i class="fa fa-eye"></i>
+                                
                               </button>
                             </td>
                           )
@@ -875,9 +874,9 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.totalCost, initialConfiguration.NoOfDecimalForPrice)}
                               {/* <button
                             type="button"
-                            class="float-right btn small-square-btn btn-link eye-btn"
+                            class="float-right mb-0 View "
                           >
-                            <i class="fa fa-eye"></i>
+                            
                           </button> */}
                             </td>
                           )
