@@ -21,11 +21,7 @@ function TabRMCC(props) {
 
   const dispatch = useDispatch()
 
-  const RMCCTabData = useSelector(state => state.costing.RMCCTabData)
-
-  // const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
-  // const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
-  const { ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC } = useSelector(state => state.costing)
+  const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
