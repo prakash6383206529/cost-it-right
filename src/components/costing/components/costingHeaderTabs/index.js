@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { connect, } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
-import { TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstrap';
 import classnames from 'classnames';
 import TabRMCC from './TabRMCC';
 import TabSurfaceTreatment from './TabSurfaceTreatment';
@@ -19,6 +19,8 @@ import {
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../helper/AllConastant';
 import { ViewCostingContext } from '../CostingDetails';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function CostingHeaderTabs(props) {
 
@@ -28,6 +30,7 @@ function CostingHeaderTabs(props) {
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
+  const [effectiveDate, setEffectiveDate] = useState('');
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -170,6 +173,24 @@ function CostingHeaderTabs(props) {
   }
 
   /**
+   * @method handleEffectiveDateChange
+   * @description Handle Effective Date
+   */
+  const handleEffectiveDateChange = (date) => {
+    setEffectiveDate(date)
+    // setTimeout(() => {
+    //   dispatch(getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
+    //     if (res && res.data && res.data.Result) {
+    //       let Data = res.data.Data;
+    //       const NetPOPriceINR = getValues('NetPOPriceINR');
+    //       setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+    //       setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+    //     }
+    //   }))
+    // }, 500)
+  }
+
+  /**
 * @method closeVisualDrawer
 * @description CLOSE VISUAL AD DRAWER
 */
@@ -184,6 +205,32 @@ function CostingHeaderTabs(props) {
   return (
     <>
       <div className="user-page p-0">
+
+        <Row className="mx-0">
+          <Col md="2">
+            <div className="form-group">
+              <label>Costing Effective Date</label>
+              <div className="inputbox date-section">
+                <DatePicker
+                  name="EffectiveDate"
+                  selected={effectiveDate}
+                  onChange={handleEffectiveDateChange}
+                  showMonthDropdown
+                  showYearDropdown
+                  dateFormat="dd/MM/yyyy"
+                  //maxDate={new Date()}
+                  dropdownMode="select"
+                  placeholderText="Select date"
+                  className="withBorder"
+                  autoComplete={"off"}
+                  disabledKeyboardNavigation
+                  onChangeRaw={(e) => e.preventDefault()}
+                  disabled={CostingViewMode ? true : false}
+                />
+              </div>
+            </div>
+          </Col>
+        </Row>
 
         {costData.IsAssemblyPart &&
           <div className="text-right w-100">

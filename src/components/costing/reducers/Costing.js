@@ -56,6 +56,8 @@ import {
   SET_IS_TOOLCOST_USED,
   TOOL_CATEGORY_SELECTLIST,
   SET_RMCC_ERRORS,
+  CUSTOM_LOADER_SHOW,
+  CUSTOM_LOADER_HIDE,
 } from '../../../config/constants';
 
 const initialState = {
@@ -89,6 +91,17 @@ export default function costingReducer(state = initialState, action) {
       return {
         ...state,
         loading: false,
+        error: true,
+      }
+    case CUSTOM_LOADER_SHOW:
+      return {
+        ...state,
+        showLoading: true,
+      }
+    case CUSTOM_LOADER_HIDE:
+      return {
+        ...state,
+        showLoading: false,
         error: true,
       }
     case GET_SUPPLIER_DETAIL_BY_PARTID_SUCCESS:
