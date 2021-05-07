@@ -1372,7 +1372,7 @@ function CostingDetails(props) {
                       </Col>
                       <Col className="col-md-15">
                         <TextFieldHookForm
-                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB : 0})`}
+                          label={`Current Price(Approved SOB: ${partInfo && partInfo.WeightedSOB !== undefined ? partInfo.WeightedSOB + '%' : 0})`}
                           name={"ShareOfBusiness"}
                           Controller={Controller}
                           control={control}
@@ -1446,7 +1446,7 @@ function CostingDetails(props) {
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Plant`}</th>
-                                  <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "160px" }}>{`Price`}</th>
@@ -1585,7 +1585,7 @@ function CostingDetails(props) {
                                 <tr>
                                   <th style={{}}>{`Vendor`}</th>
                                   {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
-                                  <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB(%)`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
                                   <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
                                   <th style={{ minWidth: "160px" }}>{`Price`}</th>

@@ -89,7 +89,8 @@ function TabRMCC(props) {
       if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + 0;
+        // return accummlator + 0;
+        return accummlator + checkForNull(el?.CostingPartDetails?.TotalRawMaterialsCost ? el.CostingPartDetails.TotalRawMaterialsCost : 0);
       }
     }, 0)
     return NetCost;
