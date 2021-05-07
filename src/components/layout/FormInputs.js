@@ -593,7 +593,7 @@ export function InputHiddenField(field) {
 }
 
 export function renderDatePicker(field) {
-  const { input, placeholder, defaultValue, meta: { touched, error }, } = field;
+  const { input, placeholder, defaultValue, disabled, meta: { touched, error }, } = field;
   return (
     <div className={"react-picker-box"}>
       <label>{field.label}{field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}      </label>
@@ -613,6 +613,7 @@ export function renderDatePicker(field) {
         autoComplete={field.autoComplete}
         disabledKeyboardNavigation
         onChangeRaw={(e) => e.preventDefault()}
+        disabled={disabled}
       />
       {touched ? <div className="text-help mb-2 mb-2">{error}</div> : ""}
     </div>

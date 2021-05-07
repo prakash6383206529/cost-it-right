@@ -214,7 +214,7 @@ class AddInterestRate extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
- 
+
   onSubmit = (values) => {
 
     const { IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate } = this.state;
@@ -467,7 +467,7 @@ class AddInterestRate extends Component {
                         <div className="form-group">
                           {/* <label>
                             Effective Date */}
-                              {/* <span className="asterisk-required">*</span> */}
+                          {/* <span className="asterisk-required">*</span> */}
                           {/* </label> */}
                           <div className="inputbox date-section">
                             {/* <DatePicker
@@ -487,23 +487,25 @@ class AddInterestRate extends Component {
                               disabled={isEditFlag ? true : false}
                             /> */}
                             <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  placeholder="Select date"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    // e.preventDefault()
-                                  }}
-                                  // disabled={isEditFlag ? true : false}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                //minDate={moment()}
-                                />
+                              label="Effective Date"
+                              name="EffectiveDate"
+                              placeholder="Select date"
+                              selected={this.state.effectiveDate}
+                              onChange={this.handleEffectiveDateChange}
+                              type="text"
+                              validate={[required]}
+                              autoComplete={'off'}
+                              required={true}
+                              changeHandler={(e) => {
+                                // e.preventDefault()
+                              }}
+                              // disabled={isEditFlag ? true : false}
+                              component={renderDatePicker}
+                              disabled={isEditFlag ? true : false
+                              }
+                              className="form-control"
+                            //minDate={moment()}
+                            />
 
                           </div>
                         </div>

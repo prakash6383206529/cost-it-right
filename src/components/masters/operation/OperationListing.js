@@ -11,14 +11,9 @@ import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import {
-    getOperationsDataList, deleteOperationAPI, getOperationSelectList,
-    getVendorWithVendorCodeSelectList, getTechnologySelectList,
-    getVendorListByTechnology,
-    getOperationListByTechnology,
-    getTechnologyListByOperation,
-    getVendorListByOperation,
-    getTechnologyListByVendor,
-    getOperationListByVendor,
+    getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
+    getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
+    getTechnologyListByVendor, getOperationListByVendor,
 } from '../actions/OtherOperation';
 import Switch from "react-switch";
 import AddOperation from './AddOperation';
@@ -29,10 +24,10 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { loggedInUserId } from '../../../helper/auth';
 import { getLeftMenu, } from '../../../actions/auth/AuthActions';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { costingHeadObj, costingHeadObjs } from '../../../config/masterData';
+import { costingHeadObjs } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
-import { Loader } from '../../common/Loader';
 import LoaderCustom from '../../common/LoaderCustom';
+import moment from 'moment';
 
 
 class OperationListing extends Component {
@@ -40,7 +35,7 @@ class OperationListing extends Component {
         super(props);
         this.state = {
             tableData: [],
-            shown:false,
+            shown: false,
             costingHead: [],
             selectedTechnology: [],
             vendorName: [],
@@ -371,7 +366,15 @@ class OperationListing extends Component {
     costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
         return cell ? 'Vendor Based' : 'Zero Based';
     }
-    
+
+    /**
+ * @method effectiveDateFormatter
+ * @description Renders buttons
+ */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
     onExportToCSV = (row) => {
         // ...
         return this.state.userData; // must return the data which you want to be exported
@@ -379,6 +382,10 @@ class OperationListing extends Component {
 
     renderPaginationShowsTotal(start, to, total) {
         return <GridTotalFormate start={start} to={to} total={total} />
+    }
+
+    renderPlantFormatter = (cell, row, enumObject, rowIndex) => {
+        return row.CostingHead ? row.DestinationPlant : row.Plants
     }
 
     /**
@@ -626,10 +633,11 @@ class OperationListing extends Component {
                         <TableHeaderColumn searchable={false} dataField="Technology" width={150} columnTitle={true} dataAlign="left" >{'Technology'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="OperationName" columnTitle={true} dataAlign="left" >{this.renderOperationName()}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="OperationCode" columnTitle={true} dataAlign="left" >{this.renderOperationCode()}</TableHeaderColumn>
-                        <TableHeaderColumn dataField="Plants" width={150} columnTitle={true} dataAlign="left" >{'Plant'}</TableHeaderColumn>
+                        <TableHeaderColumn dataField="Plants" width={150} columnTitle={true} dataAlign="left" dataFormat={this.renderPlantFormatter} >{'Plant'}</TableHeaderColumn>
                         <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" >{this.renderVendorName()}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="UnitOfMeasurement" columnTitle={true} dataAlign="left" >{'UOM'}</TableHeaderColumn>
                         <TableHeaderColumn searchable={false} dataField="Rate" width={100} columnTitle={true} dataAlign="left" >{'Rate'}</TableHeaderColumn>
+                        <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn>
                         {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                         <TableHeaderColumn dataAlign="right" searchable={false} className="action" width={110} dataField="OperationId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                     </BootstrapTable>

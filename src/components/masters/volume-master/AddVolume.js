@@ -10,7 +10,7 @@ import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSe
 import { getPartSelectList } from '../actions/Part'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { loggedInUserId, userDetails } from '../../../helper/auth'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import Switch from 'react-switch'
 import $ from 'jquery'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
@@ -104,6 +104,7 @@ class AddVolume extends Component {
       isShowForm: false,
       VolumeId: '',
       edit: false,
+      destinationPlant: []
     }
   }
 
@@ -384,41 +385,22 @@ class AddVolume extends Component {
             })
 
           setTimeout(() => {
-            const {
-              vendorWithVendorCodeSelectList,
-              financialYearSelectList,
-              partSelectList,
-            } = this.props
+            const { vendorWithVendorCodeSelectList, financialYearSelectList, partSelectList, plantSelectList } = this.props
 
-            const vendorObj =
-              vendorWithVendorCodeSelectList &&
-              vendorWithVendorCodeSelectList.find(
-                (item) => item.Value === Data.VendorId,
-              )
-            const yearObj =
-              financialYearSelectList &&
-              financialYearSelectList.find((item) => item.Text === Data.Year)
-            const partObj =
-              partSelectList &&
-              partSelectList.find((item) => item.Value === Data.PartId)
+            const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find((item) => item.Value === Data.VendorId,)
+            const yearObj = financialYearSelectList && financialYearSelectList.find((item) => item.Text === Data.Year)
+            const partObj = partSelectList && partSelectList.find((item) => item.Value === Data.PartId)
+            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
 
             this.setState({
               isEditFlag: true,
               isLoader: false,
               IsVendor: Data.IsVendor,
               selectedPlants: plantArray,
-              vendorName:
-                vendorObj && vendorObj !== undefined
-                  ? { label: vendorObj.Text, value: vendorObj.Value }
-                  : [],
-              year:
-                yearObj && yearObj !== undefined
-                  ? { label: yearObj.Text, value: yearObj.Value }
-                  : [],
-              part:
-                partObj && partObj !== undefined
-                  ? { label: partObj.Text, value: partObj.Value }
-                  : [],
+              vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+              year: yearObj && yearObj !== undefined ? { label: yearObj.Text, value: yearObj.Value } : [],
+              part: partObj && partObj !== undefined ? { label: partObj.Text, value: partObj.Value } : [],
+              destinationPlant: destinationPlantObj && destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
             })
           }, 500)
@@ -461,20 +443,18 @@ class AddVolume extends Component {
     )
   }
 
+
+  handleDestinationPlant = (newValue) => {
+    this.setState({ destinationPlant: newValue })
+  }
+
   /**
    * @method onSubmit
    * @description Used to Submit the form
    */
   onSubmit = (values) => {
     const {
-      IsVendor,
-      selectedPlants,
-      vendorName,
-      part,
-      year,
-      tableData,
-      VolumeId,
-    } = this.state
+      IsVendor, selectedPlants, vendorName, part, year, tableData, VolumeId, destinationPlant } = this.state
     const userDetail = userDetails()
 
     // let plantArray = [];
@@ -572,6 +552,8 @@ class AddVolume extends Component {
         VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,
+        DestinationPlantId: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000',
+        DestinationPlant: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : ''
       }
       this.props.reset()
       this.props.createVolume(formData, (res) => {
@@ -705,7 +687,31 @@ class AddVolume extends Component {
                               )}
                             </div>
                           </Col>
+
                         )}
+                        {
+                          this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
+                          <Col md="3">
+                            <Field
+                              label={'Destination Plant'}
+                              name="DestinationPlant"
+                              placeholder={"Select"}
+                              // selection={
+                              //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                              options={this.renderListing("plant")}
+                              handleChangeDescription={this.handleDestinationPlant}
+                              validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
+                              required={true}
+                              // optionValue={(option) => option.Value}
+                              // optionLabel={(option) => option.Text}
+                              component={searchableSelect}
+                              valueDescription={this.state.destinationPlant}
+                              mendatory={true}
+                              className="multiselect-with-border"
+                              disabled={isEditFlag ? true : false}
+                            />
+                          </Col>
+                        }
                         <Col md="3">
                           <Field
                             name="PartNumber"

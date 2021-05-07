@@ -19,6 +19,7 @@ import AddProcessDrawer from './AddProcessDrawer';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom'
+import moment from 'moment'
 
 class ProcessListing extends Component {
   constructor(props) {
@@ -283,6 +284,13 @@ class ProcessListing extends Component {
   }
 
   /**
+* @method effectiveDateFormatter
+* @description Renders buttons
+*/
+  effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+    return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+  }
+  /**
    * @method indexFormatter
    * @description Renders serial number
    */
@@ -519,6 +527,7 @@ class ProcessListing extends Component {
             >
               <TableHeaderColumn dataField="ProcessName" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Name'}</TableHeaderColumn>
               <TableHeaderColumn dataField="ProcessCode" width={200} columnTitle={true} dataAlign="left" dataSort={true}>{'Process Code'}</TableHeaderColumn>
+              {/* <TableHeaderColumn searchable={false} dataField="EffectiveDate" width={100} columnTitle={true} dataFormat={this.effectiveDateFormatter} dataAlign="left" >{'Effective Date'}</TableHeaderColumn> */}
               {/* <TableHeaderColumn dataField="Plants" width={100} columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn> */}
               {/* <TableHeaderColumn dataField="Machines" width={100}  columnTitle={true}   dataAlign="left" dataSort={true}>{'Machine'}</TableHeaderColumn> */}
               <TableHeaderColumn width={100} dataAlign="right" searchable={false} dataField="ProcessId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

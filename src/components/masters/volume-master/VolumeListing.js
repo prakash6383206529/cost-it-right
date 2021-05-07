@@ -99,7 +99,7 @@ class VolumeListing extends Component {
     this.state = {
       isEditFlag: false,
       isOpen: false,
-      shown:false,
+      shown: false,
       tableData: [],
       showVolumeForm: false,
       data: { isEditFlag: false, ID: '' },
@@ -431,6 +431,9 @@ class VolumeListing extends Component {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
+  plantFormatter = (cell, row, enumObject, rowIndex) => {
+    return row.IsVendor ? row.DestinationPlant : cell
+  }
   /**
    * @method actualBulkToggle
    * @description OPEN ACTUAL BULK UPLOAD DRAWER FOR BULK UPLOAD
@@ -537,6 +540,8 @@ class VolumeListing extends Component {
    * @returns {{}}
    */
   onSubmit(values) { }
+
+
 
   /**
    * @method render
@@ -782,7 +787,7 @@ class VolumeListing extends Component {
             <TableHeaderColumn dataField="VendorName" columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Vendor Name'}</TableHeaderColumn>
             <TableHeaderColumn dataField="PartNumber" columnTitle={true} dataAlign="left" dataSort={true} >{'Part No.'}</TableHeaderColumn>
             <TableHeaderColumn dataField="PartName" columnTitle={true} dataAlign="left" dataSort={true} >{'Part Name'}</TableHeaderColumn>
-            <TableHeaderColumn dataField="PlantCode" columnTitle={true} dataAlign="left" dataSort={true}>{'Plant'}</TableHeaderColumn>
+            <TableHeaderColumn dataField="Plant" columnTitle={true} dataAlign="left" dataFormat={this.plantFormatter} dataSort={true}>{'Plant'}</TableHeaderColumn>
             <TableHeaderColumn dataField="BudgetedQuantity" width={150} searchable={false} columnTitle={true} dataAlign="left" dataSort={true} >{'Budgeted Quantity'}</TableHeaderColumn>
             <TableHeaderColumn dataField="ApprovedQuantity" width={150} columnTitle={true} searchable={false} dataAlign="left" dataSort={true} >{'Actual Quantity '}</TableHeaderColumn>
             <TableHeaderColumn dataAlign="right" width={100} className="action" dataField="VolumeId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, alphaNumeric, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix } from "../../../helper/validation";
 import {
-  renderText, renderMultiSelectField, searchableSelect, renderTextAreaField
+  renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker
 } from "../../layout/FormInputs";
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
@@ -17,7 +17,7 @@ import {
 } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId, userDetails } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import $ from 'jquery';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
@@ -26,6 +26,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
+import moment from 'moment';
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -52,6 +53,8 @@ class AddOperation extends Component {
       isOpenVendor: false,
       isOpenUOM: false,
       OperationId: '',
+      effectiveDate: '',
+      destinationPlant: []
     }
   }
 
@@ -114,6 +117,14 @@ class AddOperation extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'singlePlant') {
+      plantSelectList && plantSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
     }
     if (label === 'VendorNameList') {
       vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.map(item => {
@@ -228,6 +239,15 @@ class AddOperation extends Component {
   }
 
   /**
+    * @method handleChange
+    * @description Handle Effective Date
+    */
+  handleEffectiveDateChange = (date) => {
+    this.setState({
+      effectiveDate: date,
+    })
+  }
+  /**
   * @method onPressSurfaceTreatment
   * @description Used for Surface Treatment
   */
@@ -262,6 +282,8 @@ class AddOperation extends Component {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
 
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+
           let plantArray = [];
           Data && Data.Plant.map((item) => {
             plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -281,10 +303,11 @@ class AddOperation extends Component {
           })
 
           setTimeout(() => {
-            const { vendorWithVendorCodeSelectList, UOMSelectList } = this.props;
+            const { vendorWithVendorCodeSelectList, UOMSelectList, plantSelectList } = this.props;
 
             const vendorObj = vendorWithVendorCodeSelectList && vendorWithVendorCodeSelectList.find(item => item.Value === Data.VendorId)
             const UOMObj = UOMSelectList && UOMSelectList.find(item => item.Value === Data.UnitOfMeasurementId)
+            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
 
             this.setState({
               isEditFlag: true,
@@ -298,6 +321,8 @@ class AddOperation extends Component {
               isSurfaceTreatment: Data.IsSurfaceTreatmentOperation,
               remarks: Data.Remark,
               files: Data.Attachements,
+              // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
+              destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
             })
           }, 500)
 
@@ -388,6 +413,11 @@ class AddOperation extends Component {
     )
   }
 
+  handleDestinationPlant = (newValue) => {
+    this.setState({ destinationPlant: newValue })
+  }
+
+
   /**
   * @method cancel
   * @description used to Reset form
@@ -416,7 +446,7 @@ class AddOperation extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, effectiveDate, destinationPlant } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
@@ -481,6 +511,8 @@ class AddOperation extends Component {
         VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlants : []) : [],
         Attachements: files,
         LoggedInUserId: loggedInUserId(),
+        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD HH:mm:ss'),
+        DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000'
       }
       this.props.reset()
       this.props.createOperationsAPI(formData, (res) => {
@@ -658,7 +690,9 @@ class AddOperation extends Component {
                               ></div>
                             )}
                           </div>
+
                         </Col>
+
                       )}
                       {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                         <Col md="3">
@@ -679,7 +713,29 @@ class AddOperation extends Component {
                         </Col>
                       )}
 
-
+                      {
+                        this.state.IsVendor && getConfigurationKey().IsDestinationPlantConfigure &&
+                        <Col md="3">
+                          <Field
+                            label={'Destination Plant'}
+                            name="DestinationPlant"
+                            placeholder={"Select"}
+                            // selection={
+                            //   this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                            options={this.renderListing("singlePlant")}
+                            handleChangeDescription={this.handleDestinationPlant}
+                            validate={this.state.destinationPlant == null || this.state.destinationPlant.length === 0 ? [required] : []}
+                            required={true}
+                            // optionValue={(option) => option.Value}
+                            // optionLabel={(option) => option.Text}
+                            component={searchableSelect}
+                            valueDescription={this.state.destinationPlant}
+                            mendatory={true}
+                            className="multiselect-with-border"
+                            disabled={isEditFlag ? true : false}
+                          />
+                        </Col>
+                      }
                       <Col md="3">
                         <Field
                           name="UnitOfMeasurementId"
@@ -726,12 +782,33 @@ class AddOperation extends Component {
                           customClassName=" withBorder"
                         />
                       </Col>}
-
+                      <Col md="3">
+                        <div className="inputbox date-section mb-3">
+                          <Field
+                            label="Effective Date"
+                            name="EffectiveDate"
+                            selected={this.state.effectiveDate}
+                            onChange={this.handleEffectiveDateChange}
+                            type="text"
+                            validate={[required]}
+                            autoComplete={'off'}
+                            required={true}
+                            changeHandler={(e) => {
+                              //e.preventDefault()
+                            }}
+                            component={renderDatePicker}
+                            className=" "
+                            disabled={isEditFlag ? true : false}
+                            customClassName=" withBorder"
+                          //minDate={moment()}
+                          />
+                        </div>
+                      </Col>
 
                     </Row>
 
                     <Row>
-                      <Col md="4" className="mb-4 pb-1">
+                      <Col md="4" className="mb-5 pb-1">
                         <label
                           className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                             }`}
