@@ -341,7 +341,7 @@ class AddRMImport extends Component {
           } else {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
-
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, res => { })
           this.props.fetchSpecificationDataAPI(Data.RMGrade, res => { });
@@ -1107,7 +1107,7 @@ class AddRMImport extends Component {
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                                disabled={isEditFlag ? true : false}
                               />
                             </Col>
                           }
@@ -1283,6 +1283,7 @@ class AddRMImport extends Component {
                                   validate={[required]}
                                   autoComplete={'off'}
                                   required={true}
+                                  disabled={isEditFlag ? true : false}
                                   changeHandler={(e) => {
                                     //e.preventDefault()
                                   }}

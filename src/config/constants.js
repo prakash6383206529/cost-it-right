@@ -638,7 +638,7 @@ export const API = {
   approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approver`,
   rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
   getApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-costing-summary`,
-  isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approvar`,
+  isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approver`,
   approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
 
   //PRIVILEGE

@@ -334,7 +334,7 @@ class AddExchangeRate extends Component {
                               validate={[required]}
                               onChangeRaw={(e) => e.preventDefault()}
                               required
-                              disabled={false}
+                              disabled={isEditFlag ? true : false}
 
                             />
                             {/* <Field

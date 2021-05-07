@@ -18,6 +18,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
+import moment from 'moment';
 
 class OverheadListing extends Component {
     constructor(props) {
@@ -27,7 +28,7 @@ class OverheadListing extends Component {
             isEditFlag: false,
             tableData: [],
             IsVendor: false,
-            shown:false,
+            shown: false,
             costingHead: [],
             ModelType: [],
             vendorName: [],
@@ -156,10 +157,10 @@ class OverheadListing extends Component {
             headText = 'Client Based';
         }
 
-        
-        
-        
-        
+
+
+
+
         // if (!cell && row.VendorName === '-') {
         //     headText = 'Zero Based';
         // } else if (cell && row.VendorName !== '-') {
@@ -168,6 +169,14 @@ class OverheadListing extends Component {
         //     headText = 'Client Based';
         // }
         return headText;
+    }
+
+    /**
+    * @method effectiveDateFormatter
+    * @description Renders buttons
+    */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
     }
 
     /**
@@ -219,6 +228,10 @@ class OverheadListing extends Component {
     renderOverheadBOP = () => {
         return <>Overhead <br />on BOP (%)</>
     }
+    renderEffectiveDate = () => {
+        return <>Effective <br />Date</>
+    }
+
 
     /**
     * @method handleHeadChange
@@ -563,6 +576,7 @@ class OverheadListing extends Component {
                             <TableHeaderColumn searchable={false} dataField="OverheadRMPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="OverheadBOPPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="OverheadMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                             <TableHeaderColumn dataAlign="right" searchable={false} width={100} dataField="OverheadId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>

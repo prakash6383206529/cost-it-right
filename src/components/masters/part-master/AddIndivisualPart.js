@@ -437,7 +437,7 @@ class AddIndivisualPart extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
+                                  disabled={isEditFlag ? true : false}
                                 />
                               </div>
                             </div>

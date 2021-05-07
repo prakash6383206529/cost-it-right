@@ -26,7 +26,7 @@ class MachineRateListing extends Component {
         this.state = {
             isEditFlag: false,
             tableData: [],
-            shown:false,
+            shown: false,
             costingHead: [],
             plant: [],
             technology: [],
@@ -357,6 +357,9 @@ class MachineRateListing extends Component {
         return <>Machine<br /> Rate </>
     }
 
+    renderPlantFormatter = (cell, row, enumObject, rowIndex) => {
+        return row.IsVendor ? row.DestinationPlant : row.Plants
+    }
 
 
     bulkToggle = () => {
@@ -612,7 +615,7 @@ class MachineRateListing extends Component {
                             <TableHeaderColumn dataField="IsVendor" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.costingHeadFormatter}>{this.renderCostingHead()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="Technologies" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{'Technology'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderVendorName()}</TableHeaderColumn>
-                            <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.plantsFormatter} >{'Plant'}</TableHeaderColumn>
+                            <TableHeaderColumn dataField="Plants" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} dataFormat={this.renderPlantFormatter} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineNumber" searchable={true} width={120} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineNo()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTypeName" width={110} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineType()}</TableHeaderColumn>
                             <TableHeaderColumn dataField="MachineTonnage" searchable={false} width={100} columnTitle={true} dataAlign="left" dataSort={true} >{this.renderMachineTonage()}</TableHeaderColumn>

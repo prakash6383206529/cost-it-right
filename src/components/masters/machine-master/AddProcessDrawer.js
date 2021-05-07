@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, reset, formValueSelector } from 'redux-form'
 import { Container, Row, Col } from 'reactstrap'
 import { acceptAllExceptSingleSpecialCharacter, required } from '../../../helper/validation'
-import { renderText, renderMultiSelectField } from '../../layout/FormInputs'
+import { renderText, renderMultiSelectField, renderDatePicker } from '../../layout/FormInputs'
 import { getMachineSelectList } from '../actions/MachineMaster'
 import { getProcessCode, createProcess, updateProcess, getProcessData, } from '../actions/Process'
 import { getPlantSelectList } from '../../../actions/Common'
@@ -11,6 +11,7 @@ import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
+import moment from 'moment'
 const selector = formValueSelector('AddProcessDrawer');
 
 class AddProcessDrawer extends Component {
@@ -20,6 +21,7 @@ class AddProcessDrawer extends Component {
       selectedPlants: [],
       selectedMachine: [],
       ProcessId: '',
+      effectiveDate: ''
     }
   }
 
@@ -44,7 +46,8 @@ class AddProcessDrawer extends Component {
       this.props.getProcessData(ID, res => {
         let Data = res.data.Data
         this.setState({
-          ProcessId: Data.ProcessId
+          ProcessId: Data.ProcessId,
+          effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : ''
         })
       })
     } else {
@@ -92,6 +95,16 @@ class AddProcessDrawer extends Component {
   }
 
   /**
+    * @method handleChange
+    * @description Handle Effective Date
+    */
+  handleEffectiveDateChange = (date) => {
+    this.setState({
+      effectiveDate: date,
+    })
+  }
+
+  /**
    * @method renderListing
    * @description Used show listing of unit of measurement
    */
@@ -132,7 +145,7 @@ class AddProcessDrawer extends Component {
    * @description Used to Submit the form
    */
   onSubmit = (values) => {
-    const { selectedPlants, selectedMachine } = this.state
+    const { selectedPlants, selectedMachine, effectiveDate } = this.state
     const { isEditFlag, isMachineShow, ID } = this.props
 
     let plantArray =
@@ -166,6 +179,7 @@ class AddProcessDrawer extends Component {
       let formData = {
         ProcessName: values.ProcessName,
         ProcessCode: values.ProcessCode,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY/MM/DD'),
         LoggedInUserId: loggedInUserId(),
       }
 
@@ -234,6 +248,28 @@ class AddProcessDrawer extends Component {
                       disabled={isEditFlag ? true : false}
                     />
                   </Col>
+                  {/* <Col md="12">
+                    <div className="inputbox date-section mb-5">
+                      <Field
+                        label="Effective Date"
+                        name="EffectiveDate"
+                        selected={this.state.effectiveDate}
+                        onChange={this.handleEffectiveDateChange}
+                        type="text"
+                        validate={[required]}
+                        autoComplete={'off'}
+                        required={true}
+                        changeHandler={(e) => {
+                          //e.preventDefault()
+                        }}
+                        component={renderDatePicker}
+                        className=" "
+                        disabled={isEditFlag ? true : false}
+                        customClassName=" withBorder"
+                      //minDate={moment()}
+                      />
+                    </div>
+                  </Col> */}
                   {/* <Col md="12">
                     <Field
                       label="Plant"

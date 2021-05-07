@@ -16,7 +16,7 @@ import {
 } from '../actions/Material'
 import { toastr } from 'react-redux-toastr'
 import { MESSAGES } from '../../../config/message'
-import { loggedInUserId, checkVendorPlantConfigurable, getConfigurationKey, } from '../../../helper/auth'
+import { loggedInUserId, getConfigurationKey, } from '../../../helper/auth'
 import Switch from 'react-switch'
 import AddSpecification from './AddSpecification'
 import AddGrade from './AddGrade'
@@ -26,7 +26,6 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery'
-import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { FILE_URL, ZBC } from '../../../config/constants'
 import moment from 'moment';
@@ -1127,7 +1126,7 @@ class AddRMDomestic extends Component {
                                 valueDescription={this.state.singlePlantSelected}
                                 mendatory={true}
                                 className="multiselect-with-border"
-                              // disabled={this.state.IsVendor || isEditFlag ? true : false}
+                                disabled={isEditFlag ? true : false}
                               />
                             </Col>
                           }
@@ -1385,6 +1384,7 @@ class AddRMDomestic extends Component {
                                   }}
                                   component={renderDatePicker}
                                   className="form-control"
+                                  disabled={isEditFlag ? true : false}
                                 //minDate={moment()}
                                 />
                               </div>

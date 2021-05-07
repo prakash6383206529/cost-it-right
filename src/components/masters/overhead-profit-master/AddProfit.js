@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
 import { required, maxLength100, getVendorCode, number, maxLength512, positiveAndDecimalNumber, maxLength15, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { renderText, searchableSelect, renderTextAreaField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 import {
@@ -17,6 +17,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
+import moment from 'moment';
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
@@ -48,6 +49,7 @@ class AddProfit extends Component {
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
+      effectiveDate: ''
     }
   }
 
@@ -114,7 +116,7 @@ class AddProfit extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
 
@@ -143,6 +145,7 @@ class AddProfit extends Component {
               overheadAppli: AppliObj && AppliObj !== undefined ? { label: AppliObj.Text, value: AppliObj.Value } : [],
               remarks: Data.Remark,
               files: Data.Attachements,
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
             }, () => this.checkOverheadFields())
           }, 500)
         }
@@ -254,6 +257,15 @@ class AddProfit extends Component {
     }
   }
 
+  /**
+ * @method handleChange
+ * @description Handle Effective Date
+ */
+  handleEffectiveDateChange = (date) => {
+    this.setState({
+      effectiveDate: date,
+    })
+  }
   /**
   * @method handleOverheadChange
   * @description called
@@ -495,7 +507,7 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
@@ -525,6 +537,7 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
       }
 
       this.props.reset()
@@ -554,6 +567,7 @@ class AddProfit extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: files,
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
       }
 
       this.props.reset()
@@ -814,6 +828,27 @@ class AddProfit extends Component {
                             />
                           </Col>
                         )}
+                        <Col md="4">
+                          <div className="inputbox date-section mb-3">
+                            <Field
+                              label="Effective Date"
+                              name="EffectiveDate"
+                              selected={this.state.effectiveDate}
+                              onChange={this.handleEffectiveDateChange}
+                              type="text"
+                              validate={[required]}
+                              autoComplete={'off'}
+                              required={true}
+                              changeHandler={(e) => {
+                                //e.preventDefault()
+                              }}
+                              component={renderDatePicker}
+                              className="form-control"
+                              disabled={isEditFlag ? true : false}
+                            //minDate={moment()}
+                            />
+                          </div>
+                        </Col>
                       </Row>
 
                       <Row>
