@@ -163,7 +163,7 @@ function AddAssemblyOperation(props) {
                             background="#4DC771"
                             onColor="#4DC771"
                             onHandleColor="#ffffff"
-                            offColor="#4DC771"
+                            offColor="#CCC"
                             uncheckedIcon={false}
                             checkedIcon={false}
                             height={20}

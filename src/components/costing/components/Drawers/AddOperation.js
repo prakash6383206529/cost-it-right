@@ -9,7 +9,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { ZBC } from '../../../../config/constants';
+import { EMPTY_GUID_0, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddOperation(props) {
@@ -21,6 +21,7 @@ function AddOperation(props) {
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   /**
   * @method toggleDrawer
@@ -39,6 +40,7 @@ function AddOperation(props) {
         PlantId: costData.PlantId,
         TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getOperationDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -57,6 +59,8 @@ function AddOperation(props) {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID_0,
+        EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }
       dispatch(getOperationDrawerVBCDataList(data, (res) => {
@@ -116,12 +120,6 @@ function AddOperation(props) {
     mode: 'checkbox',
     clickToSelect: true,
     unselectable: selectedIds,
-    // bgColor: function (row, isSelect) {
-    //   
-    //   const { OperationId } = row;
-    //   if (OperationId === '6446d198-b95d-4e37-bbf0-98404ea57245') return 'blue';
-    //   return null;
-    // },
     onSelect: onRowSelect,
     onSelectAll: onSelectAll
   };
@@ -156,7 +154,7 @@ function AddOperation(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
