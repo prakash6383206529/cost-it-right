@@ -1440,16 +1440,16 @@ function CostingDetails(props) {
                         <Row>
                           <Col md="12">
                             <Table
-                              className="table cr-brdr-main costing-table-next"
+                              className="table cr-brdr-main costing-table-next costing-table-zbc"
                               size="sm"
                             >
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Plant`}</th>
-                                  <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB`}{zbcPlantGrid.length > 0 && <button className="edit-details-btn ml-2 p-2" type={"button"} onClick={() => setZBCEnableSOBField(!isZBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
-                                  <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
-                                  <th style={{ minWidth: "160px" }}>{`Price`}</th>
+                                  <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
+                                  <th style={{ minWidth: "115px" }}>{`Price`}</th>
                                   <th style={{ minWidth: "255px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>
@@ -1578,17 +1578,17 @@ function CostingDetails(props) {
                         <Row>
                           <Col md="12">
                             <Table
-                              className="table cr-brdr-main costing-table-next"
+                              className="table cr-brdr-main costing-table-next costing-table-vbc"
                               size="sm"
                             >
                               <thead>
                                 <tr>
                                   <th style={{}}>{`Vendor`}</th>
                                   {initialConfiguration?.IsDestinationPlantConfigure && <th style={{}}>{`Destination Plant`}</th>}
-                                  <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn mr-2 ml5" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
+                                  <th style={{}}>{`SOB`}{vbcVendorGrid.length > 0 && <button className="edit-details-btn ml-2 p-2" type={"button"} onClick={() => setVBCEnableSOBField(!isVBCSOBEnabled)} />}</th>
                                   <th style={{}}>{`Costing Version`}</th>
-                                  <th className="text-center" style={{ minWidth: "260px" }}>{`Status`}</th>
-                                  <th style={{ minWidth: "160px" }}>{`Price`}</th>
+                                  <th className="text-center" style={{ minWidth: "200px" }}>{`Status`}</th>
+                                  <th style={{ minWidth: "115px" }}>{`Price`}</th>
                                   <th style={{ minWidth: "255px" }}>{`Actions`}</th>
                                 </tr>
                               </thead>

@@ -2923,14 +2923,31 @@ opacity: 0.5;
   }
 }
 .costing-table-next{
-  thead{
-    tr{width: 100%;
-      th{
-        &:first-child{width: 20%;}
-        &:nth-child(2){width: 15%;}
-        &:nth-child(3){width: 30%;}
-        &:nth-child(4){width: 28%;}
-        &:nth-child(5){width: 12%;}
+  &.costing-table-zbc{
+    thead{
+      tr{width: 100%;
+        th{
+          &:first-child{width: 30%;}
+          &:nth-child(2){width: 140px;}
+          &:nth-child(3){width: 23%;}
+          &:nth-child(4){width: 15%;}
+          &:nth-child(5){width: 10%;}
+        }
+      }
+    }
+  }
+
+  &.costing-table-vbc{
+    thead{
+      tr{width: 100%;
+        th{
+          &:first-child{width: 15%;}
+          &:nth-child(2){width: 15%;}
+          &:nth-child(3){width: 140px;}
+          &:nth-child(4){width: 23%;}
+          &:nth-child(5){width: 15%;}
+          &:nth-child(6){width: 10%;}
+        }
       }
     }
   }
@@ -3955,7 +3972,30 @@ body{
       }
     }    
   }
+
+  .costing-table-next{
+    &.costing-table-zbc{
+      thead{
+        tr{
+          th{
+            &:nth-child(3){width: 20%;}
+          }
+        }
+      }
+    }
+  
+    &.costing-table-vbc{
+      thead{
+        tr{
+          th{
+            &:nth-child(4){width: 20%;}
+          }
+        }
+      }
+    }
+  }
   // costing details page only end
+
 }// 1600px media query end
 
 @media(max-width:1366px){
@@ -5097,20 +5137,36 @@ body{
     label{font-size: 14px;}
   }
   .costing-table-next{
-    thead{
-      tr{
-        th{
-          &:first-child{width: 15%;}
-          &:nth-child(2){width: 15%;}
-          &:nth-child(3){width: 15%;}
-          &:nth-child(4){width: 15%;}
-          &:nth-child(5){width: 13%;min-width: 120px !important;}
-          &:nth-child(6){width: 15%;min-width: 100px !important;}
-          &:nth-child(7){min-width: 200px !important;}
-        }// th
-      }// tr
-    }// thead
-  }// costing-table-next
+    &.costing-table-zbc{
+      thead{
+        tr{
+          th{
+            // &:first-child{width: 30%;}
+            &:nth-child(2){width: auto;min-width: 100px;}
+            &:nth-child(3){width: 21%;}
+            // &:nth-child(4){width: 15%;}
+            // &:nth-child(5){width: 10%;}
+            &:nth-child(6){min-width: 195px !important;}
+          }
+        }
+      }
+    }
+  
+    &.costing-table-vbc{
+      thead{
+        tr{
+          th{
+            // &:first-child{width: 15%;}
+            // &:nth-child(2){width: 15%;}
+            &:nth-child(3){width: auto;min-width: 100px;}
+            &:nth-child(4){width: 22%;}
+            // &:nth-child(5){width: 15%;}
+            &:nth-child(7){min-width: 195px !important;}
+          }
+        }
+      }
+    }
+  }
 
   .costing-details-page{
     .table {

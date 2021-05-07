@@ -598,7 +598,7 @@ const SendForApproval = (props) => {
                           />
                         </Col>
                         {
-                          showValidation && <span className="warning-top"><WarningMessage message={'There is no approver added in this department'} /></span>
+                          showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
                         <Col md="12">

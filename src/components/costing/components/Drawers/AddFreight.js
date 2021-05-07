@@ -365,7 +365,7 @@ function AddFreight(props) {
                       />{' '}
                       <span>Fixed</span>
                     </Label>
-                    <Label className={'pl0 pr-3 w-auto radio-box mb-0 pb-3'} check>
+                    <Label className={'pl0 w-auto radio-box mb-0 pb-3'} check>
                       <input
                         type="radio"
                         name="freightType"
