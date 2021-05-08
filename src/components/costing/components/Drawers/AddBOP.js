@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID_0, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -57,7 +57,7 @@ function AddBOP(props) {
       const data = {
         VendorId: costData.VendorId,
         VendorPlantId: costData.VendorPlantId,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID_0,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }

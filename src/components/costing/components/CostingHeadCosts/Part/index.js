@@ -23,6 +23,7 @@ function PartCompoment(props) {
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  const CloseOpenAccordion = useSelector(state => state.costing.CloseOpenAccordion)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -51,6 +52,12 @@ function PartCompoment(props) {
   useEffect(() => {
     dispatch(setComponentItemData(item, () => { }))
   }, [IsOpen])
+
+  useEffect(() => {
+    if (IsOpen === true) {
+      toggle(item.BOMLevel, item.PartNumber)
+    }
+  }, [CloseOpenAccordion])
 
   useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API

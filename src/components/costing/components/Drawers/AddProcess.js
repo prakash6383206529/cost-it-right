@@ -42,7 +42,6 @@ function AddProcess(props) {
         PlantId: costData.PlantId,
         TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -61,8 +60,7 @@ function AddProcess(props) {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID_0,
-        EffectiveDate: CostingEffectiveDate,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         CostingId: costData.CostingId,
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
@@ -104,8 +102,8 @@ function AddProcess(props) {
       let tempArr = [...selectedRowData, row]
       setSelectedRowData(tempArr)
     } else {
-      const OperationId = row.OperationId;
-      let tempArr = selectedRowData && selectedRowData.filter(el => el.OperationId !== OperationId)
+      const ProcessId = row.ProcessId;
+      let tempArr = selectedRowData && selectedRowData.filter(el => el.ProcessId !== ProcessId)
       setSelectedRowData(tempArr)
     }
   }
