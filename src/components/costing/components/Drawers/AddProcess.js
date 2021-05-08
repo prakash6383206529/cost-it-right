@@ -9,7 +9,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, EMPTY_GUID_0, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddProcess(props) {
@@ -21,7 +21,8 @@ function AddProcess(props) {
 
   const costData = useContext(costingInfoContext)
 
-  const processDrawerList = useSelector(state => state.costing.processDrawerList)
+  const { processDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { initialConfiguration } = useSelector(state => state.auth)
 
   /**
   * @method toggleDrawer
@@ -41,6 +42,7 @@ function AddProcess(props) {
         PlantId: costData.PlantId,
         TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getProcessDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -59,6 +61,8 @@ function AddProcess(props) {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID_0,
+        EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }
       dispatch(getProcessDrawerVBCDataList(data, (res) => {
@@ -152,7 +156,7 @@ function AddProcess(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>

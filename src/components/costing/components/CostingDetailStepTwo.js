@@ -182,37 +182,37 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM TOOL TAB 
    */
   const setHeaderCostToolTab = (data) => {
-
     const headerIndex = 0;
 
-    setTimeout(() => {
-      let DataList = CostingDataList;
-      let tempData = CostingDataList && CostingDataList[headerIndex];
+    //setTimeout(() => {
+    let DataList = CostingDataList;
+    let tempData = CostingDataList && CostingDataList[headerIndex];
 
-      let OverAllCost = 0;
-      if (tempData && tempData !== undefined) {
-        const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
-        OverAllCost =
-          tempData.NetTotalRMBOPCC +
-          tempData.NetSurfaceTreatmentCost +
-          tempData.NetOverheadAndProfitCost +
-          tempData.NetPackagingAndFreight +
-          ApplyCost - checkForNull(tempData.NetDiscountsCost)
-      }
+    let OverAllCost = 0;
+    if (tempData && tempData !== undefined) {
+      console.log('setHeaderCostToolTab: ', IsToolCostApplicable, data, tempData);
+      const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
+      OverAllCost =
+        tempData.NetTotalRMBOPCC +
+        tempData.NetSurfaceTreatmentCost +
+        tempData.NetOverheadAndProfitCost +
+        tempData.NetPackagingAndFreight +
+        ApplyCost - checkForNull(tempData.NetDiscountsCost)
+    }
 
-      tempData = {
-        ...tempData,
-        // ToolCost: data.ToolCost,
-        ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
-        TotalCost: OverAllCost,
-      }
-      let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
+    tempData = {
+      ...tempData,
+      // ToolCost: data.ToolCost,
+      ToolCost: IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost),
+      TotalCost: OverAllCost,
+    }
+    let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
 
-      dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
-      dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
-      //dispatch(setSurfaceCostData(data, () => { }))
+    dispatch(setCostingDataList('setHeaderCostToolTab', tempArr, () => { }))
+    dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
+    //dispatch(setSurfaceCostData(data, () => { }))
 
-    }, 200)
+    //}, 200)
 
   }
 
@@ -281,7 +281,7 @@ function CostingDetailStepTwo(props) {
 
   return (
     <>
-      {showLoading && <LoaderCustom customClass={'costing-loader'}/>}
+      {showLoading && <LoaderCustom customClass={'costing-loader'} />}
       <div className="login-container signup-form">
         <Row>
           <Col md="12">

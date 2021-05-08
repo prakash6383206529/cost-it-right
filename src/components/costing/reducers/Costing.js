@@ -58,6 +58,7 @@ import {
   SET_RMCC_ERRORS,
   CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE,
+  SET_COSTING_EFFECTIVE_DATE,
 } from '../../../config/constants';
 
 const initialState = {
@@ -482,6 +483,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ErrorObjRMCC: action.payload
+      }
+    case SET_COSTING_EFFECTIVE_DATE:
+      return {
+        ...state,
+        loading: false,
+        CostingEffectiveDate: action.payload
       }
     default:
       return state
