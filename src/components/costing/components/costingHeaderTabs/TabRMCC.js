@@ -5,7 +5,7 @@ import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import {
   getRMCCTabData, saveCostingRMCCTab, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion
 } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
@@ -1016,6 +1016,7 @@ function TabRMCC(props) {
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+          dispatch(CloseOpenAccordion())
           dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
         }
@@ -1033,10 +1034,8 @@ function TabRMCC(props) {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  const onSubmit = (values) => {
-
-  }
-
+  const onSubmit = (values) => { }
+  console.log('ComponentItemData', ComponentItemData, Object.keys(ComponentItemData).length)
   return (
     <>
       <div className="login-container signup-form">
@@ -1135,7 +1134,7 @@ function TabRMCC(props) {
                       type={'button'}
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
-                    //disabled={Object.keys(ComponentItemData).length > 0 ? true : false}
+                      disabled={Object.keys(ComponentItemData).length === 0 ? true : false}
                     >
                       <div className={'check-icon'}>
                         <img

@@ -55,7 +55,7 @@ function OverheadProfit(props) {
   const SurfaceTreatmentCost = useContext(SurfaceCostContext);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const IsIncludedSurfaceInOverheadProfit = useSelector(state => state.costing.IsIncludedSurfaceInOverheadProfit)
+  const { CostingEffectiveDate, IsIncludedSurfaceInOverheadProfit } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -769,6 +769,7 @@ function OverheadProfit(props) {
         ModelTypeId: newValue.value,
         VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
         IsVendor: costData.IsVendor,
+        EffectiveDate: CostingEffectiveDate,
       }
 
       dispatch(getOverheadProfitDataByModelType(reqParams, res => {

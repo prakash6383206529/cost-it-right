@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, EMPTY_GUID_0, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddRM(props) {
@@ -50,7 +50,7 @@ function AddRM(props) {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID_0,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
         EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }
