@@ -475,7 +475,7 @@ export function setComponentItemData(TabData, callback) {
  * @method CloseOpenAccordion
  * @description SET COMPONENT ITEM DATA  
  */
-export function CloseOpenAccordion(Flag) {
+export function CloseOpenAccordion() {
   return (dispatch) => {
     dispatch({
       type: CLOSE_OPEN_ACCORDION,
