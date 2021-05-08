@@ -103,7 +103,7 @@ input:focus {
 .login-form {
   width: 100%;
   padding-top: 100px;
-  height: 550px;
+  height: 578px;
   .inputbox.input-group {
   .form-control { height: 40px;border-color: #C2CBE8;padding-left: 40px!important;
   }
@@ -193,15 +193,34 @@ span.input-group-text.bg-white {
 .login-box {background-image: url(../../assests/images/box.png);}
 .form-section {
   background-color: #fff;;
-    padding: 0 71px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border-radius: 8px 0 0 8px; 
+  padding: 50px 71px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 8px 0 0 8px; 
+  .bottomlogo_con{
+    text-align: center;
+    span{
+      display: block;
+      position: relative;
+      font-weight: 500;
+      font-size: 15px;
+      bottom: -5px;
+      color: #233a70;
+      margin-top: 25px;
+    }
+    .logo-second{
+      margin-bottom: 0px;
+      padding: 0px;
+      max-width: 230px;
+    }
+  }
    img{
-     width: 100%;
+     width: 90%;
      padding: 10px;
      margin-bottom: 15px;
+     max-height: 130px;
+     object-fit: contain
    }
  h3{
   font-size: 20px;

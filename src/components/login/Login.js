@@ -98,7 +98,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo.png')} alt='Cost It Rights' />
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/sipl-logo.svg")} alt="Systematix"/>
                   </a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
@@ -179,6 +179,10 @@ class Login extends Component {
                   )
                   }
                 </form>
+                <div className="bottomlogo_con">
+                  <span>Powered By</span>
+                  <img className="logo-second" src={require("../../assests/images/logo.png")} alt="Cost It Right"/>
+                </div>
               </div>
               <div className="col-md-7 p-0 right-sideimg">
                 <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
