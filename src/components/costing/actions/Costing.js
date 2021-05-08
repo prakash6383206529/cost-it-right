@@ -10,7 +10,7 @@ import {
   SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA, SET_COMPONENT_TOOL_ITEM_DATA, SET_COMPONENT_DISCOUNT_ITEM_DATA, GET_RM_DRAWER_DATA_LIST, GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_PLANT_SELECTLIST, GET_PART_COSTING_VENDOR_SELECT_LIST, GET_PART_SELECTLIST_BY_TECHNOLOGY, SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA, SET_EXCHANGE_RATE_CURRENCY_DATA,
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW,
-  CUSTOM_LOADER_HIDE, config,
+  CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE, config,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -555,25 +555,20 @@ export function getBOPData(data, callback) {
 export function getRMDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result || response.status === 204) {
-          dispatch({
-            type: GET_RM_DRAWER_DATA_LIST,
-            payload: response.status === 204 ? [] : response.data.DataList
-          })
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.EffectiveDate}/${data.CostingId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_RM_DRAWER_DATA_LIST,
+          payload: response.status === 204 ? [] : response.data.DataList
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -583,8 +578,8 @@ export function getRMDrawerDataList(data, callback) {
  */
 export function getRMDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRMDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.CostingId}`
+    const request = axios.get(`${API.getRMDrawerVBCDataList}/${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -608,21 +603,16 @@ export function getRMDrawerVBCDataList(data, callback) {
 export function getBOPDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getBOPDrawerDataList}/${data.PlantId}/${data.CostingId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getBOPDrawerDataList}/${data.PlantId}/${data.EffectiveDate}/${data.CostingId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -632,8 +622,8 @@ export function getBOPDrawerDataList(data, callback) {
  */
 export function getBOPDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBOPDrawerVBCDataList}/${data.VendorId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const queryParams = `${data.VendorId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.CostingId}`;
+    const request = axios.get(`${API.getBOPDrawerVBCDataList}/${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -698,25 +688,20 @@ export function getOperationDrawerVBCDataList(data, callback) {
 export function getProcessDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(
-      `${API.getProcessDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.CostingId}`,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result || response.status === 204) {
-          dispatch({
-            type: GET_PROCESS_DRAWER_DATA_LIST,
-            payload: response.status === 204 ? [] : response.data.DataList
-          })
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error)
-        apiErrors(error)
-      })
+    const request = axios.get(`${API.getProcessDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.EffectiveDate}/${data.CostingId}`, headers,)
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: GET_PROCESS_DRAWER_DATA_LIST,
+          payload: response.status === 204 ? [] : response.data.DataList
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error)
+      apiErrors(error)
+    })
   }
 }
 
@@ -726,8 +711,8 @@ export function getProcessDrawerDataList(data, callback) {
  */
 export function getProcessDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getProcessDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.CostingId}`;
+    const request = axios.get(`${API.getProcessDrawerVBCDataList}/${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -1611,21 +1596,15 @@ export function setInventoryRowData(supplierColumn, data) {
  */
 export function getCostingOverHeadProByModelType(data, callback) {
   return (dispatch) => {
-    const request = axios.post(
-      API.getCostingOverHeadProByModelType,
-      data,
-      headers,
-    )
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        callback(error.response)
-      })
+    const request = axios.post(API.getCostingOverHeadProByModelType, data, headers,)
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      callback(error.response)
+    })
   }
 }
 
@@ -2080,6 +2059,19 @@ export function setRMCCErrors(errObj) {
     dispatch({
       type: SET_RMCC_ERRORS,
       payload: errObj,
+    });
+  }
+};
+
+/**
+ * @method setCostingEffectiveDate
+ * @description SET COSTING EFFECTIVE DATE
+ */
+export function setCostingEffectiveDate(Date) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COSTING_EFFECTIVE_DATE,
+      payload: Date,
     });
   }
 };

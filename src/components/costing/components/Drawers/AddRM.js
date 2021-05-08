@@ -9,7 +9,7 @@ import { CONSTANT } from '../../../../helper/AllConastant';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { EMPTY_GUID, ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, EMPTY_GUID_0, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddRM(props) {
@@ -20,7 +20,8 @@ function AddRM(props) {
 
   const costData = useContext(costingInfoContext)
 
-  const rmDrawerList = useSelector(state => state.costing.rmDrawerList)
+  const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  const { initialConfiguration } = useSelector(state => state.auth)
 
   useEffect(() => {
     setSelectedRowData([])
@@ -29,8 +30,8 @@ function AddRM(props) {
       const data = {
         TechnologyId: costData.TechnologyId,
         PlantId: costData.PlantId,
-        TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getRMDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -49,6 +50,8 @@ function AddRM(props) {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID_0,
+        EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }
       dispatch(getRMDrawerVBCDataList(data, (res) => {

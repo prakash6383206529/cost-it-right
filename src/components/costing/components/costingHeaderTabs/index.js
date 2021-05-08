@@ -14,7 +14,7 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../helper/AllConastant';
@@ -175,6 +175,7 @@ function CostingHeaderTabs(props) {
    */
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
+    dispatch(setCostingEffectiveDate(moment(date).local().format('YYYY-MM-DD')))
     // setTimeout(() => {
     //   dispatch(getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
     //     if (res && res.data && res.data.Result) {
