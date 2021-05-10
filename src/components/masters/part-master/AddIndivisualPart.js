@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512 } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, } from "../../layout/FormInputs";
+import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, fileDeletePart, } from '../actions/Part';
 import { getPlantSelectList, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
@@ -223,16 +223,28 @@ class AddIndivisualPart extends Component {
         Remark: values.Remark,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         // Plants: [],
-        Attachements: updatedFiles
+        Attachements: updatedFiles,
+        IsForcefulUpdated: true
       }
 
-      this.props.reset()
-      this.props.updatePart(updateData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_PART_SUCESS);
-          this.cancel()
+      if (isEditFlag) {
+
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updatePart(updateData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_PART_SUCESS);
+                this.cancel()
+              }
+            });
+          },
+          onCancel: () => { },
         }
-      });
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
+
 
     } else {
 
@@ -418,12 +430,12 @@ class AddIndivisualPart extends Component {
 
                           <Col md="3">
                             <div className="form-group">
-                              <label>
+                              {/* <label>
                                 Effective Date
                                     <span className="asterisk-required">*</span>
-                              </label>
+                              </label> */}
                               <div className="inputbox date-section">
-                                <DatePicker
+                                {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -438,6 +450,23 @@ class AddIndivisualPart extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isEditFlag ? true : false}
+                                /> */}
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                  disabled={isEditFlag ? true : false}
+                                //minDate={moment()}
                                 />
                               </div>
                             </div>

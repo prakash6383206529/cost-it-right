@@ -79,7 +79,7 @@ function AddToComparisonDrawer(props) {
       setIsZbcSelected(true)
       setIsVbcSelected(false)
       setisCbcSelected(false)
-      dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => {
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
 
@@ -94,15 +94,15 @@ function AddToComparisonDrawer(props) {
 
         setIsZbcSelected(true)
 
-        dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => { }))
-        dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
-        dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
+        dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => { }))
+        dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       } else if (typeOfCosting === 1) {//VBC COSTING CONDITION
         console.log("COMING VBC?");
         setIsZbcSelected(false)
         setIsVbcSelected(true)
         setisCbcSelected(false)
-        dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         dispatch(getPlantBySupplier(VendorId, (res) => { }))
         dispatch(getCostingByVendorAndVendorPlant(partNo.value !== undefined ? partNo.value : partNo.partId, VendorId, vendorPlantId, () => { }))
       } else if (typeOfCosting === 2) {//CBC COSTING CONDITION
@@ -149,9 +149,9 @@ function AddToComparisonDrawer(props) {
       setIsZbcSelected(true)
       setIsVbcSelected(false)
       setisCbcSelected(false)
-      dispatch(getPartCostingPlantSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, (res) => {
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partNumber, (res) => {
         if (plantId !== undefined && plantId !== '-') {
-          dispatch(getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, plantId, () => { }))
+          dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partNumber, plantId, () => { }))
         }
         dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
         setValue('costings', '')
@@ -163,7 +163,7 @@ function AddToComparisonDrawer(props) {
       setIsVbcSelected(true)
       setisCbcSelected(false)
       setValue('costings', '')
-      dispatch(getPartCostingVendorSelectList(partNo.label !== undefined ? partNo.label : partNo.partNumber, () => { }))
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partNumber, () => { }))
       dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
       dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
 
@@ -233,6 +233,7 @@ function AddToComparisonDrawer(props) {
           let dataFromAPI = res.data.Data
           let obj = {}
           obj.zbc = dataFromAPI.TypeOfCosting
+          obj.IsApprovalLocked = dataFromAPI.IsApprovalLocked
           obj.poPrice = dataFromAPI.NetPOPrice ? dataFromAPI.NetPOPrice : '0'
           obj.costingName = dataFromAPI.DisplayCostingNumber ? dataFromAPI.DisplayCostingNumber : '-'
           obj.costingDate = dataFromAPI.CostingDate ? dataFromAPI.CostingDate : '-'

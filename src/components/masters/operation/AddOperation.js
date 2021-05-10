@@ -481,15 +481,24 @@ class AddOperation extends Component {
         Remark: remarks,
         Attachements: updatedFiles,
         LoggedInUserId: loggedInUserId(),
+        IsForcefulUpdated: true
+      }
+      if (this.state.isEditFlag) {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateOperationAPI(updateData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                this.cancel()
+              }
+            });
+          },
+          onCancel: () => { },
+        }
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
-      this.props.reset()
-      this.props.updateOperationAPI(updateData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-          this.cancel()
-        }
-      });
 
     } else {/** Add new detail for creating operation master **/
 

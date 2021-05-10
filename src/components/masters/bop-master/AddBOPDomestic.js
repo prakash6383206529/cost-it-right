@@ -6,7 +6,7 @@ import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
   maxLength, postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, applySuperScript
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import { getPartSelectList } from '../actions/Part';
@@ -139,6 +139,7 @@ class AddBOPDomestic extends Component {
         if (res && res.data && res.data.Result) {
           let vendorObj
           const Data = res.data.Data;
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -523,14 +524,26 @@ class AddBOPDomestic extends Component {
         Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
+        IsForcefulUpdated: true
       }
-      this.props.reset()
-      this.props.updateBOPDomestic(requestData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
-          this.cancel();
+      if (isEditFlag) {
+
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateBOPDomestic(requestData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
+                this.cancel();
+              }
+            })
+          },
+          onCancel: () => { },
         }
-      })
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
+
 
     } else {
 
@@ -899,12 +912,12 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <div className="form-group">
-                              <label>
-                                Effective Date
-                                    {/* <span className="asterisk-required">*</span> */}
-                              </label>
+                              {/* <label>
+                                Effective Date */}
+                              {/* <span className="asterisk-required">*</span> */}
+                              {/* </label> */}
                               <div className="inputbox date-section">
-                                <DatePicker
+                                {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -919,6 +932,23 @@ class AddBOPDomestic extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isEditFlag ? true : false}
+                                /> */}
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                  disabled={isEditFlag ? true : false}
+                                //minDate={moment()}
                                 />
                               </div>
                             </div>

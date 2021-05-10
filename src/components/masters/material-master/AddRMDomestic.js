@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, isValid, isInvalid } from "redux-form";
+import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthFour, decimalLength6, decimalLengthsix } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
@@ -30,6 +30,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { FILE_URL, ZBC } from '../../../config/constants'
 import moment from 'moment';
 import TooltipCustom from '../../common/Tooltip';
+import LoaderCustom from '../../common/LoaderCustom';
 // import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
 const selector = formValueSelector('AddRMDomestic')
 
@@ -77,7 +78,8 @@ class AddRMDomestic extends Component {
 
       netLandedCost: '',
       freightCost: '',
-      singlePlantSelected: []
+      singlePlantSelected: [],
+      showLoader: false
     }
   }
   /**
@@ -358,7 +360,7 @@ class AddRMDomestic extends Component {
             this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               isShowForm: true,
               IsVendor: Data.IsVendor,
               RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
@@ -376,7 +378,7 @@ class AddRMDomestic extends Component {
               remarks: Data.Remark,
               files: Data.FileList,
               singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 1000)
         }
       })
@@ -805,8 +807,11 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected } = this.state
-    const { initialConfiguration } = this.props
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, } = this.state
+    const { initialConfiguration, anyTouched } = this.props
+    // if (!anyTouched) {
+    //   return toastr.warning('No  changes at alllllllllllllllllllllll.')
+    // }
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -839,15 +844,26 @@ class AddRMDomestic extends Component {
         LoggedInUserId: loggedInUserId(),
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         Attachements: updatedFiles,
+        IsForcefulUpdated: true
       }
-      this.props.reset()
-      this.props.updateRMDomesticAPI(requestData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-          this.clearForm()
-          // this.cancel()
+      if (isEditFlag) {
+
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateRMDomesticAPI(requestData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+                this.clearForm()
+                // this.cancel()
+              }
+            })
+          },
+          onCancel: () => { },
         }
-      })
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
     } else {
       const formData = {
         IsVendor: IsVendor,
@@ -870,7 +886,7 @@ class AddRMDomestic extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
+        VendorPlant: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
         DestinationPlantId: IsVendor ? singlePlantSelected.value : '00000000-0000-0000-0000-000000000000'
@@ -903,6 +919,7 @@ class AddRMDomestic extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1615,6 +1632,7 @@ class AddRMDomestic extends Component {
           )} */}
         </div>
       </>
+
     );
   }
 }
@@ -1634,7 +1652,7 @@ function mapStateToProps(state) {
 
   const { initialConfiguration } = auth;
 
-  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, } = material
+  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, loader } = material
 
   let initialValues = {}
   if (rawMaterialDetails && rawMaterialDetails !== undefined) {

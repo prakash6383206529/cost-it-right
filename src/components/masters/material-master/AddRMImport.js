@@ -32,6 +32,7 @@ import $ from 'jquery';
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import moment from 'moment';
 import { getVendorWithVendorCodeSelectList, } from '../actions/Supplier';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddRMImport');
 
 class AddRMImport extends Component {
@@ -386,7 +387,7 @@ class AddRMImport extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               isShowForm: true,
               IsVendor: Data.IsVendor,
               RawMaterial: materialNameObj !== undefined ? { label: materialNameObj.Text, value: materialNameObj.Value } : [],
@@ -407,7 +408,7 @@ class AddRMImport extends Component {
               singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
               // FreightCharge:Data.FreightCharge
               // netCost:Data
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 1000);
         }
       })
@@ -829,14 +830,24 @@ class AddRMImport extends Component {
         NetLandedCostConversion: netCurrencyCost,
         RMFreightCost: values.FreightCharge,
         RMShearingCost: values.ShearingCost,
+        IsForcefulUpdated: true
       }
-      this.props.reset()
-      this.props.updateRMImportAPI(requestData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
-          this.clearForm();
+      if (isEditFlag) {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateRMImportAPI(requestData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS);
+                this.clearForm();
+              }
+            })
+          },
+          onCancel: () => { },
         }
-      })
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
 
     } else {
 
@@ -858,7 +869,7 @@ class AddRMImport extends Component {
         Remark: remarks,
         LoggedInUserId: loggedInUserId(),
         Plant: IsVendor === false ? plantArray : [],
-        VendorPlant: initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
+        VendorPlant: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? (IsVendor ? vendorPlantArray : []) : [],
         VendorCode: VendorCode,
         Attachements: files,
         Currency: currency.label,
@@ -892,6 +903,7 @@ class AddRMImport extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1165,7 +1177,7 @@ class AddRMImport extends Component {
                               )}
                             </div>
                           </Col>
-                          {initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
+                          {initialConfiguration && initialConfiguration.IsVendorPlantConfigurable && this.state.IsVendor && (
                             <Col md="4">
                               <Field
                                 label="Vendor Plant"

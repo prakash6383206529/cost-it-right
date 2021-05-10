@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, maxLength100, number, specialName, alphabetsOnly, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength, maxLength80, maxLength512 } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
-import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError } from "../../layout/FormInputs";
+import { renderText, renderTextAreaField, renderMultiSelectField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
@@ -471,6 +471,7 @@ class AddAssemblyPart extends Component {
         Attachements: updatedFiles,
         ChildParts: childPartArray,
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
+        IsForcefulUpdated: true
       }
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
@@ -480,13 +481,23 @@ class AddAssemblyPart extends Component {
         }
       }
 
-      this.props.reset()
-      this.props.updateAssemblyPart(updateData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_BOM_SUCCESS);
-          this.cancel()
+      if (isEditFlag) {
+
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateAssemblyPart(updateData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_BOM_SUCCESS);
+                this.cancel()
+              }
+            });
+          },
+          onCancel: () => { },
         }
-      });
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
 
     } else {
 
@@ -691,12 +702,12 @@ class AddAssemblyPart extends Component {
                         </Col> */}
                         <Col md="3">
                           <div className="form-group">
-                            <label>
-                              Effective Date
-                                  {/* <span className="asterisk-required">*</span> */}
-                            </label>
+                            {/* <label>
+                              Effective Date */}
+                            {/* <span className="asterisk-required">*</span> */}
+                            {/* </label> */}
                             <div className="inputbox date-section">
-                              <DatePicker
+                              {/* <DatePicker
                                 name="EffectiveDate"
                                 selected={this.state.effectiveDate}
                                 onChange={this.handleEffectiveDateChange}
@@ -711,6 +722,23 @@ class AddAssemblyPart extends Component {
                                 disabledKeyboardNavigation
                                 onChangeRaw={(e) => e.preventDefault()}
                                 disabled={isEditFlag ? true : false}
+                              /> */}
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              //minDate={moment()}
                               />
                             </div>
                           </div>

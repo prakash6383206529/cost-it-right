@@ -8,6 +8,7 @@ import {
   GET_ALL_REASON_SELECTLIST,
   GET_APPROVAL_LIST,
   GET_APPROVAL_SUMMARY,
+  GET_SELECTED_COSTING_STATUS
 } from '../../../config/constants'
 
 const initialState = {}
@@ -72,6 +73,13 @@ export default function ApprovalReducer(state = initialState, action) {
         loading: false,
         error: true,
         approvalSummaryData: action.payload,
+      }
+    case GET_SELECTED_COSTING_STATUS:
+      return {
+        ...state,
+        loading: false,
+        error: true,
+        costingStatusList: action.payload
       }
     default:
       return state
