@@ -840,7 +840,8 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         <Col md="4">
-                          <div className="inputbox date-section mb-3">
+                          
+                          <div className="inputbox date-section form-group">
                             <Field
                               label="Effective Date"
                               name="EffectiveDate"

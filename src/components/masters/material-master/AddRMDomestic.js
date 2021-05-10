@@ -1365,12 +1365,11 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           <Col md="4">
-                            <div className="form-group">
                               {/* <label>
                                 Effective Date
                                 <span className="asterisk-required">*</span>
                               </label> */}
-                              <div className="inputbox date-section mb-3">
+                              <div className="inputbox date-section form-group">
                                 {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
@@ -1405,7 +1404,7 @@ class AddRMDomestic extends Component {
                                 //minDate={moment()}
                                 />
                               </div>
-                            </div>
+                            
                           </Col>
                         </Row>
 
