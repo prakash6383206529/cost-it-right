@@ -2224,6 +2224,9 @@ html {
     }
     .flex-fill.sliderange{
       min-width: 195px;
+      .input-range{
+        margin-top: 7px;
+      }
     }
 		.flex-fills {
 			width: 20%;
@@ -2261,9 +2264,11 @@ html {
 // input range
 .input-range__label.input-range__label--min {
 	opacity: 0;
+  display: none;
 }
 .input-range__label.input-range__label--max {
 	opacity: 0;
+  display: none;
 }
 .filter-block {
 	.reset {
@@ -4355,6 +4360,9 @@ body{
           }
           .flex-fill.sliderange{
             min-width: 195px;
+            .input-range{
+              margin-top: 7px;
+            }
           }
           .flex-fills {
             width: 20%;

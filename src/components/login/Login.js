@@ -156,22 +156,8 @@ class Login extends Component {
                       className="btn login-btn w-100 dark-pinkbtn"
                     />
                   </div>
-                  <div className="form-group forgot-link d-flex pt-2 ">
-                    {/* <div className="checkboxWrap ">
-                          <label className="customs-checkbox">
-                          Remember me
-                            <input type="checkbox" />
-                            <span className=" before-box"></span>
-                          </label>
-                        </div> */}
-                    <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
-                    {/* <Link
-                      to="/forgot-password"
-                      className="forgotpwd-field"
-                      onClick={() => this.forgotConfirm()}
-                      target='_blank'>
-                      Forgot Password?
-                        </Link> */}
+                  <div className="form-group forgot-link d-flex pt-2 justify-content-center">
+                    {/* <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" /> */}
                     <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
                   </div>
                   {this.state.flag && (
