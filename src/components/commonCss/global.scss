@@ -1479,6 +1479,7 @@ button .fas {
     }
   }
 }
+.form-group.date-section{height: auto;}
 .rrt-confirm-holder .rrt-confirm {
   width: 444px;
   font-size: 1rem;
@@ -1668,7 +1669,7 @@ form .form-control {
 
 .middleContainer {
   display: flex;
-  min-height: calc(100vh - 190px);
+  min-height: calc(100vh - 195px);
   flex-direction: column;
   width: 100%;
 }

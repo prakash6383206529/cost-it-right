@@ -2461,7 +2461,7 @@ input:disabled{
   margin: 0 -30px -15px;
 }
 .add-min-height{
-  min-height: calc(100vh - 322px);
+  min-height: calc(100vh - 298px);
 }
 .role-permision-page{
   .add-min-height{
@@ -3897,9 +3897,6 @@ body{
 
 // responsive media query start
 @media(max-width:1600px){
-  .add-min-height{
-    min-height: calc(100vh - 298px);
-  }
   // costing details page only
   .table.cr-brdr-main{font-size: 14px;}
   .table-responsive{
