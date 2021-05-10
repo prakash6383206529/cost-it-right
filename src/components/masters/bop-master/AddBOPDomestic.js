@@ -58,7 +58,9 @@ class AddBOPDomestic extends Component {
       effectiveDate: '',
       files: [],
 
-      NetLandedCost: ''
+      NetLandedCost: '',
+      DataToCheck: [],
+      DropdownChanged: true
     }
   }
 
@@ -139,7 +141,7 @@ class AddBOPDomestic extends Component {
       this.props.getBOPDomesticById(data.Id, res => {
         if (res && res.data && res.data.Result) {
           let vendorObj
-          const Data = res.data.Data;
+          const Data = res.data.Data; this.setState({ DataToCheck: Data })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -192,7 +194,9 @@ class AddBOPDomestic extends Component {
       const capIndex = cell && cell.indexOf('^');
       const superNumber = cell.substring(capIndex + 1, capIndex + 2);
       const capWithNumber = cell.substring(capIndex, capIndex + 2);
-      return cell.replace(capWithNumber, superNumber.sup());
+      // return cell.replace(capWithNumber, superNumber.sup());
+      // return cell.replace(capWithNumber, ' &sup2;');
+      return cell.replace(capWithNumber, '<span>&sup2;</span>');
     } else {
       return cell;
     }
@@ -351,6 +355,7 @@ class AddBOPDomestic extends Component {
     } else {
       this.setState({ sourceLocation: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -497,7 +502,7 @@ class AddBOPDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
 
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, DropdownChanged } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -510,6 +515,20 @@ class AddBOPDomestic extends Component {
     }
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'DatatoCheck')
+      if (DataToCheck.IsVendor) {
+        if (DataToCheck.Source == values.Source && DataToCheck.BasicRate == values.BasicRate && DropdownChanged) {
+          this.cancel()
+          return false;
+        }
+      }
+      else if (DataToCheck.IsVendor == false) {
+        if (DataToCheck.BasicRate == values.BasicRate) {
+          this.cancel()
+          return false;
+        }
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -605,7 +624,7 @@ class AddBOPDomestic extends Component {
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                      >
+                    >
                       <div className="add-min-height">
                         <Row>
                           <Col md="4" className="switch mb15">
@@ -1167,6 +1186,7 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
 })(reduxForm({
   form: 'AddBOPDomestic',
+  touchOnChange: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },

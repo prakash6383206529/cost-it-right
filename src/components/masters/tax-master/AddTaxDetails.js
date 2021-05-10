@@ -21,6 +21,8 @@ class AddTaxDetails extends Component {
     this.state = {
       country: [],
       effectiveDate: '',
+      DataToCheck: [],
+      DropdownChanged: true,
     }
   }
 
@@ -41,6 +43,7 @@ class AddTaxDetails extends Component {
           const { countryList } = this.props;
           if (res && res.data && res.data.Data) {
             let Data = res.data.Data;
+            this.setState({ DataToCheck: Data })
             let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
             setTimeout(() => {
               this.setState({
@@ -111,6 +114,7 @@ class AddTaxDetails extends Component {
     } else {
       this.setState({ country: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -119,6 +123,7 @@ class AddTaxDetails extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: date, });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -139,10 +144,19 @@ class AddTaxDetails extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { country, effectiveDate } = this.state;
+    const { country, effectiveDate, DataToCheck, DropdownChanged } = this.state;
 
     /** Update detail of TAX  */
     if (this.props.isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'datatocheck')
+
+      if (DataToCheck.TaxName == values.TaxName && DataToCheck.Rate == values.Rate && DropdownChanged) {
+        console.log('chaNGES')
+        this.toggleDrawer('')
+        return false
+      }
+
       const { ID } = this.props;
 
       let formData = {

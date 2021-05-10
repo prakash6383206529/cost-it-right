@@ -52,6 +52,8 @@ class AddOperation extends Component {
       isOpenVendor: false,
       isOpenUOM: false,
       OperationId: '',
+      DataToCheck: [],
+      DropdownChanged: true
     }
   }
 
@@ -162,6 +164,7 @@ class AddOperation extends Component {
   */
   handleTechnology = (e) => {
     this.setState({ selectedTechnology: e })
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -215,6 +218,7 @@ class AddOperation extends Component {
     } else {
       this.setState({ UOM: [] })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   uomToggler = () => {
@@ -261,7 +265,7 @@ class AddOperation extends Component {
       this.props.getOperationDataAPI(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
+          this.setState({ DataToCheck: Data })
           let plantArray = [];
           Data && Data.Plant.map((item) => {
             plantArray.push({ Text: item.PlantName, Value: item.PlantId })
@@ -416,7 +420,7 @@ class AddOperation extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, selectedVendorPlants, selectedPlants, vendorName, files,
-      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId } = this.state;
+      UOM, isSurfaceTreatment, selectedTechnology, remarks, OperationId, DataToCheck, DropdownChanged } = this.state;
     const { initialConfiguration } = this.props;
     const userDetail = userDetails()
 
@@ -440,6 +444,12 @@ class AddOperation extends Component {
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'DataToCheck')
+      if (DataToCheck.Rate == values.Rate && DropdownChanged) {
+        this.cancel()
+        return false;
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OperationId }
       })
@@ -492,7 +502,7 @@ class AddOperation extends Component {
     }
 
   }
-  
+
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -527,7 +537,7 @@ class AddOperation extends Component {
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                  >
+                >
                   <div className="add-min-height">
                     <Row>
                       <Col md="4" className="switch mb15">

@@ -64,7 +64,9 @@ class AddBOPImport extends Component {
       netLandedcost: '',
       currencyValue: 1,
       showCurrency: false,
-      netLandedConverionCost: ''
+      netLandedConverionCost: '',
+      DataToChange: [],
+      DropdownChange: true
     }
   }
 
@@ -145,7 +147,7 @@ class AddBOPImport extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ DataToChange: Data })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -369,6 +371,7 @@ class AddBOPImport extends Component {
     } else {
       this.setState({ sourceLocation: [], })
     }
+    this.setState({ DropdownChange: false })
   };
 
   /**
@@ -528,7 +531,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -541,6 +544,21 @@ class AddBOPImport extends Component {
     }
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+      // if (DataToChange.IsVendor) { 
+      //   if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
+      //     DataToChange.BasicRate == values.BasicRate) {
+      //     this.cancel()
+      //     return false;
+      //   }
+      // }
+      // if (DataToChange.IsVendor == false) {
+      //   if (DataToChange.NumberOfPieces == values.NumberOfPieces && DataToChange.BasicRate == values.BasicRate) {
+      //     this.cancel()
+      //     return false;
+      //   }
+      // }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -640,7 +658,7 @@ class AddBOPImport extends Component {
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                      >
+                    >
                       <div className="add-min-height">
                         <Row>
                           <Col md="4" className="switch mb15">

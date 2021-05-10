@@ -42,6 +42,10 @@ class AddFreight extends Component {
       sourceLocation: [],
       destinationLocation: [],
       effectiveDate: "",
+      DataToChange: [],
+      AddUpdate: true,
+      DeleteChanged: true,
+      HandleChanged: true
     };
   }
   /**
@@ -93,6 +97,7 @@ class AddFreight extends Component {
       this.props.getFreightData(data.Id, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
           setTimeout(() => {
             const { cityList, vendorListByVendorType, freightModeSelectList, } = this.props;
             let modeObj =
@@ -266,6 +271,7 @@ class AddFreight extends Component {
     } else {
       this.setState({ FullTruckCapacity: [] });
     }
+    this.setState({ HandleChanged: false })
   };
   /**
    * @method criteriaHandler
@@ -277,6 +283,7 @@ class AddFreight extends Component {
     } else {
       this.setState({ RateCriteria: [] });
     }
+    this.setState({ HandleChanged: false })
   };
   /**
    * @method handleChange
@@ -284,6 +291,7 @@ class AddFreight extends Component {
    */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: date });
+    this.setState({ HandleChanged: false })
   };
   gridHandler = () => {
     const {
@@ -326,6 +334,7 @@ class AddFreight extends Component {
       },
       () => this.props.change("Rate", 0)
     );
+    this.setState({ AddUpdate: false })
   };
   /**
    * @method updateGrid
@@ -370,6 +379,7 @@ class AddFreight extends Component {
       },
       () => this.props.change("Rate", 0)
     );
+    this.setState({ AddUpdate: false })
   };
   /**
    * @method resetGridData
@@ -421,6 +431,7 @@ class AddFreight extends Component {
       return true;
     });
     this.setState({ gridTable: tempData });
+    this.setState({ DeleteChanged: false });
   };
   /**
    * @method cancel
@@ -445,9 +456,27 @@ class AddFreight extends Component {
   onSubmit = (values) => {
     const {
       IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
-      FreightID, gridTable, isEditFlag, } = this.state;
+      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate,DeleteChanged } = this.state;
+    const { fieldsObj } = this.props;
     const userDetail = userDetails();
     if (isEditFlag) {
+      console.log(values, 'gridTable')
+      console.log(DataToChange, 'DataToChange')
+      console.log(AddUpdate, 'AddUpdate')
+      console.log(HandleChanged, 'HandleChanged')
+      console.log(DeleteChanged, 'DeleteChanged')
+      if (
+        DataToChange.LoadingUnloadingCharges == values.LoadingUnloadingCharges &&
+        DataToChange.PartTruckLoadRatePerCubicFeet == values.PartTruckLoadRatePerCubicFeet &&
+        DataToChange.PartTruckLoadRatePerKilogram == values.PartTruckLoadRatePerKilogram
+        && 
+        (AddUpdate && HandleChanged) &&
+         DeleteChanged
+         ) {
+          console.log('in exit')
+          this.cancel()
+          return false
+      }
       let requestData = {
         FreightId: FreightID,
         IsLoadingUnloadingApplicable: IsLoadingUnloadingApplicable,
@@ -464,6 +493,7 @@ class AddFreight extends Component {
           this.cancel();
         }
       });
+      this.setState({ HandleChanged: true, AddUpdate: true, DeleteChanged: true })
     } else {
       const formData = {
         IsVendor: IsVendor,
@@ -526,7 +556,7 @@ class AddFreight extends Component {
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                      >
+                    >
                       <div className="add-min-height">
                         <Row>
                           <Col md="4" className="switch mb15">
@@ -679,20 +709,20 @@ class AddFreight extends Component {
                             </label>
                           </Col>
                           {/* {this.state.IsLoadingUnloadingApplicable && ( */}
-                            <Col md="3" className="hide-label-inside">
-                              <Field
-                                label={``}
-                                name={"LoadingUnloadingCharges"}
-                                type="text"
-                                placeholder={"Enter"}
-                                validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
-                                component={renderText}
-                                //required={true}
-                                disabled={false}
-                                className=""
-                                customClassName=" withBorder mn-height-auto"
-                              />
-                            </Col>
+                          <Col md="3" className="hide-label-inside">
+                            <Field
+                              label={``}
+                              name={"LoadingUnloadingCharges"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={[positiveAndDecimalNumber, maxLength10, decimalLengthFour]}
+                              component={renderText}
+                              //required={true}
+                              disabled={false}
+                              className=""
+                              customClassName=" withBorder mn-height-auto"
+                            />
+                          </Col>
                           {/* )} */}
                         </Row>
                         <Row>

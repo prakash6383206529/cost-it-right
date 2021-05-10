@@ -16,7 +16,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -62,7 +62,8 @@ class AddMachineRate extends Component {
       remarks: '',
       files: [],
 
-      machineFullValue: {}
+      machineFullValue: {},
+      Data: []
 
     }
   }
@@ -184,7 +185,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ Data: Data })
           this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
@@ -760,14 +761,20 @@ class AddMachineRate extends Component {
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag } = this.state;
-
+    const a = this.state.Data
+      console.log(a.Technology[0].Technology, 'values.Technology.Technology')
+    console.log(selectedTechnology, 'selectedTechnology.label')
     if (isViewFlag) {
       this.cancel();
       return false
     }
     const { machineData } = this.props;
     const userDetail = userDetails()
-    console.log(this.props.untouch(selectedPlants))
+
+    // if (values.Technology.Technology !== selectedTechnology.label) {
+    //   console.log('sdjdkljfklsdjlkfjsl')
+    // }
+    console.log(this.props.touch(selectedTechnology), 'klklklkklkl')
     if (processGrid && processGrid.length === 0) {
       toastr.warning('Process Rate entry required.');
       return false;
@@ -776,7 +783,7 @@ class AddMachineRate extends Component {
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-    console.log(this.props.dirty, 'props.dirty')
+    console.log(this.props.dirty, 'jjjjjjjjjjjjjjjjjjjjjj')
     if (isEditFlag) {
 
       if (IsDetailedEntry) {
@@ -1000,23 +1007,6 @@ class AddMachineRate extends Component {
                           //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                           />
                         </Col>
-                        {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
-                          <Col md="3">
-                            <Field
-                              name="Plant"
-                              type="text"
-                              label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
-                              component={searchableSelect}
-                              placeholder={'Select'}
-                              options={this.renderListing('plant')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handlePlants}
-                              valueDescription={this.state.selectedPlants}
-                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
-                            />
-                          </Col>)}
                         {this.state.IsVendor &&
                           <Col md="3">
                             <Field
@@ -1034,7 +1024,8 @@ class AddMachineRate extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>}
-                        {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
+                        {this.state.IsVendor &&
+                          checkVendorPlantConfigurable() &&
                           <Col md="3">
                             <Field
                               label="Vendor Plant"
@@ -1050,8 +1041,24 @@ class AddMachineRate extends Component {
                               className="multiselect-with-border"
                               disabled={isEditFlag ? true : false}
                             />
-                          </Col>)}
-
+                          </Col>}
+                        {!this.state.IsVendor &&
+                          <Col md="3">
+                            <Field
+                              name="Plant"
+                              type="text"
+                              label="Plant"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('plant')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handlePlants}
+                              valueDescription={this.state.selectedPlants}
+                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                            />
+                          </Col>}
                         <Col md="3">
                           <Field
                             label={`Machine No.`}

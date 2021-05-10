@@ -30,6 +30,8 @@ class AddIndivisualPart extends Component {
       effectiveDate: '',
 
       files: [],
+      DataToCheck: [],
+      DropdownChanged: true
     }
   }
 
@@ -58,7 +60,8 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ DataToCheck: Data })
+          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -88,6 +91,7 @@ class AddIndivisualPart extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -202,11 +206,19 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files } = this.state;
+    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'datatocheck')
+      if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
+        DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
+        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+        this.cancel()
+        return false;
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -300,7 +312,7 @@ class AddIndivisualPart extends Component {
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                      >
+                    >
                       <div className="add-min-height">
                         <Row>
                           <Col md="3">
@@ -456,7 +468,7 @@ class AddIndivisualPart extends Component {
                                   autoComplete={'off'}
                                   required={true}
                                   // changeHandler={(e) => {
-                                    // e.preventDefault()
+                                  // e.preventDefault()
                                   // }}
                                   // disabled={isEditFlag ? true : false}
                                   component={renderDatePicker}

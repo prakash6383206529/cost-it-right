@@ -32,6 +32,7 @@ function ManageSOBDrawer(props) {
   const [GridDataOldArray, setGridDataOldArray] = useState([]);
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
+  const [dropdownChanged, setDropDownChanged] = useState(true)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -129,7 +130,7 @@ function ManageSOBDrawer(props) {
     } else {
       //  warningMessageHandle('VALID_NUMBER_WARNING')
     }
-
+    setDropDownChanged(false)
   }
 
   /**
@@ -195,6 +196,11 @@ function ManageSOBDrawer(props) {
   const onSubmit = (values) => {
 
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
+
+    if(dropdownChanged){
+      toggleDrawer('')
+      return false
+    }
 
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
 

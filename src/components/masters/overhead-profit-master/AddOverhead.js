@@ -50,7 +50,8 @@ class AddOverhead extends Component {
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
-      doEdit: false
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
 
@@ -117,7 +118,7 @@ class AddOverhead extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ DataToChange: Data })
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
             const modelObj = modelTypes && modelTypes.find(item => Number(item.Value) === Data.ModelTypeId)
@@ -226,13 +227,8 @@ class AddOverhead extends Component {
   componentDidUpdate(prevProps) {
 
     if (prevProps.filedObj !== this.props.filedObj) {
-      console.log(prevProps.filedObj, 'aaaaaaaaaaaaaa')
-      console.log(this.props.filedObj, 'bbbbbbbbbbbbbb')
-
-      this.setState({ doEdit: true })
 
       const { filedObj } = this.props;
-      this.setState({ doEdit: true })
       if (this.props.filedObj.OverheadPercentage) {
         checkPercentageValue(this.props.filedObj.OverheadPercentage, "Overhead percentage should not be more than 100") ? this.props.change('OverheadPercentage', this.props.filedObj.OverheadPercentage) : this.props.change('OverheadPercentage', 0)
       }
@@ -496,14 +492,14 @@ class AddOverhead extends Component {
     this.props.hideForm()
   }
 
-// options = {
-//   onUploadProgress: (progressEvent) => {
-//     const { loaded, total } = progressEvent
-//     let percent = Math.floor((loaded * 100) / total)
-//     console.log(` ${loaded}kb of ${total}kb | ${percent}% `)
-//   }
-//   {uploadPercentage > 0 <ProgressBar now={uploadPercentage} active label={`${uploadPercentage}%`}>}
-// }
+  // options = {
+  //   onUploadProgress: (progressEvent) => {
+  //     const { loaded, total } = progressEvent
+  //     let percent = Math.floor((loaded * 100) / total)
+  //     console.log(` ${loaded}kb of ${total}kb | ${percent}% `)
+  //   }
+  //   {uploadPercentage > 0 <ProgressBar now={uploadPercentage} active label={`${uploadPercentage}%`}>}
+  // }
 
   /**
   * @method onSubmit
@@ -511,50 +507,48 @@ class AddOverhead extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, DataToChange } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
-      if (this.state.doEdit) {
-        let updatedFiles = files.map((file) => {
-          return { ...file, ContextId: OverheadID }
-        })
-        let requestData = {
-          OverheadId: OverheadID,
-          VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
-          IsClient: costingHead === 'client' ? true : false,
-          ClientName: costingHead === 'client' ? client.label : '',
-          OverheadApplicabilityType: overheadAppli.label,
-          ModelType: ModelType.label,
-          IsVendor: IsVendor,
-          IsCombinedEntry: !isOverheadPercent ? true : false,
-          OverheadPercentage: values.OverheadPercentage,
-          OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
-          OverheadBOPPercentage: values.OverheadBOPPercentage,
-          OverheadRMPercentage: values.OverheadRMPercentage,
-          Remark: remarks,
-          VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
-          VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
-          ClientId: costingHead === 'client' ? client.value : '',
-          OverheadApplicabilityId: overheadAppli.value,
-          ModelTypeId: ModelType.value,
-          IsActive: true,
-          CreatedDate: '',
-          CreatedBy: loggedInUserId(),
-          Attachements: updatedFiles,
-        }
+      console.log(values, 'values')
+      console.log(DataToChange, 'datatochange')
+      let updatedFiles = files.map((file) => {
+        return { ...file, ContextId: OverheadID }
+      })
+      let requestData = {
+        OverheadId: OverheadID,
+        VendorName: IsVendor ? (costingHead === 'vendor' ? vendorName.label : '') : userDetail.ZBCSupplierInfo.VendorName,
+        IsClient: costingHead === 'client' ? true : false,
+        ClientName: costingHead === 'client' ? client.label : '',
+        OverheadApplicabilityType: overheadAppli.label,
+        ModelType: ModelType.label,
+        IsVendor: IsVendor,
+        IsCombinedEntry: !isOverheadPercent ? true : false,
+        OverheadPercentage: values.OverheadPercentage,
+        OverheadMachiningCCPercentage: values.OverheadMachiningCCPercentage,
+        OverheadBOPPercentage: values.OverheadBOPPercentage,
+        OverheadRMPercentage: values.OverheadRMPercentage,
+        Remark: remarks,
+        VendorId: IsVendor ? (costingHead === 'vendor' ? vendorName.value : '') : userDetail.ZBCSupplierInfo.VendorId,
+        VendorCode: IsVendor ? (costingHead === 'vendor' ? getVendorCode(vendorName.label) : '') : userDetail.ZBCSupplierInfo.VendorNameWithCode,
+        ClientId: costingHead === 'client' ? client.value : '',
+        OverheadApplicabilityId: overheadAppli.value,
+        ModelTypeId: ModelType.value,
+        IsActive: true,
+        CreatedDate: '',
+        CreatedBy: loggedInUserId(),
+        Attachements: updatedFiles,
+      }
 
-        this.props.reset()
-        this.props.updateOverhead(requestData, (res) => {
-          if (res.data.Result) {
-            toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
-            this.cancel();
-          }
-        })
-      }
-      else {
-        return false
-      }
+      this.props.reset()
+      this.props.updateOverhead(requestData, (res) => {
+        if (res.data.Result) {
+          toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
+          this.cancel();
+        }
+      })
+
     } else {
 
       const formData = {

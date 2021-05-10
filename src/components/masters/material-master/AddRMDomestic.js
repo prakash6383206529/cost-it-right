@@ -78,8 +78,9 @@ class AddRMDomestic extends Component {
 
       netLandedCost: '',
       freightCost: '',
-      doEdit: false,
-      singlePlantSelected: []
+      singlePlantSelected: [],
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
   /**
@@ -113,7 +114,6 @@ class AddRMDomestic extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
-      this.setState({doEdit : true})
       this.calculateNetCost()
     }
   }
@@ -318,6 +318,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
+          this.setState({ DataToChange: Data })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -647,7 +648,7 @@ class AddRMDomestic extends Component {
 
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
-        console.log(UOMSelectList,'UOMSelectListUOMSelectList')
+        console.log(UOMSelectList, 'UOMSelectListUOMSelectList')
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false
@@ -809,7 +810,7 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange } = this.state
     const { initialConfiguration } = this.props
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
@@ -823,9 +824,11 @@ class AddRMDomestic extends Component {
         vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return vendorPlantArray
       })
-    if (isEditFlag ) {
-      if(this.state.doEdit){
-        let updatedFiles = files.map((file) => {
+    if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'datatochange')
+
+      let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
       })
       let requestData = {
@@ -852,10 +855,7 @@ class AddRMDomestic extends Component {
           // this.cancel()
         }
       })
-    }
-    else{
-      return false
-    }
+
     } else {
       const formData = {
         IsVendor: IsVendor,

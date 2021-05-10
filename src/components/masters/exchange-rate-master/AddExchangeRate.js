@@ -24,6 +24,8 @@ class AddExchangeRate extends Component {
       currency: [],
       effectiveDate: '',
       ExchangeRateId: '',
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
 
@@ -84,6 +86,7 @@ class AddExchangeRate extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: date, });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -104,7 +107,7 @@ class AddExchangeRate extends Component {
       this.props.getExchangeRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
+          this.setState({ DataToChange: Data })
           setTimeout(() => {
             const { currencySelectList } = this.props;
 
@@ -151,11 +154,19 @@ class AddExchangeRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { isEditFlag, currency, effectiveDate, ExchangeRateId } = this.state;
+    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged } = this.state;
 
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
 
+      if (DataToChange.CurrencyExchangeRate == values.CurrencyExchangeRate &&
+        DataToChange.BankRate == values.BankRate && DataToChange.CustomRate == values.CustomRate &&
+        DataToChange.BankCommissionPercentage == values.BankCommissionPercentage && DropdownChanged
+      ) {
+        this.cancel()
+        return false;
+      }
+      console.log(this.props.anyTouched, 'a')
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,
@@ -176,6 +187,7 @@ class AddExchangeRate extends Component {
           this.cancel()
         }
       });
+      this.setState({ DropdownChanged: true })
 
     } else {/** Add new detail for creating exchange master **/
 
@@ -238,7 +250,7 @@ class AddExchangeRate extends Component {
 
                   onSubmit={handleSubmit((e) => this.onSubmit(e))}
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                  >
+                >
                   <div className="add-min-height">
                     <Row>
                       <Col md="4">

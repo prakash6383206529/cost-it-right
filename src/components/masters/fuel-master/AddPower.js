@@ -61,7 +61,10 @@ class AddPower extends Component {
 
       netContributionValue: 0,
 
-      power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', }
+      power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', },
+      DropdownChanged: true,
+      DataToChangeVendor: [],
+      DataToChangeZ: []
     }
   }
 
@@ -270,6 +273,7 @@ class AddPower extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChangeVendor: Data })
           this.props.getPlantBySupplier(Data.VendorId, () => { })
 
           setTimeout(() => {
@@ -305,7 +309,7 @@ class AddPower extends Component {
         if (res && res.data && res.data.Result) {
           const { powerGrid } = this.state;
           const Data = res.data.Data;
-
+          this.setState({ DataToChangeZ: Data })
           this.props.getPlantListByState(Data.StateId, () => { })
 
           let tempArray = [];
@@ -456,6 +460,7 @@ class AddPower extends Component {
     } else {
       this.setState({ source: [] })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -481,6 +486,7 @@ class AddPower extends Component {
     } else {
       this.setState({ UOM: [] })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   resetpowerKeyValue = () => {
@@ -500,7 +506,7 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-        
+
         powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
       })
 
@@ -572,6 +578,7 @@ class AddPower extends Component {
       netContributionValue: NetPowerCostPerUnit,
       isAddedSEB: true,
     });
+    this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -586,7 +593,7 @@ class AddPower extends Component {
     let powerTotalT = 0
     if (powerGrid) {
       this.state.powerGrid.map((item, index) => {
-       
+
         powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
       })
 
@@ -734,6 +741,7 @@ class AddPower extends Component {
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
 
     });
+    this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -810,6 +818,7 @@ class AddPower extends Component {
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
 
     });
+    this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
   };
 
@@ -915,6 +924,7 @@ class AddPower extends Component {
     });
 
     this.setState({ powerGrid: tempData, netContributionValue: finalNetContribution })
+    this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -1011,7 +1021,7 @@ class AddPower extends Component {
   */
   onSubmit = (values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
-      effectiveDate, vendorName, selectedVendorPlants } = this.state;
+      effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged } = this.state;
     const { initialConfiguration } = this.props;
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
@@ -1028,12 +1038,20 @@ class AddPower extends Component {
     }, 0)
 
 
-
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
 
     if (isEditFlag) {
 
+      console.log(values, 'values')
+      console.log(DataToChangeVendor, 'DataToChangeVendor')
+      console.log(DataToChangeZ, 'DataToChangeZ')
+
       if (IsVendor) {
+
+        if (DataToChangeVendor.NetPowerCostPerUnit == values.NetPowerCostPerUnit) {
+          this.cancel()
+          return false
+        }
 
         let vendorDetailData = {
           PowerDetailId: PowerDetailID,
@@ -1056,7 +1074,35 @@ class AddPower extends Component {
         })
 
       } else {
+        console.log(powerGridEditIndex - 2, 'powerGridEditIndex')
+        // if (DataToChangeZ.SEBChargesDetails[0].MinDemandKWPerMonth == values.MinDemandKWPerMonth &&
+        //   DataToChangeZ.SEBChargesDetails[0].DemandChargesPerKW == values.DemandChargesPerKW &&
+        //   DataToChangeZ.SEBChargesDetails[0].AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth &&
+        //   DataToChangeZ.SEBChargesDetails[0].MaxDemandChargesKW == values.MaxDemandChargesKW &&
+        //   DataToChangeZ.SEBChargesDetails[0].MeterRentAndOtherChargesPerAnnum == values.MeterRentAndOtherChargesPerAnnum &&
+        //   DataToChangeZ.SEBChargesDetails[0].DutyChargesAndFCA == values.DutyChargesAndFCA) {
+        //   this.cancel()
+        //   return false
+        // }
+        if (
+          // DropdownChanged &&
+          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].AssetCost == values.AssetCost &&
+          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].AnnualCost == values.AnnualCost &&
+          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].CostPerUnitOfMeasurement == values.CostPerUnitOfMeasurement &&
+          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].UnitGeneratedPerUnitOfFuel == values.UnitGeneratedPerUnitOfFuel &&
+          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].UnitGeneratedPerAnnum == values.UnitGeneratedPerAnnum &&
+          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].SEBPowerContributaion == values.SEBPowerContributaion
 
+          DataToChangeZ.SGChargesDetails[0].AssetCost == values.AssetCost &&
+          DataToChangeZ.SGChargesDetails[0].AnnualCost == values.AnnualCost &&
+          DataToChangeZ.SGChargesDetails[0].CostPerUnitOfMeasurement == values.CostPerUnitOfMeasurement &&
+          DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerUnitOfFuel == values.UnitGeneratedPerUnitOfFuel &&
+          DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerAnnum == values.UnitGeneratedPerAnnum &&
+          DataToChangeZ.SGChargesDetails[0].SEBPowerContributaion == values.SEBPowerContributaion
+        ) {
+          this.cancel()
+          return false
+        }
         let requestData = {
           PowerId: PowerDetailID,
           IsVendor: IsVendor,

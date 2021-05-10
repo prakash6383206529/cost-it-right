@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, reset } from "redux-form";
+import { Field, reduxForm, formValueSelector, reset, propTypes } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
-
+  static propTypes = { ...propTypes }
   constructor(props) {
     super(props);
     this.state = {
@@ -31,6 +31,8 @@ class AddInterestRate extends Component {
       isEditFlag: false,
       InterestRateId: '',
       effectiveDate: '',
+      Data: [],
+      DropdownChanged: true
     }
   }
   /**
@@ -149,6 +151,7 @@ class AddInterestRate extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -167,6 +170,7 @@ class AddInterestRate extends Component {
       this.props.getInterestRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
+          this.setState({ Data: Data })
           this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
@@ -219,14 +223,26 @@ class AddInterestRate extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
- 
+
   onSubmit = (values) => {
 
-    const { IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate } = this.state;
+    const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
+
+      if (Data.ICCApplicability == ICCApplicability.label && Data.ICCPercent == values.ICCPercent &&
+        Data.PaymentTermApplicability == PaymentTermsApplicability.label &&
+        Data.PaymentTermPercent == values.PaymentTermPercent &&
+        Data.RepaymentPeriod == values.RepaymentPeriod && DropdownChanged) {
+        console.log('cancle')
+        this.cancel()
+        return false;
+      }
+      else {
+
+      }
 
       let updateData = {
         VendorInterestRateId: InterestRateId,
@@ -311,7 +327,7 @@ class AddInterestRate extends Component {
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
                   onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                  >
+                >
                   <div className="add-min-height">
                     <Row>
                       <Col md="4" className="switch mb15">
@@ -473,7 +489,7 @@ class AddInterestRate extends Component {
                         <div className="form-group">
                           {/* <label>
                             Effective Date */}
-                              {/* <span className="asterisk-required">*</span> */}
+                          {/* <span className="asterisk-required">*</span> */}
                           {/* </label> */}
                           <div className="inputbox date-section">
                             {/* <DatePicker
@@ -493,23 +509,23 @@ class AddInterestRate extends Component {
                               disabled={isEditFlag ? true : false}
                             /> */}
                             <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  placeholder="Select date"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    // e.preventDefault()
-                                  }}
-                                  // disabled={isEditFlag ? true : false}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                //minDate={moment()}
-                                />
+                              label="Effective Date"
+                              name="EffectiveDate"
+                              placeholder="Select date"
+                              selected={this.state.effectiveDate}
+                              onChange={this.handleEffectiveDateChange}
+                              type="text"
+                              validate={[required]}
+                              autoComplete={'off'}
+                              required={true}
+                              changeHandler={(e) => {
+                                // e.preventDefault()
+                              }}
+                              // disabled={isEditFlag ? true : false}
+                              component={renderDatePicker}
+                              className="form-control"
+                            //minDate={moment()}
+                            />
 
                           </div>
                         </div>

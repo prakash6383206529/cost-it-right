@@ -104,6 +104,8 @@ class AddVolume extends Component {
       isShowForm: false,
       VolumeId: '',
       edit: false,
+      DataChanged: [],
+      DataToChange: true
     }
   }
 
@@ -312,7 +314,9 @@ class AddVolume extends Component {
     }
   }
 
-
+  afterSaveCell = (row, cellName, cellValue) => {
+    this.setState({ DataToChange: false })
+  }
 
   deleteItem = (ID, index) => {
     const { tableData } = this.state
@@ -324,6 +328,7 @@ class AddVolume extends Component {
       return item
     })
     this.setState({ tableData: filterData })
+    this.setState({ DataToChange: false })
   }
 
   /**
@@ -342,6 +347,7 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
+          this.setState({ DataChanged: Data })
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
             plantArray.push({
@@ -535,6 +541,11 @@ class AddVolume extends Component {
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
+
+      if (this.state.DataToChange) {
+        this.cancel()
+        return false
+      }
       let updateData = {
         VolumeId: VolumeId,
         LoggedInUserId: loggedInUserId(),
@@ -601,6 +612,7 @@ class AddVolume extends Component {
       mode: 'click',
       blurToSave: true,
       beforeSaveCell: this.beforeSaveCell,
+      afterSaveCell: this.afterSaveCell
     };
 
     return (

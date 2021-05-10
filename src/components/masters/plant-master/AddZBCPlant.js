@@ -25,7 +25,9 @@ class AddZBCPlant extends Component {
       city: [],
       country: [],
       state: [],
-      company: []
+      company: [],
+      DropdownChanged: true,
+      DataToCheck: []
     }
   }
 
@@ -55,7 +57,7 @@ class AddZBCPlant extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ DataToCheck: Data })
           this.props.fetchStateDataAPI(Data.CountryId, () => { })
           this.props.fetchCityDataAPI(Data.StateId, () => { })
 
@@ -147,6 +149,7 @@ class AddZBCPlant extends Component {
       this.setState({ country: [], state: [], city: [] })
       this.props.fetchStateDataAPI(0, () => { })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -176,6 +179,7 @@ class AddZBCPlant extends Component {
     } else {
       this.setState({ city: [] });
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -207,11 +211,20 @@ class AddZBCPlant extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { city, PlantId, company } = this.state;
+    const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
 
     if (isEditFlag) {
+
+      if (DropdownChanged && DataToCheck.PlantName == values.PlantName && DataToCheck.PhoneNumber == values.PhoneNumber &&
+        DataToCheck.Extension == values.Extension && DataToCheck.AddressLine1 == values.AddressLine1 &&
+        DataToCheck.AddressLine2 == values.AddressLine2 && DataToCheck.ZipCode == values.ZipCode) {
+        console.log('chaNGES')
+        this.toggleDrawer('')
+        return false
+      }
+     
       this.setState({ isSubmitted: true });
       let updateData = {
         PlantId: PlantId,
@@ -275,6 +288,7 @@ class AddZBCPlant extends Component {
     } else {
       this.setState({ company: [] })
     }
+    this.setState({ DropdownChanged: false })
   }
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -302,7 +316,7 @@ class AddZBCPlant extends Component {
                 className="form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                >
+              >
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>

@@ -22,6 +22,8 @@ class AddClientDrawer extends Component {
             country: [],
             state: [],
             showStateCity: true,
+            DropdownChanged: true,
+            DataToCheck: []
         }
     }
 
@@ -55,6 +57,7 @@ class AddClientDrawer extends Component {
         } else {
             this.setState({ country: [], state: [], city: [] })
         }
+        this.setState({ DropdownChanged: false })
     };
 
     /**
@@ -70,7 +73,7 @@ class AddClientDrawer extends Component {
         } else {
             this.setState({ state: [], city: [] });
         }
-
+        this.setState({ DropdownChanged: false })
     };
 
     /**
@@ -83,6 +86,7 @@ class AddClientDrawer extends Component {
         } else {
             this.setState({ city: [] });
         }
+        this.setState({ DropdownChanged: false })
     };
 
     /**
@@ -131,7 +135,7 @@ class AddClientDrawer extends Component {
             this.props.getClientData(ID, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
-
+                    this.setState({ DataToCheck: Data })
                     this.props.fetchStateDataAPI(Data.CountryId, () => { })
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
 
@@ -186,11 +190,19 @@ class AddClientDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { city, } = this.state;
+        const { city, country, DataToCheck, DropdownChanged } = this.state;
         const { isEditFlag, ID } = this.props;
 
         /** Update existing detail of supplier master **/
         if (isEditFlag) {
+            if (DropdownChanged && DataToCheck.ClientName == values.ClientName && DataToCheck.ClientEmailId == values.ClientEmailId &&
+                DataToCheck.PhoneNumber == values.PhoneNumber && DataToCheck.Extension == values.Extension &&
+                DataToCheck.MobileNumber == values.MobileNumber && DataToCheck.ZipCode == values.ZipCode) {
+                console.log('chaNGES')
+                this.toggleDrawer('')
+                return false
+            }
+
             let updateData = {
                 ClientId: ID,
                 ClientName: values.ClientName,
@@ -237,9 +249,9 @@ class AddClientDrawer extends Component {
     }
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
-          e.preventDefault();
+            e.preventDefault();
         }
-      };
+    };
     /**
     * @method render
     * @description Renders the component
@@ -259,7 +271,7 @@ class AddClientDrawer extends Component {
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
                                 onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                                >
+                            >
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>

@@ -44,6 +44,7 @@ class AddLabour extends Component {
       isOpenMachineType: false,
 
       isDisable: false,
+      DropdownChanged: true
     }
   }
 
@@ -384,6 +385,7 @@ class AddLabour extends Component {
       },
       () => this.props.change('LabourRate', 0),
     )
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -444,6 +446,7 @@ class AddLabour extends Component {
       },
       () => this.props.change('LabourRate', 0),
     )
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -513,6 +516,7 @@ class AddLabour extends Component {
     }
 
     this.setState({ gridTable: tempData })
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -546,6 +550,7 @@ class AddLabour extends Component {
       vendorName,
       LabourId,
       gridTable,
+      DropdownChanged
     } = this.state
     const userDetail = userDetails()
 
@@ -556,6 +561,14 @@ class AddLabour extends Component {
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
+
+      if (DropdownChanged) {
+        console.log('chaNGES')
+        this.cancel()
+        return false
+      }
+
+
       let updateData = {
         LabourId: LabourId,
         IsContractBase: IsEmployeContractual,
@@ -576,6 +589,7 @@ class AddLabour extends Component {
           this.cancel()
         }
       })
+      this.setState({ DropdownChanged: true })
     } else {
       /** Add new detail for creating operation master **/
 

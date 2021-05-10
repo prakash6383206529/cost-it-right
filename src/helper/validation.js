@@ -249,7 +249,7 @@ export const getPlantCode = (name) => {
 }
 
 export const applySuperScript = (cell) => {
-    if (cell && cell !== '') {
+    if (cell && cell !== '') { 
         const capIndex = cell && cell.indexOf('^');
         const superNumber = cell.substring(capIndex + 1, capIndex + 2);
         const capWithNumber = cell.substring(capIndex, capIndex + 2);

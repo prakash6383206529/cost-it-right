@@ -43,7 +43,8 @@ class AddAssemblyPart extends Component {
       childPartArray: [],
       NewAddedLevelOneChilds: [],
       avoidAPICall: false,
-
+      DataToCheck: [],
+      DropdownChanged: true
     }
   }
 
@@ -71,7 +72,7 @@ class AddAssemblyPart extends Component {
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
-
+          this.setState({ DataToCheck: Data })
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
@@ -105,6 +106,7 @@ class AddAssemblyPart extends Component {
     this.setState({
       effectiveDate: date,
     });
+    this.setState({ DropdownChanged: false })
   };
 
   childDrawerToggle = () => {
@@ -423,7 +425,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -452,6 +454,14 @@ class AddAssemblyPart extends Component {
     })
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'datatocheck')
+      if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
+        DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
+        DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode) {
+        this.cancel()
+        return false;
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -555,7 +565,7 @@ class AddAssemblyPart extends Component {
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                    >
+                  >
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">

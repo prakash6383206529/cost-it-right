@@ -40,7 +40,10 @@ class AddFuel extends Component {
       errors: [],
 
       isOpenFuelDrawer: false,
-
+      AddUpdate: true,
+      DeleteChanged: true,
+      HandleChanged: true,
+      RateChange: []
     }
   }
 
@@ -72,7 +75,7 @@ class AddFuel extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ RateChange: Data })
           setTimeout(() => {
             const { fuelComboSelectList } = this.props;
 
@@ -145,6 +148,7 @@ class AddFuel extends Component {
     } else {
       this.setState({ StateName: [] })
     }
+    this.setState({ HandleChanged: false })
   };
 
   checkForSpecialCharacter = (value) => {
@@ -191,7 +195,7 @@ class AddFuel extends Component {
       StateName: [],
       effectiveDate: new Date(),
     }, () => this.props.change('Rate', 0));
-
+    this.setState({ AddUpdate: false })
   }
 
   /**
@@ -223,6 +227,7 @@ class AddFuel extends Component {
       rateGridEditIndex: '',
       isEditIndex: false,
     }, () => this.props.change('Rate', 0));
+    this.setState({ AddUpdate: false })
   };
 
   /**
@@ -271,6 +276,7 @@ class AddFuel extends Component {
     this.setState({
       rateGrid: tempData
     })
+    this.setState({ DeleteChanged: false })
   }
 
   fuelToggler = () => {
@@ -291,6 +297,7 @@ class AddFuel extends Component {
     this.setState({
       effectiveDate: date,
     });
+    this.setState({ HandleChanged: false })
   };
 
   /**
@@ -357,7 +364,7 @@ class AddFuel extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId } = this.state;
+    const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, AddUpdate, RateChange, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
       toastr.warning('Rate should not be empty.');
@@ -374,6 +381,25 @@ class AddFuel extends Component {
     })
 
     if (isEditFlag) {
+      // console.log(this.state.RateChange.FuelDetatils[0].Rate, 'DataToCRateChangehange')
+      // console.log(values, 'values')
+      // console.log(city, 'city')
+      // console.log(AddUpdate, 'country')
+      // console.log(RateChange, 'country')
+      // console.log(DeleteChanged, 'country')
+      if (
+        (
+          AddUpdate
+          &&
+          (HandleChanged)
+        )
+        || DeleteChanged
+      ) {
+        console.log('chaNGES')
+        this.cancel()
+        return false
+      }
+
       let requestData = {
         FuelDetailId: FuelDetailId,
         LoggedInUserId: loggedInUserId(),
@@ -441,7 +467,7 @@ class AddFuel extends Component {
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
                       onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                      >
+                    >
                       <div className="add-min-height">
                         <Row>
                           <Col md="12" className="filter-block">

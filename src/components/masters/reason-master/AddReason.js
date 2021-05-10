@@ -18,6 +18,7 @@ class AddReason extends Component {
     this.state = {
       IsActive: true,
       ReasonId: '',
+      DataToCheck: []
     }
   }
 
@@ -52,6 +53,7 @@ class AddReason extends Component {
       this.props.getReasonAPI(ID, res => {
         if (res && res.data && res.data.Data) {
           const Data = res.data.Data;
+          this.setState({ DataToCheck: Data })
           this.setState({ IsActive: Data.IsActive })
         }
       })
@@ -86,11 +88,17 @@ class AddReason extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { ReasonId, } = this.state;
+    const { ReasonId, DataToCheck } = this.state;
     const { isEditFlag } = this.props;
 
     /** Update detail of the existing UOM  */
     if (isEditFlag) {
+
+      if (DataToCheck.Reason == values.Reason) {
+        console.log('chaNGES')
+        this.toggleDrawer('')
+        return false
+      }
       let formData = {
         ReasonId: ReasonId,
         Reason: values.Reason,
