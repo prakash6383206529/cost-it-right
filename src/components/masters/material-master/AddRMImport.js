@@ -903,7 +903,7 @@ class AddRMImport extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
