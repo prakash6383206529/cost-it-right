@@ -22,8 +22,7 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
-  const CloseOpenAccordion = useSelector(state => state.costing.CloseOpenAccordion)
+  const { ComponentItemDiscountData, CloseOpenAccordion, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -72,6 +71,7 @@ function PartCompoment(props) {
         "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
 
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": item.CostingId,

@@ -6,7 +6,7 @@ import { getFreigtFullTruckCapacitySelectList, getRateCriteriaByCapacitySelectLi
 import { netHeadCostContext } from '../CostingDetailStepTwo';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
 import Switch from "react-switch";
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
@@ -26,8 +26,8 @@ function AddFreight(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
-    mode: 'onBlur',
-    reValidateMode: 'onBlur',
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
@@ -278,6 +278,7 @@ function AddFreight(props) {
       FreightCost: data.FreightCost,
       Freight: '',
       EFreightLoadType: freightType,
+      FreightType: freightTypeText,
     }
     toggleDrawer('', formData)
   }
@@ -288,7 +289,7 @@ function AddFreight(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>
@@ -429,7 +430,7 @@ function AddFreight(props) {
                       />}
                   </Col>
                   <Col md="12">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`${freightType === Percentage ? 'Percentage' : 'Rate'}`}
                       name={'Rate'}
                       Controller={Controller}
@@ -442,7 +443,10 @@ function AddFreight(props) {
                         //   value: /^[0-9]*$/i,
                         //   message: 'Invalid Number.'
                         // },
-                        // maxLength: 4,
+                        max: {
+                          value: 100,
+                          message: 'Percentage should be less than 100'
+                        },
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

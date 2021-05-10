@@ -17,8 +17,9 @@ function PartOverheadProfit(props) {
   const [IsOpen, setIsOpen] = useState(false);
 
   const dispatch = useDispatch()
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  const { ComponentItemDiscountData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
 
@@ -77,7 +78,8 @@ function PartOverheadProfit(props) {
         checkForNull(item.CostingPartDetails.RejectionCost) +
         checkForNull(item.CostingPartDetails.ICCCost) +
         checkForNull(item.CostingPartDetails.PaymentTermCost),
-      "CostingPartDetails": item.CostingPartDetails
+      "CostingPartDetails": item.CostingPartDetails,
+      "EffectiveDate": CostingEffectiveDate,
     }
     dispatch(saveComponentOverheadProfitTab(reqData, res => {
       if (res.data.Result) {

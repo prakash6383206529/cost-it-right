@@ -25,7 +25,7 @@ function TabDiscountOther(props) {
 
   const { DiscountTabData } = props;
   const { register, handleSubmit, setValue, getValues, errors, control } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
@@ -43,9 +43,10 @@ function TabDiscountOther(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
-  const ExchangeRateData = useSelector(state => state.costing.ExchangeRateData)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { ExchangeRateData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (props.activeTab !== '6') {
@@ -78,6 +79,7 @@ function TabDiscountOther(props) {
         "PartNumber": costData.PartNumber,
         "NetPOPrice": props.netPOPrice,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
         "CostingPartDetails": {
           "CostingDetailId": costData.CostingId,
           "PartId": costData.PartId,
@@ -236,7 +238,7 @@ function TabDiscountOther(props) {
     if (newValue && newValue !== '') {
       setCurrency(newValue)
       //let ReqParams = { Currency: newValue.label, EffectiveDate: moment(effectiveDate).local().format('DD-MM-YYYY') }
-      dispatch(getExchangeRateByCurrency(newValue.label, moment(effectiveDate).local().format('YYYY-MM-DD'), res => {
+      dispatch(getExchangeRateByCurrency(newValue.label, moment(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
           const NetPOPriceINR = getValues('NetPOPriceINR');
@@ -250,25 +252,18 @@ function TabDiscountOther(props) {
     }
   }
 
-  /**
-   * @method handleEffectiveDateChange
-   * @description Handle Effective Date
-   */
-  const handleEffectiveDateChange = (date) => {
-    setEffectiveDate(date)
+  useEffect(() => {
     if (Object.keys(currency).length > 0) {
-      // setTimeout(() => {
-      //   dispatch(getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
-      //     if (res && res.data && res.data.Result) {
-      //       let Data = res.data.Data;
-      //       const NetPOPriceINR = getValues('NetPOPriceINR');
-      //       setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
-      //       setCurrencyExchangeRate(Data.CurrencyExchangeRate)
-      //     }
-      //   }))
-      // }, 500)
+      dispatch(getExchangeRateByCurrency(currency.label, moment(CostingEffectiveDate).local().format('YYYY-MM-DD'), res => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
+          const NetPOPriceINR = getValues('NetPOPriceINR');
+          setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
+          setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+        }
+      }))
     }
-  }
+  }, [CostingEffectiveDate])
 
   /**
   * @method renderListing
@@ -363,6 +358,7 @@ function TabDiscountOther(props) {
       "PartNumber": costData.PartNumber,
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
+      "EffectiveDate": CostingEffectiveDate,
       "CostingPartDetails": {
         "CostingDetailId": costData.CostingId,
         "PartId": costData.PartId,
@@ -552,7 +548,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="4">
-                      <div className="form-group">
+                      {/* <div className="form-group">
                         <label>Effective Date</label>
                         <div className="inputbox date-section">
                           <DatePicker
@@ -572,7 +568,7 @@ function TabDiscountOther(props) {
                             disabled={CostingViewMode ? true : false}
                           />
                         </div>
-                      </div>
+                      </div> */}
                     </Col>
                   </Row>
 
@@ -598,7 +594,6 @@ function TabDiscountOther(props) {
                     <Col md="2">{''}</Col>
                     {IsCurrencyChange && (
                       <>
-
                         <Col md="4">
                           <SearchableSelectHookForm
                             label={"Select Currency"}
@@ -613,7 +608,7 @@ function TabDiscountOther(props) {
                             mandatory={true}
                             handleChange={handleCurrencyChange}
                             errors={errors.Currency}
-                            disabled={CostingViewMode || effectiveDate === '' ? true : false}
+                            disabled={CostingViewMode || CostingEffectiveDate === '' ? true : false}
                           />
                         </Col>
                         <Col md="4">
