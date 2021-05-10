@@ -414,6 +414,7 @@ class RMImportListing extends Component {
       RawMaterial: [],
       RMGrade: [],
       vendorName: [],
+      plant: [],
       value: { min: 0, max: 0 },
     }, () => {
       this.getInitialRange()

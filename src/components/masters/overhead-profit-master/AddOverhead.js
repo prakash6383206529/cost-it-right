@@ -537,16 +537,25 @@ class AddOverhead extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
         Attachements: updatedFiles,
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss')
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+        IsForcefulUpdated: true
+      }
+      if (isEditFlag) {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateOverhead(requestData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
+                this.cancel();
+              }
+            })
+          },
+          onCancel: () => { },
+        }
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
-      this.props.reset()
-      this.props.updateOverhead(requestData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.OVERHEAD_UPDATE_SUCCESS);
-          this.cancel();
-        }
-      })
 
     } else {
 

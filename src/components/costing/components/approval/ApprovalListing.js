@@ -4,7 +4,7 @@ import { SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { useForm, Controller } from 'react-hook-form'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { useDispatch, useSelector } from 'react-redux'
-import { getApprovalList } from '../../actions/Approval'
+import { getApprovalList, getSelectedCostingList } from '../../actions/Approval'
 import { loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import { getAllPartSelectList, getCostingStatusSelectList, } from '../../actions/Costing'
@@ -36,7 +36,7 @@ function ApprovalListing() {
   const dispatch = useDispatch()
 
   const partSelectList = useSelector((state) => state.costing.partSelectList)
-  const statusSelectList = useSelector((state) => state.costing.costingStatusSelectList)
+  const statusSelectList = useSelector((state) => state.approval.costingStatusList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const approvalList = useSelector(state => state.approval.approvalList)
   const userList = useSelector(state => state.auth.userList)
@@ -48,7 +48,7 @@ function ApprovalListing() {
   useEffect(() => {
     getTableData()
     dispatch(getAllPartSelectList(() => { }))
-    dispatch(getCostingStatusSelectList(() => { }))
+    dispatch(getSelectedCostingList(() => { }))
     dispatch(getAllUserAPI(() => { }))
 
   }, [])
@@ -167,6 +167,7 @@ function ApprovalListing() {
   }
 
   const createdOnFormatter = (cell, row, enumObject, rowIndex) => {
+    console.log('cell: ', cell);
     return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
   }
 

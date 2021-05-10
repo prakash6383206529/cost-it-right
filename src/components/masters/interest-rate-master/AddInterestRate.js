@@ -239,14 +239,22 @@ class AddInterestRate extends Component {
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
       }
-      this.props.reset()
-      this.props.updateInterestRate(updateData, (res) => {
-
-        if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
-          this.cancel()
+      if (this.state.isEditFlag) {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateInterestRate(updateData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_INTEREST_RATE_SUCESS);
+                this.cancel()
+              }
+            });
+          },
+          onCancel: () => { },
         }
-      });
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
 
     } else {/** Add new detail for creating operation master **/
 

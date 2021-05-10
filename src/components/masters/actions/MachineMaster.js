@@ -151,7 +151,7 @@ export function createMachine(data, callback) {
  */
 export function copyMachine(MachineId, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.copyMachine}/${MachineId}`, headers);
+        const request = axios.post(`${API.copyMachine}/${MachineId}`, '', headers);
         request.then((response) => {
             if (response.data.Result === true) {
                 dispatch({ type: CREATE_SUCCESS, });

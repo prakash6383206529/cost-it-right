@@ -1836,7 +1836,7 @@ export function storePartNumber(partNo) {
 export function getCostingSummaryByplantIdPartNo(partNo, plantId, callback) {
   return (dispatch) => {
     if (partNo !== '' && plantId != '') {
-      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}`, headers,)
+      const request = axios.get(`${API.getCostingSummaryByplantIdPartNo}/${partNo}/${plantId}/0`, headers,)
       request
         .then((response) => {
           if (response.data.Result || response.status === 204) {

@@ -758,7 +758,7 @@ class AddMachineRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
+    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag } = this.state;
 
     if (isViewFlag) {
@@ -811,15 +811,25 @@ class AddMachineRate extends Component {
           VendorPlant: vendorPlantArray,
           Remark: remarks,
           Attachements: updatedFiles,
+          IsForcefulUpdated: true
+        }
+        if (isEditFlag) {
+          const toastrConfirmOptions = {
+            onOk: () => {
+              this.props.reset()
+              this.props.updateMachine(requestData, (res) => {
+                if (res.data.Result) {
+                  toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+                  this.cancel();
+                }
+              })
+            },
+            onCancel: () => { },
+          }
+          return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
 
-        this.props.reset()
-        this.props.updateMachine(requestData, (res) => {
-          if (res.data.Result) {
-            toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-            this.cancel();
-          }
-        })
+
       }
     } else {
 

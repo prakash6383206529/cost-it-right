@@ -85,6 +85,7 @@ function CostingDetails(props) {
   useEffect(() => {
     setValue('Technology', '')
     setValue('Part', '')
+    reset()
     InjectRolePermission()
     dispatch(storePartNumber(''))
     dispatch(getCostingTechnologySelectList(() => { }))
@@ -99,7 +100,7 @@ function CostingDetails(props) {
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
   const leftMenuData = useSelector(state => state.auth.leftMenuData);
-
+  console.log(partNumber, "PNNNNNNNNNNNNNNNNNNNN");
   /**
    * @method InjectRolePermission
    * @description SET ROLE AND PERMISSION
@@ -135,8 +136,7 @@ function CostingDetails(props) {
   }, [partNumber.isChanged])
 
   useEffect(() => {
-    if (Object.keys(partNumber).length > 0) {
-
+    if (Object.keys(partNumber).length > 0 && partNumber.technologyName) {
       setValue('Technology', { label: partNumber.technologyName, value: partNumber.technologyId })
       setPart({ label: partNumber.partNumber, value: partNumber.partId })
       setTimeout(() => {
