@@ -346,10 +346,9 @@ class AddVolume extends Component {
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
             plantArray.push({
-              label: Data.Plant[0].PlantName,
+              label: `${Data.Plant[0].PlantName}.(${Data.Plant[0].PlantCode})`,
               value: Data.Plant[0].PlantId,
             })
-
           }
 
           let vendorPlantArray = []
@@ -359,9 +358,7 @@ class AddVolume extends Component {
                 Text: item.PlantName,
                 Value: item.PlantId,
               })
-
               return vendorPlantArray
-
             })
 
           let tableArray = []
@@ -552,7 +549,7 @@ class AddVolume extends Component {
         VendorPlant: [], //why ?
         LoggedInUserId: loggedInUserId(),
         IsActive: true,
-        DestinationPlantId: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '00000000-0000-0000-0000-000000000000',
+        DestinationPlantId: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.value : '',
         DestinationPlant: IsVendor && getConfigurationKey().IsDestinationPlantConfigure ? destinationPlant.label : ''
       }
       this.props.reset()
