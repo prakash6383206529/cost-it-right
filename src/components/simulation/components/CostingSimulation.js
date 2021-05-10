@@ -137,6 +137,21 @@ function CostingSimulation(props) {
         console.log("OnSubmit");
         setShowApprovalHistory(true)
     }
+
+    // const onExportToCSV = (onClick) => {
+    //     // Custom your onClick event here,
+    //     // it's not necessary to implement this function if you have no any process before onClick
+    //     console.log('This is my custom function for ExportCSVButton click event');
+    // }
+
+    const onExportToCSV = (row) => {
+        // ...
+        let products = []
+        products = costingList
+
+        return products; // must return the data which you want to be exported
+    }
+
     const selectRowProp = {
         mode: 'checkbox',
         clickToSelect: true,
@@ -149,6 +164,8 @@ function CostingSimulation(props) {
         clearSearch: true,
         noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
         // paginationShowsTotal: renderPaginationShowsTotal(),
+        onExportToCSV: onExportToCSV,
+        // exportCSVText: 'Custom Export CSV Text',
         prePage: <span className="prev-page-pg"></span>, // Previous page button text
         nextPage: <span className="next-page-pg"></span>, // Next page button text
         firstPage: <span className="first-page-pg"></span>, // First page button text
@@ -187,7 +204,7 @@ function CostingSimulation(props) {
             {
                 !showApprovalHistory &&
 
-                <div>
+                <div className="show-table-btn">
                     <Row>
                         <Col sm="12">
                             <h1 class="mb-0">Token No:{tokenNo}</h1>
@@ -284,10 +301,13 @@ function CostingSimulation(props) {
                                 //ignoreSinglePage
                                 selectRow={selectRowProp}
                                 className="add-volume-table"
-                                pagination>
+                                pagination
+                                exportCSV
+                                csvFileName='table-export.csv'   
+                            >
                                 <TableHeaderColumn dataField="SimulationCostingId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="CostingId" width={100} columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
-                                <TableHeaderColumn dataField="VendorName" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="CostingId" width={100} export hidden columnTitle={true} editable={false} dataAlign="left" dataSort={true}>{'Costing ID'}</TableHeaderColumn>
+                                <TableHeaderColumn dataField="VendorName" width={100} export hidden columnTitle={true} editable={false} dataAlign="left" >{renderVendorName()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PlantCode" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderPlantCode()}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartNo" width={100} columnTitle={true} editable={false} dataAlign="left" >{'Part No.'}</TableHeaderColumn>
                                 <TableHeaderColumn dataField="PartDescription" width={100} columnTitle={true} editable={false} dataAlign="left" >{renderDescription()}</TableHeaderColumn>
