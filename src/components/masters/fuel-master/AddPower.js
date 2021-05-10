@@ -1022,7 +1022,7 @@ class AddPower extends Component {
   onSubmit = (values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged } = this.state;
-    const { initialConfiguration } = this.props;
+    const { initialConfiguration, fieldsObj } = this.props;
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
     })
@@ -1043,7 +1043,7 @@ class AddPower extends Component {
     if (isEditFlag) {
 
       console.log(values, 'values')
-      console.log(DataToChangeVendor, 'DataToChangeVendor')
+      console.log(selfGridDataArray, 'selfGridDataArray')
       console.log(DataToChangeZ, 'DataToChangeZ')
 
       if (IsVendor) {
@@ -1074,8 +1074,8 @@ class AddPower extends Component {
         })
 
       } else {
-        console.log(powerGridEditIndex - 2, 'powerGridEditIndex')
-        // if (DataToChangeZ.SEBChargesDetails[0].MinDemandKWPerMonth == values.MinDemandKWPerMonth &&
+        console.log(fieldsObj, 'powerGridEditIndex')
+        // if (DropdownChanged&&DataToChangeZ.SEBChargesDetails[0].MinDemandKWPerMonth == values.MinDemandKWPerMonth &&
         //   DataToChangeZ.SEBChargesDetails[0].DemandChargesPerKW == values.DemandChargesPerKW &&
         //   DataToChangeZ.SEBChargesDetails[0].AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth &&
         //   DataToChangeZ.SEBChargesDetails[0].MaxDemandChargesKW == values.MaxDemandChargesKW &&
@@ -1092,13 +1092,14 @@ class AddPower extends Component {
           // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].UnitGeneratedPerUnitOfFuel == values.UnitGeneratedPerUnitOfFuel &&
           // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].UnitGeneratedPerAnnum == values.UnitGeneratedPerAnnum &&
           // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].SEBPowerContributaion == values.SEBPowerContributaion
-
-          DataToChangeZ.SGChargesDetails[0].AssetCost == values.AssetCost &&
-          DataToChangeZ.SGChargesDetails[0].AnnualCost == values.AnnualCost &&
-          DataToChangeZ.SGChargesDetails[0].CostPerUnitOfMeasurement == values.CostPerUnitOfMeasurement &&
-          DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerUnitOfFuel == values.UnitGeneratedPerUnitOfFuel &&
-          DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerAnnum == values.UnitGeneratedPerAnnum &&
-          DataToChangeZ.SGChargesDetails[0].SEBPowerContributaion == values.SEBPowerContributaion
+          DropdownChanged
+          // &&
+          // DataToChangeZ.SGChargesDetails[0].AssetCost == values.AssetCost &&
+          // DataToChangeZ.SGChargesDetails[0].AnnualCost == values.AnnualCost &&
+          // DataToChangeZ.SGChargesDetails[0].CostPerUnitOfMeasurement == values.CostPerUnitOfMeasurement &&
+          // DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerUnitOfFuel == values.UnitGeneratedPerUnitOfFuel &&
+          // DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerAnnum == values.UnitGeneratedPerAnnum &&
+          // DataToChangeZ.SGChargesDetails[0].SEBPowerContributaion == values.SEBPowerContributaion
         ) {
           this.cancel()
           return false
