@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
-import { getOverheadProfitTabData, setOverheadProfitData, saveCostingOverheadProfitTab, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
+import { getOverheadProfitTabData, setOverheadProfitData, setSurfaceCostInOverheadProfit } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, } from '../../../../helper';
 import Switch from "react-switch";
@@ -507,26 +507,7 @@ function TabOverheadProfit(props) {
   * @method saveCosting
   * @description SAVE COSTING
   */
-  const saveCosting = () => {
-    const data = {
-      // "CostingId": costData.CostingId,
-      // "PartId": costData.PartId,
-      // "PartNumber": costData.PartNumber,
-      // "NetPOPrice": props.netPOPrice,
-      // "LoggedInUserId": loggedInUserId(),
-      // "IsApplicableForChildParts": IsApplicableForChildParts,
-      // "NetOverheadAndProfitCost": OverheadCost + ProfitCost,
-      // "OverheadNetCost": OverheadCost,
-      // "ProfitNetCost": ProfitCost,
-      // "RejectionNetCost": RejectionCost,
-      // "ICCCost": ICCCost,
-      // "PaymentTermCost": PaymentTermCostValue,
-      // "CostingPartDetails": tabData
-    }
-
-    dispatch(saveCostingOverheadProfitTab(data, res => { }))
-
-  }
+  const saveCosting = () => { }
 
   /**
   * @method onSubmit

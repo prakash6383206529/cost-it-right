@@ -901,8 +901,8 @@ export function getSurfaceTreatmentDrawerDataList(data, callback) {
  */
 export function getSurfaceTreatmentDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}/${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.CostingId}`, headers);
+    const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.CostingId}`;
+    const request = axios.get(`${API.getSurfaceTreatmentDrawerVBCDataList}/${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result) {
         callback(response);
@@ -1022,14 +1022,12 @@ export function saveAssemblyOverheadProfitTab(data, callback) {
 export function saveComponentOverheadProfitTab(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.saveComponentOverheadProfitTab, data, headers)
-    request
-      .then((response) => {
-        callback(response)
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-      })
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }
 

@@ -9,21 +9,21 @@ import { Row, Col, } from 'reactstrap';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../../../config/message';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { checkForDecimalAndNull } from '../../../../../helper';
+import { checkForDecimalAndNull, loggedInUserId } from '../../../../../helper';
 
 function SurfaceTreatment(props) {
 
   const { surfaceData, transportationData, item } = props;
 
   const { handleSubmit } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   });
 
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  const { ComponentItemDiscountData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
 
@@ -64,6 +64,8 @@ function SurfaceTreatment(props) {
         "BOMLevel": item.BOMLevel,
         "CostingNumber": costData.CostingNumber,
         "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+        "EffectiveDate": CostingEffectiveDate,
+        "LoggedInUserId": loggedInUserId(),
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "IsAssemblyPart": true,
@@ -95,6 +97,8 @@ function SurfaceTreatment(props) {
         "BOMLevel": item.BOMLevel,
         "CostingNumber": costData.CostingNumber,
         "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,
+        "EffectiveDate": CostingEffectiveDate,
+        "LoggedInUserId": loggedInUserId(),
         "CostingPartDetails": {
           "CostingDetailId": "00000000-0000-0000-0000-000000000000",
           "NetSurfaceTreatmentCost": item.CostingPartDetails.NetSurfaceTreatmentCost,

@@ -21,9 +21,9 @@ function TabPackagingFreight(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-  const PackageAndFreightTabData = useSelector(state => state.costing.PackageAndFreightTabData)
+
+  const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -147,6 +147,7 @@ function TabPackagingFreight(props) {
       "PartNumber": costData.PartNumber,
       "NetPOPrice": props.netPOPrice,
       "LoggedInUserId": loggedInUserId(),
+      "EffectiveDate": CostingEffectiveDate,
       "CostingNumber": costData.CostingNumber,
       "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
       "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0].CostingPartDetails
