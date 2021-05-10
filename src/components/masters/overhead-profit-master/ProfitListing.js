@@ -5,9 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required } from "../../../helper/validation";
 import {
     getProfitDataList, deleteProfit, activeInactiveProfit, fetchModelTypeAPI,
-    getVendorWithVendorCodeSelectList,
-    getProfitVendorFilterByModelSelectList,
-    getProfitModelFilterByVendorSelectList,
+    getVendorWithVendorCodeSelectList, getProfitVendorFilterByModelSelectList, getProfitModelFilterByVendorSelectList,
 } from '../actions/OverheadProfit';
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
@@ -23,6 +21,7 @@ import { costingHeadObj } from '../../../config/masterData';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import { fetchCostingHeadsAPI, } from '../../../actions/Common';
 import LoaderCustom from '../../common/LoaderCustom';
+import moment from 'moment';
 
 class ProfitListing extends Component {
     constructor(props) {
@@ -32,7 +31,7 @@ class ProfitListing extends Component {
             isEditFlag: false,
             tableData: [],
             IsVendor: false,
-            shown:false,
+            shown: false,
 
             costingHead: [],
             ModelType: [],
@@ -161,9 +160,9 @@ class ProfitListing extends Component {
             headText = 'Client Based';
         }
 
-        
-        
-        
+
+
+
         // if (!row.IsVendor && row.VendorName === '-' && row.ClientName === "-") {
         //     headText = 'Zero Based';
         // } else if (cell && row.VendorName !== '-') {
@@ -173,6 +172,15 @@ class ProfitListing extends Component {
         // } 
         return headText;
     }
+
+    /**
+  * @method effectiveDateFormatter
+  * @description Renders buttons
+  */
+    effectiveDateFormatter = (cell, row, enumObject, rowIndex) => {
+        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+    }
+
 
     renderVendor = () => {
         return <>Vendor <br />Name </>
@@ -198,7 +206,9 @@ class ProfitListing extends Component {
     renderOverheadBOP = () => {
         return <>Profit  <br />on BOP (%)</>
     }
-
+    renderEffectiveDate = () => {
+        return <>Effective <br />Date</>
+    }
     /**
     * @method indexFormatter
     * @description Renders serial number
@@ -557,8 +567,8 @@ class ProfitListing extends Component {
                                         <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
                                             <img src={require("../../../assests/images/times.png")} alt="cancel-icon.jpg" /></button>
                                     ) : (
-                                            <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                                        )}
+                                        <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
+                                    )}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -596,6 +606,7 @@ class ProfitListing extends Component {
                             <TableHeaderColumn searchable={false} dataField="ProfitRMPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadRM()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="ProfitBOPPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadBOP()}</TableHeaderColumn>
                             <TableHeaderColumn searchable={false} dataField="ProfitMachiningCCPercentage" width={100} columnTitle={true} dataAlign="left" dataFormat={this.dashFormatter}>{this.renderOverheadCC()}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataField="EffectiveDate" dataSort={true} dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             {/* <TableHeaderColumn dataField="IsActive" width={100} columnTitle={true} dataAlign="center" dataFormat={this.statusButtonFormatter}>{'Status'}</TableHeaderColumn> */}
                             <TableHeaderColumn dataAlign="right" width={100} searchable={false} dataField="ProfitId" export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
                         </BootstrapTable>

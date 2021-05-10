@@ -199,10 +199,11 @@ function CostingSummary(props) {
                   newValue.partName = Data.PartName
                   newValue.partNumber = newValue.label
                   newValue.partId = newValue.value
+                  // const prNAme = (newValue.label).replace('/', '%2F')
                   dispatch(storePartNumber(newValue))
                   dispatch(
                     getCostingSummaryByplantIdPartNo(
-                      newValue.label,
+                      newValue.partId,
                       '00000000-0000-0000-0000-000000000000',
                       (res) => {
 

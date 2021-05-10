@@ -178,16 +178,24 @@ class AddExchangeRate extends Component {
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         IsActive: true,
         LoggedInUserId: loggedInUserId(),
+        IsForcefulUpdated: true
+      }
+      if (isEditFlag) {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateExchangeRate(updateData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
+                this.cancel()
+              }
+            });
+          },
+          onCancel: () => { },
+        }
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
-      this.props.reset()
-      this.props.updateExchangeRate(updateData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.EXCHANGE_UPDATE_SUCCESS);
-          this.cancel()
-        }
-      });
-      this.setState({ DropdownChanged: true })
 
     } else {/** Add new detail for creating exchange master **/
 
@@ -352,7 +360,7 @@ class AddExchangeRate extends Component {
                               validate={[required]}
                               onChangeRaw={(e) => e.preventDefault()}
                               required
-                              disabled={false}
+                              disabled={isEditFlag ? true : false}
 
                             />
                             {/* <Field

@@ -6,7 +6,7 @@ import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20, alphaNumeric,
   postiveNumber, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength, decimalLengthFour, decimalLengthsix
 } from "../../../helper/validation";
-import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField } from "../../layout/FormInputs";
+import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker } from "../../layout/FormInputs";
 import { fetchMaterialComboAPI, getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, } from '../../../actions/Common';
 import {
   createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
@@ -148,6 +148,8 @@ class AddBOPImport extends Component {
 
           const Data = res.data.Data;
           this.setState({ DataToChange: Data })
+
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -574,16 +576,25 @@ class AddBOPImport extends Component {
         Plant: IsVendor === false ? [plantArray] : [],
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
-        NetLandedCostConversion: netLandedConverionCost
+        NetLandedCostConversion: netLandedConverionCost,
+        IsForcefulUpdated: true
+      }
+      if (isEditFlag) {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateBOPImport(requestData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
+                this.cancel();
+              }
+            })
+          },
+          onCancel: () => { },
+        }
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
-      this.props.reset()
-      this.props.updateBOPImport(requestData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_BOP_SUCESS);
-          this.cancel();
-        }
-      })
 
     } else {
 
@@ -994,12 +1005,12 @@ class AddBOPImport extends Component {
                         <Row> */}
                           <Col md="3">
                             <div className="form-group">
-                              <label>
-                                Effective Date
-                                    {/* <span className="asterisk-required">*</span> */}
-                              </label>
+                              {/* <label>
+                                Effective Date */}
+                              {/* <span className="asterisk-required">*</span> */}
+                              {/* </label> */}
                               <div className="inputbox date-section mb-3">
-                                <DatePicker
+                                {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -1014,6 +1025,23 @@ class AddBOPImport extends Component {
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={isEditFlag ? true : false}
+                                /> */}
+                                <Field
+                                  label="Effective Date"
+                                  name="EffectiveDate"
+                                  selected={this.state.effectiveDate}
+                                  onChange={this.handleEffectiveDateChange}
+                                  type="text"
+                                  validate={[required]}
+                                  autoComplete={'off'}
+                                  required={true}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
+                                  component={renderDatePicker}
+                                  className="form-control"
+                                  disabled={isEditFlag ? true : false}
+                                //minDate={moment()}
                                 />
                               </div>
                             </div>

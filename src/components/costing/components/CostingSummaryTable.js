@@ -49,6 +49,7 @@ const CostingSummaryTable = (props) => {
   const [viewRejectAndModelType, setViewRejectAndModelType] = useState({})
   const [viewPackagingFreight, setViewPackagingFreight] = useState({})
   const [multipleCostings, setMultipleCostings] = useState([])
+  const [isWarningFlag, setIsWarningFlag] = useState(false)
 
   const [flag, setFlag] = useState(false)
   const [isAttachment, setAttachment] = useState(false)
@@ -362,9 +363,12 @@ const CostingSummaryTable = (props) => {
       const ind = multipleCostings.findIndex((data) => data === id)
       if (ind !== -1) {
         temp.splice(ind, 1)
+        setIsWarningFlag(viewCostingData[ind].IsApprovalLocked)
       }
     } else {
       temp.push(id)
+      const ind = multipleCostings.findIndex((data) => data === id)
+      setIsWarningFlag(viewCostingData[ind].IsApprovalLocked)
     }
     setMultipleCostings(temp)
     setFlag(!flag)
@@ -423,11 +427,11 @@ const CostingSummaryTable = (props) => {
   }
 
   useEffect(() => {
-    // if (viewCostingData !== undefined && viewCostingData.length === 0) {
-    //   setShowWarningMsg(true)
-    // } else {
-    //   setShowWarningMsg(false)
-    // }
+    console.log(viewCostingData && viewCostingData[0], "viewCostingData");
+    if (viewCostingData.length === 1) {
+      setIsWarningFlag(viewCostingData && viewCostingData.length > 0 && viewCostingData[0].IsApprovalLocked)
+      // setIsWarningFlag(false)
+    }
   }, [viewCostingData])
 
   useEffect(() => {
@@ -474,7 +478,7 @@ const CostingSummaryTable = (props) => {
 
             <Col md="8" className="text-right">
               {!viewMode && (
-                <button class="user-btn mr-1 mb-2 approval-btn" onClick={() => checkCostings()}>
+                <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                   <img
                     class="mr-1"
                     src={require('../../../assests/images/send-for-approval.svg')}
@@ -490,7 +494,8 @@ const CostingSummaryTable = (props) => {
                 <img className="mr-2" src={require('../../../assests/images/compare.svg')}></img>{' '}
               Add To Comparison{' '}
               </button>
-              {showWarningMsg && <WarningMessage message={'Costing for this part/Assembly is not yet done!'} />}
+              {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
+              {showWarningMsg && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
             </Col>
 
           </Row>
@@ -569,7 +574,7 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-flex justify-content-between bg-grey">
-                                {`${moment(data.costingDate).format('DD/MM/YYYY')}-${data.CostingNumber}`}{' '}
+                                {`${moment(data.costingDate).format('DD/MM/YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
                                 {
                                   !viewMode &&
                                   <a
@@ -615,10 +620,9 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.netRM, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewRM(index)}
                               >
-                                <i class="fa fa-eye"></i>
                               </button>
                             </td>
                           )
@@ -633,10 +637,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.netBOP, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewBop(index)}
                               >
-                                <i class="fa fa-eye"></i>
+
                               </button>
                             </td>
                           )
@@ -682,10 +686,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.nConvCost, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewConversionCost(index)}
                               >
-                                <i class="fa fa-eye"></i>
+
                               </button>
                             </td>
                           )
@@ -775,10 +779,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => overHeadProfit(index)}
                               >
-                                <i class="fa fa-eye"></i>
+
                               </button>
                             </td>
                           )
@@ -812,10 +816,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewPackagingAndFrieghtData(index)}
                               >
-                                <i class="fa fa-eye"></i>
+
                               </button>
                             </td>
                           )
@@ -857,10 +861,10 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.totalToolCost, initialConfiguration.NoOfDecimalForPrice)}
                               <button
                                 type="button"
-                                class="float-right btn small-square-btn btn-link eye-btn"
+                                class="float-right mb-0 View "
                                 onClick={() => viewToolCostData(index)}
                               >
-                                <i class="fa fa-eye"></i>
+
                               </button>
                             </td>
                           )
@@ -875,9 +879,9 @@ const CostingSummaryTable = (props) => {
                               {checkForDecimalAndNull(data.totalCost, initialConfiguration.NoOfDecimalForPrice)}
                               {/* <button
                             type="button"
-                            class="float-right btn small-square-btn btn-link eye-btn"
+                            class="float-right mb-0 View "
                           >
-                            <i class="fa fa-eye"></i>
+                            
                           </button> */}
                             </td>
                           )

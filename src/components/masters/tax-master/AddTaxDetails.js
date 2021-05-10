@@ -2,16 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, number, acceptAllExceptSingleSpecialCharacter, checkForDecimalAndNull, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
-import { renderText, searchableSelect } from "../../layout/FormInputs";
+import { required, checkWhiteSpaces, maxLength80, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, checkPercentageValue, decimalLengthThree } from "../../../helper/validation";
+import { renderDatePicker, renderText, searchableSelect } from "../../layout/FormInputs";
 import { createTaxDetails, getTaxDetailsData, updateTaxDetails, } from '../actions/TaxMaster';
 import { fetchCountryDataAPI, } from '../../../actions/Common';
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import moment from 'moment';
 const selector = formValueSelector('AddTaxDetails')
 
@@ -44,6 +42,8 @@ class AddTaxDetails extends Component {
           if (res && res.data && res.data.Data) {
             let Data = res.data.Data;
             this.setState({ DataToCheck: Data })
+
+            this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
             setTimeout(() => {
               this.setState({
@@ -286,12 +286,12 @@ class AddTaxDetails extends Component {
                 </div>
                 <div className="input-group form-group col-md-12 input-withouticon">
                   <div className="form-group">
-                    <label>
+                    {/* <label>
                       Effective Date
-                          {/* <span className="asterisk-required">*</span> */}
-                    </label>
+                          <span className="asterisk-required">*</span>
+                    </label> */}
                     <div className="inputbox date-section">
-                      <DatePicker
+                      {/* <DatePicker
                         name="EffectiveDate"
                         selected={this.state.effectiveDate}
                         onChange={this.handleEffectiveDateChange}
@@ -305,8 +305,30 @@ class AddTaxDetails extends Component {
                         autoComplete={"off"}
                         disabledKeyboardNavigation
                         onChangeRaw={(e) => e.preventDefault()}
-                        disabled={false}
+                        disabled={isEditFlag ? true : false}
+                      /> */}
+                      <Field
+                        label="Effective Date"
+                        name="EffectiveDate"
+                        placeholder="Select date"
+                        selected={this.state.effectiveDate}
+                        onChange={this.handleEffectiveDateChange}
+                        type="text"
+                        validate={[required]}
+                        autoComplete={'off'}
+                        required={true}
+                        changeHandler={(e) => {
+                          // e.preventDefault()
+                        }}
+                        disabled={isEditFlag ? true : false}
+                        component={renderDatePicker}
+                        disabled={isEditFlag ? true : false
+                        }
+                        required={true}
+                        className="form-control"
+                      //minDate={moment()}
                       />
+
                     </div>
                   </div>
                 </div>

@@ -242,7 +242,7 @@ export function bulkUploadVolumeBudgetedVBC(data, callback) {
 export function getVolumeDataByPartAndYear(partNumber, financialYear, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}`, headers)
+    axios.get(`${API.getVolumeData}/${partNumber}/${financialYear}/0`, headers)
       .then((response) => {
         if (response.data.Result === true || response.status === 202) {
           dispatch({

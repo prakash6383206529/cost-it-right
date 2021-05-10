@@ -28,18 +28,9 @@ function CostingDetailStepTwo(props) {
 
   }, []);
 
-  const costingData = useSelector(state => state.costing.costingData)
-  const CostingDataList = useSelector(state => state.costing.CostingDataList)
-  const NetPOPrice = useSelector(state => state.costing.NetPOPrice)
-  const RMCCBOPCost = useSelector(state => state.costing.RMCCBOPCost)
-  const SurfaceCostData = useSelector(state => state.costing.SurfaceCostData)
-  const OverheadProfitCostData = useSelector(state => state.costing.OverheadProfitCostData)
-  const DiscountCostData = useSelector(state => state.costing.DiscountCostData)
-  const partNo = useSelector((state) => state.costing.partNo)
-  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const IsToolCostApplicable = useSelector(state => state.costing.IsToolCostApplicable)
-  const showLoading = useSelector(state => state.costing.showLoading)
-  console.log('showLoading: ', showLoading);
+  const { initialConfiguration } = useSelector(state => state.auth)
+  const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
+    DiscountCostData, partNo, IsToolCostApplicable, showLoading } = useSelector(state => state.costing)
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -54,7 +45,6 @@ function CostingDetailStepTwo(props) {
   const setHeaderCostRMCCTab = (data) => {
     const headerIndex = 0;
 
-    //setTimeout(() => {
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -85,7 +75,6 @@ function CostingDetailStepTwo(props) {
     dispatch(setCostingDataList('setHeaderCostRMCCTab', tempArr, () => { }))
     dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
     dispatch(setRMCCBOPCostData(data, () => { }))
-    //}, 500)
 
   }
 
@@ -96,7 +85,6 @@ function CostingDetailStepTwo(props) {
   const setHeaderCostSurfaceTab = (data) => {
     const headerIndex = 0;
 
-    //setTimeout(() => {
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -121,8 +109,6 @@ function CostingDetailStepTwo(props) {
     dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
     dispatch(setSurfaceCostData(data, () => { }))
 
-    //}, 500)
-
   }
 
   /**
@@ -132,7 +118,6 @@ function CostingDetailStepTwo(props) {
   const setHeaderOverheadProfitCostTab = (data) => {
     const headerIndex = 0;
 
-    //setTimeout(() => {
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -158,8 +143,6 @@ function CostingDetailStepTwo(props) {
     dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
     dispatch(setOverheadProfitCostData(data, () => { }))
 
-    //}, 500)
-
   }
 
   /**
@@ -169,7 +152,6 @@ function CostingDetailStepTwo(props) {
   const setHeaderPackageFreightTab = (data) => {
     const headerIndex = 0;
 
-    //setTimeout(() => {
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -192,8 +174,6 @@ function CostingDetailStepTwo(props) {
 
     dispatch(setCostingDataList('setHeaderPackageFreightTab', tempArr, () => { }))
     dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
-
-    //}, 300)
 
   }
 
@@ -271,7 +251,6 @@ function CostingDetailStepTwo(props) {
         checkForNull(tempData.NetPackagingAndFreight) +
         checkForNull(tempData.ToolCost) - checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice)
 
-      //setTimeout(() => {
       tempData = {
         ...tempData,
         NetDiscountsCost: checkForDecimalAndNull(discountedCost, initialConfiguration.NoOfDecimalForPrice),
@@ -283,7 +262,6 @@ function CostingDetailStepTwo(props) {
       dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => { }))
       dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
 
-      //}, 500)
     }
   }
 
@@ -322,7 +300,6 @@ function CostingDetailStepTwo(props) {
                   <Table className="table cr-brdr-main mb-0 border-bottom-0" size="sm">
                     <tbody>
                       <td><div className={'part-info-title'}><p><span className="">Technology:</span><span className="dark-blue pl-1"> {costingData.TechnologyName}</span></p></div></td>
-                      {/* <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part No:</span><span className="dark-blue pl-1"> {costingData.PartNumber}</span></p></div></td> */}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue pl-1"> {costingData.PartName}</span></p></div></td>
                       {costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Vendor:</span><span className="dark-blue pl-1"> {costingData.VendorName}</span></p></div></td>}
                       {!costingData.IsVendor && <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Plant:</span><span className="dark-blue pl-1"> {`${costingData.IsVendor ? costingData.VendorPlantName : costingData.PlantName}(${costingData.VendorType})`}</span></p></div></td>}

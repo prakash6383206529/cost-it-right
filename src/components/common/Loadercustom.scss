@@ -18,6 +18,9 @@
                         tr:last-child{
                             td{
                                 border-bottom: 1px solid #C2CBE8;
+                                &.react-bs-table-no-data{
+                                    border-bottom: none;
+                                }
                             }
                         }
                     }

@@ -96,6 +96,7 @@ const SendForApproval = (props) => {
     if (newValue && newValue !== '') {
       setValue('approver', '')
       setSelectedApprover('')
+      setShowValidation(false)
       dispatch(
         getAllApprovalUserFilterByDepartment({
           LoggedInUserId: userData.LoggedInUserId,
@@ -180,7 +181,7 @@ const SendForApproval = (props) => {
     setFinancialYear(year)
 
     dispatch(
-      getVolumeDataByPartAndYear(partNo.label ? partNo.label : partNo.partNumber, year, (res) => {
+      getVolumeDataByPartAndYear(partNo.value ? partNo.value : partNo.partId, year, (res) => {
         if (res.data.Result === true || res.status === 202) {
           let approvedQtyArr = res.data.Data.VolumeApprovedDetails
           let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
@@ -233,17 +234,16 @@ const SendForApproval = (props) => {
       return
     }
     let obj = {
-      ApproverDepartmentId: selectedDepartment.value,
-      ApproverDepartmentName: selectedDepartment.label,
-      ApproverLevelId: selectedApproverLevelId.levelId,
-      ApproverLevel: selectedApproverLevelId.levelName,
-      ApproverId: selectedApprover,
+      ApproverDepartmentId: !isFinalApproverShow ? selectedDepartment.value : '',
+      ApproverDepartmentName: !isFinalApproverShow ? selectedDepartment.label : '',
+      ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : '',
+      ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : '',
+      ApproverId: !isFinalApproverShow ? selectedApprover : '',
 
       // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
       // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
       SenderLevelId: userData.LoggedInLevelId,
       SenderLevel: userData.LoggedInLevel,
-
       SenderId: userData.LoggedInUserId,
       SenderRemark: data.remarks,
       LoggedInUserId: userData.LoggedInUserId,
@@ -251,29 +251,34 @@ const SendForApproval = (props) => {
 
     let temp = []
     let tempObj = {}
-
+    let plantCount = 0
+    let venderCount = 0
     viewApprovalData.forEach((element, index, arr) => {
 
       if (element.plantId !== '-' && index > 0) {
         if (element.plantId === arr[index - 1].plantId) {
-          toastr.warning('Costings with same plant cannot be sent for approval')
           return false
         } else {
-          return true
+          plantCount = plantCount + 1
         }
       } else if (element.vendorId !== '-' && index > 0) {
         if (element.vendorId === arr[index - 1].vendorId) {
-
-          toastr.warning('Costings with same vendor cannot be sent for approval')
           return false
         } else {
-          return true
+          venderCount = venderCount + 1
         }
-      }
-      else {
-        return true
+      } else {
+        plantCount = plantCount + 1
+        venderCount = venderCount + 1
       }
     });
+
+    if (plantCount === 0) {
+      return toastr.warning('Costings with same plant cannot be sent for approval')
+    }
+    if (venderCount === 0) {
+      return toastr.warning('Costings with same vendor cannot be sent for approval')
+    }
 
     viewApprovalData.map((data) => {
 
@@ -331,6 +336,9 @@ const SendForApproval = (props) => {
 
     dispatch(
       sendForApprovalBySender(obj, (res) => {
+        // if(res.data.Result){
+
+        // }
         toastr.success(viewApprovalData.length === 1 ? `Costing ID ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
         dispatch(setCostingApprovalData([]))
@@ -455,13 +463,11 @@ const SendForApproval = (props) => {
                                 <DatePickerHookForm
                                   name={`${dateField}EffectiveDate[${index}]`}
                                   label={'Effective Date'}
-                                  selected={
-                                    data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""
-                                  }
+                                  selected={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                   handleChange={(date) => {
                                     handleEffectiveDateChange(date, index);
                                   }}
-                                  // defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                  //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
                                   rules={{ required: true }}
                                   Controller={Controller}
                                   control={control}
@@ -598,7 +604,7 @@ const SendForApproval = (props) => {
                           />
                         </Col>
                         {
-                          showValidation && <span className="warning-top"><WarningMessage message={'Level for this user/technology is not yet added!'} /></span>
+                          showValidation && <span className="warning-top"><WarningMessage message={'There is no approver added in this department'} /></span>
                         }
 
                         <Col md="12">

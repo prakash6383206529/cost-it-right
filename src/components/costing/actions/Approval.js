@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {
   API, API_REQUEST, API_FAILURE, GET_SEND_FOR_APPROVAL_SUCCESS, GET_ALL_APPROVAL_DEPARTMENT, GET_ALL_APPROVAL_USERS_BY_DEPARTMENT,
-  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY,
+  GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT, GET_ALL_REASON_SELECTLIST, GET_APPROVAL_LIST, config, GET_APPROVAL_SUMMARY, GET_SELECTED_COSTING_STATUS,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -414,3 +414,20 @@ export function pushedApprovedCosting(data, callback) {
   }
 }
 
+export function getSelectedCostingList(callback) {
+  return (dispatch) => {
+    const request = axios.get(API.getSelectedCostingStatusList, headers)
+    request.then((response) => {
+      if (response.data.Result) {
+        dispatch({
+          type: GET_SELECTED_COSTING_STATUS,
+          payload: response.data.SelectList
+        })
+      }
+    })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}

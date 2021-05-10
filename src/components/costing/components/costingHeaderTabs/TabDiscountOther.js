@@ -163,7 +163,7 @@ function TabDiscountOther(props) {
               }
               props.setHeaderCost(topHeaderData)
 
-            }, 1000)
+            }, 1500)
           }
         }
       }))

@@ -225,7 +225,7 @@ export const TextAreaHookForm = (field) => {
 */
 export const DatePickerHookForm = (field) => {
   const {
-    label, Controller, dateFormat, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, } = field
+    label, Controller, dateFormat, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, selected } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
   const InputClassName = `form-control ${field.className ? field.className : ''}`
@@ -243,6 +243,7 @@ export const DatePickerHookForm = (field) => {
           ref={register}
           defaultValue={defaultValue}
           render={({ onChange, onBlur, value, name }) => (
+
             // return (
             <ReactDatePicker
               {...field}

@@ -1505,7 +1505,8 @@ class AddMoreDetails extends Component {
       Technology: [technologyArray],
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
       Attachements: updatedFiles,
-      VendorPlant: []
+      VendorPlant: [],
+      IsForcefulUpdated: true
     }
 
     if (editDetails.isIncompleteMachine) {
@@ -1525,15 +1526,24 @@ class AddMoreDetails extends Component {
     } else if (isEditFlag) {
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND EDIT MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-      this.props.reset()
-      this.props.updateMachineDetails(requestData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-          requestData.isViewFlag = true
-          this.props.hideMoreDetailsForm(requestData)
-          // this.cancel();
+      if (isEditFlag) {
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updateMachineDetails(requestData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+                requestData.isViewFlag = true
+                this.props.hideMoreDetailsForm(requestData)
+                // this.cancel();
+              }
+            })
+          },
+          onCancel: () => { },
         }
-      })
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
 
     } else {
       // EXECUTED WHEN:- ADD MORE MACHINE DETAIL CALLED FROM ADDMACHINERATE.JS FILE

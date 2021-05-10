@@ -235,16 +235,28 @@ class AddIndivisualPart extends Component {
         Remark: values.Remark,
         EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
         // Plants: [],
-        Attachements: updatedFiles
+        Attachements: updatedFiles,
+        IsForcefulUpdated: true
       }
 
-      this.props.reset()
-      this.props.updatePart(updateData, (res) => {
-        if (res.data.Result) {
-          toastr.success(MESSAGES.UPDATE_PART_SUCESS);
-          this.cancel()
+      if (isEditFlag) {
+
+        const toastrConfirmOptions = {
+          onOk: () => {
+            this.props.reset()
+            this.props.updatePart(updateData, (res) => {
+              if (res.data.Result) {
+                toastr.success(MESSAGES.UPDATE_PART_SUCESS);
+                this.cancel()
+              }
+            });
+          },
+          onCancel: () => { },
         }
-      });
+        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+      }
+
+
 
     } else {
 
@@ -454,25 +466,23 @@ class AddIndivisualPart extends Component {
                                   autoComplete={"off"}
                                   disabledKeyboardNavigation
                                   onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
+                                  disabled={isEditFlag ? true : false}
                                 /> */}
-
                                 <Field
                                   label="Effective Date"
                                   name="EffectiveDate"
-                                  placeholder="Enter"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
                                   type="text"
                                   validate={[required]}
                                   autoComplete={'off'}
                                   required={true}
-                                  // changeHandler={(e) => {
-                                  // e.preventDefault()
-                                  // }}
-                                  // disabled={isEditFlag ? true : false}
+                                  changeHandler={(e) => {
+                                    //e.preventDefault()
+                                  }}
                                   component={renderDatePicker}
                                   className="form-control"
+                                  disabled={isEditFlag ? true : false}
                                 //minDate={moment()}
                                 />
 

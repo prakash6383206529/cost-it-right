@@ -21,26 +21,23 @@ import { LEVEL1 } from '../../../../helper/AllConastant';
 import { ViewCostingContext } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment';
 
 function CostingHeaderTabs(props) {
 
   const dispatch = useDispatch()
 
+  const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
+    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData } = useSelector(state => state.costing)
+
   const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [IsCalledAPI, setIsCalledAPI] = useState(true);
-  const [effectiveDate, setEffectiveDate] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState(moment(costingData.EffectiveDate)._isValid ? moment(costingData.EffectiveDate)._d : '');
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-
-  const ComponentItemData = useSelector(state => state.costing.ComponentItemData)
-  const ComponentItemOverheadData = useSelector(state => state.costing.ComponentItemOverheadData)
-  const ComponentItemPackageFreightData = useSelector(state => state.costing.ComponentItemPackageFreightData)
-  const ComponentItemToolData = useSelector(state => state.costing.ComponentItemToolData)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
-  const IsIncludedSurfaceInOverheadProfit = useSelector(state => state.costing.IsIncludedSurfaceInOverheadProfit)
 
   useEffect(() => {
 
@@ -230,18 +227,18 @@ function CostingHeaderTabs(props) {
               </div>
             </div>
           </Col>
-        
 
-        {costData.IsAssemblyPart &&
-          <Col md="auto">
-            <button
-              type="button"
-              onClick={() => setIsOpenViewHirarchy(true)}
-              class="btn-primary btn btn-lg mt-2">
-              <img src={require("../../../../assests/images/hirarchy-icon.svg")} alt="hirarchy-icon.jpg" />
-              <span>View BOM</span>
-            </button>
-          </Col>}
+
+          {costData.IsAssemblyPart &&
+            <Col md="auto">
+              <button
+                type="button"
+                onClick={() => setIsOpenViewHirarchy(true)}
+                class="btn-primary btn btn-lg mt-2">
+                <img src={require("../../../../assests/images/hirarchy-icon.svg")} alt="hirarchy-icon.jpg" />
+                <span>View BOM</span>
+              </button>
+            </Col>}
         </Row>
 
         <div>

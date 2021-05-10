@@ -638,8 +638,9 @@ export const API = {
   approveCostingByApprover: `${BASE_URL}/app-approval-system/approved-costing-by-approver`,
   rejectCostingByApprover: `${BASE_URL}/app-approval-system/rejected-costing-by-approver`,
   getApprovalSummaryByApprovalNo: `${BASE_URL}/app-approval-system/get-approval-costing-summary`,
-  isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approvar`,
+  isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approver`,
   approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
+  getSelectedCostingStatusList: `${BASE_URL}/app-approval-system/get-all-approval-status`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -1227,6 +1228,7 @@ export const GET_ALL_APPROVAL_USERS_FILTER_BY_DEPARTMENT = 'GET_ALL_APPROVAL_USE
 export const GET_ALL_REASON_SELECTLIST = 'GET_ALL_REASON_SELECTLIST'
 export const GET_APPROVAL_LIST = 'GET_APPROVAL_LIST'
 export const GET_APPROVAL_SUMMARY = 'GET_APPROVAL_SUMMARY'
+export const GET_SELECTED_COSTING_STATUS = 'GET_SELECTED_COSTING_STATUS'
 
 //PRIVILEGE
 export const GET_MODULE_SELECTLIST_SUCCESS = 'GET_MODULE_SELECTLIST_SUCCESS'

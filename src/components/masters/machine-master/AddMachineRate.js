@@ -16,7 +16,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { CONSTANT } from '../../../helper/AllConastant'
-import { checkVendorPlantConfigurable, loggedInUserId, userDetails } from "../../../helper/auth";
+import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -209,7 +209,7 @@ class AddMachineRate extends Component {
             const vendorObj = vendorListByVendorType && vendorListByVendorType.find(item => item.Value === Data.VendorId)
             const plantObj = Data.IsVendor === false && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
             let vendorPlantArray = Data && Data.VendorPlant.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
-
+            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
 
             this.setState({
@@ -219,7 +219,7 @@ class AddMachineRate extends Component {
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
-              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
+              selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : destinationPlantObj ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               selectedVendorPlants: vendorPlantArray,
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
@@ -759,10 +759,10 @@ class AddMachineRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, selectedVendorPlants,
+    const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
       remarks, machineType, files, processGrid, isViewFlag } = this.state;
     const a = this.state.Data
-      console.log(a.Technology[0].Technology, 'values.Technology.Technology')
+    console.log(a.Technology[0].Technology, 'values.Technology.Technology')
     console.log(selectedTechnology, 'selectedTechnology.label')
     if (isViewFlag) {
       this.cancel();
@@ -787,58 +787,56 @@ class AddMachineRate extends Component {
     if (isEditFlag) {
 
       if (IsDetailedEntry) {
-        if (this.props.dirty) {
-          console.log('in if')
-
-          // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
-          let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
-          this.props.reset()
-          this.props.updateMachineDetails(detailedRequestData, (res) => {
-            if (res.data.Result) {
-              toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-              this.cancel();
-            }
-          })
-        }
-        else {
-          console.log('in else')
-          this.cancel();
-        }
-      } else {
-        if (this.props.dirty) {
-          console.log('in if 2')
-          // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
-          let requestData = {
-            MachineId: MachineID,
-            IsVendor: IsVendor,
-            IsDetailedEntry: false,
-            VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
-            MachineNumber: values.MachineNumber,
-            MachineName: values.MachineName,
-            MachineTypeId: machineType.value,
-            TonnageCapacity: values.TonnageCapacity,
-            Description: values.Description,
-            LoggedInUserId: loggedInUserId(),
-            MachineProcessRates: processGrid,
-            Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
-            Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
-            VendorPlant: vendorPlantArray,
-            Remark: remarks,
-            Attachements: updatedFiles,
+        // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
+        let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
+        this.props.reset()
+        this.props.updateMachineDetails(detailedRequestData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+            this.cancel();
           }
+        })
 
-          this.props.reset()
-          this.props.updateMachine(requestData, (res) => {
-            if (res.data.Result) {
-              toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
-              this.cancel();
-            }
-          })
+      } else {
+
+
+        // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
+        let requestData = {
+          MachineId: MachineID,
+          IsVendor: IsVendor,
+          IsDetailedEntry: false,
+          VendorId: IsVendor ? vendorName.value : userDetail.ZBCSupplierInfo.VendorId,
+          MachineNumber: values.MachineNumber,
+          MachineName: values.MachineName,
+          MachineTypeId: machineType.value,
+          TonnageCapacity: values.TonnageCapacity,
+          Description: values.Description,
+          LoggedInUserId: loggedInUserId(),
+          MachineProcessRates: processGrid,
+          Technology: [{ Technology: selectedTechnology.label ? selectedTechnology.label : selectedTechnology[0].label, TechnologyId: selectedTechnology.value ? selectedTechnology.value : selectedTechnology[0].value }],
+          Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+          VendorPlant: vendorPlantArray,
+          Remark: remarks,
+          Attachements: updatedFiles,
+          IsForcefulUpdated: true
         }
-        else {
-          console.log('in else 2')
-          this.cancel();
+        if (isEditFlag) {
+          const toastrConfirmOptions = {
+            onOk: () => {
+              this.props.reset()
+              this.props.updateMachine(requestData, (res) => {
+                if (res.data.Result) {
+                  toastr.success(MESSAGES.UPDATE_MACHINE_SUCCESS);
+                  this.cancel();
+                }
+              })
+            },
+            onCancel: () => { },
+          }
+          return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
+
+
       }
     } else {
 
@@ -856,6 +854,7 @@ class AddMachineRate extends Component {
         MachineProcessRates: processGrid,
         Technology: technologyArray,
         Plant: !IsVendor ? [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }] : [],
+        DestinationPlantId: getConfigurationKey().IsDestinationPlantConfigure ? selectedPlants.value : '',
         VendorPlant: vendorPlantArray,
         Remark: remarks,
         Attachements: files,
