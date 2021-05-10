@@ -6,7 +6,7 @@ import { getOperationDrawerDataList } from '../../actions/Costing';
 import { netHeadCostContext } from '../CostingDetailStepTwo';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { TextFieldHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
+import { TextFieldHookForm, SearchableSelectHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../helper';
 import Switch from "react-switch";
 
@@ -23,7 +23,7 @@ function AddPackaging(props) {
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: isEditFlag ? defaultValues : {},
   });
@@ -265,7 +265,7 @@ function AddPackaging(props) {
                     />
                   </Col>
                   <Col md="12">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label="Packaging Percentage"
                       name={'PackagingCostPercentage'}
                       Controller={Controller}
@@ -275,10 +275,13 @@ function AddPackaging(props) {
                       rules={{
                         required: PackageType ? true : false,
                         pattern: {
-                          value: PackageType ? /^[0-9]\d*(\.\d+)?$/i : '',
+                          value: PackageType ? /^\d*\.?\d*$/ : '',
                           message: PackageType ? 'Invalid Number.' : '',
                         },
-                        // maxLength: 4,
+                        max: {
+                          value: 100,
+                          message: 'Percentage should be less than 100'
+                        },
                       }}
                       handleChange={() => { }}
                       defaultValue={''}

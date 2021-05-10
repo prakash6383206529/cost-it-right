@@ -287,7 +287,7 @@ function OverheadProfit(props) {
       let tempObj = {
         "InterestRateId": ICCapplicability.label !== 'Fixed' ? (ICCApplicabilityDetail ? ICCInterestRateId : '') : null,
         "IccDetailId": ICCApplicabilityDetail ? ICCApplicabilityDetail.IccDetailId : '',
-        "ICCApplicability": IsInventoryApplicable ? ICCapplicability.label : '',
+        "ICCApplicability": ICCapplicability.value,
         "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
         "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
         "NetCost": IsInventoryApplicable ? getValues('NetICCTotal') : '',
@@ -313,7 +313,7 @@ function OverheadProfit(props) {
       let tempObj = {
         "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
         "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
-        "PaymentTermApplicability": IsPaymentTermsApplicable ? paymentTermsApplicability.label : '',
+        "PaymentTermApplicability": paymentTermsApplicability.label,
         "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
         "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
         "NetCost": IsPaymentTermsApplicable ? getValues('RepaymentPeriodCost') : '',

@@ -9,14 +9,11 @@ import { getCostingByVendorAndVendorPlant, getCostingSummaryByplantIdPartNo, get
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
 import { ZBC, VBC, VIEW_COSTING_DATA, APPROVED, REJECTED, HISTORY } from '../../../config/constants'
 import { toastr } from 'react-redux-toastr'
-import { isUserLoggedIn } from '../../../helper/auth'
-import { reactLocalStorage } from 'reactjs-localstorage'
+import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { checkForNull } from '../../../helper'
 
 function AddToComparisonDrawer(props) {
   const loggedIn = isUserLoggedIn()
-
-  const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const { editObject, isEditFlag, viewMode } = props
 
@@ -550,7 +547,7 @@ function AddToComparisonDrawer(props) {
                         errors={errors.vendor}
                       />
                     </Col>
-                    {localStorage.IsVendorPlantConfigurable && (
+                    {getConfigurationKey().IsVendorPlantConfigurable && (
                       <Col md="12">
                         <SearchableSelectHookForm
                           label={"Vendor Plant"}

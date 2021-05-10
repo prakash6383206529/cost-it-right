@@ -28,7 +28,7 @@ function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
-    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData } = useSelector(state => state.costing)
+    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
@@ -53,6 +53,7 @@ function CostingHeaderTabs(props) {
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
 
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": ComponentItemData.CostingId,

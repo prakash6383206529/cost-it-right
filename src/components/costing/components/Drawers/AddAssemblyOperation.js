@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
-import { Container, Row, Col, } from 'reactstrap';
+import React, { useState, useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Row, Col, } from 'reactstrap';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
 import Switch from "react-switch";
 import { saveAssemblyCostingRMCCTab } from '../../actions/Costing';
@@ -16,6 +15,8 @@ function AddAssemblyOperation(props) {
   const [IsOpenTool, setIsOpenTool] = useState(false);
 
   const dispatch = useDispatch()
+
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext)
 
@@ -85,6 +86,8 @@ function AddAssemblyOperation(props) {
       "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
       "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
       "LoggedInUserId": loggedInUserId(),
+      "EffectiveDate": CostingEffectiveDate,
+
       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
       "NetOperationCostPerAssembly": item.CostingPartDetails.TotalOperationCostPerAssembly,
       "NetToolCostPerAssembly": item.CostingPartDetails.TotalToolCostPerAssembly,

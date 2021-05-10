@@ -256,6 +256,7 @@ class Main extends Component {
             </div>
           )}
           <ReduxToastr
+            timeOut={2500}
             newestOnTop={false}
             preventDuplicates
             position="top-right"
