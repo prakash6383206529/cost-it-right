@@ -924,7 +924,7 @@ const CostingSummaryTable = (props) => {
                       <th>Remark</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.remark}</td>
+                          return <td><span className="d-block small-grey-text">{data.remark}</span></td>
                         })}
                     </tr>
                     <tr class="background-light-blue">
@@ -943,8 +943,8 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <div>
-                                <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
-                                <span>{checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span className="d-inline-block w-50 small-grey-text">{data.currency.currencyTitle}</span> {' '}
+                                <span className="d-inline-block w-50 ">{checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </div>
                             </td>
                           )

@@ -850,7 +850,7 @@ input.form-control{
   cursor: pointer;
 }
 .edit-details-btn {
-  width: 32px;
+  width:25px;
   height: 13px;
   background: transparent url("../../assests/images/pencil-icon.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
@@ -2581,7 +2581,15 @@ button:disabled{pointer-events: none;}
   //fire-fox css
 
 //=============== costing details page only
+.react-datepicker-popper{z-index: 9;}
 .costing-details-page{
+  .costing-table-next{
+    &.costing-table-vbc,&.costing-table-zbc{
+      th,td{
+      padding: 0.71rem 20px;
+      }
+    }
+  }
   .tool-cost-tab-process-table{
     .react-bs-table{
       margin-top: 0px;
@@ -2933,8 +2941,8 @@ opacity: 0.5;
       tr{width: 100%;
         th{
           &:first-child{width: 30%;}
-          &:nth-child(2){width: 140px;}
-          &:nth-child(3){width: 23%;}
+          &:nth-child(2){width: 145px;min-width: 145px;}
+          &:nth-child(3){width: 21%;}
           &:nth-child(4){width: 15%;}
           &:nth-child(5){width: 10%;}
         }
@@ -2948,8 +2956,8 @@ opacity: 0.5;
         th{
           &:first-child{width: 15%;}
           &:nth-child(2){width: 15%;}
-          &:nth-child(3){width: 140px;}
-          &:nth-child(4){width: 23%;}
+          &:nth-child(3){width: 145px;min-width: 145px;}
+          &:nth-child(4){width: 21%;}
           &:nth-child(5){width: 15%;}
           &:nth-child(6){width: 10%;}
         }
@@ -5147,11 +5155,11 @@ body{
         tr{
           th{
             // &:first-child{width: 30%;}
-            &:nth-child(2){width: auto;min-width: 100px;}
-            &:nth-child(3){width: 21%;}
-            // &:nth-child(4){width: 15%;}
-            // &:nth-child(5){width: 10%;}
-            &:nth-child(6){min-width: 195px !important;}
+            &:nth-child(2){width: auto;min-width: 115px;}
+            &:nth-child(3){width: 18%;}
+            &:nth-child(4){min-width: 175px !important;width: 14%;}
+            &:nth-child(5){width: 9%;}
+            &:nth-child(6){min-width: 247px !important;}
           }
         }
       }
@@ -5163,10 +5171,11 @@ body{
           th{
             // &:first-child{width: 15%;}
             // &:nth-child(2){width: 15%;}
-            &:nth-child(3){width: auto;min-width: 100px;}
-            &:nth-child(4){width: 22%;}
-            // &:nth-child(5){width: 15%;}
-            &:nth-child(7){min-width: 195px !important;}
+            &:nth-child(3){width: auto;min-width: 115px;}
+            &:nth-child(4){width: 18%;}
+            &:nth-child(5){min-width: 175px !important;width: 14%;}
+            &:nth-child(6){width: 9%;}
+            &:nth-child(7){min-width: 247px !important;}
           }
         }
       }
