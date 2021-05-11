@@ -21,7 +21,8 @@ function TabRMCC(props) {
 
   const dispatch = useDispatch()
 
-  const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC } = useSelector(state => state.costing)
+  const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, CostingEffectiveDate
+  } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -989,6 +990,7 @@ function TabRMCC(props) {
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
 
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": ComponentItemData.CostingId,
@@ -1035,7 +1037,7 @@ function TabRMCC(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => { }
-  console.log('ComponentItemData', ComponentItemData, Object.keys(ComponentItemData).length)
+
   return (
     <>
       <div className="login-container signup-form">

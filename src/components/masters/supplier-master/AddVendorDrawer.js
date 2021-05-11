@@ -185,7 +185,7 @@ class AddVendorDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList } = this.props;
+        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor } = this.props;
         const temp = [];
         if (label === 'country') {
             countryList && countryList.map(item => {
@@ -216,13 +216,19 @@ class AddVendorDrawer extends Component {
 
             vendorTypeList && vendorTypeList.map((item, i) => {
                 if (item.Value === '0') return false;
-                if (isRM === true) {
+                if (isRM === true && IsVendor === false) {
                     if (item.Text === 'RAW MATERIAL') {
                         temp.push({ Text: item.Text, Value: item.Value })
                     } else {
                         return null
                     }
-                } else {
+                }
+                else if (IsVendor === true) {
+                    if (item.Text === 'PART') {
+                        temp.push({ Text: item.Text, Value: item.Value })
+                    }
+                }
+                else {
                     temp.push({ Text: item.Text, Value: item.Value })
                 }
                 return null;

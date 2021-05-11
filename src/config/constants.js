@@ -1473,7 +1473,6 @@ export const DIMENSIONLESS = 'Dimensionless'
 //UOM CATEGORY
 export const STD = 'STD'
 
-
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = 'Raw Material(Domestic)'
 export const RMIMPORT = 'Raw Material(Import)'
