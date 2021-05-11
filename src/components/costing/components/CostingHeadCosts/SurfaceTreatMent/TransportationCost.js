@@ -167,7 +167,7 @@ function TransportationCost(props) {
             <Row>
               <Col md="12">
                 <div className="left-border">
-                  {'Transportation Cost:'}
+                  {'Transportation/Other Cost:'}
                 </div>
               </Col>
             </Row>
@@ -175,7 +175,7 @@ function TransportationCost(props) {
             <Row>
               <Col md="3">
                 <SearchableSelectHookForm
-                  label={'UOM'}
+                  label={'Type'}
                   name={'UOM'}
                   placeholder={'-Select-'}
                   Controller={Controller}

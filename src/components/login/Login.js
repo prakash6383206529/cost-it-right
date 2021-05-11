@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
-import { Link } from "react-router-dom";
 import {
   renderPasswordInputField, renderEmailInputField, renderCheckboxInputField, focusOnError,
   renderText
@@ -13,8 +12,6 @@ import { Loader } from "../common/Loader";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
-import { toastr } from "react-redux-toastr";
-import { dropRight, flowRight, takeRight } from "lodash";
 
 class Login extends Component {
   constructor(props) {
@@ -41,11 +38,6 @@ class Login extends Component {
   }
 
   forgotConfirm = () => {
-    // const toastrConfirmOptions = {
-    //   onOk: () => { },
-    //   onCancel: () => { },
-    // };
-    // return toastr.confirm(`${'Please contact your IT Administrator'}`, toastrConfirmOptions);
     this.setState({ flag: true })
   }
 
