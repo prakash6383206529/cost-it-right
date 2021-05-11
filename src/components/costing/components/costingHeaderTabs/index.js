@@ -219,7 +219,7 @@ function CostingHeaderTabs(props) {
                   autoComplete={"off"}
                   disabledKeyboardNavigation
                   onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode || effectiveDate !== '') ? true : false}
+                  disabled={(CostingViewMode) ? true : false}
                 />
               </div>
             </div>
