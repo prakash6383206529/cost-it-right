@@ -496,6 +496,8 @@ class AddMachineRate extends Component {
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, } = this.state;
+    console.log('processName: ', processName);
+    console.log('processGrid: ', processGrid);
     console.log('UOM: ', UOM);
     const { fieldsObj } = this.props;
     const tempArray = [];
@@ -506,7 +508,7 @@ class AddMachineRate extends Component {
     }
 
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = processGrid.findIndex(el => (el.processNameId === processName.value && el.UOMId === UOM.value))
+    const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
     if (isExist !== -1) {
       toastr.warning('Already added, Please check the values.')
       return false;
@@ -869,6 +871,7 @@ class AddMachineRate extends Component {
   */
   showFormData = () => {
     const { data } = this.props
+    console.log('data: ', data);
     this.props.getVendorListByVendorType(data.IsVendor, () => { })
     if (data.IsVendor) {
       this.props.getPlantBySupplier(data.VendorId, () => { })
@@ -876,7 +879,9 @@ class AddMachineRate extends Component {
     setTimeout(() => {
       const { vendorListByVendorType, machineTypeSelectList, plantSelectList, } = this.props;
 
-      let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+      // let technologyArray = data && data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+      let technologyArray = [{ label: data.Technology && data.Technology[0].Technology, value: data.Technology && data.Technology[0].TechnologyId }]
+      console.log('technologyArray: ', technologyArray);
 
       let MachineProcessArray = data && data.MachineProcessRates.map(el => {
         return {

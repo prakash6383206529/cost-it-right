@@ -1131,7 +1131,7 @@ class AddMoreDetails extends Component {
     }
 
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-    const isExist = processGrid.findIndex(el => (el.processNameId === processName.value && el.UOMId === UOM.value))
+    const isExist = processGrid.findIndex(el => (el.ProcessId === processName.value))
     if (isExist !== -1) {
       toastr.warning('Already added, Please check the values.')
       return false;

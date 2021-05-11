@@ -574,7 +574,7 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-flex justify-content-between bg-grey">
-                                {`${moment(data.costingDate).format('DD/MM/YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
                                 {
                                   !viewMode &&
                                   <a

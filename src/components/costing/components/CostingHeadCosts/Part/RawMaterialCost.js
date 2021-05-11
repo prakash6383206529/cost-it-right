@@ -80,6 +80,7 @@ function RawMaterialCost(props) {
         RMName: rowData.RawMaterial,
         RMRate: rowData.NetLandedCost,
         MaterialType: rowData.MaterialType,
+        RMGrade: rowData.RMGrade,
         Density: rowData.Density,
         UOM: rowData.UOM,
         UOMId: rowData.UOMId,
