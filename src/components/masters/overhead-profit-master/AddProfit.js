@@ -49,7 +49,9 @@ class AddProfit extends Component {
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
-      effectiveDate: ''
+      effectiveDate: '',
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
 
@@ -87,6 +89,7 @@ class AddProfit extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -116,6 +119,7 @@ class AddProfit extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
@@ -289,6 +293,7 @@ class AddProfit extends Component {
         isHideRM: false,
       })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   handlePercent = (e) => {
@@ -507,10 +512,35 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+
+      if (values.ProfitBOPPercentage == '') {
+        values.ProfitBOPPercentage = null
+      }
+      if (values.ProfitMachiningCCPercentage == '') {
+        values.ProfitMachiningCCPercentage = null
+      }
+      if (values.ProfitPercentage == '') {
+        values.ProfitPercentage = null
+      }
+      if (values.ProfitRMPercentage == '') {
+        values.ProfitRMPercentage = null
+      }
+
+      if (
+        DropdownChanged && DataToChange.ProfitBOPPercentage == values.ProfitBOPPercentage && DataToChange.ProfitMachiningCCPercentage == values.ProfitMachiningCCPercentage
+        && DataToChange.ProfitPercentage == values.ProfitPercentage && DataToChange.ProfitRMPercentage == values.ProfitRMPercentage
+        && DataToChange.Remark == values.Remark) {
+        console.log('asdf')
+        this.cancel()
+        return false
+      }
+
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: ProfitID }
       })

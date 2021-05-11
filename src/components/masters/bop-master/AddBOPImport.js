@@ -548,19 +548,19 @@ class AddBOPImport extends Component {
     if (isEditFlag) {
       console.log(values, 'values')
       console.log(DataToChange, 'DataToChange')
-      // if (DataToChange.IsVendor) { 
-      //   if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
-      //     DataToChange.BasicRate == values.BasicRate) {
-      //     this.cancel()
-      //     return false;
-      //   }
-      // }
-      // if (DataToChange.IsVendor == false) {
-      //   if (DataToChange.NumberOfPieces == values.NumberOfPieces && DataToChange.BasicRate == values.BasicRate) {
-      //     this.cancel()
-      //     return false;
-      //   }
-      // }
+      if (DataToChange.IsVendor) { 
+        if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
+          DataToChange.BasicRate == values.BasicRate) {
+          this.cancel()
+          return false;
+        }
+      }
+      if (DataToChange.IsVendor == false) {
+        if (DataToChange.NumberOfPieces == values.NumberOfPieces && DataToChange.BasicRate == values.BasicRate) {
+          this.cancel()
+          return false;
+        }
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })

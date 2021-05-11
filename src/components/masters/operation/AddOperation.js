@@ -618,6 +618,7 @@ class AddOperation extends Component {
                           selectionChanged={this.handleTechnology}
                           optionValue={(option) => option.Value}
                           optionLabel={(option) => option.Text}
+                          // validate={[required]}
                           component={renderMultiSelectField}
                           mendatory={true}
                           className="multiselect-with-border"

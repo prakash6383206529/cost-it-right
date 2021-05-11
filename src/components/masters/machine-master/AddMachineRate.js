@@ -63,7 +63,8 @@ class AddMachineRate extends Component {
       files: [],
 
       machineFullValue: {},
-      Data: []
+      DataToChange: [],
+      DropdownChange: true
 
     }
   }
@@ -185,7 +186,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-          this.setState({ Data: Data })
+          this.setState({ DataToChange: Data })
           this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
@@ -257,6 +258,7 @@ class AddMachineRate extends Component {
   */
   handleTechnology = (e) => {
     this.setState({ selectedTechnology: e })
+    this.setState({ DropdownChange: false })
   }
 
   /**
@@ -535,6 +537,7 @@ class AddMachineRate extends Component {
       processName: [],
       UOM: [],
     }, () => this.props.change('MachineRate', 0));
+    this.setState({ DropdownChange: false })
   }
 
   /**
@@ -613,6 +616,7 @@ class AddMachineRate extends Component {
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
     }, () => this.props.change('MachineRate', tempData.MachineRate))
+    this.setState({ DropdownChange: false })
   }
 
   /**
@@ -630,6 +634,7 @@ class AddMachineRate extends Component {
     });
 
     this.setState({ processGrid: tempData })
+    this.setState({ DropdownChange: false })
   }
 
   handleCalculation = () => {
@@ -760,10 +765,9 @@ class AddMachineRate extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag } = this.state;
+      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange } = this.state;
     const a = this.state.Data
-    console.log(a.Technology[0].Technology, 'values.Technology.Technology')
-    console.log(selectedTechnology, 'selectedTechnology.label')
+
     if (isViewFlag) {
       this.cancel();
       return false
@@ -771,10 +775,6 @@ class AddMachineRate extends Component {
     const { machineData } = this.props;
     const userDetail = userDetails()
 
-    // if (values.Technology.Technology !== selectedTechnology.label) {
-    //   console.log('sdjdkljfklsdjlkfjsl')
-    // }
-    console.log(this.props.touch(selectedTechnology), 'klklklkklkl')
     if (processGrid && processGrid.length === 0) {
       toastr.warning('Process Rate entry required.');
       return false;
@@ -783,9 +783,12 @@ class AddMachineRate extends Component {
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-    console.log(this.props.dirty, 'jjjjjjjjjjjjjjjjjjjjjj')
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+      if (DropdownChange) {
 
+      }
       if (IsDetailedEntry) {
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }

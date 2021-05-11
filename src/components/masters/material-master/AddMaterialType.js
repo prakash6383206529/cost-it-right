@@ -17,6 +17,7 @@ class AddMaterialType extends Component {
       isEditFlag: false,
       isShowForm: false,
       MaterialTypeId: '',
+      DataToChange: []
     }
   }
 
@@ -56,9 +57,16 @@ class AddMaterialType extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { reset, ID, isEditFlag } = this.props;
+    const { reset, ID, isEditFlag, DataToChange, initialValues } = this.props;
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(initialValues, 'initialValues')
+
+      if (initialValues.CalculatedDensityValue == values.CalculatedDensityValue && initialValues.MaterialType == values.MaterialType) {
+        this.cancel()
+        return false
+      }
       let updateData = {
         MaterialTypeId: ID,
         ModifiedBy: loggedInUserId(),

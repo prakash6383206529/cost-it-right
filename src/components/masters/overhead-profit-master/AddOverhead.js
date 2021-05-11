@@ -91,6 +91,7 @@ class AddOverhead extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -214,6 +215,7 @@ class AddOverhead extends Component {
     } else {
       this.setState({ vendorName: [] })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -292,6 +294,7 @@ class AddOverhead extends Component {
         isHideRM: false,
       })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   handlePercent = (e) => {
@@ -521,12 +524,34 @@ class AddOverhead extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
       console.log(values, 'values')
       console.log(DataToChange, 'datatochange')
+
+      if (values.OverheadPercentage == '') {
+        values.OverheadPercentage = null
+      }
+      if (values.OverheadRMPercentage == '') {
+        values.OverheadRMPercentage = null
+      }
+      if (values.OverheadMachiningCCPercentage == '') {
+        values.OverheadMachiningCCPercentage = null
+      }
+      if (values.OverheadBOPPercentage == '') {
+        values.OverheadBOPPercentage = null
+      }
+
+      if (
+        DropdownChanged && DataToChange.OverheadPercentage == values.OverheadPercentage && DataToChange.OverheadRMPercentage == values.OverheadRMPercentage
+        && DataToChange.OverheadMachiningCCPercentage == values.OverheadMachiningCCPercentage && DataToChange.OverheadBOPPercentage == values.OverheadBOPPercentage
+        && DataToChange.Remark == values.Remark) {
+        console.log('asdf')
+        this.cancel()
+        return false
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OverheadID }
       })

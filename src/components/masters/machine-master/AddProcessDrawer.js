@@ -238,7 +238,7 @@ class AddProcessDrawer extends Component {
                       required={true}
                       className=" "
                       customClassName=" withBorder"
-                      disabled={isEditFlag ? true : false}
+                      // disabled={isEditFlag ? true : false}
                     />
                   </Col>
                   <Col md="12">

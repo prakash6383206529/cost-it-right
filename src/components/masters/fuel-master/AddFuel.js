@@ -381,20 +381,13 @@ class AddFuel extends Component {
     })
 
     if (isEditFlag) {
-      // console.log(this.state.RateChange.FuelDetatils[0].Rate, 'DataToCRateChangehange')
-      // console.log(values, 'values')
+      console.log(this.state.RateChange, 'DataToCRateChangehange')
+      console.log(rateGrid, 'rateGrid')
       // console.log(city, 'city')
       // console.log(AddUpdate, 'country')
       // console.log(RateChange, 'country')
       // console.log(DeleteChanged, 'country')
-      if (
-        (
-          AddUpdate
-          &&
-          (HandleChanged)
-        )
-        || DeleteChanged
-      ) {
+      if (AddUpdate && (HandleChanged) && DeleteChanged) {
         console.log('chaNGES')
         this.cancel()
         return false

@@ -320,9 +320,8 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, isDisable, } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName } = this.state
     const { fieldsObj, error } = this.props
-
 
     if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
       toastr.warning('Fields should not be empty')
@@ -563,7 +562,6 @@ class AddLabour extends Component {
     if (this.state.isEditFlag) {
 
       if (DropdownChanged) {
-        console.log('chaNGES')
         this.cancel()
         return false
       }

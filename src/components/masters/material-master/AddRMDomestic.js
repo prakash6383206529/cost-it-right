@@ -200,6 +200,7 @@ class AddRMDomestic extends Component {
    */
   handleSourceSupplierPlant = (e) => {
     this.setState({ selectedPlants: e })
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -260,6 +261,7 @@ class AddRMDomestic extends Component {
     } else {
       this.setState({ sourceLocation: [] })
     }
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -649,7 +651,6 @@ class AddRMDomestic extends Component {
 
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
-        console.log(UOMSelectList, 'UOMSelectListUOMSelectList')
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false
@@ -811,7 +812,7 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange  } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged } = this.state
     const { initialConfiguration, anyTouched } = this.props
     // if (!anyTouched) {
     //   return toastr.warning('No  changes at alllllllllllllllllllllll.')
@@ -829,9 +830,20 @@ class AddRMDomestic extends Component {
         return vendorPlantArray
       })
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'datatochange')
-
+     
+      if (DataToChange.IsVendor != true) {
+        if (DropdownChanged && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FrieghtCharge
+          && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
+          this.cancel()
+          return false
+        }
+      }
+      if (IsVendor) {
+        if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate) {
+          this.cancel()
+          return false
+        }
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
       })
@@ -870,7 +882,8 @@ class AddRMDomestic extends Component {
         return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
-    } else {
+    }
+    else {
       const formData = {
         IsVendor: IsVendor,
         RawMaterial: RawMaterial.value,
