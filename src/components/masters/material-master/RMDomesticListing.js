@@ -249,11 +249,11 @@ class RMDomesticListing extends Component {
     }
 
     rendorFreightRate = () => {
-        return <>RM Freight <br /> Cost</>
+        return <>RM Freight <br /> Cost(INR)</>
     }
 
     renderShearingCost = () => {
-        return <>Shearing <br /> Cost</>
+        return <>Shearing <br /> Cost(INR)</>
     }
 
     renderScrapRate = () => {
