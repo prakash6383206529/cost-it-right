@@ -2583,6 +2583,15 @@ button:disabled{pointer-events: none;}
 //=============== costing details page only
 .react-datepicker-popper{z-index: 9;}
 .costing-details-page{
+  .sticky-top-0{
+     .table{
+        td,th{
+          padding: 0.71rem 15px;
+          &:first-child{padding-left: 30px;}
+          &:last-child{padding-right: 30px;}
+        }
+      }
+    }
   .costing-table-next{
     &.costing-table-vbc,&.costing-table-zbc{
       th,td{
@@ -3920,6 +3929,14 @@ body{
     }
   }
   .costing-details-page{    
+    .sticky-top-0{
+      .table{
+         td,th{
+           &:first-child{padding-left: 15px;}
+           &:last-child{padding-right: 15px;}
+         }
+       }
+     }
     .table {
       td,th{
         padding: 0.71rem 15px;

@@ -199,9 +199,9 @@ function TabPackagingFreight(props) {
                     <Table className="table cr-brdr-main mb-0 " size="sm">
                       <thead>
                         <tr>
-                          <th className="py-4 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
-                          <th className="py-4 align-middle" style={{ width: "100px" }}>{`Net Packaging Cost`}</th>
-                          <th className="py-4 align-middle" style={{ width: "150px" }}>{`Net Freight Cost`}</th>
+                          <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Part Number`}</th>
+                          <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Packaging Cost`}</th>
+                          <th className="py-4 align-middle" style={{ width: "33.33%" }}>{`Net Freight Cost`}</th>
                         </tr>
                       </thead>
                       <tbody>
