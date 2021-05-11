@@ -205,14 +205,15 @@ span.input-group-text.bg-white {
       position: relative;
       font-weight: 500;
       font-size: 15px;
-      bottom: -5px;
       color: #233a70;
       margin-top: 25px;
     }
     .logo-second{
+      all:unset;
+      object-fit: contain;
       margin-bottom: 0px;
       padding: 0px;
-      max-width: 230px;
+      max-width: 190px;
     }
   }
    img{

@@ -166,7 +166,7 @@ class Login extends Component {
                 </form>
                 <div className="bottomlogo_con">
                   <span>Powered By</span>
-                  <img className="logo-second" src={require("../../assests/images/logo.png")} alt="Cost It Right" />
+                  <img className="logo-second" src={require("../../assests/images/logo_small.png")} alt="Cost It Right" />
                 </div>
               </div>
               <div className="col-md-7 p-0 right-sideimg">
