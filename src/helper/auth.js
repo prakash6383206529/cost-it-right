@@ -25,8 +25,8 @@ export function loggedInUserId() {
 }
 
 export function checkVendorPlantConfigurable() {
-  const userDetail = reactLocalStorage.getObject('userDetail')
-  return userDetail.IsVendorPlantConfigurable
+  //const userDetail = reactLocalStorage.getObject('userDetail')
+  return getConfigurationKey().IsVendorPlantConfigurable
 }
 
 /**
