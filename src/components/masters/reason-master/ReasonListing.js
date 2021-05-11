@@ -180,11 +180,11 @@ class ReasonListing extends Component {
     }
     this.props.activeInactiveReasonStatus(data, (res) => {
       if (res && res.data && res.data.Result) {
-        // if (cell == true) {
-        //     toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
-        // } else {
-        //     toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
-        // }
+        if (cell == true) {
+            toastr.success(MESSAGES.REASON_INACTIVE_SUCCESSFULLY)
+        } else {
+            toastr.success(MESSAGES.REASON_ACTIVE_SUCCESSFULLY)
+        }
         this.getTableListData()
       }
     })
