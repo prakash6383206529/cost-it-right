@@ -126,7 +126,7 @@ class SOBListing extends Component {
   }
 
   rendernetlandedCost = () => {
-    return <>Net <br />Cost</>
+    return <>Net <br />Cost(INR)</>
   }
 
   renderbopNo = () => {
