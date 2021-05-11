@@ -37,8 +37,8 @@ export function formatLoginResult(res) {
                 PlantName: res.PlantName,
             }],
             IsVendorPlantConfigurable: res.IsVendorPlantConfigurable,
-            expires: `${res.expires}`,
-            issued: `${res.issued}`,
+            expires: res[".expires"],
+            issued: res[".issued"],
             expires_in: res.expires_in,
             token_type: res.token_type,
         };

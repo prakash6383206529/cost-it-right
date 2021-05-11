@@ -8,8 +8,8 @@ export const config = {
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': 'true',
-    //'Authorization': `Bearer ${getAuthToken()}`,
-    'Authorization': `Bearer NRIsJAXFS-IgPMtfW05J1EiTwhv4z37BnFCk2TynvAdVYMuBIal7dTYyfboxRFjvPJ1zPl4r4LfQJ8_1fKDnSxTmGmThhl6YabKHaGvzp2WDQ7P0wFZs2wW10Mcmkt4Xb4ybDGzwSLt6fwRuI1uGNRuyNMxKQz-s533rIF5Qx08vwumo5ogN5x_oyi__b4KXJWbUU_0qLaJGLwISEf4o3_4CPBoP6Gv_tAGIO1W250SzOF3zwYpTxi8LwghOtQse`,
+    'Authorization': `Bearer ${getAuthToken()}`,
+    //'Authorization': `Bearer NRIsJAXFS-IgPMtfW05J1EiTwhv4z37BnFCk2TynvAdVYMuBIal7dTYyfboxRFjvPJ1zPl4r4LfQJ8_1fKDnSxTmGmThhl6YabKHaGvzp2WDQ7P0wFZs2wW10Mcmkt4Xb4ybDGzwSLt6fwRuI1uGNRuyNMxKQz-s533rIF5Qx08vwumo5ogN5x_oyi__b4KXJWbUU_0qLaJGLwISEf4o3_4CPBoP6Gv_tAGIO1W250SzOF3zwYpTxi8LwghOtQse`,
     'Access-From': 'WEB',
     'Api-Key': `${process.env.REACT_APP_API_KEY}`,
   },
@@ -18,6 +18,15 @@ export const config = {
 //hosting url for api of cost-it-right
 //const BASE_URL = 'http://10.10.1.100:8081/CIRLite';
 //const BASE_URL = 'http://10.10.1.100:8090/api/v1';
+
+// SERVER ROYAL ENFIELD URL
+//const BASE_URL = 'http://10.148.80.4:10122/api/v1';
+
+// QA ROYAL ENFIELD URL
+//const BASE_URL = 'http://10.10.1.100:10122/api/v1';
+
+// DEVELOPMENT ROYAL ENFIELD URL
+//const BASE_URL = 'http://10.10.1.100:10123/api/v1';
 
 // DEVELOPMENT
 const BASE_URL = 'http://10.10.1.100:1002/api/v1';

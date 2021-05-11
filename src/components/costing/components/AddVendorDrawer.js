@@ -6,7 +6,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { getVendorWithVendorCodeSelectList, getPlantBySupplier, getPlantSelectListByType } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
-import { checkVendorPlantConfigurable, getVendorCode, } from '../../../helper';
+import { checkVendorPlantConfigurable, getConfigurationKey, getVendorCode, } from '../../../helper';
 import { EMPTY_GUID_0, ZBC } from '../../../config/constants';
 
 function AddVendorDrawer(props) {
@@ -51,9 +51,9 @@ function AddVendorDrawer(props) {
     props.closeDrawer('',
       {
         ...data,
-        DestinationPlantCode: initialConfiguration?.IsDestinationPlantConfigure ? getVendorCode(DestinationPlant.label) : '',
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
-        DestinationPlantName: initialConfiguration?.IsDestinationPlantConfigure ? DestinationPlant.label : '',
+        DestinationPlantCode: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? getVendorCode(DestinationPlant.label) : '',
+        DestinationPlantId: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.value : EMPTY_GUID_0,
+        DestinationPlantName: initialConfiguration && initialConfiguration.IsDestinationPlantConfigure ? DestinationPlant.label : '',
         DestinationPlant: DestinationPlant,
       })
   };
@@ -107,13 +107,13 @@ function AddVendorDrawer(props) {
       setData({})
 
       //IF VENDOR PLANT IS CONFIGURABLE
-      checkVendorPlantConfigurable() && dispatch(getPlantBySupplier(newValue.value, () => { }))
+      getConfigurationKey().IsVendorPlantConfigurable && dispatch(getPlantBySupplier(newValue.value, () => { }))
 
       //IF VENDOR PLANT IS NOT CONFIGURABLE
-      if (!checkVendorPlantConfigurable()) {
+      if (!getConfigurationKey().IsVendorPlantConfigurable) {
         let data = {
           VendorId: newValue.value,
-          VendorPlantId: checkVendorPlantConfigurable() ? newValue.value : "00000000-0000-0000-0000-000000000000",
+          VendorPlantId: getConfigurationKey().IsVendorPlantConfigurable ? newValue.value : "00000000-0000-0000-0000-000000000000",
         }
         dispatch(getVBCDetailByVendorId(data, (res) => {
           if (res && res.data && res.data.Data) {
@@ -148,7 +148,7 @@ function AddVendorDrawer(props) {
       setVendorPlant(newValue)
       let data = {
         VendorId: vendor.value,
-        VendorPlantId: checkVendorPlantConfigurable() ? newValue.value : "00000000-0000-0000-0000-000000000000",
+        VendorPlantId: getConfigurationKey().IsVendorPlantConfigurable ? newValue.value : "00000000-0000-0000-0000-000000000000",
       }
       dispatch(getVBCDetailByVendorId(data, (res) => {
         if (res && res.data && res.data.Data) {
