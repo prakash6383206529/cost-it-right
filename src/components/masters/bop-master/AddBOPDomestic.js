@@ -27,6 +27,7 @@ import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -171,7 +172,7 @@ class AddBOPDomestic extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               // selectedPartAssembly: partArray,
@@ -182,11 +183,14 @@ class AddBOPDomestic extends Component {
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getBOPDomesticById('', res => { })
     }
   }
@@ -618,6 +622,8 @@ class AddBOPDomestic extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
+
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -753,7 +759,8 @@ class AddBOPDomestic extends Component {
                               placeholder={"Select"}
                               options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []} required={true}
+                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              required={true}
                               handleChangeDescription={this.handleUOM}
                               valueDescription={this.state.UOM}
                               disabled={isEditFlag ? true : false}
@@ -774,6 +781,7 @@ class AddBOPDomestic extends Component {
                                 component={searchableSelect}
                                 valueDescription={this.state.selectedPlants}
                                 mendatory={true}
+                                required={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />

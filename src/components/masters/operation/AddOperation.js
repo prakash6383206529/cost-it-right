@@ -27,6 +27,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import { FILE_URL, ZBC } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import moment from 'moment';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddOperation');
 
 class AddOperation extends Component {
@@ -327,9 +328,8 @@ class AddOperation extends Component {
               files: Data.Attachements,
               // effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : '',
               destinationPlant: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
-
         }
       })
     }
@@ -559,7 +559,7 @@ class AddOperation extends Component {
     const { isEditFlag, isOpenVendor, isOpenUOM } = this.state;
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">
@@ -618,7 +618,7 @@ class AddOperation extends Component {
                           selectionChanged={this.handleTechnology}
                           optionValue={(option) => option.Value}
                           optionLabel={(option) => option.Text}
-                          // validate={[required]}
+                          validate={[required]}
                           component={renderMultiSelectField}
                           mendatory={true}
                           className="multiselect-with-border"

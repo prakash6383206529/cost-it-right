@@ -13,6 +13,7 @@ import {
 import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddZBCPlant extends Component {
   constructor(props) {
@@ -70,12 +71,12 @@ class AddZBCPlant extends Component {
             const CompanyObj = companySelectList && companySelectList.find(item => Number(item.Value) === Data.CompanyId)
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
               state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
               city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
               company: CompanyObj && CompanyObj !== undefined ? { label: CompanyObj.Text, value: CompanyObj.Value } : []
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
@@ -224,7 +225,7 @@ class AddZBCPlant extends Component {
         this.toggleDrawer('')
         return false
       }
-     
+
       this.setState({ isSubmitted: true });
       let updateData = {
         PlantId: PlantId,
@@ -309,6 +310,7 @@ class AddZBCPlant extends Component {
           open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
         >
+          {this.state.isLoader && <LoaderCustom />}
           <Container>
             <div className={"drawer-wrapper drawer-700px"}>
               <form

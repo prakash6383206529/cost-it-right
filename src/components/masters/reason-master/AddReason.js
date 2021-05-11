@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth';
 import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddReason extends Component {
   constructor(props) {
@@ -50,13 +51,16 @@ class AddReason extends Component {
         ReasonId: ID,
       })
       $('html, body').animate({ scrollTop: 0 }, 'slow');
-      this.props.getReasonAPI(ID, res => {
-        if (res && res.data && res.data.Data) {
-          const Data = res.data.Data;
-          this.setState({ DataToCheck: Data })
-          this.setState({ IsActive: Data.IsActive })
-        }
-      })
+      setTimeout(() => {
+        this.props.getReasonAPI(ID, res => {
+          if (res && res.data && res.data.Data) {
+            const Data = res.data.Data;
+            this.setState({ DataToCheck: Data })
+            this.setState({ IsActive: Data.IsActive })
+          }
+        })
+        this.setState({ isLoader: false })
+      }, 300);
     }
   }
 
@@ -93,7 +97,6 @@ class AddReason extends Component {
 
     /** Update detail of the existing UOM  */
     if (isEditFlag) {
-
       if (DataToCheck.Reason == values.Reason) {
         console.log('chaNGES')
         this.toggleDrawer('')
@@ -147,6 +150,7 @@ class AddReason extends Component {
         open={this.props.isOpen}
       // onClose={(e) => this.toggleDrawer(e)}
       >
+        {this.state.isLoader && <LoaderCustom />}
         <Container>
           <div className={"drawer-wrapper"}>
             <form

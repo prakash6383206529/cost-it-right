@@ -19,6 +19,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
+import LoaderCustom from '../../common/LoaderCustom';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -141,7 +142,7 @@ class AddOverhead extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
               ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
@@ -151,11 +152,17 @@ class AddOverhead extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
-            }, () => this.checkOverheadFields())
+            }, () => {
+              this.checkOverheadFields()
+              this.setState({ isLoader: false })
+            })
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getOverheadData('', res => { })
     }
   }
@@ -313,7 +320,6 @@ class AddOverhead extends Component {
 
   checkOverheadFields = () => {
     const { overheadAppli } = this.state;
-
     switch (overheadAppli.label) {
       case 'RM':
         return this.setState({
@@ -648,6 +654,7 @@ class AddOverhead extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">

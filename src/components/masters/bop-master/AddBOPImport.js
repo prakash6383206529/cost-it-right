@@ -30,6 +30,7 @@ import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
+import LoaderCustom from '../../common/LoaderCustom';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -180,7 +181,7 @@ class AddBOPImport extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantObj,
@@ -191,11 +192,14 @@ class AddBOPImport extends Component {
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getBOPImportById('', res => { })
     }
 
@@ -548,7 +552,7 @@ class AddBOPImport extends Component {
     if (isEditFlag) {
       console.log(values, 'values')
       console.log(DataToChange, 'DataToChange')
-      if (DataToChange.IsVendor) { 
+      if (DataToChange.IsVendor) {
         if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
           DataToChange.BasicRate == values.BasicRate) {
           this.cancel()
@@ -649,6 +653,7 @@ class AddBOPImport extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">

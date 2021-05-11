@@ -12,6 +12,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import moment from 'moment';
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
+import LoaderCustom from '../../common/LoaderCustom';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -115,16 +116,19 @@ class AddExchangeRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
 
         }
       })
     }
     else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.change('BankRate', '')
       this.props.change('CustomRate', '')
       this.props.change('CurrencyExchangeRate', '')
@@ -236,7 +240,7 @@ class AddExchangeRate extends Component {
     const { isEditFlag, } = this.state;
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">

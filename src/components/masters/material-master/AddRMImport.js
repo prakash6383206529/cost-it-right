@@ -290,7 +290,7 @@ class AddRMImport extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.props.change('EffectiveDate', this.props.initialConfiguration.NoOfDecimalForPrice)
+    // this.props.change('EffectiveDate', this.props.initialConfiguration.NoOfDecimalForPrice)
     this.setState({ effectiveDate: date }, () => { this.handleNetCost() })
   };
 

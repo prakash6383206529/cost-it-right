@@ -15,6 +15,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
@@ -181,18 +182,21 @@ class AddInterestRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
 
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getInterestRateData('', () => { })
     }
   }
@@ -314,7 +318,7 @@ class AddInterestRate extends Component {
     const { isEditFlag, } = this.state;
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">

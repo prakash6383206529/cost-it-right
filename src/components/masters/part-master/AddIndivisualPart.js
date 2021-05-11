@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -65,14 +66,17 @@ class AddIndivisualPart extends Component {
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getPartData('', res => { })
     }
   }
@@ -302,6 +306,7 @@ class AddIndivisualPart extends Component {
     const { isEditFlag, } = this.state;
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">

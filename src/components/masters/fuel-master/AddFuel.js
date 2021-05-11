@@ -19,6 +19,7 @@ import AddFuelNameDrawer from './AddFuelNameDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import moment from 'moment';
 import { AcceptableFuelUOM } from '../../../config/masterData'
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -96,11 +97,11 @@ class AddFuel extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
               rateGrid: rateGridArray,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 200)
         }
       })
@@ -444,6 +445,7 @@ class AddFuel extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="">
             <div className="login-container signup-form">

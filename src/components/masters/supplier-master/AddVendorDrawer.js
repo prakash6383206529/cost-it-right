@@ -15,6 +15,7 @@ import { loggedInUserId } from "../../../helper/auth";
 import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -282,14 +283,14 @@ class AddVendorDrawer extends Component {
 
                         this.setState({
                             isEditFlag: true,
-                            isLoader: false,
+                            // isLoader: false,
                             selectedVendorType: tempArr,
                             country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
                             state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
                             city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
                             existedVendorPlants: tempVendorPlant,
                             selectedVendorPlants: tempVendorPlant,
-                        })
+                        }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
                 }
@@ -452,6 +453,7 @@ class AddVendorDrawer extends Component {
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
+                    {this.state.isLoader && <LoaderCustom />}
                     <Container >
                         <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
                             <form

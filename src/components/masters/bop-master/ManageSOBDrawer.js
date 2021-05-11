@@ -12,6 +12,7 @@ import { required } from "../../../helper/validation";
 
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function ManageSOBDrawer(props) {
 
@@ -33,6 +34,7 @@ function ManageSOBDrawer(props) {
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
   const [dropdownChanged, setDropDownChanged] = useState(true)
+  const [isLoader, setIsLoader] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -45,35 +47,42 @@ function ManageSOBDrawer(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getManageBOPSOBById(ID, (res) => {
-      if (res && res.data && res.data.Result) {
-        let Data = res.data.Data;
-
-        if (Data.BoughtOutPartVendorList.length === 1) {
-          setIsDisable(true)
-          setGridData(Data.BoughtOutPartVendorList)
-          setGridDataOldArray(Data.BoughtOutPartVendorList)
-        }
-        if (Data.BoughtOutPartVendorList.length > 1) {
-          let tempArray = [];
-          let tempData = Data.BoughtOutPartVendorList[0];
-          tempData = {
-            ...tempData,
-            ShareOfBusinessPercentage: 100
-
+    setIsLoader(true)
+    setTimeout(() => {
+      dispatch(getManageBOPSOBById(ID, (res) => {
+        if (res && res.data && res.data.Result) {
+  
+          let Data = res.data.Data;
+  
+          if (Data.BoughtOutPartVendorList.length === 1) {
+            setIsDisable(true)
+            setGridData(Data.BoughtOutPartVendorList)
+            setGridDataOldArray(Data.BoughtOutPartVendorList)
           }
-          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
-          setGridData(tempArray)
-          setGridDataOldArray(tempArray)
+          if (Data.BoughtOutPartVendorList.length > 1) {
+            let tempArray = [];
+            let tempData = Data.BoughtOutPartVendorList[0];
+            tempData = {
+              ...tempData,
+              ShareOfBusinessPercentage: 100
+  
+            }
+            tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
+            setGridData(tempArray)
+            setGridDataOldArray(tempArray)
+          }
+          // else {
+  
+          setData(Data)
+          // setGridData(Data.BoughtOutPartVendorList)
+          // setGridDataOldArray(Data.BoughtOutPartVendorList)
+          // }
         }
-        // else {
+        setIsLoader(false)
+      }))
 
-        setData(Data)
-        // setGridData(Data.BoughtOutPartVendorList)
-        // setGridDataOldArray(Data.BoughtOutPartVendorList)
-        // }
-      }
-    }))
+    }, 200);
+   
 
   }, []);
 
@@ -197,7 +206,7 @@ function ManageSOBDrawer(props) {
 
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
 
-    if(dropdownChanged){
+    if (dropdownChanged) {
       toggleDrawer('')
       return false
     }
@@ -240,6 +249,7 @@ function ManageSOBDrawer(props) {
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
+        {isLoader && <LoaderCustom />}
         <Container className="sob-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 

@@ -16,6 +16,7 @@ import $ from 'jquery'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import { ZBC } from '../../../config/constants'
+import LoaderCustom from '../../common/LoaderCustom'
 
 // const initialTableData = [
 //   {
@@ -400,7 +401,7 @@ class AddVolume extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               selectedPlants: plantArray,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
@@ -408,11 +409,14 @@ class AddVolume extends Component {
               part: partObj && partObj !== undefined ? { label: partObj.Text, value: partObj.Value } : [],
               destinationPlant: destinationPlantObj && destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getVolumeData('', () => { })
     }
   }
@@ -600,7 +604,7 @@ class AddVolume extends Component {
     return (
       <>
         <div className="container-fluid">
-          {/* {isLoader && <Loader />} */}
+          {this.state.isLoader && <LoaderCustom />}
           <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">

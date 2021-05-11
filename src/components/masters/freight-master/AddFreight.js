@@ -21,6 +21,7 @@ import AddVendorDrawer from "../supplier-master/AddVendorDrawer";
 import moment from "moment";
 import NoContentFound from "../../common/NoContentFound";
 import { CONSTANT } from "../../../helper/AllConastant";
+import LoaderCustom from "../../common/LoaderCustom";
 const selector = formValueSelector("AddFreight");
 class AddFreight extends Component {
   constructor(props) {
@@ -121,7 +122,7 @@ class AddFreight extends Component {
               });
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               IsLoadingUnloadingApplicable: Data.IsLoadingUnloadingApplicable,
               TransPortMood:
@@ -147,11 +148,14 @@ class AddFreight extends Component {
                   }
                   : [],
               gridTable: GridArray,
-            });
+            }, () => this.setState({ isLoader: false }));
           }, 200);
         }
       });
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getFreightData("", (res) => { });
     }
   };
@@ -456,7 +460,7 @@ class AddFreight extends Component {
   onSubmit = (values) => {
     const {
       IsVendor, TransPortMood, vendorName, IsLoadingUnloadingApplicable, sourceLocation, destinationLocation,
-      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate,DeleteChanged } = this.state;
+      FreightID, gridTable, isEditFlag, DataToChange, HandleChanged, AddUpdate, DeleteChanged } = this.state;
     const { fieldsObj } = this.props;
     const userDetail = userDetails();
     if (isEditFlag) {
@@ -469,13 +473,13 @@ class AddFreight extends Component {
         DataToChange.LoadingUnloadingCharges == values.LoadingUnloadingCharges &&
         DataToChange.PartTruckLoadRatePerCubicFeet == values.PartTruckLoadRatePerCubicFeet &&
         DataToChange.PartTruckLoadRatePerKilogram == values.PartTruckLoadRatePerKilogram
-        && 
+        &&
         (AddUpdate && HandleChanged) &&
-         DeleteChanged
-         ) {
-          console.log('in exit')
-          this.cancel()
-          return false
+        DeleteChanged
+      ) {
+        console.log('in exit')
+        this.cancel()
+        return false
       }
       let requestData = {
         FreightId: FreightID,
@@ -534,6 +538,7 @@ class AddFreight extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">

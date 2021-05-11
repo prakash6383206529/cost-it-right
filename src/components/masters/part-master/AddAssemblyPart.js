@@ -22,6 +22,7 @@ import moment from 'moment';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import BOMViewer from './BOMViewer';
 import { getRandomSixDigit } from '../../../helper/util';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddAssemblyPart')
 
 class AddAssemblyPart extends Component {
@@ -76,16 +77,19 @@ class AddAssemblyPart extends Component {
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 200)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getAssemblyPartDetail('', res => { })
     }
   }
@@ -555,6 +559,7 @@ class AddAssemblyPart extends Component {
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <Row>

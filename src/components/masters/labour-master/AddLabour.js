@@ -18,6 +18,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
 import moment from 'moment'
+import LoaderCustom from '../../common/LoaderCustom'
 
 const selector = formValueSelector('AddLabour')
 
@@ -105,7 +106,7 @@ class AddLabour extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               IsEmployeContractual: Data.IsContractBase,
               vendorName: Data.IsContractBase
@@ -122,11 +123,14 @@ class AddLabour extends Component {
                   ? { label: plantObj.Text, value: plantObj.Value }
                   : [],
               gridTable: GridArray,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getLabourData('', () => { })
     }
   }
@@ -322,6 +326,11 @@ class AddLabour extends Component {
   gridHandler = () => {
     const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName } = this.state
     const { fieldsObj, error } = this.props
+
+    if (vendorName.length == 0 || selectedPlants.length == 0 || StateName == 0) {
+      toastr.warning('First fill upper detail')
+      return false
+    }
 
     if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
       toastr.warning('Fields should not be empty')
@@ -628,7 +637,7 @@ class AddLabour extends Component {
     const { isEditFlag, isOpenMachineType, isDisable } = this.state;
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">

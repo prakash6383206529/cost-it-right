@@ -28,6 +28,7 @@ import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import { Rate } from 'antd';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -215,7 +216,7 @@ class AddMachineRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
@@ -227,7 +228,7 @@ class AddMachineRate extends Component {
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 100)
         }
       })
@@ -910,7 +911,7 @@ class AddMachineRate extends Component {
       this.setState({
         isEditFlag: false,
         //IsDetailedEntry:false,
-        isLoader: false,
+        // isLoader: false,
         IsVendor: data.IsVendor,
         IsCopied: data.IsCopied,
         IsDetailedEntry: false,
@@ -922,7 +923,7 @@ class AddMachineRate extends Component {
         processGrid: MachineProcessArray,
         remarks: data.Remark,
         files: data.Attachements,
-      })
+      }, () => this.setState({ isLoader: false }))
     }, 100)
   }
   handleKeyDown = function (e) {
@@ -942,7 +943,7 @@ class AddMachineRate extends Component {
 
     return (
       <>
-        {/* {(loading || isLoader) && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -1003,6 +1004,8 @@ class AddMachineRate extends Component {
                             // optionLabel={option => option.Text}
                             component={searchableSelect}
                             mendatory={true}
+                            required
+                            validate={[required]}
                             className="multiselect-with-border"
                             valueDescription={this.state.selectedTechnology}
                             disabled={this.state.isViewFlag ? true : false}

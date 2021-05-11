@@ -24,6 +24,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import moment from 'moment';
 import { calculatePercentageValue } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddPower');
 
 class AddPower extends Component {
@@ -64,7 +65,10 @@ class AddPower extends Component {
       power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', },
       DropdownChanged: true,
       DataToChangeVendor: [],
-      DataToChangeZ: []
+      DataToChangeZ: [],
+      ind: '',
+      DeleteChanged: true,
+      handleChange: true
     }
   }
 
@@ -232,6 +236,7 @@ class AddPower extends Component {
 
       let powerContributionTotal = 0;
       if (isEditIndex) {
+        this.setState({ ind: powerGridEditIndex })
         let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
         powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
       } else if (isEditSEBIndex) {
@@ -354,7 +359,7 @@ class AddPower extends Component {
               StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
               effectiveDate: moment(Data.SEBChargesDetails[0].EffectiveDate)._d,
               powerGrid: tempArray,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 200)
         }
       })
@@ -460,7 +465,7 @@ class AddPower extends Component {
     } else {
       this.setState({ source: [] })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ handleChange: false })
   };
 
   /**
@@ -486,7 +491,7 @@ class AddPower extends Component {
     } else {
       this.setState({ UOM: [] })
     }
-    this.setState({ DropdownChanged: false })
+    this.setState({ handleChange: false })
   };
 
   resetpowerKeyValue = () => {
@@ -635,6 +640,7 @@ class AddPower extends Component {
       //this.props.change('SEBCostPerUnit', 0)
       //this.props.change('SEBPowerContributaion', 0)
     });
+    this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
   };
 
@@ -924,7 +930,7 @@ class AddPower extends Component {
     });
 
     this.setState({ powerGrid: tempData, netContributionValue: finalNetContribution })
-    this.setState({ DropdownChanged: false })
+    this.setState({ DeleteChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -1021,7 +1027,8 @@ class AddPower extends Component {
   */
   onSubmit = (values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
-      effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged } = this.state;
+      effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
+      handleChange, DeleteChanged } = this.state;
     const { initialConfiguration, fieldsObj } = this.props;
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
@@ -1041,13 +1048,7 @@ class AddPower extends Component {
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
 
     if (isEditFlag) {
-
-      console.log(values, 'values')
-      console.log(selfGridDataArray, 'selfGridDataArray')
-      console.log(DataToChangeZ, 'DataToChangeZ')
-
       if (IsVendor) {
-
         if (DataToChangeVendor.NetPowerCostPerUnit == values.NetPowerCostPerUnit) {
           this.cancel()
           return false
@@ -1074,36 +1075,37 @@ class AddPower extends Component {
         })
 
       } else {
-        console.log(fieldsObj, 'powerGridEditIndex')
-        // if (DropdownChanged&&DataToChangeZ.SEBChargesDetails[0].MinDemandKWPerMonth == values.MinDemandKWPerMonth &&
-        //   DataToChangeZ.SEBChargesDetails[0].DemandChargesPerKW == values.DemandChargesPerKW &&
-        //   DataToChangeZ.SEBChargesDetails[0].AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth &&
-        //   DataToChangeZ.SEBChargesDetails[0].MaxDemandChargesKW == values.MaxDemandChargesKW &&
-        //   DataToChangeZ.SEBChargesDetails[0].MeterRentAndOtherChargesPerAnnum == values.MeterRentAndOtherChargesPerAnnum &&
-        //   DataToChangeZ.SEBChargesDetails[0].DutyChargesAndFCA == values.DutyChargesAndFCA) {
+
+        // let count = 0
+        // for (let i = 0; i < selfGridDataArray.length; i++) {
+        //   let grid = DataToChangeZ.SGChargesDetails[i]
+        //   let sgrid = selfGridDataArray[i]
+        //   if (grid.AssetCost == sgrid.AssetCost && grid.AnnualCost == sgrid.AnnualCost && grid.CostPerUnitOfMeasurement == sgrid.CostPerUnitOfMeasurement &&
+        //     grid.UnitGeneratedPerUnitOfFuel == sgrid.UnitGeneratedPerUnitOfFuel && grid.UnitGeneratedPerAnnum == sgrid.UnitGeneratedPerAnnum &&
+        //     grid.PowerContributionPercentage == sgrid.PowerContributionPercentage) {
+        //     count++
+        //   }
+        // }
+        console.log(values, 'values')
+        console.log(DataToChangeZ, 'DataToChangeZ')
+        // console.log(count,'count')
+        console.log(selfGridDataArray.length, 'selfGridDataArray.length')
+        // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
+        // if (
+        // (
+        // DropdownChanged
+        //    || (sebGrid.MinDemandKWPerMonth == values.MinDemandKWPerMonth && sebGrid.DemandChargesPerKW == values.DemandChargesPerKW &&
+        // sebGrid.AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW == values.MaxDemandChargesKW &&
+        // sebGrid.MeterRentAndOtherChargesPerAnnum == values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA == values.DutyChargesAndFCA
+        // &&sebGrid.PowerContributaionPersentage == values.SEBPowerContributaion))
+        // && count == selfGridDataArray.length
+        //  && handleChange
+        // && DeleteChanged
+        // ) {
         //   this.cancel()
         //   return false
         // }
-        if (
-          // DropdownChanged &&
-          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].AssetCost == values.AssetCost &&
-          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].AnnualCost == values.AnnualCost &&
-          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].CostPerUnitOfMeasurement == values.CostPerUnitOfMeasurement &&
-          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].UnitGeneratedPerUnitOfFuel == values.UnitGeneratedPerUnitOfFuel &&
-          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].UnitGeneratedPerAnnum == values.UnitGeneratedPerAnnum &&
-          // DataToChangeZ.SGChargesDetails[powerGridEditIndex - 2].SEBPowerContributaion == values.SEBPowerContributaion
-          DropdownChanged
-          // &&
-          // DataToChangeZ.SGChargesDetails[0].AssetCost == values.AssetCost &&
-          // DataToChangeZ.SGChargesDetails[0].AnnualCost == values.AnnualCost &&
-          // DataToChangeZ.SGChargesDetails[0].CostPerUnitOfMeasurement == values.CostPerUnitOfMeasurement &&
-          // DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerUnitOfFuel == values.UnitGeneratedPerUnitOfFuel &&
-          // DataToChangeZ.SGChargesDetails[0].UnitGeneratedPerAnnum == values.UnitGeneratedPerAnnum &&
-          // DataToChangeZ.SGChargesDetails[0].SEBPowerContributaion == values.SEBPowerContributaion
-        ) {
-          this.cancel()
-          return false
-        }
+
         let requestData = {
           PowerId: PowerDetailID,
           IsVendor: IsVendor,
@@ -1214,6 +1216,7 @@ class AddPower extends Component {
     let tempp = 0
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">

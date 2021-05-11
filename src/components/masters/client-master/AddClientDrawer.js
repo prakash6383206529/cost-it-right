@@ -10,6 +10,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddClientDrawer extends Component {
     constructor(props) {
@@ -147,11 +148,11 @@ class AddClientDrawer extends Component {
                         const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
 
                         this.setState({
-                            isLoader: false,
+                            // isLoader: false,
                             country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
                             state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
                             city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-                        })
+                        }, () => this.setState({ isLoader: false }))
                     }, 500)
 
                 }
@@ -264,6 +265,7 @@ class AddClientDrawer extends Component {
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
+                    {this.state.isLoader && <LoaderCustom />}
                     <Container >
                         <div className={'drawer-wrapper drawer-700px'}>
                             <form

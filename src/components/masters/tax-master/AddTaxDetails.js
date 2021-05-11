@@ -11,6 +11,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import moment from 'moment';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddTaxDetails')
 
 class AddTaxDetails extends Component {
@@ -21,6 +22,7 @@ class AddTaxDetails extends Component {
       effectiveDate: '',
       DataToCheck: [],
       DropdownChanged: true,
+      isLoader: false
     }
   }
 
@@ -37,6 +39,7 @@ class AddTaxDetails extends Component {
 
     if (isEditFlag) {
       this.props.getTaxDetailsData(ID, res => {
+        this.setState({ isLoader: true })
         this.props.fetchCountryDataAPI(() => {
           const { countryList } = this.props;
           if (res && res.data && res.data.Data) {
@@ -49,13 +52,14 @@ class AddTaxDetails extends Component {
               this.setState({
                 country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
                 effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-              })
+              }, ()=> this.setState({ isLoader: false })
+              )
             }, 500)
-
           }
         })
       })
     } else {
+      this.setState({ isLoader: false })
       this.props.getTaxDetailsData('', res => { })
     }
   }
@@ -214,6 +218,7 @@ class AddTaxDetails extends Component {
         open={this.props.isOpen}
       // onClose={(e) => this.toggleDrawer(e)}
       >
+        {this.state.isLoader && <LoaderCustom />}
         <Container>
           <div className={"drawer-wrapper"}>
             <form
