@@ -9,11 +9,13 @@ import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilter
 import { userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
-import 'react-datepicker/dist/react-datepicker.css'
+
 import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import moment from 'moment'
 import WarningMessage from '../../../common/WarningMessage'
 import { renderDatePicker } from '../../../layout/FormInputs'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -39,6 +41,7 @@ const SendForApproval = (props) => {
   const [showErrorMsg, setShowErrorMsg] = useState(false)
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
+  // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
   useEffect(() => {
@@ -460,6 +463,20 @@ const SendForApproval = (props) => {
                             {/* <label>Effective Date</label> */}
                             <div className="d-flex">
                               <div className="inputbox date-section">
+                                {/* {
+                                  data.effectiveDate ?
+                                    <DatePicker
+                                      selected={moment(data.effectiveDate).isValid ? moment(data.effectiveDate)._d : ''}
+                                      dateFormat="dd/MM/yyyy"
+                                      showMonthDropdown
+                                      showYearDropdown
+                                      readonly="readonly"
+                                      onBlur={() => null}
+                                      autoComplete={'off'}
+                                      disabledKeyboardNavigation
+                                      disabled={true}
+                                    /> : */}
+
                                 <DatePickerHookForm
                                   name={`${dateField}EffectiveDate[${index}]`}
                                   label={'Effective Date'}
@@ -487,6 +504,7 @@ const SendForApproval = (props) => {
                                   mandatory={true}
                                   errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
                                 />
+                                {/* } */}
                               </div>
                               <i className="fa fa-calendar icon-small-primary ml-2"></i>
                             </div>

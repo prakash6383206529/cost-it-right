@@ -3,11 +3,9 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI,
-    getStateListByFuel, getFuelListByState,
+    getFuelDetailDataList, getFuelComboData, deleteFuelDetailAPI, getStateListByFuel, getFuelListByState,
 } from '../actions/Fuel';
 import { searchableSelect } from "../../layout/FormInputs";
-import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -25,7 +23,7 @@ class FuelListing extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
-            shown:false,
+            shown: false,
             tableData: [],
             isBulkUpload: false,
             fuel: [],
