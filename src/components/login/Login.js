@@ -56,8 +56,8 @@ class Login extends Component {
   onSubmit(values) {
 
     let reqParams = {
-      username: 'superadmin@costitright.com',
-      password: 'Adm!n@296#',
+      username: values.UserName,
+      password: values.Password,
       grant_type: 'password',
     }
     //this.props.loginUserAPI(values, (res) => {
