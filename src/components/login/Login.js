@@ -91,8 +91,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/sipl-logo.jpg")} alt="Systematix" />
-                  </a>
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/minda-logo.png")} alt="Minda" /></a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
@@ -160,11 +159,7 @@ class Login extends Component {
                 </form>
                 <div className="bottomlogo_con">
                   <span>Powered By</span>
-<<<<<<< HEAD
-                <img className="logo-second" src={require("../../assests/images/CIRlogo.svg")} alt="Cost It Right" />
-=======
-                  <img className="logo-second" src={require("../../assests/images/logo.png")} alt="Cost It Right" />
->>>>>>> m1-frontend-mahak-production-11-05-2020
+                  <img className="logo-second" src={require("../../assests/images/CIRlogo.svg")} alt="Cost It Right" />
               </div>
             </div>
             <div className="col-md-7 p-0 right-sideimg">
