@@ -850,7 +850,7 @@ input.form-control{
   cursor: pointer;
 }
 .edit-details-btn {
-  width: 32px;
+  width:25px;
   height: 13px;
   background: transparent url("../../assests/images/pencil-icon.svg") 0% 0% no-repeat padding-box;
   opacity: 1;
@@ -2224,6 +2224,9 @@ html {
     }
     .flex-fill.sliderange{
       min-width: 195px;
+      .input-range{
+        margin-top: 7px;
+      }
     }
 		.flex-fills {
 			width: 20%;
@@ -2261,9 +2264,11 @@ html {
 // input range
 .input-range__label.input-range__label--min {
 	opacity: 0;
+  display: none;
 }
 .input-range__label.input-range__label--max {
 	opacity: 0;
+  display: none;
 }
 .filter-block {
 	.reset {
@@ -2461,7 +2466,7 @@ input:disabled{
   margin: 0 -30px -15px;
 }
 .add-min-height{
-  min-height: calc(100vh - 322px);
+  min-height: calc(100vh - 298px);
 }
 .role-permision-page{
   .add-min-height{
@@ -2576,7 +2581,24 @@ button:disabled{pointer-events: none;}
   //fire-fox css
 
 //=============== costing details page only
+.react-datepicker-popper{z-index: 9;}
 .costing-details-page{
+  .sticky-top-0{
+     .table{
+        td,th{
+          padding: 0.71rem 15px;
+          &:first-child{padding-left: 30px;}
+          &:last-child{padding-right: 30px;}
+        }
+      }
+    }
+  .costing-table-next{
+    &.costing-table-vbc,&.costing-table-zbc{
+      th,td{
+      padding: 0.71rem 20px;
+      }
+    }
+  }
   .tool-cost-tab-process-table{
     .react-bs-table{
       margin-top: 0px;
@@ -2947,14 +2969,31 @@ opacity: 0.5;
   }
 }
 .costing-table-next{
-  thead{
-    tr{width: 100%;
-      th{
-        &:first-child{width: 20%;}
-        &:nth-child(2){width: 15%;}
-        &:nth-child(3){width: 30%;}
-        &:nth-child(4){width: 28%;}
-        &:nth-child(5){width: 12%;}
+  &.costing-table-zbc{
+    thead{
+      tr{width: 100%;
+        th{
+          &:first-child{width: 30%;}
+          &:nth-child(2){width: 145px;min-width: 145px;}
+          &:nth-child(3){width: 21%;}
+          &:nth-child(4){width: 15%;}
+          &:nth-child(5){width: 10%;}
+        }
+      }
+    }
+  }
+
+  &.costing-table-vbc{
+    thead{
+      tr{width: 100%;
+        th{
+          &:first-child{width: 15%;}
+          &:nth-child(2){width: 15%;}
+          &:nth-child(3){width: 145px;min-width: 145px;}
+          &:nth-child(4){width: 21%;}
+          &:nth-child(5){width: 15%;}
+          &:nth-child(6){width: 10%;}
+        }
       }
     }
   }
@@ -3904,9 +3943,6 @@ body{
 
 // responsive media query start
 @media(max-width:1600px){
-  .add-min-height{
-    min-height: calc(100vh - 298px);
-  }
   // costing details page only
   .table.cr-brdr-main{font-size: 14px;}
   .table-responsive{
@@ -3917,6 +3953,14 @@ body{
     }
   }
   .costing-details-page{    
+    .sticky-top-0{
+      .table{
+         td,th{
+           &:first-child{padding-left: 15px;}
+           &:last-child{padding-right: 15px;}
+         }
+       }
+     }
     .table {
       td,th{
         padding: 0.71rem 15px;
@@ -3979,7 +4023,30 @@ body{
       }
     }    
   }
+
+  .costing-table-next{
+    &.costing-table-zbc{
+      thead{
+        tr{
+          th{
+            &:nth-child(3){width: 20%;}
+          }
+        }
+      }
+    }
+  
+    &.costing-table-vbc{
+      thead{
+        tr{
+          th{
+            &:nth-child(4){width: 20%;}
+          }
+        }
+      }
+    }
+  }
   // costing details page only end
+
 }// 1600px media query end
 
 @media(max-width:1366px){
@@ -4342,6 +4409,9 @@ body{
           }
           .flex-fill.sliderange{
             min-width: 195px;
+            .input-range{
+              margin-top: 7px;
+            }
           }
           .flex-fills {
             width: 20%;
@@ -5121,20 +5191,37 @@ body{
     label{font-size: 14px;}
   }
   .costing-table-next{
-    thead{
-      tr{
-        th{
-          &:first-child{width: 15%;}
-          &:nth-child(2){width: 15%;}
-          &:nth-child(3){width: 15%;}
-          &:nth-child(4){width: 15%;}
-          &:nth-child(5){width: 13%;min-width: 120px !important;}
-          &:nth-child(6){width: 15%;min-width: 100px !important;}
-          &:nth-child(7){min-width: 200px !important;}
-        }// th
-      }// tr
-    }// thead
-  }// costing-table-next
+    &.costing-table-zbc{
+      thead{
+        tr{
+          th{
+            // &:first-child{width: 30%;}
+            &:nth-child(2){width: auto;min-width: 115px;}
+            &:nth-child(3){width: 18%;}
+            &:nth-child(4){min-width: 175px !important;width: 14%;}
+            &:nth-child(5){width: 9%;}
+            &:nth-child(6){min-width: 247px !important;}
+          }
+        }
+      }
+    }
+  
+    &.costing-table-vbc{
+      thead{
+        tr{
+          th{
+            // &:first-child{width: 15%;}
+            // &:nth-child(2){width: 15%;}
+            &:nth-child(3){width: auto;min-width: 115px;}
+            &:nth-child(4){width: 18%;}
+            &:nth-child(5){min-width: 175px !important;width: 14%;}
+            &:nth-child(6){width: 9%;}
+            &:nth-child(7){min-width: 247px !important;}
+          }
+        }
+      }
+    }
+  }
 
   .costing-details-page{
     .table {

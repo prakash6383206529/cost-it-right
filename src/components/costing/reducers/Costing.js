@@ -58,6 +58,8 @@ import {
   SET_RMCC_ERRORS,
   CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE,
+  SET_COSTING_EFFECTIVE_DATE,
+  CLOSE_OPEN_ACCORDION,
 } from '../../../config/constants';
 
 const initialState = {
@@ -482,6 +484,18 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         ErrorObjRMCC: action.payload
+      }
+    case SET_COSTING_EFFECTIVE_DATE:
+      return {
+        ...state,
+        loading: false,
+        CostingEffectiveDate: action.payload
+      }
+    case CLOSE_OPEN_ACCORDION:
+      return {
+        ...state,
+        loading: false,
+        CloseOpenAccordion: action.payload
       }
     default:
       return state

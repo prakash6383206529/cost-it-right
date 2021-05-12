@@ -503,13 +503,23 @@ class AddRMDomestic extends Component {
   closeVendorDrawer = (e = '', formData = {}) => {
     this.setState({ isOpenVendor: false }, () => {
       const { IsVendor } = this.state
-      this.props.getVendorListByVendorType(IsVendor, () => {
-        const { vendorListByVendorType } = this.props
-        if (Object.keys(formData).length > 0) {
-          const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-          this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
-        }
-      })
+      if (!IsVendor) {
+        this.props.getVendorListByVendorType(IsVendor, () => {
+          const { vendorListByVendorType } = this.props
+          if (Object.keys(formData).length > 0) {
+            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
+            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
+          }
+        })
+      } else {
+        this.props.getVendorWithVendorCodeSelectList(() => {
+          const { vendorListByVendorType } = this.props
+          if (Object.keys(formData).length > 0) {
+            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
+            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
+          }
+        })
+      }
     })
   }
 
@@ -943,7 +953,7 @@ class AddRMDomestic extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {this.state.isLoader && <LoaderCustom customClass="add-page-loader"/>}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1390,13 +1400,12 @@ class AddRMDomestic extends Component {
                             />
                           </Col>
                           <Col md="4">
-                            <div className="form-group">
-                              {/* <label>
+                            {/* <label>
                                 Effective Date
                                 <span className="asterisk-required">*</span>
                               </label> */}
-                              <div className="inputbox date-section mb-3">
-                                {/* <DatePicker
+                            <div className="inputbox date-section form-group">
+                              {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
                                   onChange={this.handleEffectiveDateChange}
@@ -1412,25 +1421,25 @@ class AddRMDomestic extends Component {
                                   onChangeRaw={(e) => e.preventDefault()}
                                   disabled={false}
                                 /> */}
-                                <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    //e.preventDefault()
-                                  }}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                  disabled={isEditFlag ? true : false}
-                                //minDate={moment()}
-                                />
-                              </div>
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              //minDate={moment()}
+                              />
                             </div>
+
                           </Col>
                         </Row>
 
@@ -1629,6 +1638,7 @@ class AddRMDomestic extends Component {
             <AddVendorDrawer
               isOpen={isOpenVendor}
               isRM={true}
+              IsVendor={this.state.IsVendor}
               closeDrawer={this.closeVendorDrawer}
               isEditFlag={false}
               ID={""}

@@ -2,10 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Container, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
@@ -13,15 +10,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
 function LossStandardTable(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     //defaultValues: defaultValues,
@@ -53,7 +42,7 @@ function LossStandardTable(props) {
     //   return false
     // } else {
 
-    setTableData(props.sendTable)
+    setTableData(props.sendTable ? props.sendTable : [])
     // setNetWeight(props.netWeight.LostSum)
     // setNetWeight(props.sendTable.LostSum)
     // }
@@ -91,8 +80,11 @@ function LossStandardTable(props) {
       setNetWeight(NetWeight)
     } else {
       NetWeight = checkForDecimalAndNull(netWeight + lossWeight, trim)
+      console.log('NetWeight: ', NetWeight);
+      setTimeout(() => {
+        setNetWeight(NetWeight)
+      }, 400);
       props.calculation(NetWeight)
-      setNetWeight(NetWeight)
     }
     const obj = {
       lostPercent: lostPercent,
@@ -104,10 +96,14 @@ function LossStandardTable(props) {
       setTableData(tempArray)
       setIsEdit(false)
     } else {
-      tempArray = [...tableData, obj]
+      // tempArray = [...tableData, obj]
+      tempArray = tableData
+      tempArray.push(obj)
       setTableData(tempArray)
     }
+
     props.tableValue(tempArray)
+
     reset({
       lostPercent: '',
       lossType: '',
@@ -338,7 +334,7 @@ function LossStandardTable(props) {
               <div className="col-md-12 text-right">
                 <span className="col-md-12">
                   {`Net Loss Weight:`}
-                  {checkForDecimalAndNull(props.netWeight ? props.netWeight.LostSum : netWeight, trim)}
+                  {checkForDecimalAndNull(netWeight, trim)}
                 </span>
               </div>
             </div>

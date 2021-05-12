@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect, useCallback } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, Table, Container, } from 'reactstrap';
-import HeaderTitle from '../../common/HeaderTitle';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId, } from '../../../helper';
 import { getManageBOPSOBById, updateBOPSOBVendors } from '../actions/BoughtOutParts';
@@ -48,41 +47,33 @@ function ManageSOBDrawer(props) {
 
   useEffect(() => {
     setIsLoader(true)
-    setTimeout(() => {
-      dispatch(getManageBOPSOBById(ID, (res) => {
-        if (res && res.data && res.data.Result) {
-  
-          let Data = res.data.Data;
-  
-          if (Data.BoughtOutPartVendorList.length === 1) {
-            setIsDisable(true)
-            setGridData(Data.BoughtOutPartVendorList)
-            setGridDataOldArray(Data.BoughtOutPartVendorList)
-          }
-          if (Data.BoughtOutPartVendorList.length > 1) {
-            let tempArray = [];
-            let tempData = Data.BoughtOutPartVendorList[0];
-            tempData = {
-              ...tempData,
-              ShareOfBusinessPercentage: 100
-  
-            }
-            tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
-            setGridData(tempArray)
-            setGridDataOldArray(tempArray)
+    dispatch(getManageBOPSOBById(ID, (res) => {
+      if (res && res.data && res.data.Result) {
+        let Data = res.data.Data;
+
+        if (Data.BoughtOutPartVendorList.length === 1) {
+          setIsDisable(true)
+          setGridData(Data.BoughtOutPartVendorList)
+          setGridDataOldArray(Data.BoughtOutPartVendorList)
+        }
+        if (Data.BoughtOutPartVendorList.length > 1) {
+          let tempArray = [];
+          let tempData = Data.BoughtOutPartVendorList[0];
+          tempData = {
+            ...tempData,
+            ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
+
           }
           // else {
-  
+
           setData(Data)
           // setGridData(Data.BoughtOutPartVendorList)
           // setGridDataOldArray(Data.BoughtOutPartVendorList)
           // }
         }
         setIsLoader(false)
-      }))
-
-    }, 200);
-   
+      }
+    }))
 
   }, []);
 

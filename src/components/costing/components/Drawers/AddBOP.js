@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useDispatch, } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
-import { ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
@@ -19,6 +19,8 @@ function AddBOP(props) {
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
+  const { initialConfiguration } = useSelector(state => state.auth)
 
   /**
   * @method toggleDrawer
@@ -37,6 +39,7 @@ function AddBOP(props) {
       const data = {
         PlantId: costData.PlantId,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getBOPDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -54,6 +57,8 @@ function AddBOP(props) {
       const data = {
         VendorId: costData.VendorId,
         VendorPlantId: costData.VendorPlantId,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+        EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }
       dispatch(getBOPDrawerVBCDataList(data, (res) => {

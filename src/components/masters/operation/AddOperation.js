@@ -810,7 +810,7 @@ class AddOperation extends Component {
                         />
                       </Col>}
                       <Col md="3">
-                        <div className="inputbox date-section mb-3">
+                        <div className="inputbox date-section form-group">
                           <Field
                             label="Effective Date"
                             name="EffectiveDate"

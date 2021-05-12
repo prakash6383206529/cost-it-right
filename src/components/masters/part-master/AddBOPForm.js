@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required, number, postiveNumber, maxLength5, minValue1, } from "../../../helper/validation";
+import { required, number, postiveNumber, maxLength5, minValue1, positiveAndDecimalNumber, } from "../../../helper/validation";
 import { renderText, searchableSelect } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
 import { } from '../../../actions/Common';
@@ -231,7 +231,7 @@ class AddBOPForm extends Component {
                 name={"Quantity"}
                 type="text"
                 placeholder={""}
-                validate={[postiveNumber, maxLength5, required, minValue1]}
+                validate={[positiveAndDecimalNumber, maxLength5, required, minValue1]}
                 component={renderText}
                 required={true}
                 className=""

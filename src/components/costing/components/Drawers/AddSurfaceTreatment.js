@@ -9,7 +9,7 @@ import NoContentFound from '../../../common/NoContentFound';
 import { CONSTANT } from '../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
-import { ZBC } from '../../../../config/constants';
+import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 
 function AddSurfaceTreatment(props) {
 
@@ -20,6 +20,7 @@ function AddSurfaceTreatment(props) {
 
   const costData = useContext(costingInfoContext)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   /**
   * @method toggleDrawer
@@ -38,6 +39,7 @@ function AddSurfaceTreatment(props) {
         PlantId: costData.PlantId,
         TechnologyId: costData.TechnologyId,
         CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
       }
       dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {
         if (res && res.status === 200) {
@@ -55,6 +57,8 @@ function AddSurfaceTreatment(props) {
         VendorId: costData.VendorId,
         TechnologyId: costData.TechnologyId,
         VendorPlantId: costData.VendorPlantId,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+        EffectiveDate: CostingEffectiveDate,
         CostingId: costData.CostingId,
       }
       dispatch(getSurfaceTreatmentDrawerVBCDataList(data, (res) => {
@@ -70,7 +74,6 @@ function AddSurfaceTreatment(props) {
 
     }
   }, []);
-
 
   /**
   * @method renderPaginationShowsTotal
@@ -111,12 +114,6 @@ function AddSurfaceTreatment(props) {
     mode: 'checkbox',
     clickToSelect: true,
     unselectable: selectedIds,
-    // bgColor: function (row, isSelect) {
-    //   
-    //   const { OperationId } = row;
-    //   if (OperationId === '6446d198-b95d-4e37-bbf0-98404ea57245') return 'blue';
-    //   return null;
-    // },
     onSelect: onRowSelect,
     onSelectAll: onSelectAll
   };
@@ -151,7 +148,7 @@ function AddSurfaceTreatment(props) {
   */
   return (
     <div>
-      <Drawer anchor={props.anchor} open={props.isOpen} 
+      <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
         <Container>

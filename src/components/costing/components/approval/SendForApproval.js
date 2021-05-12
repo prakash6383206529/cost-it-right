@@ -9,11 +9,13 @@ import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilter
 import { userDetails } from '../../../../helper/auth'
 import { setCostingApprovalData, setCostingViewData, } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
-import 'react-datepicker/dist/react-datepicker.css'
+
 import { checkForDecimalAndNull, checkForNull } from '../../../../helper'
 import moment from 'moment'
 import WarningMessage from '../../../common/WarningMessage'
 import { renderDatePicker } from '../../../layout/FormInputs'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -26,6 +28,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+  console.log('viewApprovalData: ', viewApprovalData);
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partInfo = useSelector((state) => state.costing.partInfo)
@@ -39,6 +42,7 @@ const SendForApproval = (props) => {
   const [showErrorMsg, setShowErrorMsg] = useState(false)
   const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
   const [approver, setApprover] = useState('')
+  // const [showDate,setDate] = useState(false)
   const userData = userDetails()
 
   useEffect(() => {
@@ -204,7 +208,7 @@ const SendForApproval = (props) => {
             totalBudgetedQty += parseInt(data.BudgetedQuantity)
             // }
           })
-          temp.consumptionQty = checkForNull(actualQty,)
+          temp.consumptionQty = checkForNull(actualQty)
           temp.remainingQty = checkForNull(totalBudgetedQty - actualQty)
           temp.annualImpact = temp.variance != '' ? totalBudgetedQty * temp.variance : 0
           temp.yearImpact = temp.variance != '' ? (totalBudgetedQty - actualQty) * temp.variance : 0
@@ -389,7 +393,7 @@ const SendForApproval = (props) => {
             </Row>
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
-                console.log(data.effectiveDate, "DATE");
+                console.log(data.consumptionQty !== undefined ? data.consumptionQty : 0, "DATE");
                 return (
                   <div className="" key={index}>
                     <Row className="px-3">
@@ -457,36 +461,54 @@ const SendForApproval = (props) => {
                           </Col> */}
                           <Col md="4">
                             {/* <div className="form-group"> */}
-                            {/* <label>Effective Date</label> */}
                             <div className="d-flex">
                               <div className="inputbox date-section">
-                                <DatePickerHookForm
-                                  name={`${dateField}EffectiveDate[${index}]`}
-                                  label={'Effective Date'}
-                                  selected={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                  handleChange={(date) => {
-                                    handleEffectiveDateChange(date, index);
-                                  }}
-                                  //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                                  rules={{ required: true }}
-                                  Controller={Controller}
-                                  control={control}
-                                  register={register}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="DD/MM/YYYY"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  customClassName="withBorder"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={false}
-                                  mandatory={true}
-                                  errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
-                                />
+                                {
+                                  data.isDate ?
+                                    <div className={'form-group inputbox withBorder'}>
+                                      <label>Effective Date</label>
+                                      <DatePicker
+                                        selected={moment(data.effectiveDate).isValid ? moment(data.effectiveDate)._d : ''}
+                                        dateFormat="dd/MM/yyyy"
+                                        showMonthDropdown
+                                        showYearDropdown
+                                        readonly="readonly"
+                                        onBlur={() => null}
+                                        autoComplete={'off'}
+                                        disabledKeyboardNavigation
+                                        disabled={true}
+                                      />
+                                    </div>
+                                    :
+
+                                    <DatePickerHookForm
+                                      name={`${dateField}EffectiveDate[${index}]`}
+                                      label={'Effective Date'}
+                                      selected={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                      handleChange={(date) => {
+                                        handleEffectiveDateChange(date, index);
+                                      }}
+                                      //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                                      rules={{ required: true }}
+                                      Controller={Controller}
+                                      control={control}
+                                      register={register}
+                                      showMonthDropdown
+                                      showYearDropdown
+                                      dateFormat="DD/MM/YYYY"
+                                      //maxDate={new Date()}
+                                      dropdownMode="select"
+                                      placeholderText="Select date"
+                                      customClassName="withBorder"
+                                      className="withBorder"
+                                      autoComplete={"off"}
+                                      disabledKeyboardNavigation
+                                      onChangeRaw={(e) => e.preventDefault()}
+                                      disabled={false}
+                                      mandatory={true}
+                                      errors={errors && errors.dateFieldEffectiveDate && errors.dateFieldEffectiveDate !== undefined ? errors.dateFieldEffectiveDate[index] : ""}
+                                    />
+                                }
                               </div>
                               <i className="fa fa-calendar icon-small-primary ml-2"></i>
                             </div>
@@ -523,7 +545,7 @@ const SendForApproval = (props) => {
                               <label>Consumed Quantity</label>
                               <div className="d-flex align-items-center">
                                 <label className="form-control bg-grey input-form-control">
-                                  {data.consumptionQty ? checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                  {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
                                 </label>
                                 {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
                               </div>
@@ -533,7 +555,7 @@ const SendForApproval = (props) => {
                             <div className="form-group">
                               <label>Remaining Budgeted Quantity</label>
                               <label className="form-control bg-grey input-form-control">
-                                {data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
                           </Col>
@@ -541,7 +563,7 @@ const SendForApproval = (props) => {
                             <div className="form-group">
                               <label>Annual Impact</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
                           </Col>
@@ -550,7 +572,7 @@ const SendForApproval = (props) => {
                             <div className="form-group">
                               <label>Impact for the Year</label>
                               <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
                               </label>
                             </div>
                           </Col>
@@ -604,7 +626,7 @@ const SendForApproval = (props) => {
                           />
                         </Col>
                         {
-                          showValidation && <span className="warning-top"><WarningMessage message={'There is no approver added in this department'} /></span>
+                          showValidation && <span className="warning-top"><WarningMessage dClass="pl-3" message={'There is no approver added in this department'} /></span>
                         }
 
                         <Col md="12">

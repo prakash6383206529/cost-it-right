@@ -14,7 +14,7 @@ import BOMViewer from '../../../masters/part-master/BOMViewer';
 import {
   saveComponentCostingRMCCTab, setComponentItemData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
   saveCostingPackageFreightTab, setComponentPackageFreightItemData, saveToolTab, setComponentToolItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData,
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion,
 } from '../../actions/Costing';
 import { checkForNull, loggedInUserId } from '../../../../helper';
 import { LEVEL1 } from '../../../../helper/AllConastant';
@@ -28,7 +28,7 @@ function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
-    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData } = useSelector(state => state.costing)
+    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
@@ -53,6 +53,7 @@ function CostingHeaderTabs(props) {
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
 
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": ComponentItemData.CostingId,
@@ -78,6 +79,7 @@ function CostingHeaderTabs(props) {
         CostingPartDetails: ComponentItemData.CostingPartDetails,
       }
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
+        dispatch(CloseOpenAccordion())
         dispatch(setComponentItemData({}, () => { }))
         setIsCalledAPI(false)
         InjectDiscountAPICall()
@@ -175,17 +177,12 @@ function CostingHeaderTabs(props) {
    */
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
-    // setTimeout(() => {
-    //   dispatch(getExchangeRateByCurrency(currency.label, moment(date).local().format('DD-MM-YYYY'), res => {
-    //     if (res && res.data && res.data.Result) {
-    //       let Data = res.data.Data;
-    //       const NetPOPriceINR = getValues('NetPOPriceINR');
-    //       setValue('NetPOPriceOtherCurrency', checkForDecimalAndNull((NetPOPriceINR / Data.CurrencyExchangeRate), initialConfiguration.NoOfDecimalForPrice))
-    //       setCurrencyExchangeRate(Data.CurrencyExchangeRate)
-    //     }
-    //   }))
-    // }, 500)
+    dispatch(setCostingEffectiveDate(moment(date).local().format('YYYY-MM-DD')))
   }
+
+  useEffect(() => {
+    dispatch(setCostingEffectiveDate(moment(effectiveDate).local().format('YYYY-MM-DD')))
+  }, [effectiveDate])
 
   /**
 * @method closeVisualDrawer
@@ -222,7 +219,7 @@ function CostingHeaderTabs(props) {
                   autoComplete={"off"}
                   disabledKeyboardNavigation
                   onChangeRaw={(e) => e.preventDefault()}
-                  disabled={CostingViewMode ? true : false}
+                  disabled={(CostingViewMode) ? true : false}
                 />
               </div>
             </div>

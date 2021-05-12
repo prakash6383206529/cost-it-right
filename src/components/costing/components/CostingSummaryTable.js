@@ -14,12 +14,14 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import { toastr } from 'react-redux-toastr'
-import { checkForDecimalAndNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId, userDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { DRAFT, FILE_URL, REJECTED, VBC, ZBC } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
+import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
+const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
   const { viewMode, showDetail, technologyId, costingID, showWarningMsg } = props
@@ -402,13 +404,62 @@ const CostingSummaryTable = (props) => {
           obj.nPOPriceWithCurrency = viewCostingData[index].nPOPriceWithCurrency
           obj.currencyRate = viewCostingData[index].currency.currencyValue
           obj.variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
-          obj.consumptionQty = ''
-          obj.remainingQty = ''
-          obj.annualImpact = ''
-          obj.yearImpact = ''
+          let consumptionQty;
+          let remainingQty;
+          let annualImpact;
+          let yearImpact;
+          let date = viewCostingData[index].effectiveDate
+          if (viewCostingData[index].effectiveDate) {
+            let variance = Number(viewCostingData[index].poPrice && viewCostingData[index].poPrice !== '-' ? viewCostingData[index].poPrice : 0) - Number(viewCostingData[index].oldPoPrice && viewCostingData[index].oldPoPrice !== '-' ? viewCostingData[index].oldPoPrice : 0)
+            let month = new Date(date).getMonth()
+            let year = ''
+            let sequence = SEQUENCE_OF_MONTH[month]
+
+            if (month <= 2) {
+              year = `${new Date(date).getFullYear() - 1}-${new Date(date).getFullYear()}`
+            } else {
+              year = `${new Date(date).getFullYear()}-${new Date(date).getFullYear() + 1}`
+            }
+            dispatch(getVolumeDataByPartAndYear(partNumber.value ? partNumber.value : partNumber.partId, year, res => {
+              if (res.data.Result === true || res.status === 202) {
+                let approvedQtyArr = res.data.Data.VolumeApprovedDetails
+                let budgetedQtyArr = res.data.Data.VolumeBudgetedDetails
+                let actualQty = 0
+                let totalBudgetedQty = 0
+                let actualRemQty = 0
+
+                approvedQtyArr.map((data) => {
+                  if (data.Sequence < sequence) {
+                    // if(data.Date <= moment(effectiveDate).format('dd/MM/YYYY')){ 
+                    //   actualQty += parseInt(data.ApprovedQuantity)
+                    // }
+                    actualQty += parseInt(data.ApprovedQuantity)
+                  } else if (data.Sequence >= sequence) {
+                    actualRemQty += parseInt(data.ApprovedQuantity)
+                  }
+                })
+                budgetedQtyArr.map((data) => {
+                  // if (data.Sequence >= sequence) {
+                  totalBudgetedQty += parseInt(data.BudgetedQuantity)
+                  // }
+                })
+                obj.consumptionQty = checkForNull(actualQty)
+                obj.remainingQty = checkForNull(totalBudgetedQty - actualQty)
+                obj.annualImpact = variance != '' ? totalBudgetedQty * variance : 0
+                obj.yearImpact = variance != '' ? (totalBudgetedQty - actualQty) * variance : 0
+              }
+            })
+
+            )
+          }
+          // obj.consumptionQty = viewCostingData[index].effectiveDate ? consumptionQty : ''
+          // obj.remainingQty = viewCostingData[index].effectiveDate ? remainingQty : ''
+          // obj.annualImpact = viewCostingData[index].effectiveDate ? annualImpact : ''
+          // obj.yearImpact = viewCostingData[index].effectiveDate ? yearImpact : ''
           obj.reason = ''
           obj.ecnNo = ''
           obj.effectiveDate = viewCostingData[index].effectiveDate
+          obj.isDate = viewCostingData[index].effectiveDate ? true : false
           obj.partNo = viewCostingData[index].partId
           temp.push(obj)
         }
@@ -574,7 +625,7 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <span class="d-flex justify-content-between bg-grey">
-                                {`${moment(data.costingDate).format('DD/MM/YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
+                                {`${moment(data.costingDate).format('DD-MM-YYYY')}-${data.CostingNumber}-${data.status}`}{' '}
                                 {
                                   !viewMode &&
                                   <a
@@ -924,7 +975,7 @@ const CostingSummaryTable = (props) => {
                       <th>Remark</th>
                       {viewCostingData &&
                         viewCostingData.map((data, index) => {
-                          return <td>{data.remark}</td>
+                          return <td><span className="d-block small-grey-text">{data.remark}</span></td>
                         })}
                     </tr>
                     <tr class="background-light-blue">
@@ -943,8 +994,8 @@ const CostingSummaryTable = (props) => {
                           return (
                             <td>
                               <div>
-                                <span>{data.currency.currencyTitle}</span> &nbsp;{' '}
-                                <span>{checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice)}</span>
+                                <span className="d-inline-block w-50 small-grey-text">{data.currency.currencyTitle}</span> {' '}
+                                <span className="d-inline-block w-50 ">{checkForDecimalAndNull(data.currency.currencyValue, initialConfiguration.NoOfDecimalForPrice)}</span>
                               </div>
                             </td>
                           )

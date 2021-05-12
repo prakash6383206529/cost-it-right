@@ -20,6 +20,15 @@ import { MESSAGES } from "../../config/message";
 
 const headers = config;
 
+const CustomHeader = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true',
+    'Authorization': `Bearer NRIsJAXFS-IgPMtfW05J1EiTwhv4z37BnFCk2TynvAdVYMuBIal7dTYyfboxRFjvPJ1zPl4r4LfQJ8_1fKDnSxTmGmThhl6YabKHaGvzp2WDQ7P0wFZs2wW10Mcmkt4Xb4ybDGzwSLt6fwRuI1uGNRuyNMxKQz-s533rIF5Qx08vwumo5ogN5x_oyi__b4KXJWbUU_0qLaJGLwISEf4o3_4CPBoP6Gv_tAGIO1W250SzOF3zwYpTxi8LwghOtQse`,
+    'Access-From': 'WEB',
+    'Api-Key': `${process.env.REACT_APP_API_KEY}`,
+}
+
 export function loginUserAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
@@ -41,9 +50,11 @@ export function loginUserAPI(requestData, callback) {
 export function TokenAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        axios.post(API.tokenAPI, requestData, headers)
+        const queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
+        axios.post(API.tokenAPI, queryParams, CustomHeader)
             .then((response) => {
-                if (response && response.data && response.data.Result) {
+                console.log('response: ', response);
+                if (response && response.status === 200) {
                     callback(response);
                 }
             }).catch((error) => {

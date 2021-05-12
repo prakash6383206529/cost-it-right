@@ -520,13 +520,23 @@ class AddRMImport extends Component {
   closeVendorDrawer = (e = '', formData) => {
     this.setState({ isOpenVendor: false }, () => {
       const { IsVendor } = this.state
-      this.props.getVendorListByVendorType(IsVendor, () => {
-        const { vendorListByVendorType } = this.props
-        if (Object.keys(formData).length > 0) {
-          const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
-          this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
-        }
-      })
+      if (!IsVendor) {
+        this.props.getVendorListByVendorType(IsVendor, () => {
+          const { vendorListByVendorType } = this.props
+          if (Object.keys(formData).length > 0) {
+            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
+            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
+          }
+        })
+      } else {
+        this.props.getVendorWithVendorCodeSelectList(() => {
+          const { vendorListByVendorType } = this.props
+          if (Object.keys(formData).length > 0) {
+            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Text === `${formData.VendorName} (${formData.VendorCode})`)
+            this.setState({ vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [], })
+          }
+        })
+      }
     })
   }
   uomToggler = () => {
@@ -929,7 +939,7 @@ class AddRMImport extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom />}
+        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1623,6 +1633,7 @@ class AddRMImport extends Component {
               closeDrawer={this.closeVendorDrawer}
               isEditFlag={false}
               isRM={true}
+              IsVendor={this.state.IsVendor}
               ID={""}
               anchor={"right"}
             />

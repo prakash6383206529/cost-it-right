@@ -56,15 +56,13 @@ class Login extends Component {
   onSubmit(values) {
 
     let reqParams = {
-      username: 'superadmin@costitright.com',
-      password: 'Adm!n@296#',
+      username: values.UserName,
+      password: values.Password,
       grant_type: 'password',
     }
-    this.props.TokenAPI(reqParams, (response) => {
-      console.log('Token res:', response)
-    })
-    this.props.loginUserAPI(values, (res) => {
-      if (res && res.data && res.data.Result) {
+    //this.props.loginUserAPI(values, (res) => {
+    this.props.TokenAPI(reqParams, (res) => {
+      if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
         let userDetail = formatLoginResult(res.data);
         reactLocalStorage.setObject("userDetail", userDetail);
@@ -74,7 +72,8 @@ class Login extends Component {
           window.location.replace("/");
         }, 1000)
       }
-    });
+    })
+    //});
   }
 
   render() {
@@ -98,7 +97,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img src={require('../../assests/images/logo.png')} alt='Cost It Rights' />
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/sipl-logo.svg")} alt="Systematix" />
                   </a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
@@ -156,22 +155,8 @@ class Login extends Component {
                       className="btn login-btn w-100 dark-pinkbtn"
                     />
                   </div>
-                  <div className="form-group forgot-link d-flex pt-2 ">
-                    {/* <div className="checkboxWrap ">
-                          <label className="customs-checkbox">
-                          Remember me
-                            <input type="checkbox" />
-                            <span className=" before-box"></span>
-                          </label>
-                        </div> */}
-                    <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" />
-                    {/* <Link
-                      to="/forgot-password"
-                      className="forgotpwd-field"
-                      onClick={() => this.forgotConfirm()}
-                      target='_blank'>
-                      Forgot Password?
-                        </Link> */}
+                  <div className="form-group forgot-link d-flex pt-2 justify-content-center">
+                    {/* <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" /> */}
                     <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
                   </div>
                   {this.state.flag && (
@@ -179,6 +164,10 @@ class Login extends Component {
                   )
                   }
                 </form>
+                <div className="bottomlogo_con">
+                  <span>Powered By</span>
+                  <img className="logo-second" src={require("../../assests/images/logo.png")} alt="Cost It Right" />
+                </div>
               </div>
               <div className="col-md-7 p-0 right-sideimg">
                 <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />

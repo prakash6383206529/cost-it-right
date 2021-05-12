@@ -260,7 +260,7 @@ export const applySuperScript = (cell) => {
 }
 
 export const checkForNull = (ele) => {
-    const number = (ele == null || isNaN(Number(ele)) || ele === undefined || ele === Infinity) ? 0 : Number(ele);
+    const number = (ele == null || isNaN(Number(ele)) || ele === undefined || ele === Infinity || ele === -Infinity) ? 0 : Number(ele);
     return number
 }
 

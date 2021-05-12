@@ -5,7 +5,7 @@ import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import {
   getRMCCTabData, saveCostingRMCCTab, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion
 } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
@@ -21,7 +21,8 @@ function TabRMCC(props) {
 
   const dispatch = useDispatch()
 
-  const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC } = useSelector(state => state.costing)
+  const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, CostingEffectiveDate
+  } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -46,7 +47,7 @@ function TabRMCC(props) {
       topHeaderData = {
         NetRawMaterialsCost: TopHeaderValues?.TotalRawMaterialsCostWithQuantity ? TopHeaderValues.TotalRawMaterialsCostWithQuantity : 0,
         NetBoughtOutPartCost: TopHeaderValues?.TotalBoughtOutPartCostWithQuantity ? TopHeaderValues.TotalBoughtOutPartCostWithQuantity : 0,
-        NetConversionCost: TopHeaderValues?.TotalConversionCost ? TopHeaderValues.TotalConversionCost : 0,
+        NetConversionCost: TopHeaderValues?.TotalConversionCostWithQuantity ? TopHeaderValues.TotalConversionCostWithQuantity : 0,
         NetToolsCost: TopHeaderValues?.TotalToolCost ? TopHeaderValues.TotalToolCost : 0,
         //  NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCost ? TopHeaderValues.TotalCalculatedRMBOPCCCost : 0,
         NetTotalRMBOPCC: TopHeaderValues?.TotalCalculatedRMBOPCCCostWithQuantity ? TopHeaderValues.TotalCalculatedRMBOPCCCostWithQuantity : 0,
@@ -89,7 +90,8 @@ function TabRMCC(props) {
       if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + 0;
+        // return accummlator + 0;
+        return accummlator + checkForNull(el?.CostingPartDetails?.TotalRawMaterialsCost ? el.CostingPartDetails.TotalRawMaterialsCost : 0);
       }
     }, 0)
     return NetCost;
@@ -138,6 +140,22 @@ function TabRMCC(props) {
         return accummlator + (checkForNull(GridTotalCost) * el.CostingPartDetails.Quantity);
       } else {
         return accummlator + (checkForNull(el.CostingPartDetails.TotalBoughtOutPartCost !== null ? el.CostingPartDetails.TotalBoughtOutPartCost : 0) * el.CostingPartDetails.Quantity);
+      }
+    }, 0)
+    return NetCost;
+  }
+
+  /**
+  * @method getCCTotalCostForAssemblyWithQuantity
+  * @description GET CC TOTAL COST FOR ASSEMBLY WITH QUANTITY
+  */
+  const getCCTotalCostForAssemblyWithQuantity = (arr, GridTotalCost, params) => {
+    let NetCost = 0;
+    NetCost = arr && arr.reduce((accummlator, el) => {
+      if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
+        return accummlator + (checkForNull(GridTotalCost) * el.CostingPartDetails.Quantity);
+      } else {
+        return accummlator + (checkForNull(el.CostingPartDetails.TotalProcessCost !== null ? el.CostingPartDetails.TotalProcessCost : 0) * el.CostingPartDetails.Quantity);
       }
     }, 0)
     return NetCost;
@@ -534,7 +552,7 @@ function TabRMCC(props) {
 
           // BELOW KEYS COST WITH QUANTITY
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getCCCostWithQuantity(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
-          //i.CostingPartDetails.TotalConversionCostWithQuantity = getCCCostWithQuantity(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
+          i.CostingPartDetails.TotalConversionCostWithQuantity = getCCTotalCostForAssemblyWithQuantity(i.CostingChildPartDetails, checkForNull(conversionGrid.NetConversionCost), params);
 
           setProcessCostInDataList(conversionGrid, params, i.CostingChildPartDetails)
 
@@ -732,6 +750,7 @@ function TabRMCC(props) {
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = getRMBOPCCTotalCostWithQuantity(CostingChildPartDetails) * i.CostingPartDetails.Quantity;
           i.CostingPartDetails.TotalRawMaterialsCostWithQuantity = getRMTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
           i.CostingPartDetails.TotalBoughtOutPartCostWithQuantity = getBOPTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
+          i.CostingPartDetails.TotalConversionCostWithQuantity = getCCTotalCostForAssemblyWithQuantity(CostingChildPartDetails, 0, params);
 
           setAssembly(BOMLevel, PartNumber, Children, i.CostingChildPartDetails)
         } else {
@@ -971,6 +990,7 @@ function TabRMCC(props) {
         "NetTotalRMBOPCC": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "TotalCost": ComponentItemData.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
 
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": ComponentItemData.CostingId,
@@ -998,6 +1018,7 @@ function TabRMCC(props) {
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
           toastr.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+          dispatch(CloseOpenAccordion())
           dispatch(setComponentItemData({}, () => { }))
           InjectDiscountAPICall()
         }
@@ -1015,9 +1036,7 @@ function TabRMCC(props) {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  const onSubmit = (values) => {
-
-  }
+  const onSubmit = (values) => { }
 
   return (
     <>
@@ -1117,7 +1136,7 @@ function TabRMCC(props) {
                       type={'button'}
                       className="submit-button mr5 save-btn"
                       onClick={saveCosting}
-                    //disabled={Object.keys(ComponentItemData).length > 0 ? true : false}
+                      disabled={Object.keys(ComponentItemData).length === 0 ? true : false}
                     >
                       <div className={'check-icon'}>
                         <img

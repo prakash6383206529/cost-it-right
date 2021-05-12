@@ -29,10 +29,8 @@ function TabToolCost(props) {
   const [IsApplicableProcessWise, setIsApplicableProcessWise] = useState(IsToolCostApplicable);
   const [IsApplicablilityDisable, setIsApplicablilityDisable] = useState(true);
 
-  const ToolTabData = useSelector(state => state.costing.ToolTabData)
+  const { ToolTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const ToolsDataList = useSelector(state => state.costing.ToolsDataList)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -185,6 +183,7 @@ function TabToolCost(props) {
       "CostingId": costData.CostingId,
       "PartId": costData.PartId,
       "LoggedInUserId": loggedInUserId(),
+      "EffectiveDate": CostingEffectiveDate,
       "CostingNumber": costData.CostingNumber,
       "ToolCost": ToolTabData.TotalToolCost,
       "CostingPartDetails": ToolTabData && ToolTabData[0].CostingPartDetails

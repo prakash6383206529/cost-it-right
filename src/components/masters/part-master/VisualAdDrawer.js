@@ -13,9 +13,10 @@ const schema = yup.object().shape({
 
 
 export default function VishualAdDrawer(props) {
-
+    const { partType } = props
+    console.log('partType: ', partType);
     const { register, handleSubmit, watch, errors, control } = useForm({
-        resolver: yupResolver(schema),
+        // resolver: yupResolver(schema),
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -78,7 +79,7 @@ export default function VishualAdDrawer(props) {
                                         rules={{
                                             required: true,
                                             pattern: {
-                                                value: !/^\+?(0|[0-9]\d*)$/,
+                                                value: props.partType === 'BoughtOutPart' ? /^\d*\.?\d*$/ : /^\d*\?\d*$/,
                                                 //value: !/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/i,
                                                 message: 'Invalid Number.',
                                             },

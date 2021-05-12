@@ -22,7 +22,7 @@ function PartCompoment(props) {
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const ComponentItemDiscountData = useSelector(state => state.costing.ComponentItemDiscountData)
+  const { ComponentItemDiscountData, CloseOpenAccordion, CostingEffectiveDate } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -53,6 +53,12 @@ function PartCompoment(props) {
   }, [IsOpen])
 
   useEffect(() => {
+    if (IsOpen === true) {
+      toggle(item.BOMLevel, item.PartNumber)
+    }
+  }, [CloseOpenAccordion])
+
+  useEffect(() => {
     // OBJECT FOR SENDING OBJECT TO API
     if (!CostingViewMode && IsOpen === false && Count > 0) {
       let requestData = {
@@ -65,6 +71,7 @@ function PartCompoment(props) {
         "NetTotalRMBOPCC": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "TotalCost": item.CostingPartDetails.TotalCalculatedRMBOPCCCost,
         "LoggedInUserId": loggedInUserId(),
+        "EffectiveDate": CostingEffectiveDate,
 
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
         "CostingId": item.CostingId,
@@ -126,7 +133,7 @@ function PartCompoment(props) {
         <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? checkForNull(item.CostingPartDetails.Quantity) : 1}</td>
         <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         {costData.IsAssemblyPart && <td>{item.CostingPartDetails && item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
-        <td className="text-right"><div className={`${item.IsLocked ? 'lock_icon' : 'lock_icon'}`}>{''}</div></td>
+        <td className="text-right"><div className={`${item.IsLocked ? 'lock_icon' : ''}`}>{''}</div></td>
       </tr>
       {item.IsOpen && <tr>
         <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">

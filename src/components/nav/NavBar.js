@@ -677,9 +677,10 @@ class SideBar extends Component {
               </a>
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo"              >
                 <img
-                  src={require("../../assests/images/sipl-logo.svg")}
+                  // src={require("../../assests/images/sipl-logo.svg")}
+                  src={require("../../assests/images/sipl-logo.jpg")}
                   alt="Cost It Right"
-                  height="30"
+                  height="45"
                 />
               </a>
               <button
