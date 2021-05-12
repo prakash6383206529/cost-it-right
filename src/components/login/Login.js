@@ -160,19 +160,15 @@ class Login extends Component {
                 </form>
                 <div className="bottomlogo_con">
                   <span>Powered By</span>
-<<<<<<< HEAD
-                <img className="logo-second" src={require("../../assests/images/CIRlogo.svg")} alt="Cost It Right" />
-=======
                   <img className="logo-second" src={require("../../assests/images/logo.png")} alt="Cost It Right" />
->>>>>>> m1-frontend-mahak-production-11-05-2020
+                </div>
               </div>
-            </div>
-            <div className="col-md-7 p-0 right-sideimg">
-              <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
+              <div className="col-md-7 p-0 right-sideimg">
+                <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div >
     );
   }
