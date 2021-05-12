@@ -29,12 +29,15 @@ export const config = {
 //const BASE_URL = 'http://10.10.1.100:10123/api/v1';
 
 // DEVELOPMENT
-const BASE_URL = 'http://10.10.1.100:1002/api/v1';
+// const BASE_URL = 'http://10.10.1.100:1002/api/v1';
 //const BASE_URL = 'http://10.10.10.43/CostingEngine.Application.CostItRight/api/v1';
 
 //STAGING
 // const BASE_URL = 'http://10.10.1.10:1002/api/v1';
 export const FILE_URL = 'http://10.10.1.100:1002/';
+
+// DEVELOPMENT MIL URL
+const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 
 /** Export API */
 export const API = {
