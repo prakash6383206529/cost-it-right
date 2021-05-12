@@ -36,6 +36,31 @@ function ApproveRejectDrawer(props) {
   useEffect(() => {
     dispatch(getAllApprovalDepartment((res) => { }))
 
+    dispatch(getAllApprovalDepartment((res) => {
+      const Data = res.data.SelectList
+      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+      console.log('departObj: ', departObj);
+
+      setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+
+      dispatch(
+        getAllApprovalUserFilterByDepartment({
+          LoggedInUserId: userData.LoggedInUserId,
+          DepartmentId: departObj[0].Value,
+          TechnologyId: partNo.technologyId,
+        }, (res) => {
+          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+          console.log('Data: ', Data);
+          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          // setApprover(Data.Text)
+          // setSelectedApprover(Data.Value)
+          // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+          // setValue('approver', { label: Data.Text, value: Data.Value })
+        },
+        ),
+      )
+    }))
+
     // DO IT AFTER GETTING DATA
   }, [])
 
@@ -185,18 +210,19 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={"Department"}
+                        label={"Company"}
                         name={"dept"}
                         placeholder={"-Select-"}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        rules={{ required: false }}
                         register={register}
                         defaultValue={""}
                         options={renderDropdownListing("Dept")}
-                        mandatory={true}
+                        mandatory={false}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
+                        disabled={true}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -206,12 +232,13 @@ function ApproveRejectDrawer(props) {
                         placeholder={'-Select-'}
                         Controller={Controller}
                         control={control}
-                        rules={{ required: true }}
+                        rules={{ required: false }}
                         register={register}
                         //defaultValue={isEditFlag ? plantName : ''}
                         options={approvalDropDown}
-                        mandatory={true}
+                        mandatory={false}
                         handleChange={() => { }}
+                        disabled={true}
                         errors={errors.approver}
                       />
                     </div>
