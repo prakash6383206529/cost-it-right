@@ -6,9 +6,9 @@ import { costingInfoContext } from '../../CostingDetailStepTwo'
 import NoContentFound from '../../../../common/NoContentFound'
 import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
-import { NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -17,7 +17,7 @@ import { setRMCCErrors } from '../../../actions/Costing'
 
 function RawMaterialCost(props) {
 
-  const { register, handleSubmit, control, setValue, errors } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
@@ -31,6 +31,7 @@ function RawMaterialCost(props) {
   const [inputDiameter, setInputDiameter] = useState('')
   const [gridLength, setGridLength] = useState(0)
   const [gridData, setGridData] = useState(props.data)
+  const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -75,7 +76,7 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
-    if (Object.keys(rowData).length > 0) {
+    if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
       let tempObj = {
         RMName: rowData.RawMaterial,
         RMRate: rowData.NetLandedCost,
@@ -91,10 +92,14 @@ function RawMaterialCost(props) {
         RawMaterialId: rowData.RawMaterialId,
         RawMaterialCategory: rowData.Category
       }
-
-
       setGridData([...gridData, tempObj])
     }
+
+    if (IsApplyMasterBatch) {
+      setValue('MBName', rowData.RawMaterial)
+      setValue('MBPrice', rowData.NetLandedCost)
+    }
+
     setDrawerOpen(false)
   }
 
@@ -280,6 +285,56 @@ function RawMaterialCost(props) {
     setGridData([])
   }
 
+  /**
+  * @method onPressApplyMasterBatch
+  * @description ON PRESS APPLY MASTER BATCH
+  */
+  const onPressApplyMasterBatch = () => {
+    setIsApplyMasterBatch(!IsApplyMasterBatch)
+  }
+
+  /**
+  * @method MasterBatchToggle
+  * @description TOGGLE MASTER BATCH DRAWER
+  */
+  const MasterBatchToggle = () => {
+    setDrawerOpen(true)
+  }
+
+  /**
+  * @method handleMBPercentage
+  * @description HANDLE MB PERCENTAGE
+  */
+  const handleMBPercentage = (e) => {
+    let tempData = gridData[0]
+    if (Number(e.target.value)) {
+
+      setValue('RMTotal', calculatePercentageValue(getValues('RMPrice'), e.target.value))
+
+      const RMRate = calculatePercentageValue(tempData.RMRate, (100 - e.target.value));
+      console.log('RMRate: ', RMRate, getValues('RMTotal'));
+      const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * checkForNull(tempData.GrossWeight);
+      const ScrapRate = (tempData.ScrapRate * tempData.FinishWeight)
+      console.log('ScrapRate: ', ScrapRate);
+
+      const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
+
+      tempData = { ...tempData, NetLandedCost: NetLandedCost, }
+      let tempArr = Object.assign([...gridData], { [0]: tempData })
+      setGridData(tempArr)
+
+    } else {
+
+      const ApplicableFinishWeight = (tempData.FinishWeight !== 0) ? (tempData.GrossWeight - tempData.FinishWeight) * tempData.ScrapRate : 0;
+      const NetLandedCost = (tempData.GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
+      tempData = { ...tempData, NetLandedCost: NetLandedCost, }
+      let tempArr = Object.assign([...gridData], { [0]: tempData })
+      setValue('RMTotal', checkForNull(e.target.value))
+      setGridData(tempArr)
+
+    }
+  }
+
   const rmGridFields = 'rmGridFields'
 
   /**
@@ -287,8 +342,6 @@ function RawMaterialCost(props) {
    * @description Used to Submit the form
    */
   const onSubmit = (values) => { }
-  //console.log('RM Errors', errors)
-
 
   /**
    * @method setRMCCErrors
@@ -436,6 +489,119 @@ function RawMaterialCost(props) {
                 </Table>
               </Col>
             </Row>
+
+            {costData.TechnologyId === 8 &&
+              <Row >
+                <Col md="3" className="py-3 ">
+                  <label
+                    className={`custom-checkbox mb-0`}
+                    onChange={onPressApplyMasterBatch}
+                  >
+                    Apply Master Batch
+                    <input
+                      type="checkbox"
+                      checked={IsApplyMasterBatch}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsApplyMasterBatch}
+                      onChange={onPressApplyMasterBatch}
+                    />
+                  </label>
+                </Col>
+              </Row>}
+
+            <Row >
+              {IsApplyMasterBatch && costData.TechnologyId === 8 &&
+                <>
+                  <Col md="1" >
+                    <div
+                      onClick={MasterBatchToggle}
+                      className={"plus-icon-square right mt30"}
+                      title={'Add Master Batch'}
+                    ></div>
+                  </Col>
+                  <Col md="2" >
+                    <TextFieldHookForm
+                      label="RM"
+                      name={"MBName"}
+                      Controller={Controller}
+                      control={control}
+                      register={register({ required: true, })}
+                      mandatory={false}
+                      rules={{}}
+                      handleChange={(e) => { }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={"withBorder"}
+                      errors={errors.MBName}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="2">
+                    <TextFieldHookForm
+                      label="Price"
+                      name={'MBPrice'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{}}
+                      handleChange={() => { }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.MBPrice}
+                      disabled={true}
+                    />
+                  </Col>
+                  <Col md="2">
+                    <NumberFieldHookForm
+                      label="Percentage"
+                      name={`MBPercentage`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        //required: true,
+                        pattern: {
+                          value: /^\d*\.?\d*$/,
+                          message: 'Invalid Number.'
+                        },
+                      }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={'withBorder mb-0'}
+                      handleChange={(e) => {
+                        e.preventDefault()
+                        handleMBPercentage(e)
+                      }}
+                      errors={errors.MBPercentage}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                  </Col>
+                  <Col md="2">
+                    <TextFieldHookForm
+                      label="Total"
+                      name={'RMTotal'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{}}
+                      handleChange={() => { }}
+                      defaultValue={""}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.RMTotal}
+                      disabled={true}
+                    />
+                  </Col>
+                </>}
+
+            </Row>
           </form>
         </div>
       </div>
@@ -446,6 +612,7 @@ function RawMaterialCost(props) {
           isEditFlag={false}
           ID={''}
           anchor={'right'}
+          IsApplyMasterBatch={IsApplyMasterBatch}
         />
       )}
       {isWeightDrawerOpen && (
