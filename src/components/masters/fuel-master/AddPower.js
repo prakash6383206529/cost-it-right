@@ -142,14 +142,14 @@ class AddPower extends Component {
     //Formula for SEB COST PER UNIT calculation
     if (!isCostPerUnitConfigurable) {
       if (AvgUnitConsumptionPerMonth <= MinDemandKWPerMonth) {
-        const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
+        const SEBCostPerUnit = checkForNull((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
         power.SEBCostPerUnit = SEBCostPerUnit
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
         this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       } else {
-        const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth;
+        const SEBCostPerUnit = checkForNull(((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth);
 
         power.SEBCostPerUnit = SEBCostPerUnit
         this.setState({
@@ -164,7 +164,7 @@ class AddPower extends Component {
     const UnitConsumptionPerAnnum = power.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(power.AvgUnitConsumptionPerMonth) : 0;
     const SEBCostPerUnit = power.SEBCostPerUnit !== undefined ? checkForNull(power.SEBCostPerUnit) : 0;
 
-    const TotalUnitCharges = ((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum
+    const TotalUnitCharges = checkForNull(((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum)
     power.TotalUnitCharges = TotalUnitCharges
     this.setState({
       power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
@@ -187,7 +187,7 @@ class AddPower extends Component {
       if (!CostPerUnitOfMeasurement || !UnitGeneratedPerUnitOfFuel) {
         return 0
       }
-      const SelfGeneratedCostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
+      const SelfGeneratedCostPerUnit = checkForNull(CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel);
       power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
@@ -199,7 +199,7 @@ class AddPower extends Component {
       if (!AnnualCost || !UnitGeneratedPerAnnum) {
         return 0
       }
-      const SelfGeneratedCostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
+      const SelfGeneratedCostPerUnit = checkForNull(AnnualCost / UnitGeneratedPerAnnum);
       power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }

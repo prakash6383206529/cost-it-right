@@ -100,7 +100,7 @@ function CostingDetails(props) {
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
   const leftMenuData = useSelector(state => state.auth.leftMenuData);
-  console.log(partNumber, "PNNNNNNNNNNNNNNNNNNNN");
+
   /**
    * @method InjectRolePermission
    * @description SET ROLE AND PERMISSION

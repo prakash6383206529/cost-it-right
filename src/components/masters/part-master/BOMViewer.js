@@ -34,6 +34,7 @@ class BOMViewer extends Component {
       ActualBOMData: [],
       isCancel: false,
       isSaved: false,
+      partType: ''
 
     }
   }
@@ -186,8 +187,8 @@ class BOMViewer extends Component {
   * @method editLevelOne
   * @description EDIT LEVEL 1 QUANTITY IN DRAWER
   */
-  editLevelOne(index, quantity) {
-    this.setState({ isOpenVisualDrawer: true, EditIndex: index, updatedQuantity: quantity })
+  editLevelOne(index, quantity, partType) {
+    this.setState({ isOpenVisualDrawer: true, EditIndex: index, updatedQuantity: quantity, partType: partType })
   }
 
   /**
@@ -284,7 +285,7 @@ class BOMViewer extends Component {
           className={"bom-viewer-main"}
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <>
             <div className={"drawer-wrapper drawer-full-width bom-drawer"}>
@@ -415,7 +416,7 @@ class BOMViewer extends Component {
                                     <button
                                       className="Edit"
                                       onClick={() =>
-                                        this.editLevelOne(i, el.Quantity)
+                                        this.editLevelOne(i, el.Quantity, el.PartType)
                                       }
                                     />
                                   </span>
@@ -500,6 +501,7 @@ class BOMViewer extends Component {
                 isEditFlag={true}
                 anchor={"right"}
                 updatedQuantity={this.state.updatedQuantity}
+                partType={this.state.partType}
               />
             )}
           </>
