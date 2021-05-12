@@ -58,7 +58,8 @@ function ApprovalSummary(props) {
           ApprovalProcessId: ApprovalProcessId,
           ApprovalProcessSummaryId: ApprovalProcessSummaryId,
           ApprovalNumber: ApprovalNumber,
-          CostingId: CostingId
+          CostingId: CostingId,
+          ReasonId: ApprovalDetails[0].ReasonId
         })
       }),
     )

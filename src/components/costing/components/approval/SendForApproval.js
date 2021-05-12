@@ -16,6 +16,7 @@ import WarningMessage from '../../../common/WarningMessage'
 import { renderDatePicker } from '../../../layout/FormInputs'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { REASON_ID } from '../../../../config/constants'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
@@ -52,7 +53,32 @@ const SendForApproval = (props) => {
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
     dispatch(getReasonSelectList((res) => { }))
-    dispatch(getAllApprovalDepartment((res) => { }))
+    dispatch(getAllApprovalDepartment((res) => {
+      const Data = res.data.SelectList
+      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+      console.log('departObj: ', departObj);
+      setSelectedDepartment({ label: departObj[0].Text, value: departObj[0].Value })
+      setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+
+      let tempDropdownList = []
+
+      dispatch(
+        getAllApprovalUserFilterByDepartment({
+          LoggedInUserId: userData.LoggedInUserId,
+          DepartmentId: departObj[0].Value,
+          TechnologyId: partNo.technologyId,
+        }, (res) => {
+          const Data = res.data.DataList[1]
+          console.log('Data: ', Data);
+          setApprover(Data.Text)
+          setSelectedApprover(Data.Value)
+          setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+          setValue('approver', { label: Data.Text, value: Data.Value })
+        },
+        ),
+      )
+    }))
+
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
         setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
@@ -238,8 +264,8 @@ const SendForApproval = (props) => {
       return
     }
     let obj = {
-      ApproverDepartmentId: !isFinalApproverShow ? selectedDepartment.value : '',
-      ApproverDepartmentName: !isFinalApproverShow ? selectedDepartment.label : '',
+      ApproverDepartmentId: selectedDepartment.value,
+      ApproverDepartmentName: selectedDepartment.label,
       ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : '',
       ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : '',
       ApproverId: !isFinalApproverShow ? selectedApprover : '',
@@ -332,12 +358,13 @@ const SendForApproval = (props) => {
         data.typeOfCosting == 1 ? data.vendorName : ''
       tempObj.VendorPlantName =
         data.typeOfCosting == 1 ? data.vendorPlantName : ''
-      tempObj.IsFinalApproved = false
+      tempObj.IsFinalApproved = isFinalApproverShow ? true : false
       temp.push(tempObj)
     })
 
     obj.CostingsList = temp
 
+    console.log(obj, "OBJ");
     dispatch(
       sendForApprovalBySender(obj, (res) => {
         // if(res.data.Result){
@@ -595,16 +622,17 @@ const SendForApproval = (props) => {
                       <Row className="px-3">
                         <Col md="6">
                           <SearchableSelectHookForm
-                            label={"Department"}
+                            label={"Company"}
                             name={"dept"}
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
                             options={renderDropdownListing("Dept")}
-                            mandatory={true}
+                            disabled={true}
+                            mandatory={false}
                             handleChange={handleDepartmentChange}
                             errors={errors.dept}
                           />
@@ -616,11 +644,12 @@ const SendForApproval = (props) => {
                             placeholder={"-Select-"}
                             Controller={Controller}
                             control={control}
-                            rules={{ required: true }}
+                            rules={{ required: false }}
                             register={register}
                             defaultValue={""}
                             options={approvalDropDown}
-                            mandatory={true}
+                            mandatory={false}
+                            disabled={true}
                             handleChange={handleApproverChange}
                             errors={errors.approver}
                           />

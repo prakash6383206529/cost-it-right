@@ -610,6 +610,7 @@ export const API = {
   getDepartmentAPI: `${BASE_URL}/user-department/get`,
   updateDepartmentAPI: `${BASE_URL}/user-department/update`,
   deleteDepartmentAPI: `${BASE_URL}/user-department/delete`,
+  addCompanyAPI: `${BASE_URL}/company/create`,
 
   //LEVEL'S API
   assignUserLevelAPI: `${BASE_URL}/user-level/assign-user-level-for-costing`,
@@ -1494,3 +1495,5 @@ export const SURFACETREATMENT = 'SURFACE TREATMENT'
 export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
 // export constse
+
+export const REASON_ID = 6

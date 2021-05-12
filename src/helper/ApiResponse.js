@@ -41,6 +41,8 @@ export function formatLoginResult(res) {
             issued: res[".issued"],
             expires_in: res.expires_in,
             token_type: res.token_type,
+            DepartmentId: res.Data.DepartmentId,
+            Department: res.Data.Department,
         };
         return userObj;
     }

@@ -42,8 +42,8 @@ function Plastic(props) {
 
   const dropDown = [
     {
-      label: 'Purge Loss',
-      value: 'purgeLoss',
+      label: 'Processing Lost',
+      value: 'processingLost',
     },
     {
       label: 'Burning Loss',

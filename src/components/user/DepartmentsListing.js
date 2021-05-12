@@ -206,21 +206,8 @@ class DepartmentsListing extends Component {
               tableHeaderClass="my-custom-header"
               pagination
             >
-              <TableHeaderColumn
-                dataField="DepartmentName"
-                isKey={true}
-                dataAlign="left"
-                dataSort={true}
-              >
-                Department
-              </TableHeaderColumn>
-              <TableHeaderColumn
-                dataField="DepartmentId"
-                dataAlign="right"
-                dataFormat={this.buttonFormatter}
-              >
-                Actions
-              </TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentName" isKey={true} dataAlign="left" dataSort={true}>Company</TableHeaderColumn>
+              <TableHeaderColumn dataField="DepartmentId" dataAlign="right" dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>
             </BootstrapTable>
           </Col>
         </Row>
