@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector, reset } from "redux-form";
+import { Field, reduxForm, formValueSelector, reset, propTypes } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, number, positiveAndDecimalNumber, postiveNumber, maxLength10, checkPercentageValue, decimalLengthThree, } from "../../../helper/validation";
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
@@ -15,10 +15,11 @@ import $ from 'jquery';
 import moment from 'moment';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddInterestRate');
 
 class AddInterestRate extends Component {
-
+  static propTypes = { ...propTypes }
   constructor(props) {
     super(props);
     this.state = {
@@ -31,6 +32,8 @@ class AddInterestRate extends Component {
       isEditFlag: false,
       InterestRateId: '',
       effectiveDate: '',
+      Data: [],
+      DropdownChanged: true
     }
   }
   /**
@@ -149,6 +152,7 @@ class AddInterestRate extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -167,6 +171,7 @@ class AddInterestRate extends Component {
       this.props.getInterestRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
+          this.setState({ Data: Data })
           this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { vendorWithVendorCodeSelectList, paymentTermsSelectList, iccApplicabilitySelectList, } = this.props;
@@ -177,18 +182,21 @@ class AddInterestRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
               ICCApplicability: iccObj && iccObj !== undefined ? { label: iccObj.Text, value: iccObj.Value } : [],
               PaymentTermsApplicability: paymentObj && paymentObj !== undefined ? { label: paymentObj.Text, value: paymentObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
 
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getInterestRateData('', () => { })
     }
   }
@@ -209,6 +217,11 @@ class AddInterestRate extends Component {
     this.props.hideForm()
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   /**
   * @method onSubmit
@@ -217,11 +230,23 @@ class AddInterestRate extends Component {
 
   onSubmit = (values) => {
 
-    const { IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate } = this.state;
+    const { Data, IsVendor, vendorName, ICCApplicability, PaymentTermsApplicability, InterestRateId, effectiveDate, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
+
+      if (Data.ICCApplicability == ICCApplicability.label && Data.ICCPercent == values.ICCPercent &&
+        Data.PaymentTermApplicability == PaymentTermsApplicability.label &&
+        Data.PaymentTermPercent == values.PaymentTermPercent &&
+        Data.RepaymentPeriod == values.RepaymentPeriod && DropdownChanged) {
+        console.log('cancle')
+        this.cancel()
+        return false;
+      }
+      else {
+
+      }
 
       let updateData = {
         VendorInterestRateId: InterestRateId,
@@ -252,7 +277,7 @@ class AddInterestRate extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -293,7 +318,7 @@ class AddInterestRate extends Component {
     const { isEditFlag, } = this.state;
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">
@@ -313,6 +338,7 @@ class AddInterestRate extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>

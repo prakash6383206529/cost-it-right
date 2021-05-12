@@ -24,6 +24,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import moment from 'moment';
 import { calculatePercentageValue } from '../../../helper';
 import { AcceptablePowerUOM } from '../../../config/masterData';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddPower');
 
 class AddPower extends Component {
@@ -35,7 +36,7 @@ class AddPower extends Component {
       isEditFlagForStateElectricity: false,
       PowerDetailID: '',
       IsVendor: false,
-
+      temp: 0,
       StateName: [],
 
       selectedPlants: [],
@@ -61,7 +62,14 @@ class AddPower extends Component {
 
       netContributionValue: 0,
 
-      power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', }
+      power: { minMonthlyCharge: '', AvgUnitConsumptionPerMonth: '', SEBCostPerUnit: '', TotalUnitCharges: '', SelfGeneratedCostPerUnit: '', },
+      DropdownChanged: true,
+      DataToChangeVendor: [],
+      DataToChangeZ: [],
+      ind: '',
+      DeleteChanged: true,
+      handleChange: true,
+      AddChanged: true
     }
   }
 
@@ -142,14 +150,14 @@ class AddPower extends Component {
     //Formula for SEB COST PER UNIT calculation
     if (!isCostPerUnitConfigurable) {
       if (AvgUnitConsumptionPerMonth <= MinDemandKWPerMonth) {
-        const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
+        const SEBCostPerUnit = checkForNull((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
         power.SEBCostPerUnit = SEBCostPerUnit
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
         this.props.change('SEBCostPerUnit', checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       } else {
-        const SEBCostPerUnit = ((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth;
+        const SEBCostPerUnit = checkForNull(((MinDemandKWPerMonth * DemandChargesPerKW) + ((AvgUnitConsumptionPerMonth - MinDemandKWPerMonth) * MaxDemandChargesKW)) / AvgUnitConsumptionPerMonth);
 
         power.SEBCostPerUnit = SEBCostPerUnit
         this.setState({
@@ -164,7 +172,7 @@ class AddPower extends Component {
     const UnitConsumptionPerAnnum = power.AvgUnitConsumptionPerMonth !== undefined ? checkForNull(power.AvgUnitConsumptionPerMonth) : 0;
     const SEBCostPerUnit = power.SEBCostPerUnit !== undefined ? checkForNull(power.SEBCostPerUnit) : 0;
 
-    const TotalUnitCharges = ((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum
+    const TotalUnitCharges = checkForNull(((UnitConsumptionPerAnnum * SEBCostPerUnit) + MeterRentAndOtherChargesPerAnnum + DutyChargesAndFCA) / UnitConsumptionPerAnnum)
     power.TotalUnitCharges = TotalUnitCharges
     this.setState({
       power: { ...power, TotalUnitCharges: power.TotalUnitCharges }
@@ -187,7 +195,7 @@ class AddPower extends Component {
       if (!CostPerUnitOfMeasurement || !UnitGeneratedPerUnitOfFuel) {
         return 0
       }
-      const SelfGeneratedCostPerUnit = CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel;
+      const SelfGeneratedCostPerUnit = checkForNull(CostPerUnitOfMeasurement / UnitGeneratedPerUnitOfFuel);
       power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
@@ -199,7 +207,7 @@ class AddPower extends Component {
       if (!AnnualCost || !UnitGeneratedPerAnnum) {
         return 0
       }
-      const SelfGeneratedCostPerUnit = AnnualCost / UnitGeneratedPerAnnum;
+      const SelfGeneratedCostPerUnit = checkForNull(AnnualCost / UnitGeneratedPerAnnum);
       power.SelfGeneratedCostPerUnit = SelfGeneratedCostPerUnit
       this.setState({
         power: { ...power, SelfGeneratedCostPerUnit: power.SelfGeneratedCostPerUnit }
@@ -229,6 +237,7 @@ class AddPower extends Component {
 
       let powerContributionTotal = 0;
       if (isEditIndex) {
+        this.setState({ ind: powerGridEditIndex })
         let rowObj = powerGrid && powerGrid.find((el, index) => index === powerGridEditIndex)
         powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid - checkForNull(rowObj.PowerContributionPercentage);
       } else if (isEditSEBIndex) {
@@ -238,7 +247,7 @@ class AddPower extends Component {
         powerContributionTotal = selfGeneratorPowerContribution + totalContributionFromGrid;
       }
 
-      if (fieldsObj.SelfPowerContribution < 100 && powerContributionTotal > 100) {
+      if (fieldsObj.SelfPowerContribution > 100 && powerContributionTotal > 100) {
         this.setState({ checkPowerContribution: true })
         toastr.warning('Total power contribution should not be greater than 100%.')
       } else {
@@ -270,6 +279,7 @@ class AddPower extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChangeVendor: Data })
           this.props.getPlantBySupplier(Data.VendorId, () => { })
 
           setTimeout(() => {
@@ -305,7 +315,7 @@ class AddPower extends Component {
         if (res && res.data && res.data.Result) {
           const { powerGrid } = this.state;
           const Data = res.data.Data;
-
+          this.setState({ DataToChangeZ: Data })
           this.props.getPlantListByState(Data.StateId, () => { })
 
           let tempArray = [];
@@ -350,7 +360,7 @@ class AddPower extends Component {
               StateName: stateObj && stateObj !== undefined ? { label: stateObj.Text, value: stateObj.Value } : [],
               effectiveDate: moment(Data.SEBChargesDetails[0].EffectiveDate)._d,
               powerGrid: tempArray,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 200)
         }
       })
@@ -456,6 +466,7 @@ class AddPower extends Component {
     } else {
       this.setState({ source: [] })
     }
+    this.setState({ handleChange: false })
   };
 
   /**
@@ -481,6 +492,7 @@ class AddPower extends Component {
     } else {
       this.setState({ UOM: [] })
     }
+    this.setState({ handleChange: false })
   };
 
   resetpowerKeyValue = () => {
@@ -496,6 +508,22 @@ class AddPower extends Component {
   powerSEBTableHandler = (isSelfGenerator) => {
     const { powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
+
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
 
     // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
     // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
@@ -556,6 +584,7 @@ class AddPower extends Component {
       netContributionValue: NetPowerCostPerUnit,
       isAddedSEB: true,
     });
+    this.setState({ AddChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -566,6 +595,24 @@ class AddPower extends Component {
   updateSEBGrid = () => {
     const { powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
+
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SEBPowerContributaion)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
+
+
 
     // const TotalUnitCharges = fieldsObj && fieldsObj !== undefined ? fieldsObj.TotalUnitCharges : 0;
     // const SEBPowerContributaion = fieldsObj && fieldsObj !== undefined ? fieldsObj.SEBPowerContributaion : 0;
@@ -594,6 +641,7 @@ class AddPower extends Component {
       //this.props.change('SEBCostPerUnit', 0)
       //this.props.change('SEBPowerContributaion', 0)
     });
+    this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
   };
 
@@ -601,8 +649,33 @@ class AddPower extends Component {
     const { source, UOM, powerGrid, power } = this.state;
     const { fieldsObj } = this.props;
 
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
+
     if (source.length === 0 || (fieldsObj.UnitGeneratedPerAnnum === undefined ||
-      fieldsObj.SelfPowerContribution === undefined || fieldsObj.UnitGeneratedPerUnitOfFuel === undefined)) {
+      fieldsObj.SelfPowerContribution === undefined)) {
+      toastr.warning('Fields should not be empty');
+      return false;
+    }
+
+    // if (this.state.temp > 100) {
+    //   toastr.warning('Fields 100');
+    //   return false;
+    // }
+
+    if (source.label === 'Generator Diesel' && fieldsObj.UnitGeneratedPerUnitOfFuel === undefined) {
       toastr.warning('Fields should not be empty');
       return false;
     }
@@ -675,6 +748,7 @@ class AddPower extends Component {
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
 
     });
+    this.setState({ AddChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -685,6 +759,23 @@ class AddPower extends Component {
   updatePowerGrid = () => {
     const { source, UOM, powerGrid, powerGridEditIndex, power } = this.state;
     const { fieldsObj } = this.props;
+
+    let powerTotalT = 0
+    if (powerGrid) {
+      this.state.powerGrid.map((item, index) => {
+        powerTotalT = Number(powerTotalT) + Number(item.PowerContributionPercentage)
+      })
+
+      powerTotalT = Number(powerTotalT) + Number(fieldsObj.SelfPowerContribution)
+
+    }
+
+    if (powerTotalT > 100) {
+      toastr.warning('Total Contribution should not be more than 100%');
+      return false;
+    }
+
+
 
     const AssetCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AssetCost : 0;
     const AnnualCost = fieldsObj && fieldsObj !== undefined ? fieldsObj.AnnualCost : 0;
@@ -734,6 +825,7 @@ class AddPower extends Component {
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
 
     });
+    this.setState({ DropdownChanged: false })
     this.resetpowerKeyValue()
   };
 
@@ -839,6 +931,7 @@ class AddPower extends Component {
     });
 
     this.setState({ powerGrid: tempData, netContributionValue: finalNetContribution })
+    this.setState({ DeleteChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -888,7 +981,7 @@ class AddPower extends Component {
         const accept = AcceptablePowerUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
 
       });
       return temp;
@@ -935,8 +1028,9 @@ class AddPower extends Component {
   */
   onSubmit = (values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
-      effectiveDate, vendorName, selectedVendorPlants } = this.state;
-    const { initialConfiguration } = this.props;
+      effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
+      handleChange, DeleteChanged, AddChanged } = this.state;
+    const { initialConfiguration, fieldsObj } = this.props;
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
     })
@@ -952,12 +1046,14 @@ class AddPower extends Component {
     }, 0)
 
 
-
     let selfGridDataArray = powerGrid && powerGrid.filter(el => el.SourcePowerType !== 'SEB')
 
     if (isEditFlag) {
-
       if (IsVendor) {
+        if (DataToChangeVendor.NetPowerCostPerUnit == values.NetPowerCostPerUnit) {
+          this.cancel()
+          return false
+        }
 
         let vendorDetailData = {
           PowerDetailId: PowerDetailID,
@@ -980,6 +1076,30 @@ class AddPower extends Component {
         })
 
       } else {
+        let addRow = 0
+        let count = 0
+        if (selfGridDataArray.length > DataToChangeZ.SGChargesDetails.length) {
+          addRow = 1
+        }
+        if (addRow == 0) {
+          for (let i = 0; i < selfGridDataArray.length; i++) {
+            let grid = DataToChangeZ.SGChargesDetails[i]
+            let sgrid = selfGridDataArray[i]
+            if (grid.AssetCost == sgrid.AssetCost && grid.AnnualCost == sgrid.AnnualCost && grid.CostPerUnitOfMeasurement == sgrid.CostPerUnitOfMeasurement &&
+              grid.UnitGeneratedPerUnitOfFuel == sgrid.UnitGeneratedPerUnitOfFuel && grid.UnitGeneratedPerAnnum == sgrid.UnitGeneratedPerAnnum &&
+              grid.PowerContributionPercentage == sgrid.PowerContributionPercentage) {
+              count++
+            }
+          }
+        }
+        let sebGrid = DataToChangeZ.SEBChargesDetails[0]
+        if ((AddChanged && DropdownChanged || (sebGrid.MinDemandKWPerMonth == values.MinDemandKWPerMonth && sebGrid.DemandChargesPerKW == values.DemandChargesPerKW &&
+          sebGrid.AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW == values.MaxDemandChargesKW &&
+          sebGrid.MeterRentAndOtherChargesPerAnnum == values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA == values.DutyChargesAndFCA
+          && sebGrid.PowerContributaionPersentage == values.SEBPowerContributaion)) && addRow == 0 && count == selfGridDataArray.length && handleChange && DeleteChanged) {
+          this.cancel()
+          return false
+        }
 
         let requestData = {
           PowerId: PowerDetailID,
@@ -1074,6 +1194,12 @@ class AddPower extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -1082,9 +1208,10 @@ class AddPower extends Component {
     const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
       checkPowerContribution, netContributionValue } = this.state;
-
+    let tempp = 0
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -1101,6 +1228,7 @@ class AddPower extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>
@@ -1626,7 +1754,7 @@ class AddPower extends Component {
                                     name={"UnitGeneratedPerAnnum"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
+                                    validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                     component={renderText}
                                     required={true}
                                     className=""
@@ -1660,7 +1788,7 @@ class AddPower extends Component {
                                     name={"SelfPowerContribution"}
                                     type="text"
                                     placeholder={'Enter'}
-                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
+                                    validate={[positiveAndDecimalNumber, maxLength10, decimalLengthThree]}
                                     component={renderText}
                                     required={true}
                                     className=""
@@ -1713,6 +1841,8 @@ class AddPower extends Component {
                                   {
                                     this.state.powerGrid &&
                                     this.state.powerGrid.map((item, index) => {
+                                      // tempp = Number(tempp) + Number(item.PowerContributionPercentage)
+                                      // this.state.temp = Number(this.state.temp) + Number(item.PowerContributionPercentage)
                                       return (
                                         <tr key={index}>
                                           <td>{item.SourcePowerType}</td>

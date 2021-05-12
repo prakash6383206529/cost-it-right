@@ -89,6 +89,12 @@ class AddGrade extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -100,7 +106,7 @@ class AddGrade extends Component {
         <Drawer
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
             <div className={"drawer-wrapper"}>
@@ -108,6 +114,7 @@ class AddGrade extends Component {
                 noValidate
                 className="form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
               >
                 <Row className="drawer-heading">
                   <Col>

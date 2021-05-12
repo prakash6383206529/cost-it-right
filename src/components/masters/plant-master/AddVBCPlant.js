@@ -275,7 +275,11 @@ class AddVBCPlant extends Component {
     }
   }
 
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   /**
   * @method render
@@ -297,7 +301,8 @@ class AddVBCPlant extends Component {
                 noValidate
                 className="form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
-              >
+                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                >
                 <Row className="drawer-heading">
                   <Col>
                     <div className={"header-wrapper left"}>

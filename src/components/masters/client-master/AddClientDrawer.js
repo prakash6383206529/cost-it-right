@@ -10,6 +10,7 @@ import { toastr } from 'react-redux-toastr';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId, } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddClientDrawer extends Component {
     constructor(props) {
@@ -22,6 +23,8 @@ class AddClientDrawer extends Component {
             country: [],
             state: [],
             showStateCity: true,
+            DropdownChanged: true,
+            DataToCheck: []
         }
     }
 
@@ -55,6 +58,7 @@ class AddClientDrawer extends Component {
         } else {
             this.setState({ country: [], state: [], city: [] })
         }
+        this.setState({ DropdownChanged: false })
     };
 
     /**
@@ -70,7 +74,7 @@ class AddClientDrawer extends Component {
         } else {
             this.setState({ state: [], city: [] });
         }
-
+        this.setState({ DropdownChanged: false })
     };
 
     /**
@@ -83,6 +87,7 @@ class AddClientDrawer extends Component {
         } else {
             this.setState({ city: [] });
         }
+        this.setState({ DropdownChanged: false })
     };
 
     /**
@@ -131,7 +136,7 @@ class AddClientDrawer extends Component {
             this.props.getClientData(ID, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
-
+                    this.setState({ DataToCheck: Data })
                     this.props.fetchStateDataAPI(Data.CountryId, () => { })
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
 
@@ -143,11 +148,11 @@ class AddClientDrawer extends Component {
                         const CityObj = cityList && cityList.find(item => Number(item.Value) === Data.CityId)
 
                         this.setState({
-                            isLoader: false,
+                            // isLoader: false,
                             country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
                             state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
                             city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
-                        })
+                        }, () => this.setState({ isLoader: false }))
                     }, 500)
 
                 }
@@ -186,11 +191,19 @@ class AddClientDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { city, } = this.state;
+        const { city, country, DataToCheck, DropdownChanged } = this.state;
         const { isEditFlag, ID } = this.props;
 
         /** Update existing detail of supplier master **/
         if (isEditFlag) {
+            if (DropdownChanged && DataToCheck.ClientName == values.ClientName && DataToCheck.ClientEmailId == values.ClientEmailId &&
+                DataToCheck.PhoneNumber == values.PhoneNumber && DataToCheck.Extension == values.Extension &&
+                DataToCheck.MobileNumber == values.MobileNumber && DataToCheck.ZipCode == values.ZipCode) {
+                console.log('chaNGES')
+                this.toggleDrawer('')
+                return false
+            }
+
             let updateData = {
                 ClientId: ID,
                 ClientName: values.ClientName,
@@ -235,7 +248,11 @@ class AddClientDrawer extends Component {
         }
 
     }
-
+    handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
     /**
     * @method render
     * @description Renders the component
@@ -248,12 +265,14 @@ class AddClientDrawer extends Component {
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
+                    {this.state.isLoader && <LoaderCustom />}
                     <Container >
                         <div className={'drawer-wrapper drawer-700px'}>
                             <form
                                 noValidate
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                             >
                                 <Row className="drawer-heading">
                                     <Col>

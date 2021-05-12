@@ -15,6 +15,7 @@ import { loggedInUserId } from "../../../helper/auth";
 import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -35,7 +36,9 @@ class AddVendorDrawer extends Component {
             VendorId: '',
 
             isVisible: false,
-            vendor: ''
+            vendor: '',
+            DataToCheck: [],
+            DropdownChanged: true
         }
     }
 
@@ -102,9 +105,7 @@ class AddVendorDrawer extends Component {
         } else {
             this.setState({ selectedVendorType: e });
         }
-
-
-
+        this.setState({ DropdownChanged: false })
     };
 
     checkVendorSelection = () => {
@@ -139,6 +140,7 @@ class AddVendorDrawer extends Component {
         } else {
             this.setState({ country: [], state: [], city: [] })
         }
+        this.setState({ DropdownChanged: false })
     };
 
     /**
@@ -167,6 +169,7 @@ class AddVendorDrawer extends Component {
         } else {
             this.setState({ city: [] });
         }
+        this.setState({ DropdownChanged: false })
     };
 
     vendorPlantToggler = () => {
@@ -266,7 +269,7 @@ class AddVendorDrawer extends Component {
                     let tempVendorPlant = [];
                     this.props.fetchStateDataAPI(Data.CountryId, () => { })
                     this.props.fetchCityDataAPI(Data.StateId, () => { })
-
+                    this.setState({ DataToCheck: Data })
                     Data && Data.VendorTypes.map((item) => {
                         tempArr.push({ Text: item.VendorType, Value: item.VendorTypeId })
                         return null;
@@ -286,14 +289,14 @@ class AddVendorDrawer extends Component {
 
                         this.setState({
                             isEditFlag: true,
-                            isLoader: false,
+                            // isLoader: false,
                             selectedVendorType: tempArr,
                             country: CountryObj && CountryObj !== undefined ? { label: CountryObj.Text, value: CountryObj.Value } : [],
                             state: StateObj && StateObj !== undefined ? { label: StateObj.Text, value: StateObj.Value } : [],
                             city: CityObj && CityObj !== undefined ? { label: CityObj.Text, value: CityObj.Value } : [],
                             existedVendorPlants: tempVendorPlant,
                             selectedVendorPlants: tempVendorPlant,
-                        })
+                        }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
                 }
@@ -333,7 +336,7 @@ class AddVendorDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId } = this.state;
+        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
         const { supplierData, vendorPlantSelectList } = this.props;
 
 
@@ -378,6 +381,16 @@ class AddVendorDrawer extends Component {
 
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
+
+            if (DropdownChanged && DataToCheck.Email == values.Email && DataToCheck.PhoneNumber == values.PhoneNumber &&
+                DataToCheck.Extension == values.Extension && DataToCheck.MobileNumber == values.MobileNumber &&
+                DataToCheck.ZipCode == values.ZipCode && DataToCheck.AddressLine1 == values.AddressLine1 &&
+                DataToCheck.AddressLine2 == values.AddressLine2) {
+                console.log('chaNGES')
+                this.toggleDrawer('')
+                return false
+            }
+
             let formData = {
                 VendorId: VendorId,
                 VendorCode: values.VendorCode,
@@ -429,7 +442,11 @@ class AddVendorDrawer extends Component {
         }
 
     }
-
+    handleKeyDown = function (e) {
+        if (e.key === 'Enter' && e.shiftKey === false) {
+            e.preventDefault();
+        }
+    };
     /**
     * @method render
     * @description Renders the component
@@ -442,12 +459,14 @@ class AddVendorDrawer extends Component {
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
                 // onClose={(e) => this.toggleDrawer(e)}
                 >
+                    {this.state.isLoader && <LoaderCustom />}
                     <Container >
                         <div className={`drawer-wrapper WIDTH-700 drawer-700px`}>
                             <form
                                 noValidate
                                 className="form"
                                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                             >
                                 <Row className="drawer-heading">
                                     <Col>
@@ -784,4 +803,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
     form: 'AddVendorDrawer',
     enableReinitialize: true,
+    touchOnChange: true
 })(AddVendorDrawer));

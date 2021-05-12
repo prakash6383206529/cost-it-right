@@ -16,6 +16,7 @@ import $ from 'jquery'
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import { ZBC } from '../../../config/constants'
+import LoaderCustom from '../../common/LoaderCustom'
 
 // const initialTableData = [
 //   {
@@ -104,6 +105,8 @@ class AddVolume extends Component {
       isShowForm: false,
       VolumeId: '',
       edit: false,
+      DataChanged: [],
+      DataToChange: true,
       destinationPlant: []
     }
   }
@@ -313,7 +316,9 @@ class AddVolume extends Component {
     }
   }
 
-
+  afterSaveCell = (row, cellName, cellValue) => {
+    this.setState({ DataToChange: false })
+  }
 
   deleteItem = (ID, index) => {
     const { tableData } = this.state
@@ -325,6 +330,7 @@ class AddVolume extends Component {
       return item
     })
     this.setState({ tableData: filterData })
+    this.setState({ DataToChange: false })
   }
 
   /**
@@ -343,6 +349,7 @@ class AddVolume extends Component {
       this.props.getVolumeData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data
+          this.setState({ DataChanged: Data })
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
             plantArray.push({
@@ -391,7 +398,7 @@ class AddVolume extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               selectedPlants: plantArray,
               vendorName: vendorObj && vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
@@ -399,11 +406,14 @@ class AddVolume extends Component {
               part: partObj && partObj !== undefined ? { label: partObj.Text, value: partObj.Value } : [],
               destinationPlant: destinationPlantObj && destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getVolumeData('', () => { })
     }
   }
@@ -512,6 +522,11 @@ class AddVolume extends Component {
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
+
+      if (this.state.DataToChange) {
+        this.cancel()
+        return false
+      }
       let updateData = {
         VolumeId: VolumeId,
         LoggedInUserId: loggedInUserId(),
@@ -562,6 +577,12 @@ class AddVolume extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -574,12 +595,13 @@ class AddVolume extends Component {
       mode: 'click',
       blurToSave: true,
       beforeSaveCell: this.beforeSaveCell,
+      afterSaveCell: this.afterSaveCell
     };
 
     return (
       <>
         <div className="container-fluid">
-          {/* {isLoader && <Loader />} */}
+          {this.state.isLoader && <LoaderCustom />}
           <div className="login-container signup-form">
             <div className="row">
               <div className="col-md-12">
@@ -599,6 +621,7 @@ class AddVolume extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>

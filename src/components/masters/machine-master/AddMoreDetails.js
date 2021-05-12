@@ -334,7 +334,7 @@ class AddMoreDetails extends Component {
         const accept = AcceptableMachineUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null;
       });
       return temp;
@@ -800,12 +800,13 @@ class AddMoreDetails extends Component {
     let depreciationAmount = 0;
     if (depreciationType.value === SLM) {
       //depreciationAmount = (TotalCost - CastOfScrap) / LifeOfAssetPerYear Or (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage)
-      depreciationAmount = (TotalCost - checkForNull(CastOfScrap)) / checkForNull(LifeOfAssetPerYear);
+      depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) / checkForNull(LifeOfAssetPerYear));
+      console.log('depreciationAmount: ', depreciationAmount);
       // depreciationAmount = (TotalCost - CastOfScrap) * calculatePercentage(DepreciationRatePercentage) //TODO
     }
 
     if (depreciationType.value === WDM) {
-      depreciationAmount = (TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage)
+      depreciationAmount = checkForNull((TotalCost - checkForNull(CastOfScrap)) * calculatePercentage(DepreciationRatePercentage))
     }
     //this.props.change('DepreciationAmount', Math.round(depreciationAmount))
     machineFullValue.depreciationAmount = depreciationAmount
@@ -877,12 +878,12 @@ class AddMoreDetails extends Component {
 
     // yearely cost add and annual spelling
     const OtherYearlyCost = fieldsObj && fieldsObj.OtherYearlyCost !== undefined ? checkForNull(fieldsObj.OtherYearlyCost) : 0;
-    const annualAreaCost = BuildingCostPerSquareFeet * MachineFloorAreaPerSquareFeet;
+    const annualAreaCost = checkForNull(BuildingCostPerSquareFeet * MachineFloorAreaPerSquareFeet);
 
 
 
     machineFullValue.annualAreaCost = annualAreaCost;
-    const TotalMachineCostPerAnnum = DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost;
+    const TotalMachineCostPerAnnum = checkForNull(DepreciationAmount + AnnualMaintanceAmount + AnnualConsumableAmount + AnnualInsuranceAmount + annualAreaCost + OtherYearlyCost);
     machineFullValue.TotalMachineCostPerAnnum = TotalMachineCostPerAnnum
 
 
@@ -1150,11 +1151,11 @@ class AddMoreDetails extends Component {
     }
 
     let MachineRate
-    const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
+    const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
     if (UOM.label === HOUR) {
-      MachineRate = TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear // THIS IS FOR HOUR CALCUALTION
+      MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
     } else {
-      MachineRate = TotalMachineCostPerAnnum / OutputPerYear; // THIS IS FOR ALL UOM EXCEPT HOUR
+      MachineRate = checkForNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
     }
 
     const tempArray = [];
@@ -1215,8 +1216,13 @@ class AddMoreDetails extends Component {
       return false;
     }
 
-    const OutputPerYear = OutputPerHours * NumberOfWorkingHoursPerYear;
-    const MachineRate = TotalMachineCostPerAnnum / (OutputPerHours * NumberOfWorkingHoursPerYear);
+    let MachineRate
+    const OutputPerYear = checkForNull(OutputPerHours * NumberOfWorkingHoursPerYear);
+    if (UOM.label === HOUR) {
+      MachineRate = checkForNull(TotalMachineCostPerAnnum / NumberOfWorkingHoursPerYear) // THIS IS FOR HOUR CALCUALTION
+    } else {
+      MachineRate = checkForNull(TotalMachineCostPerAnnum / OutputPerYear); // THIS IS FOR ALL UOM EXCEPT HOUR
+    }
 
     let tempArray = [];
 
@@ -1541,7 +1547,7 @@ class AddMoreDetails extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -1708,7 +1714,11 @@ class AddMoreDetails extends Component {
     const { isProcessOpen } = this.state
     this.setState({ isProcessOpen: !isProcessOpen })
   }
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
   /**
   * @method render
   * @description Renders the component
@@ -1737,7 +1747,8 @@ class AddMoreDetails extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                  >
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+                    >
                     <div className="add-min-height">
 
                       <Row>

@@ -31,6 +31,8 @@ class AddSpecification extends Component {
       isOpenRMDrawer: false,
       isOpenGrade: false,
       isOpenMaterialDrawer: false,
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
 
@@ -75,6 +77,7 @@ class AddSpecification extends Component {
       this.props.getRMSpecificationDataAPI(ID, res => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
+          this.setState({ DataToChange: Data })
           this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterialId, res => { })
 
           setTimeout(() => {
@@ -150,6 +153,7 @@ class AddSpecification extends Component {
     } else {
       this.setState({ RMGrade: [], });
     }
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -211,6 +215,7 @@ class AddSpecification extends Component {
   };
 
   rawMaterialToggler = (Id = '') => {
+    this.setState({ DropdownChanged: false })
     this.setState({ isOpenRMDrawer: true, Id: Id })
   }
 
@@ -236,6 +241,7 @@ class AddSpecification extends Component {
   }
 
   gradeToggler = (Id = '') => {
+    this.setState({ DropdownChanged: false })
     this.setState({ isOpenGrade: true, Id: Id })
   }
 
@@ -290,10 +296,16 @@ class AddSpecification extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { RawMaterial, material, RMGrade, } = this.state;
+    const { RawMaterial, material, RMGrade, DataToChange, DropdownChanged } = this.state;
     const { ID, isEditFlag } = this.props;
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+      if (DataToChange.Specification == values.Specification && DropdownChanged) {
+        this.cancel()
+        return false
+      }
       let formData = {
         RawMaterialId: RawMaterial.value,
         SpecificationId: ID,
@@ -331,6 +343,12 @@ class AddSpecification extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -352,6 +370,7 @@ class AddSpecification extends Component {
                 noValidate
                 className="form"
                 onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
               >
                 <Row className="drawer-heading">
                   <Col>

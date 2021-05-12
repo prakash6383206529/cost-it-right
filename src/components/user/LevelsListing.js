@@ -67,7 +67,9 @@ class LevelsListing extends Component {
 		this.props.getUsersByTechnologyAndLevel(() => { })
 		//this.props.onRef(this);
 	}
-
+	UNSAFE_componentWillUpdate(){
+		this.props.getUsersByTechnologyAndLevel(() => { })
+	}
 	getLevelsListData = () => {
 		this.props.getAllLevelAPI(res => {
 			if (res && res.data && res.data.DataList) {
@@ -219,7 +221,7 @@ class LevelsListing extends Component {
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
 			</>
 		)
-	}
+	} 
 
 	afterSearch = (searchText, result) => {
 

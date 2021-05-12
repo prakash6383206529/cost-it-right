@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth';
 import $ from 'jquery';
 import Drawer from '@material-ui/core/Drawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddReason extends Component {
   constructor(props) {
@@ -18,6 +19,7 @@ class AddReason extends Component {
     this.state = {
       IsActive: true,
       ReasonId: '',
+      DataToCheck: []
     }
   }
 
@@ -49,12 +51,16 @@ class AddReason extends Component {
         ReasonId: ID,
       })
       $('html, body').animate({ scrollTop: 0 }, 'slow');
-      this.props.getReasonAPI(ID, res => {
-        if (res && res.data && res.data.Data) {
-          const Data = res.data.Data;
-          this.setState({ IsActive: Data.IsActive })
-        }
-      })
+      setTimeout(() => {
+        this.props.getReasonAPI(ID, res => {
+          if (res && res.data && res.data.Data) {
+            const Data = res.data.Data;
+            this.setState({ DataToCheck: Data })
+            this.setState({ IsActive: Data.IsActive })
+          }
+        })
+        this.setState({ isLoader: false })
+      }, 300);
     }
   }
 
@@ -86,11 +92,16 @@ class AddReason extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { ReasonId, } = this.state;
+    const { ReasonId, DataToCheck } = this.state;
     const { isEditFlag } = this.props;
 
     /** Update detail of the existing UOM  */
     if (isEditFlag) {
+      if (DataToCheck.Reason == values.Reason) {
+        console.log('chaNGES')
+        this.toggleDrawer('')
+        return false
+      }
       let formData = {
         ReasonId: ReasonId,
         Reason: values.Reason,
@@ -121,6 +132,12 @@ class AddReason extends Component {
 
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -133,12 +150,14 @@ class AddReason extends Component {
         open={this.props.isOpen}
       // onClose={(e) => this.toggleDrawer(e)}
       >
+        {this.state.isLoader && <LoaderCustom />}
         <Container>
           <div className={"drawer-wrapper"}>
             <form
               noValidate
               className="form"
               onSubmit={handleSubmit(this.onSubmit.bind(this))}
+              onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
             >
               <Row className="drawer-heading">
                 <Col>

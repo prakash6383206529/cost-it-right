@@ -121,17 +121,20 @@ class ZBCPlantListing extends Component {
             onCancel: () => { },
             component: () => <ConfirmComponent />,
         };
-        return toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions);
+
+        return (
+            toastr.confirm(`${cell ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`, toastrConfirmOptions)
+        )
     }
 
     confirmDeactivateItem = (data, cell) => {
         this.props.activeInactiveStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                // if (cell == true) {
-                //     toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-                // } else {
-                //     toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-                // }
+                if (cell == true) {
+                    toastr.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
+                } else {
+                    toastr.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
+                }
                 // this.getTableListData()
                 this.filterList()
             }

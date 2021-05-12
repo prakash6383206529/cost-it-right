@@ -11,6 +11,7 @@ import { required } from "../../../helper/validation";
 
 import { toastr } from 'react-redux-toastr';
 import Drawer from '@material-ui/core/Drawer';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function ManageSOBDrawer(props) {
 
@@ -31,6 +32,8 @@ function ManageSOBDrawer(props) {
   const [GridDataOldArray, setGridDataOldArray] = useState([]);
   const [WeightedCost, setWeightedCost] = useState(0);
   const [isDisable, setIsDisable] = useState(false)
+  const [dropdownChanged, setDropDownChanged] = useState(true)
+  const [isLoader, setIsLoader] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -43,6 +46,7 @@ function ManageSOBDrawer(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
+    setIsLoader(true)
     dispatch(getManageBOPSOBById(ID, (res) => {
       if (res && res.data && res.data.Result) {
         let Data = res.data.Data;
@@ -60,16 +64,14 @@ function ManageSOBDrawer(props) {
             ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
 
           }
-          tempArray = Object.assign([...Data.BoughtOutPartVendorList], { [0]: tempData })
-          setGridData(tempArray)
-          setGridDataOldArray(tempArray)
-        }
-        // else {
+          // else {
 
-        setData(Data)
-        // setGridData(Data.BoughtOutPartVendorList)
-        // setGridDataOldArray(Data.BoughtOutPartVendorList)
-        // }
+          setData(Data)
+          // setGridData(Data.BoughtOutPartVendorList)
+          // setGridDataOldArray(Data.BoughtOutPartVendorList)
+          // }
+        }
+        setIsLoader(false)
       }
     }))
 
@@ -128,7 +130,7 @@ function ManageSOBDrawer(props) {
     } else {
       //  warningMessageHandle('VALID_NUMBER_WARNING')
     }
-
+    setDropDownChanged(false)
   }
 
   /**
@@ -195,6 +197,11 @@ function ManageSOBDrawer(props) {
 
     // CHECK WHETHER SUM OF ALL SOB PERCENT IS LESS TAHN 100 
 
+    if (dropdownChanged) {
+      toggleDrawer('')
+      return false
+    }
+
     const sum = GridData.reduce((accummlator, el, currentIndex) => {
 
       return accummlator + checkForNull(el.ShareOfBusinessPercentage)
@@ -233,6 +240,7 @@ function ManageSOBDrawer(props) {
       <Drawer anchor={props.anchor} open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       >
+        {isLoader && <LoaderCustom />}
         <Container className="sob-drawer">
           <div className={'drawer-wrapper drawer-1500px'}>
 

@@ -79,7 +79,9 @@ class AddRMDomestic extends Component {
       netLandedCost: '',
       freightCost: '',
       singlePlantSelected: [],
-      showLoader: false
+      showLoader: false,
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
   /**
@@ -198,6 +200,7 @@ class AddRMDomestic extends Component {
    */
   handleSourceSupplierPlant = (e) => {
     this.setState({ selectedPlants: e })
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -258,6 +261,7 @@ class AddRMDomestic extends Component {
     } else {
       this.setState({ sourceLocation: [] })
     }
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -317,6 +321,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
+          this.setState({ DataToChange: Data })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -659,7 +664,7 @@ class AddRMDomestic extends Component {
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null
       })
       return temp
@@ -817,7 +822,7 @@ class AddRMDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, } = this.state
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged } = this.state
     const { initialConfiguration, anyTouched } = this.props
     // if (!anyTouched) {
     //   return toastr.warning('No  changes at alllllllllllllllllllllll.')
@@ -834,8 +839,21 @@ class AddRMDomestic extends Component {
         vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return vendorPlantArray
       })
-
     if (isEditFlag) {
+     
+      if (DataToChange.IsVendor != true) {
+        if (DropdownChanged && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FrieghtCharge
+          && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
+          this.cancel()
+          return false
+        }
+      }
+      if (IsVendor) {
+        if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate) {
+          this.cancel()
+          return false
+        }
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
       })
@@ -871,10 +889,11 @@ class AddRMDomestic extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
-    } else {
+    }
+    else {
       const formData = {
         IsVendor: IsVendor,
         RawMaterial: RawMaterial.value,
@@ -913,6 +932,11 @@ class AddRMDomestic extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
@@ -949,6 +973,7 @@ class AddRMDomestic extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>

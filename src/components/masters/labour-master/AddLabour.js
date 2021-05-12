@@ -18,6 +18,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import AddMachineTypeDrawer from '../machine-master/AddMachineTypeDrawer'
 import NoContentFound from '../../common/NoContentFound'
 import moment from 'moment'
+import LoaderCustom from '../../common/LoaderCustom'
 
 const selector = formValueSelector('AddLabour')
 
@@ -44,6 +45,7 @@ class AddLabour extends Component {
       isOpenMachineType: false,
 
       isDisable: false,
+      DropdownChanged: true
     }
   }
 
@@ -104,7 +106,7 @@ class AddLabour extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               IsEmployeContractual: Data.IsContractBase,
               vendorName: Data.IsContractBase
@@ -121,11 +123,14 @@ class AddLabour extends Component {
                   ? { label: plantObj.Text, value: plantObj.Value }
                   : [],
               gridTable: GridArray,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getLabourData('', () => { })
     }
   }
@@ -319,9 +324,13 @@ class AddLabour extends Component {
   }
 
   gridHandler = () => {
-    const { machineType, labourType, gridTable, effectiveDate, isDisable, } = this.state
+    const { machineType, labourType, gridTable, effectiveDate, isDisable, vendorName, selectedPlants, StateName } = this.state
     const { fieldsObj, error } = this.props
 
+    if (vendorName.length == 0 || selectedPlants.length == 0 || StateName == 0) {
+      toastr.warning('First fill upper detail')
+      return false
+    }
 
     if (machineType.length === 0 || labourType.length === 0 || fieldsObj === undefined) {
       toastr.warning('Fields should not be empty')
@@ -384,6 +393,7 @@ class AddLabour extends Component {
       },
       () => this.props.change('LabourRate', 0),
     )
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -444,6 +454,7 @@ class AddLabour extends Component {
       },
       () => this.props.change('LabourRate', 0),
     )
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -513,6 +524,7 @@ class AddLabour extends Component {
     }
 
     this.setState({ gridTable: tempData })
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -546,6 +558,7 @@ class AddLabour extends Component {
       vendorName,
       LabourId,
       gridTable,
+      DropdownChanged
     } = this.state
     const userDetail = userDetails()
 
@@ -556,6 +569,13 @@ class AddLabour extends Component {
 
     /** Update existing detail of supplier master **/
     if (this.state.isEditFlag) {
+
+      if (DropdownChanged) {
+        this.cancel()
+        return false
+      }
+
+
       let updateData = {
         LabourId: LabourId,
         IsContractBase: IsEmployeContractual,
@@ -576,6 +596,7 @@ class AddLabour extends Component {
           this.cancel()
         }
       })
+      this.setState({ DropdownChanged: true })
     } else {
       /** Add new detail for creating operation master **/
 
@@ -601,6 +622,12 @@ class AddLabour extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -610,7 +637,7 @@ class AddLabour extends Component {
     const { isEditFlag, isOpenMachineType, isDisable } = this.state;
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">
@@ -630,6 +657,7 @@ class AddLabour extends Component {
                   noValidate
                   className="form"
                   onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>

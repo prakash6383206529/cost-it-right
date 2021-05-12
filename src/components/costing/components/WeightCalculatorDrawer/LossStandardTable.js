@@ -2,10 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Container, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { CONSTANT } from '../../../../helper/AllConastant'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
@@ -13,15 +10,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
 function LossStandardTable(props) {
   const trimValue = getConfigurationKey()
   const trim = trimValue.NumberOfDecimalForWeightCalculation
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     //defaultValues: defaultValues,
@@ -53,7 +42,7 @@ function LossStandardTable(props) {
     //   return false
     // } else {
 
-    setTableData(props.sendTable)
+    setTableData(props.sendTable ? props.sendTable : [])
     // setNetWeight(props.netWeight.LostSum)
     // setNetWeight(props.sendTable.LostSum)
     // }
@@ -91,8 +80,11 @@ function LossStandardTable(props) {
       setNetWeight(NetWeight)
     } else {
       NetWeight = checkForDecimalAndNull(netWeight + lossWeight, trim)
+      console.log('NetWeight: ', NetWeight);
+      setTimeout(() => {
+        setNetWeight(NetWeight)
+      }, 400);
       props.calculation(NetWeight)
-      setNetWeight(NetWeight)
     }
     const obj = {
       lostPercent: lostPercent,
@@ -104,10 +96,14 @@ function LossStandardTable(props) {
       setTableData(tempArray)
       setIsEdit(false)
     } else {
-      tempArray = [...tableData, obj]
+      // tempArray = [...tableData, obj]
+      tempArray = tableData
+      tempArray.push(obj)
       setTableData(tempArray)
     }
+
     props.tableValue(tempArray)
+
     reset({
       lostPercent: '',
       lossType: '',
@@ -160,192 +156,192 @@ function LossStandardTable(props) {
     setTableData(tempData)
   }
   return (
-    <Fragment>      
-        <Row className={''}>
-          <Col md="12">
-            <div className="header-title">
-              <h5>{'Loss Percantage:'}</h5>
-            </div>
-          </Col>
-          <Col md="3">
-            <SearchableSelectHookForm
-              label={`Type of Loss`}
-              name={'lossType'}
-              placeholder={'-Select-'}
-              Controller={Controller}
-              control={control}
-              register={register}
-              mandatory={true}
-              // rules={{
-              //   required: true,
-              //   pattern: {
-              //     //value: /^[0-9]*$/i,
-              //     value: /^[0-9]\d*(\.\d+)?$/i,
-              //     message: 'Invalid Number.',
-              //   },
-              //   // maxLength: 4,
-              // }}
-              options={dropDownMenu}
-              handleChange={() => { }}
-              defaultValue={''}
-              className=""
-              customClassName={'withBorder'}
-              errors={errors.lossType}
-              disabled={false}
-            />
-          </Col>
-          <Col md="3">
-            <TextFieldHookForm
-              label={`Lost(%)`}
-              name={'lostPercent'}
-              Controller={Controller}
-              control={control}
-              register={register}
-              mandatory={true}
-              rules={{
-                required: true,
-                pattern: {
-                  //value: /^[0-9]*$/i,
-                  value: /^[0-9]\d*(\.\d+)?$/i,
-                  message: 'Invalid Number.',
-                },
-                // maxLength: 4,
-              }}
-              handleChange={() => { }}
-              defaultValue={''}
-              className=""
-              customClassName={'withBorder'}
-              errors={errors.lostPercent}
-              disabled={false}
-            />
-          </Col>
-          <Col md="3">
-            <TextFieldHookForm
-              label={`Loss Weight`}
-              name={'lossWeight'}
-              Controller={Controller}
-              control={control}
-              register={register}
-              mandatory={false}
-              // rules={{
-              //   required: true,
-              //   pattern: {
-              //     //value: /^[0-9]*$/i,
-              //     value: /^[0-9]\d*(\.\d+)?$/i,
-              //     message: 'Invalid Number.',
-              //   },
-              //   // maxLength: 4,
-              // }}
-              handleChange={() => { }}
-              defaultValue={''}
-              className=""
-              customClassName={'withBorder'}
-              errors={errors.lossWeight}
-              disabled={true}
-            />
-          </Col>
-          <Col md="3">
-            <div>
-              {isEdit ? (
-                <>
-                  <button
-                    type="submit"
-                    className={'btn btn-primary mt30 pull-left mr5'}
-                    onClick={() => addRow()}
-                  >
-                    Update
-                  </button>
-
-                  <button
-                    type="button"
-                    className={'cancel-btn mt30 pull-left mr5'}
-                    onClick={() => cancelUpdate()}
-                  >
-                    Cancel
-                  </button>
-                </>
-              ) : (
+    <Fragment>
+      <Row className={''}>
+        <Col md="12">
+          <div className="header-title">
+            <h5>{'Loss Percantage:'}</h5>
+          </div>
+        </Col>
+        <Col md="3">
+          <SearchableSelectHookForm
+            label={`Type of Loss`}
+            name={'lossType'}
+            placeholder={'-Select-'}
+            Controller={Controller}
+            control={control}
+            register={register}
+            mandatory={true}
+            // rules={{
+            //   required: true,
+            //   pattern: {
+            //     //value: /^[0-9]*$/i,
+            //     value: /^[0-9]\d*(\.\d+)?$/i,
+            //     message: 'Invalid Number.',
+            //   },
+            //   // maxLength: 4,
+            // }}
+            options={dropDownMenu}
+            handleChange={() => { }}
+            defaultValue={''}
+            className=""
+            customClassName={'withBorder'}
+            errors={errors.lossType}
+            disabled={false}
+          />
+        </Col>
+        <Col md="3">
+          <TextFieldHookForm
+            label={`Lost(%)`}
+            name={'lostPercent'}
+            Controller={Controller}
+            control={control}
+            register={register}
+            mandatory={true}
+            rules={{
+              required: true,
+              pattern: {
+                //value: /^[0-9]*$/i,
+                value: /^[0-9]\d*(\.\d+)?$/i,
+                message: 'Invalid Number.',
+              },
+              // maxLength: 4,
+            }}
+            handleChange={() => { }}
+            defaultValue={''}
+            className=""
+            customClassName={'withBorder'}
+            errors={errors.lostPercent}
+            disabled={false}
+          />
+        </Col>
+        <Col md="3">
+          <TextFieldHookForm
+            label={`Loss Weight`}
+            name={'lossWeight'}
+            Controller={Controller}
+            control={control}
+            register={register}
+            mandatory={false}
+            // rules={{
+            //   required: true,
+            //   pattern: {
+            //     //value: /^[0-9]*$/i,
+            //     value: /^[0-9]\d*(\.\d+)?$/i,
+            //     message: 'Invalid Number.',
+            //   },
+            //   // maxLength: 4,
+            // }}
+            handleChange={() => { }}
+            defaultValue={''}
+            className=""
+            customClassName={'withBorder'}
+            errors={errors.lossWeight}
+            disabled={true}
+          />
+        </Col>
+        <Col md="3">
+          <div>
+            {isEdit ? (
+              <>
                 <button
                   type="submit"
-                  className={'user-btn mt30 pull-left'}
-                  onClick={addRow}
+                  className={'btn btn-primary mt30 pull-left mr5'}
+                  onClick={() => addRow()}
                 >
-                  <div className={'plus'}></div>ADD
-                </button>
-              )}
-            </div>
-          </Col>
+                  Update
+                  </button>
 
-          <Col md="12">
-            <Table className="table mb-0" size="sm">
-              <thead>
-                <tr>
-                  <th>{`Type of Loss`}</th>
-                  <th>{`Lost(%)`}</th>
-                  <th>{`Loss Weight`}</th>
-                  <th>{`Actions`}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tableData &&
-                  tableData.map((item, index) => {
-                    return (
-                      <Fragment>
-                        <tr key={index}>
-                          <td>{item.lossType}</td>
-                          <td>{item.lostPercent}</td>
-                          <td>
-                            {checkForDecimalAndNull(item.lossWeight, trim)}
-                          </td>
-                          <td>
-                            {
-                              <React.Fragment>
-                                <button
-                                  className="Edit mr-2"
-                                  type={'button'}
-                                  onClick={() => editRow(index)}
-                                />
-                                <button
-                                  className="Delete"
-                                  type={'button'}
-                                  onClick={() => deleteRow(index)}
-                                />
-                              </React.Fragment>
-                            }
-                          </td>
-                        </tr>
-                        {/* <tr>
+                <button
+                  type="button"
+                  className={'cancel-btn mt30 pull-left mr5'}
+                  onClick={() => cancelUpdate()}
+                >
+                  Cancel
+                  </button>
+              </>
+            ) : (
+              <button
+                type="submit"
+                className={'user-btn mt30 pull-left'}
+                onClick={addRow}
+              >
+                <div className={'plus'}></div>ADD
+              </button>
+            )}
+          </div>
+        </Col>
+
+        <Col md="12">
+          <Table className="table mb-0" size="sm">
+            <thead>
+              <tr>
+                <th>{`Type of Loss`}</th>
+                <th>{`Lost(%)`}</th>
+                <th>{`Loss Weight`}</th>
+                <th>{`Actions`}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableData &&
+                tableData.map((item, index) => {
+                  return (
+                    <Fragment>
+                      <tr key={index}>
+                        <td>{item.lossType}</td>
+                        <td>{item.lostPercent}</td>
+                        <td>
+                          {checkForDecimalAndNull(item.lossWeight, trim)}
+                        </td>
+                        <td>
+                          {
+                            <React.Fragment>
+                              <button
+                                className="Edit mr-2"
+                                type={'button'}
+                                onClick={() => editRow(index)}
+                              />
+                              <button
+                                className="Delete"
+                                type={'button'}
+                                onClick={() => deleteRow(index)}
+                              />
+                            </React.Fragment>
+                          }
+                        </td>
+                      </tr>
+                      {/* <tr>
                           <td></td>
 
                           <td>{`Net Loss Weight:`}</td>
                           <td>{checkForDecimalAndNull(netWeight, trim)}</td>
                           <td></td>
                         </tr> */}
-                      </Fragment>
-                    )
-                  })}
-                {tableData && tableData.length === 0 && (
-                  <tr>
-                    <td colspan="4">
-                      <NoContentFound title={CONSTANT.EMPTY_DATA} />
-                    </td>
-                  </tr>
-                )}
-              </tbody>
+                    </Fragment>
+                  )
+                })}
+              {tableData && tableData.length === 0 && (
+                <tr>
+                  <td colspan="4">
+                    <NoContentFound title={CONSTANT.EMPTY_DATA} />
+                  </td>
+                </tr>
+              )}
+            </tbody>
 
-              {/* <span className="col-sm-4 ">{'30'}</span> */}
-            </Table>
-            
-            <div className="col-md-12 text-right bluefooter-butn border">
-              <span className="w-100">
-                {`Net Loss Weight:`}
-                {checkForDecimalAndNull(props.netWeight ? props.netWeight.LostSum : netWeight, trim)}
-              </span>
-            </div>
-            
-          </Col>
+            {/* <span className="col-sm-4 ">{'30'}</span> */}
+          </Table>
 
-          {/* <Row>
+          <div className="col-md-12 text-right bluefooter-butn border">
+            <span className="w-100">
+              {`Net Loss Weight:`}
+              {checkForDecimalAndNull(netWeight, trim)}
+            </span>
+          </div>
+
+        </Col>
+
+        {/* <Row>
             <Col md="12">
               <Row className={'mt15'}>
                 <Col md="3">
@@ -502,8 +498,8 @@ function LossStandardTable(props) {
               </Row>
             </Col>
           </Row> */}
-        </Row>
-      
+      </Row>
+
     </Fragment>
   )
 }

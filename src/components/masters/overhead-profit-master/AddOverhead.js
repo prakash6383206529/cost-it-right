@@ -19,6 +19,8 @@ import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
+import LoaderCustom from '../../common/LoaderCustom';
+
 const selector = formValueSelector('AddOverhead');
 
 class AddOverhead extends Component {
@@ -50,6 +52,8 @@ class AddOverhead extends Component {
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
+      DropdownChanged: true,
+      DataToChange: [],
       effectiveDate: ''
     }
   }
@@ -88,6 +92,7 @@ class AddOverhead extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -117,6 +122,7 @@ class AddOverhead extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
@@ -136,7 +142,7 @@ class AddOverhead extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
               ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
@@ -146,11 +152,17 @@ class AddOverhead extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
-            }, () => this.checkOverheadFields())
+            }, () => {
+              this.checkOverheadFields()
+              this.setState({ isLoader: false })
+            })
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getOverheadData('', res => { })
     }
   }
@@ -210,6 +222,7 @@ class AddOverhead extends Component {
     } else {
       this.setState({ vendorName: [] })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -225,9 +238,10 @@ class AddOverhead extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    if (prevProps.filedObj !== this.props.filedObj) {
-      const { filedObj } = this.props;
 
+    if (prevProps.filedObj !== this.props.filedObj) {
+
+      const { filedObj } = this.props;
       if (this.props.filedObj.OverheadPercentage) {
         checkPercentageValue(this.props.filedObj.OverheadPercentage, "Overhead percentage should not be more than 100") ? this.props.change('OverheadPercentage', this.props.filedObj.OverheadPercentage) : this.props.change('OverheadPercentage', 0)
       }
@@ -287,6 +301,7 @@ class AddOverhead extends Component {
         isHideRM: false,
       })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   handlePercent = (e) => {
@@ -305,7 +320,6 @@ class AddOverhead extends Component {
 
   checkOverheadFields = () => {
     const { overheadAppli } = this.state;
-
     switch (overheadAppli.label) {
       case 'RM':
         return this.setState({
@@ -407,7 +421,7 @@ class AddOverhead extends Component {
   }
 
   // called every time a file's `status` changes
-  handleChangeStatus = ({ meta, file }, status) => {
+  handleChangeStatus = ({ meta, file, remove }, status) => {
     const { files, } = this.state;
 
     if (status === 'removed') {
@@ -415,7 +429,6 @@ class AddOverhead extends Component {
       let tempArr = files.filter(item => item.OriginalFileName !== removedFileName)
       this.setState({ files: tempArr })
     }
-
     if (status === 'done') {
       let data = new FormData()
       data.append('file', file)
@@ -425,6 +438,7 @@ class AddOverhead extends Component {
         files.push(Data)
         this.setState({ files: files })
       })
+      // remove()
     }
 
     if (status === 'rejected_file_type') {
@@ -467,7 +481,7 @@ class AddOverhead extends Component {
 
   Preview = ({ meta }) => {
     return (
-      <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+      <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontColor: 'WHITE' }}>
         {/* {Math.round(percent)}% */}
       </span>
     )
@@ -501,16 +515,49 @@ class AddOverhead extends Component {
     this.props.hideForm()
   }
 
+  // options = {
+  //   onUploadProgress: (progressEvent) => {
+  //     const { loaded, total } = progressEvent
+  //     let percent = Math.floor((loaded * 100) / total)
+  //     console.log(` ${loaded}kb of ${total}kb | ${percent}% `)
+  //   }
+  //   {uploadPercentage > 0 <ProgressBar now={uploadPercentage} active label={`${uploadPercentage}%`}>}
+  // }
+
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, client, ModelType, vendorName, overheadAppli, remarks, OverheadID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'datatochange')
+
+      if (values.OverheadPercentage == '') {
+        values.OverheadPercentage = null
+      }
+      if (values.OverheadRMPercentage == '') {
+        values.OverheadRMPercentage = null
+      }
+      if (values.OverheadMachiningCCPercentage == '') {
+        values.OverheadMachiningCCPercentage = null
+      }
+      if (values.OverheadBOPPercentage == '') {
+        values.OverheadBOPPercentage = null
+      }
+
+      if (
+        DropdownChanged && DataToChange.OverheadPercentage == values.OverheadPercentage && DataToChange.OverheadRMPercentage == values.OverheadRMPercentage
+        && DataToChange.OverheadMachiningCCPercentage == values.OverheadMachiningCCPercentage && DataToChange.OverheadBOPPercentage == values.OverheadBOPPercentage
+        && DataToChange.Remark == values.Remark) {
+        console.log('asdf')
+        this.cancel()
+        return false
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: OverheadID }
       })
@@ -553,7 +600,7 @@ class AddOverhead extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -590,6 +637,12 @@ class AddOverhead extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -601,6 +654,7 @@ class AddOverhead extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -619,6 +673,7 @@ class AddOverhead extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>
@@ -895,8 +950,7 @@ class AddOverhead extends Component {
                             <Dropzone
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
-                              PreviewComponent={this.Preview}
-                              //onSubmit={this.handleSubmit}
+                              // PreviewComponent={this.Preview}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -919,12 +973,12 @@ class AddOverhead extends Component {
                                 )
                               }
                               styles={{
-                                dropzoneReject: {
-                                  borderColor: "red",
-                                  backgroundColor: "#DAA",
-                                },
-                                inputLabel: (files, extra) =>
-                                  extra.reject ? { color: "red" } : {},
+                                // dropzoneReject: {
+                                //   borderColor: "red",
+                                //   backgroundColor: "#DAA",
+                                // },
+                                dropzone: { minHeight: 200, maxHeight: 250 },
+                                dropzoneActive: { borderColor: 'green' },
                               }}
                               classNames="draper-drop"
                             />
@@ -977,6 +1031,7 @@ class AddOverhead extends Component {
                           </div>{" "}
                           {"Cancel"}
                         </button>
+                        {/* <button onClick={this.options}>13</button> */}
                         <button
                           type="submit"
                           className="user-btn mr5 save-btn"

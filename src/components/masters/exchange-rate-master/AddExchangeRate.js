@@ -12,6 +12,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import $ from 'jquery';
 import moment from 'moment';
 import { renderDatePicker, renderText, searchableSelect, } from "../../layout/FormInputs";
+import LoaderCustom from '../../common/LoaderCustom';
 const
   selector = formValueSelector('AddExchangeRate');
 
@@ -24,6 +25,8 @@ class AddExchangeRate extends Component {
       currency: [],
       effectiveDate: '',
       ExchangeRateId: '',
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
 
@@ -84,6 +87,7 @@ class AddExchangeRate extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: date, });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -104,7 +108,7 @@ class AddExchangeRate extends Component {
       this.props.getExchangeRateData(data.ID, (res) => {
         if (res && res.data && res.data.Data) {
           let Data = res.data.Data;
-
+          this.setState({ DataToChange: Data })
           setTimeout(() => {
             const { currencySelectList } = this.props;
 
@@ -112,16 +116,19 @@ class AddExchangeRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               currency: currencyObj && currencyObj !== undefined ? { label: currencyObj.Text, value: currencyObj.Value } : [],
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
 
         }
       })
     }
     else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.change('BankRate', '')
       this.props.change('CustomRate', '')
       this.props.change('CurrencyExchangeRate', '')
@@ -151,11 +158,19 @@ class AddExchangeRate extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { isEditFlag, currency, effectiveDate, ExchangeRateId } = this.state;
+    const { isEditFlag, currency, effectiveDate, ExchangeRateId, DataToChange, DropdownChanged } = this.state;
 
     /** Update existing detail of exchange master **/
     if (isEditFlag) {
 
+      if (DataToChange.CurrencyExchangeRate == values.CurrencyExchangeRate &&
+        DataToChange.BankRate == values.BankRate && DataToChange.CustomRate == values.CustomRate &&
+        DataToChange.BankCommissionPercentage == values.BankCommissionPercentage && DropdownChanged
+      ) {
+        this.cancel()
+        return false;
+      }
+      console.log(this.props.anyTouched, 'a')
       let updateData = {
         ExchangeRateId: ExchangeRateId,
         CurrencyId: currency.value,
@@ -182,7 +197,7 @@ class AddExchangeRate extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -210,6 +225,12 @@ class AddExchangeRate extends Component {
 
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -219,7 +240,7 @@ class AddExchangeRate extends Component {
     const { isEditFlag, } = this.state;
     return (
       <div className="container-fluid">
-        {/* {isLoader && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="login-container signup-form">
           <div className="row">
             <div className="col-md-12">
@@ -240,7 +261,7 @@ class AddExchangeRate extends Component {
                   className="form"
 
                   onSubmit={handleSubmit((e) => this.onSubmit(e))}
-                // onSubmit={handleSubmit(this.onSubmit.bind(this))}                  
+                  onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                 >
                   <div className="add-min-height">
                     <Row>

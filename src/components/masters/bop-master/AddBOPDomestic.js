@@ -26,6 +26,8 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
 import { AcceptableRMUOM } from '../../../config/masterData'
+import { applySuperScripts } from '../../../helper';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddBOPDomestic');
 
 class AddBOPDomestic extends Component {
@@ -57,7 +59,9 @@ class AddBOPDomestic extends Component {
       effectiveDate: '',
       files: [],
 
-      NetLandedCost: ''
+      NetLandedCost: '',
+      DataToCheck: [],
+      DropdownChanged: true
     }
   }
 
@@ -139,6 +143,7 @@ class AddBOPDomestic extends Component {
         if (res && res.data && res.data.Result) {
           let vendorObj
           const Data = res.data.Data;
+          this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
@@ -167,7 +172,7 @@ class AddBOPDomestic extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               // selectedPartAssembly: partArray,
@@ -178,11 +183,14 @@ class AddBOPDomestic extends Component {
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getBOPDomesticById('', res => { })
     }
   }
@@ -192,7 +200,9 @@ class AddBOPDomestic extends Component {
       const capIndex = cell && cell.indexOf('^');
       const superNumber = cell.substring(capIndex + 1, capIndex + 2);
       const capWithNumber = cell.substring(capIndex, capIndex + 2);
-      return cell.replace(capWithNumber, superNumber.sup());
+      // return cell.replace(capWithNumber, superNumber.sup());
+      // return cell.replace(capWithNumber, ' &sup2;');
+      return cell.replace(capWithNumber, '<span>&sup2;</span>');
     } else {
       return cell;
     }
@@ -351,6 +361,7 @@ class AddBOPDomestic extends Component {
     } else {
       this.setState({ sourceLocation: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -497,7 +508,7 @@ class AddBOPDomestic extends Component {
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName,
 
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, DataToCheck, DropdownChanged } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -510,6 +521,20 @@ class AddBOPDomestic extends Component {
     }
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'DatatoCheck')
+      if (DataToCheck.IsVendor) {
+        if (DataToCheck.Source == values.Source && DataToCheck.BasicRate == values.BasicRate && DropdownChanged) {
+          this.cancel()
+          return false;
+        }
+      }
+      else if (DataToCheck.IsVendor == false) {
+        if (DataToCheck.BasicRate == values.BasicRate) {
+          this.cancel()
+          return false;
+        }
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -540,7 +565,7 @@ class AddBOPDomestic extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -581,6 +606,12 @@ class AddBOPDomestic extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -591,6 +622,8 @@ class AddBOPDomestic extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
+
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -610,6 +643,7 @@ class AddBOPDomestic extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -725,7 +759,8 @@ class AddBOPDomestic extends Component {
                               placeholder={"Select"}
                               options={this.renderListing("uom")}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []} required={true}
+                              validate={this.state.UOM == null || this.state.UOM.length === 0 ? [required] : []}
+                              required={true}
                               handleChangeDescription={this.handleUOM}
                               valueDescription={this.state.UOM}
                               disabled={isEditFlag ? true : false}
@@ -746,6 +781,7 @@ class AddBOPDomestic extends Component {
                                 component={searchableSelect}
                                 valueDescription={this.state.selectedPlants}
                                 mendatory={true}
+                                required={true}
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />
@@ -1189,6 +1225,7 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
 })(reduxForm({
   form: 'AddBOPDomestic',
+  touchOnChange: true,
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },

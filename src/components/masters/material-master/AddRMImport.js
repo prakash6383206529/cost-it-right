@@ -81,7 +81,9 @@ class AddRMImport extends Component {
       showCurrency: false,
       netCost: '',
       netCurrencyCost: '',
-      singlePlantSelected: []
+      singlePlantSelected: [],
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
 
@@ -198,6 +200,7 @@ class AddRMImport extends Component {
   */
   handleSourceSupplierPlant = (e) => {
     this.setState({ selectedPlants: e })
+    this.setState({ DropdownChanged: false })
   }
 
   /**
@@ -287,9 +290,8 @@ class AddRMImport extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.props.change('EffectiveDate', this.props.initialConfiguration.NoOfDecimalForPrice)
+    // this.props.change('EffectiveDate', this.props.initialConfiguration.NoOfDecimalForPrice)
     this.setState({ effectiveDate: date }, () => { this.handleNetCost() })
-
   };
 
   handleNetCost = () => {
@@ -337,6 +339,7 @@ class AddRMImport extends Component {
       this.props.getRMImportDataById(data, true, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
@@ -649,7 +652,7 @@ class AddRMImport extends Component {
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null
       })
       return temp
@@ -804,7 +807,7 @@ class AddRMImport extends Component {
   onSubmit = (values) => {
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode,
       selectedVendorPlants, HasDifferentSource, sourceLocation, UOM, currency,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected } = this.state;
+      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, netCurrencyCost, singlePlantSelected, DataToChange, DropdownChanged } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -821,6 +824,23 @@ class AddRMImport extends Component {
     })
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+      if (DataToChange.IsVendor == false) {
+        if (DropdownChanged && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge
+          && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.remark) {
+          this.cancel()
+          return false
+        }
+      }
+      if (DataToChange.IsVendor) {
+        if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate
+          && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge && DataToChange.RMShearingCost == values.ShearingCost) {
+          this.cancel()
+          return false
+        }
+      }
+
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: RawMaterialID }
       })
@@ -855,7 +875,7 @@ class AddRMImport extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -899,6 +919,12 @@ class AddRMImport extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   handleSinglePlant = (newValue) => {
     this.setState({ singlePlantSelected: newValue })
   }
@@ -933,6 +959,7 @@ class AddRMImport extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>

@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FILE_URL } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import LoaderCustom from '../../common/LoaderCustom';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -30,6 +31,8 @@ class AddIndivisualPart extends Component {
       effectiveDate: '',
 
       files: [],
+      DataToCheck: [],
+      DropdownChanged: true
     }
   }
 
@@ -58,18 +61,22 @@ class AddIndivisualPart extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ DataToCheck: Data })
+          this.props.change("EffectiveDate", moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getPartData('', res => { })
     }
   }
@@ -87,7 +94,8 @@ class AddIndivisualPart extends Component {
   * @description Handle Effective Date
   */
   handleEffectiveDateChange = (date) => {
-    this.setState({ effectiveDate: date, });
+    this.setState({ effectiveDate: moment(date)._isValid ? moment(date)._d : '', });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -202,11 +210,19 @@ class AddIndivisualPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, selectedPlants, effectiveDate, isEditFlag, files } = this.state;
+    const { PartId, selectedPlants, effectiveDate, isEditFlag, files, DataToCheck, DropdownChanged } = this.state;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'datatocheck')
+      if (DropdownChanged && DataToCheck.PartName == values.PartName && DataToCheck.Description == values.Description &&
+        DataToCheck.GroupCode == values.GroupCode && DataToCheck.ECNNumber == values.ECNNumber &&
+        DataToCheck.RevisionNumber == values.RevisionNumber && DataToCheck.DrawingNumber == values.DrawingNumber) {
+        this.cancel()
+        return false;
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -241,7 +257,7 @@ class AddIndivisualPart extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -275,7 +291,11 @@ class AddIndivisualPart extends Component {
     }
   }
 
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   /**
   * @method render
@@ -286,6 +306,7 @@ class AddIndivisualPart extends Component {
     const { isEditFlag, } = this.state;
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -307,6 +328,7 @@ class AddIndivisualPart extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -468,6 +490,7 @@ class AddIndivisualPart extends Component {
                                   disabled={isEditFlag ? true : false}
                                 //minDate={moment()}
                                 />
+
                               </div>
                             </div>
                           </Col>

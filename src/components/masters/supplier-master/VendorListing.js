@@ -221,11 +221,11 @@ class VendorListing extends Component {
         }
         this.props.activeInactiveVendorStatus(data, res => {
             if (res && res.data && res.data.Result) {
-                // if (cell == true) {
-                //     toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
-                // } else {
-                //     toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
-                // }
+                if (cell == true) {
+                    toastr.success(MESSAGES.VENDOR_INACTIVE_SUCCESSFULLY)
+                } else {
+                    toastr.success(MESSAGES.VENDOR_ACTIVE_SUCCESSFULLY)
+                }
                 //this.getTableListData(null, null, null)
                 this.filterList()
             }

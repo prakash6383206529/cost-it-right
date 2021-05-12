@@ -22,6 +22,7 @@ import moment from 'moment';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import BOMViewer from './BOMViewer';
 import { getRandomSixDigit } from '../../../helper/util';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddAssemblyPart')
 
 class AddAssemblyPart extends Component {
@@ -43,7 +44,8 @@ class AddAssemblyPart extends Component {
       childPartArray: [],
       NewAddedLevelOneChilds: [],
       avoidAPICall: false,
-
+      DataToCheck: [],
+      DropdownChanged: true
     }
   }
 
@@ -73,19 +75,23 @@ class AddAssemblyPart extends Component {
           const Data = res.data.Data;
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
 
+          this.setState({ DataToCheck: Data })
           setTimeout(() => {
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               ChildParts: Data.ChildParts,
               BOMViewerData: Data.ChildParts,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 200)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getAssemblyPartDetail('', res => { })
     }
   }
@@ -106,6 +112,7 @@ class AddAssemblyPart extends Component {
     this.setState({
       effectiveDate: date,
     });
+    this.setState({ DropdownChanged: false })
   };
 
   closeChildDrawer = (e = '', childData = {}) => {
@@ -420,7 +427,7 @@ class AddAssemblyPart extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall } = this.state;
+    const { PartId, isEditFlag, selectedPlants, BOMViewerData, files, avoidAPICall, DataToCheck, DropdownChanged } = this.state;
     const { actualBOMTreeData, fieldsObj, partData } = this.props;
 
     let plantArray = selectedPlants && selectedPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
@@ -455,6 +462,14 @@ class AddAssemblyPart extends Component {
     })
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'datatocheck')
+      if (DropdownChanged && DataToCheck.AssemblyPartName == values.AssemblyPartName && DataToCheck.Description == values.Description &&
+        DataToCheck.ECNNumber == values.ECNNumber && DataToCheck.RevisionNumber == values.RevisionNumber &&
+        DataToCheck.DrawingNumber == values.DrawingNumber && DataToCheck.GroupCode == values.GroupCode) {
+        this.cancel()
+        return false;
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: PartId }
       })
@@ -499,7 +514,7 @@ class AddAssemblyPart extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -535,7 +550,11 @@ class AddAssemblyPart extends Component {
     }
   }
 
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   /**
   * @method render
@@ -546,6 +565,7 @@ class AddAssemblyPart extends Component {
     const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, } = this.state;
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <Row>
@@ -566,6 +586,7 @@ class AddAssemblyPart extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>

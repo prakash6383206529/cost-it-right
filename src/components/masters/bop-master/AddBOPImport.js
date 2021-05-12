@@ -30,6 +30,7 @@ import AddUOM from '../uom-master/AddUOM';
 import moment from 'moment';
 import { AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
+import LoaderCustom from '../../common/LoaderCustom';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -64,7 +65,9 @@ class AddBOPImport extends Component {
       netLandedcost: '',
       currencyValue: 1,
       showCurrency: false,
-      netLandedConverionCost: ''
+      netLandedConverionCost: '',
+      DataToChange: [],
+      DropdownChange: true
     }
   }
 
@@ -145,6 +148,8 @@ class AddBOPImport extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
+
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
@@ -176,7 +181,7 @@ class AddBOPImport extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               BOPCategory: categoryObj && categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
               selectedPlants: plantObj,
@@ -187,11 +192,15 @@ class AddBOPImport extends Component {
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
               files: Data.Attachements,
               UOM: uomObject && uomObject !== undefined ? { label: uomObject.Text, value: uomObject.Value } : [],
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 500)
         }
       })
-    } else {
+    }
+    else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getBOPImportById('', res => { })
     }
 
@@ -259,7 +268,7 @@ class AddBOPImport extends Component {
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null;
       });
       return temp;
@@ -369,6 +378,7 @@ class AddBOPImport extends Component {
     } else {
       this.setState({ sourceLocation: [], })
     }
+    this.setState({ DropdownChange: false })
   };
 
   /**
@@ -528,7 +538,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, BOPCategory, selectedPartAssembly, selectedPlants, vendorName, currency,
-      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost } = this.state;
+      selectedVendorPlants, sourceLocation, BOPID, isEditFlag, files, effectiveDate, UOM, netLandedConverionCost, DataToChange, DropdownChange } = this.state;
 
     const { initialConfiguration } = this.props;
 
@@ -541,6 +551,21 @@ class AddBOPImport extends Component {
     }
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+      if (DataToChange.IsVendor) {
+        if (DropdownChange && DataToChange.Source == values.Source && DataToChange.NumberOfPieces == values.NumberOfPieces &&
+          DataToChange.BasicRate == values.BasicRate) {
+          this.cancel()
+          return false;
+        }
+      }
+      if (DataToChange.IsVendor == false) {
+        if (DataToChange.NumberOfPieces == values.NumberOfPieces && DataToChange.BasicRate == values.BasicRate) {
+          this.cancel()
+          return false;
+        }
+      }
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: BOPID }
       })
@@ -572,7 +597,7 @@ class AddBOPImport extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -613,6 +638,12 @@ class AddBOPImport extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -623,6 +654,7 @@ class AddBOPImport extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -642,6 +674,7 @@ class AddBOPImport extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>
@@ -779,6 +812,7 @@ class AddBOPImport extends Component {
                                 component={searchableSelect}
                                 valueDescription={this.state.selectedPlants}
                                 mendatory={true}
+                                required
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />

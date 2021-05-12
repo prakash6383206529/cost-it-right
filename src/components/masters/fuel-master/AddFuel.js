@@ -19,6 +19,7 @@ import AddFuelNameDrawer from './AddFuelNameDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import moment from 'moment';
 import { AcceptableFuelUOM } from '../../../config/masterData'
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -40,7 +41,10 @@ class AddFuel extends Component {
       errors: [],
 
       isOpenFuelDrawer: false,
-
+      AddUpdate: true,
+      DeleteChanged: true,
+      HandleChanged: true,
+      RateChange: []
     }
   }
 
@@ -72,7 +76,7 @@ class AddFuel extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ RateChange: Data })
           setTimeout(() => {
             const { fuelComboSelectList } = this.props;
 
@@ -93,11 +97,11 @@ class AddFuel extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
               UOM: UOMObj && UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
               rateGrid: rateGridArray,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 200)
         }
       })
@@ -145,6 +149,7 @@ class AddFuel extends Component {
     } else {
       this.setState({ StateName: [] })
     }
+    this.setState({ HandleChanged: false })
   };
 
   checkForSpecialCharacter = (value) => {
@@ -191,7 +196,7 @@ class AddFuel extends Component {
       StateName: [],
       effectiveDate: new Date(),
     }, () => this.props.change('Rate', 0));
-
+    this.setState({ AddUpdate: false })
   }
 
   /**
@@ -223,6 +228,7 @@ class AddFuel extends Component {
       rateGridEditIndex: '',
       isEditIndex: false,
     }, () => this.props.change('Rate', 0));
+    this.setState({ AddUpdate: false })
   };
 
   /**
@@ -271,6 +277,7 @@ class AddFuel extends Component {
     this.setState({
       rateGrid: tempData
     })
+    this.setState({ DeleteChanged: false })
   }
 
   fuelToggler = () => {
@@ -291,6 +298,7 @@ class AddFuel extends Component {
     this.setState({
       effectiveDate: date,
     });
+    this.setState({ HandleChanged: false })
   };
 
   /**
@@ -319,7 +327,7 @@ class AddFuel extends Component {
         const accept = AcceptableFuelUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
 
       });
       return temp;
@@ -357,7 +365,7 @@ class AddFuel extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId } = this.state;
+    const { isEditFlag, rateGrid, fuel, UOM, FuelDetailId, AddUpdate, RateChange, DeleteChanged, HandleChanged } = this.state;
 
     if (rateGrid.length === 0) {
       toastr.warning('Rate should not be empty.');
@@ -374,6 +382,40 @@ class AddFuel extends Component {
     })
 
     if (isEditFlag) {
+
+      console.log(this.state.RateChange, 'DataToCRateChangehange')
+      console.log(rateGrid, 'rateGrid')
+      let addRow = 0
+        let count = 0
+        if (rateGrid.length > this.state.RateChange.FuelDetatils.length) {
+          addRow = 1
+        }
+        if (addRow == 0) {
+          for (let i = 0; i < rateGrid.length; i++) {
+            let grid = this.state.RateChange.FuelDetatils[i]
+            let sgrid = rateGrid[i]
+            if (grid.Rate == sgrid.Rate && grid.StateName == sgrid.StateLabel) {
+              count++
+            }
+          }
+        }
+        // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
+        if ( HandleChanged && addRow == 0 && count == rateGrid.length && DeleteChanged) {
+          this.cancel()
+          return false
+        }
+
+
+      // console.log(city, 'city')
+      // console.log(AddUpdate, 'country')
+      // console.log(RateChange, 'country')
+      // console.log(DeleteChanged, 'country')
+      // if (AddUpdate && (HandleChanged) && DeleteChanged) {
+      //   console.log('chaNGES')
+      //   this.cancel()
+      //   return false
+      // }
+
       let requestData = {
         FuelDetailId: FuelDetailId,
         LoggedInUserId: loggedInUserId(),
@@ -409,6 +451,12 @@ class AddFuel extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -419,6 +467,7 @@ class AddFuel extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="">
             <div className="login-container signup-form">
@@ -434,6 +483,7 @@ class AddFuel extends Component {
                       noValidate
                       className="form"
                       onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                      onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                     >
                       <div className="add-min-height">
                         <Row>

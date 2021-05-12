@@ -156,7 +156,7 @@ class BulkUpload extends Component {
             let DynamicData = res.data.DynamicData;
 
             if (Data.CountSucceeded > 0) {
-                toastr.success(`${messageLabel} ${Data.CountSucceeded} has been uploaded successfully.`)
+                toastr.success(`${Data.CountSucceeded} ${messageLabel}  has been uploaded successfully.`)
                 if (DynamicData && DynamicData.IsDensityAvailable === false) {
                     this.props.densityAlert()
                 }
@@ -333,12 +333,6 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'InterestRate' && costingHead === 'ZBC') {
-
-            this.props.bulkUploadInterestRateZBC(uploadData, (res) => {
-                this.responseHandler(res)
-            });
-
         } else if (fileName === 'InterestRate' && costingHead === 'VBC') {
 
             this.props.bulkUploadInterestRateVBC(uploadData, (res) => {
@@ -369,7 +363,7 @@ class BulkUpload extends Component {
         }
 
         return (
-            <Drawer anchor={this.props.anchor} open={this.props.isOpen} 
+            <Drawer anchor={this.props.anchor} open={this.props.isOpen}
             // onClose={(e) => this.toggleDrawer(e)}
             >
                 <Container>
@@ -394,20 +388,22 @@ class BulkUpload extends Component {
                             <Row className="pl-3">
                                 {isZBCVBCTemplate &&
                                     <Col md="12">
+                                        {fileName != 'InterestRate' &&
+                                            <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    checked={costingHead === 'ZBC' ? true : false}
+                                                    onClick={() => this.onPressHeads('ZBC')}
+                                                />{' '}
+                                                <span>Zero Based</span>
+                                            </Label>
+                                        }
                                         <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                             <input
                                                 type="radio"
                                                 name="costingHead"
-                                                checked={costingHead === 'ZBC' ? true : false}
-                                                onClick={() => this.onPressHeads('ZBC')}
-                                            />{' '}
-                                            <span>Zero Based</span>
-                                        </Label>
-                                        <Label sm={4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                            <input
-                                                type="radio"
-                                                name="costingHead"
-                                                checked={costingHead === 'VBC' ? true : false}
+                                                checked={costingHead === 'VBC' ? true : fileName === 'InterestRate' ? true : false}
                                                 onClick={() => this.onPressHeads('VBC')}
                                             />{' '}
                                             <span>Vendor Based</span>

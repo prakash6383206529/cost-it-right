@@ -1,6 +1,6 @@
 import React, { Component, } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, formValueSelector } from "redux-form";
+import { Field, reduxForm, formValueSelector, isDirty } from "redux-form";
 import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
@@ -28,6 +28,7 @@ import AddProcessDrawer from './AddProcessDrawer';
 import NoContentFound from '../../common/NoContentFound';
 import { AcceptableMachineUOM } from '../../../config/masterData'
 import { Rate } from 'antd';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddMachineRate');
 
 class AddMachineRate extends Component {
@@ -62,7 +63,9 @@ class AddMachineRate extends Component {
       remarks: '',
       files: [],
 
-      machineFullValue: {}
+      machineFullValue: {},
+      DataToChange: [],
+      DropdownChange: true
 
     }
   }
@@ -184,7 +187,7 @@ class AddMachineRate extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
-
+          this.setState({ DataToChange: Data })
           this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           if (Data.IsVendor) {
             this.props.getPlantBySupplier(Data.VendorId, () => { })
@@ -213,7 +216,7 @@ class AddMachineRate extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsVendor,
               IsCopied: Data.IsCopied,
               IsDetailedEntry: Data.IsDetailedEntry,
@@ -225,7 +228,7 @@ class AddMachineRate extends Component {
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
-            })
+            }, () => this.setState({ isLoader: false }))
           }, 100)
         }
       })
@@ -256,6 +259,7 @@ class AddMachineRate extends Component {
   */
   handleTechnology = (e) => {
     this.setState({ selectedTechnology: e })
+    this.setState({ DropdownChange: false })
   }
 
   /**
@@ -329,7 +333,7 @@ class AddMachineRate extends Component {
         const accept = AcceptableMachineUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.Display, value: item.Value })
         return null;
       });
       return temp;
@@ -536,6 +540,7 @@ class AddMachineRate extends Component {
       processName: [],
       UOM: [],
     }, () => this.props.change('MachineRate', 0));
+    this.setState({ DropdownChange: false })
   }
 
   /**
@@ -614,6 +619,7 @@ class AddMachineRate extends Component {
       processName: { label: tempData.processName, value: tempData.ProcessId },
       UOM: { label: tempData.UnitOfMeasurement, value: tempData.UnitOfMeasurementId },
     }, () => this.props.change('MachineRate', tempData.MachineRate))
+    this.setState({ DropdownChange: false })
   }
 
   /**
@@ -631,6 +637,7 @@ class AddMachineRate extends Component {
     });
 
     this.setState({ processGrid: tempData })
+    this.setState({ DropdownChange: false })
   }
 
   handleCalculation = () => {
@@ -761,7 +768,8 @@ class AddMachineRate extends Component {
   */
   onSubmit = (values) => {
     const { IsVendor, MachineID, isEditFlag, IsDetailedEntry, vendorName, selectedTechnology, selectedPlants, anyTouched, selectedVendorPlants,
-      remarks, machineType, files, processGrid, isViewFlag } = this.state;
+      remarks, machineType, files, processGrid, isViewFlag, DataToChange, DropdownChange } = this.state;
+    const a = this.state.Data
 
     if (isViewFlag) {
       this.cancel();
@@ -778,11 +786,13 @@ class AddMachineRate extends Component {
     let technologyArray = [{ Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value }]
     let vendorPlantArray = selectedVendorPlants && selectedVendorPlants.map((item) => ({ PlantName: item.Text, PlantId: item.Value, PlantCode: '' }))
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
-
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+      if (DropdownChange) {
 
+      }
       if (IsDetailedEntry) {
-
         // EXECUTED WHEN:- EDIT MODE && MACHINE MORE DETAILED == TRUE
         let detailedRequestData = { ...machineData, MachineId: MachineID, Remark: remarks, Attachements: updatedFiles }
         this.props.reset()
@@ -794,6 +804,7 @@ class AddMachineRate extends Component {
         })
 
       } else {
+
 
         // EXECUTED WHEN:- EDIT MODE OF BASIC MACHINE && MACHINE MORE DETAILED NOT CREATED
         let requestData = {
@@ -828,7 +839,7 @@ class AddMachineRate extends Component {
             },
             onCancel: () => { },
           }
-          return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+          return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
         }
 
 
@@ -905,7 +916,7 @@ class AddMachineRate extends Component {
       this.setState({
         isEditFlag: false,
         //IsDetailedEntry:false,
-        isLoader: false,
+        // isLoader: false,
         IsVendor: data.IsVendor,
         IsCopied: data.IsCopied,
         IsDetailedEntry: false,
@@ -917,10 +928,14 @@ class AddMachineRate extends Component {
         processGrid: MachineProcessArray,
         remarks: data.Remark,
         files: data.Attachements,
-      })
+      }, () => this.setState({ isLoader: false }))
     }, 100)
   }
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
 
   /**
   * @method render
@@ -933,7 +948,7 @@ class AddMachineRate extends Component {
 
     return (
       <>
-        {/* {(loading || isLoader) && <Loader />} */}
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -950,6 +965,7 @@ class AddMachineRate extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div class="add-min-height">
                       <Row>
@@ -993,29 +1009,14 @@ class AddMachineRate extends Component {
                             // optionLabel={option => option.Text}
                             component={searchableSelect}
                             mendatory={true}
+                            required
+                            validate={[required]}
                             className="multiselect-with-border"
                             valueDescription={this.state.selectedTechnology}
                             disabled={this.state.isViewFlag ? true : false}
                           //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
                           />
                         </Col>
-                        {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
-                          <Col md="3">
-                            <Field
-                              name="Plant"
-                              type="text"
-                              label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
-                              component={searchableSelect}
-                              placeholder={'Select'}
-                              options={this.renderListing('plant')}
-                              //onKeyUp={(e) => this.changeItemDesc(e)}
-                              validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
-                              required={true}
-                              handleChangeDescription={this.handlePlants}
-                              valueDescription={this.state.selectedPlants}
-                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
-                            />
-                          </Col>)}
                         {this.state.IsVendor &&
                           <Col md="3">
                             <Field
@@ -1033,7 +1034,8 @@ class AddMachineRate extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>}
-                        {(getConfigurationKey().IsVendorPlantConfigurable && this.state.IsVendor) && (
+                        {this.state.IsVendor &&
+                          checkVendorPlantConfigurable() &&
                           <Col md="3">
                             <Field
                               label="Vendor Plant"
@@ -1049,8 +1051,24 @@ class AddMachineRate extends Component {
                               className="multiselect-with-border"
                               disabled={isEditFlag ? true : false}
                             />
-                          </Col>)}
-
+                          </Col>}
+                        {!this.state.IsVendor &&
+                          <Col md="3">
+                            <Field
+                              name="Plant"
+                              type="text"
+                              label="Plant"
+                              component={searchableSelect}
+                              placeholder={'Select'}
+                              options={this.renderListing('plant')}
+                              //onKeyUp={(e) => this.changeItemDesc(e)}
+                              validate={(this.state.selectedPlants == null || this.state.selectedPlants.length === 0) ? [required] : []}
+                              required={true}
+                              handleChangeDescription={this.handlePlants}
+                              valueDescription={this.state.selectedPlants}
+                              disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
+                            />
+                          </Col>}
                         <Col md="3">
                           <Field
                             label={`Machine No.`}
@@ -1479,6 +1497,7 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
+  dirty: isDirty('AddMachineRate'),
   getTechnologySelectList,
   getVendorListByVendorType,
   getPlantSelectListByType,
@@ -1496,6 +1515,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddMachineRate',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

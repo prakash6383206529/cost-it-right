@@ -2805,6 +2805,30 @@ button:disabled{pointer-events: none;}
     input:not(:placeholder-shown) + .input-group-btn{opacity: 1;}
   }
 }
+
+.show-table-btn{
+  .react-bs-table-tool-bar{
+    .col-lg-8{
+      display: block;
+      max-width: 160px;
+      order: 2;
+      .btn-success{
+        background-color: #256bd1;
+        border-color: #256bd1;
+        &:hover,
+        &:not(.disabled):active:focus {
+          background-color: #1d59af;
+        }
+      }
+    }
+    .col-lg-4{
+      order: 1;
+      max-width: 245px;
+      padding-right: 0;
+    }
+  }
+}
+
 .css-1pahdxg-control{
   border:1px solid #256bd1 !important;
   box-shadow: none !important;

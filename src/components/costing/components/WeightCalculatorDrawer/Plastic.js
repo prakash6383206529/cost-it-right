@@ -2,10 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-  SearchableSelectHookForm,
-  TextFieldHookForm,
-} from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 
@@ -15,53 +12,21 @@ function Plastic(props) {
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
 
   const defaultValues = {
-    netWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.NetWeight !== undefined
-      ? WeightCalculatorRequest.NetWeight
-      : '',
-    runnerWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.RunnerWeight !== undefined
-      ? WeightCalculatorRequest.RunnerWeight
-      : '',
-    grossWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.GrossWeight !== undefined
-      ? WeightCalculatorRequest.GrossWeight
-      : '',
-    finishedWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.FinishedWeight !== undefined
-      ? WeightCalculatorRequest.FinishedWeight
-      : '',
-    scrapWeight: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ScrapWeight !== undefined
-      ? WeightCalculatorRequest.ScrapWeight
-      : '',
-    rmCost: WeightCalculatorRequest &&
-      WeightCalculatorRequest.RmCost !== undefined
-      ? WeightCalculatorRequest.RmCost
-      : '',
-    scrapCost: WeightCalculatorRequest &&
-      WeightCalculatorRequest.ScrapCost !== undefined
-      ? WeightCalculatorRequest.ScrapCost
-      : '',
-    materialCost: WeightCalculatorRequest &&
-      WeightCalculatorRequest.MaterialCost !== undefined
-      ? WeightCalculatorRequest.MaterialCost
-      : '',
+    netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
+    runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
+    grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
+    finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishedWeight !== undefined ? WeightCalculatorRequest.FinishedWeight : '',
+    scrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? WeightCalculatorRequest.ScrapWeight : '',
+    rmCost: WeightCalculatorRequest && WeightCalculatorRequest.RmCost !== undefined ? WeightCalculatorRequest.RmCost : '',
+    scrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? WeightCalculatorRequest.ScrapCost : '',
+    materialCost: WeightCalculatorRequest && WeightCalculatorRequest.MaterialCost !== undefined ? WeightCalculatorRequest.MaterialCost : '',
 
   }
 
   const [tableVal, setTableVal] = useState([])
   const [lostWeight, setLostWeight] = useState(0)
   const { rmRowData } = props
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    reset,
-    errors,
-  } = useForm({
+  const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
@@ -88,7 +53,7 @@ function Plastic(props) {
 
   useEffect(() => {
     calculateGrossWeight()
-    calculateRemainingCalculation(WeightCalculatorRequest ? WeightCalculatorRequest.LostSum : 0)
+    // calculateRemainingCalculation(WeightCalculatorRequest ? WeightCalculatorRequest.LostSum : 0)
   }, [fieldValues])
 
 
@@ -112,8 +77,9 @@ function Plastic(props) {
    * @description Calculating finished weight,scrap weight,RM cost, scrap cost,material cost
    */
   const calculateRemainingCalculation = (lostSum = 0) => {
+    console.log("HOW MANY TIMES COMING ?");
+    console.log('lostSum: ', lostSum);
 
-    setLostWeight(lostSum)
     const grossWeight = Number(getValues('grossWeight'))
     const netWeight = Number(getValues('netWeight'))
     const finishedWeight = checkForDecimalAndNull(grossWeight + lostSum, trim)
@@ -121,11 +87,13 @@ function Plastic(props) {
     const rmCost = checkForDecimalAndNull(finishedWeight * rmRowData.RMRate, trim) // TO DO Ask from Kamal sir which key to use for costing(transaction/PO)
     const scrapCost = checkForDecimalAndNull(scrapWeight * rmRowData.ScrapRate, trim)
     const materialCost = checkForDecimalAndNull(rmCost - scrapCost, trim)
+
     setValue('finishedWeight', finishedWeight)
     setValue('scrapWeight', scrapWeight)
     setValue('rmCost', rmCost)
     setValue('scrapCost', scrapCost)
     setValue('materialCost', materialCost)
+    setLostWeight(lostSum)
   }
   const onSubmit = () => {
     let obj = {}

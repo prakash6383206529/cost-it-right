@@ -11,6 +11,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import moment from 'moment';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddTaxDetails')
 
 class AddTaxDetails extends Component {
@@ -19,6 +20,9 @@ class AddTaxDetails extends Component {
     this.state = {
       country: [],
       effectiveDate: '',
+      DataToCheck: [],
+      DropdownChanged: true,
+      isLoader: false
     }
   }
 
@@ -35,23 +39,27 @@ class AddTaxDetails extends Component {
 
     if (isEditFlag) {
       this.props.getTaxDetailsData(ID, res => {
+        this.setState({ isLoader: true })
         this.props.fetchCountryDataAPI(() => {
           const { countryList } = this.props;
           if (res && res.data && res.data.Data) {
             let Data = res.data.Data;
+            this.setState({ DataToCheck: Data })
+
             this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
             let countryObj = countryList && countryList.find(item => Number(item.Value) === Data.CountryId)
             setTimeout(() => {
               this.setState({
                 country: countryObj && countryObj !== undefined ? { label: countryObj.Text, value: countryObj.Value } : [],
                 effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
-              })
+              }, ()=> this.setState({ isLoader: false })
+              )
             }, 500)
-
           }
         })
       })
     } else {
+      this.setState({ isLoader: false })
       this.props.getTaxDetailsData('', res => { })
     }
   }
@@ -110,6 +118,7 @@ class AddTaxDetails extends Component {
     } else {
       this.setState({ country: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -118,6 +127,7 @@ class AddTaxDetails extends Component {
   */
   handleEffectiveDateChange = (date) => {
     this.setState({ effectiveDate: date, });
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -138,10 +148,19 @@ class AddTaxDetails extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { country, effectiveDate } = this.state;
+    const { country, effectiveDate, DataToCheck, DropdownChanged } = this.state;
 
     /** Update detail of TAX  */
     if (this.props.isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToCheck, 'datatocheck')
+
+      if (DataToCheck.TaxName == values.TaxName && DataToCheck.Rate == values.Rate && DropdownChanged) {
+        console.log('chaNGES')
+        this.toggleDrawer('')
+        return false
+      }
+
       const { ID } = this.props;
 
       let formData = {
@@ -181,7 +200,12 @@ class AddTaxDetails extends Component {
       });
     }
   }
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+      // cb();
+    }
+  };
   /**
   * @method render
   * @description Renders the component
@@ -194,12 +218,14 @@ class AddTaxDetails extends Component {
         open={this.props.isOpen}
       // onClose={(e) => this.toggleDrawer(e)}
       >
+        {this.state.isLoader && <LoaderCustom />}
         <Container>
           <div className={"drawer-wrapper"}>
             <form
               noValidate
               className="form"
               onSubmit={handleSubmit(this.onSubmit.bind(this))}
+              onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
             >
               <Row className="drawer-heading">
                 <Col>

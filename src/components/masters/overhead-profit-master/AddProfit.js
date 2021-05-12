@@ -18,6 +18,7 @@ import 'react-dropzone-uploader/dist/styles.css'
 import $ from 'jquery';
 import { FILE_URL } from '../../../config/constants';
 import moment from 'moment';
+import LoaderCustom from '../../common/LoaderCustom';
 const selector = formValueSelector('AddProfit');
 
 class AddProfit extends Component {
@@ -49,7 +50,9 @@ class AddProfit extends Component {
       isHideRM: false,
       isHideCC: false,
       isHideBOP: false,
-      effectiveDate: ''
+      effectiveDate: '',
+      DropdownChanged: true,
+      DataToChange: []
     }
   }
 
@@ -87,6 +90,7 @@ class AddProfit extends Component {
     } else {
       this.setState({ ModelType: [], })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   /**
@@ -116,6 +120,7 @@ class AddProfit extends Component {
         if (res && res.data && res.data.Result) {
 
           const Data = res.data.Data;
+          this.setState({ DataToChange: Data })
           this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
           setTimeout(() => {
             const { modelTypes, costingHead, vendorWithVendorCodeSelectList, clientSelectList } = this.props;
@@ -136,7 +141,7 @@ class AddProfit extends Component {
 
             this.setState({
               isEditFlag: true,
-              isLoader: false,
+              // isLoader: false,
               IsVendor: Data.IsClient ? Data.IsClient : Data.IsVendor,
               costingHead: Head,
               ModelType: modelObj && modelObj !== undefined ? { label: modelObj.Text, value: modelObj.Value } : [],
@@ -146,11 +151,17 @@ class AddProfit extends Component {
               remarks: Data.Remark,
               files: Data.Attachements,
               effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
-            }, () => this.checkOverheadFields())
+            }, () => {
+              this.checkOverheadFields()
+              this.setState({ isLoader: false })
+            })
           }, 500)
         }
       })
     } else {
+      this.setState({
+        isLoader: false,
+      })
       this.props.getProfitData('', res => { })
     }
   }
@@ -289,6 +300,7 @@ class AddProfit extends Component {
         isHideRM: false,
       })
     }
+    this.setState({ DropdownChanged: false })
   };
 
   handlePercent = (e) => {
@@ -507,10 +519,35 @@ class AddProfit extends Component {
   */
   onSubmit = (values) => {
     const { costingHead, IsVendor, ModelType, vendorName, client, overheadAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate } = this.state;
+      isRM, isCC, isBOP, isOverheadPercent, isEditFlag, files, effectiveDate, DataToChange, DropdownChanged } = this.state;
     const userDetail = userDetails()
 
     if (isEditFlag) {
+      console.log(values, 'values')
+      console.log(DataToChange, 'DataToChange')
+
+      if (values.ProfitBOPPercentage == '') {
+        values.ProfitBOPPercentage = null
+      }
+      if (values.ProfitMachiningCCPercentage == '') {
+        values.ProfitMachiningCCPercentage = null
+      }
+      if (values.ProfitPercentage == '') {
+        values.ProfitPercentage = null
+      }
+      if (values.ProfitRMPercentage == '') {
+        values.ProfitRMPercentage = null
+      }
+
+      if (
+        DropdownChanged && DataToChange.ProfitBOPPercentage == values.ProfitBOPPercentage && DataToChange.ProfitMachiningCCPercentage == values.ProfitMachiningCCPercentage
+        && DataToChange.ProfitPercentage == values.ProfitPercentage && DataToChange.ProfitRMPercentage == values.ProfitRMPercentage
+        && DataToChange.Remark == values.Remark) {
+        console.log('asdf')
+        this.cancel()
+        return false
+      }
+
       let updatedFiles = files.map((file) => {
         return { ...file, ContextId: ProfitID }
       })
@@ -553,7 +590,7 @@ class AddProfit extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -590,6 +627,12 @@ class AddProfit extends Component {
     }
   }
 
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
+
   /**
   * @method render
   * @description Renders the component
@@ -601,6 +644,7 @@ class AddProfit extends Component {
 
     return (
       <>
+        {this.state.isLoader && <LoaderCustom />}
         <div className="container-fluid">
           <div className="login-container signup-form">
             <div className="row">
@@ -619,6 +663,7 @@ class AddProfit extends Component {
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                    onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
                   >
                     <div className="add-min-height">
                       <Row>

@@ -263,9 +263,11 @@ class BOPImportListing extends Component {
         return <> Part Assembly <br />Number </>
     }
     renderNetLandedCost = () => {
-        return <> Net <br />Cost </>
+        return <> Net <br />Cost(INR) </>
     }
-
+    renderBasicRate = () => {
+        return <> Basic <br />Rate(INR) </>
+    }
     renderEffectiveDate = () => {
         return <>Effective <br />Date </>
     }
@@ -519,7 +521,7 @@ class BOPImportListing extends Component {
                             <TableHeaderColumn width={100} dataField="Plants" columnTitle={true} dataAlign="left" dataSort={true} searchable={false} >{'Plant'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="Vendor" columnTitle={true} dataAlign="left" dataSort={true} >{'Vendor'}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataField="NumberOfPieces" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderMinQuantity()}</TableHeaderColumn>
-                            <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{'Basic Rate'}</TableHeaderColumn>
+                            <TableHeaderColumn width={100} dataField="BasicRate" columnTitle={true} dataAlign="left" searchable={false}  >{this.renderBasicRate()}</TableHeaderColumn>
                             <TableHeaderColumn width={120} dataField="NetLandedCostConversion" columnTitle={true} searchable={false} dataAlign="left" dataFormat={this.costFormatter} >{this.renderNetLandedCost()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} columnTitle={true} dataAlign="left" searchable={false} dataSort={true} dataField="EffectiveDate" dataFormat={this.effectiveDateFormatter} >{this.renderEffectiveDate()}</TableHeaderColumn>
                             <TableHeaderColumn width={100} dataAlign="right" dataField="BoughtOutPartId" searchable={false} export={false} isKey={true} dataFormat={this.buttonFormatter}>Actions</TableHeaderColumn>

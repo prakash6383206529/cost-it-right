@@ -12,6 +12,7 @@ import { MESSAGES } from '../../../config/message'
 import { loggedInUserId } from '../../../helper/auth'
 import Drawer from '@material-ui/core/Drawer'
 import moment from 'moment'
+import LoaderCustom from '../../common/LoaderCustom'
 const selector = formValueSelector('AddProcessDrawer');
 
 class AddProcessDrawer extends Component {
@@ -21,7 +22,8 @@ class AddProcessDrawer extends Component {
       selectedPlants: [],
       selectedMachine: [],
       ProcessId: '',
-      effectiveDate: ''
+      effectiveDate: '',
+      isLoader: false
     }
   }
 
@@ -43,12 +45,14 @@ class AddProcessDrawer extends Component {
     const { isEditFlag, ID } = this.props
 
     if (isEditFlag) {
+      this.setState({ isLoader: true })
       this.props.getProcessData(ID, res => {
         let Data = res.data.Data
         this.setState({
           ProcessId: Data.ProcessId,
           effectiveDate: moment(Data.EffectiveDate).isValid ? moment(Data.EffectiveDate)._d : ''
         })
+        this.setState({ isLoader: false })
       })
     } else {
       this.props.getProcessData('', (res) => { })
@@ -192,7 +196,11 @@ class AddProcessDrawer extends Component {
       })
     }
   }
-
+  handleKeyDown = function (e) {
+    if (e.key === 'Enter' && e.shiftKey === false) {
+      e.preventDefault();
+    }
+  };
   /**
    * @method render
    * @description Renders the component
@@ -201,12 +209,17 @@ class AddProcessDrawer extends Component {
     const { handleSubmit, isEditFlag, isMachineShow } = this.props
     return (
       <div>
+
         <Drawer anchor={this.props.anchor} open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
         >
+          {this.state.isLoader && <LoaderCustom />}
           <Container>
             <div className={'drawer-wrapper'}>
-              <form noValidate className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+              <form noValidate className="form"
+                onSubmit={handleSubmit(this.onSubmit.bind(this))}
+                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
+              >
                 <Row className="drawer-heading">
                   <Col>
                     <div className={'header-wrapper left'}>
@@ -231,7 +244,7 @@ class AddProcessDrawer extends Component {
                       required={true}
                       className=" "
                       customClassName=" withBorder"
-                      disabled={isEditFlag ? true : false}
+                    // disabled={isEditFlag ? true : false}
                     />
                   </Col>
                   <Col md="12">

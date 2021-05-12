@@ -249,7 +249,7 @@ export const getPlantCode = (name) => {
 }
 
 export const applySuperScript = (cell) => {
-    if (cell && cell !== '') {
+    if (cell && cell !== '') { 
         const capIndex = cell && cell.indexOf('^');
         const superNumber = cell.substring(capIndex + 1, capIndex + 2);
         const capWithNumber = cell.substring(capIndex, capIndex + 2);
@@ -260,7 +260,7 @@ export const applySuperScript = (cell) => {
 }
 
 export const checkForNull = (ele) => {
-    const number = (ele == null || isNaN(Number(ele)) || ele === undefined || ele === Infinity) ? 0 : Number(ele);
+    const number = (ele == null || isNaN(Number(ele)) || ele === undefined || ele === Infinity || ele === -Infinity) ? 0 : Number(ele);
     return number
 }
 
