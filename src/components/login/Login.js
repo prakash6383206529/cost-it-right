@@ -91,7 +91,7 @@ class Login extends Component {
               <div className="col-md-5 form-section">
 
                 <div className="text-center">
-                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/minda-logo1x.png")} alt="Minda" /></a>
+                  <a href="javaScript:Void(0);"><img className="logo-first" src={require("../../assests/images/logo/minda-logo1x.png")} alt="Minda" /></a>
                 </div>
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
@@ -159,7 +159,7 @@ class Login extends Component {
                 </form>
                 <div className="bottomlogo_con">
                   <span>Powered By</span>
-                  <img className="logo-second" src={require("../../assests/images/CIRlogo.svg")} alt="Cost It Right" />
+                  <img className="logo-second" src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" />
                 </div>
 
               </div>
