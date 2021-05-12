@@ -2849,8 +2849,11 @@ button:disabled{pointer-events: none;}
   border: 1px solid #e6e6e6 !important;
   color: #bfc3c7 !important;
   pointer-events: none !important;
-  .plus{
+  .plus,.check-icon{
     filter: brightness(0.8) !important;
+  }
+  .cross-icon{
+    filter: opacity(0.5);
   }
 }
 .Add:disabled, .Edit:disabled, .Delete:disabled, .View:disabled, .Download:disabled, .Bulk:disabled, .Activate:disabled, .Create:disabled, .Copy:disabled, .Approve:disabled, .Run:disabled, .Save:disabled, .Add-file:disabled, .SaveIcon:disabled, .CancelIcon:disabled, .CalculatorIcon:disabled{
