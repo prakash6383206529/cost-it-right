@@ -160,15 +160,13 @@ class Login extends Component {
                 <div className="bottomlogo_con">
                   <span>Powered By</span>
                   <img className="logo-second" src={require("../../assests/images/CIRlogo.svg")} alt="Cost It Right" />
+                </div>
+
               </div>
             </div>
-            <div className="col-md-7 p-0 right-sideimg">
-              <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
-            </div>
           </div>
-        </div>
+        </div >
       </div>
-      </div >
     );
   }
 }

@@ -169,9 +169,9 @@ class Department extends Component {
 												name={"CompanyCode"}
 												type="text"
 												placeholder={''}
-												validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
 												component={renderText}
-												required={false}
+												required={true}
 												customClassName={'withBorder'}
 											/>
 										</div>
