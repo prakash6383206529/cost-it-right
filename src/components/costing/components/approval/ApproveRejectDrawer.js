@@ -12,6 +12,7 @@ import {
 import { loggedInUserId, userDetails } from '../../../../helper'
 import { toastr } from 'react-redux-toastr'
 import PushButtonDrawer from './PushButtonDrawer'
+import { REASON_ID } from '../../../../config/constants'
 
 
 function ApproveRejectDrawer(props) {
@@ -74,6 +75,7 @@ function ApproveRejectDrawer(props) {
         ApproverLevel: data.approver && data.approver.levelName ? data.approver.levelName : '',
         Remark: data.remark,
         IsApproved: type === 'Approve' ? true : false,
+        IsFinalApprovalProcess: ele.ReasonId === REASON_ID ? true : false
       })
     })
 

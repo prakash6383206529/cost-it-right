@@ -178,7 +178,7 @@ class UserRegistration extends Component {
 
     if (label === 'department') {
       departmentList && departmentList.map(item =>
-        temp.push({ label: item.DepartmentName, value: item.DepartmentId })
+        temp.push({ label: item.DepartmentName, value: item.DepartmentId, CompanyId: item.CompanyId })
       );
       return temp;
     }
@@ -655,7 +655,7 @@ class UserRegistration extends Component {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: userDetails.CompanyId,
+        CompanyId: department.CompanyId,
         EmailAddress: values.EmailAddress,
         Mobile: values.Mobile,
         FirstName: values.FirstName,
@@ -728,7 +728,7 @@ class UserRegistration extends Component {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         DepartmentId: department.value,
         loggedInUserId: loggedInUserId(),
-        CompanyId: userDetails.CompanyId,
+        CompanyId: department.CompanyId,
         EmailAddress: values.EmailAddress,
         Mobile: values.Mobile,
         FirstName: values.FirstName,
@@ -998,7 +998,7 @@ class UserRegistration extends Component {
                     </div>
 
                     <HeaderTitle
-                      title={'Role & Department:'}
+                      title={'Role & Company:'}
                       customClass={''} />
 
                     <div className="row form-group">
@@ -1021,9 +1021,9 @@ class UserRegistration extends Component {
                         <Field
                           name="DepartmentId"
                           type="text"
-                          label="Department"
+                          label="Company"
                           component={searchableSelect}
-                          placeholder={'Select department'}
+                          placeholder={'Select company'}
                           options={this.searchableSelectType('department')}
                           //onKeyUp={(e) => this.changeItemDesc(e)}
                           validate={(this.state.department == null || this.state.department.length === 0) ? [required] : []}

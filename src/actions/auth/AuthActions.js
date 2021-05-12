@@ -1344,3 +1344,23 @@ export function getMenu(ModuleId, UserId, callback) {
         });
     };
 }
+
+/**
+ * @method addDepartmentAPI
+ * @description add Department API 
+ */
+export function addCompanyAPI(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.post(API.addCompanyAPI, requestData, headers)
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}

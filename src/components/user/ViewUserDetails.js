@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
-import {
-  getUserDataAPI, getPermissionByUser, getActionHeadsSelectList,
-  getUsersTechnologyLevelAPI,
-} from "../../actions/auth/AuthActions";
+import { getUserDataAPI, getPermissionByUser, getActionHeadsSelectList, getUsersTechnologyLevelAPI, } from "../../actions/auth/AuthActions";
 import { Loader } from '../common/Loader';
 import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
@@ -158,7 +155,7 @@ class ViewUserDetails extends Component {
     return (
       <>
         {this.props.loading && <Loader />}
-        <Drawer className="user-detail" anchor={this.props.anchor} open={this.props.isOpen} 
+        <Drawer className="user-detail" anchor={this.props.anchor} open={this.props.isOpen}
         // onClose={(e) => this.toggleDrawer(e)}
         >
           <Container>
@@ -238,7 +235,7 @@ class ViewUserDetails extends Component {
                   <Col md="12">
                     <div className={'left-details'}>
                       <HeaderTitle
-                        title={'Role & Department:'}
+                        title={'Role & Company:'}
                         customClass={'role-department-details'} />
                     </div>
                     <div className={'right-details'}>

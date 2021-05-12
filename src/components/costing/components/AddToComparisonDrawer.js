@@ -380,7 +380,7 @@ function AddToComparisonDrawer(props) {
   const handlePlantChange = (value) => {
     const temp = []
     dispatch(
-      getCostingSummaryByplantIdPartNo(partNo.label !== undefined ? partNo.label : partNo.partNumber, value.value, (res) => {
+      getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partNumber, value.value, (res) => {
         setValue('costings', '')
       }),
     )

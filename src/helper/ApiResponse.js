@@ -19,6 +19,9 @@ export function formatLoginResult(res) {
             Plants: res.Data.Plants,
             Permissions: res.Data.Permissions,
             IsVendorPlantConfigurable: res.Data.IsVendorPlantConfigurable,
+            DepartmentId: res.Data.DepartmentId,
+            Department: res.Data.Department,
+
         };
         return userObj;
     }
