@@ -31,8 +31,16 @@ export default function (ComposedComponent, PAGENAME) {
                     LoggedInUserId: loggedInUserId()
                 }
                 this.props.checkPageAuthorization(reqData, res => {
-                    if (res && res.status === 401) {
-                        this.setState({ redirectToDashboard: true })
+                    if (res && res.status === 401 && res.statusText === 'Unauthorized') {
+
+                        //MADE CHANGES ON 11TH MAY ENABLE THIS IF ANY ERROR
+                        //this.setState({ redirectToDashboard: true }) //CHANGES DONE FOR CONTINUES CALL UNAUTHORIZED 
+
+                        //NEW ADDED FOR (DISABLED THIS IF ANY ERROR)
+                        reactLocalStorage.setObject("isUserLoggedIn", false);
+                        reactLocalStorage.setObject("userDetail", {});
+                        reactLocalStorage.set('ModuleId', '');
+                        this.setState({ redirectToLogin: true })
                     }
                 })
             }

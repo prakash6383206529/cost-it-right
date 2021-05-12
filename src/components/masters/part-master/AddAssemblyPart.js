@@ -71,6 +71,7 @@ class AddAssemblyPart extends Component {
       this.props.getAssemblyPartDetail(data.Id, res => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data;
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
 
           setTimeout(() => {
             this.setState({
@@ -106,15 +107,6 @@ class AddAssemblyPart extends Component {
       effectiveDate: date,
     });
   };
-
-  childDrawerToggle = () => {
-    if (this.checkIsFormFilled() === false) {
-      toastr.warning('All fields are mandatory.')
-      return false;
-    }
-
-    this.setState({ isOpenChildDrawer: true })
-  }
 
   closeChildDrawer = (e = '', childData = {}) => {
     this.setState({ isOpenChildDrawer: false }, () => {
@@ -270,12 +262,11 @@ class AddAssemblyPart extends Component {
     //CONDITION TO CHECK BOMViewerData STATE HAS FORM DATA
     let isAvailable = BOMViewerData && BOMViewerData.findIndex(el => el.Level === 'L0')
 
-    console.log('isAvailable: ', isAvailable);
     if (isAvailable === -1) {
       tempArray.push(...BOMViewerData, {
         PartType: ASSEMBLY,
         PartNumber: fieldsObj && fieldsObj.AssemblyPartNumber !== undefined ? fieldsObj.AssemblyPartNumber : '',
-        Position: { "x": 900, "y": 50 },
+        Position: { "x": 750, "y": 50 },
         Outputs: outputArray,
         InnerContent: fieldsObj && fieldsObj.Description !== undefined ? fieldsObj.Description : '',
         PartName: fieldsObj && fieldsObj.AssemblyPartName !== undefined ? fieldsObj.AssemblyPartName : '',
@@ -283,12 +274,18 @@ class AddAssemblyPart extends Component {
         Level: 'L0',
         Input: '',
       })
-      console.log(tempArray, "tempArray");
       this.setState({ BOMViewerData: tempArray, isOpenBOMViewerDrawer: true, })
 
     } else {
 
-      tempArray = Object.assign([...BOMViewerData], { [isAvailable]: Object.assign({}, BOMViewerData[isAvailable], { Outputs: outputArray, }) })
+      tempArray = Object.assign([...BOMViewerData], {
+        [isAvailable]: Object.assign({}, BOMViewerData[isAvailable], {
+          Outputs: outputArray,
+          PartNumber: fieldsObj && fieldsObj.AssemblyPartNumber !== undefined ? fieldsObj.AssemblyPartNumber : '', //WHEN EDIT FORM
+          PartName: fieldsObj && fieldsObj.AssemblyPartName !== undefined ? fieldsObj.AssemblyPartName : '', //WHEN EDIT FORM
+          InnerContent: fieldsObj && fieldsObj.Description !== undefined ? fieldsObj.Description : '', //WHEN EDIT FORM
+        })
+      })
 
       this.setState({ BOMViewerData: tempArray, isOpenBOMViewerDrawer: true, })
     }
@@ -435,6 +432,12 @@ class AddAssemblyPart extends Component {
       return false;
     }
 
+    //GET BOMLEVEL COUNT
+    let BOMLevelArrays = BOMViewerData && BOMViewerData.map((el) => {
+      return parseInt(el?.Level.substring(1));
+    })
+    const BOMLevelCount = Math.max.apply(Math, BOMLevelArrays);
+
     BOMViewerData && BOMViewerData.map((item) => {
       if (item.Level === 'L0') return false;
       if (item.Level === 'L1') {
@@ -471,7 +474,8 @@ class AddAssemblyPart extends Component {
         Attachements: updatedFiles,
         ChildParts: childPartArray,
         NumberOfChildParts: BOMViewerData && avoidAPICall ? BOMViewerData.length - 1 : partData.NumberOfChildParts,
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        BOMLevelCount: BOMLevelCount,
       }
 
       if (JSON.stringify(BOMViewerData) !== JSON.stringify(actualBOMTreeData) && avoidAPICall && isEditFlag) {
@@ -518,6 +522,7 @@ class AddAssemblyPart extends Component {
         Plants: plantArray,
         Attachements: files,
         NumberOfChildParts: BOMViewerData && BOMViewerData.length - 1,
+        BOMLevelCount: BOMLevelCount,
       }
 
       this.props.reset()
@@ -744,16 +749,10 @@ class AddAssemblyPart extends Component {
                           </div>
                         </Col>
                         <Col md="3">
-                          {/* {(!isEditFlag || initialConfiguration.IsBOMEditable) && <button
-                                                type="button"
-                                                className={'user-btn pull-left mt30 mr5'}
-                                                onClick={this.childDrawerToggle}>
-                                                <div className={'plus'}></div>ADD Child</button>} */}
                           <button
                             type="button"
                             onClick={this.toggleBOMViewer}
-                            className={"user-btn pull-left mt30"}
-                          >
+                            className={"user-btn pull-left mt30"}>
                             <div className={"plus"}></div>VIEW BOM
                               </button>
                         </Col>

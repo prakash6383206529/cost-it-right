@@ -228,7 +228,7 @@ function AddVendorDrawer(props) {
                       register={register}
                       defaultValue={DestinationPlant.length !== 0 ? DestinationPlant : ""}
                       options={renderListing("DestinationPlant")}
-                      mandatory={false}
+                      mandatory={true}
                       handleChange={handleDestinationPlantChange}
                       errors={errors.DestinationPlant}
                     />

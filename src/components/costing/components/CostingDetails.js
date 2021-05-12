@@ -46,6 +46,7 @@ function CostingDetails(props) {
   const [IsPlantDrawerOpen, setIsPlantDrawerOpen] = useState(false);
   const [zbcPlantGrid, setZBCPlantGrid] = useState([]);
   const [zbcPlantOldArray, setzbcPlantOldArray] = useState([]);
+  const [editRow, setEditRow] = useState({});
 
   const [IsVendorDrawerOpen, setIsVendorDrawerOpen] = useState(false);
   const [vbcVendorGrid, setVBCVendorGrid] = useState([]);
@@ -358,12 +359,12 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
-        ActualSOBPercent: tempData.ShareOfBusinessPercent,
         ShareOfBusinessPercent: parseInt(event.target.value),
         isSOBChanged: checkIsZBCSOBChanged(event, index),
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
       setZBCPlantGrid(tempArray)
+      setEditRow({ EditIndex: index, type: ZBC })
     } else {
       warningMessageHandle('VALID_NUMBER_WARNING')
     }
@@ -469,12 +470,12 @@ function CostingDetails(props) {
     if (!isNaN(event.target.value)) {
       tempData = {
         ...tempData,
-        ActualSOBPercent: tempData.ShareOfBusinessPercent,
         ShareOfBusinessPercent: parseInt(event.target.value),
         isSOBChanged: checkIsVBCSOBChanged(event, index),
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
       setVBCVendorGrid(tempArray)
+      setEditRow({ EditIndex: index, type: VBC })
     } else {
       warningMessageHandle('VALID_NUMBER_WARNING')
     }
@@ -1056,9 +1057,44 @@ function CostingDetails(props) {
       onOk: () => {
         confirmSOBUpdate(type)
       },
-      onCancel: () => { },
+      onCancel: () => { setPreviousSOBValue() },
     }
     return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+  }
+
+  /**
+   * @method setPreviousSOBValue
+   * @description SET OLD SOB VALUE
+   */
+  const setPreviousSOBValue = () => {
+    if (editRow.type === ZBC) {
+      let tempDataOld = zbcPlantOldArray[editRow.EditIndex];
+      let tempData = zbcPlantGrid[editRow.EditIndex]
+
+      if (tempData) {
+        tempData = { ...tempData, ShareOfBusinessPercent: tempDataOld.ShareOfBusinessPercent, }
+        let tempArray = Object.assign([...zbcPlantGrid], { [editRow.EditIndex]: tempData })
+        setZBCPlantGrid(tempArray)
+        setTimeout(() => {
+          setValue(`${zbcPlantGridFields}[${editRow.EditIndex}]ShareOfBusinessPercent`, tempDataOld.ShareOfBusinessPercent)
+        }, 200)
+      }
+
+    }
+
+    if (editRow.type === VBC) {
+      let tempDataOld = vbcVendorOldArray[editRow.EditIndex];
+      let tempData = vbcVendorGrid[editRow.EditIndex]
+
+      if (tempData) {
+        tempData = { ...tempData, ShareOfBusinessPercent: tempDataOld.ShareOfBusinessPercent, }
+        let tempArray = Object.assign([...vbcVendorGrid], { [editRow.EditIndex]: tempData })
+        setVBCVendorGrid(tempArray)
+        setTimeout(() => {
+          setValue(`vbcGridFields[${editRow.EditIndex}]ShareOfBusinessPercent`, tempDataOld.ShareOfBusinessPercent)
+        }, 200)
+      }
+    }
   }
 
   /**
