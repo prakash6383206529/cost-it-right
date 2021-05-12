@@ -196,7 +196,8 @@ class AddBOPImport extends Component {
           }, 500)
         }
       })
-    } else {
+    }
+    else {
       this.setState({
         isLoader: false,
       })
@@ -596,7 +597,7 @@ class AddBOPImport extends Component {
           },
           onCancel: () => { },
         }
-        return toastr.confirm(`${'You have changed SOB percent So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
+        return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
 
 
@@ -811,6 +812,7 @@ class AddBOPImport extends Component {
                                 component={searchableSelect}
                                 valueDescription={this.state.selectedPlants}
                                 mendatory={true}
+                                required
                                 className="multiselect-with-border"
                                 disabled={isEditFlag ? true : false}
                               />
