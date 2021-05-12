@@ -1010,7 +1010,7 @@ class AddMachineRate extends Component {
                             component={searchableSelect}
                             mendatory={true}
                             required
-                            validate={[required]}
+                            validate={(this.state.selectedTechnology == null || this.state.selectedTechnology.length === 0 ? [required] : [])}
                             className="multiselect-with-border"
                             valueDescription={this.state.selectedTechnology}
                             disabled={this.state.isViewFlag ? true : false}
@@ -1052,12 +1052,12 @@ class AddMachineRate extends Component {
                               disabled={isEditFlag ? true : false}
                             />
                           </Col>}
-                        {!this.state.IsVendor &&
+                        {(this.state.IsVendor === false || getConfigurationKey().IsDestinationPlantConfigure) && (
                           <Col md="3">
                             <Field
                               name="Plant"
                               type="text"
-                              label="Plant"
+                              label={this.state.IsVendor ? 'Destination Plant' : 'Plant'}
                               component={searchableSelect}
                               placeholder={'Select'}
                               options={this.renderListing('plant')}
@@ -1068,7 +1068,8 @@ class AddMachineRate extends Component {
                               valueDescription={this.state.selectedPlants}
                               disabled={isEditFlag ? (IsCopied ? false : true) : this.state.isViewFlag ? true : false}
                             />
-                          </Col>}
+                          </Col>)}
+
                         <Col md="3">
                           <Field
                             label={`Machine No.`}
