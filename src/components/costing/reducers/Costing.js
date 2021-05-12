@@ -60,6 +60,7 @@ import {
   CUSTOM_LOADER_HIDE,
   SET_COSTING_EFFECTIVE_DATE,
   CLOSE_OPEN_ACCORDION,
+  BOP_DRAWER_LIST
 } from '../../../config/constants';
 
 const initialState = {
@@ -496,6 +497,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         CloseOpenAccordion: action.payload
+      }
+    case BOP_DRAWER_LIST:
+      return {
+        ...state,
+        loading: false,
+        bopDrawerList: action.payload
       }
     default:
       return state

@@ -10,7 +10,7 @@ import {
   SET_COMPONENT_PACKAGE_FREIGHT_ITEM_DATA, SET_COMPONENT_TOOL_ITEM_DATA, SET_COMPONENT_DISCOUNT_ITEM_DATA, GET_RM_DRAWER_DATA_LIST, GET_PROCESS_DRAWER_DATA_LIST,
   GET_PART_COSTING_PLANT_SELECTLIST, GET_PART_COSTING_VENDOR_SELECT_LIST, GET_PART_SELECTLIST_BY_TECHNOLOGY, SET_SURFACE_COST_FOR_OVERHEAD_TAB_DATA, SET_EXCHANGE_RATE_CURRENCY_DATA,
   SET_TOOL_PROCESS_WISE_DATALIST, SET_IS_TOOLCOST_USED, TOOL_CATEGORY_SELECTLIST, SET_RMCC_ERRORS, CUSTOM_LOADER_SHOW,
-  CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE, CLOSE_OPEN_ACCORDION, config,
+  CUSTOM_LOADER_HIDE, SET_COSTING_EFFECTIVE_DATE, CLOSE_OPEN_ACCORDION, config, BOP_DRAWER_LIST,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -568,7 +568,7 @@ export function getBOPData(data, callback) {
 export function getRMDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.EffectiveDate}/${data.CostingId}`, headers,)
+    const request = axios.get(`${API.getRMDrawerDataList}/${data.PlantId}/${data.TechnologyId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`, headers,)
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
         dispatch({
@@ -591,7 +591,7 @@ export function getRMDrawerDataList(data, callback) {
  */
 export function getRMDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.CostingId}`
+    const queryParams = `${data.VendorId}/${data.TechnologyId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.material_id}/${data.grade_id}/${data.CostingId}`
     const request = axios.get(`${API.getRMDrawerVBCDataList}/${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result || response.status === 204) {
@@ -616,9 +616,13 @@ export function getRMDrawerVBCDataList(data, callback) {
 export function getBOPDrawerDataList(data, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getBOPDrawerDataList}/${data.PlantId}/${data.EffectiveDate}/${data.CostingId}`, headers,)
+    const request = axios.get(`${API.getBOPDrawerDataList}/${data.PlantId}/${data.EffectiveDate}/${data.categoryId}/${data.CostingId}`, headers,)
     request.then((response) => {
       if (response.data.Result) {
+        dispatch({
+          type: BOP_DRAWER_LIST,
+          payload: response.data.DataList
+        })
         callback(response)
       }
     }).catch((error) => {
@@ -635,10 +639,14 @@ export function getBOPDrawerDataList(data, callback) {
  */
 export function getBOPDrawerVBCDataList(data, callback) {
   return (dispatch) => {
-    const queryParams = `${data.VendorId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.CostingId}`;
+    const queryParams = `${data.VendorId}/${data.VendorPlantId}/${data.DestinationPlantId}/${data.EffectiveDate}/${data.categoryId}/${data.CostingId}`;
     const request = axios.get(`${API.getBOPDrawerVBCDataList}/${queryParams}`, headers);
     request.then((response) => {
       if (response.data.Result) {
+        dispatch({
+          type: BOP_DRAWER_LIST,
+          payload: response.data.DataList
+        })
         callback(response);
       }
     }).catch((error) => {

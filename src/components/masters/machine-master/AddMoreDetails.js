@@ -121,7 +121,7 @@ class AddMoreDetails extends Component {
     this.props.getProcessesSelectList(() => { })
     this.props.getShiftTypeSelectList(() => { })
     this.props.getDepreciationTypeSelectList(() => { })
-    this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+    this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
     this.props.getFuelComboData(() => { })
     this.getDetails()
   }
@@ -146,7 +146,7 @@ class AddMoreDetails extends Component {
         machineType: machineType,
       }, () => {
         if (machineType && machineType.value) {
-          this.props.getLabourTypeByMachineTypeSelectList(machineType.value, () => { })
+          this.props.getLabourTypeByMachineTypeSelectList(machineType.value ? machineType.value : 0, () => { })
         }
       })
     }
@@ -191,7 +191,7 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
-          this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId, () => { })
+          this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
 
           setTimeout(() => {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
@@ -385,7 +385,7 @@ class AddMoreDetails extends Component {
       });
     } else {
       this.setState({ machineType: [], labourGrid: [], })
-      this.props.getLabourTypeByMachineTypeSelectList('', () => { })
+      this.props.getLabourTypeByMachineTypeSelectList(0, () => { })
     }
   };
 
@@ -1748,7 +1748,7 @@ class AddMoreDetails extends Component {
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}
                     onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-                    >
+                  >
                     <div className="add-min-height">
 
                       <Row>

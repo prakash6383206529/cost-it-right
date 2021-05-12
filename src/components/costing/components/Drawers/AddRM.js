@@ -12,66 +12,34 @@ import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
+import { getGradeFilterByRawMaterialSelectList, getGradeSelectList, getRawMaterialFilterSelectList, getRawMaterialNameChild } from '../../../masters/actions/Material';
+import { SearchableSelectHookForm } from '../../../layout/HookFormInputs';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 
 function AddRM(props) {
 
-  const { register, handleSubmit, control, setValue, errors } = useForm({
+  const { register, handleSubmit, control, setValue, errors, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
+
   const dispatch = useDispatch()
 
   const costData = useContext(costingInfoContext)
 
   const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
+  console.log('rmDrawerList: ', rmDrawerList);
   const { initialConfiguration } = useSelector(state => state.auth)
+  const { filterRMSelectList } = useSelector(state => state.material)
 
   useEffect(() => {
     setSelectedRowData([])
-    if (costData.VendorType === ZBC) {
-
-      const data = {
-        TechnologyId: costData.TechnologyId,
-        PlantId: costData.PlantId,
-        CostingId: costData.CostingId,
-        EffectiveDate: CostingEffectiveDate,
-      }
-      dispatch(getRMDrawerDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    } else {
-
-      const data = {
-        VendorId: costData.VendorId,
-        TechnologyId: costData.TechnologyId,
-        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
-        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
-        EffectiveDate: CostingEffectiveDate,
-        CostingId: costData.CostingId,
-      }
-      dispatch(getRMDrawerVBCDataList(data, (res) => {
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setTableDataList(Data)
-        } else if (res && res.response && res.response.status === 412) {
-          setTableDataList([])
-        } else {
-          setTableDataList([])
-        }
-      }))
-
-    }
+    dispatch(getGradeSelectList(res => { }))
+    dispatch(getRawMaterialFilterSelectList(() => { }))
+    getDataList()
   }, []);
 
   /**
@@ -81,7 +49,18 @@ function AddRM(props) {
   const renderPaginationShowsTotal = (start, to, total) => {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
+  /**
+    * @method handleRMChange
+    * @description  used to handle row material selection
+    */
+  const handleRMChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      dispatch(getGradeFilterByRawMaterialSelectList(newValue.value, res => { }))
 
+    } else {
+      dispatch(getGradeSelectList(res => { }))
+    }
+  }
   const options = {
     clearSearch: true,
     noDataText: (rmDrawerList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
@@ -130,7 +109,21 @@ function AddRM(props) {
   const renderNetLandedRate = () => {
     return <>Net Cost<br />INR/UOM</>
   }
+  const renderNetLandedConversionRate = () => {
+    return <>Net Cost<br />USD/UOM</>
+  }
 
+  const netLandedFormat = (cell, row, enumObject, rowIndex) => {
+    return cell !== null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(row.NetLandedCost, getConfigurationKey().NoOfDecimalForPrice)
+  }
+
+  const netLandedConversionFormat = (cell, row, enumObject, rowIndex) => {
+    return row.Currency !== '-' ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+  }
+
+  const currencyFormatter = (cell, row, enumObject, rowIndex) => {
+    return cell !== '-' ? cell : 'INR'
+  }
   /**
   * @method cancel
   * @description used to Reset form
@@ -151,11 +144,90 @@ function AddRM(props) {
     toggleDrawer('')
   }
 
+  const getDataList = (materialId = null, gradeId = null) => {
+    if (costData.VendorType === ZBC) {
+
+      const data = {
+        TechnologyId: costData.TechnologyId,
+        PlantId: costData.PlantId,
+        CostingId: costData.CostingId,
+        EffectiveDate: CostingEffectiveDate,
+        material_id: materialId,
+        grade_id: gradeId,
+      }
+      dispatch(getRMDrawerDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    } else {
+
+      const data = {
+        VendorId: costData.VendorId,
+        TechnologyId: costData.TechnologyId,
+        VendorPlantId: costData.VendorPlantId !== null ? costData.VendorPlantId : EMPTY_GUID,
+        DestinationPlantId: initialConfiguration?.IsDestinationPlantConfigure ? costData.DestinationPlantId : EMPTY_GUID,
+        EffectiveDate: CostingEffectiveDate,
+        CostingId: costData.CostingId,
+        material_id: materialId,
+        grade_id: gradeId,
+      }
+      dispatch(getRMDrawerVBCDataList(data, (res) => {
+        if (res && res.status === 200) {
+          let Data = res.data.DataList;
+          setTableDataList(Data)
+        } else if (res && res.response && res.response.status === 412) {
+          setTableDataList([])
+        } else {
+          setTableDataList([])
+        }
+      }))
+
+    }
+
+  }
+
   /**
   * @method filterList
   * @description Filter user listing on the basis of role and department
   */
   const filterList = () => {
+    const RMid = getValues('RawMaterialId') ? getValues('RawMaterialId').value : null;
+    const RMGradeid = getValues('RawMaterialGradeId') ? getValues('RawMaterialGradeId').value : null;
+    getDataList(RMid, RMGradeid)
+  }
+
+  /**
+   * @method renderListing
+   * @description Used to show type of listing
+   */
+  const renderListing = (label) => {
+
+
+    const temp = [];
+
+    if (label === 'material') {
+      filterRMSelectList && filterRMSelectList.RawMaterials && filterRMSelectList.RawMaterials.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'grade') {
+      filterRMSelectList && filterRMSelectList.Grades && filterRMSelectList.Grades.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
 
   }
 
@@ -164,7 +236,11 @@ function AddRM(props) {
   * @description Reset user filter
   */
   const resetFilter = () => {
-
+    setValue('RawMaterialId', '')
+    setValue('RawMaterialGradeId', '')
+    dispatch(getRawMaterialFilterSelectList(res => { }))
+    dispatch(getRawMaterialNameChild(() => { }))
+    getDataList()
   }
 
   const toggleDrawer = (event) => {
@@ -209,8 +285,31 @@ function AddRM(props) {
                       <h5>{`Filter By:`}</h5>
                     </div>
 
+                    <div className="flex-fill mr-2">
+                      <SearchableSelectHookForm
+                        label={''}
+                        name={'RawMaterialId'}
+                        placeholder={'Raw Material'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        options={renderListing("material")}
+                        handleChange={handleRMChange}
+                      />
+
+                    </div>
                     <div className="flex-fill">
 
+                      <SearchableSelectHookForm
+                        label={''}
+                        name={'RawMaterialGradeId'}
+                        placeholder={'RM Grade'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        options={renderListing("grade")}
+                        handleChange={() => { }}
+                      />
                     </div>
 
                     <div className="flex-fill">
@@ -259,11 +358,12 @@ function AddRM(props) {
                   <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Category" searchable={false} >Category</TableHeaderColumn>
                   {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorName" >Vendor</TableHeaderColumn>}
                   {costData && costData.VendorType === ZBC && <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="VendorLocation" searchable={false} >{renderVendorLocation()}</TableHeaderColumn>}
-                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" searchable={false} >Currency</TableHeaderColumn>
+                  <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="Currency" dataFormat={currencyFormatter} searchable={false} >Currency</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="UOM" searchable={false} >UOM</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="BasicRatePerUOM" searchable={false} >{renderBasicRate()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="ScrapRate" searchable={false} >{renderScrapRate()}</TableHeaderColumn>
-                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
+                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCostConversion" dataFormat={netLandedFormat} searchable={false} >{renderNetLandedRate()}</TableHeaderColumn>
+                  <TableHeaderColumn width={120} columnTitle={true} dataAlign="center" dataField="NetLandedCost" dataFormat={netLandedConversionFormat} searchable={false} >{renderNetLandedConversionRate()}</TableHeaderColumn>
                 </BootstrapTable>
               </Col>
             </Row>

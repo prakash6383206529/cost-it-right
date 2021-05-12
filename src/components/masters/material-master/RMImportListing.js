@@ -22,7 +22,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from '../../../helper/ConfirmComponent';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getPlantSelectListByType } from '../../../actions/Common'
+import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC } from '../../../config/constants'
 import { costingHeadObjs } from '../../../config/masterData';
 
@@ -42,7 +42,8 @@ class RMImportListing extends Component {
       value: { min: 0, max: 0 },
       maxRange: 0,
       isBulkUpload: false,
-      shown: this.props.isSimulation ? true : false
+      shown: this.props.isSimulation ? true : false,
+      technology: []
     }
   }
 
@@ -86,7 +87,7 @@ class RMImportListing extends Component {
     this.props.getSupplierList(() => { })
 
     this.props.getRawMaterialFilterSelectList(() => { })
-
+    this.props.getTechnologySelectList(() => { })
     this.getDataList()
     this.props.getPlantSelectListByType(ZBC, () => { })
   }
@@ -96,7 +97,7 @@ class RMImportListing extends Component {
     this.getDataList()
   }
 
-  getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null) => {
+  getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
     const { value } = this.state;
     const filterData = {
       costingHead: costingHead,
@@ -104,7 +105,7 @@ class RMImportListing extends Component {
       material_id: materialId,
       grade_id: gradeId,
       vendor_id: vendorId,
-      technologyId: this.props.isSimulation ? this.props.technology : 0,
+      technologyId: this.props.isSimulation ? this.props.technology : technologyId,
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
     }
@@ -298,7 +299,7 @@ class RMImportListing extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { filterRMSelectList, plantSelectList } = this.props;
+    const { filterRMSelectList, plantSelectList, technologySelectList } = this.props;
     const temp = [];
     if (label === 'costingHead') {
       return costingHeadObjs;
@@ -330,6 +331,14 @@ class RMImportListing extends Component {
         temp.push({ label: item.Text, value: item.Value })
       });
       return temp;
+    }
+    if (label === 'technology') {
+      technologySelectList && technologySelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
     }
 
   }
@@ -391,7 +400,7 @@ class RMImportListing extends Component {
   * @description Filter user listing on the basis of role and department
   */
   filterList = () => {
-    const { costingHead, RawMaterial, RMGrade, vendorName, plant } = this.state;
+    const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
     console.log('costingHead: ', costingHead);
 
     const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
@@ -399,8 +408,8 @@ class RMImportListing extends Component {
     const RMid = RawMaterial ? RawMaterial.value : null;
     const RMGradeid = RMGrade ? RMGrade.value : null;
     const Vendorid = vendorName ? vendorName.value : null;
-
-    this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid)
+    const technologyId = technology ? technology.value : 0
+    this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
   }
 
   /**
@@ -415,6 +424,7 @@ class RMImportListing extends Component {
       RMGrade: [],
       vendorName: [],
       plant: [],
+      technology: [],
       value: { min: 0, max: 0 },
     }, () => {
       this.getInitialRange()
@@ -468,7 +478,13 @@ class RMImportListing extends Component {
       this.setState({ plant: [] })
     }
   }
-
+  handleTechnologyChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ technology: newValue })
+    } else {
+      this.setState({ technology: [] })
+    }
+  }
 
   /**
   * @method confirmDensity
@@ -547,7 +563,22 @@ class RMImportListing extends Component {
                       valueDescription={this.state.plant}
                     />
                   </div>
-
+                  <div className="flex-fill">
+                    <Field
+                      name="Technology"
+                      type="text"
+                      label=""
+                      component={searchableSelect}
+                      placeholder={'Technology'}
+                      isClearable={false}
+                      options={this.renderListing('technology')}
+                      //onKeyUp={(e) => this.changeItemDesc(e)}
+                      validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
+                      required={true}
+                      handleChangeDescription={this.handleTechnologyChange}
+                      valueDescription={this.state.technology}
+                    />
+                  </div>
                   <div className="flex-fill">
                     <Field
                       name="RawMaterialId"
@@ -723,9 +754,9 @@ class RMImportListing extends Component {
 */
 function mapStateToProps({ material, comman, auth }) {
   const { rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList } = material;
-  const { supplierSelectList, plantSelectList } = comman;
+  const { supplierSelectList, plantSelectList, technologySelectList } = comman;
   const { initialConfiguration } = auth;
-  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList, initialConfiguration, plantSelectList }
+  return { supplierSelectList, rawMaterialNameSelectList, gradeSelectList, filterRMSelectList, rmImportDataList, initialConfiguration, plantSelectList, technologySelectList }
 }
 
 /**
@@ -749,6 +780,7 @@ export default connect(mapStateToProps, {
   getRawMaterialFilterByVendorSelectList,
   getGradeFilterByVendorSelectList,
   getPlantSelectListByType,
+  getTechnologySelectList
 })(reduxForm({
   form: 'RMImportListing',
   enableReinitialize: true,

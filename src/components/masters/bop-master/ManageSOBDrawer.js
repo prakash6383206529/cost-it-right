@@ -47,9 +47,11 @@ function ManageSOBDrawer(props) {
 
   useEffect(() => {
 
-    setIsLoader(true)
+
     setTimeout(() => {
+
       dispatch(getManageBOPSOBById(ID, (res) => {
+        // setIsLoader(true)
         if (res && res.data && res.data.Result) {
           let Data = res.data.Data;
 
@@ -72,12 +74,13 @@ function ManageSOBDrawer(props) {
             setGridData(Data.BoughtOutPartVendorList)
             setGridDataOldArray(Data.BoughtOutPartVendorList)
             // }
-            setIsLoader(false)
+
           }
 
         }
       }))
     }, 500);
+    // setIsLoader(false)
 
   }, []);
 
