@@ -156,95 +156,97 @@ function Plastic(props) {
   return (
     <Fragment>
       <Row>
-        <Col>
+        
           <form noValidate className="form"
           // onSubmit={handleSubmit(onSubmit)}
           >
-            <Col md="12" className={'mt25'}>
-              <div className="border pl-3 pr-3 pt-3">
-                <Col md="10">
-                  <div className="left-border">
-                    {'Input Weight Calculator:'}
+            <Col md="12">
+            <div className="costing-border px-4">
+              <Row>
+                <Col md="12" className={'mt25'}>
+                  <div className="header-title">
+                    <h5>{'Input Weight Calculator:'}</h5>
                   </div>
                 </Col>
-                <Col md="12">
-                  <Row className={'mt15'}>
-                    <Col md="2" className="m-height-44-label-inside">
-                      <TextFieldHookForm
-                        label={`Net Weight(Kg)`}
-                        name={'netWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.netWeight}
-                        disabled={false}
-                      />
-                    </Col>
-                    <Col md="2" className="m-height-44-label-inside">
-                      <TextFieldHookForm
-                        label={`Runner Weight`}
-                        name={'runnerWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={true}
-                        rules={{
-                          required: true,
-                          pattern: {
-                            //value: /^[0-9]*$/i,
-                            value: /^[0-9]\d*(\.\d+)?$/i,
-                            message: 'Invalid Number.',
-                          },
-                          // maxLength: 4,
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.runnerWeight}
-                        disabled={false}
-                      />
-                    </Col>
-                    <Col md="2" className="m-height-44-label-inside">
-                      <TextFieldHookForm
-                        label={`Gross Weight`}
-                        name={'grossWeight'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        // rules={{
-                        //   required: true,
-                        //   pattern: {
-                        //     //value: /^[0-9]*$/i,
-                        //     value: /^[0-9]\d*(\.\d+)?$/i,
-                        //     message: 'Invalid Number.',
-                        //   },
-                        //   // maxLength: 4,
-                        // }}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.grossWeight}
-                        disabled={true}
-                      />
-                    </Col>
-                    {/* <Col md="2">
+              </Row>
+                
+              <Row className={''}>
+                <Col md="3" >
+                  <TextFieldHookForm
+                    label={`Net Weight(Kg)`}
+                    name={'netWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.netWeight}
+                    disabled={false}
+                  />
+                </Col>
+                <Col md="3">
+                  <TextFieldHookForm
+                    label={`Runner Weight`}
+                    name={'runnerWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={true}
+                    rules={{
+                      required: true,
+                      pattern: {
+                        //value: /^[0-9]*$/i,
+                        value: /^[0-9]\d*(\.\d+)?$/i,
+                        message: 'Invalid Number.',
+                      },
+                      // maxLength: 4,
+                    }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.runnerWeight}
+                    disabled={false}
+                  />
+                </Col>
+                <Col md="3" >
+                  <TextFieldHookForm
+                    label={`Gross Weight`}
+                    name={'grossWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: true,
+                    //   pattern: {
+                    //     //value: /^[0-9]*$/i,
+                    //     value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.grossWeight}
+                    disabled={true}
+                  />
+                </Col>
+                {/* <Col md="2">
                   <TextFieldHookForm
                     label={`Sacle Loss`}
                     name={'sacleLoss'}
@@ -270,83 +272,83 @@ function Plastic(props) {
                   />
                 </Col> */}
 
-                    {/* <Col md="2">
-                  <TextFieldHookForm
-                    label={`Trimming Loss`}
-                    name={'trimmingLoss'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: false,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.trimmingLoss}
-                    disabled={true}
-                  />
-                </Col> */}
-                    {/* <Col md="2">
-                  <TextFieldHookForm
-                    label={`Bar Cutting Allowance`}
-                    name={'barCutting'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.barCutting}
-                    disabled={true}
-                  />
-                </Col> */}
-                    {/* <Col md="2">
-                  <TextFieldHookForm
-                    label={`Billet Heating Loss`}
-                    name={'billetLoss'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => {}}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.billetLoss}
-                    disabled={true}
-                  />
-                </Col> */}
-                  </Row>
-                </Col>
+                  {/* <Col md="2">
+                    <TextFieldHookForm
+                      label={`Trimming Loss`}
+                      name={'trimmingLoss'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: false,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => {}}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.trimmingLoss}
+                      disabled={true}
+                    />
+                  </Col> */}
+                  {/* <Col md="2">
+                    <TextFieldHookForm
+                      label={`Bar Cutting Allowance`}
+                      name={'barCutting'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => {}}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.barCutting}
+                      disabled={true}
+                    />
+                  </Col> */}
+                  {/* <Col md="2">
+                    <TextFieldHookForm
+                      label={`Billet Heating Loss`}
+                      name={'billetLoss'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      // rules={{
+                      //   required: true,
+                      //   pattern: {
+                      //     //value: /^[0-9]*$/i,
+                      //     value: /^[0-9]\d*(\.\d+)?$/i,
+                      //     message: 'Invalid Number.',
+                      //   },
+                      //   // maxLength: 4,
+                      // }}
+                      handleChange={() => {}}
+                      defaultValue={''}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.billetLoss}
+                      disabled={true}
+                    />
+                  </Col> */}
+              </Row>
+                
                 <LossStandardTable
                   dropDownMenu={dropDown}
                   calculation={calculateRemainingCalculation}
@@ -355,9 +357,9 @@ function Plastic(props) {
                   sendTable={WeightCalculatorRequest ? WeightCalculatorRequest.LossData : []}
                   tableValue={tableData}
                 />
-                <Col md="12">
-                  <Row className={'mt15'}>
-                    <Col md="2" className="m-height-44-label-inside">
+                
+                  <Row className={'mt25'}>
+                    <Col md="3" >
                       <TextFieldHookForm
                         label={`Finished Weight`}
                         name={'finishedWeight'}
@@ -382,7 +384,7 @@ function Plastic(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Scrap Weight(Kg)`}
                         name={'scrapWeight'}
@@ -411,8 +413,8 @@ function Plastic(props) {
                       />
                     </Col>
                   </Row>
-                  <Row className={'mt15'}>
-                    <Col md="2" className="m-height-44-label-inside">
+                  <Row className={''}>
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`RM Cost`}
                         name={'rmCost'}
@@ -437,7 +439,7 @@ function Plastic(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Scrap Cost`}
                         name={'scrapCost'}
@@ -463,7 +465,7 @@ function Plastic(props) {
                       />
                     </Col>
 
-                    <Col md="2" className="m-height-44-label-inside">
+                    <Col md="3">
                       <TextFieldHookForm
                         // Confirm this name from tanmay bhaiya
                         label={`RM Cost`}
@@ -490,7 +492,7 @@ function Plastic(props) {
                       />
                     </Col>
                   </Row>
-                </Col>
+                
               </div>
             </Col>
             <div className="mt25 col-md-12 text-right">
@@ -511,17 +513,13 @@ function Plastic(props) {
               <button
                 type="submit"
                 // disabled={isSubmitted ? true : false}
-                onClick={onSubmit}
-                className="btn-primary save-btn"
-              >
-                <div className={'check-icon'}>
-                  <i class="fa fa-check" aria-hidden="true"></i>
-                </div>
+                onClick={onSubmit} className="submit-button save-btn">
+                <div className={'check-icon'}><img src={require('../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
                 {'SAVE'}
               </button>
             </div>
           </form>
-        </Col>
+        
       </Row>
     </Fragment>
   )

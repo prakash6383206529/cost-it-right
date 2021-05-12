@@ -160,12 +160,13 @@ function LossStandardTable(props) {
     setTableData(tempData)
   }
   return (
-    <Fragment>
-      <Col md="10">
-        <div className="left-border">{'Loss Percantage:'}</div>
-      </Col>
-      <Col md="12">
-        <Row className={'mt15'}>
+    <Fragment>      
+        <Row className={''}>
+          <Col md="12">
+            <div className="header-title">
+              <h5>{'Loss Percantage:'}</h5>
+            </div>
+          </Col>
           <Col md="3">
             <SearchableSelectHookForm
               label={`Type of Loss`}
@@ -193,7 +194,7 @@ function LossStandardTable(props) {
               disabled={false}
             />
           </Col>
-          <Col md="2">
+          <Col md="3">
             <TextFieldHookForm
               label={`Lost(%)`}
               name={'lostPercent'}
@@ -218,7 +219,7 @@ function LossStandardTable(props) {
               disabled={false}
             />
           </Col>
-          <Col md="2">
+          <Col md="3">
             <TextFieldHookForm
               label={`Loss Weight`}
               name={'lossWeight'}
@@ -276,7 +277,7 @@ function LossStandardTable(props) {
           </Col>
 
           <Col md="12">
-            <Table className="table" size="sm">
+            <Table className="table mb-0" size="sm">
               <thead>
                 <tr>
                   <th>{`Type of Loss`}</th>
@@ -334,14 +335,14 @@ function LossStandardTable(props) {
 
               {/* <span className="col-sm-4 ">{'30'}</span> */}
             </Table>
-            <div className="bluefooter-butn border row">
-              <div className="col-md-12 text-right">
-                <span className="col-md-12">
-                  {`Net Loss Weight:`}
-                  {checkForDecimalAndNull(props.netWeight ? props.netWeight.LostSum : netWeight, trim)}
-                </span>
-              </div>
+            
+            <div className="col-md-12 text-right bluefooter-butn border">
+              <span className="w-100">
+                {`Net Loss Weight:`}
+                {checkForDecimalAndNull(props.netWeight ? props.netWeight.LostSum : netWeight, trim)}
+              </span>
             </div>
+            
           </Col>
 
           {/* <Row>
@@ -502,7 +503,7 @@ function LossStandardTable(props) {
             </Col>
           </Row> */}
         </Row>
-      </Col>
+      
     </Fragment>
   )
 }
