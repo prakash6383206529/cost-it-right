@@ -68,7 +68,8 @@ class AddPower extends Component {
       DataToChangeZ: [],
       ind: '',
       DeleteChanged: true,
-      handleChange: true
+      handleChange: true,
+      AddChanged: true
     }
   }
 
@@ -583,7 +584,7 @@ class AddPower extends Component {
       netContributionValue: NetPowerCostPerUnit,
       isAddedSEB: true,
     });
-    this.setState({ DropdownChanged: false })
+    this.setState({ AddChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -747,7 +748,7 @@ class AddPower extends Component {
       this.props.change('UnitGeneratedPerUnitOfFuel', 0)
 
     });
-    this.setState({ DropdownChanged: false })
+    this.setState({ AddChanged: false })
     this.resetpowerKeyValue()
   }
 
@@ -1028,7 +1029,7 @@ class AddPower extends Component {
   onSubmit = (values) => {
     const { isEditFlag, PowerDetailID, IsVendor, VendorCode, selectedPlants, StateName, powerGrid,
       effectiveDate, vendorName, selectedVendorPlants, DataToChangeVendor, DataToChangeZ, powerGridEditIndex, DropdownChanged, ind,
-      handleChange, DeleteChanged } = this.state;
+      handleChange, DeleteChanged, AddChanged } = this.state;
     const { initialConfiguration, fieldsObj } = this.props;
     let plantArray = selectedPlants && selectedPlants.map((item) => {
       return { PlantName: item.Text, PlantId: item.Value, }
@@ -1075,36 +1076,30 @@ class AddPower extends Component {
         })
 
       } else {
-
-        // let count = 0
-        // for (let i = 0; i < selfGridDataArray.length; i++) {
-        //   let grid = DataToChangeZ.SGChargesDetails[i]
-        //   let sgrid = selfGridDataArray[i]
-        //   if (grid.AssetCost == sgrid.AssetCost && grid.AnnualCost == sgrid.AnnualCost && grid.CostPerUnitOfMeasurement == sgrid.CostPerUnitOfMeasurement &&
-        //     grid.UnitGeneratedPerUnitOfFuel == sgrid.UnitGeneratedPerUnitOfFuel && grid.UnitGeneratedPerAnnum == sgrid.UnitGeneratedPerAnnum &&
-        //     grid.PowerContributionPercentage == sgrid.PowerContributionPercentage) {
-        //     count++
-        //   }
-        // }
-        console.log(values, 'values')
-        console.log(DataToChangeZ, 'DataToChangeZ')
-        // console.log(count,'count')
-        console.log(selfGridDataArray.length, 'selfGridDataArray.length')
-        // let sebGrid = DataToChangeZ.SEBChargesDetails[0]
-        // if (
-        // (
-        // DropdownChanged
-        //    || (sebGrid.MinDemandKWPerMonth == values.MinDemandKWPerMonth && sebGrid.DemandChargesPerKW == values.DemandChargesPerKW &&
-        // sebGrid.AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW == values.MaxDemandChargesKW &&
-        // sebGrid.MeterRentAndOtherChargesPerAnnum == values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA == values.DutyChargesAndFCA
-        // &&sebGrid.PowerContributaionPersentage == values.SEBPowerContributaion))
-        // && count == selfGridDataArray.length
-        //  && handleChange
-        // && DeleteChanged
-        // ) {
-        //   this.cancel()
-        //   return false
-        // }
+        let addRow = 0
+        let count = 0
+        if (selfGridDataArray.length > DataToChangeZ.SGChargesDetails.length) {
+          addRow = 1
+        }
+        if (addRow == 0) {
+          for (let i = 0; i < selfGridDataArray.length; i++) {
+            let grid = DataToChangeZ.SGChargesDetails[i]
+            let sgrid = selfGridDataArray[i]
+            if (grid.AssetCost == sgrid.AssetCost && grid.AnnualCost == sgrid.AnnualCost && grid.CostPerUnitOfMeasurement == sgrid.CostPerUnitOfMeasurement &&
+              grid.UnitGeneratedPerUnitOfFuel == sgrid.UnitGeneratedPerUnitOfFuel && grid.UnitGeneratedPerAnnum == sgrid.UnitGeneratedPerAnnum &&
+              grid.PowerContributionPercentage == sgrid.PowerContributionPercentage) {
+              count++
+            }
+          }
+        }
+        let sebGrid = DataToChangeZ.SEBChargesDetails[0]
+        if ((AddChanged && DropdownChanged || (sebGrid.MinDemandKWPerMonth == values.MinDemandKWPerMonth && sebGrid.DemandChargesPerKW == values.DemandChargesPerKW &&
+          sebGrid.AvgUnitConsumptionPerMonth == values.AvgUnitConsumptionPerMonth && sebGrid.MaxDemandChargesKW == values.MaxDemandChargesKW &&
+          sebGrid.MeterRentAndOtherChargesPerAnnum == values.MeterRentAndOtherChargesPerAnnum && sebGrid.DutyChargesAndFCA == values.DutyChargesAndFCA
+          && sebGrid.PowerContributaionPersentage == values.SEBPowerContributaion)) && addRow == 0 && count == selfGridDataArray.length && handleChange && DeleteChanged) {
+          this.cancel()
+          return false
+        }
 
         let requestData = {
           PowerId: PowerDetailID,
