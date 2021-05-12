@@ -277,25 +277,21 @@ function ManageSOBDrawer(props) {
                                   control={control}
                                   register={register}
                                   mandatory={false}
-                                  // rules={{
-                                  //   //required: true,
-                                  //   pattern: {
-                                  //     //value: /^[0-9]*$/i,
-                                  //     // value: /^[0-9]\d*(\.\d+)?$/i,
-                                  //     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                  //     message: 'Invalid Number.'
-                                  //   },
-                                  //   maxLength: {
-                                  //     value: 10,
-                                  //     message: 'Length should not be more than 10'
-                                  //   },
-
-                                  //   max: {
-                                  //     value: 100,
-                                  //     message: "Should not be greater than 100"
-                                  //   },
-                                  // }}
-
+                                  rules={{
+                                    //required: true,
+                                    pattern: {
+                                      value: /^\d*\.?\d*$/,
+                                      message: 'Invalid Number.'
+                                    },
+                                    maxLength: {
+                                      value: 10,
+                                      message: 'Length should not be more than 10'
+                                    },
+                                    max: {
+                                      value: 100,
+                                      message: "Should not be greater than 100"
+                                    },
+                                  }}
                                   defaultValue={GridData.length === 1 ? 100 : item.ShareOfBusinessPercentage}
                                   className=""
                                   customClassName={'withBorder'}
@@ -303,7 +299,6 @@ function ManageSOBDrawer(props) {
                                     e.preventDefault()
                                     handleSOBChange(e, index)
                                   }}
-
                                   errors={errors && errors.GridFields && errors.GridFields[index] !== undefined ? errors.GridFields[index].ShareOfBusinessPercentage : ''}
                                   disabled={isDisable ? true : false}
                                 />

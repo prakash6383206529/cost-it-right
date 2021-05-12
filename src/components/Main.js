@@ -46,6 +46,7 @@ import SimulationHistory from './simulation/components/SimulationHistory'
 import Simulation from './simulation/components/Simulation'
 import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
+import { userDetails } from '../helper'
 
 class Main extends Component {
   constructor(props) {
@@ -55,6 +56,14 @@ class Main extends Component {
       visibelPageNotFound: false,
       breadcrumbTrail: {},
     }
+  }
+
+  componentDidMount() {
+    const Detail = userDetails()
+    setTimeout(() => {
+      console.log('After 10 seonds')
+    }, Detail.expires_in * 1000 - 5 * 5000)
+
   }
 
   /**

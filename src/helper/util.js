@@ -13,13 +13,7 @@ import { G, KG, MG } from '../config/constants'
 export const apiErrors = (res) => {
   const response = res ? res.response : undefined
 
-  if (
-    response &&
-    response.data &&
-    response.data.error &&
-    response.data.error.message &&
-    response.data.error.message.value
-  ) {
+  if (response?.data?.error?.message?.value) {
     toastr.error(response.data.error.message.value)
   } else if (response) {
     response && handleHTTPStatus(response)
@@ -36,42 +30,31 @@ export const apiErrors = (res) => {
 const handleHTTPStatus = (response) => {
   switch (response.status) {
     case 203:
-      return toastr.error(
-        'Data is inconsistent. Please refresh your session by re-login',
-      )
+      return toastr.error('Data is inconsistent. Please refresh your session by re-login')
     case 204:
       return toastr.error('Intentionally blank for now.')
     case 205:
       return toastr.error('Please clear your cache for data to reflect')
     case 206:
-      return toastr.error(
-        'The data might not have been updated properly. Please try again to ensure',
-      )
+      return toastr.error('The data might not have been updated properly. Please try again to ensure')
     case 300:
     case 301:
     case 302:
     case 303:
-      return toastr.error(
-        'Something is not right. Please contact your IT Team.',
-      )
+      return toastr.error('Something is not right. Please contact your IT Team.')
     case 400:
       return toastr.error('Bad Request. Please contact your IT Team.')
     case 401:
+      window.location.assign('/login');
       return toastr.error('Authentication error. Please contact your IT Team.')
     case 403:
-      return toastr.error(
-        'You are not allowed to access this resource. Please contact your IT Team.',
-      )
+      return toastr.error('You are not allowed to access this resource. Please contact your IT Team.',)
     case 404:
       return toastr.error('Not found')
     case 405:
-      return toastr.error(
-        'You are not allowed to access this resource. Please contact your IT Team',
-      )
-    case 406: const errMsg406 =
-      response && response.data && response.data.Message
-        ? response.data.Message
-        : 'Something is not right. Please contact your IT Team.'
+      return toastr.error('You are not allowed to access this resource. Please contact your IT Team',)
+    case 406:
+      const errMsg406 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toastr.error(errMsg406)
     case 409:
     case 411:
@@ -80,51 +63,31 @@ const handleHTTPStatus = (response) => {
     case 427:
       return toastr.error('Something is not right. Please contact your IT Team')
     case 407:
-      return toastr.error(
-        'Proxy Authentication Error. Please contact your IT Team',
-      )
+      return toastr.error('Proxy Authentication Error. Please contact your IT Team')
     case 408:
-      return toastr.error(
-        'Your request has timed out. Please try again after some time.',
-      )
+      return toastr.error('Your request has timed out. Please try again after some time.')
     case 410:
       return toastr.error('The resource you requested no longer exists.')
     case 412:
-      const errMsg =
-        response && response.data && response.data.Message
-          ? response.data.Message
-          : 'Something is not right. Please contact your IT Team.'
+      const errMsg = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toastr.error(errMsg)
     case 413:
-      return toastr.error(
-        "Server can't process such long request. Please contact your IT Team",
-      )
+      return toastr.error("Server can't process such long request. Please contact your IT Team")
     case 415:
-      return toastr.error(
-        'This request is not supported by the server. Please contact your IT Team',
-      )
+      return toastr.error('This request is not supported by the server. Please contact your IT Team')
     case 417:
-      const errMsg417 =
-        response && response.data && response.data.Message
-          ? response.data.Message
-          : 'Something is not right. Please contact your IT Team.'
+      const errMsg417 = response?.data?.Message ? response.data.Message : 'Something is not right. Please contact your IT Team.'
       return toastr.error(errMsg417)
     case 500:
       return toastr.error('Internal server error. Please contact your IT Team')
     case 501:
       return toastr.error('Something is not right. Please contact your IT Team')
     case 502:
-      return toastr.error(
-        'Server is unavailable or unreachable. Please contact your IT Team',
-      )
+      return toastr.error('Server is unavailable or unreachable. Please contact your IT Team')
     case 503:
-      return toastr.error(
-        'Server is unavailable due to load or maintenance. Please contact your IT Team',
-      )
+      return toastr.error('Server is unavailable due to load or maintenance. Please contact your IT Team')
     case 504:
-      return toastr.error(
-        'Server is unavailable due to timeout. Please contact your IT Team',
-      )
+      return toastr.error('Server is unavailable due to timeout. Please contact your IT Team')
     default:
       return toastr.error('Something is not right. Please contact your IT Team')
   }

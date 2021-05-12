@@ -35,6 +35,8 @@ class Login extends Component {
       reactLocalStorage.setObject('isUserLoggedIn', false);
     }
 
+
+
   }
 
   forgotConfirm = () => {

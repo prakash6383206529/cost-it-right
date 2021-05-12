@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector, } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { getRMDrawerDataList, getRMDrawerVBCDataList } from '../../actions/Costing';
@@ -13,6 +14,11 @@ import { EMPTY_GUID, ZBC } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 
 function AddRM(props) {
+
+  const { register, handleSubmit, control, setValue, errors } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  })
 
   const [tableData, setTableDataList] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
@@ -91,32 +97,12 @@ function AddRM(props) {
     setSelectedRowData(row)
   }
 
-  const onSelectAll = (isSelected, rows) => {
-
-  }
+  const onSelectAll = (isSelected, rows) => { }
 
   const selectRowProp = {
     mode: 'radio',
-    //selected: ['f2e2f8c2-6914-4660-9844-26e7fea83b4e'],
     onSelect: onRowSelect,
-    //onSelectAll: onSelectAll
   };
-
-  /**
- * @method buttonFormatter
- * @description Renders buttons
- */
-  const checkBoxFormatter = (cell, row, enumObject, rowIndex) => {
-    return (
-      <>
-        <input
-          type="checkbox"
-          checked={true}
-          disabled={false}
-        />
-      </>
-    )
-  }
 
   const renderBasicRate = () => {
     return <>Basic Rate /<br />UOM </>
@@ -165,6 +151,22 @@ function AddRM(props) {
     toggleDrawer('')
   }
 
+  /**
+  * @method filterList
+  * @description Filter user listing on the basis of role and department
+  */
+  const filterList = () => {
+
+  }
+
+  /**
+  * @method resetFilter
+  * @description Reset user filter
+  */
+  const resetFilter = () => {
+
+  }
+
   const toggleDrawer = (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -172,9 +174,7 @@ function AddRM(props) {
     props.closeDrawer('', selectedRowData)
   };
 
-  const onSubmit = data => {
-    toggleDrawer('')
-  }
+  const onSubmit = data => { }
 
   /**
   * @method render
@@ -200,6 +200,42 @@ function AddRM(props) {
               </Col>
             </Row>
 
+            < form onSubmit={handleSubmit(onSubmit)} noValidate >
+
+              <Row className="filter-row-large pt-4 ">
+                <Col md="12" lg="11" className="filter-block ">
+                  <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
+                    <div className="flex-fills">
+                      <h5>{`Filter By:`}</h5>
+                    </div>
+
+                    <div className="flex-fill">
+
+                    </div>
+
+                    <div className="flex-fill">
+                      <button
+                        type="button"
+                        onClick={resetFilter}
+                        className="reset mr10"
+                      >
+                        {"Reset"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={filterList}
+                        className="user-btn"
+                      >
+                        {"Apply"}
+                      </button>
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+
+            </form >
+
             <Row className="mx-0">
               <Col>
                 <BootstrapTable
@@ -216,7 +252,6 @@ function AddRM(props) {
                   //ref={'table'}
                   pagination>
                   <TableHeaderColumn dataField="RawMaterialId" isKey={true} hidden width={100} dataAlign="center" searchable={false} >{''}</TableHeaderColumn>
-                  {/* <TableHeaderColumn dataField="" width={100} dataAlign="center" searchable={false} dataFormat={checkBoxFormatter} >{''}</TableHeaderColumn> */}
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="EntryType"  >{renderRmType()}</TableHeaderColumn>
                   <TableHeaderColumn width={100} columnTitle={true} dataAlign="center" dataField="RawMaterial" >{renderRmName()}</TableHeaderColumn>
                   <TableHeaderColumn width={80} columnTitle={true} dataAlign="center" dataField="RMGrade" >{renderRmGrade()}</TableHeaderColumn>

@@ -108,7 +108,7 @@ class BOMViewer extends Component {
         let Data = res.data.Data.FlowPoints;
 
         const DeleteNodeL1 = getRandomSixDigit();
-        Data && Data.map(el => {
+        Data && Data.map((el, index) => {
           tempArray.push({
             PartType: el.PartType,
             PartTypeId: el.PartTypeId,
@@ -284,7 +284,7 @@ class BOMViewer extends Component {
           className={"bom-viewer-main"}
           anchor={this.props.anchor}
           open={this.props.isOpen}
-          // onClose={(e) => this.toggleDrawer(e)}
+        // onClose={(e) => this.toggleDrawer(e)}
         >
           <>
             <div className={"drawer-wrapper drawer-full-width bom-drawer"}>
