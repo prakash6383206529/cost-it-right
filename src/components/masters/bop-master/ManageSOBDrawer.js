@@ -46,34 +46,38 @@ function ManageSOBDrawer(props) {
   const dispatch = useDispatch()
 
   useEffect(() => {
+
     setIsLoader(true)
-    dispatch(getManageBOPSOBById(ID, (res) => {
-      if (res && res.data && res.data.Result) {
-        let Data = res.data.Data;
+    setTimeout(() => {
+      dispatch(getManageBOPSOBById(ID, (res) => {
+        if (res && res.data && res.data.Result) {
+          let Data = res.data.Data;
 
-        if (Data.BoughtOutPartVendorList.length === 1) {
-          setIsDisable(true)
-          setGridData(Data.BoughtOutPartVendorList)
-          setGridDataOldArray(Data.BoughtOutPartVendorList)
-        }
-        if (Data.BoughtOutPartVendorList.length > 1) {
-          let tempArray = [];
-          let tempData = Data.BoughtOutPartVendorList[0];
-          tempData = {
-            ...tempData,
-            ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
-
+          if (Data.BoughtOutPartVendorList.length === 1) {
+            setIsDisable(true)
+            setGridData(Data.BoughtOutPartVendorList)
+            setGridDataOldArray(Data.BoughtOutPartVendorList)
           }
-          // else {
+          if (Data.BoughtOutPartVendorList.length > 1) {
+            let tempArray = [];
+            let tempData = Data.BoughtOutPartVendorList[0];
+            tempData = {
+              ...tempData,
+              ShareOfBusinessPercentage: Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage ? Data.BoughtOutPartVendorList[0].ShareOfBusinessPercentage : 100
 
-          setData(Data)
-          // setGridData(Data.BoughtOutPartVendorList)
-          // setGridDataOldArray(Data.BoughtOutPartVendorList)
-          // }
+            }
+            // else {
+
+            setData(Data)
+            setGridData(Data.BoughtOutPartVendorList)
+            setGridDataOldArray(Data.BoughtOutPartVendorList)
+            // }
+            setIsLoader(false)
+          }
+
         }
-        setIsLoader(false)
-      }
-    }))
+      }))
+    }, 500);
 
   }, []);
 
