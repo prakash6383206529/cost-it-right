@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getRMGradeSelectListByRawMaterial, getVendorListByVendorType,
+    deleteRawMaterialAPI, getRMDomesticDataList, getRawMaterialNameChild, getGradeSelectList, getVendorListByVendorType,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getVendorFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
     getVendorFilterByGradeSelectList, getRawMaterialFilterByVendorSelectList, getGradeFilterByVendorSelectList,
 } from '../actions/Material';
@@ -22,7 +22,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import ConfirmComponent from "../../../helper/ConfirmComponent";
 import LoaderCustom from '../../common/LoaderCustom';
 import { costingHeadObjs } from '../../../config/masterData';
-import { getPlantSelectListByType } from '../../../actions/Common'
+import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common'
 import { ZBC } from '../../../config/constants'
 
 class RMDomesticListing extends Component {
@@ -41,7 +41,8 @@ class RMDomesticListing extends Component {
             value: { min: 0, max: 0 },
             maxRange: 0,
             isBulkUpload: false,
-            shown: this.props.isSimulation ? true : false
+            shown: this.props.isSimulation ? true : false,
+            technology: []
         }
     }
 
@@ -61,6 +62,7 @@ class RMDomesticListing extends Component {
             material_id: null,
             grade_id: null,
             vendor_id: null,
+            technologyId: null,
             technologyId: this.props.isSimulation ? this.props.technology : 0,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
@@ -83,7 +85,7 @@ class RMDomesticListing extends Component {
         this.props.getVendorListByVendorType(false, () => { })
 
         this.props.getRawMaterialFilterSelectList(() => { })
-
+        this.props.getTechnologySelectList(() => { })
         this.getDataList()
         this.props.getPlantSelectListByType(ZBC, () => { })
 
@@ -101,7 +103,7 @@ class RMDomesticListing extends Component {
     * @method hideForm
     * @description HIDE DOMESTIC, IMPORT FORMS
     */
-    getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null) => {
+    getDataList = (costingHead = null, plantId = null, materialId = null, gradeId = null, vendorId = null, technologyId = 0) => {
         const { value } = this.state;
         const filterData = {
             costingHead: costingHead,
@@ -109,7 +111,7 @@ class RMDomesticListing extends Component {
             material_id: materialId,
             grade_id: gradeId,
             vendor_id: vendorId,
-            technologyId: this.props.isSimulation ? this.props.technology : 0,
+            technologyId: this.props.isSimulation ? this.props.technology : technologyId,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
         }
@@ -302,7 +304,8 @@ class RMDomesticListing extends Component {
     * @description Used to show type of listing
     */
     renderListing = (label) => {
-        const { filterRMSelectList, plantSelectList } = this.props;
+        const { filterRMSelectList, plantSelectList, technologySelectList } = this.props;
+
         const temp = [];
         if (label === 'costingHead') {
             return costingHeadObjs;
@@ -337,6 +340,14 @@ class RMDomesticListing extends Component {
                 return null;
             });
             return temp;
+        }
+        if (label === 'technology') {
+            technologySelectList && technologySelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
         }
     }
 
@@ -400,15 +411,16 @@ class RMDomesticListing extends Component {
     * @description Filter user listing on the basis of role and department
     */
     filterList = () => {
-        const { costingHead, RawMaterial, RMGrade, vendorName, plant } = this.state;
+        const { costingHead, RawMaterial, RMGrade, vendorName, plant, technology } = this.state;
 
         const costingHeadTemp = costingHead && costingHead.label === 'Zero Based' ? 0 : costingHead.label === 'Vendor Based' ? 1 : '';
         const plantId = plant ? plant.value : null;
         const RMid = RawMaterial ? RawMaterial.value : null;
         const RMGradeid = RMGrade ? RMGrade.value : null;
         const Vendorid = vendorName ? vendorName.value : null;
+        const technologyId = technology ? technology.value : 0
 
-        this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid)
+        this.getDataList(costingHeadTemp, plantId, RMid, RMGradeid, Vendorid, technologyId)
     }
 
     /**
@@ -422,6 +434,7 @@ class RMDomesticListing extends Component {
             RMGrade: [],
             vendorName: [],
             plant: [],
+            technology: [],
             value: { min: 0, max: 0 },
         }, () => {
             this.getInitialRange()
@@ -475,6 +488,13 @@ class RMDomesticListing extends Component {
         }
     }
 
+    handleTechnologyChange = (newValue, actionMeta) => {
+        if (newValue && newValue !== '') {
+            this.setState({ technology: newValue })
+        } else {
+            this.setState({ technology: [] })
+        }
+    }
     /**
     * @method confirmDensity
     * @description confirm density popup.
@@ -551,6 +571,22 @@ class RMDomesticListing extends Component {
                                             required={true}
                                             handleChangeDescription={this.handlePlantChange}
                                             valueDescription={this.state.plant}
+                                        />
+                                    </div>
+                                    <div className="flex-fill">
+                                        <Field
+                                            name="Technology"
+                                            type="text"
+                                            label=""
+                                            component={searchableSelect}
+                                            placeholder={'Technology'}
+                                            isClearable={false}
+                                            options={this.renderListing('technology')}
+                                            //onKeyUp={(e) => this.changeItemDesc(e)}
+                                            validate={(this.state.technology === null || this.state.technology.length === 0) ? [] : []}
+                                            required={true}
+                                            handleChangeDescription={this.handleTechnologyChange}
+                                            valueDescription={this.state.technology}
                                         />
                                     </div>
                                     <div className="flex-fill">
@@ -736,9 +772,9 @@ class RMDomesticListing extends Component {
 function mapStateToProps({ material, comman, auth }) {
     const { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading } = material;
     const { initialConfiguration } = auth;
-    const { plantSelectList } = comman;
+    const { plantSelectList, technologySelectList } = comman;
 
-    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList }
+    return { rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, filterRMSelectList, rmDataList, loading, initialConfiguration, plantSelectList, technologySelectList }
 
 }
 
@@ -753,7 +789,6 @@ export default connect(mapStateToProps, {
     getRMDomesticDataList,
     getRawMaterialNameChild,
     getGradeSelectList,
-    getRMGradeSelectListByRawMaterial,
     getVendorListByVendorType,
     getRawMaterialFilterSelectList,
     getGradeFilterByRawMaterialSelectList,
@@ -763,7 +798,7 @@ export default connect(mapStateToProps, {
     getRawMaterialFilterByVendorSelectList,
     getGradeFilterByVendorSelectList,
     getPlantSelectListByType,
-
+    getTechnologySelectList,
 })(reduxForm({
     form: 'RMDomesticListing',
     enableReinitialize: true,
