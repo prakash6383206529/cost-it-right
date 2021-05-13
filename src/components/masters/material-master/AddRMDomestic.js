@@ -1102,7 +1102,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="4">
-                            <TooltipCustom />
+                            <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength."/>
                             <Field
                               name="CategoryId"
                               type="text"
