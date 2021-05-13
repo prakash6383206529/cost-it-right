@@ -62,7 +62,7 @@ class Main extends Component {
     const Detail = userDetails()
     setTimeout(() => {
       console.log('After 10 seonds')
-    }, Detail.expires_in * 1000 - 5 * 5000)
+    }, Detail.expires_in * 1000 - 5 * 1000)
 
   }
 

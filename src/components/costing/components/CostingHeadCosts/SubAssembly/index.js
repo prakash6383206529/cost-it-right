@@ -135,7 +135,7 @@ function AssemblyPart(props) {
           {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity ? checkForDecimalAndNull(item.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         </div>
         <td>
-          {item?.CostingPartDetails?.TotalOperationCostPerAssembly !== 0 ?
+          {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
             <button
               type="button"
               className={'user-btn add-oprn-btn'}

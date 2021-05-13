@@ -15,21 +15,13 @@ function TabSurfaceTreatment(props) {
   const { netPOPrice } = props;
 
   const { handleSubmit, } = useForm();
-  const [isIncludeSurfaceTreatment, setIsIncludeSurfaceTreatment] = useState(false);
 
   const dispatch = useDispatch()
 
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
-  //setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-
-  // const filteredUsers = React.useMemo(() => {
-  //   setIsIncludeSurfaceTreatment(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit)
-  //   dispatch(setSurfaceCostInOverheadProfit(SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit, () => { }))
-  // }, [SurfaceTabData && SurfaceTabData.length > 0 && SurfaceTabData[0].IsIncludeSurfaceTreatmentWithOverheadAndProfit]
-  // );
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -37,7 +29,7 @@ function TabSurfaceTreatment(props) {
         CostingId: costData.CostingId,
         PartId: costData.PartId,
       }
-      dispatch(getSurfaceTreatmentTabData(data, true, (res) => { }))
+      dispatch(getSurfaceTreatmentTabData(data, true, () => { }))
     }
   }, [costData]);
 
@@ -57,6 +49,7 @@ function TabSurfaceTreatment(props) {
   const getTotalSurfaceCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -73,6 +66,7 @@ function TabSurfaceTreatment(props) {
   const getTotalTransportationCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -89,6 +83,7 @@ function TabSurfaceTreatment(props) {
   const getTotalSurfaceCost = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -105,6 +100,7 @@ function TabSurfaceTreatment(props) {
   const getTotalTransportationCost = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -307,6 +303,7 @@ function TabSurfaceTreatment(props) {
   const getSurfaceTreatmentTotalCost = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -393,6 +390,7 @@ function TabSurfaceTreatment(props) {
   const getTransportationTotalCost = (arr, GridTotalCost, params, flag) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -455,6 +453,7 @@ function TabSurfaceTreatment(props) {
   const getSurfaceTreatmentTotalCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -515,6 +514,7 @@ function TabSurfaceTreatment(props) {
   const getTransportationTotalCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
+      if (el.PartType === 'BOP') return false;
       if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
@@ -523,15 +523,6 @@ function TabSurfaceTreatment(props) {
     }, 0)
     return NetCost;
   }
-
-  /**
-  * @method onPressIncludeSurfaceTreatment
-  * @description SET INCLUDE SURFACE TREATMENT
-  */
-  // const onPressIncludeSurfaceTreatment = () => {
-  //   dispatch(setSurfaceCostInOverheadProfit(!isIncludeSurfaceTreatment, () => { }))
-  //   setIsIncludeSurfaceTreatment(!isIncludeSurfaceTreatment)
-  // }
 
   /**
   * @method saveCosting
@@ -558,27 +549,6 @@ function TabSurfaceTreatment(props) {
           <Col md="12">
             <div className="shadow-lgg login-formg">
 
-              {/* <Row className="m-0">
-                <Col md="12" className="px-30 py-4 costing-border-x border-bottom-0">
-                  <label
-                    className={`custom-checkbox mb-0`}
-                    onChange={onPressIncludeSurfaceTreatment}
-                  >
-                    Include Surface Treatment Cost in Overhead & Profit
-                    <input
-                      type="checkbox"
-                      checked={isIncludeSurfaceTreatment}
-                      disabled={CostingViewMode ? true : false}
-                    />
-                    <span
-                      className=" before-box"
-                      checked={isIncludeSurfaceTreatment}
-                      onChange={onPressIncludeSurfaceTreatment}
-                    />
-                  </label>
-                </Col>
-              </Row> */}
-
               <form
                 noValidate
                 className="form"
@@ -590,6 +560,7 @@ function TabSurfaceTreatment(props) {
                       <thead>
                         <tr>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Part Number`}</th>
+                          <th className="py-3 align-middle" style={{ width: '100px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ width: '100px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ width: "100px" }}>{`Surface Treatment Cost`}</th>
                           <th className="py-3 align-middle" style={{ width: "150px" }}>{`Transportation Cost`}</th>
@@ -611,7 +582,6 @@ function TabSurfaceTreatment(props) {
                                     setPartDetails={setPartDetails}
                                     setSurfaceCost={setSurfaceCost}
                                     setTransportationCost={setTransportationCost}
-                                    isIncludeSurfaceTreatment={isIncludeSurfaceTreatment}
                                   />
                                 </>
                               )
@@ -623,7 +593,6 @@ function TabSurfaceTreatment(props) {
                                     index={index}
                                     item={item}
                                     children={item.CostingChildPartDetails}
-                                    isIncludeSurfaceTreatment={isIncludeSurfaceTreatment}
                                     toggleAssembly={toggleAssembly}
                                     setPartDetails={setPartDetails}
                                     setSurfaceCost={setSurfaceCost}

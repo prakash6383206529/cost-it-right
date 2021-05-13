@@ -810,7 +810,7 @@ export function getSurfaceTreatmentTabData(data, IsUseReducer, callback) {
             type: SET_SURFACE_TAB_DATA,
             payload: TabData,
           });
-          //callback(response);
+          callback();
         } else {
           callback(response);
         }
