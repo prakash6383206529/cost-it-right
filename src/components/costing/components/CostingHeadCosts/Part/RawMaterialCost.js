@@ -490,9 +490,9 @@ function RawMaterialCost(props) {
               </Col>
             </Row>
 
-            {costData.TechnologyId === 8 &&
-              <Row >
-                <Col md="3" className="py-3 ">
+            {costData.TechnologyId === 6 &&
+              <Row className="py-3" >
+                <Col md="2" >
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -510,17 +510,10 @@ function RawMaterialCost(props) {
                     />
                   </label>
                 </Col>
-              </Row>}
-
-            <Row >
-              {IsApplyMasterBatch && costData.TechnologyId === 8 &&
+                {IsApplyMasterBatch && costData.TechnologyId === 6 &&
                 <>
-                  <Col md="1" >
-                    <div
-                      onClick={MasterBatchToggle}
-                      className={"plus-icon-square right mt30"}
-                      title={'Add Master Batch'}
-                    ></div>
+                  <Col md="2">
+                    <button onClick={MasterBatchToggle} title={'Add Master Batch'} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
                   </Col>
                   <Col md="2" >
                     <TextFieldHookForm
@@ -600,8 +593,9 @@ function RawMaterialCost(props) {
                     />
                   </Col>
                 </>}
+              </Row>}
 
-            </Row>
+            
           </form>
         </div>
       </div>
