@@ -947,12 +947,12 @@ class AddBOPDomestic extends Component {
                             />
                           </Col>
                           <Col md="3">
-                            <div className="form-group">
+                            
                               {/* <label>
                                 Effective Date */}
                               {/* <span className="asterisk-required">*</span> */}
                               {/* </label> */}
-                              <div className="inputbox date-section">
+                              <div className="inputbox date-section form-group">
                                 {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
@@ -987,7 +987,6 @@ class AddBOPDomestic extends Component {
                                 //minDate={moment()}
                                 />
                               </div>
-                            </div>
                           </Col>
                         </Row>
 

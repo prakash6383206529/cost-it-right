@@ -1011,12 +1011,12 @@ class AddBOPImport extends Component {
 
                         <Row> */}
                           <Col md="3">
-                            <div className="form-group">
+                            
                               {/* <label>
                                 Effective Date */}
                               {/* <span className="asterisk-required">*</span> */}
                               {/* </label> */}
-                              <div className="inputbox date-section mb-3">
+                              <div className="inputbox date-section mb-3 form-group">
                                 {/* <DatePicker
                                   name="EffectiveDate"
                                   selected={this.state.effectiveDate}
@@ -1051,7 +1051,7 @@ class AddBOPImport extends Component {
                                 //minDate={moment()}
                                 />
                               </div>
-                            </div>
+                            
                           </Col>
                         </Row>
 
