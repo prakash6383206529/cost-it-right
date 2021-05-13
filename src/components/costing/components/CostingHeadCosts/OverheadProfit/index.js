@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, } from '../../../actions/Costing';
@@ -2141,7 +2141,7 @@ function OverheadProfit(props) {
                 />
               </Col>
               <Col md="3">
-                <TextFieldHookForm
+                <NumberFieldHookForm
                   label={`Rejection ${applicability.label !== 'Fixed' ? '(%)' : ''}`}
                   name={'RejectionPercentage'}
                   Controller={Controller}
@@ -2151,7 +2151,7 @@ function OverheadProfit(props) {
                   rules={{
                     required: false,
                     pattern: {
-                      value: /^[0-9]\d*(\.\d+)?$/i,
+                      value: /^\d*\.?\d*$/,
                       message: 'Invalid Number.'
                     },
                     // max: {
@@ -2250,7 +2250,7 @@ function OverheadProfit(props) {
                     /> */}
                   </Col>
                   <Col md="3">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Interest Rate ${ICCapplicability.label !== 'Fixed' ? '(%)' : ''}`}
                       name={'InterestRatePercentage'}
                       Controller={Controller}
@@ -2260,7 +2260,7 @@ function OverheadProfit(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         max: {
@@ -2378,7 +2378,7 @@ function OverheadProfit(props) {
                     />
                   </Col>}
                   <Col md="3">
-                    <TextFieldHookForm
+                    <NumberFieldHookForm
                       label={`Interest Rate${paymentTermsApplicability.label !== 'Fixed' ? '(%)' : ''}`}
                       name={'RepaymentPeriodPercentage'}
                       Controller={Controller}
@@ -2388,7 +2388,7 @@ function OverheadProfit(props) {
                       rules={{
                         required: false,
                         pattern: {
-                          value: /^[0-9]\d*(\.\d+)?$/i,
+                          value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
                         max: {
