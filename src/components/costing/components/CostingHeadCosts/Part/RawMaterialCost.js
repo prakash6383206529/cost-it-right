@@ -490,7 +490,7 @@ function RawMaterialCost(props) {
               </Col>
             </Row>
 
-            {costData.TechnologyId === 8 &&
+            {costData.TechnologyId === 6 &&
               <Row >
                 <Col md="3" className="py-3 ">
                   <label
@@ -513,7 +513,7 @@ function RawMaterialCost(props) {
               </Row>}
 
             <Row >
-              {IsApplyMasterBatch && costData.TechnologyId === 8 &&
+              {IsApplyMasterBatch && costData.TechnologyId === 6 &&
                 <>
                   <Col md="1" >
                     <div
