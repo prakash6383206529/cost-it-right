@@ -14,6 +14,7 @@ export const config = {
   },
 }
 
+
 // DEVELOPMENT
 //const BASE_URL = 'http://10.10.1.100:1002/api/v1';
 
@@ -1485,4 +1486,4 @@ export const OVERHEAD = 'Overhead'
 export const PROFIT = 'Profits'
 // export constse
 
-export const REASON_ID = 6
+export const REASON_ID = 2
