@@ -824,18 +824,18 @@ class AddRMImport extends Component {
     })
 
     if (isEditFlag) {
-      console.log(values, 'values')
-      console.log(DataToChange, 'DataToChange')
+
       if (DataToChange.IsVendor == false) {
         if (DropdownChanged && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge
-          && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.remark) {
+          && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
           this.cancel()
           return false
         }
       }
+
       if (DataToChange.IsVendor) {
         if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate
-          && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge && DataToChange.RMShearingCost == values.ShearingCost) {
+          && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FreightCharge && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
           this.cancel()
           return false
         }
