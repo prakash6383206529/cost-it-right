@@ -34,7 +34,7 @@ function ApproveRejectDrawer(props) {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
 
   useEffect(() => {
-    dispatch(getAllApprovalDepartment((res) => { }))
+    // dispatch(getAllApprovalDepartment((res) => { }))
 
     dispatch(getAllApprovalDepartment((res) => {
       const Data = res.data.SelectList
@@ -42,13 +42,14 @@ function ApproveRejectDrawer(props) {
       console.log('departObj: ', departObj);
 
       setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-
+      let obj = {
+        LoggedInUserId: userData.LoggedInUserId,
+        DepartmentId: departObj[0].Value,
+        TechnologyId: approvalData[0].TechnologyId,
+      }
+      console.log(obj, "OBJ");
       dispatch(
-        getAllApprovalUserFilterByDepartment({
-          LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: departObj[0].Value,
-          TechnologyId: partNo.technologyId,
-        }, (res) => {
+        getAllApprovalUserFilterByDepartment(obj, (res) => {
           const Data = res.data.DataList[1] ? res.data.DataList[1] : []
           console.log('Data: ', Data);
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
