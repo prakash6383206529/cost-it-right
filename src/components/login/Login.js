@@ -153,7 +153,7 @@ class Login extends Component {
                     <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password?'}</a>
                   </div>
                   {this.state.flag && (
-                    <div className="text-help mb-2">Please contact your IT Administrator</div>
+                    <div className="text-help mb-2 text-center">Please contact your IT Administrator</div>
                   )
                   }
                 </form>
@@ -161,7 +161,9 @@ class Login extends Component {
                   <span>Powered By</span>
                   <img className="logo-second" src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" />
                 </div>
-
+              </div>
+              <div className="col-md-7 p-0 right-sideimg">
+                <img src={require('../../assests/images/box.png')} alt='error-icon.jpg' />
               </div>
             </div>
           </div>
