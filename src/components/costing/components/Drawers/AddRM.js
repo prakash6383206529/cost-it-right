@@ -278,14 +278,14 @@ function AddRM(props) {
 
             < form onSubmit={handleSubmit(onSubmit)} noValidate >
 
-              <Row className="filter-row-large pt-4 ">
-                <Col md="12" lg="11" className="filter-block ">
+              <div className="filter-row">
+                <Col md="12" lg="11" className="filter-block zindex-12 pt-2 mb-1">
                   <div className="d-inline-flex justify-content-start align-items-top w100 rm-domestic-filter">
-                    <div className="flex-fills">
-                      <h5>{`Filter By:`}</h5>
+                    <div className="flex-fills mb-0">
+                      <h5 className="left-border">{`Filter By:`}</h5>
                     </div>
 
-                    <div className="flex-fill mr-2">
+                    <div className="flex-fills hide-label mb-0">
                       <SearchableSelectHookForm
                         label={''}
                         name={'RawMaterialId'}
@@ -294,12 +294,11 @@ function AddRM(props) {
                         control={control}
                         register={register}
                         options={renderListing("material")}
-                        handleChange={handleRMChange}
-                      />
-
+                        customClassName="mn-height-auto mb-0"
+                        handleChange={handleRMChange}/>
                     </div>
-                    <div className="flex-fill">
 
+                    <div className="flex-fills hide-label mb-0">
                       <SearchableSelectHookForm
                         label={''}
                         name={'RawMaterialGradeId'}
@@ -308,30 +307,18 @@ function AddRM(props) {
                         control={control}
                         register={register}
                         options={renderListing("grade")}
-                        handleChange={() => { }}
-                      />
+                        customClassName="mn-height-auto mb-0"
+                        handleChange={() => { }}/>
                     </div>
 
-                    <div className="flex-fill">
-                      <button
-                        type="button"
-                        onClick={resetFilter}
-                        className="reset mr10"
-                      >
-                        {"Reset"}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={filterList}
-                        className="user-btn"
-                      >
-                        {"Apply"}
-                      </button>
+                    <div className="flex-fills mb-0">
+                      <button type="button" onClick={resetFilter} className="reset mr10" > {"Reset"} </button>
+                      <button type="button" onClick={filterList} className="user-btn" > {"Apply"} </button>
                     </div>
+
                   </div>
                 </Col>
-              </Row>
+              </div>
 
             </form >
 

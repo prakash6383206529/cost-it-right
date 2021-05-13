@@ -188,7 +188,7 @@ function AddVendorDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={"header-wrapper left"}>
-                  <h3>{"ADD VENDOR"}</h3>
+                  <h3>{"Add Vendor"}</h3>
                 </div>
                 <div
                   onClick={cancel}

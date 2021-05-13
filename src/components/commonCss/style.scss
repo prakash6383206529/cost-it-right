@@ -1404,9 +1404,62 @@ button.user-btn.pull-right {
       display: none
     }
 }
-.main-section .content-page .filter-block .css-yk16xz-control,
-.main-section .content-page .filter-block .css-1pahdxg-control
-{min-height: 32px !important;    height: 32px;}
+
+// filter row in drawer or filter row normal start
+.filter-row{
+  .filter-block {
+    .flex-fill,
+    .flex-fills {
+      padding-right: 10px;
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+
+    h5 {
+      color: $headinlightgblack;
+      font-size: $font-16;
+      position: $positio-relative;
+      padding: 7px 15px 7px 10px;
+    }
+
+    .css-yk16xz-control,
+    .css-1pahdxg-control {
+      border: 1px solid #c2cbe8 !important;
+      color: #a4abc5;
+      min-height: 32px !important;
+      font-size: $font-14;
+      border-color: #c2cbe8;
+      height: 32px;
+    }
+
+    .css-tlfecz-indicatorContainer,.css-1gtu0rj-indicatorContainer{
+      padding: 5px;
+      padding-left: 0px;
+    }
+
+    .css-1hwfws3 {
+      padding: 0px 8px;
+    }
+  }
+}
+// filter row in drawer or filter row normal End
+
+.main-section {
+  .content-page {
+    .filter-block{
+      .css-yk16xz-control,.css-1pahdxg-control{
+        min-height: 32px !important;
+        height: 32px;
+      }
+    }
+  }
+}
+
+
+
+
 .drawer-edit{     margin-top: 31px;
   margin-left: 5px;
 }
