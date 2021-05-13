@@ -821,7 +821,7 @@ function ProcessCost(props) {
                     })}
                   {gridData && gridData.length === 0 && (
                     <tr>
-                      <td colSpan={12}>
+                      <td colSpan={8}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />
                       </td>
                     </tr>

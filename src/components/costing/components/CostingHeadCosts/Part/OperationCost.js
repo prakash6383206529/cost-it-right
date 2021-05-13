@@ -349,7 +349,7 @@ function OperationCost(props) {
                   }
                   {gridData && gridData.length === 0 &&
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={7}>
                         <NoContentFound title={CONSTANT.EMPTY_DATA} />
                       </td>
                     </tr>
