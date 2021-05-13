@@ -541,7 +541,7 @@ class AddBOPDomestic extends Component {
       let requestData = {
         BoughtOutPartId: BOPID,
         Source: values.Source,
-        SourceLocation: sourceLocation.value,
+        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
         BasicRate: values.BasicRate,
         NetLandedCost: this.state.NetLandedCost,
         Remark: values.Remark,
