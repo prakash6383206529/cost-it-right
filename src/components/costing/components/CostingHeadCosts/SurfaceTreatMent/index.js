@@ -58,7 +58,6 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,
@@ -91,7 +90,6 @@ function SurfaceTreatment(props) {
 
       let requestData = {
         "CostingId": item.CostingId,
-        // "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.isIncludeSurfaceTreatment,
         "PartId": item.PartId,
         "PartNumber": item.PartNumber,
         "BOMLevel": item.BOMLevel,

@@ -97,9 +97,10 @@ function AssemblySurfaceTreatment(props) {
         <div className="accordian-row" style={{ display: 'contents' }} onClick={() => toggle(item.BOMLevel, item.PartNumber, true)}>
           <td>
             <span style={{ position: 'relative' }} className={`cr-prt-nm1 cr-prt-link1 ${item && item.BOMLevel}`}>
-              {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
+              {item && item.PartNumber}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
             </span>
           </td>
+          <td>{item && item.BOMLevel}</td>
           <td>{item && item.PartType}</td>
           <td>{item.CostingPartDetails.SurfaceTreatmentCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
           <td>{item.CostingPartDetails.TransportationCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TransportationCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
@@ -144,10 +145,8 @@ function AssemblySurfaceTreatment(props) {
         </td>
       </tr>
 
-      {/* {IsOpen && nestedPartComponent} */}
       {item.IsOpen && nestedPartComponent}
 
-      {/* {IsOpen && nestedAssembly} */}
       {item.IsOpen && nestedAssembly}
 
       {IsDrawerOpen && <SurfaceTreatment
@@ -161,7 +160,6 @@ function AssemblySurfaceTreatment(props) {
         transportationData={item.CostingPartDetails.TransportationDetails}
         setAssemblySurfaceCost={props.setAssemblySurfaceCost}
         setAssemblyTransportationCost={props.setAssemblyTransportationCost}
-        isIncludeSurfaceTreatment={props.isIncludeSurfaceTreatment}
         IsAssemblyCalculation={true}
       />}
     </ >
