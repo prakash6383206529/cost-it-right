@@ -245,7 +245,7 @@ class SideBar extends Component {
                   />
                   <span>Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                <div className="dropdown-menu sub-menu1">
                   <ul>
                     {
                       menuData && menuData.map((item, i) => {
@@ -326,7 +326,7 @@ class SideBar extends Component {
                   />
                   <span>Additional Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                <div className="dropdown-menu sub-menu1">
                   <ul>
                     {
                       menuData && menuData.map((item, i) => {
@@ -444,7 +444,7 @@ class SideBar extends Component {
                 />
                 <span>Costing </span>
               </Link>
-              <div className="dropdown-menu sub-menu">
+              <div className="dropdown-menu sub-menu1">
                 <ul>
                   {/* UNCOMMENT IT WHEN DONE FROM KAMAL SIR END */}
                   {
@@ -505,8 +505,8 @@ class SideBar extends Component {
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  // pathname: el.LandingPageURL, //COMMENT FOR NOW
-                  pathname: '/simulation',
+                  pathname: el.LandingPageURL, //COMMENT FOR NOW
+                  // pathname: '/simulation',
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
@@ -521,7 +521,7 @@ class SideBar extends Component {
                 />
                 <span>Simulation</span>
               </Link>
-              <div className="dropdown-menu sub-menu">
+              <div className="dropdown-menu sub-menu1">
                 <ul>
                   {
                     menuData && menuData.map((item, i) => {

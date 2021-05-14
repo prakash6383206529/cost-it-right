@@ -54,7 +54,7 @@ class Login extends Component {
       password: values.Password,
       grant_type: 'password',
     }
-    //this.props.loginUserAPI(values, (res) => {
+    // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
       if (res && res.status === 200) {
         this.setState({ isLoader: false, isSubmitted: false });
@@ -67,7 +67,7 @@ class Login extends Component {
         }, 1000)
       }
     })
-    //});
+    // });
   }
 
   render() {
