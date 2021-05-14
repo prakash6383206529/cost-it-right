@@ -309,13 +309,13 @@ function RawMaterialCost(props) {
     let tempData = gridData[0]
     if (Number(e.target.value)) {
 
-      setValue('RMTotal', calculatePercentageValue(getValues('RMPrice'), e.target.value))
+      setValue('RMTotal', calculatePercentageValue(getValues('MBPrice'), e.target.value))
 
       const RMRate = calculatePercentageValue(tempData.RMRate, (100 - e.target.value));
-      console.log('RMRate: ', RMRate, getValues('RMTotal'));
+      // console.log('RMRate: ', RMRate, getValues('RMTotal'));
       const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * checkForNull(tempData.GrossWeight);
       const ScrapRate = (tempData.ScrapRate * tempData.FinishWeight)
-      console.log('ScrapRate: ', ScrapRate);
+      // console.log('ScrapRate: ', ScrapRate);
 
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
 
