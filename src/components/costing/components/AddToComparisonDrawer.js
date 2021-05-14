@@ -375,6 +375,7 @@ function AddToComparisonDrawer(props) {
    * @description Getting costing dropdown on basis of plant selection
    */
   const handlePlantChange = (value) => {
+
     const temp = []
     dispatch(
       getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partNumber, value.value, (res) => {
