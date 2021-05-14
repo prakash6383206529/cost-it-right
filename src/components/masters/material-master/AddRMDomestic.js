@@ -840,7 +840,7 @@ class AddRMDomestic extends Component {
         return vendorPlantArray
       })
     if (isEditFlag) {
-     
+
       if (DataToChange.IsVendor != true) {
         if (DropdownChanged && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FrieghtCharge
           && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
@@ -848,8 +848,8 @@ class AddRMDomestic extends Component {
           return false
         }
       }
-      if (IsVendor) {
-        if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate) {
+      if (DataToChange.IsVendor) {
+        if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.Remark == values.Remark) {
           this.cancel()
           return false
         }
@@ -953,7 +953,7 @@ class AddRMDomestic extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader"/>}
+        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1435,7 +1435,7 @@ class AddRMDomestic extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isEditFlag ? true : false}
+                                disabled={false}
                               //minDate={moment()}
                               />
                             </div>
