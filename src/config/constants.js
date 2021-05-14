@@ -20,9 +20,15 @@ export const config = {
 // DEVELOPMENT MIL URL
 const BASE_URL = 'http://10.10.1.100:10132/api/v1';
 
+//FOR MINDA OTHER
+// const BASE_URL = 'http://10.253.2.10:10132/api/v1';
+// const BASE_URL = 'http://20.193.243.188:10132/api/v1';
+
 //STAGING
 // const BASE_URL = 'http://10.10.1.10:1002/api/v1';
+
 export const FILE_URL = 'http://10.10.1.100:1002/';
+// export const FILE_URL = 'http://20.193.243.188:10132/';
 
 /** Export API */
 export const API = {
@@ -639,6 +645,7 @@ export const API = {
   isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approver`,
   approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
   getSelectedCostingStatusList: `${BASE_URL}/app-approval-system/get-all-approval-status`,
+  createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,

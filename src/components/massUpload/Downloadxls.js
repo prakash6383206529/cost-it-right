@@ -17,7 +17,7 @@ import {
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
     ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticSimulation, RMDomesticSimulationTempData,
 } from '../../config/masterData';
-import { checkVendorPlantConfigurable } from "../../helper";
+import { checkVendorPlantConfigurable, getConfigurationKey } from "../../helper";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,9 +36,13 @@ class Downloadxls extends React.Component {
                 if (el.value === 'VendorName') return false;
                 if (el.value === 'LabourRate') return false;
                 if (el.value === 'VendorPlantCode') return false;
+                // if (el.value === 'DestinationPlant') return false;
+                // if (el.value === 'DestinationPlantCode') return false;
+                return true;
+            }
+            if (getConfigurationKey().IsDestinationPlantConfigure === false) {
                 if (el.value === 'DestinationPlant') return false;
                 if (el.value === 'DestinationPlantCode') return false;
-                return true;
             }
             return true;
         })
