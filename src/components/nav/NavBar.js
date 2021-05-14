@@ -218,11 +218,11 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown"
-                onMouseOver={(e) => {
-                  //e.stopPropagation()
-                  this.SetMenu(el.ModuleId)
-                }}
+              <li className="nav-item dropdown1"
+              // onMouseOver={(e) => {
+              //   //e.stopPropagation()
+              //   this.SetMenu(el.ModuleId)
+              // }}
               >
                 <Link
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
@@ -304,12 +304,12 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown">
+              <li className="nav-item dropdown1">
                 <Link
                   key={i}
                   className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  onMouseOver={() => this.SetMenu(el.ModuleId)}
+                  // onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -421,13 +421,13 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li className="nav-item dropdown">
+            <li className="nav-item dropdown1">
               <Link
                 key={i}
                 isActive={location && location.pathname === '/costing' ? true : false}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
-                onMouseOver={() => this.SetMenu(el.ModuleId)}
+                // onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
                   pathname: "/costing",
                   state: {
@@ -498,12 +498,12 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li className={'nav-item dropdown'}>
+            <li className={'nav-item dropdown1'}>
               <Link
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
-                onMouseOver={() => this.SetMenu(el.ModuleId)}
+                // onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
                   // pathname: el.LandingPageURL, //COMMENT FOR NOW
                   pathname: '/simulation',
@@ -669,10 +669,10 @@ class SideBar extends Component {
           <div>
             <nav className="navbar navbar-expand-lg fixed-top nav bg-light">
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0">
-                <img src={require("../../assests/images/logo/minda-logo.png")} alt="Minda" height="40"/>
+                <img src={require("../../assests/images/logo/minda-logo.png")} alt="Minda" height="40" />
               </a>
               <a href="javaScript:Void(0);" className="navbar-brand mr-auto mr-lg-0 cr-other-logo">
-              <img src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" height="40"/>
+                <img src={require("../../assests/images/logo/CIRlogo.svg")} alt="Cost It Right" height="40" />
               </a>
               <button
                 className="navbar-toggler p-0 border-0"

@@ -53,7 +53,7 @@ function CostingDetailStepTwo(props) {
       //CONDITION FOR OVERALL & PROCESS WISE TOOL COST.
       const ApplyCost = IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost);
       OverAllCost =
-        data.NetTotalRMBOPCC +
+        checkForNull(data.NetTotalRMBOPCC) +
         tempData.NetSurfaceTreatmentCost +
         tempData.NetOverheadAndProfitCost +
         tempData.NetPackagingAndFreight +
