@@ -33,6 +33,11 @@ class Downloadxls extends React.Component {
         return excelData.filter((el) => {
             if (checkVendorPlantConfigurable() === false) {
                 if (el.value === 'VendorPlant') return false;
+                if (el.value === 'VendorName') return false;
+                if (el.value === 'LabourRate') return false;
+                if (el.value === 'VendorPlantCode') return false;
+                if (el.value === 'DestinationPlant') return false;
+                if (el.value === 'DestinationPlantCode') return false;
                 return true;
             }
             return true;
@@ -77,9 +82,9 @@ class Downloadxls extends React.Component {
             case 'RMImport':
                 return this.returnExcelColumn(RMImportZBC, RMImportZBCTempData);
             case 'Operation':
-                return this.returnExcelColumn(ZBCOperation, ZBCOperationTempData);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(ZBCOperation), ZBCOperationTempData);
             case 'Machine':
-                return this.returnExcelColumn(MachineZBC, MachineZBCTempData);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
             case 'ZBC_MACHINE_MORE':
                 return this.returnExcelColumn(MHRMoreZBC, MHRMoreZBCTempData);
             case 'BOPDomestic':
