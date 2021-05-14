@@ -201,7 +201,7 @@ function SheetMetalBaicDrawer(props) {
                 </Col> */}
 
                 <Row className={'mt15'}>
-                  <Col className="col">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Tonnage(T)`}
                       name={'MachineTonnage'}
@@ -219,7 +219,7 @@ function SheetMetalBaicDrawer(props) {
                   </Col>
                   {
                     hide &&
-                    <Col className="col">
+                    <Col md="3">
                       <TextFieldHookForm
                         label={`Cycle Time(sec)`}
                         name={'CycleTime'}
@@ -247,7 +247,7 @@ function SheetMetalBaicDrawer(props) {
                   }
                   {/* {
                       props.calculatorData.UOMType === DIMENSIONLESS && */}
-                  <Col className="col">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Cavity`}
                       name={'Cavity'}
@@ -274,7 +274,7 @@ function SheetMetalBaicDrawer(props) {
                     />
                   </Col>
 
-                  <Col className="col">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Efficiency(%)`}
                       name={'Efficiency'}
@@ -299,7 +299,7 @@ function SheetMetalBaicDrawer(props) {
                       disabled={false}
                     />
                   </Col>
-                  <Col className="col">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={props.calculatorData.UOMType === MASS ? `Finished Weight` : props.calculatorData.UOMType === TIME ? `Production / Hour` : `Quantity`}
                       name={'Quantity'}
@@ -324,7 +324,7 @@ function SheetMetalBaicDrawer(props) {
                       disabled={(props.calculatorData.UOMType === MASS || props.calculatorData.UOMType === TIME) ? true : false}
                     />
                   </Col>
-                  <Col className="col">
+                  <Col md="3">
                     <TextFieldHookForm
                       label={`Process Cost`}
                       name={'ProcessCost'}

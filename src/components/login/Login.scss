@@ -256,9 +256,14 @@ label{margin-bottom: 0;}
 
 
 .right-sideimg{
-img
-{width: 100%;
-  height: 100%;}}
+img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #eff4fb;
+  object-position: bottom;
+}
+}
 @media screen and (max-width: 767px) {
   .login-container {
     margin: 15px;

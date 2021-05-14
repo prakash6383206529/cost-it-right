@@ -537,7 +537,7 @@ const SendForApproval = (props) => {
                                     />
                                 }
                               </div>
-                              <i className="fa fa-calendar icon-small-primary ml-2"></i>
+                              {/* <i className="fa fa-calendar icon-small-primary ml-2"></i> */}
                             </div>
                             {/* </div> */}
                           </Col>
