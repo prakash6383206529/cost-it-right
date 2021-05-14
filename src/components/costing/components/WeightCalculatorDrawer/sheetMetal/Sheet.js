@@ -141,7 +141,7 @@ function Sheet(props) {
             length: length,
             width: SheetWidth
         }
-        const getWeightSheet = ((calculateWeight(data.density, data.length, data.width, data.thickness)) / 1000000).toFixed(6)
+        const getWeightSheet = ((calculateWeight(data.density, data.length, data.width, data.thickness)) / 1000).toFixed(6)
         const updatedValue = dataToSend
         updatedValue.WeightOfSheet = getWeightSheet
         setTimeout(() => {

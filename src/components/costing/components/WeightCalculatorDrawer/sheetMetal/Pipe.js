@@ -21,7 +21,27 @@ function Pipe(props) {
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
   console.log('WeightCalculatorRequest: ', WeightCalculatorRequest);
 
-
+  const convert = (FinishWeightOfSheet, dimmension) => {
+    switch (dimmension) {
+      case G:
+        setTimeout(() => {
+          setFinishWeights(FinishWeightOfSheet)
+        }, 200);
+        break;
+      case KG:
+        setTimeout(() => {
+          setFinishWeights(FinishWeightOfSheet * 1000)
+        }, 200);
+        break;
+      case MG:
+        setTimeout(() => {
+          setFinishWeights(FinishWeightOfSheet / 1000)
+        }, 200);
+        break;
+      default:
+        break;
+    }
+  }
   const { rmRowData, isEditFlag } = props
 
   const costData = useContext(costingInfoContext)
@@ -65,12 +85,15 @@ function Pipe(props) {
   )
 
   let extraObj = {}
-  const [dataToSend, setDataToSend] = useState({})
+  const [dataToSend, setDataToSend] = useState({
+    GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+    FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+  })
   const [isChangeApplies, setIsChangeApplied] = useState(true)
   const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
   const tempOldObj = WeightCalculatorRequest
-  const [GrossWeight, setGrossWeights] = useState('')
-  const [FinishWeight, setFinishWeights] = useState('')
+  const [GrossWeight, setGrossWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '')
+  const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
   console.log('FinishWeight: ', FinishWeight);
   const [useFinishWeight, setUseFinishWeight] = useState(false)
   console.log(useFinishWeight, "in  finish Weight");
@@ -81,7 +104,15 @@ function Pipe(props) {
     name: ['OuterDiameter', 'Thickness', 'SheetLength', 'PartLength'],
   })
 
+  // const fieldVal = useWatch({
+  //   control,
+  //   name: ['FinishWeight']
+  // })
 
+  // useEffect(() => {
+
+  //   onFinishChange()
+  // }, [fieldVal])
 
   const dispatch = useDispatch()
 
@@ -113,7 +144,7 @@ function Pipe(props) {
         setUseFinishWeight(true)
       }
     }))
-    setFinishWeights(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : 0)
+    setFinishWeights(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : 0)
   }, [])
 
   const UOMSelectListByUnitType = useSelector(
@@ -455,6 +486,7 @@ function Pipe(props) {
     //console.log(finishWeight, "FW");
     grossWeight = setValueAccToUOM(grossWeight, value.label)
     let finishWeight = setValueAccToUOM(FinishWeight, value.label)
+    console.log('finishWeight: ', finishWeight);
     // setValue('GrossWeight', checkForDecimalAndNull(grossWeight, localStorage.NoOfDecimalForInputOutput))
 
     setUnit(value.label)
@@ -479,21 +511,25 @@ function Pipe(props) {
   const onFinishChange = (e) => {
     // if(e.target.value > getValues())
     setUseFinishWeight(false)
-    console.log(Number(e.target.value), "FinishWeight");
+    console.log("COMING ?");
+    let FW = getValues('FinishWeight')
+    console.log(Number(FW), "FinishWeight");
     if (UOMDimension.label === KG) {
-      setFinishWeights(Number(e.target.value) * 1000)
+      setFinishWeights(Number(FW) * 1000)
       let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(e.target.value) * 1000
+      updatedValue.FinishWeight = Number(FW) * 1000
       setDataToSend(updatedValue)
+
     } else if (UOMDimension.label === MG) {
-      setFinishWeights(Number(e.target.value) / 1000)
+      setFinishWeights(Number(FW) / 1000)
       let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(e.target.value) / 1000
+      updatedValue.FinishWeight = Number(FW) / 1000
       setDataToSend(updatedValue)
+
     } else {
-      setFinishWeights(Number(e.target.value))
+      setFinishWeights(Number(FW))
       let updatedValue = dataToSend
-      updatedValue.FinishWeight = Number(e.target.value)
+      updatedValue.FinishWeight = Number(FW)
       setDataToSend(updatedValue)
 
     }

@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
@@ -254,8 +254,8 @@ function RawMaterialCost(props) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
       } else if (weightData.UOMForDimension === MG) {
-        grossWeight = checkForDecimalAndNull(weightData.GrossWeight / 1000000, initialConfiguration.NoOfDecimalForPrice)
-        finishWeight = checkForDecimalAndNull(weightData.FinishWeight / 1000000, initialConfiguration.NoOfDecimalForPrice)
+        grossWeight = weightData.GrossWeight / 1000000
+        finishWeight = weightData.FinishWeight / 1000000
       }
       const FinishWeight = finishWeight
       const GrossWeight = grossWeight
@@ -274,8 +274,8 @@ function RawMaterialCost(props) {
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setTimeout(() => {
         setGridData(tempArr)
-        setValue(`${rmGridFields}[${editIndex}]GrossWeight`, GrossWeight)
-        setValue(`${rmGridFields}[${editIndex}]FinishWeight`, FinishWeight)
+        setValue(`${rmGridFields}[${editIndex}]GrossWeight`, checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+        setValue(`${rmGridFields}[${editIndex}]FinishWeight`, checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
       }, 100)
 
     }

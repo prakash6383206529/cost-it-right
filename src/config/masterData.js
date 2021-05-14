@@ -63,47 +63,68 @@ export const Masters = [
 */
 export const RMDomesticZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
-    { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Material", value: "Material" },
-    { label: "Plant", value: "Plant" },
+    { label: "RawMaterial", value: "RawMaterial" }, //*
+    { label: "RMGrade", value: "RMGrade" }, //*
+    { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "Category", value: "Category" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
+    { label: "PlantCode", value: "PlantCode" }, //*
     { label: "VendorName", value: "VendorName" },
-    { label: "VendorCode", value: "VendorCode" },
-    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "VendorCode", value: "VendorCode" }, //*
     { label: "HasDifferentSource", value: "HasDifferentSource" },
-    { label: "Source", value: "Source" },
-    { label: "SourceLocation", value: "SourceLocation" },
-    { label: "UOM", value: "UOM" },
-    { label: "BasicRate", value: "BasicRate" },
-    { label: "ScrapRate", value: "ScrapRate" },
+    { label: "Source", value: "Source" }, //NOUI
+    { label: "SourceLocation", value: "SourceLocation" }, //NOUI
+    { label: "UOM", value: "UOM" }, //*
+    { label: "BasicRate(INR)", value: "BasicRate(INR)" }, //*
+    { label: "ScrapRate(INR)", value: "ScrapRate(INR)" }, //*
+    { label: "RMFreightCost(INR)", value: "RMFreightCost(INR)" },
+    { label: "ShearingCost(INR)", value: "ShearingCost(INR)" },
+    { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const RMDomesticZBCTempData = [
     {
         //"CostingHead": "ZBC",
-        "RawMaterial": "RawMaterial Name",
-        "RMGrade": "1",
-        "RMSpec": "2",
-        "Category": "Category Name",
-        "TechnologyName": "Technology Name",
-        "Material": "Material Name",
-        "Plant": "Plant Name",
-        "VendorName": "Vendor Name",
-        "VendorCode": "Vendor123",
-        "VendorLocation": "Vendor Location",
-        "HasDifferentSource": "YES or NO",
-        "Source": "Source Name",
-        "SourceLocation": "Source Location",
-        "UOM": "Kilogram or Litre",
-        "BasicRate": "0",
-        "ScrapRate": "0",
-        "Remark": "Remark Content",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "STD",
+        "TechnologyName": "Sheet Metal",
+        "PlantCode": "PC01",
+        "VendorName": "Systematix",
+        "VendorCode": "VP123",
+        "HasDifferentSource": "Yes",
+        "Source": "Tata Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Kilogram",
+        "BasicRate(INR)": "100",
+        "ScrapRate(INR)": "10",
+        "RMFreightCost(INR)": "10",
+        "ShearingCost(INR)": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Content",
+    },
+    {
+        //"CostingHead": "ZBC",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "CTS",
+        "TechnologyName": "Sheet Metal",
+        "PlantCode": "PC01",
+        "VendorName": "Systematix",
+        "VendorCode": "VP123",
+        "HasDifferentSource": "No",
+        "Source": "Tata Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Gallon",
+        "BasicRate(INR)": "500",
+        "ScrapRate(INR)": "50",
+        "RMFreightCost(INR)": "50",
+        "ShearingCost(INR)": "50",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Content",
     }
 ]
 
@@ -112,45 +133,65 @@ export const RMDomesticZBCTempData = [
 */
 export const RMDomesticVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
-    { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Material", value: "Material" },
-    { label: "VendorName", value: "VendorName" },
-    { label: "VendorCode", value: "VendorCode" },
-    { label: "VendorPlant", value: "VendorPlant" },
-    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "RawMaterial", value: "RawMaterial" }, //*
+    { label: "RMGrade", value: "RMGrade" }, //*
+    { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "Category", value: "Category" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
+    { label: "VendorName", value: "VendorName" }, //*
+    { label: "VendorCode", value: "VendorCode" }, //NOUI,*
+    { label: "PlantCode", value: "PlantCode" }, //NOUI
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
-    { label: "UOM", value: "UOM" },
-    { label: "BasicRate", value: "BasicRate" },
-    { label: "ScrapRate", value: "ScrapRate" },
+    { label: "UOM", value: "UOM" }, //*
+    { label: "BasicRate(INR)", value: "BasicRate(INR)" }, //*
+    { label: "ScrapRate(INR)", value: "ScrapRate(INR)" }, //*
+    { label: "RMFreightCost(INR)", value: "RMFreightCost(INR)" }, //New Added
+    { label: "ShearingCost(INR)", value: "ShearingCost(INR)" }, //New Added
+    { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const RMDomesticVBCTempData = [
     {
         //"CostingHead": "VBC",
-        "RawMaterial": "RawMaterial Name",
-        "RMGrade": "RMGrade Name",
-        "RMSpec": "RMSpec Name",
-        "Category": "Category Name",
-        "TechnologyName": "Technology Name",
-        "Material": "Material Name",
-        "VendorName": "Vendor Name",
-        "VendorCode": "Vendor123",
-        "VendorPlant": "VendorPlant",
-        "VendorLocation": "Vendor Location",
-        "Source": "Source Name",
-        "SourceLocation": "Source Location",
-        "UOM": "Unit Of Measurement",
-        "BasicRate": "0",
-        "ScrapRate": "0",
-        "Remark": "Remark Content",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "STD",
+        "TechnologyName": "Sheet Metal",
+        "VendorName": "Systematix",
+        "VendorCode": "V123",
+        "PlantCode": "VP123",
+        "Source": "TATA Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Kilogram",
+        "BasicRate(INR)": "100",
+        "ScrapRate(INR)": "10",
+        "RMFreightCost(INR)": "10",
+        "ShearingCost(INR)": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Content",
+    },
+    {
+        //"CostingHead": "VBC",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "CTS",
+        "TechnologyName": "Sheet Metal",
+        "VendorName": "Systematix",
+        "VendorCode": "V123",
+        "PlantCode": "VP123",
+        "Source": "TATA Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Gallon",
+        "BasicRate(INR)": "500",
+        "ScrapRate(INR)": "50",
+        "RMFreightCost(INR)": "10",
+        "ShearingCost(INR)": "10",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Content",
     }
 ]
 
@@ -159,50 +200,74 @@ export const RMDomesticVBCTempData = [
 */
 export const RMImportZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
-    { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Material", value: "Material" },
-    { label: "Plant", value: "Plant" },
+    { label: "RawMaterial", value: "RawMaterial" }, //*
+    { label: "RMGrade", value: "RMGrade" }, //*
+    { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "Category", value: "Category" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
+    { label: "PlantCode", value: "PlantCode" }, //*
     { label: "VendorName", value: "VendorName" },
-    { label: "VendorCode", value: "VendorCode" },
-    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "VendorCode", value: "VendorCode" }, //NOUI
     { label: "HasDifferentSource", value: "HasDifferentSource" },
-    { label: "Source", value: "Source" },
-    { label: "SourceLocation", value: "SourceLocation" },
-    { label: "Currency", value: "Currency" },
-    { label: "UOM", value: "UOM" },
-    { label: "BasicRate", value: "BasicRate" },
-    { label: "ScrapRate", value: "ScrapRate" },
+    { label: "Source", value: "Source" }, //NOUI
+    { label: "SourceLocation", value: "SourceLocation" }, //NOUI
+    { label: "UOM", value: "UOM" }, //*
+    { label: "Currency", value: "Currency" }, //*
+    { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "RMFreightCost", value: "RMFreightCost" }, //New Added
+    { label: "ShearingCost", value: "ShearingCost" }, //New Added
+    { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
+
+
 ]
 
 
 export const RMImportZBCTempData = [
     {
         //"CostingHead": "ZBC",
-        "RawMaterial": "RawMaterial Name",
-        "RMGrade": "RMGrade Name",
-        "RMSpec": "RMSpec Name",
-        "Category": "Category Name",
-        "TechnologyName": "Technology Name",
-        "Material": "Material Name",
-        "Plant": "Plant Name",
-        "VendorName": "Vendor Name",
-        "VendorCode": "Vendor123",
-        "VendorLocation": "Vendor Location",
-        "HasDifferentSource": "YES or NO",
-        "Source": "Source Name",
-        "SourceLocation": "Source Location",
-        "Currency": "Currency USD or INR",
-        "UOM": "Kilogram or Litre",
-        "BasicRate": "0",
-        "ScrapRate": "0",
-        "Remark": "Remark Content",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "STD",
+        "TechnologyName": "Sheet Metal",
+        "PlantCode": "PC01",
+        "VendorName": "Systematix",
+        "VendorCode": "VP123",
+        "HasDifferentSource": "Yes",
+        "Source": "Tata Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Kilogram",
+        "Currency": "INR",
+        "BasicRate": "100",
+        "ScrapRate": "10",
+        "RMFreightCost": "10",
+        "ShearingCost": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
+    },
+    {
+        //"CostingHead": "ZBC",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "CTS",
+        "TechnologyName": "Sheet Metal",
+        "PlantCode": "PC01",
+        "VendorName": "Systematix",
+        "VendorCode": "VP123",
+        "HasDifferentSource": "No",
+        "Source": "Tata Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Gallon",
+        "Currency": "USD",
+        "BasicRate": "500",
+        "ScrapRate": "50",
+        "RMFreightCost": "10",
+        "ShearingCost": "10",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
     }
 ]
 
@@ -211,47 +276,68 @@ export const RMImportZBCTempData = [
 */
 export const RMImportVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
-    { label: "RawMaterial", value: "RawMaterial" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "RMSpec", value: "RMSpec" },
-    { label: "Category", value: "Category" },
-    { label: "TechnologyName", value: "TechnologyName" },
-    { label: "Material", value: "Material" },
+    { label: "RawMaterial", value: "RawMaterial" }, //*
+    { label: "RMGrade", value: "RMGrade" }, //*
+    { label: "RMSpec", value: "RMSpec" }, //*
+    { label: "Category", value: "Category" }, //*
+    { label: "TechnologyName", value: "TechnologyName" }, //*
     { label: "VendorName", value: "VendorName" },
-    { label: "VendorCode", value: "VendorCode" },
-    { label: "VendorPlant", value: "VendorPlant" },
-    { label: "VendorLocation", value: "VendorLocation" },
+    { label: "VendorCode", value: "VendorCode" }, //NOUI
+    { label: "PlantCode", value: "PlantCode" }, //NOUI
     { label: "Source", value: "Source" },
     { label: "SourceLocation", value: "SourceLocation" },
-    { label: "Currency", value: "Currency" },
-    { label: "UOM", value: "UOM" },
-    { label: "BasicRate", value: "BasicRate" },
-    { label: "ScrapRate", value: "ScrapRate" },
+    { label: "UOM", value: "UOM" }, //*
+    { label: "Currency", value: "Currency" }, //*
+    { label: "BasicRate", value: "BasicRate" },  //*
+    { label: "ScrapRate", value: "ScrapRate" }, //*
+    { label: "RMFreightCost", value: "RMFreightCost" },
+    { label: "ShearingCost", value: "ShearingCost" },
+    { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
-    { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
 export const RMImportVBCTempData = [
     {
         //"CostingHead": "VBC",
-        "RawMaterial": "RawMaterial Name",
-        "RMGrade": "RMGrade Name",
-        "RMSpec": "RMSpec Name",
-        "Category": "Category Name",
-        "TechnologyName": "Technology Name",
-        "Material": "Material Name",
-        "VendorName": "Vendor Name",
-        "VendorCode": "Vendor123",
-        "VendorPlant": "Vendor Plant Name",
-        "VendorLocation": "Vendor Location",
-        "Source": "Source Name",
-        "SourceLocation": "Source Location",
-        "Currency": "Currency USD or INR",
-        "UOM": "Kilogram or Litre",
-        "BasicRate": "0",
-        "ScrapRate": "0",
-        "Remark": "Remark Content",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "STD",
+        "TechnologyName": "Sheet Metal",
+        "VendorName": "Systematix",
+        "VendorCode": "V123",
+        "PlantCode": "VP123",
+        "Source": "TATA Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Kilogram",
+        "Currency": "INR",
+        "BasicRate(INR)": "100",
+        "ScrapRate(INR)": "10",
+        "RMFreightCost(INR)": "10",
+        "ShearingCost(INR)": "10",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
+    },
+    {
+        //"CostingHead": "VBC",
+        "RawMaterial": "CRCA",
+        "RMGrade": "15Cr3",
+        "RMSpec": "50 mm",
+        "Category": "CTS",
+        "TechnologyName": "Sheet Metal",
+        "VendorName": "Systematix",
+        "VendorCode": "V123",
+        "PlantCode": "VP123",
+        "Source": "TATA Steel",
+        "SourceLocation": "Jamshedpur",
+        "UOM": "Gallon",
+        "Currency": "USD",
+        "BasicRate(INR)": "500",
+        "ScrapRate(INR)": "50",
+        "RMFreightCost(INR)": "10",
+        "ShearingCost(INR)": "10",
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": "Remark Text",
     }
 ]
 
@@ -259,18 +345,20 @@ export const RMImportVBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const RMSpecification = [
-    { label: "RawMaterialName", value: "RawMaterialName" },
-    { label: "Material", value: "Material" },
-    { label: "RMGrade", value: "RMGrade" },
-    { label: "Specification", value: "Specification" },
+    { label: "RawMaterialName", value: "RawMaterialName" },//*
+    { label: "RMGrade", value: "RMGrade" },//*
+    { label: "Material", value: "Material" },//*
+    { label: "Density", value: "Density" },//*
+    { label: "Specification", value: "Specification" },//*
 ]
 
 export const RMSpecificationXLTempData = [
     {
-        "RawMaterialName": "Raw Material 1",
-        "Material": "Material 1",
-        "RMGrade": "RM Grade 1",
-        "Specification": "10mm",
+        "RawMaterialName": "CRCA",
+        "RMGrade": "15Cr3",
+        "Material": "Stainless Steel",
+        "Density": "3.3",
+        "Specification": "50 mm",
     }
 ]
 
@@ -278,42 +366,42 @@ export const RMSpecificationXLTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Vendor = [
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'RawMaterialVendor', value: 'RawMaterialVendor', },
-    { label: 'LabourVendor', value: 'LabourVendor', },
-    { label: 'VBCVendor', value: 'VBCVendor', },
-    { label: 'BOPVendor', value: 'BOPVendor', },
-    { label: 'VendorEmail', value: 'VendorEmail', },
-    { label: 'MobileNumber', value: 'MobileNumber', },
-    { label: 'AddressLine1', value: 'AddressLine1', },
-    { label: 'AddressLine2', value: 'AddressLine2', },
-    { label: 'ZipCode', value: 'ZipCode', },
+    { label: 'RawMaterialVendor', value: 'RawMaterialVendor', style: { fill: { patternType: "solid", fgColor: { rgb: "FFFFFF00" } } } },//*
+    { label: 'LabourVendor', value: 'LabourVendor', }, //*
+    { label: 'PartVendor', value: 'PartVendor', }, //*
+    { label: 'BOPVendor', value: 'BOPVendor', },//*
+    { label: 'VendorName', value: 'VendorName', },//*
+    { label: 'VendorCode', value: 'VendorCode', },//*
+    { label: 'VendorEmail', value: 'VendorEmail', },//*
     { label: 'PhoneNumber', value: 'PhoneNumber', },
     { label: 'Extension', value: 'Extension', },
-    { label: 'City', value: 'City', },
-    { label: 'State', value: 'State', },
-    { label: 'Country', value: 'Country', },
+    { label: 'MobileNumber', value: 'MobileNumber', },
+    { label: 'Country', value: 'Country', },//*
+    { label: 'State', value: 'State', },//*
+    { label: 'City', value: 'City', },//*
+    { label: 'ZipCode', value: 'ZipCode', },//*
+    { label: 'AddressLine1', value: 'AddressLine1', },
+    { label: 'AddressLine2', value: 'AddressLine2', },
 ]
 
 export const VendorTempData = [
     {
-        'VendorName': 'Vendor Name',
-        'VendorCode': 'Vendor Code',
         'RawMaterialVendor': 'YES OR NO',
         'LabourVendor': 'YES OR NO',
-        'VBCVendor': 'YES OR NO',
+        'PartVendor': 'YES OR NO',
         'BOPVendor': 'YES OR NO',
+        'VendorName': 'TATA Steel',
+        'VendorCode': 'VC01',
         'VendorEmail': 'Vendor@gmail.com',
-        'MobileNumber': '1234567890',
-        'AddressLine1': '123, Area location',
-        'AddressLine2': '123, Area location',
-        'ZipCode': '123456',
         'PhoneNumber': '1234567899',
         'Extension': '123',
-        'City': 'Indore',
-        'State': 'MP',
+        'MobileNumber': '1234567890',
         'Country': 'India',
+        'State': 'MP',
+        'City': 'Indore',
+        'ZipCode': '123456',
+        'AddressLine1': '123, Area location',
+        'AddressLine2': '123, Area location',
     }
 ]
 
@@ -330,7 +418,7 @@ export const Overhead = [
     { label: 'OverheadRMPercentage', value: 'OverheadRMPercentage', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'Remark', value: 'Remark', },
+    { label: 'Remarks', value: 'Remarks', },
 ]
 
 export const OverheadTempData = [
@@ -344,7 +432,7 @@ export const OverheadTempData = [
         'OverheadRMPercentage': '10',
         'VendorName': 'Vendor123',
         'VendorCode': 'Vendor Code1',
-        'Remark': 'Remark Text',
+        'Remarks': 'Remark Text',
     }
 ]
 
@@ -352,27 +440,29 @@ export const OverheadTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const ZBCOperation = [
-    { label: 'Technology', value: 'Technology', },
-    { label: 'OperationName', value: 'OperationName', },
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationName', value: 'OperationName', }, //*
     { label: 'OperationCode', value: 'OperationCode', },
     { label: 'Description', value: 'Description', },
-    { label: 'Plant', value: 'Plant', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'LabourRate', value: 'LabourRate', },
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'Rate', value: 'Rate', }, //*
+    { label: 'Rate', value: 'Rate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const ZBCOperationTempData = [
     {
-        'Technology': 'Technology Name',
-        'OperationName': 'Operation 1',
-        'OperationCode': 'Operation 123',
+        'Technology': 'Sheet Metal',
+        'OperationName': 'Crushing',
+        'OperationCode': 'Crushing123',
         'Description': 'Description Text',
-        'Plant': 'Plant123',
-        'UOM': 'Unit of Measurement',
-        'Rate': 0,
-        'LabourRate': 0,
+        'PlantCode': 'Systematix01',
+        'UOM': 'Litre',
+        'Rate': 50,
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'LabourRate': 5,
         'Remark': 'Remark Text',
     }
 ]
@@ -381,33 +471,37 @@ export const ZBCOperationTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCOperation = [
-    { label: 'Technology', value: 'Technology', },
-    { label: 'OperationName', value: 'OperationName', },
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'OperationName', value: 'OperationName', }, //*
     { label: 'OperationCode', value: 'OperationCode', },
     { label: 'Description', value: 'Description', },
-    { label: 'Plant', value: 'Plant', },
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'VendorPlant', value: 'VendorPlant', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'LabourRate', value: 'LabourRate', },
+    { label: 'VendorName', value: 'VendorName', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'Rate', value: 'Rate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+    { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const VBCOperationTempData = [
     {
-        'Technology': 'Technology Name',
-        'OperationName': 'Operation 1',
-        'OperationCode': 'Operation Code123',
-        'Description': 'Description',
-        'Plant': 'P123',
-        'VendorName': 'Vendor 123',
-        'VendorCode': 'Vendor Code123',
-        'VendorPlant': 'Vendor Plant',
-        'UOM': 'Unit of Measurement',
-        'Rate': 0,
-        'LabourRate': 0,
+        'Technology': 'Sheet Metal',
+        'OperationName': 'Crushing',
+        'OperationCode': 'Crushing123',
+        'Description': 'Description Text',
+        'VendorName': 'Tata Steel',
+        'VendorCode': 'Vendor123',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': 1032,
+        'VendorPlantCode': 'VP01',
+        'UOM': 'Litre',
+        'Rate': 50,
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'LabourRate': 5,
         'Remark': 'Remark',
     }
 ]
@@ -425,7 +519,7 @@ export const Profit = [
     { label: 'ProfitRMPercentage', value: 'ProfitRMPercentage', },
     { label: 'VendorName', value: 'VendorName', },
     { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'Remark', value: 'Remark', },
+    { label: 'Remarks', value: 'Remarks', },
 ]
 
 export const ProfitTempData = [
@@ -439,7 +533,7 @@ export const ProfitTempData = [
         'ProfitRMPercentage': '10',
         'VendorName': 'Vendor Name',
         'VendorCode': 'Vendor Code123',
-        'Remark': 'Remark',
+        'Remarks': 'Remark Text',
     }
 ]
 
@@ -447,26 +541,39 @@ export const ProfitTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Labour = [
-    { label: 'EmploymentTerms', value: 'EmploymentTerms', },
+    { label: 'EmploymentTerms', value: 'EmploymentTerms', }, //*
     { label: 'VendorName', value: 'VendorName', },
-    { label: 'State', value: 'State', },
-    { label: 'Plant', value: 'Plant', },
-    { label: 'MachineType', value: 'MachineType', },
-    { label: 'LabourType', value: 'LabourType', },
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'State', value: 'State', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'MachineType', value: 'MachineType', }, //*
+    { label: 'LabourType', value: 'LabourType', }, //*
+    { label: 'RatePerPerson/Annum(INR)', value: 'RatePerPerson/Annum(INR)', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'LabourRate', value: 'LabourRate', },
 ]
 
 export const LabourTempData = [
     {
-        'EmploymentTerms': 'Employ or Contractual',
-        'VendorName': 'Vendor Name',
+        'EmploymentTerms': 'Contractual',
+        'VendorName': 'Tata Steel',
+        'VendorCode': 'VC123',
         'State': 'MP',
-        'Plant': 'P1',
-        'MachineType': 'Machine Type',
-        'LabourType': 'Labour Type',
+        'PlantCode': 'Plant01',
+        'MachineType': 'Grinder',
+        'LabourType': 'Skilled',
+        'RatePerPerson/Annum(INR)': 2000000,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'LabourRate': 0,
+    },
+    {
+        'EmploymentTerms': 'Employed',
+        'VendorName': 'Reliance',
+        'VendorCode': 'VC124',
+        'State': 'MP',
+        'PlantCode': 'Plant02',
+        'MachineType': 'Grinder',
+        'LabourType': 'Semi-Skilled',
+        'RatePerPerson/Annum': 300000,
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
 
@@ -474,20 +581,20 @@ export const LabourTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Fuel = [
-    { label: 'FuelName', value: 'FuelName', },
-    { label: 'State', value: 'State', },
-    { label: 'Rate', value: 'Rate', },
-    { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM', },
+    { label: 'FuelName', value: 'FuelName', }, //*
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'State', value: 'State', }, //*
+    { label: 'Rate', value: 'Rate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
 ]
 
 export const FuelTempData = [
     {
         'FuelName': 'Petrol',
+        'UOM': 'Mililitre',
         'State': 'MP',
         'Rate': '100',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Litre',
     }
 ]
 
@@ -511,48 +618,32 @@ export const Plant = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
-    { label: 'BOPPartName', value: 'BOPPartName', },
-    { label: 'BOPCategory', value: 'BOPCategory', },
-    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'BOPPartName', value: 'BOPPartName', }, //*
+    { label: 'BOPCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'Plant', value: 'Plant', },
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'NoOfPcs', value: 'NoOfPcs', },
-    { label: 'BasicRate', value: 'BasicRate', },
-    { label: 'Remark', value: 'Remark', },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    { label: 'BasicRate(INR)', value: 'BasicRate(INR)', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' }
+    { label: 'Remark', value: 'Remark' }
 ]
 
 export const BOP_ZBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP1',
-        'BOPPartName': 'BOP Name',
-        'BOPCategory': 'Category 1',
-        'PartNumber': 'P1',
-        'Specification': 'BOP Specification',
-        'Plant': 'Plant1',
-        'VendorName': 'Vendor Name123',
-        'NoOfPcs': '1',
-        'BasicRate': '100',
-        'Remark': 'Remark Text',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
+        'Specification': '20 mm',
+        'UOM': 'Gallon',
+        'PlantCode': 'Plant101',
+        'VendorCode': 'Systematix',
+        'MinimumOrderQuantity': '10',
+        'BasicRate(INR)': '100',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
-    },
-    {
-        'BOPPartNumber': 'BOP1',
-        'BOPPartName': 'BOP Name',
-        'BOPCategory': 'Category 1',
-        'PartNumber': 'P1',
-        'Specification': 'BOP Specification',
-        'Plant': 'Plant1',
-        'VendorName': 'Vendor Name123',
-        'NoOfPcs': '1',
-        'BasicRate': '100',
-        'Remark': 'Remark Text',
-        "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -560,42 +651,40 @@ export const BOP_ZBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_DOMESTIC = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
-    { label: 'BOPPartName', value: 'BOPPartName', },
-    { label: 'BOPCategory', value: 'BOPCategory', },
-    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'BOPPartName', value: 'BOPPartName', }, //*
+    { label: 'BOPCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'VendorLocation', value: 'VendorLocation', },
-    { label: 'VendorPlant', value: 'VendorPlant', },
-    { label: 'SourceVendorName', value: 'SourceVendorName', },
-    { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
-    { label: 'NoOfPcs', value: 'NoOfPcs', },
-    { label: 'BasicRate', value: 'BasicRate', },
-    { label: 'Remark', value: 'Remark', },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    { label: 'VendorSourceName', value: 'VendorSourceName', },
+    { label: 'VendorSourceLocation', value: 'VendorSourceLocation', },
+    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    { label: 'BasicRate(INR)', value: 'BasicRate(INR)', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' }
+    { label: 'Remark', value: 'Remark' }
 ]
 
 export const BOP_VBC_DOMESTIC_TempData = [
     {
-        'BOPPartNumber': 'BOP1',
-        'BOPPartName': 'BOP Part Name123',
-        'BOPCategory': 'Category1',
-        'PartNumber': 'P1',
-        'Specification': 'BOP Specification',
-        'VendorName': 'Vendor Name123',
-        'VendorCode': 'Vendor Code123',
-        'VendorLocation': 'Vendor Location',
-        'VendorPlant': 'Vendor Plant123',
-        'SourceVendorName': 'Source Vendor Name',
-        'SourceVendorLocation': 'Source Vendor Location',
-        'NoOfPcs': '10',
-        'BasicRate': '100',
-        'Remark': 'Remark Text',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
+        'Specification': '20 mm',
+        'UOM': 'Gallon',
+        'DestinationPlant': 'manesar',
+        'DestinationPlantCode': 1032,
+        'VendorCode': 'Sys01',
+        'VendorPlantCode': 'VPlant01',
+        'VendorSourceName': 'TATA Steel',
+        'VendorSourceLocation': 'Jamshedpur',
+        'MinimumOrderQuantity': '10',
+        'BasicRate(INR)': '100',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -603,36 +692,36 @@ export const BOP_VBC_DOMESTIC_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
-    { label: 'BOPPartName', value: 'BOPPartName', },
-    { label: 'BOPCategory', value: 'BOPCategory', },
-    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'BOPPartName', value: 'BOPPartName', }, //*
+    { label: 'BOPCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
-    { label: 'Plant', value: 'Plant', },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'VendorName', value: 'VendorName', },
-    { label: 'NoOfPcs', value: 'NoOfPcs', },
-    { label: 'BasicRate', value: 'BasicRate', },
-    { label: 'Currency', value: 'Currency', },
-    { label: 'Remark', value: 'Remark', },
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'Currency', value: 'Currency', }, //*
+    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' },
+    { label: 'Remark', value: 'Remark' },
 ]
 
 export const BOP_ZBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part Number123',
-        'BOPPartName': 'Part1',
-        'BOPCategory': 'Category1',
-        'PartNumber': 'P1',
-        'Specification': 'Specification',
-        'Plant': 'Plant',
-        'VendorName': 'Vendor Name123',
-        'NoOfPcs': '10',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
+        'Specification': '20 mm',
+        'UOM': 'Gallon',
+        'PlantCode': 'Plant101',
+        'VendorName': 'Systematix',
+        'VendorCode': 'VC1',
+        'Currency': 'INR or USD',
+        'MinimumOrderQuantity': '10',
         'BasicRate': '100',
-        'Currency': 'INR',
-        'Remark': 'Remark Text',
         'EffectiveDate': moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -640,44 +729,44 @@ export const BOP_ZBC_IMPORT_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_IMPORT = [
-    { label: 'BOPPartNumber', value: 'BOPPartNumber', },
-    { label: 'BOPPartName', value: 'BOPPartName', },
-    { label: 'BOPCategory', value: 'BOPCategory', },
-    { label: 'PartNumber', value: 'PartNumber', },
+    { label: 'BOPPartNumber', value: 'BOPPartNumber', }, //*
+    { label: 'BOPPartName', value: 'BOPPartName', }, //*
+    { label: 'BOPCategory', value: 'BOPCategory', }, //*
     { label: 'Specification', value: 'Specification', },
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', },
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
     { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'VendorLocation', value: 'VendorLocation', },
-    { label: 'VendorPlant', value: 'VendorPlant', },
-    { label: 'SourceVendorName', value: 'SourceVendorName', },
-    { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
-    { label: 'NoOfPcs', value: 'NoOfPcs', },
-    { label: 'BasicRate', value: 'BasicRate', },
-    { label: 'Currency', value: 'Currency', },
-    { label: 'Remark', value: 'Remark', },
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    { label: 'VendorSourceName', value: 'VendorSourceName', },
+    { label: 'VendorSourceLocation', value: 'VendorSourceLocation', },
+    { label: 'Currency', value: 'Currency', }, //*
+    { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    { label: 'BasicRate(INR)', value: 'BasicRate(INR)', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
-    { label: 'UOM', value: 'UOM' }
+    { label: 'Remark', value: 'Remark' }
 ]
 
 export const BOP_VBC_IMPORT_TempData = [
     {
-        'BOPPartNumber': 'BOP Part Number123',
-        'BOPPartName': 'Part1',
-        'BOPCategory': 'Category1',
-        'PartNumber': 'P1',
-        'Specification': 'Specification',
-        'VendorName': 'Vendor Name',
-        'VendorCode': 'Vendor Code123',
-        'VendorLocation': 'Vendor Location',
-        'VendorPlant': 'Vendor Plant123',
-        'SourceVendorName': 'Vendor Name123',
-        'SourceVendorLocation': 'Vendor Location',
-        'NoOfPcs': '10',
-        'BasicRate': '100',
-        'Currency': 'INR',
-        'Remark': 'Remark Text',
+        'BOPPartNumber': 'BOP Part123',
+        'BOPPartName': 'Screw',
+        'BOPCategory': 'Machine',
+        'Specification': '20 mm',
+        'UOM': 'Gallon',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': 1032,
+        'VendorName': 'Systematix',
+        'VendorCode': 'Sys01',
+        'VendorPlantCode': 'VPlant01',
+        'VendorSourceName': 'TATA Steel',
+        'VendorSourceLocation': 'Jamshedpur',
+        'Currency': 'INR or USD',
+        'MinimumOrderQuantity': '10',
+        'BasicRate(INR)': '100',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
-        'UOM': 'Kilogram'
+        'Remark': 'Remark Text'
     }
 ]
 
@@ -685,24 +774,24 @@ export const BOP_VBC_IMPORT_TempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_ACTUAL_ZBC = [
-    { label: 'Plant', value: 'Plant', },
-    { label: 'PartNo', value: 'PartNo', },
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartNo', value: 'PartNo', }, //*
     // { label: 'OldPartNo', value: 'OldPartNo', },
-    { label: 'PartName', value: 'PartName', },
-    { label: 'Year', value: 'Year', },
-    { label: 'Month', value: 'Month', },
-    { label: 'ActualQuantity', value: 'ActualQuantity', },
+    { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'Month', value: 'Month', }, //NOUI,*
+    { label: 'ActualQuantity', value: 'ActualQuantity', }, //*
 ]
 
 export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
-        'Plant': 'P1',
-        'PartNo': 'Part 1',
+        'PlantCode': 'P1',
+        'PartNo': 'Screw01',
         // 'OldPartNo': 'Old Part 2',
-        'PartName': 'Part 1',
+        'PartName': 'Screw',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
-        'ActualQuantity': 1,
+        'ActualQuantity': 100,
     }
 ]
 
@@ -711,23 +800,29 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 */
 export const VOLUME_ACTUAL_VBC = [
     { label: 'VendorName', value: 'VendorName', },
-    { label: 'PartNo', value: 'PartNo', },
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PartNo', value: 'PartNo', }, //*
     // { label: 'OldPartNo', value: 'OldPartNo', },
-    { label: 'PartName', value: 'PartName', },
-    { label: 'Year', value: 'Year', },
-    { label: 'Month', value: 'Month', },
-    { label: 'ActualQuantity', value: 'ActualQuantity', },
+    { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'Month', value: 'Month', }, //NOUI ,*
+    { label: 'ActualQuantity', value: 'ActualQuantity', }, //*
 ]
 
 export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
-        'VendorName': 'Vendor Name',
-        'PartNo': 'Part1',
+        'VendorName': 'Tata Steel',
+        'VendorCode': 'Tata01',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': 1032,
+        'PartNo': 'Screw Jack',
         // 'OldPartNo': 'Old Part1',
-        'PartName': 'Part Name1',
+        'PartName': 'Screw',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
-        'ActualQuantity': 1,
+        'ActualQuantity': 50,
     }
 ]
 
@@ -735,24 +830,24 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_BUDGETED_ZBC = [
-    { label: 'BudgetedQuantity', value: 'BudgetedQuantity', },
-    { label: 'Plant', value: 'Plant', },
-    { label: 'PartNo', value: 'PartNo', },
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartNo', value: 'PartNo', }, //*
     // { label: 'OldPartNo', value: 'OldPartNo', },
-    { label: 'PartName', value: 'PartName', },
-    { label: 'Year', value: 'Year', },
-    { label: 'Month', value: 'Month', },
+    { label: 'PartName', value: 'PartName', }, //NOUI
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'Month', value: 'Month', }, //NOUI
+    { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
 ]
 
 export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
-        'BudgetedQuantity': 'BudgetedQuantity',
-        'Plant': 'Plant1',
-        'PartNo': 'Part No1',
+        'PlantCode': 'Systematix01',
+        'PartNo': 'Screw01',
         // 'OldPartNo': 'Old Part1',
-        'PartName': 'PartName',
+        'PartName': 'Screw',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
+        'BudgetedQuantity': 10,
     }
 ]
 
@@ -760,24 +855,30 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_BUDGETED_VBC = [
-    { label: 'BudgetedQuantity', value: 'BudgetedQuantity', },
     { label: 'VendorName', value: 'VendorName', },
-    { label: 'PartNo', value: 'PartNo', },
+    { label: 'VendorCode', value: 'VendorCode', }, //*
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'PartNo', value: 'PartNo', }, //*
     // { label: 'OldPartNo', value: 'OldPartNo', },
-    { label: 'PartName', value: 'PartName', },
-    { label: 'Year', value: 'Year', },
-    { label: 'Month', value: 'Month', },
+    { label: 'PartName', value: 'PartName', },//NOUI
+    { label: 'Year', value: 'Year', }, //*
+    { label: 'Month', value: 'Month', }, //NOUI
+    { label: 'BudgetedQuantity', value: 'BudgetedQuantity', }, //*
 ]
 
 export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
-        'BudgetedQuantity': 'BudgetedQuantity',
-        'VendorName': 'VendorName',
-        'PartNo': 'PartNo',
+        'VendorName': 'Tata Steel',
+        'VendorCode': 'Tata01',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': 1032,
+        'PartNo': 'Screw01',
         // 'OldPartNo': 'OldPartNo',
-        'PartName': 'PartName',
+        'PartName': 'Screw',
         'Year': moment().format('YYYY'),
         'Month': moment().format('MM'),
+        'BudgetedQuantity': 25,
     }
 ]
 
@@ -838,6 +939,7 @@ export const OtherOperation = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Power = [
+    { label: 'PowerType', value: 'PowerType', },
     { label: 'PowerChargesType', value: 'PowerChargesType', },
     { label: 'PowerType', value: 'PowerType', },
     { label: 'PowerSupplierName', value: 'PowerSupplierName', },
@@ -857,7 +959,7 @@ export const Power = [
     { label: 'PercentOfUsageToStateElectricityBoard', value: 'PercentOfUsageToStateElectricityBoard', },
     { label: 'PercentOfUsageToSelfGenerated', value: 'PercentOfUsageToSelfGenerated', },
     { label: 'NetPowerCost', value: 'NetPowerCost', },
-    { label: 'Remark', value: 'Remark', },
+    { label: 'Remarks', value: 'Remarks', },
     { label: 'Division', value: 'Division', },
     { label: 'PercentFCA', value: 'PercentFCA', },
     { label: 'PowerRateing', value: 'PowerRateing', },
@@ -867,32 +969,34 @@ export const Power = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineZBC = [
-    { label: 'Technology', value: 'Technology', },
-    { label: 'Plant', value: 'Plant', },
-    { label: 'MachineNo', value: 'MachineNo', },
-    { label: 'MachineName', value: 'MachineName', },
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'MachineNo', value: 'MachineNo', }, //*
+    { label: 'MachineSpecification', value: 'MachineSpecification', },
+    { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
-    { label: 'Description', value: 'Description', },
-    { label: 'ProcessName', value: 'ProcessName', },
-    { label: 'UOM', value: 'UOM', },
-    { label: 'MachineRate', value: 'MachineRate', },
+    { label: 'MachineTonnage', value: 'MachineTonnage', },
+    { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'UOM', value: 'UOM', }, //*
+    { label: 'MachineRate', value: 'MachineRate', }, //* 
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //* 
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const MachineZBCTempData = [
     {
-        'Technology': 'Technology Name',
-        'Plant': 'Plant1',
-        'MachineNo': 'Machine 1',
-        'MachineName': 'Machine Name1',
-        'MachineType': 'Machine Type',
-        'MachineCapacityAndTonnage': '10',
-        'Description': 'Description Text',
-        'ProcessName': 'Process Name1',
-        'UOM': 'UOM',
-        'MachineRate': 0,
-        'Remark': 'Remark',
+        'Technology': 'Sheet Metal',
+        'PlantCode': '1001',
+        'MachineNo': 'SM1002',
+        'MachineSpecification': 'Mechanical Power Press',
+        'MachineName': 'Power Press',
+        'MachineType': 'Mechanical',
+        'MachineTonnage': '40',
+        'ProcessName': 'Punching',
+        'UOM': 'Stroke',
+        'MachineRate': 55,
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text',
     }
 ]
 
@@ -900,67 +1004,56 @@ export const MachineZBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MHRMoreZBC = [
-    { label: "Technology", value: "Technology", },
-    { label: "Ownership", value: "Ownership", },
-    { label: "Plant", value: "Plant", },
-    { label: "MachineNo", value: "MachineNo", },
-    { label: "MachineName", value: "MachineName", },
+    { label: "Technology", value: "Technology", }, //*
+    { label: "PlantCode", value: "PlantCode", }, //*
+    { label: "MachineNo", value: "MachineNo", }, //*
+    { label: "MachineName", value: "MachineName", }, //*
+    { label: "MachineSpec", value: "MachineSpec", },
+    { label: "Description", value: "Description", },
     { label: "MachineType", value: "MachineType", },
     { label: "Manufacturer", value: "Manufacturer", },
     { label: "YearOfManufacturing", value: "YearOfManufacturing", },
-    { label: "MachineCapacityAndTonnage", value: "MachineCapacityAndTonnage", },
-    { label: "MachineCost", value: "MachineCost", },
-    { label: "AccessoriesCost", value: "AccessoriesCost", },
-    { label: "UOM", value: "UOM", },
-    { label: "InstallationCost", value: "InstallationCost", },
-    { label: "TotalCost", value: "TotalCost", },
+    { label: "MachineTonnage", value: "MachineTonnage", },
+    { label: "MachineCost(INR)", value: "MachineCost(INR)", }, //*
+    { label: "AccessoriesCost(INR)", value: "AccessoriesCost(INR)", },
+    { label: "InstallationCost(INR)", value: "InstallationCost(INR)", },
     { label: "LoanPercentage", value: "LoanPercentage", },
-    { label: "LoanValue", value: "LoanValue", },
     { label: "EquityPercentage", value: "EquityPercentage", },
-    { label: "EquityValue", value: "EquityValue", },
     { label: "RateOfInterest", value: "RateOfInterest", },
-    { label: "RateOfInterestValue", value: "RateOfInterestValue", },
     { label: "NoOfShifts", value: "NoOfShifts", },
     { label: "WorkingHoursPerShift", value: "WorkingHoursPerShift", },
     { label: "NoOfWorkingDaysPerAnnum", value: "NoOfWorkingDaysPerAnnum", },
     { label: "Availability", value: "Availability", },
-    { label: "NoOfWorkingHourPerAnnum", value: "NoOfWorkingHourPerAnnum", },
     { label: "DepreciationType", value: "DepreciationType", },
     { label: "DepriciationRate", value: "DepriciationRate", },
-    { label: "LifeOfAsset", value: "LifeOfAsset", },
+    { label: "LifeOfAsset", value: "LifeOfAsset", },//NOUI
     { label: "CostOfScrap", value: "CostOfScrap", },
     { label: "DateOfPurchase", value: "DateOfPurchase", },
-    { label: "DepriciationAmount", value: "DepriciationAmount", },
     { label: "IsMaintanceFixed", value: "IsMaintanceFixed", },
     { label: "AnnualMaintance", value: "AnnualMaintance", },
-    { label: "AnnualMaintanaceAmount", value: "AnnualMaintanaceAmount", },
+    { label: "AnnualMaintanaceAmount(INR)", value: "AnnualMaintanaceAmount(INR)", },
     { label: "IsConsumableFixed", value: "IsConsumableFixed", },
     { label: "AnnualConsumable", value: "AnnualConsumable", },
-    { label: "AnnualConsumableAmount", value: "AnnualConsumableAmount", },
+    { label: "AnnualConsumableAmount(INR)", value: "AnnualConsumableAmount(INR)", },
     { label: "InsuaranceTypeFixed", value: "InsuaranceTypeFixed", },
-    { label: "InsuranceAmount", value: "InsuranceAmount", },
+    { label: "InsuranceAmount(INR)", value: "InsuranceAmount(INR)", },
     { label: "AnnualInsurancePercentage", value: "AnnualInsurancePercentage", },
     { label: "BuildingCostPerSqFt", value: "BuildingCostPerSqFt", },
     { label: "MachineFloorAreaSqPerFt", value: "MachineFloorAreaSqPerFt", },
-    { label: "AnnualAreaCost", value: "AnnualAreaCost", },
     { label: "OtherYearlyCost", value: "OtherYearlyCost", },
-    { label: "TotalMachineCostPerAnnum", value: "TotalMachineCostPerAnnum", },
     { label: "UsesFuel", value: "UsesFuel", },
     { label: "Fuel", value: "Fuel", },
-    { label: "FuelCostPerUOM", value: "FuelCostPerUOM", },
     { label: "ConsumptionPerAnnum", value: "ConsumptionPerAnnum", },
     { label: "UtilizingFactor", value: "UtilizingFactor", },
     { label: "PowerRatingKW", value: "PowerRatingKW", },
-    { label: "PowerCostPerUnit", value: "PowerCostPerUnit", },
     { label: "UsesSolarPower", value: "UsesSolarPower", },
-    { label: "TotalPowerCostAnnum", value: "TotalPowerCostAnnum", },
+    // { label: "PowerCostPerUnit", value: "PowerCostPerUnit", },
     { label: "LabourType", value: "LabourType", },
-    { label: "LabourRate", value: "LabourRate", },
+    // { label: "LabourRate", value: "LabourRate", },
     { label: "NoOfPeople", value: "NoOfPeople", },
     { label: "ProcessName", value: "ProcessName", },
+    { label: "UOM", value: "UOM", },
     { label: "OutputPerHours", value: "OutputPerHours", },
-    { label: "OutputPerAnnum", value: "OutputPerAnnum", },
-    { label: "MachineRate", value: "MachineRate", }
 
 ]
 
@@ -969,67 +1062,112 @@ export const MHRMoreZBC = [
 */
 export const MHRMoreZBCTempData = [
     {
-        "Technology": "Technology",
-        "Ownership": "YES or NO",
-        "Plant": "Plant",
+        "Technology": "Sheet Metal",
+        "PlantCode": "P101",
         "MachineNo": "MAC-001",
-        "MachineName": "Machine Name",
-        "MachineType": "Machine Type",
-        "Manufacturer": "Manufacturer",
+        "MachineName": "Power Press",
+        "MachineSpec": "Machine Specification",
+        "Description": "Description text",
+        "MachineType": "Mechanical",
+        "Manufacturer": "TATA",
         "YearOfManufacturing": moment().format('YYYY'),
-        "MachineCapacityAndTonnage": 0,
-        "MachineCost": 0,
-        "AccessoriesCost": 0,
-        "UOM": "UOM",
-        "InstallationCost": 0,
-        "TotalCost": 0,
-        "LoanPercentage": 0,
-        "LoanValue": 0,
-        "EquityPercentage": 0,
-        "EquityValue": 0,
-        "RateOfInterest": 0,
-        "RateOfInterestValue": 0,
-        "NoOfShifts": 0,
-        "WorkingHoursPerShift": 0,
-        "NoOfWorkingDaysPerAnnum": 0,
-        "Availability": 0,
+        "MachineTonnage": 40,
+        "MachineCost(INR)": 5000,
+        "AccessoriesCost(INR)": 500,
+        "InstallationCost(INR)": 500,
+        "LoanPercentage": 10,
+        "EquityPercentage": 10,
+        "RateOfInterest": 7,
+        "NoOfShifts": 2,
+        "WorkingHoursPerShift": 8,
+        "NoOfWorkingDaysPerAnnum": 250,
+        "Availability": 80,
         "NoOfWorkingHourPerAnnum": 0,
-        "DepreciationType": "DepreciationType",
+        "DepreciationType": "SLM",
         "DepriciationRate": 0,
-        "LifeOfAsset": 0,
-        "CostOfScrap": 0,
+        "LifeOfAsset": 5,
+        "CostOfScrap": 100,
         "DateOfPurchase": moment().format('DD-MM-YYYY'),
-        "DepriciationAmount": 0,
-        "IsMaintanceFixed": "YES or NO",
+        "IsMaintanceFixed": "YES",
         "AnnualMaintance": 0,
-        "AnnualMaintanaceAmount": 0,
-        "IsConsumableFixed": "YES or NO",
+        "AnnualMaintanaceAmount": 1000,
+        "IsConsumableFixed": "YES",
         "AnnualConsumable": 0,
-        "AnnualConsumableAmount": 0,
-        "InsuaranceTypeFixed": "YES or NO",
-        "InsuranceAmount": 0,
+        "AnnualConsumableAmount(INR)": 1000,
+        "InsuaranceTypeFixed": "YES",
+        "InsuranceAmount(INR)": 1000,
         "AnnualInsurancePercentage": 0,
-        "BuildingCostPerSqFt": 0,
-        "MachineFloorAreaSqPerFt": 0,
-        "AnnualAreaCost": 0,
-        "OtherYearlyCost": 0,
-        "TotalMachineCostPerAnnum": 0,
-        "UsesFuel": "YES or NO",
-        "Fuel": "Fuel",
-        "FuelCostPerUOM": 0,
-        "ConsumptionPerAnnum": 0,
+        "BuildingCostPerSqFt": 100,
+        "MachineFloorAreaSqPerFt": 2500,
+        "OtherYearlyCost": 500,
+        "UsesFuel": "YES",
+        "Fuel": "CNG",
+        "ConsumptionPerAnnum": 85,
         "UtilizingFactor": 0,
         "PowerRatingKW": "Power Rating KW",
-        "PowerCostPerUnit": 0,
-        "UsesSolarPower": "YES OR NO",
-        "TotalPowerCostAnnum": 0,
-        "LabourType": "LabourType",
-        "LabourRate": 0,
-        "NoOfPeople": 0,
-        "ProcessName": "Process Name",
-        "OutputPerHours": 0,
-        "OutputPerAnnum": 0,
-        "MachineRate": 0,
+        "UsesSolarPower": "NO",
+        // "PowerCostPerUnit": 0,
+        "LabourType": "Skilled",
+        // "LabourRate": 0,
+        "NoOfPeople": 5,
+        "ProcessName": "Grinding",
+        "UOM": "Hours",
+        "OutputPerHours": 50,
+
+    },
+    {
+        "Technology": "Sheet Metal",
+        "PlantCode": "P101",
+        "MachineNo": "MAC-002",
+        "MachineName": "Hydraulic Press",
+        "MachineSpec": "Machine Specification",
+        "Description": "Description text",
+        "MachineType": "Mechanical",
+        "Manufacturer": "TATA",
+        "YearOfManufacturing": moment().format('YYYY'),
+        "MachineTonnage": 50,
+        "MachineCost(INR)": 5000,
+        "AccessoriesCost(INR)": 500,
+        "InstallationCost(INR)": 500,
+        "LoanPercentage": 10,
+        "EquityPercentage": 10,
+        "RateOfInterest": 7,
+        "NoOfShifts": '',
+        "WorkingHoursPerShift": 8,
+        "NoOfWorkingDaysPerAnnum": 250,
+        "Availability": 80,
+        "NoOfWorkingHourPerAnnum": 0,
+        "DepreciationType": "WDM",
+        "DepriciationRate": 25,
+        "LifeOfAsset": 0,
+        "CostOfScrap": 100,
+        "DateOfPurchase": moment().format('DD-MM-YYYY'),
+        "IsMaintanceFixed": "NO",
+        "AnnualMaintance": 10,
+        "AnnualMaintanaceAmount": 0,
+        "IsConsumableFixed": "NO",
+        "AnnualConsumable": 10,
+        "AnnualConsumableAmount(INR)": 0,
+        "InsuaranceTypeFixed": "NO",
+        "InsuranceAmount(INR)": 0,
+        "AnnualInsurancePercentage": 10,
+        "BuildingCostPerSqFt": 0,
+        "MachineFloorAreaSqPerFt": 0,
+        "OtherYearlyCost": 0,
+        "UsesFuel": "NO",
+        "Fuel": "",
+        "ConsumptionPerAnnum": 0,
+        "UtilizingFactor": 75,
+        "PowerRatingKW": "100",
+        "UsesSolarPower": "YES",
+        // "PowerCostPerUnit": 0,
+        "LabourType": "Semi-Skilled",
+        // "LabourRate": 0,
+        "NoOfPeople": 10,
+        "ProcessName": "Turning",
+        "UOM": "Gram",
+        "OutputPerHours": 40,
+
     }
 ]
 
@@ -1037,35 +1175,41 @@ export const MHRMoreZBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineVBC = [
-    { label: 'Technology', value: 'Technology', },
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'VendorPlant', value: 'VendorPlant', },
-    { label: 'MachineNo', value: 'MachineNo', },
-    { label: 'MachineName', value: 'MachineName', },
+    { label: 'Technology', value: 'Technology', }, //*
+    { label: 'VendorName', value: 'VendorName', }, //*, co
+    { label: 'VendorCode', value: 'VendorCode', }, // not on UI
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, // not on UI
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, // not on UI
+    { label: 'VendorPlantCode', value: 'VendorPlantCode', }, // not on UI
+    { label: 'MachineNo', value: 'MachineNo', }, //*
+    { label: 'MachineSpecification', value: 'MachineSpecification', },
+    { label: 'MachineName', value: 'MachineName', }, //*
     { label: 'MachineType', value: 'MachineType', },
-    { label: 'MachineCapacityAndTonnage', value: 'MachineCapacityAndTonnage', },
-    { label: 'Description', value: 'Description', },
-    { label: 'ProcessName', value: 'ProcessName', },
-    { label: 'UOM', value: 'UOM', },
+    { label: 'MachineTonnage', value: 'MachineTonnage', },
+    { label: 'ProcessName', value: 'ProcessName', }, //*
+    { label: 'UOM', value: 'UOM', }, //* maybe
     { label: 'MachineRate', value: 'MachineRate', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const MachineVBCTempData = [
     {
         'Technology': 'Sheet Metal',
-        'VendorName': 'Vendor Name1',
-        'VendorCode': 'Vendor Code123',
-        'VendorPlant': 'Vendor Plant123',
-        'MachineNo': 'Machine1',
-        'MachineName': 'Machine Name1',
-        'MachineType': 'Machine Type',
-        'MachineCapacityAndTonnage': '10',
-        'Description': 'Description Text',
-        'ProcessName': 'Process1',
-        'UOM': 'UOM',
-        'MachineRate': '100',
+        'VendorName': 'SIPL',
+        'VendorCode': '10222',
+        'DestinationPlant': 'Manesar',
+        'DestinationPlantCode': 1032,
+        'VendorPlantCode': 'VPlant01',
+        'MachineNo': 'SM101',
+        'MachineSpecification': 'Mechanical Power Press',
+        'MachineName': 'Power Press',
+        'MachineType': 'Mechanical',
+        'MachineTonnage': '40',
+        'ProcessName': 'Punching',
+        'UOM': 'Stroke',
+        'MachineRate': '20',
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
         'Remark': 'Remark Text',
     }
 ]
@@ -1074,21 +1218,21 @@ export const MachineVBCTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const PartComponent = [
-    { label: 'PartNo', value: 'PartNo', },
-    { label: 'PartName', value: 'PartName', },
-    { label: 'PartDescription', value: 'PartDescription', },
+    { label: 'PartNo', value: 'PartNo', }, //*
+    { label: 'PartName', value: 'PartName', }, //*
+    { label: 'PartDescription', value: 'PartDescription', }, //*
     { label: 'GroupCode', value: 'GroupCode', },
     { label: 'ECNNumber', value: 'ECNNumber', },
     { label: 'RevisionNo', value: 'RevisionNo', },
     { label: 'DrawingNo', value: 'DrawingNo', },
-    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
 ]
 
 export const PartComponentTempData = [
     {
-        'PartNo': 'Part1',
-        'PartName': 'Part Name',
+        'PartNo': 'Part123',
+        'PartName': 'Screw',
         'PartDescription': 'Part Description',
         'GroupCode': 'GC1',
         'ECNNumber': '1',
@@ -1104,25 +1248,25 @@ export const PartComponentTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const ZBCInterestRate = [
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'ICCApplicability', value: 'ICCApplicability', },
-    { label: 'ICCPercent', value: 'ICCPercent', },
-    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', },
-    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', },
-    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', },
-    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'VendorName', value: 'VendorName', }, //NOUI
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
+    { label: 'ICCPercent', value: 'ICCPercent', }, //*
+    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
+    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', }, //*
+    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
 ]
 
 export const ZBCInterestRateTempData = [
     {
-        'VendorName': 'Vendor Name1',
-        'VendorCode': 'Vendor Code123',
-        'ICCApplicability': 'RM',
-        'ICCPercent': 0,
+        'VendorName': 'Systematix',
+        'VendorCode': 'VCode001',
+        'ICCApplicability': 'RM+CC',
+        'ICCPercent': 10,
         'PaymentTermApplicability': 'RM',
-        'PaymentTermPercent': 0,
-        'RepaymentPeriod': 0,
+        'RepaymentPeriod': 30,
+        'PaymentTermPercent': 10,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
@@ -1131,25 +1275,25 @@ export const ZBCInterestRateTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCInterestRate = [
-    { label: 'VendorName', value: 'VendorName', },
-    { label: 'VendorCode', value: 'VendorCode', },
-    { label: 'ICCApplicability', value: 'ICCApplicability', },
-    { label: 'ICCPercent', value: 'ICCPercent', },
-    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', },
-    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', },
-    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', },
-    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'VendorName', value: 'VendorName', }, //NOUI
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'ICCApplicability', value: 'ICCApplicability', }, //*
+    { label: 'ICCPercent', value: 'ICCPercent', }, //*
+    { label: 'PaymentTermApplicability', value: 'PaymentTermApplicability', }, //*
+    { label: 'RepaymentPeriod', value: 'RepaymentPeriod', }, //*
+    { label: 'PaymentTermPercent', value: 'PaymentTermPercent', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
 ]
 
 export const VBCInterestRateTempData = [
     {
-        'VendorName': 'Vendor Name1',
-        'VendorCode': 'Vendor Code123',
-        'ICCApplicability': 'RM',
-        'ICCPercent': '10',
+        'VendorName': 'Systematix',
+        'VendorCode': 'VCode001',
+        'ICCApplicability': 'RM+CC',
+        'ICCPercent': '10   ',
         'PaymentTermApplicability': 'RM',
-        'PaymentTermPercent': '10',
         'RepaymentPeriod': '30',
+        'PaymentTermPercent': '10',
         "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
@@ -1158,45 +1302,84 @@ export const VBCInterestRateTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOMUpload = [
-    { label: "BOMNo", value: "BOMNo" },
-    { label: "AssemblyPartNo", value: "AssemblyPartNo" },
-    { label: "AssemblyPartName", value: "AssemblyPartName" },
-    { label: "PartNo", value: "PartNo" },
-    { label: "PartName", value: "PartName" },
-    { label: "Description", value: "Description" },
-    { label: "PartType", value: "PartType" },
+    { label: "BOMNo", value: "BOMNo" }, //*
+    { label: "AssemblyPartNo", value: "AssemblyPartNo" }, //*
+    { label: "AssemblyPartName", value: "AssemblyPartName" }, //*
+    { label: "PartNo", value: "PartNo" }, //NOUI,*
+    { label: "PartName", value: "PartName" }, //NOUI,*
+    { label: "Description", value: "Description" }, //*
+    { label: "PartType", value: "PartType" }, //NOUI,*
     { label: "GroupCode", value: "GroupCode" },
     { label: "ECNNumber", value: "ECNNumber" },
     { label: "RevisionNo", value: "RevisionNo" },
     { label: "DrawingNo", value: "DrawingNo" },
-    { label: "IsAssembly", value: "IsAssembly" },
-    { label: "BOMLevel", value: "BOMLevel" },
-    { label: "Quantity", value: "Quantity" },
-    { label: "Remark", value: "Remark" },
+    { label: "IsAssembly", value: "IsAssembly" }, //NOUI,*
+    { label: "BOMLevel", value: "BOMLevel" }, //NOUI,*
+    { label: "Quantity", value: "Quantity" }, //NOUI
     { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "Remark", value: "Remark" },
+
 ]
 
 export const BOMUploadTempData = [
     {
-        "BOMNo": "123",
-        "AssemblyPartNo": "Part1",
-        "AssemblyPartName": "Part Name1",
-        "PartNo": "Part No",
-        "PartName": "Part Name",
+        "BOMNo": "BOM123",
+        "AssemblyPartNo": "APart1",
+        "AssemblyPartName": "Screw Jack",
+        "PartNo": "SJ01",
+        "PartName": "Screw",
         "Description": "Description Text",
-        "PartType": "Part Type",
+        "PartType": "Assembly",
         "GroupCode": "GC1",
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
-        "IsAssembly": "True Or False",
+        "IsAssembly": "YES",
         "BOMLevel": 0,
-        "Quantity": 0,
-        "Remark": 'Remark',
+        "Quantity": 2,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": 'Remark',
+
+    },
+    {
+        "BOMNo": "BOM123",
+        "AssemblyPartNo": "APart1",
+        "AssemblyPartName": "Screw Jack",
+        "PartNo": "Comp_Nut",
+        "PartName": "Nut",
+        "Description": "Description Text",
+        "PartType": "Component",
+        "GroupCode": "GC1",
+        "ECNNumber": 1,
+        "RevisionNo": 1,
+        "DrawingNo": 1,
+        "IsAssembly": "NO",
+        "BOMLevel": 1,
+        "Quantity": 3,
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": 'Remark',
+
+    },
+    {
+        "BOMNo": "BOM123",
+        "AssemblyPartNo": "APart1",
+        "AssemblyPartName": "Screw Jack",
+        "PartNo": "BOP_Cap",
+        "PartName": "Cap",
+        "Description": "Description Text",
+        "PartType": "BoughtOutPart",
+        "GroupCode": "GC1",
+        "ECNNumber": 1,
+        "RevisionNo": 1,
+        "DrawingNo": 1,
+        "IsAssembly": "YES",
+        "BOMLevel": 1,
+        "Quantity": 4,
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "Remark": 'Remark',
+
     }
 ]
-
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },
     { label: 'ReadOnly', value: 0, },

@@ -1332,7 +1332,7 @@ class AddRMImport extends Component {
                                   validate={[required]}
                                   autoComplete={'off'}
                                   required={true}
-                                  disabled={isEditFlag ? true : false}
+                                  disabled={false}
                                   changeHandler={(e) => {
                                     //e.preventDefault()
                                   }}
