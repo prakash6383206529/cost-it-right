@@ -148,6 +148,8 @@ export const RMDomesticVBC = [
     { label: "ScrapRate(INR)", value: "ScrapRate(INR)" }, //*
     { label: "RMFreightCost(INR)", value: "RMFreightCost(INR)" }, //New Added
     { label: "ShearingCost(INR)", value: "ShearingCost(INR)" }, //New Added
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -170,6 +172,8 @@ export const RMDomesticVBCTempData = [
         "ScrapRate(INR)": "10",
         "RMFreightCost(INR)": "10",
         "ShearingCost(INR)": "10",
+        "DestinationPlant": "Manesar",
+        "DestinationPlantCode": "1032",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     },
@@ -190,6 +194,8 @@ export const RMDomesticVBCTempData = [
         "ScrapRate(INR)": "50",
         "RMFreightCost(INR)": "10",
         "ShearingCost(INR)": "10",
+        "DestinationPlant": "Manesar",
+        "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
@@ -675,7 +681,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'BOPCategory': 'Machine',
         'Specification': '20 mm',
         'UOM': 'Gallon',
-        'DestinationPlant': 'manesar',
+        'DestinationPlant': 'Manesar',
         'DestinationPlantCode': 1032,
         'VendorCode': 'Sys01',
         'VendorPlantCode': 'VPlant01',

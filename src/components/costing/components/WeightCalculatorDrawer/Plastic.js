@@ -4,7 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
 import { KG } from '../../../../config/constants'
@@ -28,12 +28,13 @@ function Plastic(props) {
 
   }
 
-  const [tableVal, setTableVal] = useState([])
+  const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
   const [lostWeight, setLostWeight] = useState(0)
   const [dataToSend, setDataToSend] = useState({})
   console.log('dataToSend: ', dataToSend);
 
   const { rmRowData } = props
+  console.log('rmRowData: ', rmRowData);
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -50,7 +51,7 @@ function Plastic(props) {
 
   const dropDown = [
     {
-      label: 'Processing Lost',
+      label: 'Processing Loss',
       value: 'processingLost',
     },
     {
@@ -74,10 +75,8 @@ function Plastic(props) {
 
     const netWeight = Number(getValues('netWeight'))
     const runnerWeight = Number(getValues('runnerWeight'))
-    if (!netWeight || !runnerWeight) {
-      return ''
-    }
-    const grossWeight = netWeight + runnerWeight
+
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight)
     setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
     let updatedValue = dataToSend
@@ -124,7 +123,7 @@ function Plastic(props) {
     obj.RawMaterialType = rmRowData.MaterialType
     obj.BasicRatePerUOM = rmRowData.RMRate
     obj.ScrapRate = rmRowData.ScrapRate
-    obj.NetLandedCost = dataToSend.GrossWeight * rmRowData.RMRate - (dataToSend.GrossWeight - dataToSend.FinishWeight) * rmRowData.ScrapRate
+    obj.NetLandedCost = dataToSend.grossWeight * rmRowData.RMRate - (dataToSend.grossWeight - dataToSend.finishedWeight) * rmRowData.ScrapRate
     obj.PartNumber = costData.PartNumber
     obj.TechnologyName = costData.TechnologyName
     obj.Density = rmRowData.Density
@@ -134,15 +133,15 @@ function Plastic(props) {
     obj.NetWeight = getValues('netWeight')
     obj.RunnerWeight = getValues('runnerWeight')
     obj.GrossWeight = dataToSend.grossWeight
-    obj.FinishedWeight = dataToSend.finishedWeight
+    obj.FinishWeight = dataToSend.finishedWeight
     obj.ScrapWeight = dataToSend.scrapWeight
-    obj.RmCost = dataToSend.rmCost
+    obj.RMCost = dataToSend.rmCost
     obj.ScrapCost = dataToSend.scrapCost
-    obj.MaterialCost = dataToSend.materialCost
+    obj.NetRMCost = dataToSend.materialCost
     obj.LoggedInUserId = loggedInUserId()
     let tempArr = []
     tableVal && tableVal.map(item => {
-      tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "" })
+      tempArr.push({ LossOfType: item.LossOfType, LossPercentage: item.LossPercentage, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
     })
     obj.LossOfTypeDetails = tempArr
     obj.NetLossWeight = lostWeight

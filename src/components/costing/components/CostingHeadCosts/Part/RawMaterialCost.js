@@ -596,7 +596,7 @@ function RawMaterialCost(props) {
                     />
                   </Col>
                 </>}
-            </Row>}
+            </Row>
 
 
           </form>

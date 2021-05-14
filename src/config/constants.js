@@ -639,6 +639,7 @@ export const API = {
   isFinalApprover: `${BASE_URL}/app-approval-system/is-this-user-final-approver`,
   approvalPushed: `${BASE_URL}/app-approval-system/approval-pushed`,
   getSelectedCostingStatusList: `${BASE_URL}/app-approval-system/get-all-approval-status`,
+  createRawMaterialSAP: `${BASE_URL}/sap-sync/create-raw-material-sap`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
