@@ -50,7 +50,12 @@ export function loginUserAPI(requestData, callback) {
 export function TokenAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
-        const queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
+        let queryParams = '';
+        if (requestData.IsRefreshToken) {
+            queryParams = `refresh_token=${requestData.refresh_token}&ClientId=${requestData.ClientId}&grant_type=${requestData.grant_type}`;
+        } else {
+            queryParams = `userName=${requestData.username}&password=${requestData.password}&grant_type=${requestData.grant_type}`;
+        }
         axios.post(API.tokenAPI, queryParams, CustomHeader)
             .then((response) => {
                 if (response && response.status === 200) {

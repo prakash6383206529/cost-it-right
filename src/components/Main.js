@@ -31,7 +31,7 @@ import TaxListing from './masters/tax-master/TaxListing'
 import LeftMenu from './nav/Leftsidemenu'
 import Breadcrumb from './nav/Breadcrumb'
 import CostingRoutes from './costing/Routes'
-import { showUserData } from '../actions/auth/AuthActions'
+import { showUserData, TokenAPI } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
@@ -46,7 +46,7 @@ import SimulationHistory from './simulation/components/SimulationHistory'
 import Simulation from './simulation/components/Simulation'
 import CostingSummary from './costing/components/CostingSummary'
 import SimulationUpload from './simulation/components/SimulationUpload'
-import { userDetails } from '../helper'
+import { formatLoginResult, userDetails } from '../helper'
 
 class Main extends Component {
   constructor(props) {
@@ -60,9 +60,24 @@ class Main extends Component {
 
   componentDidMount() {
     const Detail = userDetails()
-    setTimeout(() => {
-      console.log('After 10 seonds')
-    }, Detail.expires_in * 1000 - 5 * 1000)
+    if (Object.keys(Detail).length > 0) {
+
+      setTimeout(() => {
+        let reqParams = {
+          IsRefreshToken: true,
+          refresh_token: Detail.RefreshToken,
+          ClientId: 'self',
+          grant_type: 'refresh_token',
+        }
+        // this.props.TokenAPI(reqParams, (res) => {
+        //   if (res && res.status === 200) {
+        //     let userDetail = formatLoginResult(res.data);
+        //     reactLocalStorage.setObject("userDetail", userDetail);
+        //   }
+        // })
+      }, Detail.expires_in * 1000 - 5 * 1000)
+
+    }
 
   }
 
@@ -288,4 +303,4 @@ class Main extends Component {
  * @param {function} mapStateToProps
  * @param {function} mapDispatchToProps
  */
-export default connect(null, { showUserData })(Main)
+export default connect(null, { showUserData, TokenAPI })(Main)
