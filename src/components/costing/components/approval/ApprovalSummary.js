@@ -96,6 +96,10 @@ function ApprovalSummary(props) {
       }
     }
   }
+  const dataSend=[
+    approvalDetails,
+    partDetail
+  ]
 
   return (
 
@@ -439,6 +443,7 @@ function ApprovalSummary(props) {
       )}
       {pushButton && (
         <PushButtonDrawer
+        dataSend={dataSend}
           isOpen={pushButton}
           closeDrawer={closePushButton}
           anchor={'right'}

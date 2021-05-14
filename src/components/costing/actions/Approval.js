@@ -431,3 +431,23 @@ export function getSelectedCostingList(callback) {
       })
   }
 }
+
+/**
+ * @method createRawMaterialSAP
+ * @description create Raw Material SAP 
+ */
+ export function createRawMaterialSAP(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createRawMaterialSAP, data, headers)
+    request
+      .then((response) => {
+        if (response.data.Result) {
+          callback(response)
+        }
+      })
+      .catch((error) => {
+        dispatch({ type: API_FAILURE })
+        apiErrors(error)
+      })
+  }
+}

@@ -1,15 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch } from 'react-redux'
-import { pushedApprovedCosting } from '../../actions/Approval'
+import { pushedApprovedCosting, createRawMaterialSAP } from '../../actions/Approval'
 import { loggedInUserId } from '../../../../helper'
+import { useForm, Controller } from "react-hook-form";
+import { SearchableSelectHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
+import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 
 function PushButtonDrawer(props) {
 
-  const { approvalData } = props
-  console.log('approvalData: ', approvalData);
+  const { approvalData, dataSend } = props
+  console.log('dataSend: ', dataSend);
   const dispatch = useDispatch()
+  const { register, handleSubmit, errors, control } = useForm();
+  const [plant, setPlant] = useState([]);
+  const [MaterialGroup, setMaterialGroup] = useState([]);
+  const [PurchasingGroup, setPurchasingGroup] = useState([]);
 
   const toggleDrawer = (event) => {
     if (
@@ -20,6 +27,17 @@ function PushButtonDrawer(props) {
     }
     props.closeDrawer('', 'Cancel')
   }
+
+  const pushdata = {
+    effectiveDate: dataSend[0].EffectiveDate,
+    vendorCode: dataSend[0].VendorCode,
+    materialNumber: dataSend[1].PartNumber,
+    plant: dataSend[0].PlantCode,
+    currencyKey: dataSend[0].POCurrency,
+    materialGroup:MaterialGroup,
+    purchasingGroup:PurchasingGroup
+  }
+  console.log(pushdata, 'pppppppp')
 
   const closeDrawerAfterPush = () => {
     let obj = {
@@ -32,6 +50,44 @@ function PushButtonDrawer(props) {
       }
     }))
   }
+  const onSubmit = data => {
+    toggleDrawer('')
+  }
+
+  /**
+  * @method renderListing
+  * @description RENDER LISTING IN DROPDOWN
+  */
+  const renderListing = (label) => {
+    if (label === 'MaterialGroup') {
+      return materialGroup;
+    }
+    if (label === 'PurchasingGroup') {
+      return purchasingGroup;
+    }
+  }
+
+  /**
+  * @const handleMaterialChange
+  */
+  const handleMaterialChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setMaterialGroup(newValue)
+      } else {
+        setMaterialGroup([])
+    }
+  }
+
+    /**
+  * @const handlePurchasingChange
+  */
+     const handlePurchasingChange = (newValue) => {
+      if (newValue && newValue !== '') {
+        setPurchasingGroup(newValue)
+        } else {
+          setPurchasingGroup([])
+      }
+    }
 
   return (
     <>
@@ -41,16 +97,74 @@ function PushButtonDrawer(props) {
         <Container>
           <div className={'drawer-wrapper'}>
 
-            <form>
-              <Row className="drawer-heading">
-                <Col>
-                  <div className={'header-wrapper left'}>
-                    <h3>{`Push`}</h3>
-                  </div>
-                  <div
-                    //onClick={(e) => toggleDrawer(e)}
-                    className={'close-button right'}
-                  ></div>
+            <Row className="drawer-heading">
+              <Col>
+                <div className={'header-wrapper left'}>
+                  <h3>{`Push`}</h3>
+                </div>
+                <div
+                  //onClick={(e) => toggleDrawer(e)}
+                  className={'close-button right'}
+                ></div>
+              </Col>
+            </Row>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+
+              <Row className="pl-3">
+                <Col md="12">
+                  <TextFieldHookForm
+                    label="Company Code"
+                    name={"CompanyCode"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={""}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors.CompanyCode}
+                    disabled={true}
+                  />
+                </Col>
+              </Row>
+
+              <Row className="pl-3">
+                <Col md="12">
+                  <SearchableSelectHookForm
+                    label={"Material Group"}
+                    name={"MaterialGroup"}
+                    placeholder={"-Select-"}
+                    Controller={Controller}
+                    control={control}
+                    rules={{ required: true }}
+                    register={register}
+                    defaultValue={MaterialGroup.length !== 0 ? MaterialGroup : ""}
+                    options={renderListing("MaterialGroup")}
+                    mandatory={true}
+                    handleChange={handleMaterialChange}
+                    errors={errors.MaterialGroup}
+                  />
+                </Col>
+              </Row>
+
+              <Row className="pl-3">
+                <Col md="12">
+                  <SearchableSelectHookForm
+                    label={"Purchasing Group"}
+                    name={"PurchasingGroup"}
+                    placeholder={"-Select-"}
+                    Controller={Controller}
+                    control={control}
+                    rules={{ required: true }}
+                    register={register}
+                    defaultValue={PurchasingGroup.length !== 0 ? PurchasingGroup : ""}
+                    options={renderListing("PurchasingGroup")}
+                    mandatory={true}
+                    handleChange={handlePurchasingChange}
+                    errors={errors.PurchasingGroup}
+                  />
                 </Col>
               </Row>
 
@@ -61,6 +175,7 @@ function PushButtonDrawer(props) {
                     className="reset mr15 cancel-btn"
                     onClick={toggleDrawer}
                   >
+
                     <div className={'cross-icon'}>
                       <img
                         src={require('../../../../assests/images/times.png')}
@@ -86,10 +201,9 @@ function PushButtonDrawer(props) {
                 </div>
               </Row>
             </form>
-
           </div>
         </Container>
-      </Drawer>
+      </Drawer >
     </>
   )
 }
