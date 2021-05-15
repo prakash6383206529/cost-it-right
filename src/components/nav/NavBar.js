@@ -158,10 +158,10 @@ class SideBar extends Component {
   * @description Used to set left menu and Redirect to first menu.
   */
   SetMenu = (ModuleId) => {
-    if (ModuleId !== reactLocalStorage.get("ModuleId")) {
+    if (ModuleId !== reactLocalStorage.get("MenuModuleId")) {
       this.props.getMenu(ModuleId, loggedInUserId(), (res) => { });
     }
-    reactLocalStorage.set("ModuleId", ModuleId);
+    reactLocalStorage.set("MenuModuleId", ModuleId);
   };
 
   /**
@@ -218,7 +218,7 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown1"
+              <li className="nav-item dropdown"
               // onMouseOver={(e) => {
               //   //e.stopPropagation()
               //   this.SetMenu(el.ModuleId)
@@ -227,7 +227,7 @@ class SideBar extends Component {
                 <Link
                   className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  //   onMouseOver={() => this.setLeftMenu(el.ModuleId)}
+                  onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -245,7 +245,7 @@ class SideBar extends Component {
                   />
                   <span>Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                <div className="dropdown-menu sub-menu1">
                   <ul>
                     {
                       menuData && menuData.map((item, i) => {
@@ -253,10 +253,10 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
-                              onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                              onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
                             >{item.PageName}</Link>
                           </li>
@@ -304,12 +304,12 @@ class SideBar extends Component {
         if (el.ModuleName === module) {
           return (
             <>
-              <li className="nav-item dropdown1">
+              <li className="nav-item dropdown">
                 <Link
                   key={i}
                   className={`nav-link additional-masters ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                   onClick={() => this.setLeftMenu(el.ModuleId)}
-                  // onMouseOver={() => this.SetMenu(el.ModuleId)}
+                  onMouseOver={() => this.SetMenu(el.ModuleId)}
                   to={{
                     pathname: el.LandingPageURL,
                     state: {
@@ -326,17 +326,17 @@ class SideBar extends Component {
                   />
                   <span>Additional Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu">
+                <div className="dropdown-menu sub-menu1">
                   <ul>
                     {
                       menuData && menuData.map((item, i) => {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
-                              onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                              onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
                               to={{
                                 pathname: item.NavigationURL,
-                                state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                                state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                               }}
                             >{item.PageName}</Link>
                           </li>
@@ -421,13 +421,13 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li className="nav-item dropdown1">
+            <li className="nav-item dropdown">
               <Link
                 key={i}
                 isActive={location && location.pathname === '/costing' ? true : false}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
-                // onMouseOver={() => this.SetMenu(el.ModuleId)}
+                onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
                   pathname: "/costing",
                   state: {
@@ -444,7 +444,7 @@ class SideBar extends Component {
                 />
                 <span>Costing </span>
               </Link>
-              <div className="dropdown-menu sub-menu">
+              <div className="dropdown-menu sub-menu1">
                 <ul>
                   {/* UNCOMMENT IT WHEN DONE FROM KAMAL SIR END */}
                   {
@@ -453,10 +453,10 @@ class SideBar extends Component {
                       return (
                         <li key={i} className={`mb5`}>
                           <Link
-                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                            onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
                             to={{
                               pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                             }}
                           >{item.PageName}</Link>
                         </li>
@@ -498,15 +498,15 @@ class SideBar extends Component {
       menusData && menusData.map((el, i) => {
         if (el.ModuleName === module) {
           return (
-            <li className={'nav-item dropdown1'}>
+            <li className={'nav-item dropdown'}>
               <Link
                 key={i}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
-                // onMouseOver={() => this.SetMenu(el.ModuleId)}
+                onMouseOver={() => this.SetMenu(el.ModuleId)}
                 to={{
-                  // pathname: el.LandingPageURL, //COMMENT FOR NOW
-                  pathname: '/simulation',
+                  pathname: el.LandingPageURL, //COMMENT FOR NOW
+                  // pathname: '/simulation',
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Simulation",
@@ -521,7 +521,7 @@ class SideBar extends Component {
                 />
                 <span>Simulation</span>
               </Link>
-              <div className="dropdown-menu sub-menu">
+              <div className="dropdown-menu sub-menu1">
                 <ul>
                   {
                     menuData && menuData.map((item, i) => {
@@ -530,10 +530,10 @@ class SideBar extends Component {
                       return (
                         <li key={i} className={`mb5`}>
                           <Link
-                            onClick={() => this.setModuleId(reactLocalStorage.get("ModuleId"))}
+                            onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
                             to={{
                               pathname: item.NavigationURL,
-                              state: { ModuleId: reactLocalStorage.get("ModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
+                              state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
                             }}
                           >{item.PageName}</Link>
                         </li>
