@@ -2953,11 +2953,11 @@ opacity: 0.5;
 // ========error page =============
 .error-page{
   .blue-box{
-      padding: 30px;
+      padding: 0;
       .content-page {
       width: 100%;
       .middleContainer{
-        min-height: calc(100vh - 96px);
+        min-height: calc(100vh - 36px);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -3008,6 +3008,9 @@ opacity: 0.5;
   }
 }
 // ========error page =============
+
+
+
 .notification-dropdown{
   width: 20rem;
   left: -6rem;
