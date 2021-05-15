@@ -190,7 +190,6 @@ function CostingDetailStepTwo(props) {
 
     let OverAllCost = 0;
     if (tempData && tempData !== undefined) {
-      console.log('setHeaderCostToolTab: ', IsToolCostApplicable, data, tempData);
       const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
       OverAllCost =
         tempData.NetTotalRMBOPCC +

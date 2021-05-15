@@ -312,13 +312,13 @@ function RawMaterialCost(props) {
       setValue('RMTotal', calculatePercentageValue(getValues('MBPrice'), e.target.value))
 
       const RMRate = calculatePercentageValue(tempData.RMRate, (100 - e.target.value));
-      // console.log('RMRate: ', RMRate, getValues('RMTotal'));
       const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * checkForNull(tempData.GrossWeight);
       const ScrapRate = (tempData.ScrapRate * tempData.FinishWeight)
       // console.log('ScrapRate: ', ScrapRate);
 
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
 
+      console.log('RMRate: ', RMRate, RMRatePlusMasterBatch, ScrapRate, getValues('RMTotal'), NetLandedCost);
       tempData = { ...tempData, NetLandedCost: NetLandedCost, }
       let tempArr = Object.assign([...gridData], { [0]: tempData })
       setGridData(tempArr)

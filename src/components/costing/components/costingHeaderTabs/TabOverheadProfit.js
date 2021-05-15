@@ -316,6 +316,7 @@ function TabOverheadProfit(props) {
   * @description SET REJECTION DETAIL 
   */
   const dispatchRejectionDetail = (rejectionObj, params, arr) => {
+    console.log('dispatchRejectionDetail: ', rejectionObj);
 
     let tempArr = [];
     try {

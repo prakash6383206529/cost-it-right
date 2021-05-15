@@ -342,7 +342,6 @@ function TabRMCC(props) {
   }
 
   const setRMCostInDataList = (rmGrid, params, arr) => {
-    console.log('setRMCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map((i) => {
@@ -703,7 +702,6 @@ function TabRMCC(props) {
   * @description SET PART DETAILS
   */
   const setAssembly = (BOMLevel, PartNumber, Children, RMCCTabData) => {
-    console.log('setAssembly')
     let tempArr = [];
     try {
 

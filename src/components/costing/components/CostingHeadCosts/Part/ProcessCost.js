@@ -535,7 +535,7 @@ function ProcessCost(props) {
                   <tr>
                     <th>{`Process Name`}</th>
                     <th>{`Process Description`}</th>
-                    <th>{`Machine Name`}</th>
+                    <th>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
                     <th style={{ width: "220px" }}>{`Quantity`}</th>
@@ -714,7 +714,7 @@ function ProcessCost(props) {
                         <tr key={index}>
                           <td>{item.ProcessName}</td>
                           <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
-                          <td>{item.MachineName ? item.MachineName : '-'}</td>
+                          <td>{item.MachineTonnage ? item.MachineTonnage : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
                           <td style={{ width: 150 }}>
