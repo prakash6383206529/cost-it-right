@@ -1489,6 +1489,71 @@ function OverheadProfit(props) {
       }
       // END HERE ADD CC IN REJECTION
     }
+
+    // START ADD CC IN ICC
+    if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && IsInventoryApplicable) {
+
+      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
+      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
+      const InterestRatePercentage = getValues('InterestRatePercentage')
+
+      switch (Text) {
+        case 'RM + CC':
+          setValue('InterestRateCost', RMCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(RMCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        case 'RM + CC + BOP':
+          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        case 'Annual ICC (%)':
+          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        case 'Net Cost':
+          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        default:
+          break;
+      }
+
+    } else if (!IsIncludedSurfaceInOverheadProfit && IsInventoryApplicable) {
+
+      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
+      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
+      const InterestRatePercentage = getValues('InterestRatePercentage')
+
+      switch (Text) {
+        case 'RM + CC':
+          setValue('InterestRateCost', RMCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(RMCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        case 'RM + CC + BOP':
+          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        case 'Annual ICC (%)':
+          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        case 'Net Cost':
+          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
+          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
+          break;
+
+        default:
+          break;
+      }
+      // END HERE ADD CC IN ICC
+    }
   }
 
   /**
@@ -1501,6 +1566,7 @@ function OverheadProfit(props) {
 
   //console.log('counter', counter)
   counter++;
+
   /**
   * @method render
   * @description Renders the component
@@ -2277,14 +2343,8 @@ function OverheadProfit(props) {
                   mandatory={false}
                   rules={{
                     required: false,
-                    pattern: {
-                      value: /^\d*\.?\d*$/,
-                      message: 'Invalid Number.'
-                    },
-                    // max: {
-                    //   value: 100,
-                    //   message: 'Percentage cannot be greater than 100'
-                    // },
+                    pattern: { value: /^\d*\.?\d*$/, message: 'Invalid Number.' },
+                    max: { value: 100, message: 'Percentage cannot be greater than 100' },
                   }}
                   // handleChange={handleRejection}
                   handleChange={() => { }}
