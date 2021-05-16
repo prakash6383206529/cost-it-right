@@ -16,10 +16,16 @@ import { G, KG, MG } from '../../../../../config/constants'
 import { setRMCCErrors } from '../../../actions/Costing'
 
 function RawMaterialCost(props) {
-
+  const { item } = props;
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
+    defaultValues: {
+      MBName: item?.CostingPartDetails?.MasterBatchRMName,
+      MBPrice: item?.CostingPartDetails?.MasterBatchRMPrice,
+      MBPercentage: item?.CostingPartDetails?.MasterBatchPercentage,
+      RMTotal: item?.CostingPartDetails?.MasterBatchTotal,
+    }
   })
 
   const costData = useContext(costingInfoContext)
@@ -31,7 +37,7 @@ function RawMaterialCost(props) {
   const [inputDiameter, setInputDiameter] = useState('')
   const [gridLength, setGridLength] = useState(0)
   const [gridData, setGridData] = useState(props.data)
-  const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(false)
+  const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
@@ -59,6 +65,7 @@ function RawMaterialCost(props) {
         BOMLevel: props.item.BOMLevel,
         PartNumber: props.item.PartNumber,
       }
+
       props.setRMCost(gridData, Params)
     }, 100)
   }, [gridData]);
@@ -305,23 +312,40 @@ function RawMaterialCost(props) {
   * @method handleMBPercentage
   * @description HANDLE MB PERCENTAGE
   */
-  const handleMBPercentage = (e) => {
+  const handleMBPercentage = (value) => {
     let tempData = gridData[0]
-    if (Number(e.target.value)) {
+    if (Number(value) && !isNaN(value)) {
 
-      setValue('RMTotal', calculatePercentageValue(getValues('MBPrice'), e.target.value))
+      setValue('RMTotal', calculatePercentageValue(getValues('MBPrice'), value))
 
-      const RMRate = calculatePercentageValue(tempData.RMRate, (100 - e.target.value));
+      const RMRate = calculatePercentageValue(tempData.RMRate, (100 - value));
       const RMRatePlusMasterBatch = (RMRate + checkForNull(getValues('RMTotal'))) * checkForNull(tempData.GrossWeight);
       const ScrapRate = (tempData.ScrapRate * tempData.FinishWeight)
       // console.log('ScrapRate: ', ScrapRate);
 
       const NetLandedCost = RMRatePlusMasterBatch - ScrapRate;
 
-      console.log('RMRate: ', RMRate, RMRatePlusMasterBatch, ScrapRate, getValues('RMTotal'), NetLandedCost);
       tempData = { ...tempData, NetLandedCost: NetLandedCost, }
       let tempArr = Object.assign([...gridData], { [0]: tempData })
       setGridData(tempArr)
+
+      setTimeout(() => {
+
+        const Params = {
+          BOMLevel: props.item.BOMLevel,
+          PartNumber: props.item.PartNumber,
+        }
+
+        const MasterBatchObj = {
+          "MasterBatchRMId": tempArr[0].RawMaterialId,
+          "IsApplyMasterBatch": IsApplyMasterBatch,
+          "MasterBatchRMName": getValues('MBName'),
+          "MasterBatchRMPrice": getValues('MBPrice'),
+          "MasterBatchPercentage": checkForNull(value),
+          "MasterBatchTotal": getValues('RMTotal'),
+        }
+        props.setRMMasterBatchCost(tempArr, MasterBatchObj, Params)
+      }, 200)
 
     } else {
 
@@ -329,7 +353,7 @@ function RawMaterialCost(props) {
       const NetLandedCost = (tempData.GrossWeight * tempData.RMRate) - ApplicableFinishWeight;
       tempData = { ...tempData, NetLandedCost: NetLandedCost, }
       let tempArr = Object.assign([...gridData], { [0]: tempData })
-      setValue('RMTotal', checkForNull(e.target.value))
+      setValue('RMTotal', checkForNull(value))
       setGridData(tempArr)
 
     }
@@ -566,13 +590,17 @@ function RawMaterialCost(props) {
                           value: /^\d*\.?\d*$/,
                           message: 'Invalid Number.'
                         },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
+                        },
                       }}
                       defaultValue={""}
                       className=""
                       customClassName={'withBorder mb-0'}
                       handleChange={(e) => {
                         e.preventDefault()
-                        handleMBPercentage(e)
+                        handleMBPercentage(e.target.value)
                       }}
                       errors={errors.MBPercentage}
                       disabled={CostingViewMode ? true : false}

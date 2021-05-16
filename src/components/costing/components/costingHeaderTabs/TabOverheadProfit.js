@@ -316,8 +316,6 @@ function TabOverheadProfit(props) {
   * @description SET REJECTION DETAIL 
   */
   const dispatchRejectionDetail = (rejectionObj, params, arr) => {
-    console.log('dispatchRejectionDetail: ', rejectionObj);
-
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -370,7 +368,7 @@ function TabOverheadProfit(props) {
   * @description SET ICC DETAIL 
   */
   const dispatchICCDetail = (ICCObj, params, arr) => {
-
+    console.log('dispatchICCDetail: ', ICCObj);
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
