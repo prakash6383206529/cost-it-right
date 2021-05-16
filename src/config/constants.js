@@ -32,7 +32,6 @@ export const FILE_URL = 'http://10.10.1.100:1002/';
 
 /** Export API */
 export const API = {
-  //configure api's
 
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,

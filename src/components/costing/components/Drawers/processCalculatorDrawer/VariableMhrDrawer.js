@@ -18,7 +18,7 @@ import { SHEETMETAL, RUBBER, PLASTIC, MACHINING } from '../../../../../config/ma
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
 
-  const tonnage = calculatorData.MachineTonnage ? calculatorData.MachineTonnage : ''
+  const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
 
@@ -59,14 +59,12 @@ function VariableMhrDrawer(props) {
    * @description TOGGLE DRAWER
    */
   const toggleDrawer = (event, formValue = '0.00', weightData = {}) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
     props.closeDrawer('', formValue, weightData)
   }
+
   const getProcessComponent = (process) => {
 
     if (technology === MACHINING) {
