@@ -366,8 +366,58 @@ function TabRMCC(props) {
           i.CostingPartDetails.TotalRawMaterialsCost = netRMCost(rmGrid);
           i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
 
+          // MASTER BATCH FOR RM
+          // i.CostingPartDetails.IsApplyMasterBatch = MasterBatchObj.IsApplyMasterBatch;
+          // i.CostingPartDetails.MasterBatchRMName = MasterBatchObj.MasterBatchRMName;
+          // i.CostingPartDetails.MasterBatchRMPrice = checkForNull(MasterBatchObj.MasterBatchRMPrice);
+          // i.CostingPartDetails.MasterBatchPercentage = checkForNull(MasterBatchObj.MasterBatchPercentage);
+          // i.CostingPartDetails.MasterBatchTotal = checkForNull(MasterBatchObj.MasterBatchTotal);
+
         } else {
           setRMCostInDataList(rmGrid, params, i.CostingChildPartDetails)
+        }
+        return i;
+      });
+
+    } catch (error) {
+
+    }
+    return tempArr;
+  }
+
+  /**
+  * @method setRMMasterBatchCost
+  * @description SET RM MASTER BATCH COST
+  */
+  const setRMMasterBatchCost = (rmGrid, MasterBatchObj, params) => {
+    let arr = setRMBatchCostInDataList(rmGrid, MasterBatchObj, params, RMCCTabData)
+    dispatch(setRMCCData(arr, () => { }))
+  }
+
+  const setRMBatchCostInDataList = (rmGrid, MasterBatchObj, params, arr) => {
+    let tempArr = [];
+    try {
+      tempArr = arr && arr.map((i) => {
+
+        if (i.PartNumber === params.PartNumber && i.BOMLevel === params.BOMLevel) {
+
+          // let GrandTotalCost = checkForNull(netRMCost(rmGrid)) + checkForNull(i.CostingPartDetails.TotalBoughtOutPartCost) + checkForNull(i.CostingPartDetails.TotalConversionCost)
+
+          // i.CostingPartDetails.CostingRawMaterialsCost = rmGrid;
+          // i.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
+          // i.CostingPartDetails.TotalRawMaterialsCost = netRMCost(rmGrid);
+          // i.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * i.CostingPartDetails.Quantity;
+
+          // MASTER BATCH FOR RM
+          i.CostingPartDetails.MasterBatchRMId = MasterBatchObj.MasterBatchRMId;
+          i.CostingPartDetails.IsApplyMasterBatch = MasterBatchObj.IsApplyMasterBatch;
+          i.CostingPartDetails.MasterBatchRMName = MasterBatchObj.MasterBatchRMName;
+          i.CostingPartDetails.MasterBatchRMPrice = checkForNull(MasterBatchObj.MasterBatchRMPrice);
+          i.CostingPartDetails.MasterBatchPercentage = checkForNull(MasterBatchObj.MasterBatchPercentage);
+          i.CostingPartDetails.MasterBatchTotal = checkForNull(MasterBatchObj.MasterBatchTotal);
+
+        } else {
+          setRMBatchCostInDataList(rmGrid, MasterBatchObj, params, i.CostingChildPartDetails)
         }
         return i;
       });
@@ -416,7 +466,6 @@ function TabRMCC(props) {
   }
 
   const setBOPCostInDataList = (bopGrid, params, arr) => {
-    console.log('setBOPCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -461,7 +510,6 @@ function TabRMCC(props) {
   }
 
   const setBOPHandlingCostInDataList = (bopGrid, BOPHandlingFields, params, arr) => {
-    console.log('setBOPHandlingCostInDataList')
     let tempArr = [];
     try {
       tempArr = arr && arr.map(i => {
@@ -1080,6 +1128,7 @@ function TabRMCC(props) {
                                       ccData={item.CostingPartDetails.CostingConversionCost}
                                       setPartDetails={setPartDetails}
                                       setRMCost={setRMCost}
+                                      setRMMasterBatchCost={setRMMasterBatchCost}
                                       setBOPCost={setBOPCost}
                                       setBOPHandlingCost={setBOPHandlingCost}
                                       setProcessCost={setProcessCost}
@@ -1099,6 +1148,7 @@ function TabRMCC(props) {
                                       setPartDetails={setPartDetails}
                                       toggleAssembly={toggleAssembly}
                                       setRMCost={setRMCost}
+                                      setRMMasterBatchCost={setRMMasterBatchCost}
                                       setBOPCost={setBOPCost}
                                       setBOPHandlingCost={setBOPHandlingCost}
                                       setProcessCost={setProcessCost}

@@ -20,7 +20,7 @@ function SheetMetalBaicDrawer(props) {
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const defaultValues = {
-    MachineTonnage: props.calculatorData ? props.calculatorData.MachineTonnage : '',
+    MachineTonnage: props.calculatorData ? props.calculatorData.Tonnage : '',
     CycleTime: WeightCalculatorRequest && WeightCalculatorRequest.CycleTime !== null ? WeightCalculatorRequest.CycleTime : '',
     Efficiency: WeightCalculatorRequest && WeightCalculatorRequest.Efficiency !== null ? WeightCalculatorRequest.Efficiency : 100,
     Cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1,

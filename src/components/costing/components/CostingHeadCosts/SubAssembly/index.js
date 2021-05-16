@@ -63,6 +63,7 @@ function AssemblyPart(props) {
         ccData={el.CostingPartDetails !== null && el.CostingPartDetails.CostingConversionCost}
         setPartDetails={props.setPartDetails}
         setRMCost={props.setRMCost}
+        setRMMasterBatchCost={props.setRMMasterBatchCost}
         setBOPCost={props.setBOPCost}
         setBOPHandlingCost={props.setBOPHandlingCost}
         setProcessCost={props.setProcessCost}
@@ -81,6 +82,7 @@ function AssemblyPart(props) {
       setPartDetails={props.setPartDetails}
       toggleAssembly={props.toggleAssembly}
       setRMCost={props.setRMCost}
+      setRMMasterBatchCost={props.setRMMasterBatchCost}
       setBOPCost={props.setBOPCost}
       setBOPHandlingCost={props.setBOPHandlingCost}
       setProcessCost={props.setProcessCost}

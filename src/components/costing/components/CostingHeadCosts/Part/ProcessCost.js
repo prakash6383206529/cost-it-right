@@ -90,7 +90,10 @@ function ProcessCost(props) {
   }
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
+
     setIsCalculator(false)
+    if (Object.keys(weightData).length === 0) return false;
+
     let tempData = gridData[calciIndex]
     let time
     let netCost
@@ -181,7 +184,7 @@ function ProcessCost(props) {
           MachineName: el.MachineName,
           UOM: el.UnitOfMeasurement,
           UnitOfMeasurementId: el.UnitOfMeasurementId,
-          MachineTonnage: el.MachineTonnage,
+          Tonnage: el.MachineTonnage,
           ProcessCost: el.MachineRate * 1,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId
@@ -714,7 +717,7 @@ function ProcessCost(props) {
                         <tr key={index}>
                           <td>{item.ProcessName}</td>
                           <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
-                          <td>{item.MachineTonnage ? item.MachineTonnage : '-'}</td>
+                          <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
                           <td style={{ width: 150 }}>

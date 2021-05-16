@@ -143,6 +143,7 @@ function PartCompoment(props) {
                 index={props.index}
                 data={rmData}
                 setRMCost={props.setRMCost}
+                setRMMasterBatchCost={props.setRMMasterBatchCost}
                 item={item}
               />
 
