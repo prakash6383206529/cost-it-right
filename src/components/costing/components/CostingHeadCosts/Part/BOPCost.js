@@ -259,7 +259,6 @@ function BOPCost(props) {
                     <tr>
                       <th>{`BOP Part No.`}</th>
                       <th>{`BOP Part Name`}</th>
-                      <th style={{ width: "220px" }}>{`Currency`}</th>
                       <th style={{ width: "220px" }} >{`Landed Cost(INR)`}</th>
                       <th style={{ width: "220px" }} >{`Quantity`}</th>
                       <th style={{ width: "220px" }} >{`Net BOP Cost`}</th>
@@ -275,7 +274,6 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
-                              <td>{item.Currency}</td>
                               <td>{checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice)}</td>
                               <td style={{ width: 200 }}>
                                 {
@@ -316,7 +314,6 @@ function BOPCost(props) {
                             <tr key={index}>
                               <td>{item.BOPPartNumber}</td>
                               <td>{item.BOPPartName}</td>
-                              <td>{item.Currency}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{item.Quantity}</td>
                               <td>{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
