@@ -126,9 +126,9 @@ class Downloadxls extends React.Component {
             case 'BOPImport':
                 return this.returnExcelColumn(this.checkVendorPlantConfig(BOP_VBC_IMPORT), BOP_VBC_IMPORT_TempData);
             case 'ActualVolume':
-                return this.returnExcelColumn(VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'BudgetedVolume':
-                return this.returnExcelColumn(VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA);
+                return this.returnExcelColumn(this.checkVendorPlantConfig(VOLUME_BUDGETED_VBC), VOLUME_BUDGETED_VBC_TEMPDATA);
             case 'InterestRate':
                 return this.returnExcelColumn(VBCInterestRate, VBCInterestRateTempData);
             default:
@@ -142,7 +142,7 @@ class Downloadxls extends React.Component {
     */
     returnExcelColumn = (data = [], TempData) => {
         const { fileName, failedData, isFailedFlag } = this.props;
-        console.log("COMING IN EXCEL COLUMN11111111111111111", TempData);
+
         if (isFailedFlag) {
 
             //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
@@ -152,7 +152,7 @@ class Downloadxls extends React.Component {
                 data.push(addObj)
             }
         }
-        console.log("COMING IN EXCEL COLUMN2222222222222222222222222222222222222");
+
 
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
             {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.label} style={ele.style} />)}

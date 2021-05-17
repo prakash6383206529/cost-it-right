@@ -271,9 +271,9 @@ const SendForApproval = (props) => {
     let obj = {
       ApproverDepartmentId: selectedDepartment.value,
       ApproverDepartmentName: selectedDepartment.label,
-      ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : '',
-      ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : '',
-      ApproverId: !isFinalApproverShow ? selectedApprover : '',
+      ApproverLevelId: !isFinalApproverShow ? selectedApproverLevelId.levelId : userData.LoggedInLevelId,
+      ApproverLevel: !isFinalApproverShow ? selectedApproverLevelId.levelName : userData.LoggedInLevel,
+      ApproverId: !isFinalApproverShow ? selectedApprover : userData.LoggedInUserId,
 
       // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
       // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here

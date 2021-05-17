@@ -298,6 +298,8 @@ export const RMImportVBC = [
     { label: "ScrapRate", value: "ScrapRate" }, //*
     { label: "RMFreightCost", value: "RMFreightCost" },
     { label: "ShearingCost", value: "ShearingCost" },
+    { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -321,6 +323,8 @@ export const RMImportVBCTempData = [
         "ScrapRate(INR)": "10",
         "RMFreightCost(INR)": "10",
         "ShearingCost(INR)": "10",
+        "DestinationPlant": "Manesar",
+        "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     },
@@ -342,6 +346,8 @@ export const RMImportVBCTempData = [
         "ScrapRate(INR)": "50",
         "RMFreightCost(INR)": "10",
         "ShearingCost(INR)": "10",
+        "DestinationPlant": "Manesar",
+        "DestinationPlantCode": "EC1",
         "EffectiveDate": moment().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
@@ -372,7 +378,7 @@ export const RMSpecificationXLTempData = [
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Vendor = [
-    { label: 'RawMaterialVendor', value: 'RawMaterialVendor', style: { fill: { patternType: "solid", fgColor: { rgb: "FFFFFF00" } } } },//*
+    { label: 'RawMaterialVendor', value: 'RawMaterialVendor' },//*
     { label: 'LabourVendor', value: 'LabourVendor', }, //*
     { label: 'PartVendor', value: 'PartVendor', }, //*
     { label: 'BOPVendor', value: 'BOPVendor', },//*
@@ -455,6 +461,7 @@ export const ZBCOperation = [
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //NOUI
+    { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -468,6 +475,7 @@ export const ZBCOperationTempData = [
         'UOM': 'Litre',
         'Rate': 50,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "IsSurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark Text',
     }
@@ -489,6 +497,7 @@ export const VBCOperation = [
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'Rate', value: 'Rate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
+    { label: 'IsSurfaceTreatmentOperation', value: 'IsSurfaceTreatmentOperation' },
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
     { label: 'Remark', value: 'Remark', },
 ]
@@ -502,11 +511,12 @@ export const VBCOperationTempData = [
         'VendorName': 'Tata Steel',
         'VendorCode': 'Vendor123',
         'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': 1032,
+        'DestinationPlantCode': "1032",
         'VendorPlantCode': 'VP01',
         'UOM': 'Litre',
         'Rate': 50,
         "EffectiveDate": moment().format('DD-MM-YYYY'),
+        "IsSurfaceTreatmentOperation": "Yes or No",
         'LabourRate': 5,
         'Remark': 'Remark',
     }
@@ -682,7 +692,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Specification': '20 mm',
         'UOM': 'Gallon',
         'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': 1032,
+        'DestinationPlantCode': "1032",
         'VendorCode': 'Sys01',
         'VendorPlantCode': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -878,7 +888,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
         'VendorName': 'Tata Steel',
         'VendorCode': 'Tata01',
         'DestinationPlant': 'Manesar',
-        'DestinationPlantCode': 1032,
+        'DestinationPlantCode': "1032",
         'PartNo': 'Screw01',
         // 'OldPartNo': 'OldPartNo',
         'PartName': 'Screw',
@@ -905,6 +915,8 @@ export const Bought_Out_Parts = [
     { label: 'SourceSupplierName', value: 'SourceSupplierName', },
     { label: 'UnitOfMeasurementName', value: 'UnitOfMeasurementName', },
     { label: 'PlantName', value: 'PlantName', },
+    { label: 'DestinationPlant', value: 'DestinationPlant', },
+    { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
 ]
 
 /** 
@@ -1060,6 +1072,7 @@ export const MHRMoreZBC = [
     { label: "ProcessName", value: "ProcessName", },
     { label: "UOM", value: "UOM", },
     { label: "OutputPerHours", value: "OutputPerHours", },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
 
 ]
 
@@ -1119,7 +1132,7 @@ export const MHRMoreZBCTempData = [
         "ProcessName": "Grinding",
         "UOM": "Hours",
         "OutputPerHours": 50,
-
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     },
     {
         "Technology": "Sheet Metal",
@@ -1173,7 +1186,7 @@ export const MHRMoreZBCTempData = [
         "ProcessName": "Turning",
         "UOM": "Gram",
         "OutputPerHours": 40,
-
+        "EffectiveDate": moment().format('DD-MM-YYYY'),
     }
 ]
 

@@ -3,7 +3,7 @@ import { Row, Col, Container } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalciData } from '../../actions/CostWorking'
@@ -11,11 +11,22 @@ import { KG } from '../../../../config/constants'
 import { toastr } from 'react-redux-toastr'
 
 function Plastic(props) {
-  const trimValue = getConfigurationKey()
-  const trim = trimValue.NumberOfDecimalForWeightCalculation
+  const { item, rmRowData } = props
+  const { CostingPartDetails } = item
+  const { IsApplyMasterBatch, MasterBatchTotal } = CostingPartDetails
+
+  let totalRM
+  //IF MASTER BATCH IS ADDED OTSIDE THE CALCULATOR THEN RM RATE WILL BE SUM OF RMRATE AND MASTERBATCH RATE (AFTER PERCENTAGE)
+  if (IsApplyMasterBatch) {
+    totalRM = Number(rmRowData.RMRate) + Number(MasterBatchTotal)
+  } else {
+    totalRM = Number(rmRowData.RMRate)
+  }
+
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
+
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
@@ -39,8 +50,6 @@ function Plastic(props) {
   })
   console.log('dataToSend: ', dataToSend);
 
-  const { rmRowData } = props
-  console.log('rmRowData: ', rmRowData);
 
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
@@ -115,7 +124,7 @@ function Plastic(props) {
       scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
     }
-    const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) // FINAL GROSS WEIGHT * RMRATE
+    const rmCost = checkForNull(grossWeight) * checkForNull(totalRM) // FINAL GROSS WEIGHT * RMRATE (HERE RM IS RMRATE +MAMSTER BATCH (IF INCLUDED))
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -152,9 +161,9 @@ function Plastic(props) {
     obj.CostingRawMaterialDetailId = rmRowData.RawMaterialDetailId
     obj.RawMaterialName = rmRowData.RMName
     obj.RawMaterialType = rmRowData.MaterialType
-    obj.BasicRatePerUOM = rmRowData.RMRate
+    obj.BasicRatePerUOM = totalRM
     obj.ScrapRate = rmRowData.ScrapRate
-    obj.NetLandedCost = dataToSend.grossWeight * rmRowData.RMRate - (dataToSend.grossWeight - getValues('finishedWeight')) * rmRowData.ScrapRate
+    obj.NetLandedCost = dataToSend.grossWeight * totalRM - (dataToSend.grossWeight - getValues('finishedWeight')) * rmRowData.ScrapRate
     obj.PartNumber = costData.PartNumber
     obj.TechnologyName = costData.TechnologyName
     obj.Density = rmRowData.Density
