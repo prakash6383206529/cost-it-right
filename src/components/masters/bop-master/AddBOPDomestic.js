@@ -270,8 +270,8 @@ class AddBOPDomestic extends Component {
         const accept = AcceptableRMUOM.includes(item.Type)
         if (accept === false) return false
         if (item.Value === '0') return false;
-        let display = this.applySuperScriptFormatter(item.Display)
-        temp.push({ label: display, value: item.Value })
+        // let display = this.applySuperScriptFormatter(item.Display)
+        temp.push({ label: item.Display, value: item.Value })
         return null
       });
       return temp;
@@ -905,6 +905,27 @@ class AddBOPDomestic extends Component {
                             <div className="left-border">{"Cost:"}</div>
                           </Col>
                           <Col md="3">
+                            <div className="inputbox date-section form-group">
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              //minDate={moment()}
+                              />
+                            </div>
+                          </Col>
+                          <Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
@@ -946,48 +967,7 @@ class AddBOPDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="3">
-                            
-                              {/* <label>
-                                Effective Date */}
-                              {/* <span className="asterisk-required">*</span> */}
-                              {/* </label> */}
-                              <div className="inputbox date-section form-group">
-                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
-                                <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    //e.preventDefault()
-                                  }}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                  disabled={isEditFlag ? true : false}
-                                //minDate={moment()}
-                                />
-                              </div>
-                          </Col>
+
                         </Row>
 
                         <Row>

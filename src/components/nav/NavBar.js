@@ -245,7 +245,7 @@ class SideBar extends Component {
                   />
                   <span>Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu1">
+                <div className="dropdown-menu sub-menu">
                   <ul>
                     {
                       menuData && menuData.map((item, i) => {
@@ -253,7 +253,7 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
-                              onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
+                              onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
                                 state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -326,14 +326,14 @@ class SideBar extends Component {
                   />
                   <span>Additional Masters</span>
                 </Link>
-                <div className="dropdown-menu sub-menu1">
+                <div className="dropdown-menu sub-menu">
                   <ul>
                     {
                       menuData && menuData.map((item, i) => {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
-                              onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
+                              onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
                                 state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -341,24 +341,7 @@ class SideBar extends Component {
                             >{item.PageName}</Link>
                           </li>
                         )
-                        // return (
-                        //   <li key={i}>
-                        //     <Link
-                        //       className="dropdown-item"
-                        //       //     onClick={this.setLeftMenuAccToMenu(menu.NavigationURL)}
-                        //       to={{
-                        //         pathname: menu.NavigationURL,
-                        //         state: {
-                        //           ModuleId: menu.PageId,
-                        //           PageName: menu.PageName,
-                        //           PageURL: menu.NavigationURL,
-                        //         },
-                        //       }}
-                        //     >
-                        //       - {menu.PageName}
-                        //     </Link>
-                        //   </li>
-                        // )
+
                       })
                     }
                   </ul>
@@ -444,7 +427,7 @@ class SideBar extends Component {
                 />
                 <span>Costing </span>
               </Link>
-              <div className="dropdown-menu sub-menu1">
+              <div className="dropdown-menu sub-menu">
                 <ul>
                   {/* UNCOMMENT IT WHEN DONE FROM KAMAL SIR END */}
                   {
@@ -453,7 +436,7 @@ class SideBar extends Component {
                       return (
                         <li key={i} className={`mb5`}>
                           <Link
-                            onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
+                            onClick={() => this.setLeftMenu(el.ModuleId)}
                             to={{
                               pathname: item.NavigationURL,
                               state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -521,7 +504,7 @@ class SideBar extends Component {
                 />
                 <span>Simulation</span>
               </Link>
-              <div className="dropdown-menu sub-menu1">
+              <div className="dropdown-menu sub-menu">
                 <ul>
                   {
                     menuData && menuData.map((item, i) => {
@@ -530,7 +513,7 @@ class SideBar extends Component {
                       return (
                         <li key={i} className={`mb5`}>
                           <Link
-                            onClick={() => this.setModuleId(reactLocalStorage.get("MenuModuleId"))}
+                            onClick={() => this.setLeftMenu(el.ModuleId)}
                             to={{
                               pathname: item.NavigationURL,
                               state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }

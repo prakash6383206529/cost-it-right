@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { required } from "../../../helper/validation";
+import { checkForDecimalAndNull, required } from "../../../helper/validation";
 import { searchableSelect } from "../../layout/FormInputs";
 import { Loader } from '../../common/Loader';
 import { CONSTANT } from '../../../helper/AllConastant';
@@ -17,6 +17,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { costingHeadObj } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
+import { getConfigurationKey } from '../../../helper';
 
 class SOBListing extends Component {
   constructor(props) {
@@ -143,6 +144,10 @@ class SOBListing extends Component {
 
   renderNoOfVendor = () => {
     return <>No of <br />Vendors </>
+  }
+
+  costRender = (cell, cellValue, row, rowIndex) => {
+    return cell !== null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
   }
 
   /**
@@ -313,7 +318,7 @@ class SOBListing extends Component {
               <TableHeaderColumn width={110} dataField="Specification" columnTitle={true} dataAlign="left" >{'Specification'}</TableHeaderColumn>
               <TableHeaderColumn width={90} dataField="NoOfVendors" columnTitle={true} dataAlign="left" dataSort={true} >{this.renderNoOfVendor()}</TableHeaderColumn>
               <TableHeaderColumn width={90} dataField="Plant" columnTitle={true} dataAlign="left" dataSort={true} >{'Plant'}</TableHeaderColumn>
-              <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn>
+              <TableHeaderColumn width={120} dataField="NetLandedCost" columnTitle={true} dataAlign="left" dataFormat={this.costRender} dataSort={true} >{this.rendernetlandedCost()}</TableHeaderColumn>
               <TableHeaderColumn width={100} dataField="ShareOfBusinessPercentage" columnTitle={true} dataAlign="left"  >{'Total SOB%'}</TableHeaderColumn>
               {/* <TableHeaderColumn width={100} dataField="UOM" columnTitle={true} dataAlign="left"  >{'UOM'}</TableHeaderColumn> */}
               <TableHeaderColumn width={140} dataField="WeightedNetLandedCost" columnTitle={true} dataAlign="left"  >{this.renderweightnet()}</TableHeaderColumn>

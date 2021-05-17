@@ -83,10 +83,11 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
+    console.log('rowData: ', rowData);
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
       let tempObj = {
         RMName: rowData.RawMaterial,
-        RMRate: rowData.NetLandedCost,
+        RMRate: rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion,
         MaterialType: rowData.MaterialType,
         RMGrade: rowData.RMGrade,
         Density: rowData.Density,
@@ -104,7 +105,7 @@ function RawMaterialCost(props) {
 
     if (IsApplyMasterBatch) {
       setValue('MBName', rowData.RawMaterial)
-      setValue('MBPrice', rowData.NetLandedCost)
+      setValue('MBPrice', rowData.Currency === '-' ? rowData.NetLandedCost : rowData.NetLandedCostConversion)
     }
 
     setDrawerOpen(false)

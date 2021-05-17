@@ -146,9 +146,9 @@ function AddToComparisonDrawer(props) {
       setIsZbcSelected(true)
       setIsVbcSelected(false)
       setisCbcSelected(false)
-      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partNumber, (res) => {
+      dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         if (plantId !== undefined && plantId !== '-') {
-          dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partNumber, plantId, () => { }))
+          dispatch(getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, plantId, () => { }))
         }
         dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
         setValue('costings', '')
@@ -160,7 +160,7 @@ function AddToComparisonDrawer(props) {
       setIsVbcSelected(true)
       setisCbcSelected(false)
       setValue('costings', '')
-      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partNumber, () => { }))
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
       dispatch(getCostingByVendorAndVendorPlant('', '', '', () => { }))
 
@@ -378,7 +378,7 @@ function AddToComparisonDrawer(props) {
 
     const temp = []
     dispatch(
-      getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partNumber, value.value, (res) => {
+      getCostingSummaryByplantIdPartNo(partNo.value !== undefined ? partNo.value : partNo.partId, value.value, (res) => {
         setValue('costings', '')
       }),
     )

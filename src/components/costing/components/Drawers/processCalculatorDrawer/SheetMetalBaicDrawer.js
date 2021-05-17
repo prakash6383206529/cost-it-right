@@ -4,8 +4,8 @@ import { Row, Col, Container } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, checkPercentageValue, loggedInUserId } from '../../../../../helper'
+import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { DIMENSIONLESS, HOUR, KG, MASS, NO, SHOTS, STROKE, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveProcessCostCalculationData } from '../../../actions/CostWorking';
 import { toastr } from 'react-redux-toastr';
@@ -17,6 +17,9 @@ function SheetMetalBaicDrawer(props) {
 
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
+  console.log('props: ', props);
+  console.log('calculatorData: ', props.calculatorData);
+  console.log('WeightCalculatorRequest: ', WeightCalculatorRequest);
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
 
   const defaultValues = {
@@ -53,14 +56,28 @@ function SheetMetalBaicDrawer(props) {
     calculateProcessCost()
   }, [fieldValues])
 
-  useEffect(() => {
+  const quantFieldValue = useWatch({
+    control,
+    name: ['Quantity']
+  })
 
+  useEffect(() => {
+    if (props.calculatorData.UOMType !== MASS || props.calculatorData.UOMType !== HOUR) {
+      calculateProcessCost()
+    }
+  }, [quantFieldValue])
+
+
+  useEffect(() => {
+    setValue('ProcessCost', checkForDecimalAndNull(WeightCalculatorRequest && WeightCalculatorRequest.ProcessCost ? WeightCalculatorRequest.ProcessCost : '', getConfigurationKey().NoOfDecimalForPrice))
     if (props.calculatorData.UOMType === MASS) {
 
       setValue('Quantity', rmFinishWeight ? rmFinishWeight : 1)
 
       // setValue('Cavity', WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1)
     }
+
+
 
     if (props.calculatorData.UOMType === TIME) {
       setHide(true)
@@ -75,7 +92,7 @@ function SheetMetalBaicDrawer(props) {
 
 
     let obj = {}
-    obj.ProcessCalculationId = WeightCalculatorRequest && WeightCalculatorRequest.ProcessCalculationId ? WeightCalculatorRequest.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
+    obj.ProcessCalculationId = props.calculatorData.ProcessCalculationId ? props.calculatorData.ProcessCalculationId : "00000000-0000-0000-0000-000000000000"
     obj.CostingProcessDetailId = WeightCalculatorRequest && WeightCalculatorRequest.CostingProcessDetailId ? WeightCalculatorRequest.CostingProcessDetailId : "00000000-0000-0000-0000-000000000000"
     obj.IsChangeApplied = tempProcessObj === value.ProcessCost ? false : true
     obj.TechnologyId = costData.TechnologyId
@@ -100,7 +117,7 @@ function SheetMetalBaicDrawer(props) {
     obj.LoggedInUserId = loggedInUserId()
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
-
+    console.log('obj: ', obj);
 
     dispatch(saveProcessCostCalculationData(obj, res => {
       if (res.data.Result) {
@@ -167,6 +184,7 @@ function SheetMetalBaicDrawer(props) {
     calculateProcessCost()
   }
   const onCancel = () => {
+
     calculateMachineTime('0.00')
   }
 
@@ -181,8 +199,16 @@ function SheetMetalBaicDrawer(props) {
   }
 
   const checlPercentageForEfficiency = (e) => {
-    checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")
-    setValue('Efficiency', 100)
+    if (checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.")) {
+      setValue('Efficiency', e.target.value)
+    } else {
+      console.log("IN ELSE");
+      setTimeout(() => {
+
+        setValue('Efficiency', 100)
+      }, 100);
+    }
+    // setValue('Efficiency', checkPercentageValue(e.target.value, "Efficiency can not be more than 100%.") ? e.target.value : 100)
   }
 
   // const quantity = (e) => {

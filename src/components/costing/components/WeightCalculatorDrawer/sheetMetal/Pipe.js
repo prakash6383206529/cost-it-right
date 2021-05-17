@@ -21,6 +21,7 @@ function Pipe(props) {
   const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest;
   console.log('WeightCalculatorRequest: ', WeightCalculatorRequest);
 
+
   const convert = (FinishWeightOfSheet, dimmension) => {
     switch (dimmension) {
       case G:
@@ -89,6 +90,7 @@ function Pipe(props) {
     GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
     FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
   })
+  const [manualFinish, setManualFinish] = useState(false)
   const [isChangeApplies, setIsChangeApplied] = useState(true)
   const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
   const tempOldObj = WeightCalculatorRequest
@@ -110,8 +112,10 @@ function Pipe(props) {
   // })
 
   // useEffect(() => {
+  //   if (manualFinish) {
 
-  //   onFinishChange()
+  //     onFinishChange()
+  //   }
   // }, [fieldVal])
 
   const dispatch = useDispatch()
@@ -124,13 +128,13 @@ function Pipe(props) {
       const Data = res.data.Data
       const kgObj = Data.find(el => el.Text === G)
       setTimeout(() => {
-        setValue('UOMDimension', WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+        setValue('UOMDimension', Object.keys(WeightCalculatorRequest).length !== 0
           ? {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
           }
           : { label: kgObj.Text, value: kgObj.Value })
-        setUOMDimension(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+        setUOMDimension(Object.keys(WeightCalculatorRequest).length !== 0
           ? {
             label: WeightCalculatorRequest.UOMForDimension,
             value: WeightCalculatorRequest.UOMForDimensionId,
@@ -959,21 +963,24 @@ function Pipe(props) {
                 </Col>
               </Row>
             </div>
+            {
+              isEditFlag &&
 
-            <div className="col-sm-12 text-right px-0 mt-4">
-              <button
-                type={'button'}
-                className="reset mr15 cancel-btn"
-                onClick={cancel} >
-                <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
-              </button>
-              <button
-                type={'submit'}
-                className="submit-button save-btn">
-                <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
-                {'Save'}
-              </button>
-            </div>
+              <div className="col-sm-12 text-right px-0 mt-4">
+                <button
+                  type={'button'}
+                  className="reset mr15 cancel-btn"
+                  onClick={cancel} >
+                  <div className={'cross-icon'}><img src={require('../../../../../assests/images/times.png')} alt='cancel-icon.jpg' /></div> {'Cancel'}
+                </button>
+                <button
+                  type={'submit'}
+                  className="submit-button save-btn">
+                  <div className={'check-icon'}><img src={require('../../../../../assests/images/check.png')} alt='check-icon.jpg' /> </div>
+                  {'Save'}
+                </button>
+              </div>
+            }
 
           </form>
         </div>

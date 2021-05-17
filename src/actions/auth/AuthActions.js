@@ -6,7 +6,7 @@ import {
     GET_USER_UNIT_DATA_SUCCESS, GET_UNIT_ROLE_DATA_SUCCESS, GET_UNIT_DEPARTMENT_DATA_SUCCESS, GET_UNIT_LEVEL_DATA_SUCCESS, GET_ROLES_SELECTLIST_SUCCESS,
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
-    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER
+    GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { toastr } from "react-redux-toastr";
@@ -817,6 +817,10 @@ export function getAllLevelMappingAPI(callback) {
         const request = axios.get(`${API.getAllLevelMappingAPI}`, headers);
         request.then((response) => {
             if (response.data.Result) {
+                dispatch({
+                    type: LEVEL_MAPPING_API,
+                    payload: response.data.DataList
+                })
                 callback(response);
             }
         }).catch((error) => {
