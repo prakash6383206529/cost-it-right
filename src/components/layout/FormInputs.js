@@ -665,6 +665,7 @@ export const searchableSelect = ({
   valueDescription,
   options,
   placeholder,
+  menuPlacement,
   isClearable,
   meta: { touched, error, dirty, visited },
   multi,
@@ -693,6 +694,7 @@ export const searchableSelect = ({
         value={valueDescription}
         isDisabled={isDisable}
         placeholder={placeholder}
+        menuPlacement={menuPlacement}
         className={"searchable"}
       />
       <div className="text-help mb-2 mb-2">{touched ? error : ""}</div>

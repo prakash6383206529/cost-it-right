@@ -314,6 +314,13 @@ class AddInterestRate extends Component {
   * @description Renders the component
   */
   render() {
+    let pos_drop_down = "auto"
+    if (window.screen.width > 1366) {
+      pos_drop_down = "auto";
+    }
+    else{
+      pos_drop_down = "top";
+    }
     const { handleSubmit, } = this.props;
     const { isEditFlag, } = this.state;
     return (
@@ -446,6 +453,7 @@ class AddInterestRate extends Component {
                       <Col md="3">
                         <Field
                           name="PaymentTermsApplicability"
+                          menuPlacement={pos_drop_down}
                           type="text"
                           label="Payment Terms Applicability"
                           component={searchableSelect}

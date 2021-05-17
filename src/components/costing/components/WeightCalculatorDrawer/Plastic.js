@@ -448,8 +448,6 @@ function Plastic(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
-              <Row className={''}>
                 <Col md="3">
                   <TextFieldHookForm
                     label={`RM Cost`}
