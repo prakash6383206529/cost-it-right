@@ -18,7 +18,7 @@ import {
   getCostingTechnologySelectList, getAllPartSelectList, getPartInfo, checkPartWithTechnology, createZBCCosting, createVBCCosting, getZBCExistingCosting, getVBCExistingCosting,
   updateZBCSOBDetail, updateVBCSOBDetail, storePartNumber, getZBCCostingByCostingId, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData,
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded,
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import ConfirmComponent from '../../../helper/ConfirmComponent';
@@ -93,6 +93,7 @@ function CostingDetails(props) {
     dispatch(getPartSelectListByTechnology('', () => { }))
     dispatch(getAllPartSelectList(() => { }))
     dispatch(getPartInfo('', () => { }))
+    dispatch(gridDataAdded(false))
   }, [])
 
   const technologySelectList = useSelector((state) => state.costing.technologySelectList)
@@ -592,6 +593,8 @@ function CostingDetails(props) {
       return false;
     }
 
+    dispatch(getZBCCostingByCostingId('', (res) => { }))
+
     if (checkSOBTotal() && type === ZBC) {
       let tempData = zbcPlantGrid[index]
 
@@ -663,9 +666,9 @@ function CostingDetails(props) {
 
       dispatch(createVBCCosting(data, (res) => {
         if (res.data.Result) {
+          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
           setPartInfo(res.data.Data)
           setCostingData({ costingId: res.data.Data.CostingId, type })
-          dispatch(getZBCCostingByCostingId(res.data.Data.CostingId, (res) => { }))
           setIsCostingViewMode(false)
           setStepTwo(true)
           setStepOne(false)
@@ -992,6 +995,7 @@ function CostingDetails(props) {
 
     dispatch(setComponentDiscountOtherItemData({}, () => { }))  //THIS WILL CLEAR DISCOUNT ITEM DATA FROM REDUCER
 
+    dispatch(gridDataAdded(false)) //BASIS OF GRID DATA DISABLED/ENABLED COSTING EFFECTIVE DATE
     setStepOne(true);
     setStepTwo(false);
     setZBCPlantGrid([])

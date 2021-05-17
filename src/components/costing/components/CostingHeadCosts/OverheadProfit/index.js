@@ -5,7 +5,7 @@ import { Col, Row, } from 'reactstrap';
 import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, } from '../../../../../helper';
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getICCAppliSelectListKeyValue, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
-import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, } from '../../../actions/Costing';
+import { getOverheadProfitDataByModelType, getInventoryDataByHeads, getPaymentTermsDataByHeads, gridDataAdded, } from '../../../actions/Costing';
 import Switch from "react-switch";
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
 import { EMPTY_GUID } from '../../../../../config/constants';
@@ -141,6 +141,7 @@ function OverheadProfit(props) {
 
     if (modelType && modelType.value !== undefined) {
       handleModelTypeChange(modelType)
+      IncludeSurfaceTreatmentCall()
     }
 
     if (applicability && applicability.value !== undefined) {
@@ -800,7 +801,7 @@ function OverheadProfit(props) {
 
           //setRejectionObj(Data.CostingRejectionDetail)
           // setIsSurfaceTreatmentAdded(false)
-
+          dispatch(gridDataAdded(true))
         }
       }))
     } else {
@@ -904,6 +905,7 @@ function OverheadProfit(props) {
    */
   const onPressInventory = () => {
     setIsInventoryApplicable(!IsInventoryApplicable)
+    dispatch(gridDataAdded(true))
   }
 
   useEffect(() => {
@@ -1043,6 +1045,7 @@ function OverheadProfit(props) {
    */
   const onPressPaymentTerms = () => {
     setIsPaymentTermsApplicable(!IsPaymentTermsApplicable)
+    dispatch(gridDataAdded(true))
   }
 
   useEffect(() => {

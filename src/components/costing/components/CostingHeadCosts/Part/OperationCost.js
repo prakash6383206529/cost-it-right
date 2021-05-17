@@ -7,9 +7,9 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
 
 function OperationCost(props) {
 
@@ -28,7 +28,9 @@ function OperationCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const CostingViewMode = useContext(ViewCostingContext);
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
     const Params = {
@@ -41,6 +43,8 @@ function OperationCost(props) {
     } else {
       props.setOperationCost(gridData, Params, JSON.stringify(gridData) !== JSON.stringify(OldGridData) ? true : false)
     }
+
+    selectedIds(gridData)
   }, [gridData]);
 
   /**
@@ -48,6 +52,7 @@ function OperationCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
   }
 
@@ -81,6 +86,7 @@ function OperationCost(props) {
       let tempArr = [...GridArray, ...rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }

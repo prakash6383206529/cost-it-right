@@ -31,7 +31,6 @@ function AddRM(props) {
   const costData = useContext(costingInfoContext)
 
   const { rmDrawerList, CostingEffectiveDate } = useSelector(state => state.costing)
-  console.log('rmDrawerList: ', rmDrawerList);
   const { initialConfiguration } = useSelector(state => state.auth)
   const { filterRMSelectList } = useSelector(state => state.material)
 
@@ -295,7 +294,7 @@ function AddRM(props) {
                         register={register}
                         options={renderListing("material")}
                         customClassName="mn-height-auto mb-0"
-                        handleChange={handleRMChange}/>
+                        handleChange={handleRMChange} />
                     </div>
 
                     <div className="flex-fills hide-label mb-0">
@@ -308,7 +307,7 @@ function AddRM(props) {
                         register={register}
                         options={renderListing("grade")}
                         customClassName="mn-height-auto mb-0"
-                        handleChange={() => { }}/>
+                        handleChange={() => { }} />
                     </div>
 
                     <div className="flex-fills mb-0">
