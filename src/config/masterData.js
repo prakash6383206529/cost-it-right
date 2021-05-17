@@ -1987,3 +1987,14 @@ export const RMImportSimulation = [
     { label: "NetLandedCost", value: "NetLandedCost" },
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
+// Material Group
+export const materialGroup = [
+    { label: 'Zero Based', value: 'ZBC' },
+    { label: 'Vendor Based', value: 'VBC' },
+]
+
+// Purchasing Group 
+export const purchasingGroup = [
+    { label: 'Zero Based', value: 'ZBC' },
+    { label: 'Vendor Based', value: 'VBC' },
+]

@@ -78,18 +78,20 @@ const CostingSummaryTable = (props) => {
 
 
   useEffect(() => {
-    let obj = {}
-    obj.TechnologyId = partInfo.TechnologyId
-    obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
-    obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
-    obj.LoggedInUserId = userDetails().LoggedInUserId
+    if (!viewMode && viewCostingData) {
+      let obj = {}
+      obj.TechnologyId = partInfo.TechnologyId
+      obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
+      obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
+      obj.LoggedInUserId = userDetails().LoggedInUserId
 
-    dispatch(isFinalApprover(obj, res => {
-      if (res.data.Result) {
-        setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
-        // setIsFinalApproverShow(false)
-      }
-    }))
+      dispatch(isFinalApprover(obj, res => {
+        if (res.data.Result) {
+          setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+          // setIsFinalApproverShow(false)
+        }
+      }))
+    }
   }, [])
 
 

@@ -582,7 +582,8 @@ class AddBOPImport extends Component {
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
         NetLandedCostConversion: netLandedConverionCost,
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
         const toastrConfirmOptions = {
