@@ -10,6 +10,8 @@ import { toastr } from 'react-redux-toastr';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { setRMCCErrors } from '../../../actions/Costing';
+import { curry } from 'lodash';
+import { INR } from '../../../../../config/constants';
 
 function BOPCost(props) {
   const { item, data } = props;
@@ -67,10 +69,10 @@ function BOPCost(props) {
           BoughtOutPartId: el.BoughtOutPartId,
           BOPPartNumber: el.BoughtOutPartNumber,
           BOPPartName: el.BoughtOutPartName,
-          Currency: el.Currency,
-          LandedCostINR: el.NetLandedCost,
+          Currency: el.Currency !== '-' ? el.Currency : INR,
+          LandedCostINR: el.Currency === '-' ? el.NetLandedCost : el.NetLandedCostConversion,
           Quantity: 1,
-          NetBoughtOutPartCost: el.NetLandedCost * 1,
+          NetBoughtOutPartCost: el.Currency === '-' ? el.NetLandedCost * 1 : el.NetLandedCostConversion * 1,
         }
       })
 

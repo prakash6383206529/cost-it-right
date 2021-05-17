@@ -7,7 +7,7 @@ import {
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
   maxLength512, checkPercentageValue, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix
 } from "../../../helper/validation";
-import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError } from "../../layout/FormInputs";
+import { renderText, renderNumberInputField, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getTechnologySelectList, getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
 import { getVendorListByVendorType, } from '../actions/Material';
 import {
@@ -96,7 +96,8 @@ class AddMoreDetails extends Component {
       isPowerOpen: false,
       isLabourOpen: false,
       isProcessOpen: false,
-      UOM: []
+      UOM: [],
+      effectiveDate: ''
     }
   }
 
@@ -191,13 +192,15 @@ class AddMoreDetails extends Component {
 
           const Data = res.data.Data;
 
+          this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+
           this.props.getLabourTypeByMachineTypeSelectList(Data.MachineTypeId ? Data.MachineTypeId : 0, () => { })
 
           setTimeout(() => {
             const { plantSelectList, machineTypeSelectList, ShiftTypeSelectList, DepreciationTypeSelectList,
               fuelComboSelectList, } = this.props;
 
-            let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
+            // let technologyArray = Data && Data.Technology.map((item) => ({ Text: item.Technology, Value: item.TechnologyId }))
             const plantObj = Data.Plant && plantSelectList && plantSelectList.find(item => item.Value === Data.Plant[0].PlantId)
             const machineTypeObj = machineTypeSelectList && machineTypeSelectList.find(item => Number(item.Value) === Data.MachineTypeId)
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => item.Value == Data.WorkingShift)
@@ -230,7 +233,7 @@ class AddMoreDetails extends Component {
               isEditFlag: true,
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
-              selectedTechnology: technologyArray,
+              selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
               selectedPlants: plantObj && plantObj !== undefined ? { label: plantObj.Text, value: plantObj.Value } : [],
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
@@ -246,6 +249,7 @@ class AddMoreDetails extends Component {
               processGrid: MachineProcessArray,
               remarks: Data.Remark,
               files: Data.Attachements,
+              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : ''
             })
           }, 500)
         }
@@ -546,9 +550,15 @@ class AddMoreDetails extends Component {
     }
   };
 
-
-
-
+  /**
+  * @method handleChange
+  * @description Handle Effective Date
+  */
+  handleEffectiveDateChange = (date) => {
+    this.setState({
+      effectiveDate: date,
+    });
+  };
   /**
    * @method handleChange
    * @description Handle Purchase Date
@@ -1427,7 +1437,8 @@ class AddMoreDetails extends Component {
 
     const { isEditFlag, MachineID, selectedTechnology, selectedPlants, machineType, remarks, files, DateOfPurchase,
       IsAnnualMaintenanceFixed, IsAnnualConsumableFixed, IsInsuranceFixed, IsUsesFuel, IsUsesSolar, fuelType,
-      labourGrid, processGrid, machineFullValue } = this.state;
+      labourGrid, processGrid, machineFullValue, effectiveDate } = this.state;
+    console.log(selectedTechnology, "selectedTechnology");
 
     if (this.state.processGrid.length === 0) {
 
@@ -1440,6 +1451,7 @@ class AddMoreDetails extends Component {
     const userDetail = userDetails()
 
     let technologyArray = selectedTechnology && { Technology: selectedTechnology.label, TechnologyId: selectedTechnology.value, }
+    console.log('technologyArray: ', technologyArray);
 
     let updatedFiles = files.map((file) => ({ ...file, ContextId: MachineID }))
 
@@ -1512,7 +1524,8 @@ class AddMoreDetails extends Component {
       Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
       Attachements: updatedFiles,
       VendorPlant: [],
-      IsForcefulUpdated: true
+      IsForcefulUpdated: true,
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
     }
 
     if (editDetails.isIncompleteMachine) {
@@ -1536,14 +1549,14 @@ class AddMoreDetails extends Component {
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
-            this.props.updateMachineDetails(requestData, (res) => {
-              if (res.data.Result) {
-                toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
-                requestData.isViewFlag = true
-                this.props.hideMoreDetailsForm(requestData)
-                // this.cancel();
-              }
-            })
+            // this.props.updateMachineDetails(requestData, (res) => {
+            //   if (res.data.Result) {
+            //     toastr.success(MESSAGES.UPDATE_MACHINE_DETAILS_SUCCESS);
+            //     requestData.isViewFlag = true
+            //     this.props.hideMoreDetailsForm(requestData)
+            //     // this.cancel();
+            //   }
+            // })
           },
           onCancel: () => { },
         }
@@ -1621,7 +1634,8 @@ class AddMoreDetails extends Component {
         Technology: [technologyArray],
         Plant: [{ PlantId: selectedPlants.value, PlantName: selectedPlants.label }],
         Attachements: files,
-        VendorPlant: []
+        VendorPlant: [],
+        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
       }
 
 
@@ -2032,6 +2046,29 @@ class AddMoreDetails extends Component {
                             className=" "
                             customClassName="withBorder"
                           />
+                        </Col>
+                        <Col md="3">
+                          <div className="form-group">
+                            <div className="inputbox date-section">
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                disabled={false}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </div>
+                          </div>
                         </Col>
                       </Row>
                       {/*  LOAN AND INTREST VALUE */}

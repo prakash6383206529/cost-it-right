@@ -57,9 +57,10 @@ function LossStandardTable(props) {
     const LossPercentage = Number(getValues('LossPercentage'))
 
     const inputWeight = props.weightValue //Need to Ask what to do
-    if (!inputWeight || !LossPercentage) {
-      return ''
-    }
+    console.log('inputWeight: ', inputWeight);
+    // if (!inputWeight || !LossPercentage) {
+    //   return ''
+    // }
     const LossWeight = (inputWeight * LossPercentage) / 100
 
     setValue('LossWeight', checkForDecimalAndNull(LossWeight, trim))

@@ -63,6 +63,7 @@ class UserRegistration extends Component {
       technologyLevelEditIndex: '',
       isEditIndex: false,
       isShowPwdField: true,
+      isLoader: false
     };
   }
 
@@ -767,10 +768,10 @@ class UserRegistration extends Component {
 
   render() {
     const { handleSubmit, initialConfiguration, loading } = this.props;
-    const { isSubmitted } = this.state;
+    const { isSubmitted, isLoader } = this.state;
     return (
       <div className="container-fluid">
-        {loading && <Loader />}
+        {isLoader && <Loader />}
         <div className="login-container signup-form">
           <div className="row">
 

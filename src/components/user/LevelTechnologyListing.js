@@ -11,6 +11,7 @@ import { CONSTANT } from '../../helper/AllConastant';
 import NoContentFound from '../common/NoContentFound';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ConfirmComponent from '../../helper/ConfirmComponent';
+import LoaderCustom from '../common/LoaderCustom';
 
 class LevelTechnologyListing extends Component {
 	constructor(props) {
@@ -112,7 +113,7 @@ class LevelTechnologyListing extends Component {
 		const { AddAccessibility } = this.props;
 		const options = {
 			//clearSearch: true,
-			noDataText: <NoContentFound title={CONSTANT.EMPTY_DATA} />,
+			noDataText: (this.props.levelMappingList === undefined ? <LoaderCustom /> : <NoContentFound title={CONSTANT.EMPTY_DATA} />),
 			afterSearch: this.afterSearch,
 			paginationShowsTotal: this.renderPaginationShowsTotal,
 			prePage: <span className="prev-page-pg"></span>, // Previous page button text
@@ -129,7 +130,7 @@ class LevelTechnologyListing extends Component {
 		};
 		return (
 			<>
-				{this.props.loading && <Loader />}
+				{/* {this.props.loading && <Loader />} */}
 				<Row className="levellisting-page">
 					<Col md="6">
 						<h2 className="manage-level-heading">{`Level Mapping`}</h2>
@@ -173,7 +174,7 @@ class LevelTechnologyListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { loading } = auth;
+	const { loading, levelMappingList } = auth;
 
 	return { loading };
 }

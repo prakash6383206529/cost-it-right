@@ -950,6 +950,28 @@ class AddBOPImport extends Component {
                             />
                           </Col>
                           <Col md="3">
+                            <div className="inputbox date-section mb-3 form-group">
+                              <Field
+                                label="Effective Date"
+                                name="EffectiveDate"
+                                selected={this.state.effectiveDate}
+                                onChange={this.handleEffectiveDateChange}
+                                type="text"
+                                validate={[required]}
+                                autoComplete={'off'}
+                                required={true}
+                                changeHandler={(e) => {
+                                  //e.preventDefault()
+                                }}
+                                component={renderDatePicker}
+                                className="form-control"
+                                disabled={isEditFlag ? true : false}
+                              //minDate={moment()}
+                              />
+                            </div>
+
+                          </Col>
+                          <Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
@@ -1010,49 +1032,7 @@ class AddBOPImport extends Component {
                           {/* </Row>
 
                         <Row> */}
-                          <Col md="3">
-                            
-                              {/* <label>
-                                Effective Date */}
-                              {/* <span className="asterisk-required">*</span> */}
-                              {/* </label> */}
-                              <div className="inputbox date-section mb-3 form-group">
-                                {/* <DatePicker
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  showMonthDropdown
-                                  showYearDropdown
-                                  dateFormat="dd/MM/yyyy"
-                                  //maxDate={new Date()}
-                                  dropdownMode="select"
-                                  placeholderText="Select date"
-                                  className="withBorder"
-                                  autoComplete={"off"}
-                                  disabledKeyboardNavigation
-                                  onChangeRaw={(e) => e.preventDefault()}
-                                  disabled={isEditFlag ? true : false}
-                                /> */}
-                                <Field
-                                  label="Effective Date"
-                                  name="EffectiveDate"
-                                  selected={this.state.effectiveDate}
-                                  onChange={this.handleEffectiveDateChange}
-                                  type="text"
-                                  validate={[required]}
-                                  autoComplete={'off'}
-                                  required={true}
-                                  changeHandler={(e) => {
-                                    //e.preventDefault()
-                                  }}
-                                  component={renderDatePicker}
-                                  className="form-control"
-                                  disabled={isEditFlag ? true : false}
-                                //minDate={moment()}
-                                />
-                              </div>
-                            
-                          </Col>
+
                         </Row>
 
                         <Row>

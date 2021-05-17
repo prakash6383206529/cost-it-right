@@ -138,7 +138,7 @@ function ProcessCost(props) {
       setTabData(tempArr2)
       setGridData(tempArray)
       setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, weightData.Quantity)
-      setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, weightData.ProcessCost)
+      setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
     }, 100)
   }
 
