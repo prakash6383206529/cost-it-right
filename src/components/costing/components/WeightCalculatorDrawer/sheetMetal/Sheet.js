@@ -50,7 +50,7 @@ function Sheet(props) {
 
     const [isOneSide, setIsOneSide] = useState(WeightCalculatorRequest && WeightCalculatorRequest.IsOneSide ? WeightCalculatorRequest.IsOneSide : false)
     const [UOMDimension, setUOMDimension] = useState(
-        WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+        WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
             ? {
                 label: WeightCalculatorRequest.UOMForDimension,
                 value: WeightCalculatorRequest.UOMForDimensionId,
@@ -60,7 +60,7 @@ function Sheet(props) {
     let extraObj = {}
     const [dataToSend, setDataToSend] = useState({})
     const [isChangeApplies, setIsChangeApplied] = useState(true)
-    const [unit, setUnit] = useState(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
+    const [unit, setUnit] = useState(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0 ? WeightCalculatorRequest.UOMForDimension !== null : G) //Need to change default value after getting it from API
     const tempOldObj = WeightCalculatorRequest
     const [GrossWeight, setGrossWeights] = useState('')
     const [FinishWeightOfSheet, setFinishWeights] = useState('')
@@ -84,13 +84,13 @@ function Sheet(props) {
             const Data = res.data.Data
             const kgObj = Data.find(el => el.Text === G)
             setTimeout(() => {
-                setValue('UOMDimension', WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+                setValue('UOMDimension', WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
                     ? {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,
                     }
                     : { label: kgObj.Text, value: kgObj.Value })
-                setUOMDimension(WeightCalculatorRequest && WeightCalculatorRequest.UOMForDimensionId !== null
+                setUOMDimension(WeightCalculatorRequest && Object.keys(WeightCalculatorRequest).length !== 0
                     ? {
                         label: WeightCalculatorRequest.UOMForDimension,
                         value: WeightCalculatorRequest.UOMForDimensionId,

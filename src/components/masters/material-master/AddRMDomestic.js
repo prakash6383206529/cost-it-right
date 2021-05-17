@@ -25,7 +25,7 @@ import AddUOM from '../uom-master/AddUOM'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
-import $ from 'jquery'
+import $, { data } from 'jquery'
 import 'react-datepicker/dist/react-datepicker.css'
 import { FILE_URL, ZBC } from '../../../config/constants'
 import moment from 'moment';
@@ -81,7 +81,8 @@ class AddRMDomestic extends Component {
       singlePlantSelected: [],
       showLoader: false,
       DropdownChanged: true,
-      DataToChange: []
+      DataToChange: [],
+      isDateChange: false
     }
   }
   /**
@@ -110,7 +111,7 @@ class AddRMDomestic extends Component {
     this.props.getTechnologySelectList(() => { })
     this.props.fetchSpecificationDataAPI(0, () => { })
     this.props.getPlantSelectListByType(ZBC, () => { })
-    console.log(getConfigurationKey().IsDestinationPlantConfigure, "CONFIGURE KEY");
+
   }
 
   componentDidUpdate(prevProps) {
@@ -293,9 +294,16 @@ class AddRMDomestic extends Component {
    * @description Handle Effective Date
    */
   handleEffectiveDateChange = (date) => {
-    this.setState({
-      effectiveDate: date,
-    })
+    if (date !== this.state.effectiveDate) {
+      console.log(("Date change"));
+      this.setState({ isDateChange: true, effectiveDate: date, })
+    } else {
+      this.setState({ isDateChange: false, effectiveDate: date, })
+    }
+    // this.setState({
+    //   effectiveDate: date,
+    //   // DropdownChanged: date.EffectiveDate
+    // })
   }
 
   /**
@@ -321,70 +329,80 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialDetailsAPI(data, true, (res) => {
         if (res && res.data && res.data.Result) {
           const Data = res.data.Data
-          this.setState({ DataToChange: Data })
+          this.setState({ DataToChange: Data }, () => {
+            console.log('DataToChange: ', this.state.DataToChange);
+
+          })
           if (Data.IsVendor) {
             this.props.getVendorWithVendorCodeSelectList(() => { })
           } else {
             this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           }
-          this.props.getVendorListByVendorType(Data.IsVendor, () => { })
-          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => { },)
-          this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => { })
+          // this.props.getVendorListByVendorType(Data.IsVendor, () => { })
           this.props.getPlantBySupplier(Data.Vendor, () => { })
           this.props.change('FrieghtCharge', Data.RMFreightCost ? Data.RMFreightCost : '')
           this.props.change('ShearingCost', Data.RMShearingCost ? Data.RMShearingCost : '')
+          this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
-          setTimeout(() => {
-            const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
+            this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
 
-            const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
-            const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
-            const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
-            const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
-            const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
-            console.log('destinationPlantObj: ', destinationPlantObj);
-            const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
+              setTimeout(() => {
+                const { gradeSelectList, rmSpecification, cityList, categoryList, rawMaterialNameSelectList, UOMSelectList, vendorListByVendorType, technologySelectList, plantSelectList } = this.props
+                console.log('gradeSelectList: ', gradeSelectList);
+
+                const materialNameObj = rawMaterialNameSelectList && rawMaterialNameSelectList.find((item) => item.Value === Data.RawMaterial,)
+                const gradeObj = gradeSelectList && gradeSelectList.find((item) => item.Value === Data.RMGrade)
+                console.log('gradeObj: ', gradeObj);
+                const specObj = rmSpecification && rmSpecification.find((item) => item.Value === Data.RMSpec)
+                console.log('specObj: ', specObj);
+                const categoryObj = categoryList && categoryList.find((item) => Number(item.Value) === Data.Category)
+                const destinationPlantObj = plantSelectList && plantSelectList.find((item) => item.Value === Data.DestinationPlantId)
+                console.log('destinationPlantObj: ', destinationPlantObj);
+                const technologyObj = technologySelectList && technologySelectList.find((item) => Number(item.Value) === Data.TechnologyId)
 
 
-            let plantArray = []
-            Data && Data.Plant.map((item) => {
-              plantArray.push({ Text: item.PlantName, Value: item.PlantId })
-              return plantArray
+                let plantArray = []
+                Data && Data.Plant.map((item) => {
+                  plantArray.push({ Text: item.PlantName, Value: item.PlantId })
+                  return plantArray
+                })
+
+                const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Value === Data.Vendor)
+
+                let vendorPlantArray = []
+                Data && Data.VendorPlant.map((item) => {
+                  vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId, })
+                  return vendorPlantArray
+                })
+
+                const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
+                const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
+                this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
+                this.setState({
+                  isEditFlag: true,
+                  // isLoader: false,
+                  isShowForm: true,
+                  IsVendor: Data.IsVendor,
+                  RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
+                  RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
+                  RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
+                  Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
+                  selectedPlants: plantArray,
+                  Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
+                  vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
+                  selectedVendorPlants: vendorPlantArray,
+                  HasDifferentSource: Data.HasDifferentSource,
+                  sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
+                  UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
+                  effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
+                  remarks: Data.Remark,
+                  files: Data.FileList,
+                  singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
+                }, () => this.setState({ isLoader: false }))
+              }, 200)
             })
+          })
 
-            const vendorObj = vendorListByVendorType && vendorListByVendorType.find((item) => item.Value === Data.Vendor)
-
-            let vendorPlantArray = []
-            Data && Data.VendorPlant.map((item) => {
-              vendorPlantArray.push({ Text: item.PlantName, Value: item.PlantId, })
-              return vendorPlantArray
-            })
-
-            const sourceLocationObj = cityList && cityList.find((item) => Number(item.Value) === Data.SourceLocation)
-            const UOMObj = UOMSelectList && UOMSelectList.find((item) => item.Value === Data.UOM)
-            this.props.change('EffectiveDate', moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '')
-            this.setState({
-              isEditFlag: true,
-              // isLoader: false,
-              isShowForm: true,
-              IsVendor: Data.IsVendor,
-              RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
-              RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
-              RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value } : [],
-              Category: categoryObj !== undefined ? { label: categoryObj.Text, value: categoryObj.Value } : [],
-              selectedPlants: plantArray,
-              Technology: technologyObj !== undefined ? { label: technologyObj.Text, value: technologyObj.Value } : [],
-              vendorName: vendorObj !== undefined ? { label: vendorObj.Text, value: vendorObj.Value } : [],
-              selectedVendorPlants: vendorPlantArray,
-              HasDifferentSource: Data.HasDifferentSource,
-              sourceLocation: sourceLocationObj !== undefined ? { label: sourceLocationObj.Text, value: sourceLocationObj.Value, } : [],
-              UOM: UOMObj !== undefined ? { label: UOMObj.Text, value: UOMObj.Value } : [],
-              effectiveDate: moment(Data.EffectiveDate)._isValid ? moment(Data.EffectiveDate)._d : '',
-              remarks: Data.Remark,
-              files: Data.FileList,
-              singlePlantSelected: destinationPlantObj !== undefined ? { label: destinationPlantObj.Text, value: destinationPlantObj.Value } : []
-            }, () => this.setState({ isLoader: false }))
-          }, 1000)
         }
       })
     } else {
@@ -820,13 +838,19 @@ class AddRMDomestic extends Component {
    * @description Used to Submit the form
    */
   onSubmit = (values) => {
+    console.log('values: ', values);
+    //  console.log(DataToChange, "DataToChange");
     const { IsVendor, RawMaterial, RMGrade, RMSpec, Category, Technology, selectedPlants, vendorName,
       VendorCode, selectedVendorPlants, HasDifferentSource, sourceLocation,
-      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged } = this.state
-    const { initialConfiguration, anyTouched } = this.props
+      UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate, netLandedCost, singlePlantSelected, DataToChange, DropdownChanged, isDateChange } = this.state
+    const { initialConfiguration } = this.props
+    console.log('isDateChange: ', isDateChange);
     // if (!anyTouched) {
     //   return toastr.warning('No  changes at alllllllllllllllllllllll.')
     // }
+    console.log(
+      "fffffffffffffffffffffffffffffffffffffffffffffffffffffff", Number(DataToChange.RMShearingCost)
+    );
     let plantArray = []
     selectedPlants && selectedPlants.map((item) => {
       plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
@@ -839,43 +863,54 @@ class AddRMDomestic extends Component {
         vendorPlantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
         return vendorPlantArray
       })
+
+
+    // if (DataToChange.IsVendor != true) {
+
+    // }
+    // if (DataToChange.IsVendor) {
+    //   if (DropdownChanged && DataToChange.Source === values.Source && DataToChange.BasicRatePerUOM === values.BasicRate && DataToChange.ScrapRate === values.ScrapRate && DataToChange.Remark === values.Remark) {
+    //     this.cancel()
+    //     return false
+    //   }
+    // }
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: RawMaterialID }
+    })
+    let requestData = {
+      RawMaterialId: RawMaterialID,
+      IsVendor: IsVendor,
+      HasDifferentSource: HasDifferentSource,
+      Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
+      SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
+      Remark: remarks,
+      BasicRatePerUOM: values.BasicRate,
+      RMFreightCost: values.FrieghtCharge,
+      RMShearingCost: values.ShearingCost,
+      ScrapRate: values.ScrapRate,
+      NetLandedCost: netLandedCost,
+      LoggedInUserId: loggedInUserId(),
+      EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
+      Attachements: updatedFiles,
+      IsForcefulUpdated: isDateChange ? false : true
+    }
     if (isEditFlag) {
-
-      if (DataToChange.IsVendor != true) {
-        if (DropdownChanged && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.RMFreightCost == values.FrieghtCharge
-          && DataToChange.RMShearingCost == values.ShearingCost && DataToChange.Remark == values.Remark) {
+      console.log(DataToChange, "kkk", values);
+      if (isDateChange) {
+        console.log("COMING IN DATE CHANGE");
+        this.props.reset()
+        this.props.updateRMDomesticAPI(requestData, (res) => {
+          if (res.data.Result) {
+            toastr.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+            this.clearForm()
+            // this.cancel()
+          }
+        })
+      } else {
+        if (DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRate && Number(DataToChange.ScrapRate) === values.ScrapRate && Number(DataToChange.NetLandedCost) === values.NetLandedCost && DataToChange.Remark === values.Remark) {
           this.cancel()
           return false
         }
-      }
-      if (DataToChange.IsVendor) {
-        if (DropdownChanged && DataToChange.Source == values.Source && DataToChange.BasicRatePerUOM == values.BasicRate && DataToChange.ScrapRate == values.ScrapRate && DataToChange.Remark == values.Remark) {
-          this.cancel()
-          return false
-        }
-      }
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: RawMaterialID }
-      })
-      let requestData = {
-        RawMaterialId: RawMaterialID,
-        IsVendor: IsVendor,
-        HasDifferentSource: HasDifferentSource,
-        Source: !IsVendor && !HasDifferentSource ? '' : values.Source,
-        SourceLocation: !IsVendor && !HasDifferentSource ? '' : sourceLocation.value,
-        Remark: remarks,
-        BasicRatePerUOM: values.BasicRate,
-        RMFreightCost: values.FrieghtCharge,
-        RMShearingCost: values.ShearingCost,
-        ScrapRate: values.ScrapRate,
-        NetLandedCost: netLandedCost,
-        LoggedInUserId: loggedInUserId(),
-        EffectiveDate: moment(effectiveDate).local().format('YYYY-MM-DD HH:mm:ss'),
-        Attachements: updatedFiles,
-        IsForcefulUpdated: true
-      }
-      if (isEditFlag) {
-
         const toastrConfirmOptions = {
           onOk: () => {
             this.props.reset()
@@ -891,8 +926,10 @@ class AddRMDomestic extends Component {
         }
         return toastr.confirm(`${'You have changed details, So your all Pending for Approval costing will get Draft. Do you wish to continue?'}`, toastrConfirmOptions,)
       }
-
     }
+
+
+
     else {
       const formData = {
         IsVendor: IsVendor,
@@ -925,7 +962,7 @@ class AddRMDomestic extends Component {
         if (res.data.Result) {
           toastr.success(MESSAGES.MATERIAL_ADD_SUCCESS)
           this.clearForm()
-          // this.cancel()
+          this.cancel()
         }
       })
 
@@ -949,7 +986,6 @@ class AddRMDomestic extends Component {
   render() {
     const { handleSubmit, initialConfiguration } = this.props
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isVisible, } = this.state
-    console.log(!this.state.IsVendor || getConfigurationKey().IsDestinationPlantConfigure, "SSSSSSSSSSSSSSSSSSSSSS")
 
     return (
       <>
@@ -1102,7 +1138,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                           <Col md="4">
-                            <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength."/>
+                            <TooltipCustom tooltipText="RM category will come here like CutToFit, CutToLength." />
                             <Field
                               name="CategoryId"
                               type="text"
@@ -1327,7 +1363,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Basic Rate/ ${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (INR)`}
+                              label={`Basic Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"BasicRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1343,7 +1379,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Scrap Rate (INR)`}
+                              label={`Scrap Rate (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"ScrapRate"}
                               type="text"
                               placeholder={"Enter"}
@@ -1357,7 +1393,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`RM Freight Cost(INR)`}
+                              label={`RM Freight Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"FrieghtCharge"}
                               type="text"
                               placeholder={"Enter"}
@@ -1372,7 +1408,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Shearing Cost (INR)`}
+                              label={`Shearing Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"ShearingCost"}
                               type="text"
                               placeholder={"Enter"}
@@ -1387,7 +1423,7 @@ class AddRMDomestic extends Component {
                           </Col>
                           <Col md="4">
                             <Field
-                              label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} )`}
+                              label={`Net Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                               name={"NetLandedCost"}
                               type="text"
                               placeholder={""}
@@ -1688,6 +1724,7 @@ function mapStateToProps(state) {
   const { initialConfiguration } = auth;
 
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, loader } = material
+
 
   let initialValues = {}
   if (rawMaterialDetails && rawMaterialDetails !== undefined) {

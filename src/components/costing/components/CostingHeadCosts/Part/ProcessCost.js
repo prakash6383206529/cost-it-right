@@ -90,7 +90,10 @@ function ProcessCost(props) {
   }
 
   const closeCalculatorDrawer = (e, value, weightData = {}) => {
+
     setIsCalculator(false)
+    if (Object.keys(weightData).length === 0) return false;
+
     let tempData = gridData[calciIndex]
     let time
     let netCost
@@ -138,7 +141,7 @@ function ProcessCost(props) {
       setTabData(tempArr2)
       setGridData(tempArray)
       setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, weightData.Quantity)
-      setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, weightData.ProcessCost)
+      setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
     }, 100)
   }
 
@@ -181,7 +184,7 @@ function ProcessCost(props) {
           MachineName: el.MachineName,
           UOM: el.UnitOfMeasurement,
           UnitOfMeasurementId: el.UnitOfMeasurementId,
-          MachineTonnage: el.MachineTonnage,
+          Tonnage: el.MachineTonnage,
           ProcessCost: el.MachineRate * 1,
           UOMType: el.UnitType,
           UOMTypeId: el.UnitTypeId
@@ -535,7 +538,7 @@ function ProcessCost(props) {
                   <tr>
                     <th>{`Process Name`}</th>
                     <th>{`Process Description`}</th>
-                    <th>{`Machine Name`}</th>
+                    <th>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
                     <th style={{ width: "220px" }}>{`Quantity`}</th>
@@ -714,7 +717,7 @@ function ProcessCost(props) {
                         <tr key={index}>
                           <td>{item.ProcessName}</td>
                           <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
-                          <td>{item.MachineName ? item.MachineName : '-'}</td>
+                          <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
                           <td style={{ width: 150 }}>

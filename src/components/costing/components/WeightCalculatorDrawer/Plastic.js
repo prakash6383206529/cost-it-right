@@ -41,6 +41,7 @@ function Plastic(props) {
 
   const { rmRowData } = props
   console.log('rmRowData: ', rmRowData);
+
   const { register, handleSubmit, control, setValue, getValues, reset, errors, } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -52,7 +53,7 @@ function Plastic(props) {
   // }
   const fieldValues = useWatch({
     control,
-    name: ['netWeight', 'runnerWeight'],
+    name: ['netWeight', 'runnerWeight', 'finishedWeight'],
   })
 
   const dropDown = [
@@ -68,7 +69,7 @@ function Plastic(props) {
 
   useEffect(() => {
     calculateGrossWeight()
-    // calculateRemainingCalculation(WeightCalculatorRequest ? WeightCalculatorRequest.LostSum : 0)
+    calculateRemainingCalculation(lostWeight)
   }, [fieldValues])
 
 
@@ -82,7 +83,7 @@ function Plastic(props) {
     const netWeight = Number(getValues('netWeight'))
     const runnerWeight = Number(getValues('runnerWeight'))
 
-    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight)
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostWeight
     setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
     let updatedValue = dataToSend
@@ -97,17 +98,31 @@ function Plastic(props) {
     console.log("HOW MANY TIMES COMING ?");
     console.log('lostSum: ', lostSum);
 
-    const grossWeight = Number(getValues('grossWeight'))
-    const netWeight = Number(getValues('netWeight'))
-    const finishedWeight = grossWeight + lostSum
-    const scrapWeight = finishedWeight - netWeight
-    const rmCost = finishedWeight * rmRowData.RMRate
-    const scrapCost = scrapWeight * rmRowData.ScrapRate
-    const materialCost = rmCost - scrapCost
+    const netWeight = Number(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
+    const runnerWeight = Number(getValues('runnerWeight'))
+    const finishedWeight = Number(getValues('finishedWeight'))
 
-    setDataToSend({ ...dataToSend, finishedWeight: finishedWeight, scrapWeight: scrapWeight, rmCost: rmCost, scrapCost: scrapCost, materialCost: materialCost })
+    const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostSum //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
+    // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
+    const scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+    const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) // FINAL GROSS WEIGHT * RMRATE
+    const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
+    const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
-    setValue('finishedWeight', checkForDecimalAndNull(finishedWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    const updatedValue = dataToSend
+    updatedValue.totalGrossWeight = grossWeight
+    updatedValue.scrapWeight = scrapWeight
+    updatedValue.rmCost = rmCost
+    updatedValue.scrapCost = scrapCost
+    updatedValue.materialCost = materialCost
+
+    setDataToSend(updatedValue)
+    // setTimeout(() => {
+
+    //   setDataToSend({ ...dataToSend, totalGrossWeight: grossWeight, scrapWeight: scrapWeight, rmCost: rmCost, scrapCost: scrapCost, materialCost: materialCost })
+    // }, 500);
+
+    setValue('grossWeight', checkForDecimalAndNull(grossWeight, getConfigurationKey().NoOfDecimalForInputOutput)) // SETING FINAL GROSS WEIGHT VALUE
     setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
     setValue('rmCost', checkForDecimalAndNull(rmCost, getConfigurationKey().NoOfDecimalForPrice))
     setValue('scrapCost', checkForDecimalAndNull(scrapCost, getConfigurationKey().NoOfDecimalForPrice))
@@ -129,7 +144,7 @@ function Plastic(props) {
     obj.RawMaterialType = rmRowData.MaterialType
     obj.BasicRatePerUOM = rmRowData.RMRate
     obj.ScrapRate = rmRowData.ScrapRate
-    obj.NetLandedCost = dataToSend.grossWeight * rmRowData.RMRate - (dataToSend.grossWeight - dataToSend.finishedWeight) * rmRowData.ScrapRate
+    obj.NetLandedCost = dataToSend.grossWeight * rmRowData.RMRate - (dataToSend.grossWeight - getValues('finishedWeight')) * rmRowData.ScrapRate
     obj.PartNumber = costData.PartNumber
     obj.TechnologyName = costData.TechnologyName
     obj.Density = rmRowData.Density
@@ -139,7 +154,7 @@ function Plastic(props) {
     obj.NetWeight = getValues('netWeight')
     obj.RunnerWeight = getValues('runnerWeight')
     obj.GrossWeight = dataToSend.grossWeight
-    obj.FinishWeight = dataToSend.finishedWeight
+    obj.FinishWeight = getValues('finishedWeight')
     obj.ScrapWeight = dataToSend.scrapWeight
     obj.RMCost = dataToSend.rmCost
     obj.ScrapCost = dataToSend.scrapCost
@@ -193,7 +208,7 @@ function Plastic(props) {
               <Row className={''}>
                 <Col md="3" >
                   <TextFieldHookForm
-                    label={`Net Weight(Kg)`}
+                    label={`Gross Weight(Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
                     control={control}
@@ -241,31 +256,7 @@ function Plastic(props) {
                     disabled={false}
                   />
                 </Col>
-                <Col md="3" >
-                  <TextFieldHookForm
-                    label={`Gross Weight(Kg)`}
-                    name={'grossWeight'}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    // rules={{
-                    //   required: true,
-                    //   pattern: {
-                    //     //value: /^[0-9]*$/i,
-                    //     value: /^[0-9]\d*(\.\d+)?$/i,
-                    //     message: 'Invalid Number.',
-                    //   },
-                    //   // maxLength: 4,
-                    // }}
-                    handleChange={() => { }}
-                    defaultValue={''}
-                    className=""
-                    customClassName={'withBorder'}
-                    errors={errors.grossWeight}
-                    disabled={true}
-                  />
-                </Col>
+
                 {/* <Col md="2">
                   <TextFieldHookForm
                     label={`Sacle Loss`}
@@ -372,13 +363,38 @@ function Plastic(props) {
               <LossStandardTable
                 dropDownMenu={dropDown}
                 calculation={calculateRemainingCalculation}
-                weightValue={Number(getValues('grossWeight'))}
+                weightValue={Number(getValues('netWeight'))}
                 netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
                 sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
                 tableValue={tableData}
               />
 
               <Row className={'mt25'}>
+                <Col md="3" >
+                  <TextFieldHookForm
+                    label={`Total Gross Weight(Kg)`}
+                    name={'grossWeight'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    // rules={{
+                    //   required: true,
+                    //   pattern: {
+                    //     //value: /^[0-9]*$/i,
+                    //     value: /^[0-9]\d*(\.\d+)?$/i,
+                    //     message: 'Invalid Number.',
+                    //   },
+                    //   // maxLength: 4,
+                    // }}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.grossWeight}
+                    disabled={true}
+                  />
+                </Col>
                 <Col md="3" >
                   <TextFieldHookForm
                     label={`Finished Weight(Kg)`}
@@ -401,7 +417,7 @@ function Plastic(props) {
                     className=""
                     customClassName={'withBorder'}
                     errors={errors.finishedWeight}
-                    disabled={true}
+                    disabled={false}
                   />
                 </Col>
                 <Col md="3">

@@ -13,12 +13,13 @@ import EndMill from './EndMill'
 import { useDispatch } from 'react-redux'
 import SheetMetalBaicDrawer from './SheetMetalBaicDrawer'
 import InjectionMoulding from './InjectionMoulding'
-import { SHEETMETAL, RUBBER, PLASTIC, MACHINING } from '../../../../../config/masterData'
+import { SHEETMETAL, RUBBER, PLASTIC, MACHINING, Non_Ferrous_HPDC } from '../../../../../config/masterData'
+import HPDC from '../../WeightCalculatorDrawer/HPDC'
 
 function VariableMhrDrawer(props) {
   const { technology, calculatorData } = props
 
-  const tonnage = calculatorData.MachineTonnage ? calculatorData.MachineTonnage : ''
+  const tonnage = calculatorData.Tonnage ? calculatorData.Tonnage : ''
   const dispatch = useDispatch()
   const calculateMachineTime = (time, formValue) => {
 
@@ -59,14 +60,12 @@ function VariableMhrDrawer(props) {
    * @description TOGGLE DRAWER
    */
   const toggleDrawer = (event, formValue = '0.00', weightData = {}) => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
     props.closeDrawer('', formValue, weightData)
   }
+
   const getProcessComponent = (process) => {
 
     if (technology === MACHINING) {
@@ -173,9 +172,27 @@ function VariableMhrDrawer(props) {
             <InjectionMoulding calculateMachineTime={calculateMachineTime} calculatorData={calculatorData} />
           )
         default:
+          return (
+            <SheetMetalBaicDrawer
+              calculateMachineTime={calculateMachineTime}
+              tonnage={tonnage}
+              rmFinishWeight={props.rmFinishWeight}
+              calculatorData={calculatorData}
+            />
+          )
           break;
       }
+    } else if (technology === Non_Ferrous_HPDC) {
+      return (
+        <SheetMetalBaicDrawer
+          calculateMachineTime={calculateMachineTime}
+          tonnage={tonnage}
+          rmFinishWeight={props.rmFinishWeight}
+          calculatorData={calculatorData}
+        />
+      )
     }
+
   }
 
   return (
@@ -191,7 +208,7 @@ function VariableMhrDrawer(props) {
             <Row className="drawer-heading">
               <Col>
                 <div className={'header-wrapper left'}>
-                  <h3>{'Calculator'}</h3>
+                  <h3>{'Process Calculator'}</h3>
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}

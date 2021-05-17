@@ -10,6 +10,7 @@ import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepart
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
+import moment from "moment";
 
 class Department extends Component {
 	constructor(props) {
@@ -72,7 +73,7 @@ class Department extends Component {
 	 * @returns {{}}
 	 */
 	onSubmit(values) {
-		const { isEditFlag, DepartmentId } = this.props;
+		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
 		const { reset } = this.props;
 		this.setState({ isLoader: true })
 
@@ -82,8 +83,12 @@ class Department extends Component {
 			let formReq = {
 				DepartmentId: DepartmentId,
 				IsActive: true,
+				CreatedDate: moment(new Date()).format('YYYY/MM/dd HH:mm:ss'),
 				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
+				DepartmentCode: values.CompanyCode ? values.CompanyCode.trim() : '',
+				CompanyId: departmentDetail.CompanyId
 			}
+			console.log(formReq, "formReq");
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				if (res && res.data && res.data.Result) {
 					toastr.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
@@ -97,7 +102,7 @@ class Department extends Component {
 			const randomNo = Math.floor(Math.random() * (2000 - 1) + 1)
 			let obj = {
 				CompanyName: values.DepartmentName ? values.DepartmentName.trim() : '',
-				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : `C-${randomNo}`
+				CompanyCode: values.CompanyCode ? values.CompanyCode.trim() : ``
 			}
 
 			// ADD NEW COMPANY VIA DEPARTMENT
@@ -233,6 +238,7 @@ const mapStateToProps = ({ auth }) => {
 	if (departmentDetail && departmentDetail != undefined) {
 		initialValues = {
 			DepartmentName: departmentDetail.DepartmentName,
+			CompanyCode: departmentDetail.DepartmentCode,
 			Description: departmentDetail.Description,
 		}
 	}

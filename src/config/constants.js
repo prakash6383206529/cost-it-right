@@ -32,7 +32,6 @@ export const FILE_URL = 'http://10.10.1.100:1002/';
 
 /** Export API */
 export const API = {
-  //configure api's
 
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
@@ -1219,11 +1218,13 @@ export const GET_ROLES_SELECTLIST_SUCCESS = 'GET_ROLES_SELECTLIST_SUCCESS'
 //LEVEL USERS
 export const GET_LEVEL_USER_SUCCESS = 'GET_LEVEL_USER_SUCCESS'
 export const GET_UNIT_LEVEL_DATA_SUCCESS = 'GET_UNIT_LEVEL_DATA_SUCCESS'
+export const LEVEL_MAPPING_API = 'LEVEL_MAPPING_API'
 
 //DEPARTMENT
 export const GET_DEPARTMENT_SUCCESS = 'GET_DEPARTMENT_SUCCESS'
 export const GET_UNIT_DEPARTMENT_DATA_SUCCESS = 'GET_UNIT_DEPARTMENT_DATA_SUCCESS'
 export const GET_TECHNOLOGY_DATA_LIST_SUCCESS = 'GET_TECHNOLOGY_DATA_LIST_SUCCESS'
+
 
 //Common to get plants by supplier
 export const GET_PLANTS_BY_SUPPLIER = 'GET_PLANTS_BY_SUPPLIER'
