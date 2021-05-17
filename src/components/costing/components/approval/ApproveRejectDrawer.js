@@ -255,7 +255,7 @@ function ApproveRejectDrawer(props) {
                     </div>
                   </>
                 }
-                <div className="input-group form-group col-md-12 input-withouticon">
+                <div className="input-group form-group col-md-12">
                   <TextAreaHookForm
                     label="Remark"
                     name={'remark'}
@@ -263,12 +263,14 @@ function ApproveRejectDrawer(props) {
                     control={control}
                     register={register}
                     mandatory={type === 'Approve' ? false : true}
-                    rules={{ required: true }}
+                    rules={{
+                      required: true,
+                    }}
                     handleChange={() => { }}
                     //defaultValue={viewRM.RMRate}
                     className=""
                     customClassName={'withBorder'}
-                    //errors={errors.ECNNumber}
+                    errors={errors.remark}
                     disabled={false}
                   />
                 </div>
