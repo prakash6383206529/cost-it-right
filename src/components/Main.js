@@ -62,6 +62,10 @@ class Main extends Component {
     const Detail = userDetails()
     if (Object.keys(Detail).length > 0) {
 
+      const exam_ending_at = new Date(Detail.expires);
+      const current_time = new Date();
+      const totalSeconds = Math.floor((exam_ending_at - (current_time)) / 1000);
+
       setTimeout(() => {
         let reqParams = {
           IsRefreshToken: true,
@@ -69,13 +73,14 @@ class Main extends Component {
           ClientId: 'self',
           grant_type: 'refresh_token',
         }
+
         // this.props.TokenAPI(reqParams, (res) => {
         //   if (res && res.status === 200) {
         //     let userDetail = formatLoginResult(res.data);
         //     reactLocalStorage.setObject("userDetail", userDetail);
         //   }
         // })
-      }, Detail.expires_in * 1000 - 5 * 1000)
+      }, totalSeconds * 1000 - 5 * 1000)
 
     }
 
