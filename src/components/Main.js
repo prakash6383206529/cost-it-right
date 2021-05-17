@@ -62,21 +62,34 @@ class Main extends Component {
     const Detail = userDetails()
     if (Object.keys(Detail).length > 0) {
 
-      setTimeout(() => {
-        let reqParams = {
-          IsRefreshToken: true,
-          refresh_token: Detail.RefreshToken,
-          ClientId: 'self',
-          grant_type: 'refresh_token',
-        }
-        // this.props.TokenAPI(reqParams, (res) => {
-        //   if (res && res.status === 200) {
-        //     let userDetail = formatLoginResult(res.data);
-        //     reactLocalStorage.setObject("userDetail", userDetail);
-        //   }
-        // })
-      }, Detail.expires_in * 1000 - 5 * 1000)
+      const token_expires_at = new Date(Detail.expires);
+      // const token_expires_at = new Date('Mon, 17 May 2021 12:09:15');
+      const current_time = new Date();
+      const totalSeconds = Math.floor((token_expires_at - (current_time)) / 1000);
+      const callBeforeSeconds = 15 * 1000; //Refresh token API will call before 15 seconds 
 
+      console.log('token_expires_at: ', token_expires_at);
+      console.log('totalSeconds * 1000 - callBeforeSeconds', totalSeconds * 1000 - callBeforeSeconds)
+
+      if ((totalSeconds * 1000 - callBeforeSeconds) > 0) {
+
+        setTimeout(() => {
+          let reqParams = {
+            IsRefreshToken: true,
+            refresh_token: Detail.RefreshToken,
+            ClientId: 'self',
+            grant_type: 'refresh_token',
+          }
+
+          this.props.TokenAPI(reqParams, (res) => {
+            if (res && res.status === 200) {
+              let userDetail = formatLoginResult(res.data);
+              reactLocalStorage.setObject("userDetail", userDetail);
+            }
+          })
+        }, totalSeconds * 1000 - callBeforeSeconds)
+
+      }
     }
 
   }
