@@ -52,32 +52,6 @@ const SendForApproval = (props) => {
     obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
     obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
     obj.LoggedInUserId = userDetails().LoggedInUserId
-    dispatch(getReasonSelectList((res) => { }))
-    dispatch(getAllApprovalDepartment((res) => {
-      const Data = res.data.SelectList
-      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-      console.log('departObj: ', departObj);
-      setSelectedDepartment({ label: departObj[0].Text, value: departObj[0].Value })
-      setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-
-      let tempDropdownList = []
-
-      dispatch(
-        getAllApprovalUserFilterByDepartment({
-          LoggedInUserId: userData.LoggedInUserId,
-          DepartmentId: departObj[0].Value,
-          TechnologyId: partNo.technologyId,
-        }, (res) => {
-          const Data = res.data.DataList[1]
-          console.log('Data: ', Data);
-          setApprover(Data.Text)
-          setSelectedApprover(Data.Value)
-          setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-          setValue('approver', { label: Data.Text, value: Data.Value })
-        },
-        ),
-      )
-    }))
 
     dispatch(isFinalApprover(obj, res => {
       if (res.data.Result) {
@@ -85,6 +59,38 @@ const SendForApproval = (props) => {
         // setIsFinalApproverShow(false)
       }
     }))
+
+    dispatch(getReasonSelectList((res) => { }))
+    if (!isFinalApproverShow) {
+
+      dispatch(getAllApprovalDepartment((res) => {
+        const Data = res.data.SelectList
+        const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+        console.log('departObj: ', departObj);
+        setSelectedDepartment({ label: departObj[0].Text, value: departObj[0].Value })
+        setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+
+        let tempDropdownList = []
+
+        dispatch(
+          getAllApprovalUserFilterByDepartment({
+            LoggedInUserId: userData.LoggedInUserId,
+            DepartmentId: departObj[0].Value,
+            TechnologyId: partNo.technologyId,
+          }, (res) => {
+            const Data = res.data.DataList[1]
+            console.log('Data: ', Data);
+            setApprover(Data.Text)
+            setSelectedApprover(Data.Value)
+            setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+            setValue('approver', { label: Data.Text, value: Data.Value })
+          },
+          ),
+        )
+      }))
+    }
+
+
   }, [])
   useEffect(() => {
 
