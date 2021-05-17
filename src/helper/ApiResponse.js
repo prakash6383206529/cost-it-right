@@ -24,7 +24,7 @@ export function formatLoginResult(res) {
             Token: res.access_token,
             RefreshToken: res.refresh_token,
             LoggedInUserId: res.LoggedInUserId,
-            LoggedInLevel: res.Data.LoggedInLevel,
+            LoggedInLevel: res.LoggedInLevel,
             LoggedInLevelId: res.LoggedInLevelId,
             UserName: res.UserName,
             Name: res.Name,
