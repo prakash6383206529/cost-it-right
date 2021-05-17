@@ -114,6 +114,7 @@ class Login extends Component {
                       // maxLength={71}
                       />
                       :
+                      <span className="inputbox input-group ">
                       <Field
                         label=""
                         name={"UserName"}
@@ -124,8 +125,8 @@ class Login extends Component {
                         required={true}
                         onClickCapture={(e) => this.setState({ flag: false })}
                         // maxLength={26}
-                        customClassName={'withBorder'}
-                      />
+                        className={'withBorder'}
+                      /></span>
                     }
                   </div>
                   <div className="input-group phone" onClickCapture={(e) => this.setState({ flag: false })}>

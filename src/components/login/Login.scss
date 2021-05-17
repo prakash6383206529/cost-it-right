@@ -111,8 +111,13 @@ input:focus {
       // content: url(../../assests/images/email.png);
       position: absolute;
       left: 11px;
-      top: 11px;
+      top: 10px;
       z-index: 10;
+    }
+    @-moz-document url-prefix() {
+      &::before{
+        top:9px;
+      }
     }
   }
   .input-group.mail  .inputbox.input-group {
