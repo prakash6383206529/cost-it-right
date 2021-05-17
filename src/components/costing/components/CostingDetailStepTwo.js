@@ -31,6 +31,7 @@ function CostingDetailStepTwo(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading } = useSelector(state => state.costing)
+  console.log('CostingDataList: ', CostingDataList);
 
   useEffect(() => {
     if (partNo.isChanged === true) {
@@ -44,6 +45,8 @@ function CostingDetailStepTwo(props) {
    */
   const setHeaderCostRMCCTab = (data) => {
     const headerIndex = 0;
+
+    if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
@@ -85,6 +88,8 @@ function CostingDetailStepTwo(props) {
   const setHeaderCostSurfaceTab = (data) => {
     const headerIndex = 0;
 
+    if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
+
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -117,6 +122,8 @@ function CostingDetailStepTwo(props) {
    */
   const setHeaderOverheadProfitCostTab = (data) => {
     const headerIndex = 0;
+
+    if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
@@ -152,6 +159,8 @@ function CostingDetailStepTwo(props) {
   const setHeaderPackageFreightTab = (data) => {
     const headerIndex = 0;
 
+    if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
+
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
 
@@ -183,6 +192,8 @@ function CostingDetailStepTwo(props) {
    */
   const setHeaderCostToolTab = (data) => {
     const headerIndex = 0;
+
+    if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
     //setTimeout(() => {
     let DataList = CostingDataList;
@@ -220,8 +231,9 @@ function CostingDetailStepTwo(props) {
    * @description SET COSTS FOR TOP HEADER FROM DISCOUNT AND COST
    */
   const setHeaderDiscountTab = (data) => {
-
     const headerIndex = 0;
+
+    if (CostingDataList && CostingDataList.length > 0 && CostingDataList[headerIndex].CostingId === undefined) return false;
 
     let DataList = CostingDataList;
     let tempData = CostingDataList && CostingDataList[headerIndex];
@@ -275,8 +287,6 @@ function CostingDetailStepTwo(props) {
     }, 0)
     return TotalCost;
   }
-
-
 
   return (
     <>

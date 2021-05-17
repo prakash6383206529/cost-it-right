@@ -7,14 +7,14 @@ import OperationCost from './OperationCost';
 import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import ToolCost from './ToolCost';
 import AddProcess from '../../Drawers/AddProcess';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessCalculation } from '../../../actions/CostWorking';
-import { setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { HOUR } from '../../../../../config/constants';
 
@@ -47,13 +47,19 @@ function ProcessCost(props) {
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
+
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   // const fieldValues = useWatch({
   //   control,
   //   name: ['ProcessGridFields'],
   //   //defaultValue: 'default' // default value before the render
   // })
+
+  useEffect(() => {
+    selectedIds(gridData)
+  }, [gridData])
 
   useEffect(() => {
     const Params = {
@@ -163,6 +169,7 @@ function ProcessCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
   }
 
@@ -209,6 +216,7 @@ function ProcessCost(props) {
       setGridData(tempArr)
       setTabData(tempArr2)
       selectedIds(tempArr)
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }
@@ -254,6 +262,9 @@ function ProcessCost(props) {
       setIds(id)
       setTabData(tempArr2)
       setGridData(tempArr)
+      tempArr && tempArr.map((el, i) => {
+        setValue(`${ProcessGridFields}[${i}]ProcessCost`, el.ProcessCost)
+      })
     }, 200)
   }
 

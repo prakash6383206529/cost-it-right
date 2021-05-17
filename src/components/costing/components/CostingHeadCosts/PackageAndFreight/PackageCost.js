@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
+import { useDispatch, } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
 import { checkForNull } from '../../../../../helper';
 import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
+import { gridDataAdded } from '../../../actions/Costing';
 
 function PackageCost(props) {
 
@@ -15,6 +17,8 @@ function PackageCost(props) {
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editIndex, setEditIndex] = useState('')
   const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const dispatch = useDispatch()
 
   const CostingViewMode = useContext(ViewCostingContext);
 
@@ -44,6 +48,7 @@ function PackageCost(props) {
         let tempArr = [...gridData, rowData]
         setGridData(tempArr)
       }
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }

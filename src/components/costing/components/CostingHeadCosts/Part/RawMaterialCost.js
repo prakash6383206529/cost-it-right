@@ -8,12 +8,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CONSTANT } from '../../../../../helper/AllConastant'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { toastr } from 'react-redux-toastr'
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationByTechnology, } from '../../../actions/CostWorking'
 import { ViewCostingContext } from '../../CostingDetails'
 import { G, KG, MG } from '../../../../../config/constants'
-import { setRMCCErrors } from '../../../actions/Costing'
+import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing'
 
 function RawMaterialCost(props) {
   const { item } = props;
@@ -40,6 +40,7 @@ function RawMaterialCost(props) {
   const [IsApplyMasterBatch, setIsApplyMasterBatch] = useState(item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -75,6 +76,7 @@ function RawMaterialCost(props) {
    * @description TOGGLE DRAWER
    */
   const DrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
   }
 
@@ -83,7 +85,6 @@ function RawMaterialCost(props) {
    * @description HIDE RM DRAWER
    */
   const closeDrawer = (e = '', rowData = {}) => {
-    console.log('rowData: ', rowData);
     if (Object.keys(rowData).length > 0 && IsApplyMasterBatch === false) {
       let tempObj = {
         RMName: rowData.RawMaterial,
@@ -101,6 +102,7 @@ function RawMaterialCost(props) {
         RawMaterialCategory: rowData.Category
       }
       setGridData([...gridData, tempObj])
+      dispatch(gridDataAdded(true))
     }
 
     if (IsApplyMasterBatch) {

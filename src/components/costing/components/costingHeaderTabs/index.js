@@ -28,7 +28,7 @@ function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
-    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate } = useSelector(state => state.costing)
+    ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate, IsCostingDateDisabled } = useSelector(state => state.costing)
 
   const { netPOPrice } = props;
   const [activeTab, setActiveTab] = useState('1');
@@ -219,7 +219,7 @@ function CostingHeaderTabs(props) {
                   autoComplete={"off"}
                   disabledKeyboardNavigation
                   onChangeRaw={(e) => e.preventDefault()}
-                  disabled={(CostingViewMode) ? true : false}
+                  disabled={(CostingViewMode || IsCostingDateDisabled || netPOPrice > 0) ? true : false}
                 />
               </div>
             </div>

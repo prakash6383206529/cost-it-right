@@ -7,9 +7,9 @@ import { NumberFieldHookForm, TextFieldHookForm } from '../../../../layout/HookF
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, setValueAccToUOM } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, setValueAccToUOM } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
-import { setRMCCErrors } from '../../../actions/Costing';
+import { gridDataAdded, setRMCCErrors } from '../../../actions/Costing';
 import { curry } from 'lodash';
 import { INR } from '../../../../../config/constants';
 
@@ -35,6 +35,7 @@ function BOPCost(props) {
   const [IsApplyBOPHandlingCharges, setIsApplyBOPHandlingCharges] = useState(item.CostingPartDetails.IsApplyBOPHandlingCharges)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   const CostingViewMode = useContext(ViewCostingContext);
 
@@ -47,6 +48,7 @@ function BOPCost(props) {
       }
       props.setBOPCost(gridData, Params)
     }, 100)
+    selectedIds(gridData)
   }, [gridData]);
 
   /**
@@ -54,6 +56,7 @@ function BOPCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
   }
 
@@ -79,6 +82,7 @@ function BOPCost(props) {
       let tempArr = [...gridData, ...rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }

@@ -59,6 +59,7 @@ import {
   CUSTOM_LOADER_SHOW,
   CUSTOM_LOADER_HIDE,
   SET_COSTING_EFFECTIVE_DATE,
+  IS_COSTING_EFFECTIVE_DATE_DISABLED,
   CLOSE_OPEN_ACCORDION,
   BOP_DRAWER_LIST
 } from '../../../config/constants';
@@ -75,6 +76,7 @@ const initialState = {
   partNo: '',
   costingApprovalData: [],
   IsIncludedSurfaceInOverheadProfit: false,
+  IsCostingDateDisabled: false,
 }
 
 export default function costingReducer(state = initialState, action) {
@@ -503,6 +505,12 @@ export default function costingReducer(state = initialState, action) {
         ...state,
         loading: false,
         bopDrawerList: action.payload
+      }
+    case IS_COSTING_EFFECTIVE_DATE_DISABLED:
+      return {
+        ...state,
+        loading: false,
+        IsCostingDateDisabled: action.payload
       }
     default:
       return state

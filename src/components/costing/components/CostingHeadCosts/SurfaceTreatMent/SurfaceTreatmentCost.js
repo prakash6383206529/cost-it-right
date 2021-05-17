@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import { TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import { toastr } from 'react-redux-toastr';
-import { checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
+import { gridDataAdded } from '../../../actions/Costing';
 
 function SurfaceTreatmentCost(props) {
 
   const { register, control, errors } = useForm({
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   });
+
+  const dispatch = useDispatch()
 
   const [gridData, setGridData] = useState(props.data)
   const [OldGridData, setOldGridData] = useState(props.data)
@@ -24,6 +27,7 @@ function SurfaceTreatmentCost(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+  const { CostingEffectiveDate } = useSelector(state => state.costing)
 
   useEffect(() => {
     // setTimeout(() => {
@@ -46,6 +50,7 @@ function SurfaceTreatmentCost(props) {
   * @description TOGGLE DRAWER
   */
   const DrawerToggle = () => {
+    if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     setDrawerOpen(true)
   }
 
@@ -78,6 +83,7 @@ function SurfaceTreatmentCost(props) {
       let tempArr = [...gridData, ...rowArray]
       setGridData(tempArr)
       selectedIds(tempArr)
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }

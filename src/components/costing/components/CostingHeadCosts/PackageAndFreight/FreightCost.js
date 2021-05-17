@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Col, Row, Table } from 'reactstrap';
+import { useDispatch, } from 'react-redux';
 import NoContentFound from '../../../../common/NoContentFound';
 import { CONSTANT } from '../../../../../helper/AllConastant';
 import AddFreight from '../../Drawers/AddFreight';
 import { Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../../config/constants';
 import { ViewCostingContext } from '../../CostingDetails';
+import { gridDataAdded } from '../../../actions/Costing';
 
 function FreightCost(props) {
 
@@ -15,6 +17,7 @@ function FreightCost(props) {
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
+  const dispatch = useDispatch()
   const CostingViewMode = useContext(ViewCostingContext);
 
   useEffect(() => {
@@ -49,6 +52,7 @@ function FreightCost(props) {
         setIsEditFlag(false)
         setRowObjData(tempArr)
       }
+      dispatch(gridDataAdded(true))
     }
     setDrawerOpen(false)
   }
