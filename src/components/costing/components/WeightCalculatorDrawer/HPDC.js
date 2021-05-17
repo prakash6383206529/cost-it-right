@@ -58,7 +58,7 @@ function HPDC(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['shotWeight', 'burningPercent', 'cavity', 'finishWeight', 'recovery'],
+        name: ['shotWeight', 'burningPercent', 'cavity', 'finishedWeight', 'recovery'],
     })
 
     // const fieldValues1 = useWatch({
@@ -98,11 +98,26 @@ function HPDC(props) {
     const calculateRemainingCalculation = (lostSum = 0) => {
         console.log("HOW MANY TIMES COMING ?");
         console.log('lostSum: ', lostSum);
+        let scrapWeight = 0
+
+
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostSum
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
+
+        if (finishedWeight > grossWeight) {
+            toastr.warning('Finish Weight should not be greater than gross weight')
+            setValue('finishedWeight', 0)
+            return false
+        }
+        if (finishedWeight !== 0) {
+            console.log("Coming here in scrap cond?");
+            scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+
+        }
+
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
-        const scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight)
-        const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate)
+        // const scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight)
+        const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) //FINAL GROSS WEIGHT - RMRATE
         const scrapCost = checkForNull(checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate) * recovery)
         const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
