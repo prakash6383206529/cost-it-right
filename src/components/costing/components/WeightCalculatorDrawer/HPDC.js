@@ -20,11 +20,11 @@ function HPDC(props) {
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== undefined ? WeightCalculatorRequest.ShotWeight : '',
-        cavity: WeightCalculatorRequest && WeightCalculatorRequest.Cavity !== undefined ? WeightCalculatorRequest.Cavity : '',
-        burningPercent: WeightCalculatorRequest && WeightCalculatorRequest.BurningPercent !== undefined ? WeightCalculatorRequest.BurningPercent : '',
+        cavity: WeightCalculatorRequest && WeightCalculatorRequest.NumberOfCavity !== undefined ? WeightCalculatorRequest.NumberOfCavity : '',
+        burningPercent: WeightCalculatorRequest && WeightCalculatorRequest.BurningPercentage !== undefined ? WeightCalculatorRequest.BurningPercentage : '',
         burningValue: WeightCalculatorRequest && WeightCalculatorRequest.BurningValue !== undefined ? WeightCalculatorRequest.BurningValue : '',
         castingWeight: WeightCalculatorRequest && WeightCalculatorRequest.CastingWeight !== undefined ? WeightCalculatorRequest.CastingWeight : '',
-        recovery: WeightCalculatorRequest && WeightCalculatorRequest.Recovery !== undefined ? WeightCalculatorRequest.Recovery : '',
+        recovery: WeightCalculatorRequest && WeightCalculatorRequest.RecoveryPercentage !== undefined ? WeightCalculatorRequest.RecoveryPercentage : '',
         machiningScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapWeight !== undefined ? WeightCalculatorRequest.MachiningScrapWeight : '',
         grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
         finishedWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? WeightCalculatorRequest.FinishWeight : '',
@@ -58,7 +58,7 @@ function HPDC(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['shotWeight', 'burningPercent', 'cavity', 'finishWeight', 'recovery'],
+        name: ['shotWeight', 'burningPercent', 'cavity', 'finishedWeight', 'recovery'],
     })
 
     // const fieldValues1 = useWatch({
@@ -98,11 +98,26 @@ function HPDC(props) {
     const calculateRemainingCalculation = (lostSum = 0) => {
         console.log("HOW MANY TIMES COMING ?");
         console.log('lostSum: ', lostSum);
+        let scrapWeight = 0
+
+
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostSum
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
+
+        if (finishedWeight > grossWeight) {
+            toastr.warning('Finish Weight should not be greater than gross weight')
+            setValue('finishedWeight', 0)
+            return false
+        }
+        if (finishedWeight !== 0) {
+            console.log("Coming here in scrap cond?");
+            scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+
+        }
+
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
-        const scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight)
-        const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate)
+        // const scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight)
+        const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) //FINAL GROSS WEIGHT - RMRATE
         const scrapCost = checkForNull(checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate) * recovery)
         const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
@@ -396,7 +411,7 @@ function HPDC(props) {
                                 dropDownMenu={dropDown}
                                 calculation={calculateRemainingCalculation}
                                 weightValue={Number(getValues('castingWeight'))}
-                                netWeight={WeightCalculatorRequest && WeightCalculatorRequest.CastingWeight !== null ? WeightCalculatorRequest.CastingWeight : ''}
+                                netWeight={WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight !== null ? WeightCalculatorRequest.NetLossWeight : ''}
                                 sendTable={WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : []}
                                 tableValue={tableData}
                             />

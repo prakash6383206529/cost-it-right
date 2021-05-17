@@ -16,6 +16,7 @@ import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhr
 import { getProcessCalculation } from '../../../actions/CostWorking';
 import { setIsToolCostUsed, setRMCCErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
+import { HOUR } from '../../../../../config/constants';
 
 function ProcessCost(props) {
   const { data } = props
@@ -115,7 +116,7 @@ function ProcessCost(props) {
     //   }
     tempData = {
       ...tempData,
-      Quantity: weightData.Quantity,
+      Quantity: weightData.UOM === HOUR ? checkForNull(weightData.ProcessCost / weightData.MachineRate) : weightData.Quantity,
       ProcessCost: weightData.ProcessCost,
       IsCalculatedEntry: true,
       ProcessCalculationId: weightData.ProcessCalculationId,
@@ -140,7 +141,7 @@ function ProcessCost(props) {
     setTimeout(() => {
       setTabData(tempArr2)
       setGridData(tempArray)
-      setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, weightData.Quantity)
+      setValue(`${ProcessGridFields}[${calciIndex}]Quantity`, weightData.UOM === HOUR ? checkForDecimalAndNull((weightData.ProcessCost / weightData.MachineRate), getConfigurationKey().NoOfDecimalForPrice) : weightData.Quantity)
       setValue(`${ProcessGridFields}[${calciIndex}]ProcessCost`, checkForDecimalAndNull(weightData.ProcessCost, getConfigurationKey().NoOfDecimalForPrice))
     }, 100)
   }
@@ -230,28 +231,30 @@ function ProcessCost(props) {
   const deleteItem = (index) => {
     let tempArr2 = [];
     let tempArr = gridData && gridData.filter((el, i) => {
-      if (i === index) return false
+      if (i === index) return false;
       return true
     })
 
+    console.log('deleteItem: ', tempArr);
+    setTimeout(() => {
+      let ProcessCostTotal = 0
+      ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
+        return accummlator + checkForNull(el.ProcessCost)
+      }, 0)
 
-    let ProcessCostTotal = 0
-    ProcessCostTotal = tempArr && tempArr.reduce((accummlator, el) => {
-      return accummlator + checkForNull(el.ProcessCost)
-    }, 0)
+      tempArr2 = {
+        ...tabData,
+        NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
+        ProcessCostTotal: ProcessCostTotal,
+        CostingProcessCostResponse: tempArr,
+      }
 
-    tempArr2 = {
-      ...tabData,
-      NetConversionCost: ProcessCostTotal + checkForNull(tabData.OperationCostTotal !== null ? tabData.OperationCostTotal : 0,),
-      ProcessCostTotal: ProcessCostTotal,
-      CostingProcessCostResponse: tempArr,
-    }
-
-    let id = []
-    tempArr.map(el => { id.push(el.MachineRateId) })
-    setIds(id)
-    setTabData(tempArr2)
-    setGridData(tempArr)
+      let id = []
+      tempArr.map(el => { id.push(el.MachineRateId) })
+      setIds(id)
+      setTabData(tempArr2)
+      setGridData(tempArr)
+    }, 200)
   }
 
   const editItem = (index) => {
@@ -514,7 +517,6 @@ function ProcessCost(props) {
                 <thead>
                   <tr>
                     <th>{`Process Name`}</th>
-                    <th>{`Process Description`}</th>
                     <th>{`Machine Tonnage`}</th>
                     <th style={{ width: "220px" }}>{`Machine Rate`}</th>
                     <th style={{ width: "220px" }}>{`UOM`}</th>
@@ -526,174 +528,9 @@ function ProcessCost(props) {
                 <tbody>
                   {gridData &&
                     gridData.map((item, index) => {
-                      //                     return editIndex === index ? (
-                      //                       <tr key={index}>
-                      //                         <td>{item.ProcessName}</td>
-                      //                         <td>{item.ProcessDescription}</td>
-                      //                         <td>{item.MachineName}</td>
-                      //                         <td>{item.MachineRate}</td>
-                      //                         <td>{item.UOM}</td>
-                      //                         {/* <td>{item.Time ? item.Time : '0.00'}</td> */}
-                      //                         {/* <td>{item.NetCost? item.NetCost : '0.00'}</td> */}
-
-                      //                         <td style={{ width: 200 }}>
-                      //                           {
-                      //                             <TextFieldHookForm
-                      //                               label=""
-                      //                               name={`${ProcessGridFields}[${index}]Time`}
-                      //                               Controller={Controller}
-                      //                               control={control}
-                      //                               register={register}
-                      //                               mandatory={false}
-                      //                               // rules={{
-                      //                               //   //required: true,
-                      //                               //   pattern: {
-                      //                               //     value: /^[0-9]\d*(\.\d+)?$/i,
-                      //                               //     message: 'Invalid Number.',
-                      //                               //   },
-                      //                               // }}
-                      //                               defaultValue={item.Time ? item.Time : '0.00'}
-                      //                               className=""
-                      //                               customClassName={'withBorder'}
-                      //                               handleChange={(e) => {
-                      //                                 e.preventDefault()
-                      //                                 // handleCycleTimeChange(e, index)
-                      //                               }}
-                      //                               // errors={}
-                      //                               disabled={true}
-                      //                             />
-                      //                           }
-                      //                         </td>
-
-                      //                         <td style={{ width: 200 }}>
-                      //                           {
-                      //                             <TextFieldHookForm
-                      //                               label=""
-                      //                               name={`${ProcessGridFields}[${index}]NetCost`}
-                      //                               Controller={Controller}
-                      //                               control={control}
-                      //                               register={register}
-                      //                               mandatory={false}
-                      //                               // rules={{
-                      //                               //   //required: true,
-                      //                               //   pattern: {
-                      //                               //     value: /^[1-9]*$/i,
-                      //                               //     //value: /^[0-9]\d*(\.\d+)?$/i,
-                      //                               //     message: 'Invalid Number.',
-                      //                               //   },
-                      //                               // }}
-                      //                               defaultValue={
-                      //                                 item.NetCost ? item.NetCost : '0.00'
-                      //                               }
-                      //                               className=""
-                      //                               customClassName={'withBorder'}
-                      //                               handleChange={(e) => {
-                      //                                 e.preventDefault()
-                      //                                 // handleEfficiencyChange(e, index)
-                      //                               }}
-                      //                               // errors={}
-                      //                               disabled={true}
-                      //                             />
-                      //                           }
-                      //                         </td>
-
-                      //                         <td style={{ width: 200 }}>
-                      //                           {
-                      //                             <TextFieldHookForm
-                      //                               label=""
-                      //                               name={`${ProcessGridFields}[${index}]NetCost`}
-                      //                               Controller={Controller}
-                      //                               control={control}
-                      //                               register={register}
-                      //                               mandatory={false}
-                      //                               rules={{
-                      //                                 //required: true,
-                      //                                 pattern: {
-                      //                                   value: /^[1-9]*$/i,
-                      //                                   //value: /^[0-9]\d*(\.\d+)?$/i,
-                      //                                   message: 'Invalid Number.',
-                      //                                 },
-                      //                               }}
-                      //                               defaultValue={item.NetCost}
-                      //                               className=""
-                      //                               customClassName={'withBorder'}
-                      //                               handleChange={(e) => {
-                      //                                 e.preventDefault()
-                      //                                 //handleCavityChange(e, index)
-                      //                               }}
-                      //                               // errors={
-                      //                               //   errors &&
-                      //                               //   errors.ProcessGridFields &&
-                      //                               //   errors.ProcessGridFields[index] !== undefined
-                      //                               //     ? errors.ProcessGridFields[index]
-                      //                               //         .GrossWeight
-                      //                               //     : ''
-                      //                               // }
-                      //                               disabled={true}
-                      //                             />
-                      //                           }
-                      //                         </td>
-                      //                         {/*
-                      //                         <td style={{ width: 200 }}>
-                      //                           {
-                      //                             <TextFieldHookForm
-                      //                               label=""
-                      //                               name={`${ProcessGridFields}[${index}]Quantity`}
-                      //                               Controller={Controller}
-                      //                               control={control}
-                      //                               register={register}
-                      //                               mandatory={false}
-                      //                               rules={{
-                      //                                 //required: true,
-                      //                                 pattern: {
-                      //                                   value: /^[0-9]\d*(\.\d+)?$/i,
-                      //                                   message: 'Invalid Number.',
-                      //                                 },
-                      //                               }}
-                      //                               defaultValue={item.Quantity}
-                      //                               className=""
-                      //                               customClassName={'withBorder'}
-                      //                               handleChange={(e) => {
-                      //                                 e.preventDefault()
-                      //                                 handleQuantityChange(e, index)
-                      //                               }}
-                      //                               errors={
-                      //                                 errors &&
-                      //                                 errors.ProcessGridFields &&
-                      //                                 errors.ProcessGridFields[index] !== undefined
-                      //                                   ? errors.ProcessGridFields[index].Quantity
-                      //                                   : ''
-                      //                               }
-                      //                               disabled={false}
-                      //                             />
-                      //                           }
-                      //                         </td>
-
-                      // */}
-
-                      //                         {/* <td>
-                      //                           {item.ProcessCost
-                      //                             ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice)
-                      //                             : 0}
-                      //                         </td> */}
-                      //                         <td>
-                      //                           <button
-                      //                             className="SaveIcon mt15 mr-2"
-                      //                             type={'button'}
-                      //                             onClick={() => SaveItem(index)}
-                      //                           />
-                      //                           <button
-                      //                             className="CancelIcon mt15"
-                      //                             type={'button'}
-                      //                             onClick={() => CancelItem(index)}
-                      //                           />
-                      //                         </td>
-                      //                       </tr>
-                      //                     ) :
                       return (
                         <tr key={index}>
                           <td>{item.ProcessName}</td>
-                          <td>{item.ProcessDescription ? item.ProcessDescription : '-'}</td>
                           <td>{item.Tonnage ? checkForNull(item.Tonnage) : '-'}</td>
                           <td>{item.MHR}</td>
                           <td>{item.UOM}</td>
@@ -720,7 +557,6 @@ function ProcessCost(props) {
                                   handleChange={(e) => {
                                     e.preventDefault()
                                     handleQuantityChange(e, index)
-                                    // handleCycleTimeChange(e, index)
                                   }}
 
                                   // errors={}
@@ -734,23 +570,7 @@ function ProcessCost(props) {
                               onClick={() => toggleWeightCalculator(index)}
                             />}
                           </td>
-                          {/* <td>
-                            <span className={'mr-2'}>
-                              {item.Quantity
-                                ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice)
-                                : '0.00'}
-                            </span>
-                            <button
-                              className="CalculatorIcon cr-cl-icon height-auto"
-                              type={'button'}
-                              onClick={() => toggleWeightCalculator(index)}
-                            />
-                          </td> */}
-                          {/* <td>{item.NetCost}</td> */}
-                          {/* <td>{item.CycleTime ? item.CycleTime : '-'}</td>
-                          <td>{item.Efficiency ? item.Efficiency : '-'}</td>
-                          <td>{item.Cavity ? item.Cavity : '-'}</td>
-                          <td>{item.Quantity}</td> */}
+
                           <td style={{ width: 100 }}>
                             {
                               <TextFieldHookForm
@@ -760,40 +580,19 @@ function ProcessCost(props) {
                                 control={control}
                                 register={register}
                                 mandatory={false}
-                                // rules={{
-                                //   //required: true,
-                                //   pattern: {
-                                //     value: /^[0-9]\d*(\.\d+)?$/i,
-                                //     message: 'Invalid Number.',
-                                //   },
-                                // }}
                                 defaultValue={item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, trimForCost,) : '0.00'}
                                 className=""
                                 customClassName={'withBorder'}
                                 handleChange={(e) => {
                                   e.preventDefault()
-                                  //handleCycleTimeChange(e, index)
-                                  //closeCalculatorDrawer()
                                 }}
                                 // errors={}
                                 disabled={true}
                               />
                             }
-                            {/* {item.NetCost
-                              ? checkForDecimalAndNull(item.NetCost, initialConfiguration.NoOfDecimalForPrice)
-                              : '0.00'}{' '} */}
-                            {/* <button
-                              className="CalculatorIcon cr-cl-icon mt15"
-                              type={"button"}
-                              onClick={() => toggleWeightCalculator(index)}
-                            /> */}
+
                           </td>
                           <td>
-                            {/* <button
-                              className="Edit mt15 mr-2"
-                              type={"button"}
-                              onClick={() => editItem(index)}
-                            /> */}
                             {!CostingViewMode && <button className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
                           </td>
                         </tr>

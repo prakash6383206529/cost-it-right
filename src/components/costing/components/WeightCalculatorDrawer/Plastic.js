@@ -97,21 +97,31 @@ function Plastic(props) {
   const calculateRemainingCalculation = (lostSum = 0) => {
     console.log("HOW MANY TIMES COMING ?");
     console.log('lostSum: ', lostSum);
+    let scrapWeight = 0
 
     const netWeight = Number(getValues('netWeight')) // THIS IS FIRST GROSS WEIGHT
     const runnerWeight = Number(getValues('runnerWeight'))
     const finishedWeight = Number(getValues('finishedWeight'))
+    console.log('finishedWeight: ', finishedWeight);
 
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + lostSum //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
     // const finishedWeight = checkForNull(grossWeight) + checkForNull(lostSum)
-    const scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+    if (finishedWeight > grossWeight) {
+      toastr.warning('Finish Weight should not be greater than gross weight')
+      return false
+    }
+    if (finishedWeight !== 0) {
+      console.log("Coming here in scrap cond?");
+      scrapWeight = checkForNull(grossWeight) - checkForNull(finishedWeight) //FINAL GROSS WEIGHT - FINISHED WEIGHT
+
+    }
     const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) // FINAL GROSS WEIGHT * RMRATE
     const scrapCost = checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate)
     const materialCost = checkForNull(rmCost) - checkForNull(scrapCost)
 
     const updatedValue = dataToSend
-    updatedValue.totalGrossWeight = grossWeight
     updatedValue.scrapWeight = scrapWeight
+    updatedValue.totalGrossWeight = grossWeight
     updatedValue.rmCost = rmCost
     updatedValue.scrapCost = scrapCost
     updatedValue.materialCost = materialCost
