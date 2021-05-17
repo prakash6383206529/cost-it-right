@@ -223,12 +223,6 @@ function VariableMhrDrawer(props) {
                   <span>{calculatorData.ProcessName}</span>
                 </span>
                 <span className="d-inline-block mr-4 mb-3">
-                  <span className="cr-tbl-label d-block">
-                    Process Description:
-                  </span>
-                  <span>{calculatorData.ProcessDescription ? calculatorData.ProcessDescription : '-'}</span>
-                </span>
-                <span className="d-inline-block mr-4 mb-3">
                   <span className="cr-tbl-label d-block">Machine Name:</span>
                   <span>{calculatorData.MachineName ? calculatorData.MachineName : '-'}</span>
                 </span>
