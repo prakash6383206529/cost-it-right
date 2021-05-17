@@ -21,6 +21,7 @@ import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import moment from 'moment'
 import { getVolumeDataByPartAndYear } from '../../masters/actions/Volume'
+import { isFinalApprover } from '../actions/Approval'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
@@ -31,6 +32,7 @@ const CostingSummaryTable = (props) => {
   const [addComparisonToggle, setaddComparisonToggle] = useState(false)
   const [isEditFlag, setIsEditFlag] = useState(false)
   const [editObject, setEditObject] = useState({})
+  const [isFinalApproverShow, setIsFinalApproverShow] = useState(false)
 
   /* Constant  for drawer toggle*/
   const [isViewBOP, setViewBOP] = useState(false)
@@ -73,6 +75,24 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
 
   }, [multipleCostings])
+
+
+  useEffect(() => {
+    let obj = {}
+    obj.TechnologyId = partInfo.TechnologyId
+    obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
+    obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
+    obj.LoggedInUserId = userDetails().LoggedInUserId
+
+    dispatch(isFinalApprover(obj, res => {
+      if (res.data.Result) {
+        setIsFinalApproverShow(res.data.Data.IsFinalApprovar) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+        // setIsFinalApproverShow(false)
+      }
+    }))
+  }, [])
+
+
   /**
    * @method ViewBOP
    * @description SET VIEW BOP DATA FOR DRAWER
@@ -553,7 +573,7 @@ const CostingSummaryTable = (props) => {
             }
 
             <Col md="8" className="text-right">
-              {!viewMode && (
+              {(!viewMode && !isFinalApproverShow) && (
                 <button class="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                   <img
                     class="mr-1"

@@ -646,6 +646,7 @@ function RawMaterialCost(props) {
           closeDrawer={closeWeightDrawer}
           isEditFlag={CostingViewMode ? false : true}
           inputDiameter={inputDiameter}
+          item={item}
           technology={costData.ETechnologyType}
           ID={''}
           anchor={'right'}
