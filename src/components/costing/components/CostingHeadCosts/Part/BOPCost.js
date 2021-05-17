@@ -342,6 +342,7 @@ function BOPCost(props) {
             </Row>
             <Row >
               <Col md="12" className="py-3 ">
+                <span className="d-inline-block">
                 <label
                   className={`custom-checkbox mb-0`}
                   onChange={onPressApplyBOPCharges}
@@ -358,6 +359,7 @@ function BOPCost(props) {
                     onChange={onPressApplyBOPCharges}
                   />
                 </label>
+                </span>
               </Col>
 
               {IsApplyBOPHandlingCharges &&

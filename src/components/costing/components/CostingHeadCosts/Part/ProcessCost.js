@@ -486,32 +486,9 @@ function ProcessCost(props) {
         <div className="cr-process-costwrap">
           <Row className="cr-innertool-cost">
 
-            <Col md="3" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-            <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
-
-            <Col md="3" className="switch cr-costlabel text-right">
-              {/* DISABLED FOR FUTURE SCOPE 03-03-2021 */}
-
-              {/* <label className="switch-level d-inline-flex w-auto">
-                <div className={'left-title'}>{''}</div>
-                <Switch
-                  onChange={onToolToggle}
-                  checked={isOpen}
-                  id="normal-switch"
-                  disabled={CostingViewMode ? true : false}
-                  background="#4DC771"
-                  onColor="#4DC771"
-                  onHandleColor="#ffffff"
-                  offColor="#CCC"
-                  uncheckedIcon={false}
-                  checkedIcon={false}
-                  height={20}
-                  width={46}
-                />
-                <div className={'right-title'}>Show Tool Cost</div>
-              </label> */}
-            </Col>
+            <Col md="4" className="cr-costlabel"><span className="d-inline-block align-middle">{`Process Cost: ${tabData && tabData.ProcessCostTotal !== null ? checkForDecimalAndNull(tabData.ProcessCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="4" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Operation Cost: ${tabData && tabData.OperationCostTotal !== null ? checkForDecimalAndNull(tabData.OperationCostTotal, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
+            <Col md="4" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Conversion Cost: ${tabData && tabData.NetConversionCost !== null ? checkForDecimalAndNull(tabData.NetConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</span></Col>
           </Row>
 
           <Row className="align-items-center">

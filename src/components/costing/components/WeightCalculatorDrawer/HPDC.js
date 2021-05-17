@@ -289,7 +289,7 @@ function HPDC(props) {
                                         disabled={false}
                                     />
                                 </Col>
-                                <Col md="2">
+                                <Col md="3">
                                     <TextFieldHookForm
                                         label={`Burning Value`}
                                         name={'burningValue'}
@@ -315,7 +315,7 @@ function HPDC(props) {
                                     />
                                 </Col>
 
-                                <Col md="2">
+                                <Col md="3">
                                     <TextFieldHookForm
                                         label={`Casting Weight(before machining)`}
                                         name={'castingWeight'}
@@ -335,7 +335,7 @@ function HPDC(props) {
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
-                                        customClassName={'withBorder'}
+                                        customClassName={'withBorder text-nowrap'}
                                         errors={errors.castingWeight}
                                         disabled={false}
                                     />
@@ -481,7 +481,7 @@ function HPDC(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                                <Col md="2">
+                                <Col md="3">
                                     <TextFieldHookForm
                                         label={`Recovery %`}
                                         name={'recovery'}

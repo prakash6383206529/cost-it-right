@@ -515,9 +515,9 @@ function RawMaterialCost(props) {
               </Col>
             </Row>
 
-            {costData.TechnologyId === 6 &&
               <Row >
-                <Col md="3" className="py-3 ">
+              {costData.TechnologyId === 6 &&
+                <Col md="2" className="py-3 ">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -535,9 +535,8 @@ function RawMaterialCost(props) {
                     />
                   </label>
                 </Col>
-              </Row>}
+              }
 
-            <Row >
               {IsApplyMasterBatch && costData.TechnologyId === 6 &&
                 <>
                   <Col md="2">

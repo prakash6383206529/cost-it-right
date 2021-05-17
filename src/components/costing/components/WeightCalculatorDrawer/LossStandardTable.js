@@ -259,7 +259,7 @@ function LossStandardTable(props) {
             disabled={true}
           />
         </Col>
-        <Col md="3">
+        <Col md="3" className="pr-0">
           <div>
             {isEdit ? (
               <>
@@ -273,7 +273,7 @@ function LossStandardTable(props) {
 
                 <button
                   type="button"
-                  className={'cancel-btn mt30 pull-left mr5'}
+                  className={'reset-btn mt30 pull-left mr5'}
                   onClick={() => cancelUpdate()}
                 >
                   Cancel
