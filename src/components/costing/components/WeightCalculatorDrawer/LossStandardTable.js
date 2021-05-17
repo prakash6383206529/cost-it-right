@@ -160,8 +160,12 @@ function LossStandardTable(props) {
    */
   const deleteRow = (index) => {
     const tempObj = tableData[index]
-
-    const weight = netWeight - tempObj.LossWeight //FIXME Calculation going wrong need to ask Harish sir.
+    let weight
+    if (tableData.length === 1) {
+      weight = 0
+    } else {
+      weight = netWeight - tempObj.LossWeight //FIXME Calculation going wrong need to ask Harish sir.
+    }
 
     setNetWeight(weight)
     props.calculation(weight)
@@ -179,7 +183,7 @@ function LossStandardTable(props) {
       <Row className={''}>
         <Col md="12">
           <div className="header-title">
-            <h5>{'Loss Percantage:'}</h5>
+            <h5>{'Loss Percentage:'}</h5>
           </div>
         </Col>
         <Col md="3">

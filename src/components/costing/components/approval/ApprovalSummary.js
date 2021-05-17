@@ -41,10 +41,11 @@ function ApprovalSummary(props) {
       getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
 
         const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId, ApprovalProcessSummaryId,
-          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, CostingId } = res.data.Data.Costings[0]
+          ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow, CostingId, PartId } = res.data.Data.Costings[0]
         const technologyId = res.data.Data.Costings[0].PartDetails.TechnologyId
         const partNumber = PartDetails.PartNumber
-        dispatch(storePartNumber({ partNumber: PartDetails.PartNumber }))
+
+        dispatch(storePartNumber({ partId: PartId }))
         setPartDetail(PartDetails)
         setApprovalDetails(ApprovalDetails[0])
         setApprovalLevelStep(ApprovalLevelStep)
@@ -423,6 +424,7 @@ function ApprovalSummary(props) {
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
+          dataSend={[approvalDetails, partDetail]}
         />
       )}
       {rejectDrawer && (
@@ -435,12 +437,14 @@ function ApprovalSummary(props) {
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
+          dataSend={[approvalDetails, partDetail]}
         />
       )}
       {pushButton && (
         <PushButtonDrawer
           isOpen={pushButton}
           closeDrawer={closePushButton}
+          dataSend={[approvalDetails, partDetail]}
           anchor={'right'}
           approvalData={[approvalData]}
         />

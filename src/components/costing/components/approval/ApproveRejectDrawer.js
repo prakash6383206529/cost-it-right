@@ -17,7 +17,8 @@ import { REASON_ID } from '../../../../config/constants'
 
 function ApproveRejectDrawer(props) {
 
-  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation } = props
+  const { type, tokenNo, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend } = props
+  console.log('dataSend: ', dataSend);
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -106,14 +107,14 @@ function ApproveRejectDrawer(props) {
     })
 
     if (type === 'Approve') {
-      if (IsPushDrawer) {
-        toastr.success('The costing has been approved')
-        setOpenPushButton(true)
+      // if (IsPushDrawer) {
+      //   toastr.success('The costing has been approved')
+      //   setOpenPushButton(true)
 
-      } else {
-        toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
-        props.closeDrawer('', 'submit')
-      }
+      // } else {
+      //   toastr.success(!IsFinalLevel ? 'The costing has been approved' : 'The costing has been sent to next level for approval')
+      //   props.closeDrawer('', 'submit')
+      // }
 
       dispatch(approvalRequestByApprove(Data, res => {
         if (res.data.Result) {
@@ -129,7 +130,7 @@ function ApproveRejectDrawer(props) {
           // props.closeDrawer()
         }
       }))
-      props.closeDrawer('')
+      //     props.closeDrawer('')
     } else {
       // REJECT CONDITION
       dispatch(rejectRequestByApprove(Data, res => {
@@ -341,6 +342,7 @@ function ApproveRejectDrawer(props) {
           isOpen={openPushButton}
           closeDrawer={closePushButton}
           approvalData={[approvalData]}
+          dataSend={dataSend}
           anchor={'right'}
         />
       )}

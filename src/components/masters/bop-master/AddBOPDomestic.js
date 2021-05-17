@@ -549,7 +549,8 @@ class AddBOPDomestic extends Component {
         Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
         Attachements: updatedFiles,
         UnitOfMeasurementId: UOM.value,
-        IsForcefulUpdated: true
+        IsForcefulUpdated: true,
+        NumberOfPieces: values.NumberOfPieces,
       }
       if (isEditFlag) {
 
@@ -936,7 +937,7 @@ class AddBOPDomestic extends Component {
                               required={true}
                               className=""
                               customClassName=" withBorder"
-                              disabled={isEditFlag ? true : false}
+                              disabled={false}
                             />
                           </Col>
                           <Col md="3">
