@@ -115,7 +115,7 @@ function OpenWeightCalculator(props) {
                 <div className="d-inline-block mr-4"><span className="grey-text d-block">RM Rate:</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></div>
                 {IsApplyMasterBatch && <div className="d-inline-block mr-4"><span className="grey-text d-block">RM Rate(including<br/> Master Batch):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(Number(rmRowData.RMRate) + Number(MasterBatchTotal), getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
                 <div className="d-inline-block mr-4"><span className="grey-text d-block">Scrap Rate:</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</span></div>
-                <div className="d-inline-block mr-4"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.RawMaterialCategory !== undefined ? rmRowData.RawMaterialCategory : ''}`}</span></div>
+                <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.RawMaterialCategory !== undefined ? rmRowData.RawMaterialCategory : ''}`}</span></div>
               </Col>
             </Row>
             {openConditionalDrawer()}

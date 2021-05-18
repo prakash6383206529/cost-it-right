@@ -3687,8 +3687,12 @@ body{
       background-color: #256bd1;
     }
   }
-  input:disabled ~ span{
-    &:before,&:after{opacity: 0.5;}
+  input:disabled ~ span{opacity: 0.5;}
+  input[type="radio"]:disabled{
+    cursor: not-allowed;
+    & ~ span{
+      cursor: not-allowed;
+    }
   }
 }
 
