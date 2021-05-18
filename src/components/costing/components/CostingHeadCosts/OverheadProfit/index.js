@@ -294,8 +294,8 @@ function OverheadProfit(props) {
     setTimeout(() => {
       let tempObj = {
         "InterestRateId": ICCapplicability.label !== 'Fixed' ? (ICCApplicabilityDetail ? ICCInterestRateId : '') : null,
-        "IccDetailId": ICCApplicabilityDetail ? ICCApplicabilityDetail.IccDetailId : '',
-        "ICCApplicability": ICCapplicability.value,
+        "IccDetailId": InventoryObj ? InventoryObj.InterestRateId : '',
+        "ICCApplicability": InventoryObj ? InventoryObj.ICCApplicability : '',
         "CostApplicability": IsInventoryApplicable ? getValues('InterestRateCost') : '',
         "InterestRate": IsInventoryApplicable ? getValues('InterestRatePercentage') : '',
         "NetCost": IsInventoryApplicable ? getValues('NetICCTotal') : '',
@@ -321,7 +321,7 @@ function OverheadProfit(props) {
       let tempObj = {
         "InterestRateId": paymentTermsApplicability.label !== 'Fixed' ? (IsPaymentTermsApplicable ? PaymentTermInterestRateId : '') : null,
         "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
-        "PaymentTermApplicability": paymentTermsApplicability.label,
+        "PaymentTermApplicability": PaymentTermObj ? PaymentTermObj.PaymentTermApplicability : '',
         "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
         "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
         "NetCost": IsPaymentTermsApplicable ? getValues('RepaymentPeriodCost') : '',
@@ -330,7 +330,7 @@ function OverheadProfit(props) {
 
       props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
     }, 200)
-  }, [PaymentTermsFieldValues]);
+  }, [PaymentTermsFieldValues, PaymentTermsFixedFieldValues]);
 
   // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
   useEffect(() => {
@@ -919,7 +919,7 @@ function OverheadProfit(props) {
           setValue('InterestRatePercentage', Data.InterestRate)
           setICCInterestRateId(Data.InterestRateId !== null ? Data.InterestRateId : EMPTY_GUID)
           setICCapplicability({ label: Data.ICCApplicability, value: Data.ICCApplicability })
-
+          setInventoryObj(Data)
           if (IsIncludedSurfaceInOverheadProfit) {
             setIsSurfaceTreatmentAdded(false)
             setTimeout(() => {
@@ -935,6 +935,7 @@ function OverheadProfit(props) {
           setValue('NetICCTotal', '')
           checkInventoryApplicability('')
           setICCapplicability([])
+          setInventoryObj({})
         }
 
       }))
@@ -1062,12 +1063,14 @@ function OverheadProfit(props) {
           setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
           checkPaymentTermApplicability(Data.PaymentTermApplicability)
           setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
+          setPaymentTermObj(Data)
         } else if (res.status === 204) {
           setValue('RepaymentPeriodDays', '')
           setValue('RepaymentPeriodPercentage', '')
           setValue('RepaymentPeriodCost', '')
           checkPaymentTermApplicability('')
           setPaymentTermsApplicability([])
+          setPaymentTermObj({})
         }
 
       }))

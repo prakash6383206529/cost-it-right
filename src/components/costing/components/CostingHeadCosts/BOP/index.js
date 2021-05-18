@@ -49,12 +49,12 @@ function BoughtOutPart(props) {
         </td>
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
-        <td>{''}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{''}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.Quantity !== undefined ? item.CostingPartDetails.Quantity : 1}</td>
-        <td>{item.CostingPartDetails && item.CostingPartDetails.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item.CostingPartDetails.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        {costData.IsAssemblyPart && <td>{''}</td>}
+        <td>{'-'}</td>
+        <td>{item?.CostingPartDetails?.BoughtOutPartRate !== null ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        <td>{'-'}</td>
+        <td>{item?.CostingPartDetails?.Quantity ? item.CostingPartDetails.Quantity : 1}</td>
+        <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull(item.CostingPartDetails.BoughtOutPartRate, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        {costData.IsAssemblyPart && <td>{item?.CostingPartDetails?.BoughtOutPartRate ? checkForDecimalAndNull((item.CostingPartDetails.BoughtOutPartRate * item.CostingPartDetails.Quantity), initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         <td>{''}</td>
       </tr>
     </ >

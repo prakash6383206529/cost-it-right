@@ -344,22 +344,22 @@ function BOPCost(props) {
             <Row >
               <Col md="12" className="py-3 ">
                 <span className="d-inline-block">
-                <label
-                  className={`custom-checkbox mb-0`}
-                  onChange={onPressApplyBOPCharges}
-                >
-                  Apply BOP Handling Charges
-                    <input
-                    type="checkbox"
-                    checked={IsApplyBOPHandlingCharges}
-                    disabled={CostingViewMode ? true : false}
-                  />
-                  <span
-                    className=" before-box"
-                    checked={IsApplyBOPHandlingCharges}
+                  <label
+                    className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}
-                  />
-                </label>
+                  >
+                    Apply BOP Handling Charges
+                    <input
+                      type="checkbox"
+                      checked={IsApplyBOPHandlingCharges}
+                      disabled={CostingViewMode ? true : false}
+                    />
+                    <span
+                      className=" before-box"
+                      checked={IsApplyBOPHandlingCharges}
+                      onChange={onPressApplyBOPCharges}
+                    />
+                  </label>
                 </span>
               </Col>
 
