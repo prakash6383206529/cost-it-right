@@ -302,7 +302,7 @@ function AddToComparisonDrawer(props) {
             currencyValue: dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.CurrencyExchangeRate ? dataFromAPI.CostingPartDetails.OtherCostDetails.CurrencyExchangeRate : '-',
           }
           obj.nPOPrice = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceINR !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.NetPOPriceINR : 0
-          obj.effectiveDate = dataFromAPI.CostingPartDetails && dataFromAPI.CostingPartDetails.OtherCostDetails.EffectiveDate !== null ? dataFromAPI.CostingPartDetails.OtherCostDetails.EffectiveDate : ''
+          obj.effectiveDate = dataFromAPI.EffectiveDate ? dataFromAPI.EffectiveDate : ''
           // // // obj.attachment = "Attachment";
           obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : ''
           obj.approvalButton = ''
