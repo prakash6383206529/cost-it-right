@@ -895,7 +895,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         <Col md="4">
-                          
+
                           <div className="inputbox date-section form-group">
                             <Field
                               label="Effective Date"
@@ -950,7 +950,7 @@ class AddOverhead extends Component {
                             <Dropzone
                               getUploadParams={this.getUploadParams}
                               onChangeStatus={this.handleChangeStatus}
-                              // PreviewComponent={this.Preview}
+                              PreviewComponent={this.Preview}
                               accept="*"
                               initialFiles={this.state.initialFiles}
                               maxFiles={3}
@@ -973,12 +973,12 @@ class AddOverhead extends Component {
                                 )
                               }
                               styles={{
-                                // dropzoneReject: {
-                                //   borderColor: "red",
-                                //   backgroundColor: "#DAA",
-                                // },
-                                dropzone: { minHeight: 200, maxHeight: 250 },
-                                dropzoneActive: { borderColor: 'green' },
+                                dropzoneReject: {
+                                  borderColor: "red",
+                                  backgroundColor: "#DAA",
+                                },
+                                inputLabel: (files, extra) =>
+                                  extra.reject ? { color: "red" } : {},
                               }}
                               classNames="draper-drop"
                             />

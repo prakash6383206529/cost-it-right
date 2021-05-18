@@ -406,10 +406,15 @@ class AddBOPImport extends Component {
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
+    // COMMENTED FOR MINDA
+    // const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
+    // const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
+    // this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
+    // this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces) * this.state.currencyValue)
-    this.setState({ netLandedcost: (BasicRate / NoOfPieces), netLandedConverionCost: NetLandedCost })
-    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate / NoOfPieces), initialConfiguration.NoOfDecimalForPrice))
+    const NetLandedCost = checkForNull((BasicRate) * this.state.currencyValue)
+    this.setState({ netLandedcost: (BasicRate), netLandedConverionCost: NetLandedCost })
+    this.props.change('NetLandedCost', checkForDecimalAndNull((BasicRate), initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
   }
 
@@ -978,9 +983,9 @@ class AddBOPImport extends Component {
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, postiveNumber, maxLength10]}
+                              validate={[postiveNumber, maxLength10]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               className=""
                               customClassName=" withBorder"
                             />

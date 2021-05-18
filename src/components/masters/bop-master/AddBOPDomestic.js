@@ -388,7 +388,8 @@ class AddBOPDomestic extends Component {
     const { fieldsObj, initialConfiguration } = this.props
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 0;
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull((BasicRate / NoOfPieces))
+    // const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) //COMMENTED FOR MINDA
+    const NetLandedCost = checkForNull(BasicRate) //THIS IS ONLY FOR MINDA
     this.setState({
       NetLandedCost: NetLandedCost
     })
@@ -932,9 +933,9 @@ class AddBOPDomestic extends Component {
                               name={"NumberOfPieces"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, postiveNumber, maxLength10]}
+                              validate={[postiveNumber, maxLength10]}
                               component={renderText}
-                              required={true}
+                              required={false}
                               className=""
                               customClassName=" withBorder"
                               disabled={false}
