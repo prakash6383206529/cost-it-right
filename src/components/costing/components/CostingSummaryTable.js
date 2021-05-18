@@ -71,12 +71,15 @@ const CostingSummaryTable = (props) => {
   const partNumber = useSelector(state => state.costing.partNo);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
-  // const [showWarningMsg, setShowWarningMsg] = useState(false)
+  const [warningMsg, setShowWarningMsg] = useState(false)
+  console.log('warningMsg: ', warningMsg);
   useEffect(() => {
 
   }, [multipleCostings])
 
-
+  // useEffect(() => {
+  //   console.log("Now rendering after use effect");
+  // }, [showWarningMsg])
   useEffect(() => {
     if (!viewMode && viewCostingData) {
       let obj = {}
@@ -92,6 +95,7 @@ const CostingSummaryTable = (props) => {
         }
       }))
     }
+
   }, [])
 
 
@@ -324,6 +328,7 @@ const CostingSummaryTable = (props) => {
   const closeAddComparisonDrawer = (e = '') => {
     setaddComparisonToggle(false)
     setMultipleCostings([])
+    setShowWarningMsg(true)
   }
 
   /**
@@ -394,7 +399,7 @@ const CostingSummaryTable = (props) => {
       if (checkInd !== -1) {
         console.log(viewCostingData[checkInd].IsApprovalLocked, "IN IF", viewCostingData);
         if (viewCostingData[checkInd].IsApprovalLocked) {
-          setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)
+          setIsWarningFlag(!viewCostingData[checkInd].IsApprovalLocked)   // CONDITION IF ALREADY FOR A PART +PLANT /VENDOR+PLANT ,COSTING IS ALREADY SENT FOR APPROVAL
         }
       }
     } else {
@@ -593,7 +598,7 @@ const CostingSummaryTable = (props) => {
               Add To Comparison{' '}
               </button>
               {isWarningFlag && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'A costing is pending for approval for this part or one of it\'s child part. Please approve that first'} />}
-              {showWarningMsg && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
+              {(showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
             </Col>
 
           </Row>

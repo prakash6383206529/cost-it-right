@@ -296,18 +296,20 @@ const SendForApproval = (props) => {
         } else {
           plantCount = plantCount + 1
         }
-      } else if (element.vendorId !== '-' && index > 0) {
+      }
+      else if (element.vendorId !== '-' && index > 0) {
         if (element.vendorId === arr[index - 1].vendorId) {
           return false
         } else {
           venderCount = venderCount + 1
         }
-      } else {
+      }
+      else {
         plantCount = plantCount + 1
         venderCount = venderCount + 1
       }
     });
-
+    console.log(plantCount, "plantCount", venderCount);
     if (plantCount === 0) {
       return toastr.warning('Costings with same plant cannot be sent for approval')
     }
