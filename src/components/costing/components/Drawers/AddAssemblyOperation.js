@@ -156,7 +156,7 @@ function AddAssemblyOperation(props) {
                       <Col md="3" className="cr-costlabel text-center"><span className="d-inline-block align-middle">{`Net Operation Cost: ${item.CostingPartDetails && item.CostingPartDetails.GrandTotalCost !== null ? item.CostingPartDetails.TotalOperationCostPerAssembly + item.CostingPartDetails.TotalToolCostPerAssembly : 0}`}</span></Col>
 
                       <Col md="3" className="switch cr-costlabel text-right">
-                        <label className="switch-level d-inline-flex w-auto mb-0">
+                        {/* <label className="switch-level d-inline-flex w-auto mb-0">
                           <div className={'left-title'}>{''}</div>
                           <Switch
                             onChange={onToolToggle}
@@ -173,7 +173,7 @@ function AddAssemblyOperation(props) {
                             width={46}
                           />
                           <div className={'right-title'}>Show Tool Cost</div>
-                        </label>
+                        </label> */}
                       </Col>
                     </Row>
 
