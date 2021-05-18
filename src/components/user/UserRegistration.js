@@ -894,7 +894,7 @@ class UserRegistration extends Component {
                             placeholder={'Enter'}
                             component={renderText}
                             isDisabled={false}
-                            validate={[required, minLength7, checkWhiteSpaces]}
+                            validate={[required, minLength3, checkWhiteSpaces]}
                             required={true}
                             maxLength={70}
                             disabled={this.state.isEditFlag ? true : false}
