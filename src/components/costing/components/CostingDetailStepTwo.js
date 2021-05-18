@@ -31,7 +31,6 @@ function CostingDetailStepTwo(props) {
   const { initialConfiguration } = useSelector(state => state.auth)
   const { costingData, CostingDataList, NetPOPrice, RMCCBOPCost, SurfaceCostData, OverheadProfitCostData,
     DiscountCostData, partNo, IsToolCostApplicable, showLoading } = useSelector(state => state.costing)
-  console.log('CostingDataList: ', CostingDataList);
 
   useEffect(() => {
     if (partNo.isChanged === true) {
