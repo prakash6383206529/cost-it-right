@@ -141,7 +141,6 @@ function OverheadProfit(props) {
 
     if (modelType && modelType.value !== undefined) {
       handleModelTypeChange(modelType)
-      IncludeSurfaceTreatmentCall()
     }
 
     if (applicability && applicability.value !== undefined) {
@@ -254,14 +253,14 @@ function OverheadProfit(props) {
 
   useEffect(() => {
 
-    if (applicability.label === 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
-      checkRejectionApplicability(applicability.label)
-    } else if (IsIncludedSurfaceInOverheadProfit === false) {
-      checkRejectionApplicability(applicability.label)
-    } else if (applicability.label !== 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
-      setIsSurfaceTreatmentAdded(false)
-      IncludeSurfaceTreatmentCall()
-    }
+    // if (applicability.label === 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
+    checkRejectionApplicability(applicability.label)
+    // } else if (IsIncludedSurfaceInOverheadProfit === false) {
+    //   checkRejectionApplicability(applicability.label)
+    // } else if (applicability.label !== 'Fixed' && IsIncludedSurfaceInOverheadProfit) {
+    //   setIsSurfaceTreatmentAdded(false)
+    //   IncludeSurfaceTreatmentCall()
+    // }
 
     setTimeout(() => {
       let tempObj = {
@@ -285,12 +284,12 @@ function OverheadProfit(props) {
 
   useEffect(() => {
 
-    if (IsIncludedSurfaceInOverheadProfit) {
-      setIsSurfaceTreatmentAdded(false)
-      IncludeSurfaceTreatmentCall()
-    } else {
-      checkInventoryApplicability(ICCapplicability?.label)
-    }
+    // if (IsIncludedSurfaceInOverheadProfit) {
+    //   setIsSurfaceTreatmentAdded(false)
+    //   IncludeSurfaceTreatmentCall()
+    // } else {
+    checkInventoryApplicability(ICCapplicability?.label)
+    // }
 
     setTimeout(() => {
       let tempObj = {
@@ -1384,269 +1383,6 @@ function OverheadProfit(props) {
       // END HERE ADD CC IN PROFIT COMBINED
     }
 
-    // START ADD CC IN REJECTION
-    if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && applicability && applicability.label !== '') {
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
-      const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetConversionCost;
-      const RejectionPercentage = getValues('RejectionPercentage')
-
-      switch (applicability.label) {
-
-        case 'CC':
-          setValue('RejectionCost', headerCosts.NetConversionCost + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'RM + CC':
-          setValue('RejectionCost', checkForDecimalAndNull(RMCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'BOP + CC':
-          setValue('RejectionCost', checkForDecimalAndNull(BOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        default:
-          break;
-      }
-      //}
-
-    } else if (!IsIncludedSurfaceInOverheadProfit && applicability && applicability.label !== '') {
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
-      const BOPCC = headerCosts.NetBoughtOutPartCost + headerCosts.NetConversionCost;
-      const RejectionPercentage = getValues('RejectionPercentage')
-
-      switch (applicability.label) {
-
-        case 'CC':
-          setValue('RejectionCost', headerCosts.NetConversionCost)
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('RejectionCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'RM + CC':
-          setValue('RejectionCost', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        case 'BOP + CC':
-          setValue('RejectionCost', checkForDecimalAndNull(BOPCC, initialConfiguration.NoOfDecimalForPrice))
-          setValue('RejectionTotalCost', checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          setRejectionObj({
-            ...rejectionObj,
-            RejectionPercentage: RejectionPercentage,
-            RejectionCost: getValues('RejectionCost'),
-            RejectionTotalCost: checkForDecimalAndNull(getValues('RejectionCost') * calculatePercentage(RejectionPercentage), initialConfiguration.NoOfDecimalForPrice)
-          })
-          break;
-
-        default:
-          break;
-      }
-      // END HERE ADD CC IN REJECTION
-    }
-
-    // START ADD CC IN ICC
-    if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && IsInventoryApplicable) {
-
-      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
-      const InterestRatePercentage = getValues('InterestRatePercentage')
-
-      switch (ICCapplicability.label) {
-        case 'RM + CC':
-          setValue('InterestRateCost', RMCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
-          setValue('NetICCTotal', checkForDecimalAndNull(getValues('InterestRateCost') * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
-          setValue('NetICCTotal', checkForDecimalAndNull(getValues('InterestRateCost') * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        case 'Annual ICC (%)':
-          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
-          setValue('NetICCTotal', checkForDecimalAndNull(getValues('InterestRateCost') * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        case 'Net Cost':
-          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost)
-          setValue('NetICCTotal', checkForDecimalAndNull(getValues('InterestRateCost') * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        default:
-          break;
-      }
-
-    } else if (!IsIncludedSurfaceInOverheadProfit && IsInventoryApplicable) {
-
-      const RMBOP = headerCosts.NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
-      const InterestRatePercentage = getValues('InterestRatePercentage')
-
-      switch (Text) {
-        case 'RM + CC':
-          setValue('InterestRateCost', RMCC)
-          setValue('NetICCTotal', checkForDecimalAndNull(RMCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
-          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        case 'Annual ICC (%)':
-          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
-          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        case 'Net Cost':
-          setValue('InterestRateCost', headerCosts.NetTotalRMBOPCC)
-          setValue('NetICCTotal', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        default:
-          break;
-      }
-      // END HERE ADD CC IN ICC
-    }
-
-    // START ADD CC IN PAYMENT TERMS
-    if (IsIncludedSurfaceInOverheadProfit && IsSurfaceTreatmentAdded === false && IsPaymentTermsApplicable) {
-
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
-      const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
-      const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
-      const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
-
-      switch (Text) {
-
-        case 'RM + CC':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost) * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost) * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        case 'Annual ICC (%)':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost) * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        case 'Net Cost':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetTotalRMBOPCC + SurfaceTreatmentCost.NetSurfaceTreatmentCost) * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(true)
-          break;
-
-        default:
-          break;
-      }
-
-    } else if (!IsIncludedSurfaceInOverheadProfit && IsPaymentTermsApplicable) {
-
-      const RMCC = headerCosts.NetRawMaterialsCost + headerCosts.NetConversionCost;
-      const RepaymentPeriodDays = getValues('RepaymentPeriodDays')
-      const RepaymentPeriodPercentage = getValues('RepaymentPeriodPercentage')
-      const RepaymentCost = (calculatePercentage(RepaymentPeriodPercentage) / 90) * RepaymentPeriodDays;
-
-      switch (Text) {
-
-        case 'RM + CC':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(RMCC * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        case 'RM + CC + BOP':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        case 'Annual ICC (%)':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        case 'Net Cost':
-          setValue('RepaymentPeriodCost', checkForDecimalAndNull(headerCosts.NetTotalRMBOPCC * RepaymentCost, initialConfiguration.NoOfDecimalForPrice))
-          setIsSurfaceTreatmentAdded(false)
-          break;
-
-        default:
-          break;
-      }
-      // END HERE ADD CC IN PAYMENT TERMS
-    }
   }
 
   /**
