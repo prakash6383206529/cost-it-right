@@ -803,6 +803,7 @@ export const API = {
 
   //COMPANY
   getComapanySelectList: `${BASE_URL}/company/get-company-select-list`,
+  updateCompany: `${BASE_URL}/company/update`,
 
   //SIMULATION
   getSimulationHistory: `${BASE_URL}/`,

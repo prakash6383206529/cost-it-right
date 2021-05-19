@@ -126,7 +126,7 @@ function ApprovalSummary(props) {
                 </Col>
               </Row>
               {/* Code for approval workflow */}
-              <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} />
+              <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalData.ApprovalNumber} />
 
               <Row>
                 <Col md="12">
@@ -422,6 +422,7 @@ function ApprovalSummary(props) {
           // tokenNo={approvalNumber}
           approvalData={[approvalData]}
           anchor={'right'}
+          reasonId={approvalDetails.ReasonId}
           IsFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
@@ -457,6 +458,7 @@ function ApprovalSummary(props) {
           isOpen={viewButton}
           closeDrawer={closeViewDrawer}
           anchor={'top'}
+          approvalNo={approvalData.ApprovalNumber}
         />
       )}
     </>
