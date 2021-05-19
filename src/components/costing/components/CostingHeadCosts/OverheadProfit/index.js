@@ -117,6 +117,10 @@ function OverheadProfit(props) {
     IncludeSurfaceTreatmentCall()
   }, [IsIncludedSurfaceInOverheadProfit])
 
+  useEffect(() => {
+    IncludeSurfaceTreatmentCall()
+  }, [SurfaceTreatmentCost.NetSurfaceTreatmentCost])
+
   /**
   * @method UpdateForm
   * @description UPDATE FORM ON EACH INITIAL RENDER

@@ -29,7 +29,7 @@ function Tool(props) {
   const { register, handleSubmit, control, setValue, getValues, errors } = useForm({
     mode: 'onBlur',
     reValidateMode: 'onChange',
-    defaultValues: IsApplicableProcessWise === false ? defaultValues : {},
+    defaultValues: (IsApplicableProcessWise === false || IsApplicableProcessWise === null) ? defaultValues : {},
   });
 
   const [gridData, setGridData] = useState(data && data.CostingPartDetails.CostingToolCostResponse.length > 0 ? data.CostingPartDetails.CostingToolCostResponse : [])

@@ -69,6 +69,25 @@ export function TokenAPI(requestData, callback) {
     };
 }
 
+export function AutoSignin(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        let queryParams = `Token=${requestData.Token}&UserName=${requestData.UserName}`;
+        axios.post(API.AutoSignin, queryParams, CustomHeader)
+            .then((response) => {
+                console.log('response success: ', response);
+                if (response && response.status === 200) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                console.log('response error: ', error);
+                dispatch(getFailure(error));
+                apiErrors(error);
+                callback(error);
+            });
+    };
+}
+
 /**
  * @method getLoginSuccess
  * @description return object containing action type

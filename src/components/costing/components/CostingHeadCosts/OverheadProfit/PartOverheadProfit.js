@@ -66,7 +66,6 @@ function PartOverheadProfit(props) {
   * @description Used to Submit the form
   */
   const saveCosting = (values) => {
-    console.log('Called save', item)
     let reqData = {
       "CostingId": item.CostingId,
       "LoggedInUserId": loggedInUserId(),

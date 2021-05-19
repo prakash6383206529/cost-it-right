@@ -31,7 +31,7 @@ import TaxListing from './masters/tax-master/TaxListing'
 import LeftMenu from './nav/Leftsidemenu'
 import Breadcrumb from './nav/Breadcrumb'
 import CostingRoutes from './costing/Routes'
-import { showUserData, TokenAPI } from '../actions/auth/AuthActions'
+import { showUserData, TokenAPI, AutoSignin } from '../actions/auth/AuthActions'
 import AuthMiddleware from '../AuthMiddleware'
 import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
@@ -58,6 +58,35 @@ class Main extends Component {
     }
   }
 
+  UNSAFE_componentWillMount() {
+    if (this?.props?.location?.search) {
+      const queryParams = new URLSearchParams(this.props.location.search);
+      const token = queryParams.get('token')
+      const username = queryParams.get('username')
+      const email = queryParams.get('email')
+      console.log('queryParams: ', token, username, email);
+
+      // http://costmanagementqa.unominda.com/login?token=46675TgCsOE1mc&username=4667&email=RMANCHANDA@MINDAGROUP.COM
+      let reqParams = {
+        Token: token,
+        UserName: username,
+        //Email: email,
+      }
+
+      this.props.AutoSignin(reqParams, (res) => {
+        if (res && res.status === 200) {
+          let userDetail = formatLoginResult(res.data);
+          reactLocalStorage.setObject("userDetail", userDetail);
+          this.props.logUserIn();
+          setTimeout(() => {
+            window.location.replace("/");
+          }, 1000)
+        }
+      })
+
+    }
+  }
+
   componentDidMount() {
     const Detail = userDetails()
     if (Object.keys(Detail).length > 0) {
@@ -67,9 +96,6 @@ class Main extends Component {
       const current_time = new Date();
       const totalSeconds = Math.floor((token_expires_at - (current_time)) / 1000);
       const callBeforeSeconds = 15 * 1000; //Refresh token API will call before 15 seconds 
-
-      console.log('token_expires_at: ', token_expires_at);
-      console.log('totalSeconds * 1000 - callBeforeSeconds', totalSeconds * 1000 - callBeforeSeconds)
 
       if ((totalSeconds * 1000 - callBeforeSeconds) > 0) {
 
@@ -314,4 +340,4 @@ class Main extends Component {
  * @param {function} mapStateToProps
  * @param {function} mapDispatchToProps
  */
-export default connect(null, { showUserData, TokenAPI })(Main)
+export default connect(null, { showUserData, TokenAPI, AutoSignin })(Main)

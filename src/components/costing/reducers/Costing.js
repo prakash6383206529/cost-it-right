@@ -78,6 +78,7 @@ const initialState = {
   costingApprovalData: [],
   IsIncludedSurfaceInOverheadProfit: false,
   IsCostingDateDisabled: false,
+  IsToolCostApplicable: false,
 }
 
 export default function costingReducer(state = initialState, action) {
