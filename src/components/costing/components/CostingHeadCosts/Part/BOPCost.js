@@ -211,9 +211,22 @@ function BOPCost(props) {
     }
   }, [item.CostingPartDetails.TotalBoughtOutPartCost])
 
+  // USED TO RESET VALUE AS IT IS WITHOUT BOP HANDLING CHARGESD
   useEffect(() => {
+    if (IsApplyBOPHandlingCharges === false) {
 
-  }, [gridData]);
+      const Params = {
+        BOMLevel: item.BOMLevel,
+        PartNumber: item.PartNumber,
+      }
+      const BOPHandlingFields = {
+        IsApplyBOPHandlingCharges: IsApplyBOPHandlingCharges,
+        BOPHandlingPercentage: 0,
+        BOPHandlingCharges: 0,
+      }
+      props.setBOPHandlingCost(gridData, BOPHandlingFields, Params)
+    }
+  }, [IsApplyBOPHandlingCharges]);
 
   const bopGridFields = 'bopGridFields';
 
