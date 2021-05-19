@@ -273,8 +273,8 @@ class Main extends Component {
 
                     <Route path="/costing-summary" component={CostingRoutes} />
 
-
                     <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} />
+
                     <Route path="/approval-listing" component={ApprovalListing} />
                     {/* <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} /> */}
 
