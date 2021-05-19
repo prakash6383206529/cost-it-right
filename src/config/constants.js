@@ -1378,6 +1378,13 @@ export const VOLUME = 'Volume'
 export const EXCHANGE_RATE = 'Exchange Rate'
 export const FREIGHT = 'Freight'
 export const INTEREST_RATE = 'Interest Rate'
+export const Approval_Summary = 'Approval Summary'
+export const Approval_Listing = 'Approval Listing'
+export const CostingSummary_BulkUpload = 'Costing Summary BulkUpload'
+export const Simulation_History = 'Simulation History'
+export const Simulation_Page = "Simulation"
+export const Simulation_Upload = 'Simulation Upload'
+
 export const TAX = 'Tax'
 
 export const SHEET_METAL = 'Sheet Metal'

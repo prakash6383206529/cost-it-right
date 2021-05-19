@@ -172,7 +172,21 @@ function ApprovalListing() {
   }
 
   const priceFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : '';
+    return (
+    <>
+    <img className="arrow-ico mr-1 arrow-green" src={require("../../../../assests/images/arrow-up.svg")} alt="arro-up" />
+    {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+    </>
+    )
+  }
+
+  const oldpriceFormatter = (cell, row, enumObject, rowIndex) => {
+    return (
+    <>
+    <img className="mr-1 arrow-ico arrow-red" src={require("../../../../assests/images/arrow-down.svg")} alt="arro-down" />
+    {cell != null ? checkForDecimalAndNull(cell, initialConfiguration && initialConfiguration.NoOfDecimalForPrice) : ''}
+    </>
+    )
   }
 
   const requestedOnFormatter = (cell, row, enumObject, rowIndex) => {
@@ -453,6 +467,8 @@ function ApprovalListing() {
               <TableHeaderColumn dataField="VendorName" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={renderVendor} >{'Vendor'}</TableHeaderColumn>
 
               <TableHeaderColumn dataField="NetPOPrice" columnTitle={true} dataAlign="left" dataFormat={priceFormatter} dataSort={false}>{'Price'}</TableHeaderColumn>
+              <TableHeaderColumn dataField="OldPOPrice" columnTitle={true} dataAlign="left" dataFormat={oldpriceFormatter} dataSort={false}>{'Old PO Price'}</TableHeaderColumn>
+              
               <TableHeaderColumn dataField="CreatedBy" columnTitle={true} dataAlign="left" dataSort={false} >{'Initiated By'}</TableHeaderColumn>
               <TableHeaderColumn dataField="CreatedOn" columnTitle={true} dataAlign="left" dataSort={false} dataFormat={createdOnFormatter} >{'Created On'} </TableHeaderColumn>
               <TableHeaderColumn dataField="RequestedBy" columnTitle={true} dataAlign="left" dataSort={false}>{'Requested By'} </TableHeaderColumn>

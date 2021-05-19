@@ -37,7 +37,7 @@ import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
-  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY
+  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY,Approval_Summary,Approval_Listing,CostingSummary_BulkUpload,Simulation_History,Simulation_Page,Simulation_Upload
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -246,17 +246,15 @@ class Main extends Component {
                     <Route path="/costing" component={CostingRoutes} />
 
                     <Route path="/costing-summary" component={CostingRoutes} />
-                    {/*Temporary  */}
-                    <Route path="/approval-summary" component={ApprovalSummary} />
+                    
+                    
+                    <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary,Approval_Summary)} />
 
-                    <Route path="/approval-listing" component={ApprovalListing} />
+                    <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} />
 
-                    <Route path="/costing-bulkUpload" component={CostingSummaryBulkUpload} />
+                    <Route path="/costing-bulkUpload" component={AuthMiddleware(CostingSummaryBulkUpload,CostingSummary_BulkUpload)} />
 
-                    <Route
-                      path="/reason-master"
-                      component={AuthMiddleware(ReasonListing, REASON)}
-                    />
+                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)}/>
 
                     <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
 
@@ -266,11 +264,11 @@ class Main extends Component {
 
                     <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
 
-                    <Route path="/simulation-history" component={SimulationHistory} />
+                    <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory,Simulation_History)} />
 
-                    <Route path="/simulation" component={Simulation} />
+                    <Route path="/simulation" component={AuthMiddleware(Simulation,Simulation_Page)} />
 
-                    <Route path="/simulation-upload" component={SimulationUpload} />
+                    <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload,Simulation_Upload)} />
 
                     <Route
                       render={(props) => (

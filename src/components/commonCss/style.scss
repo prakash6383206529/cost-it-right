@@ -1881,6 +1881,16 @@ body {
 	margin: 1px;
 	font-weight: 400;
 }
+.arrow-ico {
+  width: 12px;
+  height: 12px;
+  &.arrow-green{
+    filter: invert(38%) sepia(18%) saturate(1338%) hue-rotate(85deg) brightness(97%) contrast(83%);
+  }
+  &.arrow-red{
+    filter: invert(45%) sepia(44%) saturate(2855%) hue-rotate(320deg) brightness(106%) contrast(98%);
+  }
+}
 // =================Costing Approval=========================
 
 // =================approval-summary=========================
