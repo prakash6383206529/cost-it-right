@@ -49,8 +49,9 @@ function TabSurfaceTreatment(props) {
   const getTotalSurfaceCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
         return accummlator + checkForNull(el.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? el.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0);
@@ -66,8 +67,9 @@ function TabSurfaceTreatment(props) {
   const getTotalTransportationCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
         return accummlator + checkForNull(el.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? el.CostingPartDetails.TotalTransportationCostPerAssembly : 0);
@@ -83,13 +85,15 @@ function TabSurfaceTreatment(props) {
   const getTotalSurfaceCost = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails.SurfaceTreatmentCost !== null ? el.CostingPartDetails.SurfaceTreatmentCost : 0);
+        return accummlator + checkForNull(el?.CostingPartDetails?.SurfaceTreatmentCost);
       }
     }, 0)
+    console.log('getTotalSurfaceCost NetCost: ', NetCost);
     return NetCost;
   }
 
@@ -100,8 +104,9 @@ function TabSurfaceTreatment(props) {
   const getTotalTransportationCost = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
         return accummlator + checkForNull(el.CostingPartDetails.TransportationCost !== null ? el.CostingPartDetails.TransportationCost : 0);
@@ -303,11 +308,12 @@ function TabSurfaceTreatment(props) {
   const getSurfaceTreatmentTotalCost = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails !== null && el.CostingPartDetails.SurfaceTreatmentCost !== undefined ? el.CostingPartDetails.SurfaceTreatmentCost : 0);
+        return accummlator + checkForNull(el?.CostingPartDetails?.SurfaceTreatmentCost);
       }
     }, 0)
     return NetCost;
@@ -390,11 +396,12 @@ function TabSurfaceTreatment(props) {
   const getTransportationTotalCost = (arr, GridTotalCost, params, flag) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails !== null && el.CostingPartDetails.TransportationCost !== undefined ? el.CostingPartDetails.TransportationCost : 0);
+        return accummlator + checkForNull(el?.CostingPartDetails?.TransportationCost);
       }
     }, 0)
     return NetCost;
@@ -453,11 +460,12 @@ function TabSurfaceTreatment(props) {
   const getSurfaceTreatmentTotalCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly !== null ? el.CostingPartDetails.TotalSurfaceTreatmentCostPerAssembly : 0);
+        return accummlator + checkForNull(el?.CostingPartDetails?.TotalSurfaceTreatmentCostPerAssembly);
       }
     }, 0)
     return NetCost;
@@ -514,11 +522,12 @@ function TabSurfaceTreatment(props) {
   const getTransportationTotalCostForAssembly = (arr, GridTotalCost, params) => {
     let NetCost = 0;
     NetCost = arr && arr.reduce((accummlator, el) => {
-      if (el.PartType === 'BOP') return false;
-      if (el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) {
+      if (el.PartType === 'BOP') {
+        return accummlator;
+      } else if ((el.BOMLevel === params.BOMLevel && el.PartNumber === params.PartNumber) || (el.IsAssemblyPart)) {
         return accummlator + checkForNull(GridTotalCost);
       } else {
-        return accummlator + checkForNull(el.CostingPartDetails.TotalTransportationCostPerAssembly !== null ? el.CostingPartDetails.TotalTransportationCostPerAssembly : 0);
+        return accummlator + checkForNull(el?.CostingPartDetails?.TotalTransportationCostPerAssembly);
       }
     }, 0)
     return NetCost;

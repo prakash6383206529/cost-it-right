@@ -37,7 +37,7 @@ import {
   BOP, DASHBOARD, FREIGHT, FUEL_AND_POWER, INTEREST_RATE, LABOUR, MACHINE, OPERATION,
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH,
-  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY,Approval_Summary,Approval_Listing,CostingSummary_BulkUpload,Simulation_History,Simulation_Page,Simulation_Upload
+  APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY, Approval_Summary, Approval_Listing, CostingSummary_BulkUpload, Simulation_History, Simulation_Page, Simulation_Upload
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import ApprovalListing from './costing/components/approval/ApprovalListing'
@@ -60,22 +60,22 @@ class Main extends Component {
 
   UNSAFE_componentWillMount() {
     if (this?.props?.location?.search) {
+
+      if (reactLocalStorage.getObject('isUserLoggedIn') === true) return false;
+
       const queryParams = new URLSearchParams(this.props.location.search);
       const token = queryParams.get('token')
       const username = queryParams.get('username')
       const email = queryParams.get('email')
-      console.log('queryParams: ', token, username, email);
 
-      // http://costmanagementqa.unominda.com/login?token=46675TgCsOE1mc&username=4667&email=RMANCHANDA@MINDAGROUP.COM
       let reqParams = {
         Token: token,
         UserName: username,
-        //Email: email,
       }
 
       this.props.AutoSignin(reqParams, (res) => {
         if (res && res.status === 200) {
-          let userDetail = formatLoginResult(res.data);
+          let userDetail = formatLoginResult(res.data.Data);
           reactLocalStorage.setObject("userDetail", userDetail);
           this.props.logUserIn();
           setTimeout(() => {
@@ -272,15 +272,15 @@ class Main extends Component {
                     <Route path="/costing" component={CostingRoutes} />
 
                     <Route path="/costing-summary" component={CostingRoutes} />
-                    
-                    
-                    <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary,Approval_Summary)} />
 
-                    <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} />
 
-                    <Route path="/costing-bulkUpload" component={AuthMiddleware(CostingSummaryBulkUpload,CostingSummary_BulkUpload)} />
+                    <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} />
 
-                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)}/>
+                    <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing, Approval_Listing)} />
+
+                    <Route path="/costing-bulkUpload" component={AuthMiddleware(CostingSummaryBulkUpload, CostingSummary_BulkUpload)} />
+
+                    <Route path="/reason-master" component={AuthMiddleware(ReasonListing, REASON)} />
 
                     <Route path="/volume-master" component={AuthMiddleware(VolumeListing, VOLUME)} />
 
@@ -290,11 +290,11 @@ class Main extends Component {
 
                     <Route path="/tax-master" component={AuthMiddleware(TaxListing, TAX)} />
 
-                    <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory,Simulation_History)} />
+                    <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} />
 
-                    <Route path="/simulation" component={AuthMiddleware(Simulation,Simulation_Page)} />
+                    <Route path="/simulation" component={AuthMiddleware(Simulation, Simulation_Page)} />
 
-                    <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload,Simulation_Upload)} />
+                    <Route path="/simulation-upload" component={AuthMiddleware(SimulationUpload, Simulation_Upload)} />
 
                     <Route
                       render={(props) => (
